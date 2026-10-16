@@ -221,7 +221,8 @@ the join. When code-span padding stripping removed the joining space, the entry 
 the padding boundary: offset 0 after the opening backtick run, or the value's
 length before the closing run.
 
-**The root carries exactly three fields** - `type`, `children`, `srcByteLength`
+**The root carries three fields** - `type`, `children`, `srcByteLength` - plus
+an optional `astVersion` on a bare tree
 ([`CARVE-P12-024`](./rules/ast-interchange)). Frontmatter and definitions are **block nodes in the tree**, not
 root fields, because a root field cannot carry a position and both are source an
 editor navigates to. A footnote or link reference definition is a child of the
@@ -274,7 +275,10 @@ destination:
 { "type": "link", "href": "/start", "ref": "getting started", "rawRef": "[getting started][]" }
 ```
 
-and `href` is empty only where nothing resolved the reference. That is §5's
+and `href` is empty only where nothing resolved the reference. The one
+exception is a definition whose destination is itself empty (`[r]:`): the use
+then carries `href: ""` and `resolved: true`, and an empty `href` without
+`resolved` still means unresolved (contract 1.2). That is §5's
 added-alongside rule - the same one that lets a resolved footnote reference keep
 its label and gain its number - not a retreat from pre-resolve: the authored
 construct is `ref` and `rawRef`, and it survives intact.
@@ -698,17 +702,25 @@ At a storage or process boundary, wrap the tree in an envelope:
 
 ```json
 {
-  "astVersion": "2.0",
+  "astVersion": "1.2",
   "vocabulary": "https://markup-carve.org/ast/core",
   "extensions": [{ "id": "https://markup-carve.org/ext/citations", "version": "1" }],
   "document": { "type": "document", "children": [], "srcByteLength": 0 }
 }
 ```
 
-The tree inside does not change, and `carve --json` still writes it bare.
+The tree inside does not change. `carve --json` writes it bare, with
+`astVersion` on the root so a reader of bare trees can check the version; a
+reader accepts a bare tree without one.
 `astVersion` is the contract's version, not the language's: a reader refuses a
 higher major or minor than it implements, and a required extension it does not
 implement, with an error naming both versions ([`CARVE-P12-056`](./rules/ast-interchange)).
+
+Contract 1.2 adds three optional fields and changes no existing reading:
+`resolved: true` on a reference use whose definition has an empty destination,
+`astVersion` on a bare tree's root, and `form` (`"block"`, `"line"` or
+`"braced"`) on `comment`. A writer emits `form` beside `block` and `delimited`,
+and a reader refuses a comment where the three disagree.
 
 ## Containers and line blocks
 
@@ -828,7 +840,7 @@ Generated from [the checked summary table](https://github.com/markup-carve/carve
 
 | Shape | Rule | Carve | HTML | Markdown | Plain | ANSI | Diagnostic |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `figure.shortCaption,table.shortCaption` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L344) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
+| `figure.shortCaption,table.shortCaption` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L347) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
 | `figure.target[table]` | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | `table_caption` | `figure` | `unspecified` | `unspecified` | `unspecified` | `clause` |
 | `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L360) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
 | `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L408) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |

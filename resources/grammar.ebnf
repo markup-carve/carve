@@ -6328,8 +6328,8 @@ EOF = (* end of file *) ;
         published does it with a `beforeRender` extension, which keeps the
         escaping decision where it belongs.
       - THE SPELLING IS RECORDED. Both forms parse to a `comment` node, and the
-        node says which one produced it (`delimited: true` for this form, PART
-        12). Without that field a writer reading the tree back has one spelling
+        node says which one produced it (`delimited: true` and
+        `form: "braced"` for this form, PART 12). Without that field a writer reading the tree back has one spelling
         for two constructs, and `foo {% bar %} baz` formats to `foo %% bar` --
         the trailing form swallowing `baz`.
       - `carve lint` reports a braced comment in a document that also carries
@@ -11346,7 +11346,8 @@ EOF = (* end of file *) ;
       `{"type":"document","children":[...]}`.
 
       The root's own fields are fixed by CARVE-P12-024: `type`, `children` and
-      `srcByteLength`, and nothing else.
+      `srcByteLength`, plus an optional `astVersion` on a bare tree, and
+      nothing else.
 
         {"type":"document","children":[...],"srcByteLength":42}
 
@@ -11500,15 +11501,21 @@ EOF = (* end of file *) ;
         {"type":"link","href":"/start","ref":"getting started",
          "rawRef":"[getting started][]"}
 
-      `href` may also be empty when the matching hoisted definition has an
-      explicitly empty destination. Resolve by definition membership under
-      PART 9R R1's label key, not by whether `href` is truthy. An inline link
-      with `href: ""` and no `ref`/`rawRef` is an explicit empty destination;
-      a reference with `href: ""` and a matching empty definition is resolved;
-      one without a matching definition is unresolved. These three states
-      survive whole-document JSON encode/decode and rendering. The use node
-      alone cannot distinguish the two reference states; the document retains
-      the hoisted definition. `ref` and `rawRef` survive either way.
+      `href` is empty only where nothing resolved the reference; `ref` and
+      `rawRef` survive either way.
+
+      A REFERENCE THAT RESOLVES TO AN EMPTY DEFINITION SAYS SO. Where the
+      matching definition's destination is empty (`[label]:`, CARVE-P3-024),
+      the use carries `href: ""` (`src: ""` on an image) and `resolved: true`:
+
+        {"type":"link","href":"","ref":"r","rawRef":"[t][r]","resolved":true}
+
+      `resolved` appears on no other node. An empty `href` on a reference use
+      WITHOUT it is unresolved, exactly as in contract 1.1, so a reader that
+      predates the field reads every tree it accepts correctly. An inline link
+      with `href: ""` and no `ref`/`rawRef` is an explicit empty destination.
+      These three states survive whole-document JSON encode/decode and
+      rendering.
 
       THE COLLAPSED FORM'S `ref` IS THE DERIVED LABEL. For `[getting started][]`
       `ref` carries `"getting started"`, the label the reference resolves by;
@@ -11795,8 +11802,9 @@ EOF = (* end of file *) ;
       A serializer that loses a field is not a lossy convenience; it is a
       consumer breaking silently one document later.
 
-   7. THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS -- NORMATIVE [CARVE-P12-024]:
-      `type`, `children`, `srcByteLength`. Nothing else. An implementation MUST
+   7. THE DOCUMENT ROOT CARRIES THREE FIELDS AND AN OPTIONAL VERSION -- NORMATIVE [CARVE-P12-024]:
+      `type`, `children`, `srcByteLength`, and on a bare tree an optional
+      `astVersion` (CARVE-P12-056). Nothing else. An implementation MUST
       NOT hang document-level data off the root; content goes in the tree,
       where every other piece of content already lives.
 
@@ -11986,8 +11994,9 @@ EOF = (* end of file *) ;
       `block_extension` payload (CARVE-P12-055); anywhere else it is an unnamed property.
 
    12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. CARVE-P12-024
-      fixes the root at `type`, `children` and `srcByteLength`; the schema marks
-      all three `required` and pins `type` to `document`.
+      fixes the root at `type`, `children` and `srcByteLength`, with an optional
+      `astVersion`; the schema marks the three `required` and pins `type` to
+      `document`.
 
       AN INGEST REFUSAL IS A TYPED ERROR NAMING WHAT AND WHERE -- NORMATIVE
       [CARVE-P12-068]. Where PART 12 says an ingest refuses, it fails with an
@@ -12002,7 +12011,8 @@ EOF = (* end of file *) ;
       (a) A ROOT MISSING ANY OF THE THREE FIELDS. Not defaulted, not inferred:
           a reader that supplies `children: []` has turned a truncated document
           into an empty one.
-      (b) A ROOT CARRYING ANYTHING ELSE. The root is closed like every other
+      (b) A ROOT CARRYING ANYTHING ELSE. `astVersion` is not "else": a reader
+          accepts it and accepts its absence (CARVE-P12-056). The root is closed like every other
           node (CARVE-P12-030). A root whose `type` is not `document` (`doc`, say, which
           is ProseMirror's) fails (d).
       (c) A NODE WHOSE `type` THE SCHEMA DOES NOT NAME, AT DECODE, not in a
@@ -12892,11 +12902,20 @@ EOF = (* end of file *) ;
       `major.minor` and it does not track the Carve version: the language is
       versioned for authors and this is versioned for readers of a tree. A
       MAJOR bump removes, renames or reinterprets a field or a meaning; a MINOR
-      bump adds a field or a node type. Empty destinations reinterpret an empty
-      `href` on a reference use: it can now be resolved by a matching empty
-      definition rather than always unresolved (CARVE-P12-006). The contract
-      therefore moves to 2.0, even though no field is added. A leading zero is
-      refused so the 0.x reading of a major never applies here.
+      bump adds a field or a node type. The current contract is 1.2. A leading
+      zero is refused so the 0.x reading of a major never applies here.
+
+      WHAT 1.2 ADDS, all optional on read, nothing removed, renamed or
+      reinterpreted:
+        - `resolved: true` on a link or image reference use whose matching
+          definition has an empty destination (CARVE-P12-006). Its `href` or
+          `src` is `""`; without the field an empty one is unresolved, as in 1.1.
+        - `astVersion` on the root of a bare tree (CARVE-P12-024), below.
+        - `form` on `comment`: `"block"` for `%%%`, `"line"` for `%%`,
+          `"braced"` for `{% … %}`. `block` and `delimited` stay. A writer
+          emits all three; a reader refuses a node where they disagree, with
+          the CARVE-P12-068 error: `block` is true exactly when `form` is
+          `"block"`, and `delimited` is true exactly when `form` is `"braced"`.
 
       A MINOR SAYS WHAT UPGRADING COSTS, NOT WHAT AN OLD READER TOLERATES. It
       tells a reader's author that moving up means handling new fields and
@@ -12931,14 +12950,13 @@ EOF = (* end of file *) ;
       implements - rather than echoing what it read. Re-emitting an ingested
       `astVersion` would republish a claim the producer cannot keep.
 
-      A BARE TREE IS THE CONTRACT ITS PRODUCER IMPLEMENTS. `carve --json` and
-      an in-memory handoff carry no envelope and therefore no version, which is
-      deliberate: inside one build there is nothing to negotiate. A bare tree
-      that CROSSES a version boundary is the producer's problem to solve, by
-      wrapping it, and a reader handed one has no version to check and reads it
-      against its own contract. That is also where a closed schema reports the
-      mismatch as an unnamed property rather than as a version, which is the
-      cost of leaving the bare form versionless and is accepted.
+      A BARE TREE MAY CARRY ITS VERSION ON THE ROOT. `carve --json` writes
+      `astVersion` on the root of the tree it prints, so a reader of bare trees
+      can detect the contract version. A reader applies (a) and (b) to it and
+      accepts its absence: a bare tree without one is read against the
+      reader's own contract, and a closed schema then reports any mismatch as
+      an unnamed property rather than as a version. An in-memory handoff need
+      not carry it.
 
       THE SCHEMA STAYS CLOSED. `additionalProperties: false` holds on the
       envelope and on every node inside it. Versioning solves evolution without

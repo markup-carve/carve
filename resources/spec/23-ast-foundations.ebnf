@@ -62,7 +62,8 @@
       `{"type":"document","children":[...]}`.
 
       The root's own fields are fixed by CARVE-P12-024: `type`, `children` and
-      `srcByteLength`, and nothing else.
+      `srcByteLength`, plus an optional `astVersion` on a bare tree, and
+      nothing else.
 
         {"type":"document","children":[...],"srcByteLength":42}
 
@@ -216,15 +217,21 @@
         {"type":"link","href":"/start","ref":"getting started",
          "rawRef":"[getting started][]"}
 
-      `href` may also be empty when the matching hoisted definition has an
-      explicitly empty destination. Resolve by definition membership under
-      PART 9R R1's label key, not by whether `href` is truthy. An inline link
-      with `href: ""` and no `ref`/`rawRef` is an explicit empty destination;
-      a reference with `href: ""` and a matching empty definition is resolved;
-      one without a matching definition is unresolved. These three states
-      survive whole-document JSON encode/decode and rendering. The use node
-      alone cannot distinguish the two reference states; the document retains
-      the hoisted definition. `ref` and `rawRef` survive either way.
+      `href` is empty only where nothing resolved the reference; `ref` and
+      `rawRef` survive either way.
+
+      A REFERENCE THAT RESOLVES TO AN EMPTY DEFINITION SAYS SO. Where the
+      matching definition's destination is empty (`[label]:`, CARVE-P3-024),
+      the use carries `href: ""` (`src: ""` on an image) and `resolved: true`:
+
+        {"type":"link","href":"","ref":"r","rawRef":"[t][r]","resolved":true}
+
+      `resolved` appears on no other node. An empty `href` on a reference use
+      WITHOUT it is unresolved, exactly as in contract 1.1, so a reader that
+      predates the field reads every tree it accepts correctly. An inline link
+      with `href: ""` and no `ref`/`rawRef` is an explicit empty destination.
+      These three states survive whole-document JSON encode/decode and
+      rendering.
 
       THE COLLAPSED FORM'S `ref` IS THE DERIVED LABEL. For `[getting started][]`
       `ref` carries `"getting started"`, the label the reference resolves by;

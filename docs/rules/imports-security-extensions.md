@@ -39,10 +39,10 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P10-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L269) | 10 | THE OTHER SEMANTIC NAMES ARE AN EXTENSION |
 | [`CARVE-P10-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L286) | 10 | A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES |
 | [`CARVE-P10-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L125) | 10 | A PLACED ELEMENT'S OWN TAGS CARRY THE PER-IMPLEMENTATION INDENTATION |
-| [`CARVE-P12-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L260) | 12 | A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST |
-| [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L259) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
-| [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L344) | 12 | A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION |
-| [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L377) | 12 | A TABLE MAY CARRY AN OPTIONAL ROW GROUPING |
+| [`CARVE-P12-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L267) | 12 | A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST |
+| [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L262) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L347) | 12 | A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION |
+| [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L380) | 12 | A TABLE MAY CARRY AN OPTIONAL ROW GROUPING |
 | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | 12 | A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT |
 | [`CARVE-P12-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L33) | 12 | A CITATION DEFINITION IS A NODE |
 | [`CARVE-P12-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L69) | 12 | A CITATION ITEM IS A POSITIONED INLINE NODE |

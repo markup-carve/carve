@@ -27,8 +27,9 @@
       A serializer that loses a field is not a lossy convenience; it is a
       consumer breaking silently one document later.
 
-   7. THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS -- NORMATIVE [CARVE-P12-024]:
-      `type`, `children`, `srcByteLength`. Nothing else. An implementation MUST
+   7. THE DOCUMENT ROOT CARRIES THREE FIELDS AND AN OPTIONAL VERSION -- NORMATIVE [CARVE-P12-024]:
+      `type`, `children`, `srcByteLength`, and on a bare tree an optional
+      `astVersion` (CARVE-P12-056). Nothing else. An implementation MUST
       NOT hang document-level data off the root; content goes in the tree,
       where every other piece of content already lives.
 
@@ -218,8 +219,9 @@
       `block_extension` payload (CARVE-P12-055); anywhere else it is an unnamed property.
 
    12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. CARVE-P12-024
-      fixes the root at `type`, `children` and `srcByteLength`; the schema marks
-      all three `required` and pins `type` to `document`.
+      fixes the root at `type`, `children` and `srcByteLength`, with an optional
+      `astVersion`; the schema marks the three `required` and pins `type` to
+      `document`.
 
       AN INGEST REFUSAL IS A TYPED ERROR NAMING WHAT AND WHERE -- NORMATIVE
       [CARVE-P12-068]. Where PART 12 says an ingest refuses, it fails with an
@@ -234,7 +236,8 @@
       (a) A ROOT MISSING ANY OF THE THREE FIELDS. Not defaulted, not inferred:
           a reader that supplies `children: []` has turned a truncated document
           into an empty one.
-      (b) A ROOT CARRYING ANYTHING ELSE. The root is closed like every other
+      (b) A ROOT CARRYING ANYTHING ELSE. `astVersion` is not "else": a reader
+          accepts it and accepts its absence (CARVE-P12-056). The root is closed like every other
           node (CARVE-P12-030). A root whose `type` is not `document` (`doc`, say, which
           is ProseMirror's) fails (d).
       (c) A NODE WHOSE `type` THE SCHEMA DOES NOT NAME, AT DECODE, not in a

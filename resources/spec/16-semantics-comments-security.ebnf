@@ -62,8 +62,8 @@
         published does it with a `beforeRender` extension, which keeps the
         escaping decision where it belongs.
       - THE SPELLING IS RECORDED. Both forms parse to a `comment` node, and the
-        node says which one produced it (`delimited: true` for this form, PART
-        12). Without that field a writer reading the tree back has one spelling
+        node says which one produced it (`delimited: true` and
+        `form: "braced"` for this form, PART 12). Without that field a writer reading the tree back has one spelling
         for two constructs, and `foo {% bar %} baz` formats to `foo %% bar` --
         the trailing form swallowing `baz`.
       - `carve lint` reports a braced comment in a document that also carries

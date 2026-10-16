@@ -80,6 +80,7 @@
         "kind": "link",
         "href": "",
         "ref": "r",
+        "resolved": true,
         "rawRef": "[t][r]"
       },
       "canonical": "[t][r]\n\n[r]:"
@@ -106,6 +107,7 @@
         "kind": "link",
         "href": "",
         "ref": "r",
+        "resolved": true,
         "rawRef": "[][r]",
         "children": []
       }

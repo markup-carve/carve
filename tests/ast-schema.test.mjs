@@ -979,6 +979,25 @@ test('the schema accepts a minimal document', () => {
   )
 })
 
+test('contract 1.2: a bare root may carry astVersion', () => {
+  assert.equal(validate({ type: 'document', srcByteLength: 0, children: [], astVersion: '1.2' }), true)
+  assert.equal(validate({ type: 'document', srcByteLength: 0, children: [], astVersion: '01.2' }), false)
+})
+
+test('contract 1.2: a reference resolved to an empty definition says so', () => {
+  const link = { type: 'link', href: '', ref: 'r', rawRef: '[t][r]', resolved: true, children: [] }
+  const doc = (inline) => ({ type: 'document', srcByteLength: 0, children: [{ type: 'paragraph', children: [inline] }] })
+  assert.equal(validate(doc(link)), true)
+  assert.equal(validate(doc({ ...link, resolved: false })), false)
+  assert.equal(validate(doc({ type: 'image', src: '', alt: 'a', ref: 'r', rawRef: '[r]', resolved: true })), true)
+})
+
+test('contract 1.2: comment form is block, line or braced', () => {
+  const doc = (form) => ({ type: 'document', srcByteLength: 0, children: [{ type: 'comment', block: true, content: '', form }] })
+  for (const form of ['block', 'line', 'braced']) assert.equal(validate(doc(form)), true, form)
+  assert.equal(validate(doc('trailing')), false)
+})
+
 test('the schema accepts an authored empty link reference definition', () => {
   assert.equal(validate({
     type: 'document',

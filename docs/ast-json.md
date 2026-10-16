@@ -57,7 +57,8 @@ UTF-8 bytes in the parsed source.
 | `attrs` | Authored or resolved attributes associated with the node |
 | `pos` | Optional source range for nodes produced by parsing Carve source |
 
-The document root has exactly `type`, `children`, and `srcByteLength`.
+The document root has `type`, `children`, and `srcByteLength`, and a bare tree
+from `carve --json` also carries `astVersion`.
 Consumers should dispatch on `type`, then read only fields valid for that type.
 Validate untrusted JSON before traversing it.
 
