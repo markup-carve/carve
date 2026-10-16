@@ -51,6 +51,7 @@ function layout(stack) {
   const lines = []
   let marker = ''
   let deepest = 0
+  let notes = 0
   const quotes = []
   const columns = [0]
   for (const kind of stack) {
@@ -64,7 +65,8 @@ function layout(stack) {
     }
     const start = marker.length
     if (layer.quote) quotes.push(start)
-    marker += layer.open
+    // A second footnote layer takes its own label, so it is not a duplicate.
+    marker += layer.footnote && notes++ ? layer.open.replace('c', 'd') : layer.open
     // A footnote body sits two columns past its marker, not past its label.
     deepest = layer.footnote ? start + layer.width : marker.length
     columns.push(deepest)
@@ -116,7 +118,7 @@ function build(stack, hostLine, probe, column, marked, follower) {
   const tail = FOLLOWERS[follower] ?? lineAt(quotes, deepest, marked, 'tail')
   body.push(tail)
   // The use line comes first so an unclosed fence below cannot swallow it.
-  const source = `[r][] [^p] [^c]\n\n${body.join('\n')}\n`
+  const source = `[r][] [^p] [^c] [^d]\n\n${body.join('\n')}\n`
   return source
 }
 
@@ -156,6 +158,7 @@ export function blockFamilyCases({ seed = 3279, nested = 3200 } = {}) {
 
 // Reported by hand before the generator existed; kept as fixed rows.
 const SEEDS = [
+  '- > [^f]: n\n  >   more\ntail[^f]\n',
   '- > - para\n  >   [^f]: n\n   >     more\ntail[^f]\n',
   '- > > - para\n    >   [^f]: n\ntail[^f]\n',
   ':: t\n: > [^f]: n\n  >   more\ntail[^f]\n',
