@@ -5508,6 +5508,8 @@ function collectItems(lines, i, list, state, ind, meas) {
      */
     const deepestParagraphOpen = () => {
       if (!paragraphIsOpen()) return false
+      if (bodyQuote.at === i - 1 && bodyQuote.open &&
+          !COLON_CLOSER.test(QUOTE.exec(ind(i - 1)?.rest ?? '')?.[1] ?? '')) return true
       // An authored block the block reader has already ended holds nothing
       // open for the line below (a description ending on a code block).
       if (!deepestIsDescendant && authoredContainer && authoredBlockLimit !== null && i >= authoredBlockLimit) return false
@@ -5921,7 +5923,11 @@ function collectItems(lines, i, list, state, ind, meas) {
       bodyQuote.at = idx
       return bodyQuote.open
     }
-    if (QUOTE.test(head.text) && !paragraphIsOpen()) advanceBodyQuote(head.text, i)
+    // Seed from an open-paragraph head only when a marked line follows; a
+    // single-line nest would otherwise re-walk every level (quadratic).
+    if (QUOTE.test(head.text) && (!paragraphIsOpen() || QUOTE.test(stripIndent(lines[headIndex + 1] ?? '')))) {
+      advanceBodyQuote(head.text, headIndex)
+    }
     {
       // A fence can open on the MARKER LINE (`- ``` `), where its opener is the
       // marker-line content, not a collected continuation line -- seed from it.
@@ -6031,6 +6037,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       }
     }
     let paragraphOpenBeforeComments = false
+    let markedQuoteCommentClaim = false
     let captureParagraphState = true
     // Keep a marker-line note's comment at its authored body column, including
     // a terminated span. A comment-shaped line inside its code fence is payload.
@@ -7004,6 +7011,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       if (!nm && lm.rest.startsWith('%%') && itemLines.length > 0) {
         if (!afterComment && !(deepestParagraphOpen() || paragraphOpenBeforeComments) && fence.opaque?.kind !== 'comment' &&
             nestedOpaque?.kind !== 'comment' && !bodyHoldsLiveCommentSpan()) break
+        markedQuoteCommentClaim = bodyQuote.at === i - 1 && bodyQuote.open
         // KEEP ONE COLUMN of the original indentation. Stripping it entirely
         // told the item's own parse that a line indented in the source had
         // been written flush left, and the rule above cannot then tell an
@@ -7059,6 +7067,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           if (run && belowSpan !== null && run[1].length === belowSpan.run.length) { belowSpan = null; belowSpanClosed = true }
           else if (run && belowSpan === null) belowSpan = { run: run[1] }
         }
+        if (markedQuoteCommentClaim) afterComment = true
         i++
         continue
       }
@@ -7101,7 +7110,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // Document column zero remains owned by the document.
       // Q1 (or a frame surviving a comment, which Q3 answers), Q3, then Q2 at
       // the frame's own column 0 - the anchor the raw line carries.
-      if (!nm && (deepestParagraphOpen() || (afterComment && !atFrameColumn(lm.col))) &&
+      if (!nm && (deepestParagraphOpen() || (afterComment && (!atFrameColumn(lm.col) || markedQuoteCommentClaim))) &&
           itemLines.length > 0 && !opensBlockAt(line, i)) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
