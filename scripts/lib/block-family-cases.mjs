@@ -158,6 +158,12 @@ export function blockFamilyCases({ seed = 3279, nested = 3200 } = {}) {
 
 // Reported by hand before the generator existed; kept as fixed rows.
 const SEEDS = [
+  // A wider description separator moves the body column (carve#3295).
+  ':: t\n:  para\n  # H\ntail\n',
+  ':: t\n:  para\n  ---\ntail\n',
+  ':: t\n:  para\n  | a |\ntail\n',
+  ':: t\n:  para\n > q\ntail\n',
+  ':: t\n: para\n > q\ntail\n',
   '- > [^f]: n\n  >   more\ntail[^f]\n',
   '- > - para\n  >   [^f]: n\n   >     more\ntail[^f]\n',
   '- > > - para\n    >   [^f]: n\ntail[^f]\n',
