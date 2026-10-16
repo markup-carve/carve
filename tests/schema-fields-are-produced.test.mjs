@@ -77,9 +77,7 @@ const ENGINE_ROLLOUT_PENDING = {
   'math.number': 'equation interchange field (CARVE-P12-066): Carve 0.1 source has no direct spelling; produced only by AST and format-bridge consumers',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table_cell.blocks': 'structural interchange field: Carve 0.1 source has no spelling for a block inside a cell; produced only by AST/Pandoc/HTML-import consumers',
-  'comment.form': 'contract 1.2 (carve#3261): the pinned engine predates the field; drop when the pin moves',
-  'link.resolved': 'contract 1.2 (carve#3261): the pinned engine predates the field; drop when the pin moves',
-  'image.resolved': 'contract 1.2 (carve#3261): the pinned engine predates the field; drop when the pin moves',
+  'image.resolved': 'contract 1.2 (carve#3261): no corpus document references an image through an empty definition yet; the engines round-trip it in their own tests',
   'document.astVersion': 'contract 1.2 (carve#3261): written by `carve --json` on a bare tree, not by the library encoder this test runs',
 }
 
