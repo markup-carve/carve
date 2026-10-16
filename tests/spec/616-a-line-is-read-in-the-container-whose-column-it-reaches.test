@@ -244,3 +244,39 @@ x
   </dd>
 </dl>
 ```
+
+```
+:: t
+: para
+ # H
+.
+<dl>
+  <dt>t</dt>
+  <dd>para
+# H</dd>
+</dl>
+```
+
+```
+:: t
+: para
+ ---
+.
+<dl>
+  <dt>t</dt>
+  <dd>para
+—</dd>
+</dl>
+```
+
+```
+:: t
+: para
+ | a |
+.
+<dl>
+  <dt>t</dt>
+  <dd>para
+| a |</dd>
+</dl>
+```

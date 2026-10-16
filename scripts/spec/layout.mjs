@@ -3715,12 +3715,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * `dd` recognizes it; it is framed here too so all four kinds reach
              * the body by one path rather than by two that agree today.
              */
-            // CARVE-P0-021: under a quote holding an open paragraph, an opener
-            // below the body's column folds into it; only that column opens.
+            // Below the body's column an opener folds into the open paragraph
+            // (PART 0 O3, CARVE-P0-021); in an item it opens there unless a quote holds the band (X2).
             const lastBlock = stripIndent([...bodyLines].reverse().find((l) => !l.startsWith(LAZY)) ?? '')
-            if (authoredCol > 0 && authoredCol < bodyColumn && QUOTE.test(lastBlock) &&
+            if (authoredCol > 0 && authoredCol < bodyColumn && (!inItem || QUOTE.test(lastBlock)) &&
                 bodyLeavesParagraphOpen(asRead(bodyLines)) &&
-                (HEADING.test(dedented) || HR.test(dedented) || isTableRow(dedented) || isCodeBlockOpener(dedented))) {
+                (HEADING.test(dedented) || HR.test(dedented) || isTableRow(dedented) ||
+                 QUOTE.test(dedented) || (QUOTE.test(lastBlock) && isCodeBlockOpener(dedented)))) {
               pushBody(LAZY + dedented)
               i++
               continue

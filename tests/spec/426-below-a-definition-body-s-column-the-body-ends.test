@@ -19,9 +19,9 @@ Below a definition body's column the body ends
 .
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+&gt; quote</dd>
 </dl>
-<p>&gt; quote</p>
 ```
 
 ```
@@ -31,9 +31,9 @@ Below a definition body's column the body ends
 .
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+# H</dd>
 </dl>
-<p># H</p>
 ```
 
 ```

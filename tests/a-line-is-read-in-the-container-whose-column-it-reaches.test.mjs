@@ -6,6 +6,21 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const normalize = (h) => h.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
 const cases = [
   [
+    "a table row below a description body's column folds into its paragraph",
+    ":: t\n: para\n | a |\n",
+    "<dl>\n<dt>t</dt>\n<dd>para\n| a |</dd>\n</dl>"
+  ],
+  [
+    "a thematic break below a description body's column folds into its paragraph",
+    ":: t\n: para\n ---\n",
+    "<dl>\n<dt>t</dt>\n<dd>para\n—</dd>\n</dl>"
+  ],
+  [
+    "a heading below a description body's column folds into its paragraph, as under a list item",
+    ":: t\n: para\n # H\n",
+    "<dl>\n<dt>t</dt>\n<dd>para\n# H</dd>\n</dl>"
+  ],
+  [
     "an opener below a description column folds into its quote",
     ":: t\n: > para\n # H\n",
     "<dl>\n<dt>t</dt>\n<dd>\n<blockquote><p>para\n# H</p></blockquote>\n</dd>\n</dl>"

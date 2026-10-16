@@ -28771,10 +28771,11 @@ intro
 
 A description line is the other place a blank line turns out not to matter -
 but the clause says where an opener may sit, and a description body's floor is
-its own content column. An opener BELOW that column does not reach the body at
-all: the body ends there and the opener is classified in whatever context
-survives it (PART 9, `BELOW THE BODY'S COLUMN THE BODY ENDS`). At the top level
-that context needs column 0, so a `>` one column in opens nothing.
+its own content column. An opener BELOW that column does not reach the body as
+an opener: it is classified in whatever context survives it (PART 9, `BELOW THE
+BODY'S COLUMN THE BODY ENDS`). At the top level that context needs column 0, so
+a `>` one column in opens nothing and folds into the body's paragraph as text
+(carve#3295).
 
 ::: compare
 
@@ -28787,9 +28788,9 @@ that context needs column 0, so a `>` one column in opens nothing.
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+&gt; quote</dd>
 </dl>
-<p>&gt; quote</p>
 ```
 
 :::
@@ -29378,8 +29379,9 @@ Column 0 is not a special case of the first band, it is the ordinary case: the
 :::
 
 One and two columns in are the same band, and the surviving context here is the
-document, where an opener must be written at column 0. So the body still ends
-and the indented `>` is ordinary paragraph text - it opens a quote nowhere.
+document, where an opener must be written at column 0. The indented `>` and `#`
+open nothing there, so the body does not end: they fold into its paragraph as
+text, exactly as under a list item (carve#3295).
 
 ::: compare
 
@@ -29392,9 +29394,9 @@ and the indented `>` is ordinary paragraph text - it opens a quote nowhere.
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+&gt; quote</dd>
 </dl>
-<p>&gt; quote</p>
 ```
 
 :::
@@ -29410,9 +29412,9 @@ and the indented `>` is ordinary paragraph text - it opens a quote nowhere.
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+# H</dd>
 </dl>
-<p># H</p>
 ```
 
 :::
@@ -55390,6 +55392,63 @@ An opener below a description body's column folds into a quote held there; only 
     <blockquote><p>para
 # H</p></blockquote>
   </dd>
+</dl>
+```
+
+::::::
+
+A heading below a description body's column folds into its paragraph, as under a list item (carve#3295).
+:::::: compare
+
+````carve
+:: t
+: para
+ # H
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>para
+# H</dd>
+</dl>
+```
+
+::::::
+
+A thematic break below a description body's column folds into its paragraph (carve#3295).
+:::::: compare
+
+````carve
+:: t
+: para
+ ---
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>para
+—</dd>
+</dl>
+```
+
+::::::
+
+A table row below a description body's column folds into its paragraph (carve#3295).
+:::::: compare
+
+````carve
+:: t
+: para
+ | a |
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>para
+| a |</dd>
 </dl>
 ```
 
