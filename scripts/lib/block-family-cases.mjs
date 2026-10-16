@@ -159,6 +159,17 @@ export function blockFamilyCases({ seed = 3279, nested = 3200 } = {}) {
 // Reported by hand before the generator existed; kept as fixed rows.
 const SEEDS = [
   // Found outside the product by the carve-js round-4 lane.
+  ':: t\n: ![a](x.png)\n^ cap\n',
+  '- ![a](x.png)\n^ cap\n',
+  ':: t\n: ![a](x.png)\n ^ cap\n',
+  '- ![a](x.png)\n ^ cap\n',
+  ':: t\n: ![a](x.png)\n  ^ cap\n',
+  '- ![a](x.png)\n  ^ cap\n',
+  ':: t\n: > para\n^ cap\n',
+  ':: t\n: > para\n  ^ cap\n',
+  '[^c]: 1. para\n   [^p]: n\nx\n\n[^c] [^p]\n',
+  '- > para\n  ^ cap\n',
+  '- x\n\n  > para\n  ^ cap\n',
   '- :: term\n  : body\n  +\n  before\n   > nested\n',
   '- a\n\n  before\n   > nested\n',
   '- a\n  %% c\n  before\n   > nested\n',
