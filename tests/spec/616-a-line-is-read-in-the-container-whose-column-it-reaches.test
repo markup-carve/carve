@@ -280,3 +280,48 @@ x
 | a |</dd>
 </dl>
 ```
+
+```
+- :: term
+  : body
+  +
+  before
+   > nested
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>body</dd>
+    </dl>
+    before
+    <blockquote><p>nested</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+:: t
+: para
+^ cap
+.
+<dl>
+  <dt>t</dt>
+  <dd>para
+^ cap</dd>
+</dl>
+```
+
+```
+:: t
+: > para
+^ cap
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>para
+^ cap</p></blockquote>
+  </dd>
+</dl>
+```

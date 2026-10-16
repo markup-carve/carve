@@ -48,3 +48,4 @@
 422-a-recognized-opener-in-a-body-needs-no-blank-line-above-it-7  ahead of the pin: a quote marker below a description body's column opens nothing at document level and folds into the body's paragraph (CARVE-P2-017, carve#3295); the pinned carve-js ends the description
 426-below-a-definition-body-s-column-the-body-ends-2  ahead of the pin: a quote marker one column in folds into the description's paragraph (CARVE-P2-017, carve#3295); the pinned carve-js ends the description
 426-below-a-definition-body-s-column-the-body-ends-3  ahead of the pin: a heading below the description body's column folds into its paragraph (CARVE-P2-017, carve#3295); the pinned carve-js ends the description
+616-a-line-is-read-in-the-container-whose-column-it-reaches-20  ahead of the pin: a caption line below a description body's column folds into the quoted paragraph as text (PART 9 §10 I7); the pinned carve-js attaches it to the quote as a figcaption

@@ -55453,3 +55453,69 @@ A table row below a description body's column folds into its paragraph (carve#32
 ```
 
 ::::::
+
+A refused continuation marker attaches nothing, and a quote past the item column then opens in the item (CARVE-P9-031).
+:::::: compare
+
+````carve
+- :: term
+  : body
+  +
+  before
+   > nested
+````
+
+```html
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>body</dd>
+    </dl>
+    before
+    <blockquote><p>nested</p></blockquote>
+  </li>
+</ul>
+```
+
+::::::
+
+A caption line below a description body's column folds into its paragraph as text (PART 9 §10 I7).
+:::::: compare
+
+````carve
+:: t
+: para
+^ cap
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>para
+^ cap</dd>
+</dl>
+```
+
+::::::
+
+A caption line below a description body's column folds into a quoted paragraph there as text, as under a list item (PART 9 §10 I7).
+:::::: compare
+
+````carve
+:: t
+: > para
+^ cap
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>para
+^ cap</p></blockquote>
+  </dd>
+</dl>
+```
+
+::::::

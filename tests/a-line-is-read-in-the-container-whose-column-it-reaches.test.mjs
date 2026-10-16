@@ -6,6 +6,21 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const normalize = (h) => h.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
 const cases = [
   [
+    "a caption line below a description body's column folds into a quoted paragraph there as text, as under a list item",
+    ":: t\n: > para\n^ cap\n",
+    "<dl>\n<dt>t</dt>\n<dd>\n<blockquote><p>para\n^ cap</p></blockquote>\n</dd>\n</dl>"
+  ],
+  [
+    "a caption line below a description body's column folds into its paragraph as text",
+    ":: t\n: para\n^ cap\n",
+    "<dl>\n<dt>t</dt>\n<dd>para\n^ cap</dd>\n</dl>"
+  ],
+  [
+    "a refused continuation marker attaches nothing, and a quote past the item column then opens in the item",
+    "- :: term\n  : body\n  +\n  before\n   > nested\n",
+    "<ul>\n<li>\n<dl>\n<dt>term</dt>\n<dd>body</dd>\n</dl>\nbefore\n<blockquote><p>nested</p></blockquote>\n</li>\n</ul>"
+  ],
+  [
     "a table row below a description body's column folds into its paragraph",
     ":: t\n: para\n | a |\n",
     "<dl>\n<dt>t</dt>\n<dd>para\n| a |</dd>\n</dl>"
