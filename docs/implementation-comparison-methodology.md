@@ -295,6 +295,34 @@ undeclared finding does. With all four participants present, a declaration that
 no longer reproduces also fails, forcing the debt entry to be removed with its
 fix.
 
+### The block-structure family
+
+`npm run block-family:check` is a third differential, aimed at one family: a
+line read under a container stack. It builds a seeded, deterministic product
+of an outer container (none, a `::: note`, a quote, a bullet or ordered item, a
+description body, a footnote body, and nestings of two), a host line, a probe
+(a link or footnote definition, an attribute line, a comment, a heading, a
+table row, a thematic break, a list marker), the probe's column (below, at and
+past every content column, and over-indented), quote markers written or
+omitted, and a follower (a column-0 line, a blank, an unclosed fence, a colon
+closer of another width, a line at the content column). Single containers are
+enumerated in full and nestings are sampled, 6,025 documents in all.
+
+Each document renders through the executable spec, carve-js, carve-php and
+carve-rs. The run compares HTML with each line trimmed and reports every
+divergence together with the implementation that is the odd one out. The
+engines are passed explicitly, so a stale sibling checkout cannot join a run:
+
+```bash
+npm run block-family:check -- --js=<carve-js>/dist/index.js --php=<carve-php> \
+  --rust=<carve-rs>/target/release/carve --report=/tmp/block-family.json
+```
+
+`--spec=<carve checkout>` measures another revision of the executable spec,
+and `--filter=<name>` re-runs one slice. Like the other differentials, a
+divergence is a question. Decide it by the clause, then pin the answer in the
+corpus.
+
 Render options (`sections`, `sourceLine`) are not an axis yet: neither the
 carve-rs nor the carve-php CLI exposes them and the executable spec implements
 neither, so there is nothing to compare across. Adding those flags promotes the
