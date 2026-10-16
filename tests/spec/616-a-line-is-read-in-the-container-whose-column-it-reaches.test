@@ -1,0 +1,172 @@
+A line is read in the container whose column it reaches
+
+```
+- :: t
+  : para
+  - li
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>para</dd>
+    </dl>
+    <ul>
+      <li>li</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- > para
+  > more
+%% c
+x
+.
+<ul>
+  <li>
+    <blockquote><p>para
+more</p></blockquote>
+    x
+  </li>
+</ul>
+```
+
+```
+x[^c]
+
+:: t
+: [^c]: para
+    # H
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>para</p>
+      <h1 id="H">H</h1>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: t
+: - para
+    [^p]: n
+x
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>para</li>
+    </ul>
+  </dd>
+</dl>
+<p>x</p>
+```
+
+```
+:: t
+: - para
+ - li
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>para
+- li</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+[r][] [^p] [^c]
+[^c]: - para
+   # H
+.
+<p>[r][] [^p] <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <ul>
+        <li>para</li>
+      </ul>
+      <h1 id="H">H</h1>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- :: t
+  : para
+   - li
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>para
+- li</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+- > a
+  b
+ [r]: /u
+.
+<ul>
+  <li>
+    <blockquote><p>a
+b
+[r]: /u</p></blockquote>
+  </li>
+</ul>
+```
+
+````
+> :: t
+```
+.
+<blockquote>
+  <dl>
+    <dt>t
+<code></code></dt>
+  </dl>
+</blockquote>
+````
+
+````
+- :: t
+  : para
+ %% c
+```
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <p>para</p>
+        <pre><code></code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+````
