@@ -1980,7 +1980,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     }
     // A footnote body's column is its marker's plus 2 (PART 9 SS16), and the
     // definition itself interrupts a paragraph, so its first block is a start.
-    if (FOOTNOTE_DEF.test(inner.rest)) {
+    if (FOOTNOTE_DEF.test(inner.rest) && reachesDefinitionSite(h, inner.col)) {
       h.markerCols.push(inner.col)
       h.columns.push(inner.col + 2)
       h.kinds.push('note')
@@ -2025,6 +2025,16 @@ function hostedBlockAt(h, inner, popped) {
   h.tableOpen = isTableRow(text) || continuation
   return continuation || HEADING.test(text) || HR.test(text) || text[0] === '|' ||
     isDefinitionOrAttributeLine(text)
+}
+
+// A quote does not rebase (CARVE-P0-004): a definition or attribute line in
+// it is one only at the quote's own column or at or past a column it hosts.
+function reachesDefinitionSite(h, col) {
+  return col === 0 || h.columns.slice(1).some(column => col >= column)
+}
+
+function hostedDefinitionAt(h, inner) {
+  return isDefinitionOrAttributeLine(inner.rest) && reachesDefinitionSite(h, inner.col)
 }
 
 function hostColonStep(h, inner, commentCloses = () => false, markerLine = false, paragraph = [], remainingDepth = MAX_NESTING_DEPTH, codeCloses = () => false) {
@@ -2531,7 +2541,7 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
       }) >= 0
     }
     const protectsInnermostContainer = measured.col === 0 && !unclosedFenceText &&
-      (opensSubBlock(measured.rest) || !((absorbedNoteMarker || absorbedDescriptionMarker) && paragraphOpen) && matchMarkerAt(measured) !== null)
+      (opensSubBlock(measured.rest) || !paragraphOpen && matchMarkerAt(measured) !== null)
     if (!establishesBase && !protectsInnermostContainer) {
       // A plain PARAGRAPH sibling of a note just flushed to column 0 keeps a
       // leading indent that is not structural: the note's body column is now the
@@ -3997,6 +4007,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // fence a list item inside a NESTED quote holds open is written at that
       // item's content column, and CARVE-P0-013 names no depth (carve#2538).
       const qNestedHost = []
+      let qHostedUntracked = []
       const qNestedPara = []
       const qNestedParaLines = []
       const qNestedColon = []
@@ -4192,7 +4203,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (QUOTE.test(inner.rest)) text = inner.rest
           if (!QUOTE.test(text)) {
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(text.trim() !== '', depth)
-            if (hostedBlockAt(host, inner, popped) || isDefinitionOrAttributeLine(inner.rest)) return settle(false, depth)
+            if (hostedBlockAt(host, inner, popped) || hostedDefinitionAt(host, inner)) return settle(false, depth)
             // A bare colon run closes the claim unless this level's own
             // paragraph absorbs it under CARVE-P9-016.
             const colon = COLON_FENCE.exec(text)
@@ -4428,6 +4439,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qNestedHost.some(host => host?.fence) ||
           isDefinitionOrAttributeLine((hostedQuote[1] ?? '').trimStart()) ||
           !opensParagraph(inner0.rest, true, false, prefixMemo(state, lines, idx).paragraph))
+        // Tracking starts late for a hosted quote, so seed its ladder from the
+        // lines it skipped: a definition's column is read against them.
+        if (hostedQuoteNeedsTracking && !QUOTE.test(l) && qNestedHost.length === 0) {
+          qHostedUntracked.forEach(([text, at], k) => nestedQuoteOpensParagraph(text, k === 0, at))
+        }
+        if (hostedQuote && !hostedQuoteNeedsTracking && !QUOTE.test(l)) qHostedUntracked.push([inner0.rest, idx])
+        else qHostedUntracked = []
         const nestedQuoteText = QUOTE.test(l) ? l : hostedQuoteNeedsTracking ? inner0.rest : null
         const nestedQuoteEnds = nestedQuoteText !== null && !nestedQuoteOpensParagraph(nestedQuoteText, blockStart || !qOpenPara, idx)
         const nestedItemEnds = !qOpenPara && !!matchMarkerAt(meas) &&
@@ -5893,7 +5911,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           opaque = true
           break
         }
-        if (hostedBlockAt(host, inner, popped) || isDefinitionOrAttributeLine(inner.rest)) { opaque = true; break }
+        if (hostedBlockAt(host, inner, popped) || hostedDefinitionAt(host, inner)) { opaque = true; break }
         depth++
       }
       bodyQuote.hosts.length = depth + Number(opaque)

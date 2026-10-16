@@ -1,0 +1,239 @@
+A line past a body's column is read in the body, and a quote does not rebase
+
+```
+:: t
+: d
+  - para
+    [r]: /u
+x
+
+[r][]
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+- para</dd>
+</dl>
+<p>x</p>
+<p><a href="/u">r</a></p>
+```
+
+```
+:: t
+: d
+  1. para
+     [r]: /u
+x
+
+[r][]
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+1. para</dd>
+</dl>
+<p>x</p>
+<p><a href="/u">r</a></p>
+```
+
+```
+[^n]: d
+  - para
+    [r]: /u
+x
+
+[r][] [^n]
+.
+<p>x</p>
+<p><a href="/u">r</a> <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>d
+- para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: t
+: d
+  - para
+    [r]: /u
+  more
+
+[r][]
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d
+- para</p>
+    <p>more</p>
+  </dd>
+</dl>
+<p><a href="/u">r</a></p>
+```
+
+```
+:: t
+: d
+  - para
+    # H
+x
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d
+- para</p>
+    <h1 id="H">H</h1>
+  </dd>
+</dl>
+<p>x</p>
+```
+
+```
+:: t
+: d
+  - para
+    {#k}
+x
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+- para</dd>
+</dl>
+<p>x</p>
+```
+
+```
+:: t
+: d
+  - para
+    *[A]: b
+x
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+- para
+*[A]: b
+x</dd>
+</dl>
+```
+
+```
+- > para
+  >  [r]: /u
+tail
+
+[r][]
+.
+<ul>
+  <li>
+    <blockquote><p>para
+[r]: /u
+tail</p></blockquote>
+  </li>
+</ul>
+<p>[r][]</p>
+```
+
+```
+- > para
+  >  [^f]: n
+tail
+.
+<ul>
+  <li>
+    <blockquote><p>para
+[^f]: n
+tail</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- > para
+  >  {#x}
+tail
+.
+<ul>
+  <li>
+    <blockquote><p>para
+{<span class="tag"><strong>#x</strong></span>}
+tail</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+> - > para
+>   >  [r]: /u
+tail
+
+[r][]
+.
+<blockquote>
+  <ul>
+    <li>
+      <blockquote><p>para
+[r]: /u
+tail</p></blockquote>
+    </li>
+  </ul>
+</blockquote>
+<p>[r][]</p>
+```
+
+```
+> :: t
+> : d
+>   [r]: /u
+tail
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>d</dd>
+  </dl>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> :: t
+> : d
+>   {#x}
+tail
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>d</dd>
+  </dl>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> :: t
+> : d
+>   # H
+tail
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>
+      <p>d</p>
+      <h1 id="H">H</h1>
+    </dd>
+  </dl>
+</blockquote>
+<p>tail</p>
+```
