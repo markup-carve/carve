@@ -3614,15 +3614,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              */
             if (authoredCol === 0 &&
                 isDefinitionOrAttributeLine(dedented)) break
-            // A COLUMN-0 LINE AFTER A DESCRIPTION-HOSTED NOTE IS A DOCUMENT
-            // SIBLING (carve#1974). The note absorbed its floor-reaching opener,
-            // so the body's only open paragraph is the note's, at body column 2;
-            // column 0 does not reach it (PART 0 owner selection). The fold below
-            // reads the absorbed continuation as an open paragraph and pulled the
-            // line into the `dd`. Column-dependent by design - lines at the body's
-            // own columns still fold, which is why the test is made here and not
-            // in `bodyLeavesParagraphOpen`.
-            if (authoredCol === 0 && descriptionBodyEndsInAbsorbedNote(asRead(bodyLines))) break
             if (COMMENT_LINE.test(dedented) && !bodyHoldsOpenCommentSpan(asRead(sinceComment()))) {
               openFence = bodyHasFenceCandidate
                 ? descriptionOpenFenceAt(asRead(bodyLines), lines, i, bodyColumn, endsBodyAt)
@@ -3636,6 +3627,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               i++
               continue
             }
+            // A line below the description body column cannot reach a paragraph
+            // held only by its marker-line note (CARVE-P0-011). Check the note
+            // shape first so ordinary long descriptions avoid a backward scan.
+            if (authoredCol < bodyColumn && FOOTNOTE_DEF.test(bodyLines[0] ?? '') &&
+                descriptionBodyEndsInAbsorbedNote(asRead(bodyLines))) break
             if (classifyLayoutComment(lines, i) !== null) {
               if (authoredCol === 0 && commentFenceOpensSpan(lines, i)) break
               if (!afterComment && !retainedParagraph && !bodyLeavesParagraphOpen(asRead(sinceComment()))) break
@@ -3727,7 +3723,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             break
           }
           const normalizedBody = state.authoredBodyBases
-            ? normalizeAuthoredBodyBases(bodyLines, state)
+            ? normalizeAuthoredBodyBases(bodyLines, state, FOOTNOTE_DEF.test(bodyLines[0] ?? ''))
             : bodyLines
           if (bodyOrigins && normalizedBody !== bodyLines) measurement.origins.set(normalizedBody, bodyOrigins)
           if (openFence !== -1) (state.fenceOpensAt ??= new WeakMap()).set(normalizedBody, new Set([openFence]))
