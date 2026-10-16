@@ -4437,6 +4437,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qOpenPara = false
           qTermOpen = false
           qPara = []
+        } else if (qHost.kinds.includes('note')) {
+          // A footnote's extent takes no lazy line (CARVE-P0-012 DEFINITION EXTENT).
+          qOpenPara = false
+          qTermOpen = false
+          qPara = []
         } else {
           if (!qOpenPara) qPara = []
           qOpenPara = true
@@ -5430,7 +5435,7 @@ function collectItems(lines, i, list, state, ind, meas) {
      * descendant now has somewhere to ask rather than having to re-derive it
      * from this collector's own paragraph.
      */
-    const descendantQ1 = { col: -1, open: false, para: [], absorbedFence: null }
+    const descendantQ1 = { col: -1, open: false, para: [], absorbedFence: null, noteCol: null }
     let markerLineFence = headSubMarker
       ? markerFenceSummary(head.text, prefixMemo(state, itemLines, 0).markerFence ??= new Map())
       : null
@@ -5483,6 +5488,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       descendantQ1.open = text !== '' && descendantLineOpensParagraph(text, false, -1, memo)
       descendantQ1.para = descendantQ1.open ? [text] : []
       descendantQ1.absorbedFence = null
+      descendantQ1.noteCol = null
     }
     /*
      * One line the descendant takes. `text` is already in the descendant's
@@ -5490,9 +5496,20 @@ function collectItems(lines, i, list, state, ind, meas) {
      * applies to its own; anything else extends it, which is what makes an
      * absorbed opener readable at all.
      */
-    const advanceDescendantQ1 = (text, absorbed, verbatim = false, idx = -1) => {
+    const advanceDescendantQ1 = (text, absorbed, verbatim = false, idx = -1, lineCol = -1) => {
       if (descendantQ1.col < 0) return
       const close = () => { descendantQ1.open = false; descendantQ1.para = [] }
+      // A footnote's extent takes no lazy line (CARVE-P0-012 DEFINITION EXTENT):
+      // its blanks and the lines reaching its body column hold nothing open.
+      if (descendantQ1.noteCol !== null) {
+        if (text.trim() === '' || lineCol >= descendantQ1.noteCol) { close(); return }
+        descendantQ1.noteCol = null
+      }
+      if (lineCol >= 0 && FOOTNOTE_DEF.test(text)) {
+        descendantQ1.noteCol = lineCol + FOOTNOTE_BODY_COLUMN
+        close()
+        return
+      }
       if (text.trim() === '') { close(); descTableOpen = false; return }
       // A marker-line opener is not an absorbed opener when this is its closer.
       const markerCloser = markerLineFence && PURE_FENCE.exec(text)
@@ -6585,7 +6602,7 @@ function collectItems(lines, i, list, state, ind, meas) {
             // A line that opens, carries or closes an opaque descendant body is
             // verbatim, and a verbatim body holds no paragraph.
             advanceDescendantQ1(dmeas.rest, absorbedFenceSeen,
-              nestedOpaque !== null || wasNested !== null, i)
+              nestedOpaque !== null || wasNested !== null, i, dmeas.col)
           }
           if (dmeas.rest !== '') {
             if (nm && nm.indent >= contentCol && !inDefBody) descLive = true

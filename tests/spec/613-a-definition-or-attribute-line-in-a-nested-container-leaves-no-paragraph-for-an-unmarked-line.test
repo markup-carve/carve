@@ -1,0 +1,241 @@
+A definition or attribute line in a nested container leaves no paragraph for an unmarked line
+
+```
+- a
+  - para
+    [r]: /u
+x
+.
+<ul>
+  <li>a
+    <ul>
+      <li>para</li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+```
+- a
+  - para
+    {#x}
+x
+.
+<ul>
+  <li>a
+    <ul>
+      <li>para</li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+```
+- a[^f]
+  - para
+    [^f]: n
+      more
+x
+.
+<ul>
+  <li>a<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>
+    <ul>
+      <li>para</li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> - para
+>   [^f]: n
+tail
+.
+<blockquote>
+  <ul>
+    <li>para</li>
+  </ul>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> > - para
+> >   [^f]: n
+tail
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>para</li>
+    </ul>
+  </blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+````
+> 1. para
+>    [^f]: n
+```
+code
+.
+<blockquote>
+  <ol>
+    <li>para</li>
+  </ol>
+</blockquote>
+<pre><code>code
+</code></pre>
+````
+
+```
+> :: t
+> : d
+>   [^f]: n
+tail
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>d</dd>
+  </dl>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> - a
+>   - para
+>     [^f]: n
+tail
+.
+<blockquote>
+  <ul>
+    <li>a
+      <ul>
+        <li>para</li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> - para
+>   [^f]: n
+- tail
+.
+<blockquote>
+  <ul>
+    <li>para</li>
+  </ul>
+</blockquote>
+<ul>
+  <li>tail</li>
+</ul>
+```
+
+```
+> 1. para
+>    {#x}
+tail
+.
+<blockquote>
+  <ol>
+    <li>para</li>
+  </ol>
+</blockquote>
+<p>tail</p>
+```
+
+```
+- > - para
+  >   [r]: /u
+tail
+.
+<ul>
+  <li>
+    <blockquote>
+      <ul>
+        <li>para</li>
+      </ul>
+    </blockquote>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- > - para
+  >   {#x}
+tail
+.
+<ul>
+  <li>
+    <blockquote>
+      <ul>
+        <li>para</li>
+      </ul>
+    </blockquote>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- > para
+  > [^f]: n
+tail
+.
+<ul>
+  <li>
+    <blockquote><p>para</p></blockquote>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- > - para
+  >   [^f]: n
+  tail
+.
+<ul>
+  <li>
+    <blockquote>
+      <ul>
+        <li>para</li>
+      </ul>
+    </blockquote>
+    tail
+  </li>
+</ul>
+```
+
+```
+> - para
+>   *[A]: b
+tail
+.
+<blockquote>
+  <ul>
+    <li>para
+*[A]: b
+tail</li>
+  </ul>
+</blockquote>
+```
