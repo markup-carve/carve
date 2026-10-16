@@ -3765,13 +3765,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A table row interrupts the paragraph (PART 9 §10 I1), so below
             // the body's column it ends the body rather than folding (carve#3145).
             if (isTableRow(dedented)) break
-            if ((foldablePlain(dedented) || lazyFence || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) && bodyLeavesParagraphOpen(asRead(bodyLines))) {
+            if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) && bodyLeavesParagraphOpen(asRead(bodyLines))) {
               // The marker is below the lead item's content column, so it
               // continues that paragraph even when the description dedents it.
               const leadItem = matchMarkerAt(indentCols(bodyLines[0] ?? ''))
               const belowLeadItem = leadItem && authoredCol > 0 && authoredCol < bodyColumn + leadItem.markerWidth &&
                 matchMarkerAt(indentCols(dedented))
-              pushBody(lazyFence || belowLeadItem ? LAZY + dedented : dedented)
+              pushBody(lazyFence || belowLeadItem || CAPTION.test(dedented) ? LAZY + dedented : dedented)
               i++
               continue
             }
