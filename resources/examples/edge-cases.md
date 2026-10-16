@@ -55291,4 +55291,57 @@ A retained description reads the next unclosed fence as a code block (CARVE-P0-0
 </ul>
 ```
 
+A lazy line keeps the quoted paragraph open for the next line (PART 1 S4).
+:::::: compare
+
+````carve
+- > a
+  > b
+ [r]: /u
+x
+````
+
+```html
+<ul>
+  <li>
+    <blockquote><p>a
+b
+[r]: /u
+x</p></blockquote>
+  </li>
+</ul>
+```
+
+::::::
+
+A footnote body in a quote takes no lazy line (DEFINITION EXTENT).
+:::::: compare
+
+````carve
+- > para
+  > [^f]: n
+  >   - sub
+tail[^f]
+````
+
+```html
+<ul>
+  <li>
+    <blockquote><p>para</p></blockquote>
+  </li>
+</ul>
+<p>tail<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n
+- sub<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::::
+
 ::::::

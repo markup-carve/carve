@@ -5946,6 +5946,10 @@ function collectItems(lines, i, list, state, ind, meas) {
       while (QUOTE.test(text) && depth < MAX_NESTING_DEPTH) {
         text = QUOTE.exec(text)[1] ?? ''
         const host = bodyQuote.hosts[depth] ??= hostLadder()
+        if (host.kinds.at(-1) === 'note' && indentCols(text).col >= host.columns.at(-1)) {
+          opaque = true
+          break
+        }
         if (hostFenceStep(host, text)) { opaque = true; break }
         const { inner, blockStart, popped } = hostAdvance(host, text, continues && bodyQuote.open)
         if (host.kinds.at(-1) === 'note') { opaque = true; break }
@@ -7192,6 +7196,7 @@ function collectItems(lines, i, list, state, ind, meas) {
             COMMENT_LINE.test(indentCols(itemLines.at(-1) ?? '').rest)) {
           pushLine(lm.rest, lm)
         } else pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
+        if (bodyQuote.at === i - 1 && bodyQuote.open) bodyQuote.at = i
         i++
         continue
       }
