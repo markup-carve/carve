@@ -545,6 +545,7 @@ index: examples/edge-cases/index.md
   editorial-markup-closes-outside-a-cross-reference-or-a-bracket-run
   an-autolink-is-opaque-to-the-bracket-scan
   an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter
+  an-escaped-cross-reference-spelling-stays-literal
   a-delimiter-that-is-part-of-a-larger-character-is-text
   a-tag-inside-a-literal-brace-run-is-still-a-tag
   a-math-span-s-base-class-keeps-the-class-slot-in-place
