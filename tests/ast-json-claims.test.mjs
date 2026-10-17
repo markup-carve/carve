@@ -353,6 +353,7 @@ const permittedByEngine = () => {
  */
 const PERMITTED_PHRASE = {
   text: 'coalesced `text` run',
+  table_row: 'empty CSV record',
   table_cell: 'table cell',
   cell_wrap: 'reassembled `cell_wrap`',
   code: 'verbatim run continued on a `+` line',

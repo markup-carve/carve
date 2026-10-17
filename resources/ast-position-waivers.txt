@@ -396,3 +396,14 @@ carve-php  617-csv-and-tsv-table-bodies-8.crv  table_cell  3  permitted
 carve-php  617-csv-and-tsv-table-bodies-8.crv  text        3  permitted
 carve-rs   617-csv-and-tsv-table-bodies-8.crv  table_cell  3  permitted
 carve-rs   617-csv-and-tsv-table-bodies-8.crv  text        3  permitted
+# Corpus 617-9 has an empty CSV record. Its only source character is a line
+# terminator, which cannot start a span; the empty row, cell and text have none.
+carve-js   617-csv-and-tsv-table-bodies-9.crv  table_row   1  permitted
+carve-js   617-csv-and-tsv-table-bodies-9.crv  table_cell  1  permitted
+carve-js   617-csv-and-tsv-table-bodies-9.crv  text        1  permitted
+carve-php  617-csv-and-tsv-table-bodies-9.crv  table_row   1  permitted
+carve-php  617-csv-and-tsv-table-bodies-9.crv  table_cell  1  permitted
+carve-php  617-csv-and-tsv-table-bodies-9.crv  text        1  permitted
+carve-rs   617-csv-and-tsv-table-bodies-9.crv  table_row   1  permitted
+carve-rs   617-csv-and-tsv-table-bodies-9.crv  table_cell  1  permitted
+carve-rs   617-csv-and-tsv-table-bodies-9.crv  text        1  permitted
