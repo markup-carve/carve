@@ -10,7 +10,7 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-## [0.1.10] - 2026-10-16
+## [0.1.10] - 2026-10-17
 
 ### Breaking
 
@@ -92,6 +92,13 @@ Releases before 0.1.6 are archived in
 
 ### Improvements
 
+- A `{table}` attribute turns a fenced `csv` or `tsv` body into a table of
+  literal fields. Quoted fields can contain newlines; malformed quoting leaves
+  the fence as code, and the canonical writer keeps the delimited form
+  (#3239).
+- Plain text and ANSI write every continuation block in a list item at the
+  item's content column. Markdown output keeps its existing layout
+  (CARVE-P11-035) (#3309, #3311).
 - An include can select a named source region with `@region:name`, marked by
   `#region name` / `#endregion [name]` lines behind an optional comment
   marker. A missing, unclosed or duplicate region, or combining `@region`

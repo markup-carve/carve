@@ -127,3 +127,5 @@
 3296: 0.1.10 - gates include conformance against its own reference pin without moving the corpus engine pin. Gate machinery.
 3302: 0.1.10 - moves the engine pins to the block-family engine mains; the rulings are cited under #3279, #3295 and #3268. Pin bump.
 3308: 0.1.10 - moves the engine pins to the block-family zero-divergence mains; the rulings are cited under #3279 and #3295. Pin bump.
+3310: 0.1.10 - moves the engine pins to the CSV and list-continuation mains and records positions for synthesized cells. Pin bump and gate ledger.
+3312: 0.1.10 - accepts CSV and TSV table starts in the AST checker. Gate machinery.
