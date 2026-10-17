@@ -60,6 +60,8 @@ const pinnedDefaultTriggers =
   JSON.parse(readFileSync(resolve(root, 'resources/lint-default-triggers.json'), 'utf8'))
 const TRIGGERS = {
   ...pinnedDefaultTriggers,
+  'delimited-table-malformed': '{table}\n```csv\n"bad\n```\n',
+  'delimited-table-wide-row': '{table}\n```csv\na,b\n1\n2,3,4\n```\n',
   'platform-mention-token': {
     source: 'Use @minutely for that cron alias.\n',
     options: { platforms: ['github'] },
