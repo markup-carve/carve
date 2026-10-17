@@ -24,3 +24,11 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+617-csv-and-tsv-table-bodies  The pinned JS engine predates marked CSV/TSV tables; update the pin with the coordinated engine release.
+617-csv-and-tsv-table-bodies-2  The pinned JS engine predates marked CSV/TSV tables; update the pin with the coordinated engine release.
+617-csv-and-tsv-table-bodies-4  The pinned JS engine predates marked CSV/TSV tables; update the pin with the coordinated engine release.
+617-csv-and-tsv-table-bodies-5  The pinned JS engine predates marked CSV/TSV tables; update the pin with the coordinated engine release.
+617-csv-and-tsv-table-bodies-6  The pinned JS engine predates marked CSV/TSV tables; update the pin with the coordinated engine release.
+617-csv-and-tsv-table-bodies-8  The pinned JS engine predates marked CSV/TSV tables; update the pin with the coordinated engine release.
+617-csv-and-tsv-table-bodies-9  The pinned JS engine predates marked CSV/TSV tables; update the pin with the coordinated engine release.
+617-csv-and-tsv-table-bodies-10  The pinned JS engine predates marked CSV/TSV tables; update the pin with the coordinated engine release.
