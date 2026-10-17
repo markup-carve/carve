@@ -20,5 +20,3 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-05-lists-29  the pinned plain-text and ANSI writers put an item's continuation blocks at column 0; CARVE-P11-072 writes them at the item's content column (carve#3309, carve-js#3225)
-05-lists-30  the pinned plain-text and ANSI writers put an item's continuation blocks at column 0; CARVE-P11-072 writes them at the item's content column (carve#3309, carve-js#3225)
