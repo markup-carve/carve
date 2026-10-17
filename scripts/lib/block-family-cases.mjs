@@ -67,11 +67,14 @@ function layout(stack) {
       marker = lineAt(quotes, start, true, '')
     }
     const start = marker.length
-    if (layer.quote) quotes.push(start)
+    // A quote continues at the column its host's body reaches, not where its
+    // marker sat on a footnote's marker line.
+    const quoteCol = Math.min(start, deepest)
+    if (layer.quote) quotes.push(quoteCol)
     // A second footnote layer takes its own label, so it is not a duplicate.
     marker += layer.footnote && notes++ ? layer.open.replace('c', 'd') : layer.open
     // A footnote body sits two columns past its marker, not past its label.
-    deepest = layer.footnote ? start + layer.width : marker.length
+    deepest = layer.footnote ? start + layer.width : layer.quote ? quoteCol + layer.width : marker.length
     columns.push(deepest)
   }
   lines.push(marker + HOST)
