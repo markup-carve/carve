@@ -19,7 +19,18 @@ const here = dirname(fileURLToPath(import.meta.url))
 const specDir = option('spec') ? resolve(option('spec'), 'scripts/spec') : resolve(here, 'spec')
 const { parse } = await import(pathToFileURL(resolve(specDir, 'layout.mjs')).href)
 const { renderDoc } = await import(pathToFileURL(resolve(specDir, 'html.mjs')).href)
-const normalize = (html) => html.split('\n').map(l => l.trim()).filter(Boolean).join('\n')
+// Indentation outside a code block is pretty-printing; inside one it is content.
+const normalize = (html) => {
+  let inPre = false
+  const out = []
+  for (const line of html.trim().split('\n')) {
+    if (inPre) out.push(line)
+    else if (line.trim() !== '') out.push(line.trim())
+    if (/<pre[ >]/.test(line)) inPre = true
+    if (line.includes('</pre>')) inPre = false
+  }
+  return out.join('\n')
+}
 
 const cases = blockFamilyCases().filter(c => !filter || c.name.includes(filter))
 const { carveToHtml } = await import(pathToFileURL(resolve(jsPath)).href)
