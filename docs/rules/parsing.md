@@ -93,13 +93,13 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P7-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/11-lexical.ebnf#L62) | 7 | MARKER SEPARATORS AND PADDING SLOTS |
 | [`CARVE-P7-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/11-lexical.ebnf#L132) | 7 | ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT |
 | [`CARVE-P7-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/11-lexical.ebnf#L191) | 7 | ESCAPE CONTEXTS |
-| [`CARVE-P9-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L265) | 9 | T5 SPAN WALK |
-| [`CARVE-P9-069`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L307) | 9 | THE ROW ABOVE IS A LINE, NOT A `<tr>` |
-| [`CARVE-P9-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L335) | 9 | A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN |
-| [`CARVE-P9-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L351) | 9 | T7 GFM DELIMITER ROW |
-| [`CARVE-P9-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L378) | 9 | T8 ROW ATTRIBUTES |
-| [`CARVE-P9-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L423) | 9 | T10 CELL ATTRIBUTES BIND LAST |
-| [`CARVE-P9-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L442) | 9 | T11 A MARKER RUN ENDS AT A SPACE |
+| [`CARVE-P9-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L266) | 9 | T5 SPAN WALK |
+| [`CARVE-P9-069`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L308) | 9 | THE ROW ABOVE IS A LINE, NOT A `<tr>` |
+| [`CARVE-P9-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L336) | 9 | A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN |
+| [`CARVE-P9-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L352) | 9 | T7 GFM DELIMITER ROW |
+| [`CARVE-P9-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L379) | 9 | T8 ROW ATTRIBUTES |
+| [`CARVE-P9-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L424) | 9 | T10 CELL ATTRIBUTES BIND LAST |
+| [`CARVE-P9-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L443) | 9 | T11 A MARKER RUN ENDS AT A SPACE |
 | [`CARVE-P9-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L130) | 9 | AN INVISIBLE LINE IS ONE CLASSIFICATION |
 | [`CARVE-P9-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L258) | 9 | N1a HARD BOUNDARY AFTER THREE BLANK LINES |
 | [`CARVE-P9-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L316) | 9 | A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER |
@@ -135,4 +135,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L507) | 3 | SMART QUOTE DIRECTION |
 | [`CARVE-P3-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L277) | 3 | AN EMPTY DESTINATION IS EXPLICIT |
 | [`CARVE-P3-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L62) | 3 | A DELIMITER IS A WHOLE GRAPHEME |
-| [`CARVE-P9-082`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L236) | 9 | A CELL SLOT IS COUNTED, NOT WEIGHED |
+| [`CARVE-P9-082`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L237) | 9 | A CELL SLOT IS COUNTED, NOT WEIGHED |

@@ -133,3 +133,18 @@ for (const slug of slugs) {
     assert.equal(got.trim(), expected.trim())
   })
 }
+
+test('the final header count controls a marked CSV table', () => {
+  const source = '{header-rows=1}\n{table header-rows=0}\n```csv\na\nb\n```\n'
+  assert.doesNotMatch(oracleHtml(source), /<thead>/)
+  assert.match(oracleHtml(source), /<td>a<\/td>/)
+  assert.doesNotMatch(oracleHtml('{table table}\n```csv\na\n```\n'), /table=""/)
+})
+
+test('invalid row counts use the delimited table defaults', () => {
+  for (const key of ['header-rows', 'footer-rows']) {
+    const source = `{table ${key}=x}\n\`\`\`csv\na,b\n1,2\n\`\`\`\n`
+    assert.match(oracleHtml(source), /<thead>/)
+    assert.match(oracleHtml(source), /<th scope="col">a<\/th>/)
+  }
+})

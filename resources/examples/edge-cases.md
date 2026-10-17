@@ -55901,3 +55901,39 @@ last
 ```
 
 :::
+
+A quote inside an unquoted field leaves the fence as code.
+
+::: compare
+
+````carve
+{table}
+```csv
+a"b,c
+```
+````
+
+```html
+<pre table=""><code class="language-csv">a"b,c
+</code></pre>
+```
+
+:::
+
+Text after a closing quote also leaves the fence as code.
+
+::: compare
+
+````carve
+{table}
+```csv
+"a" ,b
+```
+````
+
+```html
+<pre table=""><code class="language-csv">"a" ,b
+</code></pre>
+```
+
+:::

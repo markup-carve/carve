@@ -1,3 +1,12 @@
+export function delimitedRowCount(raw) {
+  if (raw === undefined) return undefined
+  const value = String(raw).trim()
+  if (value === '') return 1
+  if (!/^\d+$/.test(value)) return undefined
+  const count = Number(value)
+  return Number.isSafeInteger(count) ? count : undefined
+}
+
 // Convert a verbatim csv/tsv fence payload into table rows. A quoted field may
 // contain a record break. Invalid quoting leaves the original code block intact.
 export function delimitedRows(source, separator) {

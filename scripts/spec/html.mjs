@@ -15,6 +15,7 @@ export const rawPassthrough = content => /^\n*$/.test(content) ? content : conte
 
 import { Refuse, TIER1, TERM_COMMENT, bracketRunEnd } from './layout.mjs'
 import { labelKey } from './label-key.mjs'
+import { delimitedRowCount } from './delimited-table.mjs'
 
 /*
  * THE WORDS THE ENGINE WRITES ITSELF (PART 9 SS16a, carve#1456).
@@ -1071,10 +1072,12 @@ function renderTable(node, depth, ctx) {
     }
     if (keep.length) ordinaryAttrs.push(keep)
   }
-  if (node.sourceFormat && !tableKeys.has('header-rows')) {
-    const rawFoot = tableKeys.get('footer-rows')
-    const foot = rawFoot === undefined ? 0 : String(rawFoot).trim() === '' ? 1 : Number(rawFoot)
-    tableKeys.set('header-rows', String(Math.min(1, Math.max(0, node.rows.length - foot))))
+  if (node.sourceFormat) {
+    const foot = delimitedRowCount(tableKeys.get('footer-rows')) ?? 0
+    tableKeys.set('footer-rows', String(foot))
+    const head = delimitedRowCount(tableKeys.get('header-rows'))
+      ?? Math.min(1, Math.max(0, node.rows.length - foot))
+    tableKeys.set('header-rows', String(head))
   }
   const rows = node.rows
   const hasBody = ['body-rows', 'body-header-rows', 'body-header-cols'].some(key => tableKeys.has(key))

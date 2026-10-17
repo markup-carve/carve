@@ -19,7 +19,7 @@
 
 import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd } from './render.mjs'
 import { labelKey } from './label-key.mjs'
-import { delimitedRows } from './delimited-table.mjs'
+import { delimitedRowCount, delimitedRows } from './delimited-table.mjs'
 import layoutTransitions from '../../resources/spec/layout-transitions.json' with { type: 'json' }
 
 export { TIER1 }
@@ -2980,11 +2980,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const rows = delimitedRows(node.text, node.lang === 'csv' ? ',' : '\t')
       if (rows !== null) {
         const width = rows.reduce((width, row) => Math.max(width, row.length), 0)
-        const headerAttr = attrs.find((a) => a[1] === 'header-rows' && (a[0] === 'kv' || a[0] === 'bool'))
-        const footerAttr = attrs.find((a) => a[1] === 'footer-rows' && (a[0] === 'kv' || a[0] === 'bool'))
-        const footerRows = footerAttr ? Number(footerAttr[0] === 'bool' || footerAttr[2] === '' ? 1 : footerAttr[2]) : 0
-        const headerRows = headerAttr ? Number(headerAttr[0] === 'bool' || headerAttr[2] === '' ? 1 : headerAttr[2])
-          : Math.min(1, Math.max(0, rows.length - footerRows))
+        const headerAttr = attrs.findLast((a) => a[1] === 'header-rows' && (a[0] === 'kv' || a[0] === 'bool'))
+        const footerAttr = attrs.findLast((a) => a[1] === 'footer-rows' && (a[0] === 'kv' || a[0] === 'bool'))
+        const footerRows = delimitedRowCount(footerAttr?.[0] === 'bool' ? '' : footerAttr?.[2]) ?? 0
+        const headerRows = delimitedRowCount(headerAttr?.[0] === 'bool' ? '' : headerAttr?.[2])
+          ?? Math.min(1, Math.max(0, rows.length - footerRows))
         node = {
           t: 'table', sourceFormat: node.lang, caption: node.caption,
           rows: rows.map((row, index) => ({
@@ -2995,8 +2995,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           })),
         }
         for (const list of pending) {
-          const at = list.findIndex((a) => a[1] === 'table' && (a[0] === 'bool' || (a[0] === 'kv' && a[2] === '')))
-          if (at >= 0) list.splice(at, 1)
+          for (let at = list.length - 1; at >= 0; at--) {
+            const attr = list[at]
+            if (attr[1] === 'table' && (attr[0] === 'bool' || (attr[0] === 'kv' && attr[2] === ''))) list.splice(at, 1)
+          }
         }
       }
     }
