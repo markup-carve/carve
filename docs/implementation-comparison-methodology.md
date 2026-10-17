@@ -307,7 +307,7 @@ marker, a quote marker, a caption line), the probe's column (below, at and
 past every content column, and over-indented), quote markers written or
 omitted, and a follower (a column-0 line, a blank, an unclosed fence, a colon
 closer of another width, a line at the content column). Single containers are
-enumerated in full and nestings are sampled, 8,326 documents in all.
+enumerated in full and nestings are sampled, 8.328 documents in all.
 
 Each document renders through the executable spec, carve-js, carve-php and
 carve-rs. The run compares HTML with each line trimmed and reports every
