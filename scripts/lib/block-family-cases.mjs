@@ -30,6 +30,9 @@ export const PROBES = {
 // The matched `%%%` spelling of the comment probe, written at the same column.
 const FENCED = { commentFence: ['%%%', 'c', '%%%'] }
 
+// Probes added after the sample was fixed; they ride on the heading rows.
+const EXTRA = { quote: '> q', caption: '^ cap' }
+
 export const FOLLOWERS = {
   col0: 'tail',
   blank: '\ntail',
@@ -120,7 +123,7 @@ function build(stack, hostLine, probe, column, marked, follower) {
   const { lines, quotes, deepest } = layout(stack)
   const body = [...lines]
   if (hostLine) body.push(lineAt(quotes, deepest, marked, 'more'))
-  for (const text of FENCED[probe] ?? [PROBES[probe]]) body.push(lineAt(quotes, column, marked, text))
+  for (const text of FENCED[probe] ?? [PROBES[probe] ?? EXTRA[probe]]) body.push(lineAt(quotes, column, marked, text))
   const tail = FOLLOWERS[follower] ?? lineAt(quotes, deepest, marked, 'tail')
   body.push(tail)
   // The use line comes first so an unclosed fence below cannot swallow it.
@@ -147,7 +150,7 @@ export function blockFamilyCases({ seed = 3279, nested = 3200 } = {}) {
   }
   for (const stack of [[], ...KINDS.map(k => [k])])
     expand(stack, (h, p, c, m, f, meta) => add(`s:${stack.join('/') || 'none'}`, build(stack, h, p, c, m, f), meta),
-      [...Object.keys(PROBES), ...Object.keys(FENCED)])
+      [...Object.keys(PROBES), ...Object.keys(FENCED), ...Object.keys(EXTRA)])
 
   const pool = []
   for (const outer of KINDS) for (const inner of KINDS)
@@ -161,6 +164,8 @@ export function blockFamilyCases({ seed = 3279, nested = 3200 } = {}) {
     add(`n:${stack.join('/')}`, build(stack, h, p, c, m, f), meta)
     // Every sampled line comment also runs as a matched comment fence.
     if (p === 'comment') add(`n:${stack.join('/')}`, build(stack, h, 'commentFence', c, m, f), { ...meta, probe: 'commentFence' })
+    if (p === 'heading') for (const extra of Object.keys(EXTRA))
+      add(`n:${stack.join('/')}`, build(stack, h, extra, c, m, f), { ...meta, probe: extra })
   }
 
   for (const source of SEEDS) add('seed', source)
