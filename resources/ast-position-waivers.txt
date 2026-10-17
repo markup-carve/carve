@@ -388,3 +388,11 @@ carve-js  64-table-rowspan-with-multi-line-content-2.crv  cell_wrap  1  permitte
 carve-js  64-table-rowspan-with-multi-line-content-2.crv  text  1  permitted
 carve-php  64-table-rowspan-with-multi-line-content-2.crv  cell_wrap  1  permitted
 carve-php  64-table-rowspan-with-multi-line-content-2.crv  text  1  permitted
+# Corpus 617-8 has three fields short of the widest CSV record. Their cells
+# and empty text are synthesized, so no source span exists (PART 12 §4).
+carve-js   617-csv-and-tsv-table-bodies-8.crv  table_cell  3  permitted
+carve-js   617-csv-and-tsv-table-bodies-8.crv  text        3  permitted
+carve-php  617-csv-and-tsv-table-bodies-8.crv  table_cell  3  permitted
+carve-php  617-csv-and-tsv-table-bodies-8.crv  text        3  permitted
+carve-rs   617-csv-and-tsv-table-bodies-8.crv  table_cell  3  permitted
+carve-rs   617-csv-and-tsv-table-bodies-8.crv  text        3  permitted
