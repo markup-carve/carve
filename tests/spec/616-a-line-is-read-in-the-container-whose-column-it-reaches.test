@@ -390,3 +390,19 @@ y
   </li>
 </ul>
 ````
+
+````
+- > para
+  > more
+ %%%
+ %%%
+```
+.
+<ul>
+  <li>
+    <blockquote><p>para
+more</p></blockquote>
+    <pre><code></code></pre>
+  </li>
+</ul>
+````

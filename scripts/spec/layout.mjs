@@ -7131,8 +7131,13 @@ function collectItems(lines, i, list, state, ind, meas) {
         // carve#2509 and carve#2527 each measured going quadratic here.
         if (!spanBefore) {
           const run = COMMENT_FENCE_BODY.exec(lm.rest)
-          if (run && belowSpan !== null && run[1].length === belowSpan.run.length) { belowSpan = null; belowSpanClosed = true }
-          else if (run && belowSpan === null) belowSpan = { run: run[1] }
+          // A matched span answers as one comment line: the claim its opener
+          // found after a marked quote line holds through its closer (CARVE-P9-053).
+          if (run && belowSpan !== null && run[1].length === belowSpan.run.length) {
+            markedQuoteCommentClaim = belowSpan.claim
+            belowSpan = null
+            belowSpanClosed = true
+          } else if (run && belowSpan === null) belowSpan = { run: run[1], claim: markedQuoteCommentClaim }
         }
         if (markedQuoteCommentClaim) afterComment = true
         i++

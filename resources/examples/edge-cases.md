@@ -55612,3 +55612,26 @@ y
 ```
 
 ::::::
+
+After a marked quote line, a matched comment fence below the item column retains the item as a comment line does (CARVE-P9-053).
+:::::: compare
+
+````carve
+- > para
+  > more
+ %%%
+ %%%
+```
+````
+
+```html
+<ul>
+  <li>
+    <blockquote><p>para
+more</p></blockquote>
+    <pre><code></code></pre>
+  </li>
+</ul>
+```
+
+::::::
