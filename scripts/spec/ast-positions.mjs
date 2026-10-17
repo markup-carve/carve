@@ -553,7 +553,9 @@ export const INDENT_LATITUDE = new Set([
 export function checkOpeningMarkup(doc, codepoints, findings) {
   let examined = 0
   for (const [node, path] of walkNodes(doc)) {
-    const pattern = node.type === 'comment' && node.delimited === true
+    const pattern = node.type === 'table' && (node.sourceFormat === 'csv' || node.sourceFormat === 'tsv')
+      ? /^[`~]/
+      : node.type === 'comment' && node.delimited === true
       ? /^\{%/
       : node.type === 'block_quote' && node.fenced === true
         ? /^:::/

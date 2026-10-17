@@ -867,6 +867,23 @@ test('a table cell is not asked to begin at a pipe', () => {
   assert.deepEqual(findingsFor(doc, source), [])
 })
 
+test('a delimited table begins at its fence', () => {
+  for (const format of ['csv', 'tsv']) {
+    for (const fence of ['```', '~~~']) {
+      const source = `${fence}${format}\na,b\n${fence}\n`
+      const doc = { type: 'document', children: [{ type: 'table', sourceFormat: format, pos: pos(0, source.length) }] }
+      const findings = []
+      assert.equal(checkOpeningMarkup(doc, [...source], findings), 1)
+      assert.deepEqual(findings, [])
+    }
+  }
+
+  const pipeTable = { type: 'document', children: [{ type: 'table', pos: pos(0, 4) }] }
+  const findings = []
+  checkOpeningMarkup(pipeTable, [...'```\n'], findings)
+  assert.equal(findings.length, 1)
+})
+
 test('the combined form keeps its derived inner span', () => {
   // `/*x*/` materialises a strong > emphasis pair from ONE run of delimiters,
   // and the inner span is the outer trimmed by two characters. There is no
