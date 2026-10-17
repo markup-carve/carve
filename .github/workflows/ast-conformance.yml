@@ -591,6 +591,16 @@ jobs:
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run combinatorial:check
 
+      # The generated block-family differential: the executable spec and the
+      # three engines at their pins must agree on every case. Daily, because it
+      # gated the 0.1.10 convergence and a regression should surface the next day.
+      - name: Block-family differential
+        if: ${{ !cancelled() }}
+        run: >-
+          npm run block-family:check --
+          --js=carve-js/dist/index.js --php=carve-php
+          --rust=carve-rs/target/release/carve --report=/tmp/block-family.json
+
       # Deterministic but exploratory: every minimized class becomes a focused
       # issue and corpus candidate. The current marker-line definition finding
       # is tracked as carve#1425. Exit 2 (an engine missing or unable to run)

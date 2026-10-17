@@ -320,7 +320,8 @@ npm run block-family:check -- --js=<carve-js>/dist/index.js --php=<carve-php> \
 ```
 
 `--spec=<carve checkout>` measures another revision of the executable spec,
-and `--filter=<name>` re-runs one slice. Like the other differentials, a
+and `--filter=<name>` re-runs one slice. The daily AST conformance workflow
+runs it against the pinned engines and fails on any difference. Like the other differentials, a
 divergence is a question. Decide it by the clause, then pin the answer in the
 corpus.
 
