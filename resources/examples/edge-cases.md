@@ -55635,3 +55635,36 @@ more</p></blockquote>
 ```
 
 ::::::
+
+A quote in a note on a description marker line holds no lazy line for the description, so a column-0 line leaves (DEFINITION EXTENT, CARVE-P0-011).
+:::::: compare
+
+````carve
+x[^c]
+
+:: t
+: [^c]: para
+     > q
+tail
+````
+
+```html
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>tail</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>para</p>
+      <blockquote><p>q</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::::

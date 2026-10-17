@@ -3670,7 +3670,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // held only by its marker-line note (CARVE-P0-011). Check the note
             // shape first so ordinary long descriptions avoid a backward scan.
             if (authoredCol < bodyColumn && FOOTNOTE_DEF.test(bodyLines[0] ?? '') &&
-                descriptionBodyEndsInAbsorbedNote(asRead(bodyLines))) break
+                descriptionBodyEndsInAbsorbedNote(bodyLines)) break
             if (classifyLayoutComment(lines, i) !== null) {
               if (authoredCol === 0 && commentFenceOpensSpan(lines, i)) break
               if (!afterComment && !retainedParagraph && !bodyLeavesParagraphOpen(asRead(sinceComment()))) break

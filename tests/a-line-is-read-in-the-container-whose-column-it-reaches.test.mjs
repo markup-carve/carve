@@ -6,6 +6,11 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const normalize = (h) => h.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
 const cases = [
   [
+    "a quote in a description marker-line note holds no lazy line",
+    "x[^c]\n\n:: t\n: [^c]: para\n     > q\ntail\n",
+    "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<dl>\n<dt>t</dt>\n<dd></dd>\n</dl>\n<p>tail</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p>para</p>\n<blockquote><p>q</p></blockquote>\n<p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n</li>\n</ol>\n</section>"
+  ],
+  [
     "a matched comment fence after a marked quote line retains the item",
     "- > para\n  > more\n %%%\n %%%\n```\n",
     "<ul>\n<li>\n<blockquote><p>para\nmore</p></blockquote>\n<pre><code></code></pre>\n</li>\n</ul>"
