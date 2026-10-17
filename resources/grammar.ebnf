@@ -4597,8 +4597,8 @@ EOF = (* end of file *) ;
          escaping, including a quoted field containing a newline. `tsv`
          substitutes TAB for comma and uses the same quoted-field rule.
          Record separators are LF after Carve's source ingestion; the final
-         separator is optional. A trailing separator does not add an empty
-         record. An empty field is an empty text cell; a blank record is one
+         separator is optional. One final separator terminates the final record without adding
+         another. A preceding separator still creates a blank record. An empty field is an empty text cell; a blank record is one
          empty cell. Fields are LITERAL text: no Carve inline parsing, smart
          typography, span markers, or per-cell attributes are recognized.
          The first row is a header unless `header-rows=0` is supplied; an
@@ -4606,11 +4606,11 @@ EOF = (* end of file *) ;
          implicit header uses zero rows when the table is empty or the footer
          consumes every row; an explicit overlapping header and footer is
          invalid under the ordinary table partition rule.
-         Short records gain empty cells to the width of the widest record;
-         longer records are retained and linted, never truncated. An empty
-         fence has zero rows. A malformed quoted field leaves the fence as
-         code, with its ordinary attributes (including `table`), and is
-         linted. The table AST
+         Records shorter than the widest record gain empty cells. A record
+         wider than the first record is retained, never truncated, and reports
+         `delimited-table-wide-row`. An empty fence has zero rows. A malformed
+         quoted field leaves the fence as code, with its ordinary attributes
+         (including `table`), and reports `delimited-table-malformed`. The table AST
          records `sourceFormat` as `csv` or `tsv`, so the canonical Carve
          writer keeps the delimited form. It may normalize quotes and record
          separators. External files, spans and per-cell attributes have no

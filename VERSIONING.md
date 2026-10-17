@@ -1,12 +1,16 @@
 # Versioning policy
 
-## Semantic Versioning
+## Version numbers
 
-All Carve repositories use [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`).
+Carve uses `MAJOR.MINOR.PATCH` version numbers. During the `0.1.x` series,
+Carve treats the third component as a minor feature increment. A coordinated
+`0.1.x` release may add core grammar or change output after the spec and all
+three engines pass the same corpus. Breaking changes still require a review of
+stored documents and a `[behavior]` entry in the release notes.
 
-**Pre-1.0 note:** while the version is below `1.0.0`, minor releases may
-introduce breaking changes to grammar, output, or the extension API. Patch
-releases fix bugs without changing behavior.
+A fix confined to one repository may also use an independent `0.1.x` release.
+The shared feature release must choose a number above every existing core
+repository version so its tag identifies the same grammar snapshot everywhere.
 
 ## Stored documents
 
@@ -41,12 +45,12 @@ Tier-2 / Tier-3 seam):
   footnotes, math, admonitions, attributes, frontmatter, comments, autolinks,
   raw blocks, heading ids, cross-references) and the always-on security model
   (grammar PART 9 §25/§26) are **normative and stable** - corpus-pinned with
-  byte-parity across all three engines. Changes require a coordinated minor.
+  byte-parity across all three engines. Changes require a coordinated `0.1.x` feature release.
 - **Tier-2 standard extensions** (citations incl. typed-locator + integral
   enrichment, code callouts, mentions/tags, and the four block features pinned
   in `tests/corpus-optional` - list tables, details, spoilers, tabs) are
   **stable and corpus-pinned** in 0.1.
-  Their syntax and HTML contract will not change without a minor bump.
+  Their syntax and HTML contract will not change without a coordinated feature release.
 - **Tier-3 app-level extensions** (bibliography, glossary, index, heading
   numbers, Mermaid, table-of-contents, heading permalinks, ColorSwatch, QR,
   static maps, and other host-dependent extensions)
@@ -63,7 +67,7 @@ converters / LSP as available-but-evolving.
 
 ## Core lockstep
 
-The four core repositories advance together on every minor and major release:
+The four core repositories advance together on every coordinated feature release:
 
 | Repository | Role |
 |------------|------|
@@ -72,15 +76,13 @@ The four core repositories advance together on every minor and major release:
 | `markup-carve/carve-rs` | Rust engine |
 | `markup-carve/carve-php` | PHP engine |
 
-A shared lockstep minor/major version means: all four repos tag the same version
-number at the same grammar and corpus snapshot. When the grammar or corpus changes
-in a way that requires coordinated implementation updates, all four repos cut a
-new minor together.
+A coordinated feature release tags the same version in all four repositories
+at the same grammar and corpus snapshot. During `0.1.x`, that number advances
+the third component.
 
-**Patches are per-repo.** A bug fix that touches only one engine does not force
-the others to re-release. The version number of each repo may diverge at the
-patch level between lockstep minors (e.g. `carve-js@0.1.3` and `carve-rs@0.1.1`
-can coexist while both implement the `0.1` grammar).
+Independent fix releases remain per-repository. A fix in one engine does not
+force the others to re-release, so their `0.1.x` numbers may differ between
+coordinated feature releases.
 
 ## Satellites
 

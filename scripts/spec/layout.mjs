@@ -2979,7 +2979,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     if (tableFlag && node.t === 'code' && (node.lang === 'csv' || node.lang === 'tsv')) {
       const rows = delimitedRows(node.text, node.lang === 'csv' ? ',' : '\t')
       if (rows !== null) {
-        const width = Math.max(0, ...rows.map((row) => row.length))
+        const width = rows.reduce((width, row) => Math.max(width, row.length), 0)
         const headerAttr = attrs.find((a) => a[1] === 'header-rows' && (a[0] === 'kv' || a[0] === 'bool'))
         const footerAttr = attrs.find((a) => a[1] === 'footer-rows' && (a[0] === 'kv' || a[0] === 'bool'))
         const footerRows = footerAttr ? Number(footerAttr[0] === 'bool' || footerAttr[2] === '' ? 1 : footerAttr[2]) : 0

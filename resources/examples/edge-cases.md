@@ -55668,6 +55668,7 @@ tail
 ```
 
 ::::::
+
 ## CSV and TSV table bodies
 
 `{table}` turns a `csv` or `tsv` fence into a table. Without the flag, the fence remains a code sample. Fields are plain text, including Carve punctuation.
@@ -55805,6 +55806,97 @@ An empty delimited fence makes an empty table.
 
 ```html
 <table>
+</table>
+```
+
+:::
+
+Malformed quoted input remains code, with the authored `table` attribute still present.
+
+::: compare
+
+````carve
+{table}
+```csv
+"bad
+```
+````
+
+```html
+<pre table=""><code class="language-csv">"bad
+</code></pre>
+```
+
+:::
+
+Rows wider than the header stay intact; short rows gain empty cells.
+
+::: compare
+
+````carve
+{table}
+```csv
+a,b
+1
+2,3,4
+```
+````
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col">b</th><th scope="col"></th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td></td><td></td></tr>
+    <tr><td>2</td><td>3</td><td>4</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+A blank final record remains a row before the final separator.
+
+::: compare
+
+````carve
+{table}
+```csv
+a
+
+```
+````
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">a</th></tr>
+  </thead>
+  <tbody>
+    <tr><td></td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+A footer can consume the only row.
+
+::: compare
+
+````carve
+{table footer-rows=1}
+```csv
+last
+```
+````
+
+```html
+<table>
+  <tfoot>
+    <tr><td>last</td></tr>
+  </tfoot>
 </table>
 ```
 
