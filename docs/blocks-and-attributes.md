@@ -210,6 +210,59 @@ The separator is a space: `:::>` opens nothing and stays paragraph text, exactly
 
 Rules of thumb: a standalone admonition wants quotes; a panel in a group wants brackets; use both to have a named tab whose panel also carries a visible heading (`::: tab "Install on Linux" [Linux]`). A title never feeds the tab name - if a tab has no `[label]`, the name falls back to the deprecated `{label="…"}` attribute or first inner heading, then to `Tab N`.
 
+
+### Keeping line breaks: `::: |` and `::: \` {#keeping-line-breaks}
+
+Lines next to each other in a paragraph join into one running paragraph, as in Markdown. Two containers keep each line on its own line instead. A `\` at the end of a single line does the same for that one line.
+
+```
+::: |
+Roses are red,
+    violets are blue.
+
+- not a list
+:::
+```
+
+```html
+<div class="line-block">
+  <p>Roses are red,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;violets are blue.</p>
+  <p>- not a list</p>
+</div>
+```
+
+```
+::: \
+Roses are red,
+    violets are blue.
+
+- a real list
+- second
+:::
+```
+
+```html
+<div class="hardbreaks">
+  <p>Roses are red,<br>
+violets are blue.</p>
+  <ul>
+    <li>a real list</li>
+    <li>second</li>
+  </ul>
+</div>
+```
+
+| | `::: \|` line block | `::: \` hard breaks |
+|---|---|---|
+| For | verse, lyrics, addresses: text whose layout is the content | ordinary content where a few line breaks should show |
+| Each line break | becomes `<br>` | becomes `<br>`, in paragraphs directly inside |
+| Leading spaces | kept (`&nbsp;`) | dropped, as in any paragraph |
+| Blank line | starts a new stanza | starts a new block |
+| Lists, fences, tables inside | plain text: the stanza is the only structure | work normally, without hard breaks of their own |
+
+In a line block, a `\` alone on a line gives an empty verse line, because a blank line would start a new stanza instead.
+
 ## Inline elements
 
 An inline element lives inside a line of text.

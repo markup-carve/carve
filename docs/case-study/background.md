@@ -208,7 +208,7 @@ JOHN
 I have something to tell you.
 ```
 
-- **Lesson**: Position and convention can mark screenplay structure with little punctuation.
+- **Lesson**: Fountain reads structure from position alone: an all-caps line before dialogue is a character name, a parenthesized line under it is a parenthetical. Carve keeps explicit markers instead. Adjacent lines join into one paragraph, so the same scene needs a [`::: |` line block](../blocks-and-attributes#keeping-line-breaks) to keep its lines, and roles such as character or dialogue would need classes.
 
 #### YAML Frontmatter (Metadata)
 

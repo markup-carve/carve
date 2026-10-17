@@ -116,12 +116,14 @@ inner                         colon per level inward)
 ::::
 :::
 
-::: |                        (preserves per-line layout)
+::: |                        (verse: every line break and leading
+                              space kept; lists/fences inside are text)
 Roses are red,
   Violets are blue.
 :::
 
-::: \                        (local hard breaks; no whitespace preservation)
+::: \                        (every line break kept, nothing else
+                              changes: leading spaces dropped, lists work)
 one
 two
 :::
