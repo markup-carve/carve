@@ -1,7 +1,7 @@
 {
   "sharedFixtures": [
     "heading", "thematic_break", "code_block", "blockquote", "unordered_list",
-    "ordered_list", "definition_list", "table", "admonition", "div", "paragraph",
+    "ordered_list", "definition_list", "pipe_table", "delimited_table", "admonition", "div", "paragraph",
     "block_attributes", "code_span", "inline_link", "inline_span", "inline_image",
     "math_inline", "math_display", "emphasis", "highlight", "forced_emphasis",
     "forced_highlight", "forced_strong", "forced_underline", "forced_strike"
