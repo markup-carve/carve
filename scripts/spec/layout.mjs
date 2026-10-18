@@ -6798,7 +6798,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // and the same correction carve#891 already made one construct over for
         // the colon fence. This branch tested the line's SHAPE, so an
         // unterminated fence the paragraph had ABSORBED closed it anyway.
-        else if (FENCE.test(dedented)) {
+        else if (isCodeBlockOpener(dedented)) {
           if (inPayload || fence.opaque?.payload) openParaWith(dedented)
           else if (fence.opaque && fence.opaque.kind === 'code' && fence.opaque.opens === false) {
             openParaWith(dedented)
@@ -6952,7 +6952,8 @@ function collectItems(lines, i, list, state, ind, meas) {
         // host and can start an ancestor paragraph with a new claim. A new
         // fence on that line leaves no claim, even if the old descendant was
         // still open when the line arrived.
-        if ((descendantOwned || FENCE.test(dedented)) && (nestedVerbatim() || wasNested?.kind === 'code')) closePara()
+        if ((descendantOwned || isCodeBlockOpener(dedented)) &&
+            (nestedVerbatim() || wasNested?.kind === 'code')) closePara()
         // The note body keeps its reach past the closed paragraph (CARVE-P0-013).
         if (markerNoteCommentSeen && inNoteBody) {
           const noteBody = defBodyIndent
