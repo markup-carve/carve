@@ -71,3 +71,17 @@ test('a new outer-item fence after a nested fence stores no lazy claim', () => {
   assert.equal(ast.blocks[0].items[0].blocks.at(-1).t, 'code')
   assert.equal(ast.blocks[0].items[0].blocks.at(-1).text, '')
 })
+
+test('an outer-item fence with payload still ends at its host column', () => {
+  const source = '- - ```\n  ```\n  x\ntail\n'
+  const ast = parse(source)
+  assert.deepEqual(ast.blocks.at(-1), { t: 'para', lines: ['tail'] })
+  assert.equal(ast.blocks[0].items[0].blocks.at(-1).text, 'x\n')
+})
+
+test('a quoted outer-item paragraph stores its own claim after a nested fence', () => {
+  const source = '> - - - ```\n>   tail\n> tail\n'
+  const html = renderDoc(parse(source))
+  assert.match(html, /      tail\ntail\n    <\/li>/)
+  assert.doesNotMatch(html, /<p>tail<\/p>/)
+})

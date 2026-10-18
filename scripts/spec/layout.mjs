@@ -5483,10 +5483,10 @@ function collectItems(lines, i, list, state, ind, meas) {
       }
       return hasCloser(body, 0)
     }
-    const bodyFenceOpens = (idx, dedented, blockBase = contentCol) => {
+    const bodyFenceOpens = (idx, dedented, blockBase = contentCol, endedDescendant = false) => {
       const m = FENCE.exec(dedented)
       if (!m || parseFenceInfo(m[2]) === null) return false // INVALID-FENCE FALLBACK
-      if (!paragraphIsOpen()) return true // at block start it runs to the end of the container
+      if (endedDescendant || !paragraphIsOpen()) return true // at block start it runs to the end of the container
       // An ANCESTOR collector already answered §10 I4 for this source line, over
       // lines its own break then removed from this body. One line, one answer.
       if (state.nestedFenceOpensAt?.get(lines)?.has(idx)) return true
@@ -6690,7 +6690,8 @@ function collectItems(lines, i, list, state, ind, meas) {
           if (openerBase === contentCol) pendingAuthoredBlock = i
           else authoredBlockLimit = authoredBlockEnd(lines, i, openerBase, state)
         }
-        const opens = bodyFenceOpens(i, dedented, localBase)
+        // The old descendant cannot supply a paragraph to an ancestor's new fence.
+        const opens = bodyFenceOpens(i, dedented, localBase, nestedOpaque?.kind === 'code' && !descendantOwned)
         // The item's own parse asks I4 over the item's lines, and a closer the
         // lookahead found past a below-column line is not among them. Hand it
         // the answer given here so the line is read one way (carve#1399).
@@ -7042,7 +7043,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // surviving ancestor the run's column reaches, and carries no depth term,
       // so a descendant's open body ends this container too and the run is
       // classified where the column puts it (carve#2490).
-      if (!commentTokenBelow && (nestedVerbatim() || fenceUnderAbsorbed !== null || (fence.opaque && !fence.opaque.payload && fence.opaque.opens !== false))) break
+      if (!commentTokenBelow && (nestedVerbatim() || fenceUnderAbsorbed !== null || (fence.opaque && fence.opaque.opens !== false))) break
       if (nm && columnOwner(nm.indent) === 'outer') {
         // §17 L1, first clause: the item WAS followed by a blank line before
         // this sibling marker - an invisible attachment in between does not
