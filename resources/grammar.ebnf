@@ -202,16 +202,18 @@
    BLOCK STRUCTURE IS ONE ORDERED PROCEDURE -- NORMATIVE [CARVE-P0-024].
    For each normalized line, execute O1 to O4 below once, in order and without
    backtracking, with X1 to X3 as named exceptions. O1 matches prefixes and
-   handles opaque payload and comments before visible classification. Consumed
-   payload skips later steps; comments use O2 and X1 to select or retain an
-   owner, O4 to close missed frames, and T for their state change. O2 selects
-   a visible line's owner. Recognize its residue in that owner's coordinates
-   and scope under PART 8 and the construct's guards, then apply PART 9 §10
-   before O3 tests for a lazy fold. X1 may retain a deeper owner only after
-   its recognition gate succeeds. Without a fold, O4 closes unmatched frames
-   and reads the line in the selected or retained owner. Apply T at each
-   boundary, keeping container survival, paragraph openness and continuation
-   claims separate. Only a construct's declared closer guard may read ahead.
+   handles code and raw payload and comments before visible classification.
+   Code and raw payload skip later steps: a closer applies T, while other
+   payload lines leave all frame state unchanged. Comments use O2 and X1 to
+   select or retain an owner, O4 to close frames deeper than that owner, and
+   T for their state change. O2 selects a visible line's owner. Recognize the
+   residue in that owner's coordinates and scope under PART 8 and its construct
+   guards. Apply PART 9 §10 before O3 tests for a lazy fold. X1 may retain a
+   deeper owner only after X1's recognition gate succeeds. Without a fold, O4
+   closes frames deeper than the selected or retained owner and reads the line
+   there. Apply T at each boundary, keeping container survival, paragraph
+   openness and continuation claims separate. Only a construct's declared
+   closer guard may read ahead.
    The clauses after X3 state consequences of these steps.
 
      O1 STRIP PREFIXES, OUTWARD-IN. Walk `open` bottom-up, consuming each
