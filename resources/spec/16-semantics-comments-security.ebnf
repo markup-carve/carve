@@ -420,7 +420,9 @@
              marker folds as lazy item text (markers never interrupt, §10 I2);
              every other line, likewise, never nests -- with no blank it
              lazily continues the open item paragraph (§10 I2), and after a
-             blank it ends the item and parses at DOCUMENT level.
+             blank it ends the item and parses in the nearest surviving
+             owner (PART 0 O2). That owner is the document only when no
+             enclosing container's content column is reached.
 
              A definition at DOCUMENT column 0 is the I5 interrupter, not the
              lazy-text branch: column 0 is the surrounding document's own
@@ -510,7 +512,7 @@
             reader agrees; what separates the two is that one of them is a
             comment BLOCK written at the enclosing context's own opener column
             and the other is not a block at all.
-           - AT OR ABOVE content_column: a block opener nests and a list marker
+           - AT OR PAST content_column: a block opener nests and a list marker
              opens a sublist. Recognized non-list blocks apply PART 0's ONE
              AUTHORED BLOCK BASE; this item clause defines only containment and
              adds no second rebase rule. A sublist marker keeps its existing

@@ -25,11 +25,12 @@ result. Rules: CARVE-P0-001, CARVE-P0-002 and CARVE-P0-023.
 
 ## Block structure decision order
 
-CARVE-P0-024 gives the order for each line: identify blanks and comments,
-match prefixes and select an owner, recognize visible forms in that owner's
-coordinates, then decide interruption or lazy continuation. If the line does
-not fold, close missed frames and classify it in the owner. The `parse` entry
-point runs these decisions. Rule: CARVE-P0-024.
+CARVE-P0-024 gives the order for each line: identify blanks, match prefixes,
+let an opaque body take its payload, then classify comments. For a visible
+line, select an owner, recognize its form in that owner's coordinates and
+decide interruption or lazy continuation. If it does not fold, close missed
+frames and classify it in the owner. The `parse` entry point runs these
+decisions. Rule: CARVE-P0-024.
 
 ## O1 Strip prefixes
 

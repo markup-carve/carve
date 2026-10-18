@@ -297,10 +297,10 @@ admonition = admonition_open, newline,
    ranges from parser structure; proximity alone never licenses resizing a
    nested fence.
 
-   A CLOSER IS REQUIRED. Only a fence that closes is opaque. A ``` or ~~~
-   opener with no closer ahead opens NO span: the INNERMOST container's own
-   closer stays structural and ends it, and the lines after that closer are
-   parsed normally. Any other colon line before it, of any width, is fence
+   A CLOSER IS REQUIRED when a code fence would consume the host's closer.
+   A ``` or ~~~ opener with no closer ahead opens NO span there: the
+   INNERMOST container's own closer stays structural and ends it, and the
+   lines after that closer are parsed normally. Any other colon line before it, of any width, is fence
    content: it neither closes an ancestor nor opens a child. This is the test
    PART 9 §10 I4 applies one level up, and the one the `%%%` rule above
    states ("an opener with no exact closer ahead opens nothing"). In

@@ -308,9 +308,12 @@ blockquote_line = '>', (newline | (space, inline_content, newline)) ;
        quote whose last block is a heading, a table, a thematic break, a closed
        fence or an empty container takes no lazy line; and the line is
      - not blank (a blank line ends the blockquote), and
-     - not a block-opener: a heading, table, fenced code, `:::` div, thematic
-       break, OR an "invisible" reference / footnote / abbreviation definition
-       or comment -- each ends the blockquote and starts that block OUTSIDE it,
+     - not an interrupting opener in the selected owner's coordinates: a
+       heading, table, guarded fenced code opener, `:::` div, thematic break,
+       or an invisible definition or comment recognized there ends the quote
+       and starts outside it. PART 0 X2 keeps an unmarked opener in the quote
+       band as text when its host's column does not recognize it, and an
+       unclosed code fence does not interrupt its open paragraph (§10 I4),
        and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
    A LIST MARKER (bullet or ordered) is NOT an exclusion: it folds into the

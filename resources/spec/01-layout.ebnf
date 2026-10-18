@@ -126,25 +126,32 @@
         container prefixes and opaque payload have been checked.
 
      2. Match the open frames from the document inward to the deepest
-        supplied prefix (O1). Select the owner in those coordinates (O2).
-        After matching the prefix of an opaque body's host, test its closer
-        and consume its payload before visible classification. Handle
-        comments at O1, before visible block ownership. A line consumed by
-        an opaque body or comment skips steps 3 and 4, applies its boundary's
-        T row, and advances to the next line. A quote needs its marker;
-        indentation alone never supplies it. A blank supplies
-        indentation prefixes but ends a quote whose marker is absent.
+        supplied prefix (O1). After matching the prefix of an opaque body's
+        host, test its closer and consume its payload before visible
+        classification. Handle comments at O1, before visible block
+        ownership. An opaque payload line skips steps 3 and 4. Its closing
+        boundary, if any, applies T; other payload lines leave the opaque
+        body's state alone. For a comment, select or retain its owner (O2,
+        X1), close frames it did not reach or retain (O4), and apply its T
+        row before advancing. Other lines select the owner in the matched
+        coordinates (O2). A quote needs its marker; indentation alone never
+        supplies it. A blank supplies indentation prefixes but ends a quote
+        whose marker is absent.
 
      3. In the selected owner's coordinates and scope, classify the residue
-        as a definition, attribute line, caption, continuation marker,
+        as a blank, definition, attribute line, caption, continuation marker,
         visible block opener, list marker or ordinary text. A spelling below
         an indentation container's content column is not thereby a
         definition or attribute line in that container. PART 8 fixes
         precedence when spellings overlap. A code or raw fence needs its
-        production's closer guard; a colon fence is unguarded (I4). Apply
+        production's closer guard when it would interrupt an open paragraph
+        or consume another container's closer; when it interrupts nothing, a
+        fence that would consume no host closer can remain unclosed to the
+        end of its host (PART 9 §10 I4, PART 2 A CLOSER IS REQUIRED). A colon
+        fence is unguarded (I4). Apply
         PART 9 §10 to that recognition result to decide interruption, then
-        O3 to decide a
-        lazy fold into the deepest open paragraph. X2 and X3 govern their
+        O3 to decide a lazy fold into the deepest open paragraph. A blank
+        never folds. X2 and X3 govern their
         quote bands, including a list marker at the host's content column.
         Outside X2, a list marker at an item's content column and a sibling
         marker take their structural boundary before a lazy fold. X1 may
@@ -154,9 +161,9 @@
      4. If the line does not fold, close every frame it did not reach and
         X1 did not retain. Classify it in the selected or retained owner
         (O4). Open any new container or
-        leaf block; attach a caption, continuation, definition or attribute
-        line only in the scope its own clause permits. Otherwise start a
-        paragraph. Apply
+        leaf block; attach a caption, continuation or attribute line, or
+        register a definition, only in the scope its own clause permits.
+        Otherwise start a paragraph. Apply
         T to the boundary, recording container survival, paragraph openness
         and any continuation claim separately. A blank closes the paragraph;
         it does not by itself close an indentation container. Repeat for the
@@ -297,7 +304,8 @@
         need the exact column. When the residue is a container opener (a
         quote marker; a list marker at an admissible column; a `+`
         continuation marker at the marker column, PART 9 §17 L3/L4; a fence
-        opener whose closer-lookahead guard holds), push the container and
+        opener whose closer-lookahead guard holds when it interrupts or would
+        consume a host closer), push the container and
         recurse on the remaining residue.
 
         Ordinary prose reopens a paragraph anywhere among a container's
