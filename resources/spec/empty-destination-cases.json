@@ -5,7 +5,6 @@
     "CARVE-P12-006",
     "CARVE-P11-070"
   ],
-  "status": "specification-ahead-of-implementations",
   "cases": [
     {
       "id": "explicit-empty-link",
