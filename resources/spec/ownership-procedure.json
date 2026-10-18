@@ -25,6 +25,18 @@
       "constraint": "Input normalization precedes column measurement."
     },
     {
+      "id": "order",
+      "step": "ORDER",
+      "title": "Block structure decision order",
+      "rules": [
+        "CARVE-P0-024"
+      ],
+      "checkerHelpers": [
+        "parse"
+      ],
+      "constraint": "Identify blanks before O1. After matching an opaque host, opaque payload wins; comments are classified at O1 after prefix decoding. Visible forms are recognized after O2 in the selected owner's coordinates."
+    },
+    {
       "id": "strip",
       "step": "O1",
       "title": "O1 Strip prefixes",

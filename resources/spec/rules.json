@@ -53,6 +53,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P0-024",
+      "part": "0",
+      "title": "BLOCK STRUCTURE IS ONE ORDERED PROCEDURE",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P0-004",
       "part": "0",
       "title": "ONE AUTHORED BLOCK BASE",

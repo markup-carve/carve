@@ -9,7 +9,7 @@ a transition table and three named exceptions. This page follows that order and
 names the clauses each step decides. It adds no rule. The source clauses in
 `resources/spec/01-layout.ebnf` are authoritative, and the
 [machine-readable map](https://github.com/markup-carve/carve/blob/main/resources/spec/ownership-procedure.json)
-lists all 22 Part 0 rule IDs with the checker helpers that implement each step.
+lists the Part 0 rule IDs with the checker helpers that implement each step.
 Those helpers are implementation entry points, not a public parser API.
 
 Some examples and historical material cite the earlier step names: S1 is O1,
@@ -22,6 +22,14 @@ uses O1 to O4.
 Strip a leading byte order mark, and replace every NUL and every ill-formed
 sequence with U+FFFD, before the first line is read. Columns are measured on the
 result. Rules: CARVE-P0-001, CARVE-P0-002 and CARVE-P0-023.
+
+## Block structure decision order
+
+CARVE-P0-024 gives the order for each line: identify blanks and comments,
+match prefixes and select an owner, recognize visible forms in that owner's
+coordinates, then decide interruption or lazy continuation. If the line does
+not fold, close missed frames and classify it in the owner. The `parse` entry
+point runs these decisions. Rule: CARVE-P0-024.
 
 ## O1 Strip prefixes
 
