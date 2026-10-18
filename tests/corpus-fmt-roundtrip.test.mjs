@@ -183,8 +183,7 @@ test('formatting a corpus document settles on the first pass', () => {
  * implements that clause, and it is load-bearing rather than decorative -
  * without the coalescing half, 71 of 1404 documents differ; with it, 4 do.
  *
- * KEY ORDER IS IGNORED for the same reason §4's own procedure ignores it (W3:
- * "compare the resulting documents, ignoring source positions and key order").
+ * KEY ORDER IS IGNORED as in the optional writer strategy's tree comparison.
  * A JSON object is unordered, `attrs.order` is where an authored sequence is
  * recorded, and five of the 1404 documents differ by nothing but the order the
  * two parses happened to insert `attrs`' own keys in.
@@ -202,7 +201,7 @@ const SPELLS_ITS_OWN_WRAPPER_AWAY = new Set(['image', 'comment'])
  * Source positions go, because §1 is about the AST and not the bytes. Escaping
  * goes, because §1 says it must: `escaped_text` becomes `text` and adjacent
  * text runs coalesce, so `a\-b` and `a-b` are the same document. Object keys
- * are sorted, because §4 W3 compares "ignoring source positions and key order".
+ * are sorted, as in the optional writer strategy's tree comparison.
  *
  * NOTHING IS DELETED OR RENAMED INSIDE `attrs`, and the carve-out is not
  * caution - it is a measured hole. `attrs.keyValues` is an author-controlled

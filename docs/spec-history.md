@@ -142,8 +142,9 @@ changes:
   and 12 escapes (carve-js#1327, carve-php#1578, carve-rs#1254).
 - A historical document-scoped conclusion conflated the scope needed to resolve
   references with the smaller unit that actually needs conservative output.
-  The current W4/W5 procedure compares documents but escalates only the
-  smallest failing unit.
+  The current rule compares complete documents but escalates only the
+  smallest failing unit. Its optional procedure now lives in the
+  [writer escaping strategy](./writer-escaping-strategy).
 - Differential fuzzing found writers substituting comment and continuation
   constructs that rendered alike but produced different ASTs (carve#544).
 - Markdown escaping changes must land together across engines because partial

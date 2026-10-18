@@ -14,20 +14,18 @@ the writer's escaping decisions, and whether formatting a document preserves it.
   is the interesting half: `50% faster: yes (ok)` must come back unchanged, not
   as `50\% faster\: yes \(ok\)`.
 - **The conservative form** where the minimal form would change meaning
-  (PART 11 §4 W4). `04-literal-punctuation`, `06-column-zero-literals` and
+  (PART 11 §§2b and 4). `04-literal-punctuation`, `06-column-zero-literals` and
   `07-mention-and-tag-literals` are those cases - their escapes are
   load-bearing, and a writer that drops them corrupts the document.
 
-`04` shows the cost the fallback accepts: the trailing `.` needs no escape on
-its own, but the decision is document-scoped, so it is escaped along with the
-rest. That bluntness is deliberate - see PART 11 §4, "why document scope". A
-finer rule cannot be implemented, because anything smaller than a document
-loses the link-reference and footnote definitions and reports differences that
-escaping never caused.
+In `04`, the trailing `.` stays bare beside load-bearing escapes, as
+CARVE-P11-007 requires. PART 11 §2b limits how far a fallback reaches; the
+comparison in §4 still re-parses complete documents so reference and footnote
+definitions remain in scope.
 
 `07` proves the candidate set has to be complete: a document carrying both
 literal `\@user` / `\#tag` text and a real `@who` mention. If `@` were missing
-from the set, W4 would have nothing to escape with and the literal would
+from the set, the fallback would have nothing to escape with and the literal would
 silently become a mention.
 
 `09` and `10` pin **container fence width**, which is the other thing a writer

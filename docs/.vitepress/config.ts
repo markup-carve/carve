@@ -253,6 +253,7 @@ export default defineConfig({
             { text: 'Format Conversion', link: '/format-bridges' },
             { text: 'Development', link: '/development' },
             { text: 'Formal Grammar', link: '/grammar' },
+            { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
             {
               text: 'Specification Rules',
               collapsed: true,

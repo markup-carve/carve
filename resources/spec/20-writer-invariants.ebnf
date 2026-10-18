@@ -23,8 +23,8 @@
       are the same document for the purpose of this invariant, and differ only
       in what the author wrote to get there.
 
-      §5's unconditional quote escapes reparse as `escaped_text`, so §1 and
-      §4's internal comparison both use this equality.
+      §5's unconditional quote escapes reparse as `escaped_text`, so both §1
+      and §4's optional comparison use this equality.
 
       What escaping still MUST preserve is the rendered result: the escape is
       authoring syntax, so `to_html(fmt(x)) == to_html(x)` admits no such
@@ -452,64 +452,19 @@
       §2's THE UNIT IS THE OPENER: `\#\# H` and not `\## H`. What narrows is
       the reach of the fallback, not the strength of the escape it applies.
 
-   3. WHY A STATIC CHARACTER TABLE CANNOT IMPLEMENT §2. Whether a character
-      is significant depends on the line, not on the character:
+   3. ESCAPING DEPENDS ON CONTEXT. A character may be literal in one position
+      and an opener in another. A static character table cannot decide §2;
+      contextual per-character decisions remain permitted.
 
-        `[`  literal alone, an opener in `[a](b)`
-        `(`  literal in `[a] (b)`, an opener in `[a](b)`
-        `^`  literal at column 0 before a space, an opener in `^[note]`
-        `-`  literal mid-word, a list marker at column 0, an en dash doubled
-        `_`  literal alone, an opener only when a closer follows on the line
-
-      A writer that decides per character with no context must therefore
-      over-escape to stay correct, which is the defect §2 forbids.
-
-   4. A PERMITTED STRATEGY -- NOT THE PINNED OUTPUT. The output is pinned by
-      §2 and by §2 alone: a character is escaped if and only if omitting the
-      escape would change the re-parsed AST. This section describes ONE way to
-      compute that, which an implementation MAY use and is NOT required to.
-      Where the two differ, §2 wins.
-
-      §3 rules out a static table, not contextual per-character decisions.
-
-      The procedure, then, as a strategy:
-
-      W1 Render the document twice: the MINIMAL form, escaping only the
-         UNCONDITIONAL set (§5), and the CONSERVATIVE form, additionally
-         escaping every CANDIDATE-set character (§5). A LONE BRACKET and a
-         `(` THAT WOULD OPEN A DESTINATION (§5) are in the unconditional set,
-         so the search never has to find them.
-      W2 If the two are byte-identical, emit either.
-      W3 Otherwise parse BOTH and compare the resulting documents, ignoring
-         source positions and key order.
-      W4 Equal -> emit the minimal form. Different -> emit the conservative
-         form FOR THE SMALLEST UNIT THAT FAILS (CARVE-P11-009), and the minimal form
-         everywhere else, re-running W3 on the result.
-      W5 Inside a unit that stayed conservative, offer each OPENER OCCURRENCE
-         its bare form and keep the bare form wherever W3 still holds (§2).
-         A unit is not one knob: the occurrences that survive escaped are the
-         ones that failed, not the ones that shared a block with a failure.
-
-      A WRITER MAY STOP THE SEARCH SHORT, and CARVE-P11-009's fallback is what it returns
-      to when it does: the occurrences it did not get to stay escaped. That is
-      WIDER than §2's minimum and never narrower, so a spent budget costs
-      idle escapes and never correctness. It is also why the state a bounded
-      search returns is still checked by W3 against the conservative form's own
-      re-parse rather than assumed.
-
-      THE COMPARISON IS DOCUMENT-SCOPED. A smaller scope loses reference and
-      footnote definitions and can report differences escaping never caused,
-      so W1 and W3 render and parse whole documents.
-
-      THAT IS NOT A REASON TO ESCALATE THE WHOLE DOCUMENT, and reading it as
-      one is what CARVE-P11-009 forbids. Where the two parses differ, they differ
-      SOMEWHERE, and W4 takes the conservative spelling only for the smallest
-      unit that fails.
-
-      THE TWO RENDERS ARE COMPARED WITH EACH OTHER, not with the source tree.
-      Some permitted writer forms re-parse to a different tree while rendering
-      identical HTML; comparing with the source would conflate those differences
-      with escaping.
+   4. A PERMITTED STRATEGY. A writer may compare minimal and conservative
+      spellings, then narrow escapes per occurrence. The minimal form escapes
+      §5's unconditional set; the conservative form also escapes its candidate
+      set. Compare by re-parsing complete emitted documents, not isolated lines:
+      a line alone lacks the document's reference and footnote definitions.
+      Compare the emitted spellings with each other, not with the source tree.
+      See `docs/writer-escaping-strategy.md` for one procedure. §2 pins the
+      output; CARVE-P11-009 limits any conservative fallback to the smallest
+      failing unit. The strategy does not change either requirement.
 
    5. THE TWO SETS.
 
@@ -530,12 +485,11 @@
         forms keeps the two renders identical on that point, at the cost of
         one escape on a character that is rare in prose.
 
-        SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT -- NORMATIVE [CARVE-P11-010], and the
-        difference is §4's own. This section names the sets W1 renders
-        against, so a caret named here is escaped in BOTH forms and W3 never
-        weighs the mark; it is not a license to EMIT an escape §2 does not
-        ask for. §4 pins the output on §2 and yields to it wherever the two
-        differ, and CARVE-P11-034 already restates the reach in those terms -- "§5's
+        SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT -- NORMATIVE [CARVE-P11-010].
+        §4's optional strategy uses these sets for its trial forms. A caret
+        named here is escaped in both forms, so their comparison never weighs
+        the mark; it is not a license to emit an escape §2 does not ask for.
+        §2 pins the output, and CARVE-P11-034 restates the reach in those terms -- "§5's
         unconditional set escapes a LEADING caret in TEXT". So "always escaped
         in a text node" is the set's membership rule, and §2 is the test the
         emitted byte answers to.
@@ -614,14 +568,15 @@
 
         not `:foo[a \[b] c]`.
 
-        A run holding an EMPTY CODE SPAN, directly or inside emphasis, is left
-        to the search whole: neither half selects any bracket or `(` in it.
+        A run holding an EMPTY CODE SPAN, directly or inside emphasis, takes
+        §2's test whole: neither half selects any bracket or `(` in it.
         The empty span is written as a bare backtick run, which ends the
         bracket scan's view of what follows it, so a pairing read from the
         tree no longer matches the written bytes. A nested construct that
         writes its own brackets is a run of its own and keeps both halves.
 
-      CANDIDATE -- escaped only when W4 selects the conservative form:
+      CANDIDATE -- escaped only where §2 requires it or CARVE-P11-009 permits
+      a conservative fallback:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters
         `[ ]  { } <`      links, images, spans, attributes, autolinks
         `@ #`                mentions and tags (PART 9 §7 boundary rules); `#` also
@@ -634,10 +589,9 @@
 
       A character in neither set is never escaped.
 
-      The set must cover EVERY construct opener, or W4 has nothing to fall
-      back to and the document is unrecoverable: `\@user` would emit as
-      `@user`, W3 would correctly see a `mention` where the source had text,
-      and W4 could not fix it. When a new opener is added to the grammar, its
-      character belongs here.
+      The set must cover EVERY construct opener, or a conservative fallback
+      cannot recover the document: `\@user` would emit as `@user`, which
+      re-parses as a `mention` where the source had text. When a new opener is
+      added to the grammar, its character belongs here.
 
    ============================================================================ *)

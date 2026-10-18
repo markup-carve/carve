@@ -64,7 +64,7 @@ test('the round-trip corpus is non-empty', () => {
  * SPLITS the run it sat in - `escaped.` is one text node, `escaped\.` is a text
  * node plus an escaped-text node - so a raw AST comparison reports a difference
  * for every escape the writer emitted, which is the one thing these fixtures are
- * pinning. Both engines' W3 comparison normalizes the same way.
+ * pinning. Both engines' writer comparisons normalize the same way.
  */
 function mergeTextRuns(node) {
   if (Array.isArray(node)) {
