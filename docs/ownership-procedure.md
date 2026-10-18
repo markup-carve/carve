@@ -61,6 +61,8 @@ paragraph and its continuation claim, a noninterrupting line folds into it
 whatever prefixes it missed. T supplies the paragraph state; an ancestor's
 earlier paragraph cannot supply a missing claim. Recognition uses O2's owner,
 coordinates and scope, including the fence's valid metadata and closer guard.
+A new paragraph at an enclosing list item's content column stores its own
+claim after an ended descendant; it can take the next lazy line.
 A fold closes nothing. Definition-term continuation follows CARVE-P2-028.
 Rules: CARVE-P0-006, CARVE-P0-007, CARVE-P0-009, CARVE-P0-014, CARVE-P0-015,
 CARVE-P0-016, CARVE-P0-017 and CARVE-P0-018.

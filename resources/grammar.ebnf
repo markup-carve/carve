@@ -350,6 +350,12 @@
         and left the quoted paragraph open. Definition-term continuation
         remains governed by CARVE-P2-028.
 
+        An ended descendant supplies no claim to an enclosing list item. If a
+        later line reaches that item's content column and starts a paragraph,
+        its ordinary-line transition stores a new claim. Thus
+        `- - - ~~~` / `  tail` / `tail` puts both `tail` lines in the outer
+        item: the first starts its paragraph and the second continues it.
+
         A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE -- NORMATIVE [CARVE-P0-009].
         The last-child traversal in O3 applies at every depth, including a
         quote whose last block is another quote. CARVE-P0-006 and T decide

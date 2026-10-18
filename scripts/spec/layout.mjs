@@ -6947,8 +6947,11 @@ function collectItems(lines, i, list, state, ind, meas) {
         // (CARVE-P0-013, CARVE-P0-014). The branches above classify the line in
         // THIS item's coordinates, where a descendant's fence and its payload
         // are ordinary text, so they record a paragraph the deepest structure
-        // does not hold.
-        if (nestedVerbatim() || wasNested?.kind === 'code') closePara()
+        // does not hold. A line outside that descendant's column closes its
+        // host and can start an ancestor paragraph with a new claim. A new
+        // fence on that line leaves no claim, even if the old descendant was
+        // still open when the line arrived.
+        if ((descendantOwned || FENCE.test(dedented)) && (nestedVerbatim() || wasNested?.kind === 'code')) closePara()
         // The note body keeps its reach past the closed paragraph (CARVE-P0-013).
         if (markerNoteCommentSeen && inNoteBody) {
           const noteBody = defBodyIndent
