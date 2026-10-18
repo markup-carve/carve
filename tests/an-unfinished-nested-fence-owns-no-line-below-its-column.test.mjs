@@ -85,3 +85,10 @@ test('a quoted outer-item paragraph stores its own claim after a nested fence', 
   assert.match(html, /      tail\ntail\n    <\/li>/)
   assert.doesNotMatch(html, /<p>tail<\/p>/)
 })
+
+test('quote padding does not change the outer-item paragraph claim', () => {
+  const source = '>  - - - ```\n>    tail\n>  tail\n'
+  const html = renderDoc(parse(source))
+  assert.match(html, /      tail\ntail\n    <\/li>/)
+  assert.doesNotMatch(html, /<p>tail<\/p>/)
+})
