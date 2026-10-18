@@ -5,7 +5,7 @@ description: One way to implement the canonical writer's contextual escape rule.
 
 # Writer escaping strategy
 
-[PART 11 §2](./grammar) pins the bytes the canonical writer emits. This page describes one way to decide whether a candidate character needs an escape. An implementation can use another method if it produces the same bytes. PART 11 §2b limits a conservative fallback to the smallest failing unit.
+PART 11 §2 of the [formal specification](./grammar) pins the bytes the canonical writer emits. This page describes one way to decide whether a candidate character needs an escape. An implementation can use another method if it produces the same bytes. PART 11 §2b limits a conservative fallback to the smallest failing unit.
 
 A static character table cannot make this decision. `[` is literal on its own but opens a link in `[a](b)`. `(` is literal in `[a] (b)` but opens a destination in `[a](b)`. `^` is literal before a space at column zero but opens a footnote in `^[note]`. `-` is literal inside a word but can open a list at the start of a line. `_` opens emphasis only when a closer follows. Escaping these characters everywhere would violate §2 when the escape changes nothing.
 

@@ -16,7 +16,7 @@ resolution and canonical writing together.
 | PART 9 | Semantic constraints a context-free production cannot carry | Operational semantics, with interruption and ownership tables published as data |
 | PART 9R | Whole-document resolution (references, footnotes, crossrefs, numbering) | Two-pass rules over declared symbol tables |
 | PART 10 | HTML serialization | Tree-transform conventions |
-| PART 11 | Canonical source writer (`carve fmt`): round-trip invariants and the escaping rule | Invariants over `parse`/`fmt` + a decision procedure |
+| PART 11 | Canonical source writer and other non-HTML targets | Round-trip invariants, contextual escape test and target-specific spelling rules |
 | PART 12 | AST serialization: the JSON shape a parsed document exchanges as | Reference-implementation field names + a round-trip invariant |
 
 ::: info Why layers instead of one grammar?
@@ -24,6 +24,9 @@ Some Carve constraints are not expressible in context-free EBNF. Structured
 tables cover closed state transitions and capability matrices; operational
 clauses cover the remaining algorithms.
 :::
+
+The [writer escaping strategy](./writer-escaping-strategy) gives one optional
+implementation procedure for PART 11's escape test.
 
 ## Specification sources
 
