@@ -5,34 +5,18 @@ description: Try Carve in the playground, then render it in your own project.
 
 # Get Started
 
-## Write your first document
+## Try Carve
 
-Open the [Playground](/playground) to try Carve without installing anything.
-Replace the text in the *Carve source* pane with this:
-
-```carve
-# Weekend plans
-
-Bring a *warm coat* and a notebook.
-
-- Walk by the river
-- Take photos
-```
-
-The *Rendered HTML* pane shows a heading, a paragraph with bold text, and a
-two-item list. Change a list item to see the preview update. Carve uses `*` for
-bold; see [Coming from Markdown](/migrate-from-markdown) if that surprises you.
-
-To keep the document, copy the source into a text editor and save it as
-`weekend.crv`. If you have Node.js 20 or newer installed, you can make an HTML
-file with:
+Open the [Playground](/playground) to edit and preview Carve without installing
+anything. To keep your changes, save the source as a `.crv` file. If you have
+Node.js 20 or newer, you can render that file to HTML with:
 
 ```bash
-npx @markup-carve/carve weekend.crv > weekend.html
+npx @markup-carve/carve input.crv > output.html
 ```
 
-Open `weekend.html` in a browser to see the result. The [Cheat Sheet](/cheatsheet)
-has more syntax when you need it.
+See the [Cheat Sheet](/cheatsheet) for syntax and [Coming from
+Markdown](/migrate-from-markdown) for the main differences.
 
 ## Choose a workflow
 
