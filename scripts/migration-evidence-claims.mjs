@@ -63,85 +63,66 @@ const UNVERIFIED = { code: 'fidelity-unverified', severity: 'warning', fidelity:
 const QUOTE_FIELD_LOSS = { code: 'bbcode-quote-field-dropped', severity: 'warning', fidelity: 'dropped', confidence: 'exact', path: 'line:1' }
 const AHEAD_OF_PIN = {
   'bbcode-quote-field-dropped': {
-    engines: ['js', 'php'],
+    engines: ['php'],
     pinned: { diagnostics: [{ code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }] },
   },
   // carve#3341: one attribution reading across the three BBCode importers.
   'bbcode-quote-attribution-nothing-left': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '> y\n^\n', diagnostics: [UNVERIFIED] },
+    engines: ['rust', 'php'],
     rust: { diagnostics: [UNVERIFIED, { ...QUOTE_FIELD_LOSS, message: 'The BBCode quote user_id cannot be represented in Carve and was dropped.' }] },
     php: { output: '> y\n^\n', diagnostics: [UNVERIFIED] },
   },
-  'bbcode-quote-attribution-space-opener': {
-    engines: ['js'],
-    js: { output: '> c\n^ name=\\"bob\\" date=\\"2020-01-01\\" #7\n' },
-  },
   'bbcode-quote-attribution-unknown-field': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '> q3\n^ alice foo=bar (2023-11-14) #12\n', diagnostics: [UNVERIFIED] },
+    engines: ['rust', 'php'],
     rust: { output: '> q3\n^ "alice"    foo=bar (2023-11-14) #12\n', diagnostics: [UNVERIFIED, { ...QUOTE_FIELD_LOSS, message: 'The BBCode quote user_id cannot be represented in Carve and was dropped.' }] },
     php: { output: '> q3\n^ "alice"    foo=bar (2023-11-14) #12\n', diagnostics: [UNVERIFIED] },
   },
   'bbcode-quote-attribution-only-unknown-field': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '> x\n^ foo=bar\n', diagnostics: [UNVERIFIED] },
+    engines: ['rust', 'php'],
     rust: { output: '> x\n^ foo=bar\n', diagnostics: [UNVERIFIED] },
     php: { output: '> x\n^ foo=bar\n', diagnostics: [UNVERIFIED] },
   },
   'bbcode-quote-attribution-unix-time-wins': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '> x\n^ alice (2020-01-01 1700000000)\n', diagnostics: [UNVERIFIED] },
+    engines: ['rust', 'php'],
     rust: { diagnostics: [UNVERIFIED] },
     php: { diagnostics: [UNVERIFIED] },
   },
   'bbcode-quote-attribution-post-id-wins': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '> x\n^ alice  post_id=8 #7\n', diagnostics: [UNVERIFIED] },
+    engines: ['rust', 'php'],
     rust: { output: '> x\n^ alice  post_id=8 #7\n', diagnostics: [UNVERIFIED] },
     php: { diagnostics: [UNVERIFIED] },
   },
   'bbcode-quote-attribution-leading-id-loses': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '> q\n^ post_id=12 #9\n', diagnostics: [UNVERIFIED] },
+    engines: ['rust', 'php'],
     rust: { output: '> q\n^ post_id=12 #9\n', diagnostics: [UNVERIFIED] },
     php: { diagnostics: [UNVERIFIED] },
   },
   'bbcode-quote-attribution-repeated-name': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '> x\n^ name=\\"bob\\" name=\\"carl\\"\n', diagnostics: [UNVERIFIED] },
+    engines: ['rust', 'php'],
     rust: { diagnostics: [UNVERIFIED] },
     php: { diagnostics: [UNVERIFIED] },
   },
   'bbcode-quote-attribution-text-beside-name': {
-    engines: ['js', 'rust', 'php'],
-    js: { diagnostics: [UNVERIFIED] },
+    engines: ['rust', 'php'],
     rust: { diagnostics: [UNVERIFIED] },
     php: { diagnostics: [UNVERIFIED] },
   },
   'bbcode-quote-attribution-text-runs-beside-name': {
-    engines: ['js', 'rust', 'php'],
+    engines: ['rust', 'php'],
     pinned: { diagnostics: [UNVERIFIED] },
   },
-  'bbcode-quote-attribution-single-quoted': {
-    engines: ['js'],
-    js: { output: '> x\n^ name=\\\'bob\\\'\n' },
-  },
   'bbcode-quote-attribution-unquoted-values': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '> x\n^ name=bob date=2020-01-01\n' },
+    engines: ['rust', 'php'],
     rust: { output: '> x\n^ name=bob date=2020-01-01\n' },
     php: { output: '> x\n^ name=bob date=2020-01-01\n' },
   },
   'bbcode-quote-attribution-author': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '> x\n^ author=alice #3\n' },
+    engines: ['rust', 'php'],
     rust: { output: '> x\n^ author=alice #3\n' },
     php: { output: '> x\n^ author=alice #3\n' },
   },
   'bbcode-quote-attribution-text-spacing': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '> x\n^ Bob   Smith\n' },
+    engines: ['rust', 'php'],
     rust: { output: '> x\n^ Bob   Smith\n' },
     php: { output: '> x\n^ Bob   Smith\n' },
   },
@@ -162,7 +143,7 @@ const AHEAD_OF_PIN = {
     rust: { output: '[https://e.com/a[b]](https://e.com/a%5Bb%5D)\n' },
   },
   'link-fragment-case-rewritten': {
-    engines: ['js', 'rust', 'php'],
+    engines: ['rust', 'php'],
     pinned: {
       output: '# Install Steps\n\nSee [steps](#install-steps).\n',
       diagnostics: [
@@ -173,12 +154,12 @@ const AHEAD_OF_PIN = {
     },
   },
   'link-fragment-case-rewritten-names-the-authored-spelling': {
-    engines: ['js', 'rust', 'php'],
+    engines: ['rust', 'php'],
     pinned: {
       output: '# Über Uns\n\nSee [a](#%C3%BCber-uns).\n',
       diagnostics: [{ code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }],
     },
-    // carve-rs assesses this input completely where carve-js and carve-php do not.
+    // carve-rs assesses this input completely where carve-php does not.
     rust: {
       output: '# Über Uns\n\nSee [a](#%C3%BCber-uns).\n',
       exit: 0,
