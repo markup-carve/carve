@@ -1,0 +1,56 @@
+{
+  "name": "i04-mid-line-warning-column",
+  "description": "A warning about a directive that is not first on its line names the directive's own column (carve-js#3254).",
+  "rules": [
+    "I2",
+    "I4"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Some text {{ missing.crv }} and {{ block.crv }} end.",
+  "files": {
+    "block.crv": "# Heading\n\nPara."
+  },
+  "options": {
+    "sourcePath": "book.crv"
+  },
+  "checkWarningLocations": true,
+  "expected": {
+    "html": "<p>Some text {{ missing.crv }} and {{ block.crv }} end.</p>",
+    "fmt": "Some text {{ missing.crv }} and {{ block.crv }} end.\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved",
+        "file": "book.crv"
+      },
+      {
+        "rule": "include-block-in-inline",
+        "file": "book.crv"
+      }
+    ],
+    "warningLocations": [
+      {
+        "rule": "include-unresolved",
+        "file": "book.crv",
+        "line": 1,
+        "column": 11
+      },
+      {
+        "rule": "include-block-in-inline",
+        "file": "book.crv",
+        "line": 1,
+        "column": 33
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "missing.crv",
+        "resolved": false
+      },
+      {
+        "id": "block.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

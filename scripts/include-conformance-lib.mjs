@@ -299,6 +299,7 @@ export function runVector(vector, carve) {
               ? { file: baseReal ? normalizeFsPath(w.file, baseReal) : w.file }
               : {}),
             line: w.line,
+            column: w.column,
           })) }
         : {}),
       dependencies: normalizeDependencies(result.dependencies, baseReal),

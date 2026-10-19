@@ -410,6 +410,17 @@ export const vectors = [
     checkWarningLocations: true,
   },
   {
+    name: 'i04-mid-line-warning-column',
+    description: 'A warning about a directive that is not first on its line names the directive\'s own column (carve-js#3254).',
+    rules: ['I2', 'I4'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: 'Some text {{ missing.crv }} and {{ block.crv }} end.',
+    files: { 'block.crv': '# Heading\n\nPara.' },
+    options: { sourcePath: 'book.crv' },
+    checkWarningLocations: true,
+  },
+  {
     name: 'i04-attribution-omitted-without-sourcepath',
     description: 'With no sourcePath the top-level document has no identity, so no file is attributed.',
     rules: ['I4'],

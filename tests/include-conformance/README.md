@@ -55,7 +55,7 @@ goldens).
 | `checkFmtExpandEquivalence` | optional | When true, the runner also asserts that expanding the **formatted** entry yields the same html + dependency set (I12 stronger invariant). |
 | `checkCarveTarget` | optional | When true, the vector carries `expected.carveTarget` (I15). |
 | `checkFlattened` | optional | When true, the vector carries `expected.flattened`. |
-| `checkWarningLocations` | optional | When true, the proof runner checks `expected.warningLocations` as `{ rule, file?, line }` for this fixture. This is outside the portable §19 warning contract. |
+| `checkWarningLocations` | optional | When true, the proof runner checks `expected.warningLocations` as `{ rule, file?, line, column }` for this fixture, with the 1-based line and column of the directive's first character. This is outside the portable §19 warning contract. |
 
 `options` keys: `sourcePath` (warning attribution, I4), `maxDepth` /
 `maxBytes` (I6 limit overrides), `allowAbsolute` (filesystem), `resolverIds`

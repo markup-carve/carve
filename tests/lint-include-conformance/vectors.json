@@ -395,6 +395,49 @@
       }
     },
     {
+      "name": "mid-line-directive",
+      "description": "A directive that is not first on its line is reported at its own column (carve-js#3254).",
+      "resolver": "virtual",
+      "entry": "Some text {{ missing.crv }} more text.\n",
+      "files": {},
+      "expected": {
+        "findings": [
+          {
+            "rule": "include-unresolved",
+            "file": "doc.crv",
+            "line": 1,
+            "column": 11
+          }
+        ]
+      }
+    },
+    {
+      "name": "mid-line-directive-in-a-chain",
+      "description": "A mid-line directive in an included file, reached through a mid-line directive, reports both directive columns.",
+      "resolver": "virtual",
+      "entry": "Intro {{ part.crv }} end.\n",
+      "files": {
+        "part.crv": "a {{ gone.crv }} b\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "rule": "include-unresolved",
+            "file": "part.crv",
+            "line": 1,
+            "column": 3,
+            "includedBy": [
+              {
+                "file": "doc.crv",
+                "line": 1,
+                "column": 7
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "invalid-region",
       "description": "A missing region is reported at the directive.",
       "resolver": "virtual",

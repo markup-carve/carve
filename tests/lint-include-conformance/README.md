@@ -37,6 +37,8 @@ gate does.
 - `@lines` and `#section` selections reporting only their own lines;
 - include errors at the directive: a cycle, a missing file, an invalid region
   and a selection conflict;
+- a mid-line directive reported at its own column, in the top-level document
+  and in the include chain;
 - no resolver, no expansion.
 
 `tests/lint-include-conformance.test.mjs` checks the vectors against the schema

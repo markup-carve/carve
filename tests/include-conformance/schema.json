@@ -158,7 +158,8 @@
             "properties": {
               "rule": { "type": "string" },
               "file": { "type": "string" },
-              "line": { "type": "integer", "minimum": 1 }
+              "line": { "type": "integer", "minimum": 1 },
+              "column": { "type": "integer", "minimum": 1 }
             }
           }
         },
