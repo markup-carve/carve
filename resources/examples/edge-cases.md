@@ -16105,6 +16105,63 @@ So does the end of a list item.
 
 :::
 
+A fence opened on a nested list marker line keeps the blank too, even with no
+line before it and at any depth. A blank line supplies every indentation prefix
+(PART 0 O1), so nesting depth does not change which frame owns it
+(markup-carve/carve-php#3573, markup-carve/carve-rs#2925).
+
+::: compare
+
+````carve
+- - ```
+
+tail
+````
+
+````html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+:::
+
+::: compare
+
+````carve
+- - - ```
+
+tail
+````
+
+````html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code>
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+:::
+
 ## A boolean and a key/value of the same name are one attribute
 
 A boolean and a `key=value` of the SAME name are one attribute, not two. A
