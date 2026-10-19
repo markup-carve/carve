@@ -1,0 +1,475 @@
+{
+  "version": 1,
+  "rule": "consumed-key-near-miss",
+  "vectors": [
+    {
+      "name": "table-transposition-on-csv",
+      "description": "Two adjacent letters swapped in `table` on a csv fence.",
+      "source": "{tabel}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "tabel",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-insertion-on-csv",
+      "description": "One letter too many.",
+      "source": "{tables}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "tables",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-substitution-on-csv",
+      "description": "One letter replaced.",
+      "source": "{teble}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "teble",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-case-only",
+      "description": "A key that equals `table` ignoring ASCII case.",
+      "source": "{Table}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "Table",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-case-only-upper",
+      "description": "The case fold covers every letter.",
+      "source": "{TABLE}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "TABLE",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-on-tsv",
+      "description": "A tsv fence takes `table` too.",
+      "source": "{tabel}\n```tsv\na\tb\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "tabel",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-on-tilde-fence",
+      "description": "The fence character does not matter.",
+      "source": "{tabel}\n~~~csv\na,b\n~~~\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "tabel",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-on-captioned-fence",
+      "description": "A caption makes the fence a figure; the figure is the host and the finding is still at the fence.",
+      "source": "{tabel}\n```csv\na,b\n1,2\n```\n^ Caption\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "tabel",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-quoted-empty-value",
+      "description": "An empty quoted value is the boolean spelling.",
+      "source": "{tabel=\"\"}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "tabel",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-next-to-id-and-class",
+      "description": "An id and a class on the same line do not matter.",
+      "source": "{#id .c tabel}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "tabel",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-two-near-misses",
+      "description": "Each near miss is its own finding, at the same location.",
+      "source": "{tabel tbale lose}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "tabel",
+            "suggests": "table"
+          },
+          {
+            "line": 2,
+            "column": 1,
+            "word": "tbale",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-merged-attribute-lines",
+      "description": "Two attribute lines merge; the finding is at the host's first line.",
+      "source": "{tabel}\n{.x}\n```csv\na,b\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "word": "tabel",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "table-inside-a-div",
+      "description": "A nested host reports at its own line.",
+      "source": "::: note\n{tabel}\n```csv\na\n```\n:::\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "word": "tabel",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "loose-on-bullet-list",
+      "description": "A deletion from `loose` on a bullet list.",
+      "source": "{lose}\n- item\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "lose",
+            "suggests": "loose"
+          }
+        ]
+      }
+    },
+    {
+      "name": "loose-on-ordered-list",
+      "description": "Any list kind is a host.",
+      "source": "{lose}\n1. item\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "lose",
+            "suggests": "loose"
+          }
+        ]
+      }
+    },
+    {
+      "name": "loose-on-task-list",
+      "description": "A task list is a list.",
+      "source": "{lose}\n- [ ] task\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "lose",
+            "suggests": "loose"
+          }
+        ]
+      }
+    },
+    {
+      "name": "loose-on-definition-list",
+      "description": "A definition list takes `loose`.",
+      "source": "{lose}\n:: term\n:  definition\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "lose",
+            "suggests": "loose"
+          }
+        ]
+      }
+    },
+    {
+      "name": "loose-insertion",
+      "description": "One letter too many.",
+      "source": "{loosee}\n- item\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "loosee",
+            "suggests": "loose"
+          }
+        ]
+      }
+    },
+    {
+      "name": "loose-case-only",
+      "description": "Case only.",
+      "source": "{Loose}\n- item\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "Loose",
+            "suggests": "loose"
+          }
+        ]
+      }
+    },
+    {
+      "name": "loose-next-to-the-real-key",
+      "description": "The correct key on the same line does not hide a near miss.",
+      "source": "{loose lose}\n- item\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "lose",
+            "suggests": "loose"
+          }
+        ]
+      }
+    },
+    {
+      "name": "loose-in-a-quote",
+      "description": "Columns are the host's own, inside a block quote.",
+      "source": "> {lose}\n> - item\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "word": "lose",
+            "suggests": "loose"
+          }
+        ]
+      }
+    },
+    {
+      "name": "loose-on-a-nested-list",
+      "description": "A nested list is a host.",
+      "source": "- outer\n\n  {lose}\n  - inner\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 4,
+            "column": 3,
+            "word": "lose",
+            "suggests": "loose"
+          }
+        ]
+      }
+    },
+    {
+      "name": "both-keys-in-one-document",
+      "description": "Each host is checked against its own key.",
+      "source": "{lose}\n- a\n\n{tabel}\n```csv\na\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "word": "lose",
+            "suggests": "loose"
+          },
+          {
+            "line": 5,
+            "column": 1,
+            "word": "tabel",
+            "suggests": "table"
+          }
+        ]
+      }
+    },
+    {
+      "name": "correct-table",
+      "description": "The consumed key itself.",
+      "source": "{table}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "correct-loose",
+      "description": "The consumed key itself.",
+      "source": "{loose}\n- item\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "valued-key",
+      "description": "A key with a value is not a boolean flag.",
+      "source": "{tabel=foo}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "two-edits",
+      "description": "Case-folded but also misspelled: two edits away.",
+      "source": "{TABEL}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "too-short",
+      "description": "Two letters short.",
+      "source": "{tab}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "distant-word",
+      "description": "An unrelated key.",
+      "source": "{disabled}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "close-is-two-edits-from-loose",
+      "description": "`close` is two edits from `loose`.",
+      "source": "{close}\n- item\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "abel-is-two-edits-from-table",
+      "description": "A deletion plus a swap.",
+      "source": "{abel}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "table-key-on-a-list",
+      "description": "`table` near misses are only checked on csv and tsv fences.",
+      "source": "{tabel}\n- item\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "loose-key-on-a-fence",
+      "description": "`loose` near misses are only checked on lists and definition lists.",
+      "source": "{lose}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "other-language",
+      "description": "A fence in another language is not a host.",
+      "source": "{tabel}\n```js\ncode\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "language-is-case-sensitive",
+      "description": "The language must be exactly `csv` or `tsv`.",
+      "source": "{tabel}\n```CSV\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "paragraph",
+      "description": "A paragraph is not a host.",
+      "source": "{lose}\nParagraph.\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "marked-fence-is-a-table",
+      "description": "With `table` present the fence is a table, which is not a host.",
+      "source": "{table tabel}\n```csv\na,b\n1,2\n```\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

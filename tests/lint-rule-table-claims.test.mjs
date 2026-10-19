@@ -119,6 +119,10 @@ const NOT_IN_THE_PIN_YET = new Map([
     'specified by markup-carve/carve#3319; carve-js emits it once its pin moves past the region-marker change',
   ],
   [
+    'consumed-key-near-miss',
+    'specified by markup-carve/carve#3340; carve-js emits it from f45ded02, past this pin',
+  ],
+  [
     'table-marker-run-padding',
     'specified by markup-carve/carve#1464; no engine emits it yet, and it ' +
       'supersedes table-alignment-run-padding once they do',
@@ -250,7 +254,16 @@ test('an opt-in rule reports nothing until it is asked for', () => {
 // Internal list-indentation grouping labels in the pinned linter. They merge
 // adjacent diagnostics; neither string is ever emitted as a warning rule id.
 // `semantic-span` is an extension name broken-fragment-link compares against.
-const NOT_A_RULE = new Set(['definition-list', 'footnote-definition', 'semantic-span'])
+// The three include-* ids are render warnings lint skips by name: CARVE-P6-001
+// I16 says renames and heading clamps are not lint findings.
+const NOT_A_RULE = new Set([
+  'definition-list',
+  'footnote-definition',
+  'semantic-span',
+  'include-id-rename',
+  'include-footnote-rename',
+  'include-heading-clamp',
+])
 
 function ruleIdsInBuild() {
   const lintSource = readFileSync(

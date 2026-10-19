@@ -78,7 +78,9 @@ data/plans.csv:3:1 delimited-table-malformed — This marked CSV/TSV record has 
 ```
 
 An include that fails (a missing file, a cycle, an invalid region, conflicting
-selections) is reported at its directive under its `include-*` rule id. A file
+selections) is reported at its directive under its `include-*` rule id. Renames
+and heading clamps (`include-id-rename`, `include-footnote-rename`,
+`include-heading-clamp`) are render warnings, not lint findings. A file
 included twice reports each finding once. Without `--include-root` nothing is
 expanded and lint reports what it always has: the include root is never
 inferred from the input path here, unlike `carve render`. The rules are
@@ -183,6 +185,7 @@ the command-line and editor behavior stay aligned.
 | `table-column-overlap` | a field supplied both by an in-table column marker and by a table attribute list; the in-table spelling wins |
 | `delimited-table-malformed` | malformed quoting in a marked `csv` or `tsv` fence; the fence remains code |
 | `delimited-table-wide-row` | a marked `csv` or `tsv` record wider than the first record; the extra fields are kept |
+| `consumed-key-near-miss` | a bare key one edit away from the consumed structural key its block reads, such as `{tabel}` on a `csv` fence or `{lose}` on a list. The key stays an ordinary attribute and the structure does not happen; see [consumed key near misses](#consumed-key-near-misses) |
 | `table-width-total` | table column widths whose specified percentages total more than 100; individual widths remain usable, but the allocation overcommits the table |
 | `table-span-marker-blocked` | a `^` or `<` span marker that the PART 9 §5 T5 span walk cannot resolve: a `^` in the first row or with no cell above it, a `<` in the first column, or a span that would cover another cell. T5 renders the marker as a cell of its own, so the span the author wrote silently does not happen. The message names the reason. Escaped `\^` and `\<` are text and are not reported. Nothing is rewritten. Emitted by carve-js; carve-php and carve-rs port it next (markup-carve/carve#3183) |
 | `semantic-attribute-value-ignored` | a non-empty value on a semantic span name that only selects its wrapper - `kbd` in core, and `samp`, `var`, `cite` where the SemanticSpan extension is enabled. The value reaches no output at all, so `[Dune]{cite="https://example.org/dune"}` renders `<cite>Dune</cite>` and loses the URL (PART 9 §9, §10) |
@@ -201,6 +204,41 @@ the command-line and editor behavior stay aligned.
 | `references-placement-in-container` | a `::: references` marker inside a block-level container when a citation extension supplies a document-wide reference list. The marker renders the `<div class="references">` floor and the list keeps its default position (`CARVE-P9-073`) |
 | `quote-fence-ends-the-quote-above` | a `::: >` opener at the column of the quote directly above it. It is a block opener, so it ends that quote and starts a sibling one, and the two render as adjacent blockquotes rather than the nesting the indentation suggests. Nothing is malformed and lint otherwise exits 0, which is why this container kind needs a rule of its own: write `> ::: >` to nest it, or leave a blank line to make two quotes deliberate |
 | `definition-term-block-folded` | a block opener indented under a `:: ` term, past the column of the container that holds the list. A term has no content column (`CARVE-P2-028`), so the line folds into the term as text rather than opening its block. Reported once per term, on the first such line; lines inside a code, math, raw or literal span are content and are not reported. Dedent the line to the container's content column to open the block, or move it into the term's `: ` description |
+
+### Consumed key near misses
+
+`consumed-key-near-miss` covers the two boolean
+[consumed structural keys](./blocks-and-attributes#consumed-structural-keys).
+A misspelled one is an ordinary attribute, so `{tabel}` above a `csv` fence
+renders the records as code and `{lose}` above a list leaves it tight, with
+nothing malformed to report.
+
+A host and the key it is checked against:
+
+- a fenced code block whose language is exactly `csv` or `tsv`, or a figure
+  whose target is one: `table`;
+- a list of any kind, or a definition list: `loose`.
+
+Every key on the host's attributes whose value is empty (`{tabel}` or
+`{tabel=""}`) is reported when it differs from the key and either equals it
+after ASCII lowercasing or is one edit from it: one inserted, deleted or
+replaced letter, or two adjacent letters swapped. `{Table}`, `{tables}`,
+`{teble}` and `{talbe}` are reported on a `csv` fence. `{TABEL}`, `{tab}` and
+`{abel}` are two edits away, and `{close}` is two edits from `loose`; none is
+reported. A key with a value (`{tabel=foo}`) is not a flag and is not checked.
+
+The finding is at the host's first line and column, not at the attribute line.
+A host with several near misses reports each, in the order the keys are
+written. `table` is not checked on a list or `loose` on a fence. A fence that
+already carries `table` is a table, not a host, so `{table tabel}` reports
+nothing. The message names the key as written and suggests the consumed key:
+
+```txt
+doc.crv:2:1 consumed-key-near-miss — "tabel" is not a consumed key here; did you mean {table}?
+```
+
+The shared vectors are in
+[`tests/lint-rule-vectors/consumed-key-near-miss.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/consumed-key-near-miss.json).
 
 ### Declaring a target version
 
@@ -417,7 +455,8 @@ input.
 
 `bibliography-placement-in-container` and `table-marker-run-padding` are
 specified but absent from these builds, and none of them reports
-`unresolved-reference-link` for a reference image yet. The engines still emit
+`unresolved-reference-link` for a reference image yet. `consumed-key-near-miss`
+is in carve-js; carve-php and carve-rs port it next (markup-carve/carve#3340). The engines still emit
 `table-alignment-run-padding`. The broader Djot migration checks remain specific
 to carve-js. Diagnostic message wording is engine-specific; compare the rule id
 and source location.
