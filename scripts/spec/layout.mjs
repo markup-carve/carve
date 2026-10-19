@@ -6206,6 +6206,11 @@ function collectItems(lines, i, list, state, ind, meas) {
           fenceBlankRun++
           const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
           pushLine(dd.text, dd.meas)
+          // §17 L1 / CARVE-P0-015: a lazy closer leaves this item's later paragraph separate.
+          if (fence.opaque?.opens === false && subCol < 0 && headSubCol < 0) {
+            const next = i + 1 < n ? ind(i + 1) : null
+            if (next && next.col >= contentCol && foldablePlainLine(next.rest)) list.tight = false
+          }
           // AND IT ENDS THE OPEN PARAGRAPH, whatever container is holding the
           // blank. This branch used to leave `openPara` set across it, so a
           // following line BELOW the content column found a paragraph to fold
