@@ -279,3 +279,22 @@ more</figcaption>
   <li>c</li>
 </ul>
 ```
+
+````
+- ```
+  x
+
+  ^ cap
+  ```
+- c
+.
+<ul>
+  <li>
+    <pre><code>x
+
+^ cap
+</code></pre>
+  </li>
+  <li>c</li>
+</ul>
+````

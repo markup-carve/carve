@@ -220,3 +220,14 @@ test('an unpromoted paragraph keeps no field and takes the slot back as text', (
   assert.equal(doc.blocks[0].captionSlot, undefined)
   assert.deepEqual(doc.blocks[0].lines, ['![a][r]', '^ cap'])
 })
+
+test('a caption in a list item note keeps its own blank-run boundary', () => {
+  const source = (gap) => `- [^n]: | a |\n${gap}    ^ cap\n- c\n\nref[^n]\n`
+  const attached = html(source('\n'))
+  const detached = html(source('\n\n'))
+  assert.match(attached, /<caption>cap<\/caption>/)
+  assert.doesNotMatch(detached, /<caption>/)
+  assert.match(detached, /<p>\^ cap/)
+  assert.match(attached, /<li>c<\/li>/)
+  assert.match(detached, /<li>c<\/li>/)
+})

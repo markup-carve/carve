@@ -6338,14 +6338,6 @@ function collectItems(lines, i, list, state, ind, meas) {
             i = j
             continue
           }
-          if (CAPTION.test(jm.rest)) {
-            for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
-            closePara()
-            if (j > i + 1) list.tight = false
-            else captionGaps.push({ line: trimLineEnd(jm.rest), text: CAPTION.exec(jm.rest)[1] })
-            i = j
-            continue
-          }
           const authored = opensAuthoredBase(jm.rest) ? jm.col : contentCol
           const dedented = dedent(lines[j], authored)
           /*
@@ -6376,9 +6368,22 @@ function collectItems(lines, i, list, state, ind, meas) {
           const defBase = authoredBlockLimit !== null && j >= authoredBlockLimit ? null : authoredBlockBase ?? contentCol
           if (defBodyIndent !== null && defBase !== null && jm.col - defBase > defBodyIndent) {
             const defBody = defBodyIndent
-            if (!descendantFence) pushLine('', BLANK_MEAS)
+            if (!descendantFence) {
+              const blanks = CAPTION.test(jm.rest) ? j - i : 1
+              for (let k = 0; k < blanks; k++) pushLine('', BLANK_MEAS)
+            }
             closePara()
             defBodyIndent = defBody
+            i = j
+            continue
+          }
+          if (CAPTION.test(jm.rest)) {
+            if (!descendantFence) {
+              for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
+              closePara()
+              if (j > i + 1) list.tight = false
+              else captionGaps.push({ line: trimLineEnd(jm.rest), text: CAPTION.exec(jm.rest)[1] })
+            }
             i = j
             continue
           }

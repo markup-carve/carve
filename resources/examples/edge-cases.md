@@ -56341,3 +56341,30 @@ An attached quote caption in a sublist keeps both lists tight
 ```
 
 :::
+
+A caret inside an open list-item fence stays code
+
+::: compare
+
+```carve
+- ```
+  x
+
+  ^ cap
+  ```
+- c
+```
+
+```html
+<ul>
+  <li>
+    <pre><code>x
+
+^ cap
+</code></pre>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
