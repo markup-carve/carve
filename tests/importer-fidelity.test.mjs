@@ -128,6 +128,21 @@ test('a case-only heading fragment rewrite is a located normalized fixup', () =>
     { code: row.code, severity: 'info', fidelity: 'normalized', confidence: 'inferred', path: 'link:#install-steps' })
 })
 
+test('the fragment fixup row names the destination as the link wrote it, not percent-encoded', () => {
+  const validate = new Ajv2020().compile(reportSchema)
+  const row = {
+    code: 'link-fragment-case-rewritten',
+    message: 'Rewrote link fragment #über-uns to #%C3%9Cber-Uns, the one heading id it matches without regard to case.',
+    severity: 'info', fidelity: 'normalized', confidence: 'inferred', path: 'link:#über-uns'
+  }
+  assert.equal(validate({ schemaVersion: 2, sourceFormat: 'markdown', diagnostics: [row] }), true, JSON.stringify(validate.errors))
+  const fixture = manifest.cases.find(item => item.id === 'link-fragment-case-rewritten-names-the-authored-spelling')
+  assert.equal(fixture.input, '# Über Uns\n\nSee [a](#über-uns).\n')
+  assert.equal(fixture.expected.output, '# Über Uns\n\nSee [a](#%C3%9Cber-Uns).\n')
+  const { message: _message, ...located } = row
+  assert.deepEqual(fixture.expected.diagnostics.at(-1), located)
+})
+
 test('externally replayed fixtures name their release-gate repository', () => {
   const external = manifest.cases.filter(item => item.runner === 'external')
   assert.deepEqual(external.map(item => [item.sourceFormat, item.repository]), [

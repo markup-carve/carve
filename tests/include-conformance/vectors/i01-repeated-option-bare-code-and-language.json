@@ -1,0 +1,25 @@
+{
+  "name": "i01-repeated-option-bare-code-and-language",
+  "description": "A bare `@code` and `@code:lang` share one key, so together they repeat it.",
+  "rules": [
+    "I1",
+    "I1c",
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @code @code:js }}",
+  "files": {
+    "a.js": "one()\n"
+  },
+  "expected": {
+    "html": "<p>{{ a.js <span class=\"mention\"><strong>@code</strong></span> <span class=\"mention\"><strong>@code</strong></span>:js }}</p>",
+    "fmt": "{{ a.js @code @code:js }}\n",
+    "warnings": [
+      {
+        "rule": "include-duplicate-option"
+      }
+    ],
+    "dependencies": []
+  }
+}

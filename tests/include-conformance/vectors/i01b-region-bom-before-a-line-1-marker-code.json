@@ -1,0 +1,25 @@
+{
+  "name": "i01b-region-bom-before-a-line-1-marker-code",
+  "description": "The carve#3348 example: a file's leading U+FEFF does not hide a `// #region` opener on line 1 of a code include.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ snippet.js@region:b @code:js }}",
+  "files": {
+    "snippet.js": "﻿// #region b\nbomcode()\n// #endregion b\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-js\">bomcode()\n</code></pre>",
+    "fmt": "{{ snippet.js@region:b @code:js }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "snippet.js",
+        "resolved": true
+      }
+    ]
+  }
+}

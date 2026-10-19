@@ -1,0 +1,24 @@
+{
+  "name": "i01-repeated-option-code-language",
+  "description": "The carve#3351 example: two code languages are an error, not \"the last one wins\".",
+  "rules": [
+    "I1",
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @code:js @code:py }}",
+  "files": {
+    "a.js": "one()\ntwo()\nthree()\n"
+  },
+  "expected": {
+    "html": "<p>{{ a.js <span class=\"mention\"><strong>@code</strong></span>:js <span class=\"mention\"><strong>@code</strong></span>:py }}</p>",
+    "fmt": "{{ a.js @code:js @code:py }}\n",
+    "warnings": [
+      {
+        "rule": "include-duplicate-option"
+      }
+    ],
+    "dependencies": []
+  }
+}

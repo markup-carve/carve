@@ -601,6 +601,102 @@
       "expected": {
         "findings": []
       }
+    },
+    {
+      "name": "region-after-a-leading-bom",
+      "description": "A file's leading U+FEFF does not hide a line-1 `%%` region opener (carve#3348): the region expands and is linted.",
+      "resolver": "virtual",
+      "entry": "{{ part.crv @region:b }}\n",
+      "files": {
+        "part.crv": "﻿%% #region b\n>inside\n%% #endregion b\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "rule": "blockquote-marker-without-space",
+            "file": "part.crv",
+            "line": 2,
+            "column": 1,
+            "includedBy": [
+              {
+                "file": "doc.crv",
+                "line": 1,
+                "column": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "code-region-after-a-leading-bom",
+      "description": "A file's leading U+FEFF does not hide a line-1 `#region` opener in a `{table}` csv code include (carve#3348).",
+      "resolver": "virtual",
+      "entry": "{table}\n{{ data.csv @region:b @code:csv }}\n",
+      "files": {
+        "data.csv": "﻿#region b\nPlan,Seats\nTeam,\"10\" yearly\n#endregion b\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "rule": "delimited-table-malformed",
+            "file": "data.csv",
+            "line": 3,
+            "column": 1,
+            "includedBy": [
+              {
+                "file": "doc.crv",
+                "line": 2,
+                "column": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "lines-start-past-the-end",
+      "description": "A line range that starts past the last line is reported at the directive and its file is not linted (carve#3349).",
+      "resolver": "virtual",
+      "entry": "{{ part.crv @lines:3-3 }}\n",
+      "files": {
+        "part.crv": ">never linted\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "rule": "include-lines-out-of-range",
+            "file": "doc.crv",
+            "line": 1,
+            "column": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "repeated-option",
+      "description": "An option given twice is reported at the directive, at its own column mid-line, and nothing is expanded (carve#3351).",
+      "resolver": "virtual",
+      "entry": "{{ part.crv @lines:1-1 @lines:1-1 }}\n\nSee {{ part.crv @shift:1 @shift:1 }} here.\n",
+      "files": {
+        "part.crv": ">never linted\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "rule": "include-duplicate-option",
+            "file": "doc.crv",
+            "line": 1,
+            "column": 1
+          },
+          {
+            "rule": "include-duplicate-option",
+            "file": "doc.crv",
+            "line": 3,
+            "column": 5
+          }
+        ]
+      }
     }
   ]
 }

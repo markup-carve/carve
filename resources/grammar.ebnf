@@ -884,7 +884,12 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    `path` of `link:` followed by the destination as the link wrote it before
    the rewrite, and the message `Rewrote link fragment #OLD to #NEW, the one
    heading id it matches without regard to case.` with both fragments as the
-   destinations spell them. Reference definitions and raw HTML URLs remain for manual
+   destinations spell them. The path and `#OLD` keep the author's spelling,
+   not a percent-encoded form of it: `[a](#über-uns)` reports
+   `link:#über-uns`. Where two spellings in one file encode to the same
+   destination, the row cannot tell their links apart and names the encoded
+   form. `#NEW` is the fragment as the importer writes it into the
+   rewritten link. Reference definitions and raw HTML URLs remain for manual
    review. This import-time repair does not change Carve's case-sensitive
    link or cross-reference resolution. *)
 
@@ -3791,7 +3796,14 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       disjoint kinds. SELECTION options choose WHICH content is pulled in:
       `#section` (semantic -- a heading's section or one block, I1a) and
       `@lines:N-M` (physical -- a 1-based inclusive line range), and
-      `@region:name` (physical -- a named source region, I1b). The three
+      `@region:name` (physical -- a named source region, I1b). A line range
+      that STARTS past the file's last line is an ERROR
+      (`include-lines-out-of-range`, Warning + literal, per I7); the file
+      stays a resolved dependency (I11). A range that starts on or before
+      the last line and ends past it selects through the last line. A final
+      line ending does not begin a further line, so an empty file has no
+      lines, and neither has a file holding only its leading U+FEFF, which
+      is not content (I1c). The three
       SELECTION mechanisms are MUTUALLY EXCLUSIVE: a directive MUST use at
       most one; a directive carrying two is an ERROR (Warning + literal,
       per I7). TRANSFORM options reshape already-selected content and are
@@ -3802,6 +3814,12 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       per I8), never both. A MODE option chooses what the selected content
       becomes: `@code` and `@code:lang` make it one code block (I1c). Without
       it the content is read as Carve. Every other `@key` is RESERVED.
+      An option key appears AT MOST ONCE: a directive that gives the same
+      key twice (`@lines:1-2 @lines:5-6`, `@code:js @code:ts`, `@shift:1
+      @shift:2`, or a bare `@code` beside `@code:lang`, which share the key
+      `code`) is an ERROR (`include-duplicate-option`, Warning + literal,
+      per I7). The last value never silently wins. Like a malformed option,
+      it is never passed to the resolver.
 
    I1b NAMED SOURCE REGION (`@region:name`). `name` is an `identifier` and is
       matched exactly. A marker is a whole physical line: optional ASCII
@@ -3809,6 +3827,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       but spaces or tabs. The keywords `#region` and `#endregion` are
       case-sensitive: `#Region` is not a marker. Spaces or tabs MAY separate
       a comment opener from the keyword and the name from a comment closer.
+      A leading U+FEFF of the file is not content (CARVE-P0-001, I1c), so
+      marker recognition skips it in both modes: a file that opens with
+      U+FEFF followed by a marker has that marker on line 1.
       WHICH FORMS ARE MARKERS FOLLOWS THE INCLUDE MODE, so a marker never
       renders in the file that holds it:
       (a) An include that reads Carve (no `@code`) recognizes ONLY the `%%`
@@ -4032,7 +4053,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    I7 ERRORS. Unreadable path, binary / non-text content, a `#name` that
       selects nothing (I1a), an invalid or missing named region (I1b),
       more than one of `#section`, `@lines` and `@region` (I1), `#section`
-      with `@code` (I1c), block-structured
+      with `@code` (I1c), an `@lines` range that starts past the file's
+      last line (`include-lines-out-of-range`, I1), an option key given
+      twice (`include-duplicate-option`, I1), block-structured
       content in INLINE position (I2), cycle, depth-exceeded,
       size-exceeded, call-bound-exceeded, and a directive reached AFTER
       byte-budget or call-bound exhaustion EACH emit a Warning and leave
@@ -10013,11 +10036,11 @@ EOF = (* end of file *) ;
           starts on the line after the earlier one ends, counting the
           attribute lines the writer itself puts above the later block. The
           earlier block MUST be a paragraph, block image, heading, code block,
-          thematic break or comment, since a `%%` line written directly below
-          anything else can be read into it. A link reference or footnote
-          definition is collected (§7) and written apart, so it is no sibling
-          here. Otherwise, and in a tree without positions, the ordinary
-          separator applies.
+          thematic break, comment, table, link reference definition, or a div,
+          admonition or block quote written with a closing `:::` fence, since a
+          `%%` line written directly below anything else can be read into it.
+          Otherwise, and in a tree without positions, the ordinary separator
+          applies.
 
       (b) A MARKER KEPT IN A LIST ITEM KEEPS ITS COLUMN. A region marker that
           is a list item's child, adjacent under (a) to the paragraph or block
@@ -10028,7 +10051,14 @@ EOF = (* end of file *) ;
           claim admits it, and the retention it sets admits the next such
           marker.
 
-      With both, a region whose content is already canonical comes out of
+      (c) A HOISTED DEFINITION DOES NOT CROSS A MARKER. A link reference or
+          footnote definition with a region marker anywhere below its source
+          line is not collected to the end of the document (§7). It is written
+          where the author wrote it, among its siblings in source order, and
+          (a) applies to it like any other block. One with no marker below it
+          is collected as before, which moves it past no marker.
+
+      With all three, a region whose content is already canonical comes out of
       `fmt` byte for byte, so the include selects the same bytes before and
       after. `tests/fixtures/region-marker-fmt.json` pins it:
 
@@ -10039,11 +10069,18 @@ EOF = (* end of file *) ;
 
       is its own canonical form. Without (a) the writer opened a blank line
       under the opener; without (b) it wrote the closer at the item's content
-      column, two spaces in.
+      column, two spaces in. So is
+
+        %% #region links
+        [ref]: /u
+        %% #endregion links
+
+      which without (c) came out as an empty region with the definition
+      written after its closer.
 
       NOT COVERED. Normalization the writer applies to the content itself
-      (an escape, a run of blank lines, a hoisted definition) changes the
-      selected bytes exactly as it changes any other text. A marker retained
+      (an escape, a run of blank lines) changes the selected bytes exactly as
+      it changes any other text. A marker retained
       in a nested item returns to that item's marker column, which is not
       necessarily the column it was authored at, and a marker in a footnote
       body keeps the body's column. Neither moves the marker out of its

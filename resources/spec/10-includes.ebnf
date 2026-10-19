@@ -75,7 +75,14 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       disjoint kinds. SELECTION options choose WHICH content is pulled in:
       `#section` (semantic -- a heading's section or one block, I1a) and
       `@lines:N-M` (physical -- a 1-based inclusive line range), and
-      `@region:name` (physical -- a named source region, I1b). The three
+      `@region:name` (physical -- a named source region, I1b). A line range
+      that STARTS past the file's last line is an ERROR
+      (`include-lines-out-of-range`, Warning + literal, per I7); the file
+      stays a resolved dependency (I11). A range that starts on or before
+      the last line and ends past it selects through the last line. A final
+      line ending does not begin a further line, so an empty file has no
+      lines, and neither has a file holding only its leading U+FEFF, which
+      is not content (I1c). The three
       SELECTION mechanisms are MUTUALLY EXCLUSIVE: a directive MUST use at
       most one; a directive carrying two is an ERROR (Warning + literal,
       per I7). TRANSFORM options reshape already-selected content and are
@@ -86,6 +93,12 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       per I8), never both. A MODE option chooses what the selected content
       becomes: `@code` and `@code:lang` make it one code block (I1c). Without
       it the content is read as Carve. Every other `@key` is RESERVED.
+      An option key appears AT MOST ONCE: a directive that gives the same
+      key twice (`@lines:1-2 @lines:5-6`, `@code:js @code:ts`, `@shift:1
+      @shift:2`, or a bare `@code` beside `@code:lang`, which share the key
+      `code`) is an ERROR (`include-duplicate-option`, Warning + literal,
+      per I7). The last value never silently wins. Like a malformed option,
+      it is never passed to the resolver.
 
    I1b NAMED SOURCE REGION (`@region:name`). `name` is an `identifier` and is
       matched exactly. A marker is a whole physical line: optional ASCII
@@ -93,6 +106,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       but spaces or tabs. The keywords `#region` and `#endregion` are
       case-sensitive: `#Region` is not a marker. Spaces or tabs MAY separate
       a comment opener from the keyword and the name from a comment closer.
+      A leading U+FEFF of the file is not content (CARVE-P0-001, I1c), so
+      marker recognition skips it in both modes: a file that opens with
+      U+FEFF followed by a marker has that marker on line 1.
       WHICH FORMS ARE MARKERS FOLLOWS THE INCLUDE MODE, so a marker never
       renders in the file that holds it:
       (a) An include that reads Carve (no `@code`) recognizes ONLY the `%%`
@@ -316,7 +332,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    I7 ERRORS. Unreadable path, binary / non-text content, a `#name` that
       selects nothing (I1a), an invalid or missing named region (I1b),
       more than one of `#section`, `@lines` and `@region` (I1), `#section`
-      with `@code` (I1c), block-structured
+      with `@code` (I1c), an `@lines` range that starts past the file's
+      last line (`include-lines-out-of-range`, I1), an option key given
+      twice (`include-duplicate-option`, I1), block-structured
       content in INLINE position (I2), cycle, depth-exceeded,
       size-exceeded, call-bound-exceeded, and a directive reached AFTER
       byte-budget or call-bound exhaustion EACH emit a Warning and leave
