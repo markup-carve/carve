@@ -24,6 +24,15 @@ function splitLine(line) {
   for (let index = 1; index < line.length; index++) {
     const char = line[index]
     if (char === '\\') { backslashes++; continue }
+    if (char === '`' && backslashes % 2 === 0) {
+      // A pipe inside a code span is content, not a cell boundary.
+      const run = /^`+/.exec(line.slice(index))[0]
+      const close = line.slice(index + run.length).search(new RegExp(`(?<!\`)${run}(?!\`)`))
+      if (close >= 0) index += run.length + close + run.length - 1
+      else index += run.length - 1
+      backslashes = 0
+      continue
+    }
     if (char === '|' && backslashes % 2 === 0) {
       cells.push(line.slice(start, index))
       start = index + 1

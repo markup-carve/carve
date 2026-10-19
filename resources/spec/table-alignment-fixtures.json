@@ -33,5 +33,35 @@
     "name": "separator colons",
     "canonical": "| A | B |\n|:--|--:|\n| x | right |\n",
     "aligned": "| A | B     |\n|:--|--:    |\n| x | right |\n"
+  },
+  {
+    "name": "non-breaking space escape",
+    "canonical": "| a\\ b | x |\n| ccc | `y|z` |\n",
+    "aligned": "| a\\ b | x     |\n| ccc  | `y|z` |\n"
+  },
+  {
+    "name": "two non-breaking space escapes",
+    "canonical": "| a\\ \\ b |\n| cccccc |\n",
+    "aligned": "| a\\ \\ b |\n| cccccc |\n"
+  },
+  {
+    "name": "escaped backslash and pipe",
+    "canonical": "| a \\\\ b | c \\| d |\n| e | f |\n",
+    "aligned": "| a \\\\ b | c \\| d |\n| e      | f      |\n"
+  },
+  {
+    "name": "escaped span marker payloads",
+    "canonical": "| \\^ | \\< | x |\n| a | b | ccc |\n",
+    "aligned": "| \\^ | \\< | x   |\n| a  | b  | ccc |\n"
+  },
+  {
+    "name": "escape in a header cell beside an inline marker",
+    "canonical": "|= a\\ b |= *b* |\n| cccc | d |\n",
+    "aligned": "|= a\\ b |= *b* |\n| cccc  | d    |\n"
+  },
+  {
+    "name": "escape on a continuation line",
+    "canonical": "| a | b |\n+ c\\ d | e |\n",
+    "aligned": "| a    | b |\n+ c\\ d | e |\n"
   }
 ]
