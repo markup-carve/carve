@@ -78,7 +78,8 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    including inside emphasis, headings, link labels and table cells, but code
    spans, code blocks, raw payloads, destinations and attribute values remain
    opaque. An escaped at sign prevents recognition. A candidate beginning
-   `@{#` and ending at its first unescaped `}` that fails this grammar is one
+   `@{#` and ending at its first unescaped `}` outside a quoted selector
+   that fails this grammar is one
    literal source run, including any inline marks within it; without a closing
    brace, ordinary inline parsing applies. The optional attribute run attaches to the
    reference; `{code}` is consumed as its inline-code presentation flag. *)

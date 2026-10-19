@@ -538,8 +538,10 @@
    `row`, `column` and `source`. `target` is the authored table id without `#`.
    `row` and `column` are each a positive integer or decoded quoted string;
    their types distinguish positional and named selectors. `source` is the
-   exact authored `@{...}` run, including the selector escapes, so an
+   exact `@{...}` run at this stage, including the selector escapes, so an
    unresolved reference can be shown without access to its original bytes.
+   It starts as the authored run; include collision resolution replaces only
+   a renamed table id in both `target` and `source`.
    Optional `value` holds the resolved plain-text scalar, including an empty
    string for an authored empty cell. Absent `value` means either not yet
    resolved or unresolved; a renderer MUST resolve the document before output

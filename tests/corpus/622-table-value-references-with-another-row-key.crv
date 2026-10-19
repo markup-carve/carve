@@ -1,0 +1,10 @@
+{table #sales row-key=Quarter}
+```csv
+Revenue,Quarter
+120,Q1
+150,Q2
+```
+
+Selected: @{#sales["Q2"]["Revenue"]}.
+Missing: @{#sales["Q3"]["Revenue"]}.
+Literal: \@{#sales["Q2"]["Revenue"]}.

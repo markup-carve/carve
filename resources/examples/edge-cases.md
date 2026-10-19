@@ -58718,3 +58718,41 @@ a
 ```
 
 :::::::
+
+## Table value references with another row key
+
+`row-key` chooses the column used for quoted row selectors. An unknown row
+leaves its reference visible. Escaping the at sign keeps the complete source
+run literal.
+
+::::: compare
+
+````carve
+{table #sales row-key=Quarter}
+```csv
+Revenue,Quarter
+120,Q1
+150,Q2
+```
+
+Selected: @{#sales["Q2"]["Revenue"]}.
+Missing: @{#sales["Q3"]["Revenue"]}.
+Literal: \@{#sales["Q2"]["Revenue"]}.
+````
+
+```html
+<table id="sales">
+  <thead>
+    <tr><th scope="col">Revenue</th><th scope="col">Quarter</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>120</td><td>Q1</td></tr>
+    <tr><td>150</td><td>Q2</td></tr>
+  </tbody>
+</table>
+<p>Selected: 150.
+Missing: @{#sales["Q3"]["Revenue"]}.
+Literal: @{#sales["Q2"]["Revenue"]}.</p>
+```
+
+:::::

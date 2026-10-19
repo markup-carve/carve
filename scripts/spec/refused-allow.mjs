@@ -15,4 +15,5 @@
 export const REFUSED_ALLOW = new Set([
   '621-table-cell-value-references',
   '621-table-cell-value-references-2',
+  '622-table-value-references-with-another-row-key',
 ])
