@@ -1,0 +1,24 @@
+{
+  "name": "i01b-region-bom-before-a-line-1-marker-carve",
+  "description": "A file's leading U+FEFF does not hide a `%%` region opener on line 1 of a Carve include.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ part.crv @region:b }}",
+  "files": {
+    "part.crv": "﻿%% #region b\nInside.\n%% #endregion b\n\nOutside.\n"
+  },
+  "expected": {
+    "html": "<p>Inside.</p>",
+    "fmt": "{{ part.crv @region:b }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "part.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "i01-repeated-option-lines",
+  "description": "Two line ranges are an error, not \"the last one wins\".",
+  "rules": [
+    "I1",
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @lines:1-1 @lines:3-3 @code }}",
+  "files": {
+    "a.js": "one()\ntwo()\nthree()\n"
+  },
+  "expected": {
+    "html": "<p>{{ a.js <span class=\"mention\"><strong>@lines</strong></span>:1-1 <span class=\"mention\"><strong>@lines</strong></span>:3-3 <span class=\"mention\"><strong>@code</strong></span> }}</p>",
+    "fmt": "{{ a.js @lines:1-1 @lines:3-3 @code }}\n",
+    "warnings": [
+      {
+        "rule": "include-duplicate-option"
+      }
+    ],
+    "dependencies": []
+  }
+}

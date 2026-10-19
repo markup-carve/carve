@@ -155,6 +155,8 @@ const INCLUDE_TRIGGERS = {
   'include-region-invalid': withIncludes('{{ a.crv @region:nope }}\n'),
   'include-selection-conflict': withIncludes('{{ a.crv #a @lines:1-2 }}\n'),
   'include-unknown-option': withIncludes('{{ a.crv @bogus:1 }}\n'),
+  'include-lines-out-of-range': withIncludes('{{ a.crv @lines:9-9 }}\n'),
+  'include-duplicate-option': withIncludes('{{ a.crv @shift:1 @shift:2 }}\n'),
   'include-block-in-inline': withIncludes('See {{ para.crv }} here.\n'),
   'include-cycle': withIncludes('{{ loop.crv }}\n'),
   'include-depth': withIncludes('{{ deep.crv }}\n', { maxDepth: 1 }),

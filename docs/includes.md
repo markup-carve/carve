@@ -87,7 +87,12 @@ nothing to do.
   An unquoted value ends at the next `@`, so `@shift:1@lines:1-8` is two
   options. A value that needs an `@` is quoted.
   - **`@lines:N-M`** includes the 1-based, inclusive physical-line range `N`
-    through `M` of the resolved source.
+    through `M` of the resolved source. A range that ends past the file's last
+    line stops at that line, so <code v-pre>{{ two.txt @lines:2-9 }}</code> on
+    a two-line file includes line 2. A range that **starts** past the last line
+    is an `include-lines-out-of-range` error, and the directive stays literal.
+    A final line ending does not begin another line, so an empty file has no
+    lines.
   - **`@region:name`** includes the physical lines between matching named
     source comment markers. The name uses Carve's `identifier` spelling.
   - **`@shift:N`** shifts the level of every included heading by the signed
@@ -98,6 +103,12 @@ nothing to do.
     option that takes no value.
   - Every other `@key` is **reserved**. A processor that does not recognize an
     option SHOULD treat the directive as unresolvable (Warning, literal).
+
+  Each option key appears at most once. A directive that repeats one, such as
+  <code v-pre>{{ a.js @code:js @code:py }}</code> or
+  <code v-pre>{{ a.js @lines:1-1 @lines:3-3 }}</code>, is an
+  `include-duplicate-option` error and stays literal: the last value does not
+  win. A bare `@code` and `@code:lang` are the same key.
 
 **The closer is the first `}}` outside any quoted run.** A quoted run - a
 quoted path, or the quoted form of an option value - MAY contain the `}}` pair:
@@ -151,7 +162,9 @@ parses: that combination is an `include-selection-conflict` error.
 marker is a whole line: optional leading spaces or tabs, a comment that holds
 `#region demo` or `#endregion demo`, and nothing after it. The keywords are
 case-sensitive, so `#Region demo` is not a marker. An end marker may omit the
-name. Marker lines themselves are not included.
+name. Marker lines themselves are not included. A byte order mark (U+FEFF) at
+the start of the file is not part of line 1, so a file saved with one still has
+a marker on its first line.
 
 Which comments count as markers depends on what the include produces, because a
 marker must never show up in the file that holds it.
@@ -1007,6 +1020,8 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 | A `#section` that selects nothing | `include-section` Warning + literal directive; a case-only mismatch names the exact id |
 | More than one of `#section`, `@lines` and `@region`, or `#section` with `@code` | `include-selection-conflict` Warning + literal directive |
 | Invalid or missing named region | `include-region-invalid` Warning + literal directive |
+| An `@lines` range that starts past the file's last line | `include-lines-out-of-range` Warning + literal directive |
+| The same option key given twice | `include-duplicate-option` Warning + literal directive |
 | Block-structured content in inline position (inline include) | `include-block-in-inline` Warning + literal directive |
 | Inclusion cycle | `include-cycle` Warning + literal directive |
 | Depth exceeds the include-depth limit | `include-depth` Warning + literal directive |

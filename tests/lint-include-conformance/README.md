@@ -35,8 +35,11 @@ gate does.
 - duplicates: a file included twice, a file reached through two parents, two
   region selections of one file, and a `@shift` that adds no range;
 - `@lines` and `#section` selections reporting only their own lines;
-- include errors at the directive: a cycle, a missing file, an invalid region
-  and a selection conflict;
+- include errors at the directive: a cycle, a missing file, an invalid region,
+  a selection conflict, a line range that starts past the end of the file and
+  an option given twice;
+- a region opener on line 1 of a file that starts with U+FEFF, in a Carve
+  include and in a `{table}` code include;
 - a mid-line directive reported at its own column, in the top-level document
   and in the include chain;
 - no resolver, no expansion.

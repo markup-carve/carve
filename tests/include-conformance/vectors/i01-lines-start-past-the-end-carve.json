@@ -1,0 +1,29 @@
+{
+  "name": "i01-lines-start-past-the-end-carve",
+  "description": "A line range starting past the last line is an error in a Carve include too.",
+  "rules": [
+    "I1",
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ two.txt @lines:3-4 }}",
+  "files": {
+    "two.txt": "one\ntwo\n"
+  },
+  "expected": {
+    "html": "<p>{{ two.txt <span class=\"mention\"><strong>@lines</strong></span>:3-4 }}</p>",
+    "fmt": "{{ two.txt @lines:3-4 }}\n",
+    "warnings": [
+      {
+        "rule": "include-lines-out-of-range"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "two.txt",
+        "resolved": true
+      }
+    ]
+  }
+}
