@@ -1002,18 +1002,18 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 <!-- normative-obligations: PART 6 I3 I6 I7 -->
 | Condition | Result |
 |---|---|
-| Unreadable / missing path | Warning + literal directive |
-| Binary / non-text content | Warning + literal directive |
-| A `#section` that selects nothing | Warning + literal directive; a case-only mismatch names the exact id |
+| Unreadable / missing path | `include-unresolved` Warning + literal directive |
+| Binary / non-text content | `include-non-text` Warning + literal directive |
+| A `#section` that selects nothing | `include-section` Warning + literal directive; a case-only mismatch names the exact id |
 | More than one of `#section`, `@lines` and `@region`, or `#section` with `@code` | `include-selection-conflict` Warning + literal directive |
 | Invalid or missing named region | `include-region-invalid` Warning + literal directive |
-| Block-structured content in inline position (inline include) | Warning + literal directive |
-| Inclusion cycle | Warning + literal directive |
-| Depth exceeds the include-depth limit | Warning + literal directive |
-| Expanded size exceeds the byte budget | Warning + literal directive |
-| Resolver calls exceed the call bound | Warning + literal directive, not resolved |
-| A directive after budget or call-bound exhaustion | Warning + literal directive, not resolved |
-| No resolver configured | Literal directive (no Warning required) |
+| Block-structured content in inline position (inline include) | `include-block-in-inline` Warning + literal directive |
+| Inclusion cycle | `include-cycle` Warning + literal directive |
+| Depth exceeds the include-depth limit | `include-depth` Warning + literal directive |
+| Expanded size exceeds the byte budget | `include-budget` Warning + literal directive |
+| Resolver calls exceed the call bound | `include-call-limit` Warning + literal directive, not resolved |
+| A directive after budget or call-bound exhaustion | `include-budget` or `include-call-limit` Warning, matching the bound that was spent, + literal directive, not resolved |
+| No resolver configured | Literal directive (no Warning required, so no rule id) |
 
 A `@shift:N` whose result would leave the valid heading range is the one
 degrade that does **not** go literal: the heading is **kept** with its level

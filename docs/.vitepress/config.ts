@@ -262,6 +262,7 @@ export default defineConfig({
                 { text: 'References & Output', link: '/rules/resolution-rendering' },
                 { text: 'Parsed Document JSON', link: '/rules/ast-interchange' },
                 { text: 'Standard Formatting', link: '/rules/canonical-writing' },
+                { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
                 { text: 'Import, Security & Extensions', link: '/rules/imports-security-extensions' },
               ],
             },

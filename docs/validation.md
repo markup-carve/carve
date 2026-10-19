@@ -142,6 +142,9 @@ included file carries `file` (the resolver's id for it) and `includedBy`, the
 directives that reached it, top-level directive first:
 
 ```ts
+import { lintCarve } from '@markup-carve/carve'
+import { fileSystemResolver } from '@markup-carve/carve/node'
+
 lintCarve(source, { includes: { resolve: fileSystemResolver(root), sourcePath } })
 ```
 
@@ -172,6 +175,17 @@ the command-line and editor behavior stay aligned.
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column. Reported once per block, on its first line; continuing table rows and quote lines do not open another block. An aligned opener stays unreported when a continuation is overindented, including when the block opens on the item's marker line. The finding also covers the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
 | `empty-include-path` | a <code v-pre>{{ ... }}</code> run shaped like an include directive but containing no path, including empty braces and spaced directive forms containing only a `#section` or `@option`; it remains literal text, so add a path or remove the braces |
 | `region-marker-renders-as-text` | a line whose content is a `#region` or `#endregion` marker in a source-comment form (`#region name`, `// #region name`, `-- #region name`, `/* #region name */`, `<!-- #region name -->`), or a `%%` marker whose keyword is not lowercase (`%% #Region name`). In a Carve file the first kind renders as visible text and none of them is a region marker for a Carve include (CARVE-P6-001 I1b), so write `%% #region name` |
+| `include-unresolved` | a Warning for an include whose path the resolver cannot read: missing, unreadable or outside the containment root; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
+| `include-non-text` | a Warning for an include target that is binary or otherwise not text; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
+| `include-section` | a Warning for a `#section` that selects nothing in the included file; a case-only mismatch names the exact id; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
+| `include-region-invalid` | a Warning for an `@region:name` the included file does not define, or region markers that are malformed, duplicated, unmatched or unclosed; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
+| `include-selection-conflict` | a Warning for a directive that combines more than one of `#section`, `@lines` and `@region`, names two sections, or pairs `#section` with `@code`; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
+| `include-unknown-option` | a Warning for an unrecognized or malformed `@option`, such as `@bogus:1` or a `@code` language that is not a language token; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
+| `include-block-in-inline` | a Warning for an inline include whose content resolves to more than one paragraph or to block structure; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
+| `include-cycle` | a Warning for an include that would reach a file already on its own include chain; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
+| `include-depth` | a Warning for an include nested deeper than the include-depth limit; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
+| `include-budget` | a Warning for an include whose expansion would exceed the render byte budget, and for every directive after the budget is spent, which is not resolved; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
+| `include-call-limit` | a Warning for an include past the resolver-call bound, and for every directive after it, which is not resolved; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
 | `empty-reference-definition` | warning for a bare `[label]:` definition with an empty URL; the definition remains valid and can interrupt a paragraph, so confirm that no destination was removed by mistake |
 | `carve-version-unsupported` | a document declaring a Carve spec version the processor does not implement, so constructs added after that version render as something else without any error |
 | `unclosed-container-fence` | a `:::` opener with no matching closer; the container runs to end of input, which is legal (PART 9 §12) and rarely what was meant |
@@ -183,8 +197,8 @@ the command-line and editor behavior stay aligned.
 | `table-alignment-run-padding` | An alignment run at the start of a table cell lacks its terminating space, for example `|>text |`. Currently emitted by all three measured engines. `table-marker-run-padding` specifies the broader replacement; keep accepting this id until the engines implement that replacement |
 | `table-column-arity` | an `aligns`, `valigns`, or `widths` list shorter than the widest row; the unset tail is valid but often accidental. More entries than columns is a parse error rather than a lint |
 | `table-column-overlap` | a field supplied both by an in-table column marker and by a table attribute list; the in-table spelling wins |
-| `delimited-table-malformed` | malformed quoting in a marked `csv` or `tsv` fence; the fence remains code |
-| `delimited-table-wide-row` | a marked `csv` or `tsv` record wider than the first record; the extra fields are kept |
+| `delimited-table-malformed` | malformed quoting in a marked `csv` or `tsv` fence, or in a `{table}`-marked `csv` or `tsv` `@code` include when lint is given an include root (CARVE-P6-001 I16); the fence or include remains code |
+| `delimited-table-wide-row` | a marked `csv` or `tsv` record, in a fence or in a `{table}`-marked `@code` include linted under an include root (CARVE-P6-001 I16), wider than the first record; the extra fields are kept |
 | `consumed-key-near-miss` | a bare key one edit away from the consumed structural key its block reads, such as `{tabel}` on a `csv` fence or `{lose}` on a list. The key stays an ordinary attribute and the structure does not happen; see [consumed key near misses](#consumed-key-near-misses) |
 | `table-width-total` | table column widths whose specified percentages total more than 100; individual widths remain usable, but the allocation overcommits the table |
 | `table-span-marker-blocked` | a `^` or `<` span marker that the PART 9 §5 T5 span walk cannot resolve: a `^` in the first row or with no cell above it, a `<` in the first column, or a span that would cover another cell. T5 renders the marker as a cell of its own, so the span the author wrote silently does not happen. The message names the reason. Escaped `\^` and `\<` are text and are not reported. Nothing is rewritten. Emitted by carve-js; carve-php and carve-rs port it next (markup-carve/carve#3183) |

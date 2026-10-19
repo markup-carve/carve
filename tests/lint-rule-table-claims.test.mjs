@@ -129,6 +129,39 @@ const NOT_IN_THE_PIN_YET = new Map([
   ],
 ])
 
+/*
+ * The include-* rows (CARVE-P6-001 I16). They need lint to expand includes,
+ * which carve-js gained in f42a347c, past this pin. Until the pin lints
+ * includes they wait like NOT_IN_THE_PIN_YET; once it does, every trigger must
+ * provoke its rule with no edit here.
+ */
+const INCLUDE_FILES = {
+  'a.crv': '# A\n\nText.\n',
+  'para.crv': 'Para one.\n\nPara two.\n',
+  'loop.crv': '{{ loop.crv }}\n',
+  'deep.crv': '{{ deep2.crv }}\n',
+  'deep2.crv': 'x\n',
+  'bin.dat': new Uint8Array([0, 159, 146, 150, 0, 255]),
+  'big.crv': `${'y'.repeat(50)}\n`,
+}
+function withIncludes(source, limits = {}) {
+  const resolve = (path) => (path in INCLUDE_FILES ? { source: INCLUDE_FILES[path], id: path } : null)
+  return { source, options: { includes: { resolve, sourcePath: 'doc.crv', ...limits } } }
+}
+const INCLUDE_TRIGGERS = {
+  'include-unresolved': withIncludes('{{ missing.crv }}\n'),
+  'include-non-text': withIncludes('{{ bin.dat }}\n'),
+  'include-section': withIncludes('{{ a.crv #nope }}\n'),
+  'include-region-invalid': withIncludes('{{ a.crv @region:nope }}\n'),
+  'include-selection-conflict': withIncludes('{{ a.crv #a @lines:1-2 }}\n'),
+  'include-unknown-option': withIncludes('{{ a.crv @bogus:1 }}\n'),
+  'include-block-in-inline': withIncludes('See {{ para.crv }} here.\n'),
+  'include-cycle': withIncludes('{{ loop.crv }}\n'),
+  'include-depth': withIncludes('{{ deep.crv }}\n', { maxDepth: 1 }),
+  'include-budget': withIncludes('{{ big.crv }}\n', { maxBytes: 10 }),
+  'include-call-limit': withIncludes('{{ a.crv }}\n\n{{ a.crv }}\n', { maxResolverCalls: 1 }),
+}
+
 /** The rules this map calls with options, i.e. the ones that are not default-on. */
 const OPT_IN = Object.entries(TRIGGERS)
   .filter(([, entry]) => typeof entry !== 'string')
@@ -299,7 +332,7 @@ test('every rule id in the pinned build is on the page', () => {
 
 test('every rule the page lists can actually be emitted', () => {
   const unproducible = documentedRules().filter(
-    (rule) => !(rule in TRIGGERS) && !NOT_IN_THE_PIN_YET.has(rule),
+    (rule) => !(rule in TRIGGERS) && !(rule in INCLUDE_TRIGGERS) && !NOT_IN_THE_PIN_YET.has(rule),
   )
   assert.deepEqual(
     unproducible,
@@ -330,4 +363,32 @@ test('a rule declared as unimplemented is on the page and is still unimplemented
     `the pinned build now carries ${arrived.join(', ')}. Delete the NOT_IN_THE_PIN_YET line ` +
       'and add a TRIGGERS entry, in the commit that moves the pin.',
   )
+})
+
+const PIN_LINTS_INCLUDES = rulesFor(INCLUDE_TRIGGERS['include-unresolved']).includes('include-unresolved')
+
+test('every include rule trigger names a rule on the page', () => {
+  const missing = Object.keys(INCLUDE_TRIGGERS).filter((rule) => !documentedRules().includes(rule))
+  assert.deepEqual(missing, [], `INCLUDE_TRIGGERS names rule id(s) docs/validation.md does not list: ${missing.join(', ')}.`)
+})
+
+test(
+  'every include trigger provokes its rule',
+  { skip: PIN_LINTS_INCLUDES ? false : 'the pinned carve-js lintCarve does not expand includes yet' },
+  () => {
+    const broken = []
+    for (const [rule, entry] of Object.entries(INCLUDE_TRIGGERS)) {
+      const ids = rulesFor(entry)
+      if (!ids.includes(rule)) broken.push(`${rule} (got ${ids.join(', ') || 'nothing'})`)
+    }
+    assert.deepEqual(broken, [], `include trigger(s) that do not provoke their rule: ${broken.join('; ')}`)
+  },
+)
+
+test('an include rule reports nothing without an include root or resolver', () => {
+  // I16: without a root or a resolver the linter reads no include target.
+  const leaked = Object.entries(INCLUDE_TRIGGERS)
+    .filter(([rule, { source }]) => rulesFor({ source, options: undefined }).includes(rule))
+    .map(([rule]) => rule)
+  assert.deepEqual(leaked, [], `include rule(s) reported with no resolver: ${leaked.join(', ')}`)
 })
