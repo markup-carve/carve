@@ -378,6 +378,121 @@
       }
     },
     {
+      "name": "code-table-crlf-quoted-record",
+      "description": "A CRLF payload whose records end in a quoted field is well formed: lint reads the payload split on newline as PART 0 defines it, as the renderer does.",
+      "resolver": "virtual",
+      "entry": "{table}\n{{ p.csv @code:csv }}\n",
+      "files": {
+        "p.csv": "a\r\n\"x\"\r\n"
+      },
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "code-table-cr-quoted-record",
+      "description": "A CR-only payload whose records end in a quoted field is well formed too.",
+      "resolver": "virtual",
+      "entry": "{table}\n{{ p.csv @code:csv }}\n",
+      "files": {
+        "p.csv": "a\r\"x\"\r"
+      },
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "code-table-cr-wide-record",
+      "description": "A wide record in a CR-only payload is a wide row at its own line, with CR counted as one line break.",
+      "resolver": "virtual",
+      "entry": "{table}\n{{ data/wide.csv @code:csv }}\n",
+      "files": {
+        "data/wide.csv": "a,b\rc,d\re,f,g\r"
+      },
+      "expected": {
+        "findings": [
+          {
+            "rule": "delimited-table-wide-row",
+            "file": "data/wide.csv",
+            "line": 3,
+            "column": 1,
+            "includedBy": [
+              {
+                "file": "doc.crv",
+                "line": 2,
+                "column": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "code-include-cycle",
+      "description": "A code include of a file already on the include chain is a cycle (I1c keeps cycles for @code), reported at the directive.",
+      "resolver": "virtual",
+      "entry": "Intro.\n\n{{ doc.crv @code }}\n",
+      "files": {
+        "doc.crv": "Intro.\n\n{{ doc.crv @code }}\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "rule": "include-cycle",
+            "file": "doc.crv",
+            "line": 3,
+            "column": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "code-include-cycle-through-a-child",
+      "description": "A code include that closes a cycle in an included file is reported there, reached from the top-level directive.",
+      "resolver": "virtual",
+      "entry": "{{ a.crv }}\n",
+      "files": {
+        "doc.crv": "{{ a.crv }}\n",
+        "a.crv": "{{ doc.crv @code }}\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "rule": "include-cycle",
+            "file": "a.crv",
+            "line": 1,
+            "column": 1,
+            "includedBy": [
+              {
+                "file": "doc.crv",
+                "line": 1,
+                "column": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "top-level-self-cycle-has-no-chain",
+      "description": "A cycle closed in the top-level file carries no include chain, since nothing included that file.",
+      "resolver": "virtual",
+      "entry": "{{ doc.crv }}\n",
+      "files": {
+        "doc.crv": "{{ doc.crv }}\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "rule": "include-cycle",
+            "file": "doc.crv",
+            "line": 1,
+            "column": 1
+          }
+        ]
+      }
+    },
+    {
       "name": "missing-file",
       "description": "A missing target is reported at its directive in the top-level document, with no chain.",
       "resolver": "virtual",
