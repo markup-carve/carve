@@ -57,11 +57,18 @@ test('every node-holding field the schema declares has a role', () => {
     if (!owner || !def.properties) continue
     for (const [field, value] of Object.entries(def.properties)) {
       if (field === 'type' || field === 'attrs' || field === 'pos') continue
+      const refHoldsNode = (ref) => {
+        const target = schema.$defs[ref.replace('#/$defs/', '')]
+        return typeof target?.properties?.type?.const === 'string' || Array.isArray(target?.properties?.type?.enum)
+      }
+      const unionHoldsNode = (members) => Array.isArray(members) && members.some((member) =>
+        (typeof member.$ref === 'string' && refHoldsNode(member.$ref)) ||
+        typeof member.properties?.type?.const === 'string')
       const holdsNode =
-        typeof value.$ref === 'string' ||
-        Array.isArray(value.oneOf) ||
+        (typeof value.$ref === 'string' && refHoldsNode(value.$ref)) ||
+        unionHoldsNode(value.oneOf) ||
         (value.type === 'array' &&
-          (typeof value.items?.$ref === 'string' ||
+          ((typeof value.items?.$ref === 'string' && refHoldsNode(value.items.$ref)) ||
             Array.isArray(value.items?.anyOf) ||
             Array.isArray(value.items?.oneOf) ||
             // No field is an array of node arrays since §36 made a line a

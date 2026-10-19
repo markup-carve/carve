@@ -81,6 +81,8 @@ out: examples/core.md
   a-span-across-bodies-keeps-their-header-semantics
   a-head-and-foot-consuming-all-rows-leave-no-implicit-body
   explicit-body-counts-include-native-header-cells
+  table-cell-value-references
+  table-value-references-with-another-row-key
   11-fenced-code
   11-fenced-code-3
   11-fenced-code-4
