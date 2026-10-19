@@ -279,6 +279,18 @@ index: examples/edge-cases/index.md
   624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-3
   624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-4
   624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-5
+  624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-6
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-2
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-3
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-4
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-5
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-6
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-7
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-8
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-9
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-10
+  625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-11
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3
