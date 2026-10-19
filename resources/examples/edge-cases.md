@@ -55940,7 +55940,7 @@ Text after a closing quote also leaves the fence as code.
 
 ## Captions in list items do not create a paragraph gap
 
-The caption slot permits zero or one blank line after its host. That blank does not loosen the enclosing list. Two blanks detach the caption; the resulting paragraph does loosen the list. These cases cover each captionable host.
+The caption slot permits zero or one blank line after its host. That blank does not loosen the enclosing list. Two blanks detach the caption; the resulting paragraph does loosen the list. These cases cover each captionable host. They also cover hosts after nested lists and hosts opened after a blank.
 
 No blank before a table caption
 
@@ -56364,6 +56364,450 @@ A caret inside an open list-item fence stays code
 </code></pre>
   </li>
   <li>c</li>
+</ul>
+```
+
+:::
+
+One blank before a quote caption after a nested list
+
+::: compare
+
+```carve
+- - text
+  > q
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+One blank before a code listing caption after a nested list
+
+::: compare
+
+````carve
+- - text
+  ```
+  x
+  ```
+
+  ^ cap
+- c
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+Item prose and a nested list before a quote caption
+
+::: compare
+
+```carve
+- x
+  - text
+  > q
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>x
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+One blank before a table caption after a nested list
+
+::: compare
+
+```carve
+- - text
+  | a |
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <table>
+      <caption>cap</caption>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+An ordered item holds a nested list before a quote caption
+
+::: compare
+
+```carve
+1. - text
+   > q
+
+   ^ cap
+2. c
+```
+
+```html
+<ol>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ol>
+```
+
+:::
+
+A quoted list holds a nested list before a quote caption
+
+::: compare
+
+```carve
+> - - text
+>   > q
+>
+>   ^ cap
+> - c
+```
+
+```html
+<blockquote>
+  <ul>
+    <li>
+      <ul>
+        <li>text</li>
+      </ul>
+      <figure>
+        <blockquote><p>q</p></blockquote>
+        <figcaption>cap</figcaption>
+      </figure>
+    </li>
+    <li>c</li>
+  </ul>
+</blockquote>
+```
+
+:::
+
+A blank opens a quote before its caption
+
+::: compare
+
+```carve
+- text
+
+  > q
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>text
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+A blank opens a code listing before its caption
+
+::: compare
+
+````carve
+- text
+
+  ```
+  x
+  ```
+
+  ^ cap
+- c
+````
+
+```html
+<ul>
+  <li>text
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+A blank opens a table before its caption
+
+::: compare
+
+```carve
+- text
+
+  | a |
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>text
+    <table>
+      <caption>cap</caption>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+A blank opens the final quote before its caption
+
+::: compare
+
+```carve
+- text
+
+  > q
+
+  ^ cap
+```
+
+```html
+<ul>
+  <li>text
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+</ul>
+```
+
+:::
+
+A blank between sibling items still loosens the list
+
+::: compare
+
+```carve
+- - text
+  > q
+
+  ^ cap
+
+- c
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+:::
+
+A second paragraph after the caption still loosens the list
+
+::: compare
+
+```carve
+- - text
+  > q
+
+  ^ cap
+
+  Body.
+- c
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+    <p>Body.</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+:::
+
+A caption line with no host above it is a paragraph and loosens the list
+
+::: compare
+
+```carve
+- text
+
+  | a |
+  |b
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li><p>text</p>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+    <p>|b</p>
+    <p>^ cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+:::
+
+A folded equation block leaves the caption line without a host and loosens the list
+
+::: compare
+
+```carve
+- - text
+  $$
+  x
+  $$
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>text
+$$
+x
+$$</li>
+    </ul>
+    <p>^ cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+:::
+
+A folded image leaves the caption line without a host and loosens the list
+
+::: compare
+
+```carve
+- - text
+  ![i](x.png)
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>text
+<img src="x.png" alt="i"></li>
+    </ul>
+    <p>^ cap</p>
+  </li>
+  <li><p>c</p></li>
 </ul>
 ```
 

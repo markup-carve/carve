@@ -298,3 +298,327 @@ more</figcaption>
   <li>c</li>
 </ul>
 ````
+
+```
+- - text
+  > q
+
+  ^ cap
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+````
+- - text
+  ```
+  x
+  ```
+
+  ^ cap
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+````
+
+```
+- x
+  - text
+  > q
+
+  ^ cap
+- c
+.
+<ul>
+  <li>x
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- - text
+  | a |
+
+  ^ cap
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <table>
+      <caption>cap</caption>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+1. - text
+   > q
+
+   ^ cap
+2. c
+.
+<ol>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ol>
+```
+
+```
+> - - text
+>   > q
+>
+>   ^ cap
+> - c
+.
+<blockquote>
+  <ul>
+    <li>
+      <ul>
+        <li>text</li>
+      </ul>
+      <figure>
+        <blockquote><p>q</p></blockquote>
+        <figcaption>cap</figcaption>
+      </figure>
+    </li>
+    <li>c</li>
+  </ul>
+</blockquote>
+```
+
+```
+- text
+
+  > q
+
+  ^ cap
+- c
+.
+<ul>
+  <li>text
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+````
+- text
+
+  ```
+  x
+  ```
+
+  ^ cap
+- c
+.
+<ul>
+  <li>text
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+````
+
+```
+- text
+
+  | a |
+
+  ^ cap
+- c
+.
+<ul>
+  <li>text
+    <table>
+      <caption>cap</caption>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- text
+
+  > q
+
+  ^ cap
+.
+<ul>
+  <li>text
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+</ul>
+```
+
+```
+- - text
+  > q
+
+  ^ cap
+
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+```
+- - text
+  > q
+
+  ^ cap
+
+  Body.
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+    <p>Body.</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+```
+- text
+
+  | a |
+  |b
+
+  ^ cap
+- c
+.
+<ul>
+  <li><p>text</p>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+    <p>|b</p>
+    <p>^ cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+```
+- - text
+  $$
+  x
+  $$
+
+  ^ cap
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text
+$$
+x
+$$</li>
+    </ul>
+    <p>^ cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+```
+- - text
+  ![i](x.png)
+
+  ^ cap
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text
+<img src="x.png" alt="i"></li>
+    </ul>
+    <p>^ cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
