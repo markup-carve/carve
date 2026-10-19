@@ -961,3 +961,9 @@ index: examples/edge-cases/index.md
   include-directive-with-no-resolver-renders-literal
   45-inline-extensions-9
   36-autolinks-2
+
+[edge-generated-containers] Generated container documents
+> Generated cases for container ownership, blank payload and definitions.
+out: examples/edge-cases/generated-container-documents.md
+index: examples/edge-cases/index.md
+  generated-container-documents

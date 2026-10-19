@@ -400,6 +400,29 @@ const INVENTORY = [
   { base: '41-line-blocks-11', crv: ['trailing-WS', 'trailing-TAB'], html: [] },
   { base: '41-line-blocks-12', crv: ['trailing-WS', 'trailing-TAB'], html: [] },
   { base: '600-a-delimiter-that-is-part-of-a-larger-character-is-text-5', crv: ['ZWJ'], html: ['ZWJ'] }, // silent-decay shape: raw in both sides
+  { base: '620-generated-container-documents', crv: [], html: [] },
+  { base: '620-generated-container-documents-2', crv: ['trailing-WS'], html: [] },
+  { base: '620-generated-container-documents-3', crv: [], html: [] },
+  { base: '620-generated-container-documents-4', crv: [], html: [] },
+  { base: '620-generated-container-documents-5', crv: [], html: [] },
+  { base: '620-generated-container-documents-6', crv: [], html: [] },
+  { base: '620-generated-container-documents-7', crv: [], html: [] },
+  { base: '620-generated-container-documents-8', crv: [], html: [] },
+  { base: '620-generated-container-documents-9', crv: [], html: [] },
+  { base: '620-generated-container-documents-10', crv: [], html: [] },
+  { base: '620-generated-container-documents-11', crv: [], html: [] },
+  { base: '620-generated-container-documents-12', crv: [], html: [] },
+  { base: '620-generated-container-documents-13', crv: [], html: [] },
+  { base: '620-generated-container-documents-14', crv: [], html: [] },
+  { base: '620-generated-container-documents-15', crv: [], html: [] },
+  { base: '620-generated-container-documents-16', crv: [], html: [] },
+  { base: '620-generated-container-documents-17', crv: [], html: [] },
+  { base: '620-generated-container-documents-18', crv: [], html: [] },
+  { base: '620-generated-container-documents-19', crv: ['trailing-WS'], html: [] },
+  { base: '620-generated-container-documents-20', crv: [], html: [] },
+  { base: '620-generated-container-documents-21', crv: [], html: [] },
+  { base: '620-generated-container-documents-22', crv: [], html: [] },
+  { base: '620-generated-container-documents-23', crv: [], html: [] },
 ]
 
 function scan(text) {
@@ -464,7 +487,7 @@ test('the inventory of fixtures carrying invisible characters is complete', () =
     const base = file.slice(0, -4)
     if (scan(readFileSync(resolve(corpusDir, file), 'utf8')).size > 0) actual.push(base)
   }
-  const expected = INVENTORY.map((e) => e.base).sort()
+  const expected = INVENTORY.filter((e) => e.crv.length || e.html.length).map((e) => e.base).sort()
   assert.deepEqual(
     actual.sort(),
     expected,

@@ -3258,6 +3258,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // same body: neither reaches the reader, so nothing distinguishes them
         // downstream and the renderer needs no answer carried from the source.
         state.footnoteDefs.set(key, parseBlocks(inheritFinalBreak(lines, normalizedBody, i, state), state, false))
+      } else {
+        // A losing note is invisible, so definitions in its body must still register.
+        const losingBody = bodyLines.map(stripIndent)
+        parseBlocks(inheritFinalBreak(lines, losingBody, i, state), state, false)
       }
       continue
     }
@@ -3428,7 +3432,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // past the column folds whatever it would open (carve#2411).
             // A lone `+` is no marker here: a term holds no blocks for it to
             // attach, so it is a plain line and folds (CARVE-P2-028, carve#3145).
-            if (isEntry(cur) || cur.startsWith(LAZY) && /^: /.test(unlazy(cur)) ||
+            if (isEntry(cur) || cur.startsWith(LAZY) && /^: (?=[ \t]*[^ \t])/.test(unlazy(cur)) ||
                 isBlank(cur)) break
             // A comment at the container's column ends the term. Past it the
             // comment stays a comment, fence body included, and the term goes
@@ -3450,7 +3454,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               dt += '\n' + TERM_COMMENT
               continue
             }
-            if (!foldablePlain(cur)) break
+            if (!foldablePlain(cur) && !/^: +[ \t]*$/.test(cur)) break
             if (isTableRow(cur) || colonFenceInterrupts(cur, [dt]) || (cur[0] === '{' && tryAttrLine(lines, i))) break
             // A line folded into an item BELOW its content column arrives here
             // LAZY-prefixed (the item-fold pass at C3). Strip that framing marker
@@ -3471,7 +3475,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           node.items.push({ dt })
           continue
         }
-        if ((dm = /^:( +)(.*)$/.exec(cur0))) {
+        if ((dm = /^:( +)(?=[ \t]*[^ \t])(.*)$/.exec(cur0))) {
           const bodyColumn = 1 + dm[1].length
           // definition (dd): collect its full body, then parse it to blocks. A
           // definition body continues like a list item (SS17): lazy
@@ -4570,7 +4574,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           else break
         }
         // PART 0 T leaves a term open for plain lazy text.
-        qTermOpen = qOpenPara && !/^:( +)/.test(leaf.trimStart()) &&
+        qTermOpen = !/^:( +)/.test(leaf.trimStart()) &&
           (DEFLIST_TERM.test(leaf) || qTermOpen)
       }
       while (i < n) {
@@ -4660,10 +4664,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // The line is not framed here: the item collector pushes a comment
         // UNFRAMED for exactly this reason, so a comment reaching a nested quote
         // still arrives as itself.
-        if (lines[i] !== undefined && qOpenPara && !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
-            !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(stripLazy(lines[i])) ||
-              (FENCE.test(lines[i]) && !hasCloser(lines, i))) &&
-            !peekInterrupts(i) && !COLON_CLOSER.test(lines[i]) && !CAPTION.test(lines[i])) {
+        const foldedColon = ind(i).col > 0 && COLON_CLOSER.test(ind(i).rest) &&
+          (inner.at(-1) ?? '').startsWith(' ') && (inner.at(-1) ?? '').trimStart().startsWith(':::')
+        const unmarked = stripLazy(lines[i] ?? '')
+        if (lines[i] !== undefined && (qOpenPara || qTermOpen || foldedColon) &&
+            !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
+            !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(unmarked) ||
+              (FENCE.test(unmarked) && !hasCloser(lines, i))) &&
+            (!peekInterrupts(i) || foldedColon) &&
+            (!COLON_CLOSER.test(lines[i]) || foldedColon) && !CAPTION.test(lines[i])) {
           // lazy continuation folds into the open quoted paragraph (SS10 I6)
           //
           // A FLUSH-LEFT COLON FENCE NEVER FOLDS (carve#920 shape B).
@@ -4690,7 +4699,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // A line that reached HERE already framed came from an outer
           // collector's own fold; framing it twice leaks the sentinel into the
           // rendered text, which the paragraph collector strips only once.
-          inner.push(lines[i].startsWith(LAZY) ? lines[i] : LAZY + ind(i).rest)
+          inner.push(lines[i].startsWith(LAZY) ? lines[i] : LAZY + (/^: /.test(ind(i).rest) ? ' ' : '') + ind(i).rest)
           i++
           continue
         }
@@ -6258,7 +6267,8 @@ function collectItems(lines, i, list, state, ind, meas) {
         let j = i + 1
         while (j < n && ind(j).rest === '') j++
         const descendantFence = bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k], hasFutureCommentCloser)
-        if (descendantFence) {
+        if (descendantFence || nestedOpaque?.kind === 'code' && !CONT_MARKER.test(lines[i - 1] ?? '') &&
+            (j >= n || ind(j).col < contentCol)) {
           // A descendant's unfinished fence owns the run even when the next
           // line returns to this item or leaves it altogether.
           for (let k = i; k < j; k++) {
@@ -7235,7 +7245,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // Document column zero remains owned by the document.
       // Q1 (or a frame surviving a comment, which Q3 answers), Q3, then Q2 at
       // the frame's own column 0 - the anchor the raw line carries.
-      if (!nm && (deepestParagraphOpen() || (afterComment && (!atFrameColumn(lm.col) || markedQuoteCommentClaim))) &&
+      if (!nm && (deepestParagraphOpen() || (DEFLIST_TERM.test(head.text.replace(/^> ?/, '')) && isCodeBlockOpener(lm.rest) && !hasCloser(lines, i)) || (afterComment && (!atFrameColumn(lm.col) || markedQuoteCommentClaim))) &&
           itemLines.length > 0 && !opensBlockAt(line, i)) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/

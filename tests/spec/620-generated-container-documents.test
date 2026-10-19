@@ -1,0 +1,359 @@
+Generated container documents
+
+```
+- :: t
+:  head
+
+     a
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <p>head</p>
+        <p>a</p>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+:: t
+:: 
+.
+<dl>
+  <dt>t
+::</dt>
+</dl>
+```
+
+```
+- > :: t
+> : d
+>   [^f]: n
+tail
+.
+<ul>
+  <li>
+    <blockquote>
+      <dl>
+        <dt>t</dt>
+      </dl>
+    </blockquote>
+  </li>
+</ul>
+<blockquote><p>: d
+[^f]: n
+tail</p></blockquote>
+```
+
+```
+> :: c
+  # H
+.
+<blockquote>
+  <dl>
+    <dt>c
+# H</dt>
+  </dl>
+</blockquote>
+```
+
+```
+- x
+    %%%
+ y
+   %%%
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>y</p>
+```
+
+````
+- para
+%% c
+```
+- a
+  [^f]: t
+.
+<ul>
+  <li>para
+    <pre><code></code></pre>
+  </li>
+  <li>a</li>
+</ul>
+````
+
+```
+> . >
+X
+.
+<blockquote>
+  <ol>
+    <li>
+      <blockquote>
+
+      </blockquote>
+    </li>
+  </ol>
+</blockquote>
+<p>X</p>
+```
+
+```
+- %%%
+%%%
+:  x
+   %%%
+.
+<ul>
+  <li></li>
+</ul>
+<p>:  x</p>
+```
+
+```
+> - +
+> p
+.
+<blockquote>
+  <ul>
+    <li>p</li>
+  </ul>
+</blockquote>
+```
+
+```
+>  ::: |
+ :::
+.
+<blockquote><p>::: |
+:::</p></blockquote>
+```
+
+```
+- - item
+ %%%
+  %%%
+tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>item
+        tail
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+> 1. :: t
+   : para
+.
+<blockquote>
+  <ol>
+    <li>
+      <dl>
+        <dt>t
+: para</dt>
+      </dl>
+    </li>
+  </ol>
+</blockquote>
+```
+
+````
+```
+```
+- > :: t
+```
+.
+<pre><code></code></pre>
+<ul>
+  <li>
+    <blockquote>
+      <dl>
+        <dt>t
+<code></code></dt>
+      </dl>
+    </blockquote>
+  </li>
+</ul>
+````
+
+```
+- - a
+
+  %% just a note
+- b
+.
+<ul>
+  <li>
+    <ul>
+      <li>a</li>
+    </ul>
+  </li>
+  <li><p>b</p></li>
+</ul>
+```
+
+```
+> - :: term
+  : definition
+.
+<blockquote>
+  <ul>
+    <li>
+      <dl>
+        <dt>term
+: definition</dt>
+      </dl>
+    </li>
+  </ul>
+</blockquote>
+```
+
+```
+- - body
+
+  [^g]: n
+   prose
+.
+<ul>
+  <li>
+    <ul>
+      <li>body</li>
+    </ul>
+    <p>prose</p>
+  </li>
+</ul>
+```
+
+```
+- > > - para
+> >   [^f]: n
+.
+<ul>
+  <li>
+    <blockquote>
+      <blockquote>
+        <ul>
+          <li>para</li>
+        </ul>
+      </blockquote>
+    </blockquote>
+  </li>
+</ul>
+<blockquote>
+  <blockquote><p>[^f]: n</p></blockquote>
+</blockquote>
+```
+
+````
+1. :: t
+   : para
+%% c
+```
+```
+.
+<ol>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>para</dd>
+    </dl>
+  </li>
+</ol>
+<pre><code></code></pre>
+````
+
+```
+- :: t
+:  
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t
+:</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+- - ::: |
+  :::
+  para
+tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="line-block">
+
+        </div>
+      </li>
+    </ul>
+    <div>
+      <p>para
+tail</p>
+    </div>
+  </li>
+</ul>
+```
+
+````
+- - ```
+    x
+
+[^1]: a
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>x
+
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+```
+> - > ~~~
+  > y
+.
+<blockquote>
+  <ul>
+    <li>
+      <blockquote>
+        <pre><code></code></pre>
+      </blockquote>
+    </li>
+  </ul>
+</blockquote>
+<p>&gt; y</p>
+```
+
+```
+- a
+  [^f]: t
+[^f]: a
+     [r]: /url
+[r][]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p><a href="/url">r</a></p>
+```
