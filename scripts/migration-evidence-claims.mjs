@@ -60,7 +60,7 @@ const classes = new Map([
 // until that engine is removed here, in the commit that moves its pin.
 const AHEAD_OF_PIN = {
   'bbcode-quote-field-dropped': {
-    engines: ['js', 'rust', 'php'],
+    engines: ['js', 'php'],
     pinned: { diagnostics: [{ code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }] },
   },
 }
@@ -82,7 +82,7 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
     assert.equal(report.sourceFormat, fixture.sourceFormat, context)
     assert.equal(result.stdout, expected.output, context)
     const diagnostics = report.diagnostics.map(({ code, severity, fidelity, confidence, path }) => ({ code, severity, fidelity, confidence, ...(path ? { path } : {}) }))
-    assert.deepEqual(diagnostics, expected.diagnostics, `${context}${AHEAD_OF_PIN[fixture.id] ? ' (AHEAD_OF_PIN: if this engine now writes the ruled report, remove it from the entry)' : ''}`)
+    assert.deepEqual(diagnostics, expected.diagnostics, `${context}${AHEAD_OF_PIN[fixture.id]?.engines.includes(engine) ? ' (AHEAD_OF_PIN: if this engine now writes the ruled report, remove it from the entry)' : ''}`)
     for (const row of report.diagnostics) {
       assert.ok(row.message.length > 0, context)
       if (row.code === 'structure-unspellable' && fixture.id.includes('ordered-task')) assert.equal(row.message, 'An ordered task item is not spellable as a Carve task item; the checkbox marker was kept as text', context)
