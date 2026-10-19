@@ -168,7 +168,7 @@ marker must never show up in the file that holds it.
   %% #endregion requirements
   ```
 
-  `{{ readme.crv @region:requirements }}` then includes the two list items, and
+  <code v-pre>{{ readme.crv @region:requirements }}</code> then includes the two list items, and
   `readme.crv` itself renders as if the markers were not there. The selected
   lines are read as Carve, like any included file; to include source code,
   use `@code`. A bare
