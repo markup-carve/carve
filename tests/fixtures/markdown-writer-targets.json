@@ -18,6 +18,12 @@
     "markdown": "[a](/x[y]) and ![b](/p[q].png)\n"
   },
   {
+    "name": "destination-non-ascii-is-literal",
+    "rule": "CARVE-P11-069",
+    "carve": "[a](/ü.png) and ![b](/ü.png)\n",
+    "markdown": "[a](/ü.png) and ![b](/ü.png)\n"
+  },
+  {
     "name": "autolink-brackets-keep-the-angle-form",
     "rule": "CARVE-P11-069",
     "carve": "<https://e.com/a[b]>\n",

@@ -886,12 +886,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    heading id it matches without regard to case.` with both fragments as the
    destinations spell them. The path and `#OLD` keep the author's spelling,
    not a percent-encoded form of it: `[a](#über-uns)` reports
-   `link:#über-uns`. Where two spellings in one file encode to the same
-   destination, the row cannot tell their links apart and names the encoded
-   form. `#NEW` is the fragment as the importer writes it into the
-   rewritten link. Reference definitions and raw HTML URLs remain for manual
-   review. This import-time repair does not change Carve's case-sensitive
-   link or cross-reference resolution. *)
+   `link:#über-uns`. The importer keeps a destination as written, so
+   `#über-uns` and `#%C3%BCber-uns` stay two spellings with two rows.
+   `#NEW` is the fragment as the importer writes it into the rewritten
+   link, non-ASCII included: `[a](#über-uns)` becomes `[a](#Über-Uns)`.
+   Reference definitions and raw HTML URLs remain for manual review. This
+   import-time repair does not change Carve's case-sensitive link or
+   cross-reference resolution. *)
 
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;

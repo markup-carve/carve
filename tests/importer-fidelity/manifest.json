@@ -561,7 +561,7 @@
       "repository": "markup-carve/carve",
       "input": "![x](/ü.png)\n",
       "expected": {
-        "output": "![x](/%C3%BC.png)\n",
+        "output": "![x](/ü.png)\n",
         "diagnostics": [
           {
             "code": "markdown-paragraph",
@@ -610,6 +610,52 @@
           },
           {
             "code": "markdown-image",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      },
+      "constructs": [
+        "paragraph",
+        "link",
+        "image"
+      ]
+    },
+    {
+      "id": "markdown-destination-keeps-non-ascii",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[a](/ü.png) and ![b](/ü.png) and [c](/%C3%BC)\n",
+      "expected": {
+        "output": "[a](/ü.png) and ![b](/ü.png) and [c](/%C3%BC)\n",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-image",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
             "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
@@ -3271,7 +3317,7 @@
       "repository": "markup-carve/carve",
       "input": "# Über Uns\n\nSee [a](#über-uns).\n",
       "expected": {
-        "output": "# Über Uns\n\nSee [a](#%C3%9Cber-Uns).\n",
+        "output": "# Über Uns\n\nSee [a](#Über-Uns).\n",
         "diagnostics": [
           {
             "code": "fidelity-unverified",

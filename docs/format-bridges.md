@@ -314,10 +314,11 @@ same content. Native HTML may use `<s>` for strikethrough and add accessible lab
 checkboxes. Diagnostic order may follow parser traversal; paths identify the
 source occurrences.
 
-A link or image destination keeps its square brackets: the importer writes
-`[a](/x[y])` for that Markdown input, not `[a](/x%5By%5D)`, because a Carve
-destination holds a bracket literally. Assessment compares against the `href`
-Carve renders for it, which keeps the bracket too.
+A link or image destination keeps its square brackets and non-ASCII characters as
+written: `[a](/x[y])` stays `[a](/x[y])`, `[a](/ü.png)` stays `[a](/ü.png)`,
+and `[c](/%C3%BC)` stays `[c](/%C3%BC)`. Only whitespace and control
+characters are percent-encoded because a Carve destination cannot hold them.
+Assessment compares against the `href` Carve renders.
 
 A paragraph whose whole content is one image converts to a Carve block image
 (CARVE-P9R-007), which renders as the bare image without a paragraph wrapper.

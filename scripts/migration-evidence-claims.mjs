@@ -127,9 +127,19 @@ const AHEAD_OF_PIN = {
     php: { output: '> x\n^ Bob   Smith\n' },
   },
   // carve#3373: an image alone in its paragraph is a block image, assessed like any paragraph.
+  // carve#3378: every pin still percent-encodes the non-ASCII destination.
   'markdown-image-alone-in-its-paragraph': {
-    engines: ['rust', 'php'],
-    pinned: { exit: 1, diagnostics: [UNVERIFIED] },
+    engines: ['js', 'rust', 'php'],
+    js: { output: '![x](/%C3%BC.png)\n' },
+    rust: { output: '![x](/%C3%BC.png)\n', exit: 1, diagnostics: [UNVERIFIED] },
+    php: { output: '![x](/%C3%BC.png)\n', exit: 1, diagnostics: [UNVERIFIED] },
+  },
+  // carve#3378: the importer keeps a non-ASCII destination as written.
+  'markdown-destination-keeps-non-ascii': {
+    engines: ['js', 'rust', 'php'],
+    js: { output: '[a](/%C3%BC.png) and ![b](/%C3%BC.png) and [c](/%C3%BC)\n' },
+    rust: { output: '[a](/%C3%BC.png) and ![b](/%C3%BC.png) and [c](/%C3%BC)\n' },
+    php: { output: '[a](/%C3%BC.png) and ![b](/%C3%BC.png) and [c](/%C3%BC)\n', exit: 1, diagnostics: [UNVERIFIED] },
   },
   // carve#3372: the importer keeps a destination's square brackets.
   'markdown-link-destination-keeps-its-brackets': {
@@ -154,10 +164,15 @@ const AHEAD_OF_PIN = {
     },
   },
   'link-fragment-case-rewritten-names-the-authored-spelling': {
-    engines: ['rust', 'php'],
+    engines: ['js', 'rust', 'php'],
     pinned: {
       output: '# Über Uns\n\nSee [a](#%C3%BCber-uns).\n',
       diagnostics: [{ code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }],
+    },
+    // carve#3378: the js pin rewrites the fragment but still percent-encodes it.
+    js: {
+      output: '# Über Uns\n\nSee [a](#%C3%9Cber-Uns).\n',
+      message: 'Rewrote link fragment #über-uns to #%C3%9Cber-Uns, the one heading id it matches without regard to case.',
     },
     // carve-rs assesses this input completely where carve-php does not.
     rust: {
@@ -174,7 +189,7 @@ const AHEAD_OF_PIN = {
 // The fixup message each row pins (CARVE-P2-031): the old fragment as the link wrote it.
 const FIXUP_MESSAGES = {
   'link-fragment-case-rewritten': 'Rewrote link fragment #install-steps to #Install-Steps, the one heading id it matches without regard to case.',
-  'link-fragment-case-rewritten-names-the-authored-spelling': 'Rewrote link fragment #über-uns to #%C3%9Cber-Uns, the one heading id it matches without regard to case.',
+  'link-fragment-case-rewritten-names-the-authored-spelling': 'Rewrote link fragment #über-uns to #Über-Uns, the one heading id it matches without regard to case.',
 }
 const manifest = JSON.parse(readFileSync(resolve(root, 'tests/importer-fidelity/manifest.json'), 'utf8'))
 for (const id of Object.keys(AHEAD_OF_PIN)) assert.ok(manifest.cases.some(row => row.id === id), `AHEAD_OF_PIN names ${id}, which no manifest row has`)
@@ -203,7 +218,7 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
       assert.ok(row.message.length > 0, context)
       if (row.code === 'structure-unspellable' && fixture.id.includes('ordered-task')) assert.equal(row.message, 'An ordered task item is not spellable as a Carve task item; the checkbox marker was kept as text', context)
       if (row.code === 'bbcode-quote-field-dropped' && fixture.id === 'bbcode-quote-field-dropped') assert.ok(row.message.includes('user_id'), `${context}: the message names the dropped field`)
-      if (row.code === 'link-fragment-case-rewritten') assert.equal(row.message, FIXUP_MESSAGES[fixture.id], context)
+      if (row.code === 'link-fragment-case-rewritten') assert.equal(row.message, pinned?.message ?? FIXUP_MESSAGES[fixture.id], context)
       const contract = classes.get(row.code)
       if (!contract) {
         assert.equal(row.code, 'fidelity-unverified', context)
