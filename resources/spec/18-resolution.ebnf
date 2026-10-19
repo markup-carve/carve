@@ -64,7 +64,8 @@
    consumed rather than emitted as `code=""`; no other `as` mode is defined.
    Other inline attributes on a plain projection wrap the text in a span;
    on a code projection they apply to the code element. The literal fallback
-   includes the complete authored reference and any trailing attribute run.
+   includes the complete reference and a canonically spelled equivalent of
+   any trailing attribute run.
    The surrounding emphasis, link label or other inline host keeps its own
    meaning. Code spans, fences, raw content, destinations and attribute
    values never recognize a cell reference.
