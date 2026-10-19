@@ -314,11 +314,23 @@ same content. Native HTML may use `<s>` for strikethrough and add accessible lab
 checkboxes. Diagnostic order may follow parser traversal; paths identify the
 source occurrences.
 
-A link or image destination keeps its square brackets and non-ASCII characters as
-written: `[a](/x[y])` stays `[a](/x[y])`, `[a](/ü.png)` stays `[a](/ü.png)`,
-and `[c](/%C3%BC)` stays `[c](/%C3%BC)`. Only whitespace and control
-characters are percent-encoded because a Carve destination cannot hold them.
-Assessment compares against the `href` Carve renders.
+A link or image destination keeps its characters as written:
+`[a](/x[y])` stays `[a](/x[y])`, `[a](/ü.png)` stays `[a](/ü.png)`,
+`[c](/%C3%BC)` stays `[c](/%C3%BC)`, and `[d](/a^b{c})` stays `[d](/a^b{c})`.
+Only whitespace and control characters are percent-encoded, because a Carve
+destination cannot hold them. A character keeps a minimal spelling only where
+Carve would read it differently at that position:
+
+- a backslash before `\`, `(` or `)`, or at the end, is written `\\`
+  (`destination_escape`); elsewhere it stays a single `\`;
+- a parenthesis without a partner is written `\(` or `\)`; a balanced pair stays
+  bare;
+- in a table cell, `|` is written `%7C`, because a bare one ends the cell.
+
+The same rule covers reference definitions, an autolink that falls back to an
+explicit link, and a GFM bare URL, whose destination is its own text:
+`https://e.com/ü` imports as `[https://e.com/ü](https://e.com/ü)`. Assessment
+compares against the `href` Carve renders.
 
 A paragraph whose whole content is one image converts to a Carve block image
 (CARVE-P9R-007), which renders as the bare image without a paragraph wrapper.

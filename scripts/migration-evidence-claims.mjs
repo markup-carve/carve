@@ -163,10 +163,47 @@ const AHEAD_OF_PIN = {
     engines: ['js', 'php'],
     pinned: { diagnostics: [UNVERIFIED], exit: 1 },
   },
-  // carve#3391: a bare URL's link text escapes a bracket only where the parse needs it.
+  // carve#3391, carve#3393: a bare URL escapes only what the parse needs and keeps its text as destination.
   'markdown-bare-url-label-escapes-only-what-it-must': {
-    engines: ['php'],
-    php: { output: 'see [https://example.com/\\[a\\]b](https://example.com/%5Ba%5Db) here\n' },
+    engines: ['js', 'php', 'rust'],
+    js: { output: "see [https://example.com/[a]b](https://example.com/%5Ba%5Db) here\n" },
+    php: { output: "see [https://example.com/\\[a\\]b](https://example.com/%5Ba%5Db) here\n" },
+    rust: { output: "see [https://example.com/[a]b](https://example.com/%5Ba%5Db) here\n" },
+  },
+  // carve#3392: a destination keeps ASCII punctuation Carve reads literally.
+  'markdown-destination-keeps-ascii-punctuation': {
+    engines: ['js', 'php', 'rust'],
+    js: { output: "[a](/x%5Cy) [b](/a%60b) [c](/a%5Eb%7Bc%7D) [d](/a%22b) [e](/a%3Cb%3E)\n" },
+    php: { output: "[a](/x%5Cy) [b](/a%60b) [c](/a%5Eb%7Bc%7D) [d](/a%22b) [e](/a%3Cb%3E)\n", diagnostics: [UNVERIFIED], exit: 1 },
+    rust: { output: "[a](/x%5Cy) [b](/a%60b) [c](/a%5Eb%7Bc%7D) [d](/a%22b) [e](/a%3Cb%3E)\n", diagnostics: [UNVERIFIED], exit: 1 },
+  },
+  // carve#3392: a backslash doubles only before a backslash, a parenthesis or the end.
+  'markdown-destination-backslash-takes-the-minimal-escape': {
+    engines: ['js', 'php', 'rust'],
+    js: { output: "[e](/x%5C) [f](/a%5C\\() [g](/a%5C%5Cb)\n", diagnostics: [UNVERIFIED], exit: 1 },
+    php: { output: "[e](/x%5C) [f](/a%5C\\() [g](/a%5C%5Cb)\n", diagnostics: [UNVERIFIED], exit: 1 },
+    rust: { output: "[e](/x%5C) [f](/a%5C\\() [g](/a%5C%5Cb)\n" },
+  },
+  // carve#3392: a paired parenthesis stays bare.
+  'markdown-destination-pairs-its-parentheses': {
+    engines: ['js', 'php', 'rust'],
+    js: { output: "[a](/x\\)\\(a) [b](/x\\(a\\)\\)) [c](/x\\(\\(a\\)) [d](/x%5C\\(a\\))\n", diagnostics: [UNVERIFIED], exit: 1 },
+    php: { output: "[a](/x\\)\\(a) [b](/x\\(a\\)\\)) [c](/x\\(\\(a\\)) [d](/x%5C\\(a\\))\n", diagnostics: [UNVERIFIED], exit: 1 },
+    rust: { output: "[a](/x\\)\\(a) [b](/x(a)\\)) [c](/x\\((a)) [d](/x%5C(a))\n" },
+  },
+  // carve#3393: a bare URL keeps its text as its destination.
+  'markdown-bare-url-keeps-its-text-as-destination': {
+    engines: ['js', 'php', 'rust'],
+    js: { output: "see [https://e.com/ü](https://e.com/%C3%BC) here\n" },
+    php: { output: "see [https://e.com/ü](https://e.com/%C3%BC) here\n" },
+    rust: { output: "see [https://e.com/ü](https://e.com/%C3%BC) here\n" },
+  },
+  // carve#3399: the ( after a bracket run around an autolink stays escaped.
+  'markdown-autolink-in-link-brackets-stays-text': {
+    engines: ['js', 'php', 'rust'],
+    js: { output: "[x [https://e.com/a\\]b](https://e.com/a%5Db) y](/u)\n" },
+    php: { output: "[x [https://e.com/a\\]b](https://e.com/a%5Db) y]\\(/u)\n" },
+    rust: { output: "[x [https://e.com/a\\]b](https://e.com/a%5Db) y](/u)\n" },
   },
   'link-fragment-case-rewritten': {
     engines: ['rust', 'php'],

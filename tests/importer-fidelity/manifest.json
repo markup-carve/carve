@@ -708,7 +708,7 @@
       "repository": "markup-carve/carve",
       "input": "<https://example.com/\\[\\>\n",
       "expected": {
-        "output": "[https://example.com/\\\\\\[\\\\](https://example.com/%5C[%5C)\n",
+        "output": "[https://example.com/\\\\\\[\\\\](https://example.com/\\[\\\\)\n",
         "diagnostics": [
           {
             "code": "markdown-paragraph",
@@ -778,7 +778,7 @@
       "repository": "markup-carve/carve",
       "input": "see https://example.com/[a]b here\n",
       "expected": {
-        "output": "see [https://example.com/[a]b](https://example.com/%5Ba%5Db) here\n",
+        "output": "see [https://example.com/[a]b](https://example.com/[a]b) here\n",
         "diagnostics": [
           {
             "code": "markdown-paragraph",
@@ -800,6 +800,288 @@
       "constructs": [
         "paragraph",
         "bare-autolink"
+      ]
+    },
+    {
+      "id": "markdown-destination-keeps-ascii-punctuation",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[a](/x\\y) [b](/a`b) [c](/a^b{c}) [d](/a\"b) [e](/a<b>)\n",
+      "expected": {
+        "output": "[a](/x\\y) [b](/a`b) [c](/a^b{c}) [d](/a\"b) [e](/a<b>)\n",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      },
+      "constructs": [
+        "paragraph",
+        "link"
+      ]
+    },
+    {
+      "id": "markdown-destination-backslash-takes-the-minimal-escape",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[e](/x\\\\) [f](</a\\\\(>) [g](/a\\\\\\\\b)\n",
+      "expected": {
+        "output": "[e](/x\\\\) [f](/a\\\\\\() [g](/a\\\\\\b)\n",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      },
+      "constructs": [
+        "paragraph",
+        "link"
+      ]
+    },
+    {
+      "id": "markdown-destination-pairs-its-parentheses",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[a](</x)(a>) [b](</x(a))>) [c](</x((a)>) [d](</x\\\\(a)>)\n",
+      "expected": {
+        "output": "[a](/x\\)\\(a) [b](/x(a)\\)) [c](/x\\((a)) [d](/x\\\\(a))\n",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      },
+      "constructs": [
+        "paragraph",
+        "link"
+      ]
+    },
+    {
+      "id": "markdown-bare-url-keeps-its-text-as-destination",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "see https://e.com/ü here\n",
+      "expected": {
+        "output": "see [https://e.com/ü](https://e.com/ü) here\n",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-bare-autolink",
+            "severity": "info",
+            "fidelity": "normalized",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      },
+      "constructs": [
+        "paragraph",
+        "bare-autolink"
+      ]
+    },
+    {
+      "id": "markdown-autolink-in-link-brackets-stays-text",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[x <https://e.com/a]b> y](/u)\n",
+      "expected": {
+        "output": "[x <https://e.com/a]b> y]\\(/u)\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ],
+        "exit": 1
+      },
+      "constructs": [
+        "paragraph",
+        "autolink"
+      ]
+    },
+    {
+      "id": "markdown-destination-pipe-in-a-table-cell-stays-encoded",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "| h |\n| --- |\n| [a](/x\\|y) z |\n",
+      "expected": {
+        "output": "|= h |\n| [a](/x%7Cy) z |\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "rust": {
+            "diagnostics": [
+              {
+                "code": "markdown-table",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-row",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-row",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:3"
+              },
+              {
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:3"
+              },
+              {
+                "code": "markdown-link",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:3"
+              }
+            ],
+            "exit": 0
+          }
+        }
+      },
+      "constructs": [
+        "table",
+        "link"
       ]
     },
     {
