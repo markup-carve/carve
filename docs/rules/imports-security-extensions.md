@@ -9,14 +9,15 @@ description: "Optional and host-facing behavior, importer contracts, security li
 
 Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces.
 
-This view contains 36 of 344 active rules. Every rule remains mandatory where applicable.
+This view contains 37 of 345 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
 | Rule | Part | Clause |
 |---|---:|---|
-| [`CARVE-P2-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L229) | 2 | AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE |
-| [`CARVE-P2-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L107) | 2 | A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING |
+| [`CARVE-P2-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L245) | 2 | AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE |
+| [`CARVE-P2-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L123) | 2 | A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING |
+| [`CARVE-P2-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L103) | 2 | MARKDOWN MIGRATION FRAGMENTS |
 | [`CARVE-P2-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L574) | 2 | RENDER-LOSS REPORTING |
 | [`CARVE-P4-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L223) | 4 | AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED |
 | [`CARVE-P6-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/10-includes.ebnf#L61) | 6 | FILE INCLUSION SEMANTICS |

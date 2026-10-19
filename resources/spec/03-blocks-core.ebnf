@@ -100,6 +100,22 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    MUST use the same table. Cross-references match the id table EXACTLY, case
    included (PART 9R R4). *)
 
+(* MARKDOWN MIGRATION FRAGMENTS -- NORMATIVE [CARVE-P2-031]. An importer
+   rewriting an inline Markdown link destination's local fragment, within one file or a
+   migrated directory, MUST first look for an exact id in the converted
+   target's rendered HTML. If none exists and lowercasing the fragment and the
+   converted target's heading ids finds exactly one heading id, it MUST replace
+   the fragment with that id in its Carve case. Multiple
+   different heading ids with the same lowercase key remain unresolved, as do
+   fragments with no match. To avoid confusing Markdown's duplicate heading
+   suffixes with Carve's different numbering, a heading id ending in `-N`
+   where N is at least 2 has no case-insensitive alias. An exact fragment still
+   resolves to such an id. Non-heading ids have no case-insensitive match.
+   A directory migration MUST report a rewritten target as rewritten and an ambiguous target as
+   unresolved. Reference definitions and raw HTML URLs remain for manual
+   review. This import-time repair does not change Carve's case-sensitive
+   link or cross-reference resolution. *)
+
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
 

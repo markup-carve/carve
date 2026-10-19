@@ -53,7 +53,12 @@ before publishing.
 
 Folder migration also checks local links and image paths. It rewrites a
 `.md` or `.markdown` link to `.crv` only when the converted target exists and
-any fragment matches an id in that target's rendered HTML. Each file's `links`
+any fragment resolves in that target. An exact rendered id wins. If there is
+no exact match, a case-insensitive match to one heading id rewrites the fragment
+to that Carve id. A match to several heading ids stays unresolved, and ids on
+other elements require an exact match. Heading ids ending in `-2` or a higher
+number also require an exact match because duplicate heading numbers differ
+between Markdown and Carve. Each file's `links`
 array records `valid`, `rewritten`, or `unresolved` targets. Missing files,
 missing fragments, paths outside the source tree, site-root routes, and asset
 fragments go on the review list. External URLs are left alone. Reference links
@@ -62,10 +67,12 @@ URL attributes, including `href`, `src`, `srcset`, and `poster`, are checked
 but left for manual rewrite. URLs in CSS or scripts and host-specific routes
 still need a site check.
 
-Carve heading ids are case-sensitive. A Markdown link to `#intro` is reported
-for review after a `# Intro` heading converts unless that heading has an
-explicit `{#intro}` id. The command does not guess an anchor replacement;
-see [Attributes](#attributes).
+Carve heading ids are case-sensitive. A Markdown link to `#intro` becomes
+`#Intro` after a `# Intro` heading converts. Single-file migration also
+rewrites inline same-file links. Reference definitions keep their destinations
+and need manual review. Links to repeated headings also need review because
+Markdown and Carve number duplicate anchors differently. See
+[Attributes](#attributes) for explicit ids.
 
 With `--check-loss`, exit code `0` means no file needs review and no entry was
 skipped. Exit code `1` means review is needed; the converted files and report
@@ -391,8 +398,9 @@ Moving an id from the heading to its `<section>` does not by itself affect a
 fragment link: once the Carve id is `Page-Heading`, `#Page-Heading` resolves to
 the wrapper exactly as it would to the heading. Migration can still change the
 id itself. Many Markdown renderers lowercase this example to `page-heading`,
-while Carve preserves case by default, so audit existing inbound links or give
-the heading an explicit id. What the wrapper additionally breaks is CSS and JS
+while Carve preserves case by default. Migration rewrites local links to an
+unambiguous heading id; audit inbound links from outside the converted folder
+or give the heading an explicit id. What the wrapper additionally breaks is CSS and JS
 that assume rendered blocks are **direct children** of their container. The
 common casualty is the owl/stack spacing idiom, because the paragraphs are now
 grandchildren:
