@@ -55937,3 +55937,272 @@ Text after a closing quote also leaves the fence as code.
 ```
 
 :::
+
+## Captions in list items do not create a paragraph gap
+
+The caption slot permits zero or one blank line after its host. That blank does not loosen the enclosing list. Two blanks detach the caption; the resulting paragraph does loosen the list. These cases cover each captionable host.
+
+No blank before a table caption
+
+::: compare
+
+```carve
+- | a |
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <table>
+      <caption>cap</caption>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+One blank before a table caption
+
+::: compare
+
+```carve
+- | a |
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <table>
+      <caption>cap</caption>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+Two blanks detach a table caption
+
+::: compare
+
+```carve
+- | a |
+
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+    <p>^ cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+:::
+
+One blank before an image caption
+
+::: compare
+
+```carve
+- ![a](b.png)
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <figure>
+      <img src="b.png" alt="a">
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+One blank before a quote caption
+
+::: compare
+
+```carve
+- > q
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+One blank before a code listing caption
+
+::: compare
+
+````carve
+- ```
+  x
+  ```
+
+  ^ cap
+- c
+````
+
+```html
+<ul>
+  <li>
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+One blank before an equation caption
+
+::: compare
+
+```carve
+- $$`x`
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <figure>
+      <p><span class="math display" role="math">\[x\]</span></p>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+One blank before a figure group caption
+
+::: compare
+
+```carve
+- ::: figure
+  ![a](b.png)
+  :::
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <figure class="carve-figure-group">
+      <img src="b.png" alt="a">
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+Two blanks detach a figure group caption
+
+::: compare
+
+```carve
+- ::: figure
+  ![a](b.png)
+  :::
+
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <figure class="carve-figure-group">
+      <img src="b.png" alt="a">
+    </figure>
+    <p>^ cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+:::
+
+A paragraph before a quote-shaped line has no caption slot
+
+::: compare
+
+```carve
+- text
+  > q
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>text
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::

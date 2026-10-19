@@ -6310,6 +6310,29 @@ function collectItems(lines, i, list, state, ind, meas) {
           break
         }
         if (col >= contentCol && !(nm && nm.indent >= contentCol)) {
+          if (j > i + 1 && CAPTION.test(jm.rest)) {
+            for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
+            closePara()
+            list.tight = false
+            i = j
+            continue
+          }
+          const hostLines = itemLines.slice(itemLines.findLastIndex((entry) => entry === '') + 1)
+          const hostStart = hostLines[0] ?? ''
+          const lastContent = hostLines.at(-1) ?? ''
+          const captionHost = (hostLines.length === 1 &&
+              (/^!\[[^\n]*\]\([^\n]*\)$/.test(hostStart.trim()) || /^\$\$`/.test(hostStart.trim()))) ||
+            (/^\s*\|\s/.test(hostStart) && /^\s*\|\s/.test(lastContent)) ||
+            (/^\s*>\s/.test(hostStart) && /^\s*>\s/.test(lastContent)) ||
+            (/^\s*(?:`{3,}|~{3,})/.test(hostStart) && hostLines.length >= 2 &&
+              /^\s*(?:`{3,}|~{3,})\s*$/.test(lastContent)) ||
+            (/^\s*:{3,}\s+figure\b/.test(hostStart) && /^\s*:{3,}\s*$/.test(lastContent))
+          if (j === i + 1 && CAPTION.test(jm.rest) && captionHost) {
+            pushLine('', BLANK_MEAS)
+            closePara()
+            i = j
+            continue
+          }
           if (pendingHeadTerm !== null) measureHeadTerm()
           if (authoredContainer && pendingAuthoredBlock !== null) {
             authoredBlockLimit = authoredBlockEnd(lines, pendingAuthoredBlock, contentCol, state)
