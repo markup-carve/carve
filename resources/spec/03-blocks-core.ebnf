@@ -112,7 +112,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    where N is at least 2 has no case-insensitive alias. An exact fragment still
    resolves to such an id. Non-heading ids have no case-insensitive match.
    A directory migration MUST report a rewritten target as rewritten and an ambiguous target as
-   unresolved. Reference definitions and raw HTML URLs remain for manual
+   unresolved. Each link whose fragment changes this way MUST also add one
+   `link-fragment-case-rewritten` row to the migration report that covers its
+   file: `info` severity, `normalized` fidelity, `inferred` confidence, a
+   `path` of `link:` followed by the destination as the link wrote it before
+   the rewrite, and the message `Rewrote link fragment #OLD to #NEW, the one
+   heading id it matches without regard to case.` with both fragments as the
+   destinations spell them. Reference definitions and raw HTML URLs remain for manual
    review. This import-time repair does not change Carve's case-sensitive
    link or cross-reference resolution. *)
 

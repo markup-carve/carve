@@ -90,7 +90,7 @@
                     },
                     "path": {
                       "type": "string",
-                      "pattern": "^line:[1-9][0-9]*$"
+                      "pattern": "^(?:line:[1-9][0-9]*|link:[^#]*#.+)$"
                     },
                     "severity": {
                       "enum": [
@@ -260,7 +260,7 @@
               },
               "path": {
                 "type": "string",
-                "pattern": "^line:[1-9][0-9]*$"
+                "pattern": "^(?:line:[1-9][0-9]*|link:[^#]*#.+)$"
               },
               "severity": {
                 "enum": [

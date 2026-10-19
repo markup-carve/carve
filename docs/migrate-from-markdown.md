@@ -68,8 +68,9 @@ but left for manual rewrite. URLs in CSS or scripts and host-specific routes
 still need a site check.
 
 Carve heading ids are case-sensitive. A Markdown link to `#intro` becomes
-`#Intro` after a `# Intro` heading converts. Single-file migration also
-rewrites inline same-file links. Reference definitions keep their destinations
+`#Intro` after a `# Intro` heading converts, and the report records each such
+rewrite as a `link-fragment-case-rewritten` row naming the old and new
+fragment. Single-file migration also rewrites inline same-file links. Reference definitions keep their destinations
 and need manual review. Links to repeated headings also need review because
 Markdown and Carve number duplicate anchors differently. See
 [Attributes](#attributes) for explicit ids.

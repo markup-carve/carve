@@ -54,6 +54,7 @@ const inventory = JSON.parse(readFileSync(resolve(root, 'resources/markdown-impo
 const classes = new Map([
   ...inventory.constructs.map(row => [row.code, row]),
   ['bbcode-quote-field-dropped', { severity: 'warning', fidelity: 'dropped', confidence: 'exact' }],
+  ['link-fragment-case-rewritten', { severity: 'info', fidelity: 'normalized', confidence: 'inferred', path: /^link:[^#]*#.+$/ }],
 ])
 // Rows whose ruled report the pinned engines do not write yet. `pinned` is what they
 // write instead, compared exactly; once an engine writes the ruled report the row fails
@@ -62,6 +63,17 @@ const AHEAD_OF_PIN = {
   'bbcode-quote-field-dropped': {
     engines: ['js', 'rust', 'php'],
     pinned: { diagnostics: [{ code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }] },
+  },
+  'link-fragment-case-rewritten': {
+    engines: ['js', 'rust', 'php'],
+    pinned: {
+      output: '# Install Steps\n\nSee [steps](#install-steps).\n',
+      diagnostics: [
+        { code: 'markdown-atx-heading', severity: 'info', fidelity: 'preserved', confidence: 'exact', path: 'line:1' },
+        { code: 'markdown-paragraph', severity: 'info', fidelity: 'preserved', confidence: 'exact', path: 'line:3' },
+        { code: 'markdown-link', severity: 'info', fidelity: 'preserved', confidence: 'exact', path: 'line:3' },
+      ],
+    },
   },
 }
 const manifest = JSON.parse(readFileSync(resolve(root, 'tests/importer-fidelity/manifest.json'), 'utf8'))
@@ -87,6 +99,7 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
       assert.ok(row.message.length > 0, context)
       if (row.code === 'structure-unspellable' && fixture.id.includes('ordered-task')) assert.equal(row.message, 'An ordered task item is not spellable as a Carve task item; the checkbox marker was kept as text', context)
       if (row.code === 'bbcode-quote-field-dropped') assert.ok(row.message.includes('user_id'), `${context}: the message names the dropped field`)
+      if (row.code === 'link-fragment-case-rewritten') assert.equal(row.message, 'Rewrote link fragment #install-steps to #Install-Steps, the one heading id it matches without regard to case.', context)
       const contract = classes.get(row.code)
       if (!contract) {
         assert.equal(row.code, 'fidelity-unverified', context)
@@ -95,7 +108,7 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
       assert.equal(row.severity, contract.severity, context)
       assert.equal(row.fidelity, contract.fidelity, context)
       assert.equal(row.confidence, contract.confidence, context)
-      if (!diagnostics.some(item => item.code === 'fidelity-unverified')) assert.match(row.path ?? '', /^line:[1-9][0-9]*$/, context)
+      if (!diagnostics.some(item => item.code === 'fidelity-unverified')) assert.match(row.path ?? '', contract.path ?? /^line:[1-9][0-9]*$/, context)
       covered.add(`${engine}/${row.code}`)
     }
     for (const [profile, html] of Object.entries(fixture.expected.html ?? {})) {

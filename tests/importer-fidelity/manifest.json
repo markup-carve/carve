@@ -2751,6 +2751,47 @@
         ],
         "exit": 1
       }
+    },
+    {
+      "id": "link-fragment-case-rewritten",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "# Install Steps\n\nSee [steps](#install-steps).\n",
+      "expected": {
+        "output": "# Install Steps\n\nSee [steps](#Install-Steps).\n",
+        "diagnostics": [
+          {
+            "code": "markdown-atx-heading",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:3"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:3"
+          },
+          {
+            "code": "link-fragment-case-rewritten",
+            "severity": "info",
+            "fidelity": "normalized",
+            "confidence": "inferred",
+            "path": "link:#install-steps"
+          }
+        ],
+        "exit": 0
+      }
     }
   ]
 }

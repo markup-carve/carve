@@ -108,6 +108,26 @@ test('a dropped BBCode quote attribution field is a located exact loss', () => {
     { code: row.code, severity: 'warning', fidelity: 'dropped', confidence: 'exact', path: 'line:1' })
 })
 
+test('a case-only heading fragment rewrite is a located normalized fixup', () => {
+  const validate = new Ajv2020().compile(reportSchema)
+  const row = {
+    code: 'link-fragment-case-rewritten',
+    message: 'Rewrote link fragment #install-steps to #Install-Steps, the one heading id it matches without regard to case.',
+    severity: 'info', fidelity: 'normalized', confidence: 'inferred', path: 'link:b.md#install-steps'
+  }
+  assert.equal(validate({ schemaVersion: 2, sourceFormat: 'markdown', diagnostics: [row] }), true, JSON.stringify(validate.errors))
+  for (const change of [{ path: undefined }, { path: 'line:3' }, { path: 'link:b.md' }, { fidelity: 'preserved' }, { confidence: 'exact' }, { severity: 'warning' }, { message: 'Rewrote a fragment.' }]) {
+    const changed = { ...row, ...change }
+    if ('path' in change && change.path === undefined) delete changed.path
+    assert.equal(validate({ schemaVersion: 2, sourceFormat: 'markdown', diagnostics: [changed] }), false, JSON.stringify(change))
+  }
+  const fixture = manifest.cases.find(item => item.id === 'link-fragment-case-rewritten')
+  assert.equal(fixture.input, '# Install Steps\n\nSee [steps](#install-steps).\n')
+  assert.equal(fixture.expected.output, '# Install Steps\n\nSee [steps](#Install-Steps).\n')
+  assert.deepEqual(fixture.expected.diagnostics.at(-1),
+    { code: row.code, severity: 'info', fidelity: 'normalized', confidence: 'inferred', path: 'link:#install-steps' })
+})
+
 test('externally replayed fixtures name their release-gate repository', () => {
   const external = manifest.cases.filter(item => item.runner === 'external')
   assert.deepEqual(external.map(item => [item.sourceFormat, item.repository]), [

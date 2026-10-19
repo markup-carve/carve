@@ -157,6 +157,46 @@ naming `user_id`, beside `fidelity-unverified`.
 Text inside `[code]`, `[c]` / `[icode]` and `[noparse]` is content, not
 attributes, so a quote tag spelled there reports nothing.
 
+### Markdown heading fragment fixups
+
+Carve keeps a heading's case in its id, while GitHub and most Markdown tools
+lowercase it. Markdown migration resolves a local link fragment that matches no
+id exactly but matches one heading id without regard to case, and rewrites the
+fragment to that id ([`CARVE-P2-031`](./rules/imports-security-extensions)).
+Each rewritten link MUST add a `link-fragment-case-rewritten` row to the
+migration report that covers its file. The row is `normalized` fidelity,
+`inferred` confidence and `info` severity, so it never fails a loss gate. Its
+`path` is `link:` followed by the destination as the link wrote it before the
+rewrite, which is the `target` a directory report's `links` entry records. The
+message is pinned, with both fragments as the destinations spell them:
+
+```text
+Rewrote link fragment #install-steps to #Install-Steps, the one heading id it matches without regard to case.
+```
+
+In a folder, `a.md` links to a heading in `b.md`:
+
+```text
+a.md:  # Guide
+       See [steps](b.md#install-steps).
+b.md:  # Install Steps
+```
+
+`a.crv` converts to:
+
+```carve
+# Guide
+
+See [steps](b.crv#Install-Steps).
+```
+
+The `links` entry for `b.md#install-steps` is `rewritten`, and the
+diagnostics for `a.md` end with `link-fragment-case-rewritten` at
+`link:b.md#install-steps`. A same-file link in single-file migration reports
+the same row, for example at `link:#install-steps`. A fragment that matches
+several heading ids without regard to case, or none, is not rewritten and
+reports no row; a directory report lists it as `unresolved` as before.
+
 ### Markdown construct assessment
 
 Markdown assessment uses CommonMark plus GFM. The machine-readable inventory is
