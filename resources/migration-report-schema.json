@@ -61,6 +61,15 @@
             "if": { "properties": { "code": { "const": "raw-code-fallback" } }, "required": ["code"] },
             "then": { "properties": { "severity": { "const": "warning" }, "fidelity": { "const": "degraded" }, "confidence": { "const": "exact" } } }
           }
+        ,
+          {
+            "$comment": "A quote attribution field the BBCode importer drops (phpBB user_id) is reported at its source line, never dropped silently.",
+            "if": { "properties": { "code": { "const": "bbcode-quote-field-dropped" } }, "required": ["code"] },
+            "then": {
+              "required": ["path"],
+              "properties": { "severity": { "const": "warning" }, "fidelity": { "const": "dropped" }, "confidence": { "const": "exact" }, "path": { "type": "string", "pattern": "^line:[1-9][0-9]*$" } }
+            }
+          }
         ]
       }
     }

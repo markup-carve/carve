@@ -51,12 +51,26 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
   }
 }
 const inventory = JSON.parse(readFileSync(resolve(root, 'resources/markdown-import-inventory.json'), 'utf8'))
-const classes = new Map(inventory.constructs.map(row => [row.code, row]))
+const classes = new Map([
+  ...inventory.constructs.map(row => [row.code, row]),
+  ['bbcode-quote-field-dropped', { severity: 'warning', fidelity: 'dropped', confidence: 'exact' }],
+])
+// Rows whose ruled report the pinned engines do not write yet. `pinned` is what they
+// write instead, compared exactly; once an engine writes the ruled report the row fails
+// until that engine is removed here, in the commit that moves its pin.
+const AHEAD_OF_PIN = {
+  'bbcode-quote-field-dropped': {
+    engines: ['js', 'rust', 'php'],
+    pinned: { diagnostics: [{ code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }] },
+  },
+}
 const manifest = JSON.parse(readFileSync(resolve(root, 'tests/importer-fidelity/manifest.json'), 'utf8'))
+for (const id of Object.keys(AHEAD_OF_PIN)) assert.ok(manifest.cases.some(row => row.id === id), `AHEAD_OF_PIN names ${id}, which no manifest row has`)
 const covered = new Set()
 for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
   for (const fixture of manifest.cases.filter(row => row.runner === 'core')) {
-    const expected = { ...fixture.expected, ...fixture.expected.engines?.[engine] }
+    const ahead = AHEAD_OF_PIN[fixture.id]?.engines.includes(engine) ? AHEAD_OF_PIN[fixture.id].pinned : {}
+    const expected = { ...fixture.expected, ...fixture.expected.engines?.[engine], ...ahead }
     const result = spawnSync(command, [...prefix, 'migrate', '--from', fixture.sourceFormat, '--report', '-', '--check-loss'],
       { input: fixture.input, encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 })
     const context = `${engine}/${fixture.id}`
@@ -68,10 +82,11 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
     assert.equal(report.sourceFormat, fixture.sourceFormat, context)
     assert.equal(result.stdout, expected.output, context)
     const diagnostics = report.diagnostics.map(({ code, severity, fidelity, confidence, path }) => ({ code, severity, fidelity, confidence, ...(path ? { path } : {}) }))
-    assert.deepEqual(diagnostics, expected.diagnostics, context)
+    assert.deepEqual(diagnostics, expected.diagnostics, `${context}${AHEAD_OF_PIN[fixture.id] ? ' (AHEAD_OF_PIN: if this engine now writes the ruled report, remove it from the entry)' : ''}`)
     for (const row of report.diagnostics) {
       assert.ok(row.message.length > 0, context)
       if (row.code === 'structure-unspellable' && fixture.id.includes('ordered-task')) assert.equal(row.message, 'An ordered task item is not spellable as a Carve task item; the checkbox marker was kept as text', context)
+      if (row.code === 'bbcode-quote-field-dropped') assert.ok(row.message.includes('user_id'), `${context}: the message names the dropped field`)
       const contract = classes.get(row.code)
       if (!contract) {
         assert.equal(row.code, 'fidelity-unverified', context)
@@ -96,4 +111,4 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
   }
   for (const row of inventory.constructs) assert.ok(covered.has(`${engine}/${row.code}`) && covered.has(`${engine}/construct/${row.construct}`), `${engine}: no fixture covers ${row.construct}`)
 }
-console.log(`migration evidence: ${checked} CLI cases across all three engines; no exemptions`)
+console.log(`migration evidence: ${checked} CLI cases across all three engines; no exemptions beyond the declared AHEAD_OF_PIN rows`)

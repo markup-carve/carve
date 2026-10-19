@@ -2725,6 +2725,32 @@
       "constructs": [
         "table"
       ]
+    },
+    {
+      "id": "bbcode-quote-field-dropped",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote=\"alice\" post_id=12 time=1700000000 user_id=3]q3[/quote]",
+      "expected": {
+        "output": "> q3\n^ alice (2023-11-14) #12\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 1
+      }
     }
   ]
 }

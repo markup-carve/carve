@@ -7,7 +7,7 @@ import { migrateBbcode, migrateDjot, migrateHtml } from '@markup-carve/carve'
 const manifest = JSON.parse(readFileSync(new URL('./importer-fidelity/manifest.json', import.meta.url)))
 const schema = JSON.parse(readFileSync(new URL('../resources/importer-fidelity-schema.json', import.meta.url)))
 const reportSchema = JSON.parse(readFileSync(new URL('../resources/migration-report-schema.json', import.meta.url)))
-const formats = ['markdown', 'pandoc-json', 'pdf-extraction-json']
+const formats = ['markdown', 'bbcode', 'pandoc-json', 'pdf-extraction-json']
 const fidelity = ['preserved', 'normalized', 'degraded', 'dropped']
 const confidence = ['exact', 'inferred', 'fallback']
 
@@ -91,6 +91,21 @@ test('Markdown construct paths and external fixture boundaries are enforced', ()
   const external = structuredClone(manifest.cases.find(row => row.runner === 'external'))
   external.expected.exit = 0
   assert.equal(validateManifest({ schemaVersion: 2, cases: [external] }), false)
+})
+
+test('a dropped BBCode quote attribution field is a located exact loss', () => {
+  const validate = new Ajv2020().compile(reportSchema)
+  const row = { code: 'bbcode-quote-field-dropped', message: 'Dropped the quote attribution field user_id.', severity: 'warning', fidelity: 'dropped', confidence: 'exact', path: 'line:1' }
+  assert.equal(validate({ schemaVersion: 2, sourceFormat: 'bbcode', diagnostics: [row] }), true, JSON.stringify(validate.errors))
+  for (const change of [{ path: undefined }, { path: 'line:0' }, { fidelity: 'degraded' }, { confidence: 'fallback' }, { severity: 'info' }]) {
+    const changed = { ...row, ...change }
+    if ('path' in change && change.path === undefined) delete changed.path
+    assert.equal(validate({ schemaVersion: 2, sourceFormat: 'bbcode', diagnostics: [changed] }), false, JSON.stringify(change))
+  }
+  const fixture = manifest.cases.find(item => item.id === 'bbcode-quote-field-dropped')
+  assert.equal(fixture.input, '[quote="alice" post_id=12 time=1700000000 user_id=3]q3[/quote]')
+  assert.deepEqual(fixture.expected.diagnostics.find(item => item.code === row.code),
+    { code: row.code, severity: 'warning', fidelity: 'dropped', confidence: 'exact', path: 'line:1' })
 })
 
 test('externally replayed fixtures name their release-gate repository', () => {

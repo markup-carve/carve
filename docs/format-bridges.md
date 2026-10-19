@@ -129,6 +129,34 @@ assessment also retains `fidelity-unverified`. Its message is pinned once, for e
 reaches the loss, under
 [a lost checkbox on an ordered task item](./html-import-contract#a-lost-checkbox-on-an-ordered-task-item-says-it-one-way).
 
+### BBCode quote attribution fields
+
+The BBCode importer MUST report each quote attribution field it drops as a
+`bbcode-quote-field-dropped` diagnostic in the migration report instead of
+dropping it silently. The diagnostic is `dropped` fidelity, `exact`
+confidence and `warning` severity, carries a `line:N` path naming the source
+line, and its message names the dropped field. The code is field-generic: any
+attribution field the importer drops reports under it.
+
+phpBB writes a `user_id` into the attribution:
+
+```text
+[quote="alice" post_id=12 time=1700000000 user_id=3]q3[/quote]
+```
+
+The quote converts as before:
+
+```carve
+> q3
+^ alice (2023-11-14) #12
+```
+
+and the report holds `bbcode-quote-field-dropped` at `line:1`, with a message
+naming `user_id`, beside `fidelity-unverified`.
+
+Text inside `[code]`, `[c]` / `[icode]` and `[noparse]` is content, not
+attributes, so a quote tag spelled there reports nothing.
+
 ### Markdown construct assessment
 
 Markdown assessment uses CommonMark plus GFM. The machine-readable inventory is

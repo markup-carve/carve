@@ -33,7 +33,8 @@
             "enum": [
               "pandoc-json",
               "pdf-extraction-json",
-              "markdown"
+              "markdown",
+              "bbcode"
             ]
           },
           "runner": {
@@ -164,7 +165,10 @@
             "then": {
               "properties": {
                 "sourceFormat": {
-                  "const": "markdown"
+                  "enum": [
+                    "markdown",
+                    "bbcode"
+                  ]
                 },
                 "expected": {
                   "required": [
