@@ -48,3 +48,10 @@
 625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-4  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
 625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-5  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
 625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-6  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
+626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
+626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-2  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
+626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-4  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
+626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-5  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
+626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-6  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
+626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-7  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
+626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-8  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
