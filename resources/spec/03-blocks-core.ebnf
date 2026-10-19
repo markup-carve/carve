@@ -119,7 +119,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    the rewrite, and the message `Rewrote link fragment #OLD to #NEW, the one
    heading id it matches without regard to case.` with both fragments as the
    destinations spell them. The path and `#OLD` keep the author's spelling,
-   never a percent-encoded form of it: `[a](#über-uns)` reports
+   not a percent-encoded form of it: `[a](#über-uns)` reports
    `link:#über-uns`. Where two spellings in one file encode to the same
    destination, the row cannot tell their links apart and names the encoded
    form. `#NEW` is the fragment as the importer writes it into the
