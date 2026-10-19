@@ -338,6 +338,10 @@ const visibleText = (html) =>
 // break. The orphan and fenced-code controls return through Markdown; attached
 // captions do not. Pin 20ef54b4 adds one HTML round trip on this corpus.
 
+// Corpus 620 adds 23 generated container documents. All import, remain fixed
+// points and keep their visible text; four more return through HTML and five
+// through Markdown. Pin 38549364 moves no count on its own.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

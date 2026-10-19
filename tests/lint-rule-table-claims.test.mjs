@@ -62,6 +62,8 @@ const TRIGGERS = {
   ...pinnedDefaultTriggers,
   'delimited-table-malformed': '{table}\n```csv\n"bad\n```\n',
   'delimited-table-wide-row': '{table}\n```csv\na,b\n1\n2,3,4\n```\n',
+  'region-marker-renders-as-text': '// #region demo\nBody.\n// #endregion demo\n',
+  'consumed-key-near-miss': '{tabel}\n```csv\na,b\n```\n',
   'platform-mention-token': {
     source: 'Use @minutely for that cron alias.\n',
     options: { platforms: ['github'] },
@@ -113,14 +115,6 @@ const NOT_IN_THE_PIN_YET = new Map([
   [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',
-  ],
-  [
-    'region-marker-renders-as-text',
-    'specified by markup-carve/carve#3319; carve-js emits it once its pin moves past the region-marker change',
-  ],
-  [
-    'consumed-key-near-miss',
-    'specified by markup-carve/carve#3340; carve-js emits it from f45ded02, past this pin',
   ],
   [
     'table-marker-run-padding',

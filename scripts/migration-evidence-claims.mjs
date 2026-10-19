@@ -147,7 +147,7 @@ const AHEAD_OF_PIN = {
   },
   // carve#3373: an image alone in its paragraph is a block image, assessed like any paragraph.
   'markdown-image-alone-in-its-paragraph': {
-    engines: ['js', 'rust', 'php'],
+    engines: ['rust', 'php'],
     pinned: { exit: 1, diagnostics: [UNVERIFIED] },
   },
   // carve#3372: the importer keeps a destination's square brackets.

@@ -8,8 +8,7 @@
       "fmt": "%% #region requirements\n- PHP 8.3 or later\n- Composer 2.7\n%% #endregion requirements\n",
       "regions": {
         "requirements": "- PHP 8.3 or later\n- Composer 2.7\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "markers-adjacent-to-paragraphs-stay-adjacent",
@@ -17,8 +16,7 @@
       "fmt": "Intro.\n%% #region steps\nRun the installer.\n%% #endregion steps\nOutro.\n",
       "regions": {
         "steps": "Run the installer.\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "blank-lines-beside-markers-stay",
@@ -34,8 +32,7 @@
       "fmt": "%% #region steps\n- one\n\n- two\n%% #endregion steps\n",
       "regions": {
         "steps": "- one\n\n- two\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "a-closer-at-the-content-column-stays-there",
@@ -43,8 +40,7 @@
       "fmt": "%% #region steps\n- one\n  %% #endregion steps\n",
       "regions": {
         "steps": "- one\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "an-attribute-line-after-an-opener-stays-adjacent",
@@ -52,8 +48,7 @@
       "fmt": "%% #region steps\n{.note}\nRun the installer.\n%% #endregion steps\n",
       "regions": {
         "steps": "{.note}\nRun the installer.\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "nested-closers-after-a-list-stay-at-column-0",
@@ -62,8 +57,7 @@
       "regions": {
         "inner": "- one\n",
         "outer": "%% #region inner\n- one\n%% #endregion inner\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "normalization-outside-a-region-leaves-it-alone",
@@ -71,8 +65,7 @@
       "fmt": "***\n\n%% #region steps\n- one\n%% #endregion steps\n",
       "regions": {
         "steps": "- one\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "a-definition-in-a-region-stays-in-it",
@@ -80,8 +73,7 @@
       "fmt": "%% #region r\n[ref]: /u\n%% #endregion r\n\nSee [it][ref].\n",
       "regions": {
         "r": "[ref]: /u\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "a-footnote-in-a-region-stays-in-it",
@@ -89,8 +81,7 @@
       "fmt": "%% #region f\n[^f]: note\n\n%% #endregion f\n\nSee[^f].\n",
       "regions": {
         "f": "[^f]: note\n\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "a-closer-under-a-table-stays-adjacent",
@@ -98,8 +89,7 @@
       "fmt": "%% #region t\n| a | b |\n%% #endregion t\n",
       "regions": {
         "t": "| a | b |\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "a-closer-under-a-closed-div-stays-adjacent",
@@ -107,8 +97,7 @@
       "fmt": "%% #region d\n::: note\nx\n:::\n%% #endregion d\n",
       "regions": {
         "d": "::: note\nx\n:::\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "a-closer-under-a-fenced-quote-stays-adjacent",
@@ -116,8 +105,7 @@
       "fmt": "%% #region q\n::: >\nx\n:::\n%% #endregion q\n",
       "regions": {
         "q": "::: >\nx\n:::\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "a-definition-above-a-marker-in-a-figure-group-stays",
@@ -125,8 +113,7 @@
       "fmt": "[ref]: /u\n\n::: figure\n%% #region r\n![a](a.png)\n^ A\n\n%% #endregion r\n:::\n\nSee [it][ref].\n",
       "regions": {
         "r": "![a](a.png)\n^ A\n\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "a-definition-above-a-marker-in-a-line-block-stays",
@@ -134,8 +121,7 @@
       "fmt": "[ref]: /u\n\n::: |\n%% #region r\nLine one\n%% #endregion r\n:::\n\nSee [it][ref].\n",
       "regions": {
         "r": "Line one\n"
-      },
-      "aheadOfPin": true
+      }
     }
   ]
 }
