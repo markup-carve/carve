@@ -146,7 +146,22 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       `newline` as PART 0 defines it, a leading U+FEFF of the file is not
       content (CARVE-P0-001), and every payload line ends with one line
       feed, as an authored fence's content does. An empty selection is an
-      empty code block.
+      empty code block. A selection of N lines is N payload lines, so a
+      selected blank last line keeps its line feed: `@lines:1-3` of a file
+      holding `x` and two blank lines gives the same three payload lines as
+      the whole file.
+      SPAN. The block's `pos` (PART 12 §4) is measured in the included file
+      and covers the selected lines. It starts at column 1 of the first
+      selected line, after the leading U+FEFF when that line is line 1. A
+      blank first line still starts the span: it is payload, so
+      CARVE-P12-021 does not move the start. The span ends immediately after
+      the last codepoint of the last selected line, whose line terminator is
+      not included (CARVE-P12-014), so a blank last line ends the span at
+      its column 1. Offsets count every codepoint of the file, a CRLF as
+      two. An empty selection has a zero-width span where the selection
+      begins: the start of the file (after a leading U+FEFF), or column 1 of
+      an empty region's closing marker line. A table rendered from the block
+      (`{table}`) has the same span.
       LANGUAGE. `@code:lang` gives the block the language `lang`, which MUST
       be a `language_info` token; any other value is a malformed option
       (Warning + literal, I7). A bare `@code` gives the block NO language: it

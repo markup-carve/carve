@@ -258,6 +258,12 @@ server.listen(3000)
   text and a fence line is content. Line endings follow the document's line
   rules, a leading byte order mark is dropped, and every line ends with a line
   feed, as in an authored fence. An empty selection is an empty code block.
+  A selected blank last line is kept: `@lines:1-3` of a file holding `x` and
+  two blank lines gives the same block as including the whole file.
+- **Position.** In the AST (`carve --json`), the block's `pos` points into the
+  included file. It runs from the start of the first selected line to the end
+  of the last selected line's text, without its line ending. Offsets count a
+  CRLF as two characters.
 - **Language.** `lang` is spelled like a fence's language token. A bare `@code`
   produces a code block with no language; the language is never guessed from
   the file extension.
