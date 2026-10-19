@@ -6,7 +6,7 @@ import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from '../../carve-extensions.js'
 // @ts-expect-error - local ESM helper without TS resolution context
-import { PLAYGROUND_CODE_LANGUAGES } from '../../playground-code-languages.js'
+import { PLAYGROUND_CODE_LANGUAGES, playgroundDataGrammars } from '../../playground-code-languages.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../../render-math.js'
 // @ts-expect-error - local ESM helper without TS resolution context
@@ -571,11 +571,13 @@ function getHighlighter(): Promise<unknown> {
       const { createHighlighter } = await import('shiki')
       // The repo's Carve TextMate grammar, so `language-carve` blocks highlight too.
       const carveGrammar = (await import('@markup-carve/carve-grammars/textmate/carve.tmLanguage.json')).default
+      const csvGrammar = (await import('@markup-carve/carve-grammars/textmate/csv.tmLanguage.json')).default
+      const tsvGrammar = (await import('@markup-carve/carve-grammars/textmate/tsv.tmLanguage.json')).default
       // The same Carve theme rules the docs code blocks get from carveMarkdown().
       const { carveLightTheme, carveDarkTheme } = await import('@markup-carve/carve-grammars/shiki/themes')
       return createHighlighter({
         themes: [carveLightTheme, carveDarkTheme],
-        langs: [...PLAYGROUND_CODE_LANGUAGES, carveGrammar as never],
+        langs: [...PLAYGROUND_CODE_LANGUAGES, carveGrammar as never, ...playgroundDataGrammars(csvGrammar, tsvGrammar) as never[]],
       })
     })()
   }
