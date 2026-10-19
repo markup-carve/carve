@@ -233,7 +233,9 @@ responsibility:
     root is rejected the same as a literal `../` traversal.
   - **Refuse remote fetches by default.** URL schemes (`file:`, `http:`, `data:`,
     …) MAY be denied outright; enable a remote source only behind an explicit
-    allowlist.
+    allowlist. A scheme allowlist alone does not prevent requests to private
+    hosts. A network resolver should check the resolved address at connect time
+    and apply the same policy after every redirect.
 - **The root is well defined, and is never the working directory.** For
   file-based entry points (a CLI invocation on a document path, or a
   convert-from-file API) the root SHOULD default to the **directory of the
@@ -254,6 +256,20 @@ book/            <- root (default: directory of the top-level document)
 
 From `chapters/ch1.crv`, `../shared/glossary.crv` is allowed (it canonicalizes
 inside `book/`), while `../../../etc/passwd` is denied.
+
+Containment does not restrict reads *within* the root. An author who controls
+an include can request files throughout it; readable text within the size
+limits can enter the output. Use a root without credentials or private files.
+An editor rooted at a workspace containing `.env` may need a narrower root.
+For untrusted input, inclusion must stay off unless the host meets the security
+requirements on this page. Server-side user content must leave inclusion
+disabled; see the administrator-only exception in
+[Editor and IDE integration](/includes#editor-and-ide-integration).
+
+A filesystem resolver that checks a path and opens it later can be raced if
+another party swaps a symlink or directory in that path between those steps.
+For mutable trees, use an immutable snapshot or an OS-backed resolver that
+confines each open to the root.
 
 - **Included content is parsed under the SAME sanitization as any Carve.**
   Inclusion is a *source-merge*, not a privilege boundary: raw-HTML passthrough,
