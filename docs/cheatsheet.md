@@ -272,16 +272,15 @@ cell to its column's width (CARVE-P11-071):
 Padding goes after the content, also in right-aligned columns. Width counts
 wide characters such as CJK as two columns. Both forms render the same table.
 
-Support as of carve-js 0.1.12:
+Since carve-js 0.1.12, table alignment is available through:
 
 - carve-js CLI: `carve fmt --align-tables`, and `carve fmt --align-tables --check`
   as the matching CI gate
 - Prettier, through the plugin carve-js ships: `"carveAlignTables": true`
 - carve-lsp: the `format.alignTables` setting
 
-The mode is optional per engine. carve-php 0.1.13 (`Unknown fmt option`) and
-carve-rs 0.1.10 (`unknown option`) do not offer it, and reject the flag instead
-of writing the canonical form.
+The mode is optional per engine. The `carve fmt --align-tables` option, including
+`--check`, is also supported from carve-php 0.1.14 and carve-rs 0.1.11.
 
 ## Captions (images, quotes, tables, code listings, equations, figure groups)
 
