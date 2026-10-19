@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "rule": "unclosed-code-fence",
+  "vectors": [
+    {
+      "name": "eof-top-level",
+      "description": "A backtick fence at the top level runs to the end of the input.",
+      "source": "```js\nx\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "```",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "eof-tilde",
+      "description": "A tilde fence runs to the end of the input.",
+      "source": "~~~\nx\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "~~~",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "eof-raw",
+      "description": "A raw fence is a fence too.",
+      "source": "```=html\n<b>\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "```",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "eof-shorter-closer",
+      "description": "A closer shorter than the opener does not close it.",
+      "source": "````\nx\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "````",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "eof-in-item",
+      "description": "The input ends while the item and the fence are open.",
+      "source": "- ```\n  x\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "```",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "container-list-item",
+      "description": "The next item ends the item, and the fence with it.",
+      "source": "- ```\n  x\n- y\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "```",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "container-block-quote",
+      "description": "A blank line ends the quote, and the fence with it.",
+      "source": "> ```\n> x\n\nafter\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "```",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "container-div",
+      "description": "The div's closer ends the fence inside it.",
+      "source": "::: note\n```\nx\n:::\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "```",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "continuation-marker",
+      "description": "A plus at the item's marker column ends the fence before the attached block (carve#3401).",
+      "source": "- ```\n  x\n\n+\ntail\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "```",
+              "continuation marker"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "two-fences",
+      "description": "Each unclosed fence is reported, in source order.",
+      "source": "> ```\n> a\n\n~~~\nb\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "```",
+              "end of its container"
+            ]
+          },
+          {
+            "line": 4,
+            "column": 1,
+            "includes": [
+              "~~~",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "closed",
+      "description": "A closed fence.",
+      "source": "```\nx\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "closed-by-longer-run",
+      "description": "A longer closer closes the fence.",
+      "source": "```\nx\n````\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "closed-raw",
+      "description": "A closed raw fence.",
+      "source": "```=html\n<b>\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "closed-in-item",
+      "description": "A fence closed inside its item.",
+      "source": "- ```\n  x\n  ```\n- y\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "folded-opener-is-not-a-fence",
+      "description": "An indented opener folds into the paragraph as text and opens no code block.",
+      "source": "para\n  ```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "colon-fence",
+      "description": "An unclosed colon fence belongs to unclosed-container-fence.",
+      "source": "::: note\nbody\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

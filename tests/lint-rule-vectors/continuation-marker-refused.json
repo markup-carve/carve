@@ -1,0 +1,190 @@
+{
+  "version": 1,
+  "rule": "continuation-marker-refused",
+  "vectors": [
+    {
+      "name": "item-blank",
+      "description": "A blank line after the plus refuses it.",
+      "source": "- item\n+\n\nMeant for the item.\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "item-end-of-input",
+      "description": "The input ends after the plus.",
+      "source": "- item\n+\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "ordered-item",
+      "description": "An ordered item takes the marker the same way.",
+      "source": "1. a\n+\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "definition-description",
+      "description": "A description takes the marker the same way.",
+      "source": ":: t\n: d\n+\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "first-block-form",
+      "description": "The first-block form on the marker line.",
+      "source": "- +\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "first-block-end-of-input",
+      "description": "The first-block form with nothing after it.",
+      "source": "- +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested-item",
+      "description": "The nested item's marker column.",
+      "source": "- a\n  - b\n  +\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "under-an-open-fence",
+      "description": "A refused plus at the marker column under an open fence (carve#3400 family).",
+      "source": "- ```\n+\n\ntail\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "accepted-fence",
+      "description": "A flush-left block after the plus is attached.",
+      "source": "- item\n+\n```\nx\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "accepted-paragraph",
+      "description": "A flush-left paragraph after the plus is attached.",
+      "source": "- a\n+\npara\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "block-quote",
+      "description": "In a block quote the plus is not a list marker position.",
+      "source": "> q\n+\n\npara\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "footnote-body",
+      "description": "In a footnote body the plus is ordinary text.",
+      "source": "x[^a]\n\n[^a]: note\n+\n\npara\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "not-flush-left",
+      "description": "A line that is not flush-left follows the plus.",
+      "source": "- a\n+\n  x\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "plus-with-text",
+      "description": "A plus followed by text is not a marker.",
+      "source": "- a\n+ b\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "payload-in-a-fence",
+      "description": "A plus inside the fence's content column is payload.",
+      "source": "- ```\n  +\n\n  x\n  ```\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

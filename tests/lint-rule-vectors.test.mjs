@@ -47,7 +47,14 @@ for (const file of files) {
       assert.equal(typeof v.description, 'string')
       assert.equal(typeof v.source, 'string')
       for (const f of v.expected.findings) {
-        assert.deepEqual(Object.keys(f).sort(), ['column', 'line', 'suggests', 'word'])
+        const keys = Object.keys(f).sort()
+        if (keys.includes('includes')) {
+          assert.deepEqual(keys, ['column', 'includes', 'line'])
+          assert.ok(Array.isArray(f.includes) && f.includes.length > 0)
+          assert.ok(f.includes.every((part) => typeof part === 'string'))
+        } else {
+          assert.deepEqual(keys, ['column', 'line', 'suggests', 'word'])
+        }
       }
     }
   })
@@ -62,8 +69,14 @@ for (const file of files) {
         v.name,
       )
       v.expected.findings.forEach((f, i) => {
-        assert.ok(actual[i].message.includes(f.word) && actual[i].message.includes(`{${f.suggests}}`),
-          `${v.name}: ${actual[i].message}`)
+        if ('includes' in f) {
+          for (const part of f.includes) {
+            assert.ok(actual[i].message.includes(part), `${v.name}: ${actual[i].message}`)
+          }
+        } else {
+          assert.ok(actual[i].message.includes(f.word) && actual[i].message.includes(`{${f.suggests}}`),
+            `${v.name}: ${actual[i].message}`)
+        }
       })
     }
   })

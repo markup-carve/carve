@@ -173,6 +173,7 @@ the command-line and editor behavior stay aligned.
 | `fence-delimiter-indentation` | a fenced-code delimiter whose authored column is noncanonical; top-level fences require column 0, while a fence inside a container may start at or beyond that container's minimum content column and uses that authored column as the base of the complete fenced block. `fmt` moves a structural fence back to the minimum column |
 | `list-item-body-detached` | a block-shaped line indented past the item's marker column but below its exact content column; after a blank it has left the item, so the diagnostic offers the two explicit intentions: indent to the content column to make it structural, or escape the opener to preserve literal text |
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column. Reported once per block, on its first line; continuing table rows and quote lines do not open another block. An aligned opener stays unreported when a continuation is overindented, including when the block opens on the item's marker line. The finding also covers the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
+| `continuation-marker-refused` | a `+` continuation marker in a list item or a definition description, including the first-block form `- +`, followed by a blank line or by the end of the input. PART 9 §17 L4 refuses the marker and ends the body, so the block the author meant to attach is not attached and nothing is malformed; see [refused continuation markers](#refused-continuation-markers) |
 | `empty-include-path` | a <code v-pre>{{ ... }}</code> run shaped like an include directive but containing no path, including empty braces and spaced directive forms containing only a `#section` or `@option`; it remains literal text, so add a path or remove the braces |
 | `region-marker-renders-as-text` | a line whose content is a `#region` or `#endregion` marker in a source-comment form (`#region name`, `// #region name`, `-- #region name`, `/* #region name */`, `<!-- #region name -->`), or a `%%` marker whose keyword is not lowercase (`%% #Region name`). In a Carve file the first kind renders as visible text and none of them is a region marker for a Carve include (CARVE-P6-001 I1b), so write `%% #region name` |
 | `include-unresolved` | a Warning for an include whose path the resolver cannot read: missing, unreadable or outside the containment root; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
@@ -191,6 +192,7 @@ the command-line and editor behavior stay aligned.
 | `empty-reference-definition` | warning for a bare `[label]:` definition with an empty URL; the definition remains valid and can interrupt a paragraph, so confirm that no destination was removed by mistake |
 | `carve-version-unsupported` | a document declaring a Carve spec version the processor does not implement, so constructs added after that version render as something else without any error |
 | `unclosed-container-fence` | a `:::` opener with no matching closer; the container runs to end of input, which is legal (PART 9 §12) and rarely what was meant |
+| `unclosed-code-fence` | a backtick or tilde fence that opened a code block or a raw block and has no closing fence, so it runs to the end of the document, to the end of the container holding it, or to a `+` continuation marker that ends it (PART 9 §17 L3). Legal and rarely meant: every line up to that point is code. The message names the fence as written and where it ended; see [unclosed code fences](#unclosed-code-fences) |
 | `colon-fence-length-mismatch` | a bare colon run plausibly intended to close the innermost container has a different width; reports both widths, the opener location, and whether the line actually opens a nested container or remains text |
 | `fence-title-syntax` | invalid fence metadata; a recognized fence/type prefix keeps the container and its children while dropping metadata, and an unrecognized prefix remains paragraph text |
 | `footnote-labels-differ-only-in-whitespace` | two footnote definitions whose labels normalize to the same ASCII-whitespace key; the first definition wins, the later definition is ignored, and the diagnostic identifies the collision |
@@ -255,6 +257,92 @@ doc.crv:2:1 consumed-key-near-miss — "tabel" is not a consumed key here; did y
 
 The shared vectors are in
 [`tests/lint-rule-vectors/consumed-key-near-miss.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/consumed-key-near-miss.json).
+
+### Unclosed code fences
+
+`unclosed-code-fence` reports a fenced code block or raw block whose opener
+has no matching closer: a line of the same fence character, at least as long
+as the opener, at the opener's column. Without one, the block takes every line
+until something else ends it, and all of them are code:
+
+- the end of the input;
+- the end of the container holding the fence: a list item, a definition
+  description, a block quote, a footnote body or a `:::` container;
+- a `+` continuation marker at the host's marker column, which ends a
+  preceding fence before the attached block begins (PART 9 §17 L3).
+
+Each case is legal (PART 2 `code_block`, CARVE-P12-064), and none is what an
+author usually meant. Here the fence opened on the item's marker line takes
+`x` and the blank line as code, and the `+` ends it:
+
+````carve
+- ```
+  x
+
++
+tail
+````
+
+The finding is at the opener's first fence character. The message names the
+fence as written and how it ended, using one of three phrases: `end of the
+document`, `end of its container` or `continuation marker`. It also names
+the fix, a closing fence where the code should stop. Nothing is rewritten.
+
+```txt
+doc.crv:1:3 unclosed-code-fence — The ``` fence opened here has no closing fence; a continuation marker on line 4 ends it. Add a closing ``` where the code should stop.
+```
+
+Not reported:
+
+- a fence-shaped line that does not open a code block, such as an opener
+  folded into an open paragraph as text; `fence-opener-fallback` and
+  `fence-delimiter-indentation` cover those;
+- a `:::` container, which `unclosed-container-fence` covers;
+- a `%%%` comment fence.
+
+The shared vectors are in
+[`tests/lint-rule-vectors/unclosed-code-fence.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/unclosed-code-fence.json).
+
+### Refused continuation markers
+
+`continuation-marker-refused` reports a `+` that sits where PART 9 §17 L3
+reads a continuation marker, at the marker column of an open list item or
+definition description, or alone after the item marker in the first-block
+form (`- +`, `1. +`, `: +`), when the next line is blank or the input ends.
+PART 9 §17 L4 refuses the marker and ends the body. The block below the
+blank line is not attached, and the list or description ends at the `+`:
+
+```carve
+- item
++
+
+Meant for the item.
+```
+
+renders a one-item list and a paragraph after it. The finding is at the `+`.
+The message says what follows it, a `blank line` or the `end of the
+document`, and names the fix: delete the blank line to attach the next
+block, or delete the `+`.
+
+```txt
+doc.crv:2:1 continuation-marker-refused — This + attaches nothing: a blank line follows it, so the marker is refused and the list item ends here. Delete the blank line to attach the next block, or delete the +.
+```
+
+Not reported:
+
+- a `+` followed by a line that is not flush-left; L4 refuses that marker
+  too, but the line lands by the ordinary column rules and often stays in
+  the item;
+- a `+` in a block quote or a footnote body, where L4 makes it ordinary
+  text that renders;
+- a `+` inside a code fence's content column, which is payload.
+
+A `+` at the marker column under a fence that is still open is reported like
+any other: the marker is refused whatever the fence does with the blank line
+after it (markup-carve/carve#3400 settles that payload, not the refusal).
+
+The shared vectors are in
+[`tests/lint-rule-vectors/continuation-marker-refused.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/continuation-marker-refused.json).
 
 ### Declaring a target version
 
@@ -454,10 +542,12 @@ published page: the **caption of a captioned listing**, and the body of a
 
 ### Which implementations provide these rules
 
-All three engines provide `carve lint`. The 37 default triggers in
+All three engines provide `carve lint`. The default triggers in
 [`resources/lint-default-triggers.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-default-triggers.json)
 pass in the builds recorded in
-[`resources/lint-corpus-drift.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-corpus-drift.json).
+[`resources/lint-corpus-drift.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-corpus-drift.json),
+except the ones declared in
+[`resources/lint-parity-drift.txt`](https://github.com/markup-carve/carve/blob/main/resources/lint-parity-drift.txt).
 Those builds agree on 2,167 of the 2,168 corpus documents; the one declared
 difference is listed in the same file. Passing a trigger establishes that a rule
 can fire; corpus agreement does not establish correctness for every possible
@@ -472,7 +562,7 @@ input.
 `bibliography-placement-in-container` and `table-marker-run-padding` are
 specified but absent from these builds, and none of them reports
 `unresolved-reference-link` for a reference image yet. `consumed-key-near-miss`
-is in carve-js; carve-php and carve-rs port it next (markup-carve/carve#3340). The engines still emit
+is in carve-js; carve-php and carve-rs port it next (markup-carve/carve#3340). `unclosed-code-fence` and `continuation-marker-refused` are specified ahead of the engines (markup-carve/carve#3407); their default triggers are declared missing in `resources/lint-parity-drift.txt` until the pins carry them. The engines still emit
 `table-alignment-run-padding`. The broader Djot migration checks remain specific
 to carve-js. Diagnostic message wording is engine-specific; compare the rule id
 and source location.

@@ -10,8 +10,9 @@ Cross-engine vectors for single lint rules, one file per rule id, named
    linter reports them.
 3. Compare their `(line, column)` pairs with `expected.findings` exactly.
    Lines and columns are 1-based; columns count codepoints.
-4. Each finding's message must contain the expected `word` and the suggested
-   key in braces (`{table}`). The rest of the wording is the engine's own.
+4. For a `word`/`suggests` finding, the message must contain the word and the
+   suggested key in braces (`{table}`). For an `includes` finding, it must
+   contain every listed string. The rest of the wording is the engine's own.
 
 A vector with no expected findings is a negative: the rule must not fire.
 `tests/lint-rule-vectors.test.mjs` checks the shape and runs every vector
