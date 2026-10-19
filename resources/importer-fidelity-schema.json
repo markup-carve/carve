@@ -92,6 +92,11 @@
                       "type": "string",
                       "pattern": "^(?:line:[1-9][0-9]*|link:[^#]*#.+)$"
                     },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "When present, the report row's message must equal it exactly."
+                    },
                     "severity": {
                       "enum": [
                         "info",

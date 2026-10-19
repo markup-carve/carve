@@ -2753,6 +2753,306 @@
       }
     },
     {
+      "id": "bbcode-quote-attribution-nothing-left",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote user_id=9]y[/quote]",
+      "expected": {
+        "output": "> y\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the quote attribution field user_id."
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-space-opener",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote name=\"bob\" date=\"2020-01-01\" id=7]c[/quote]",
+      "expected": {
+        "output": "> c\n^ bob (2020-01-01) #7\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-unknown-field",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote=\"alice\" post_id=12 time=1700000000 user_id=3 foo=bar]q3[/quote]",
+      "expected": {
+        "output": "> q3\n^ alice (2023-11-14) #12\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the quote attribution field user_id."
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the quote attribution field foo."
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-only-unknown-field",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote foo=bar]x[/quote]",
+      "expected": {
+        "output": "> x\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the quote attribution field foo."
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-unix-time-wins",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote=\"alice\" date=\"2020-01-01\" time=1700000000]x[/quote]",
+      "expected": {
+        "output": "> x\n^ alice (2023-11-14)\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the quote attribution field date."
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-post-id-wins",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote=alice id=7 post_id=8]x[/quote]",
+      "expected": {
+        "output": "> x\n^ alice #8\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the quote attribution field id."
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-repeated-name",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote name=\"bob\" name=\"carl\"]x[/quote]",
+      "expected": {
+        "output": "> x\n^ bob\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the quote attribution field name."
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-text-beside-name",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote=z name=\"bob\" foo=bar]x[/quote]",
+      "expected": {
+        "output": "> x\n^ bob\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the unnamed quote attribution text \"z\", which an explicit name= replaced."
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the quote attribution field foo."
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-single-quoted",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote name='bob']x[/quote]",
+      "expected": {
+        "output": "> x\n^ bob\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-unquoted-values",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote name=bob date=2020-01-01]x[/quote]",
+      "expected": {
+        "output": "> x\n^ bob (2020-01-01)\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-author",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote author=alice post_id=3]x[/quote]",
+      "expected": {
+        "output": "> x\n^ alice #3\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "bbcode-quote-attribution-text-spacing",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote=Bob   Smith]x[/quote]",
+      "expected": {
+        "output": "> x\n^ Bob Smith\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
       "id": "link-fragment-case-rewritten",
       "sourceFormat": "markdown",
       "runner": "core",

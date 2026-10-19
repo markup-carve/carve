@@ -157,6 +157,84 @@ naming `user_id`, beside `fidelity-unverified`.
 Text inside `[code]`, `[c]` / `[icode]` and `[noparse]` is content, not
 attributes, so a quote tag spelled there reports nothing.
 
+### BBCode quote attribution reading
+
+Every BBCode importer MUST read a quote attribution the same way, so one tag
+converts to one caption and one report in every engine. The attribution is the
+text after `[quote=` or `[quote ` up to the closing `]`; both openers read it
+alike. It splits into parts at whitespace:
+
+- a **field** `key=value`: the key is an ASCII letter or `_` followed by ASCII
+  letters, digits, `_` or `-`, compared without regard to case. The value is
+  the text between a matching pair of `"` or `'` right after the `=`, or else
+  the run of non-whitespace characters after it;
+- **quoted text**: `"…"` or `'…'` up to the matching quote;
+- a **bare word**: any other run of non-whitespace characters.
+
+The quoted texts and bare words, in order and joined by single spaces, are the
+attribution's **text**. Fields map as follows; the first field of each kind
+wins, and a later one of the same kind is dropped.
+
+| Part | Reads as |
+| --- | --- |
+| `name=` or `author=` | the name |
+| the text, when no `name=` or `author=` is present | the name |
+| `post_id=` with an all-digit value | the post id |
+| `id=` with an all-digit value, when no `post_id=` is present | the post id |
+| quoted text that is only digits and opens the attribution (`[quote="9"]`), when no `post_id=` or `id=` is present | the post id |
+| `;` and digits ending the text (vBulletin `[quote=bob;123]`), when no other post id is present | the post id |
+| `date=` | the date, as written |
+| `time=` with a value of 9 to 11 digits | the date: Unix seconds as the UTC calendar day `YYYY-MM-DD` |
+| `time=` with any other value | a clock time, written after the `date=` value and a space, or alone |
+
+These are dropped:
+
+- `user_id=`, a `post_id=` or `id=` whose value is not all digits, and every
+  key the table does not name;
+- `id=` when `post_id=` is present;
+- `date=` when a Unix `time=` is present;
+- the text when `name=` or `author=` is present.
+
+The caption is `name (date) #id`, each part left out when it is absent and
+joined by single spaces. When all three are absent the quote gets no caption
+line: a bare `^` is not a caption and would render as text inside the quote.
+
+Each dropped part is one `bbcode-quote-field-dropped` diagnostic, in source
+order. A dropped field names its key as the source spells it:
+
+```text
+Dropped the quote attribution field user_id.
+```
+
+Dropped text is one diagnostic for the whole text, placed at its first part:
+
+```text
+Dropped the unnamed quote attribution text "bob", which an explicit name= replaced.
+```
+
+Where these rules come from:
+
+- phpBB's quote tag declares `author` (the `[quote="name"]` value), `post_id`,
+  `time` as Unix seconds, `user_id`, `msg_id` and URL fields
+  (`phpBB/phpbb/textformatter/s9e/factory.php`). Of those, only the author,
+  the post id and the time belong in a caption. A key phpBB does not declare,
+  such as `foo=bar`, is not part of the author's name, so it is dropped and
+  reported rather than printed.
+- `post_id=` is phpBB's post id field, so it wins over a generic `id=`. A Unix
+  `time=` is phpBB's post timestamp, so it wins over a `date=` that no phpBB
+  quote writes. Both drops match carve-php
+  ([carve-php#3545](https://github.com/markup-carve/carve-php/pull/3545)).
+- phpBB writes its named fields after a space and unquoted (`post_id=12`), so
+  a field reads the same quoted or not, and after either opener
+  (`[quote name="bob"]`).
+- No forum format decides a repeated key. carve-js keeps the first `name=` and
+  drops the second, and that reading holds for every key.
+- No forum format decides how the caption spaces its parts, so the gaps that
+  removed fields leave behind are not kept.
+
+The importer-fidelity manifest pins one row per reading that the engines
+disagreed on ([carve#3341](https://github.com/markup-carve/carve/issues/3341)).
+
 ### Markdown heading fragment fixups
 
 Carve keeps a heading's case in its id, while GitHub and most Markdown tools

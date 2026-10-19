@@ -56,13 +56,97 @@ const classes = new Map([
   ['bbcode-quote-field-dropped', { severity: 'warning', fidelity: 'dropped', confidence: 'exact' }],
   ['link-fragment-case-rewritten', { severity: 'info', fidelity: 'normalized', confidence: 'inferred', path: /^link:[^#]*#.+$/ }],
 ])
-// Rows whose ruled report the pinned engines do not write yet. `pinned` is what they
-// write instead, compared exactly; once an engine writes the ruled report the row fails
-// until that engine is removed here, in the commit that moves its pin.
+// Rows whose ruled report the pinned engines do not write yet. `pinned` is what the
+// listed `engines` write instead, `byEngine` the same per engine, compared exactly; once
+// an engine writes the ruled report the row fails until that engine is removed here, in
+// the commit that moves its pin.
+const UNVERIFIED = { code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }
+const QUOTE_FIELD_LOSS = { code: 'bbcode-quote-field-dropped', severity: 'warning', fidelity: 'dropped', confidence: 'exact', path: 'line:1' }
 const AHEAD_OF_PIN = {
   'bbcode-quote-field-dropped': {
     engines: ['js', 'php'],
     pinned: { diagnostics: [{ code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }] },
+  },
+  // carve#3341: one attribution reading across the three BBCode importers.
+  'bbcode-quote-attribution-nothing-left': {
+    byEngine: {
+      js: { output: '> y\n^\n', diagnostics: [UNVERIFIED] },
+      rust: { diagnostics: [UNVERIFIED, { ...QUOTE_FIELD_LOSS, message: 'The BBCode quote user_id cannot be represented in Carve and was dropped.' }] },
+      php: { output: '> y\n^\n', diagnostics: [UNVERIFIED] },
+    },
+  },
+  'bbcode-quote-attribution-space-opener': {
+    byEngine: {
+      js: { output: '> c\n^ name=\\"bob\\" date=\\"2020-01-01\\" #7\n' },
+    },
+  },
+  'bbcode-quote-attribution-unknown-field': {
+    byEngine: {
+      js: { output: '> q3\n^ alice foo=bar (2023-11-14) #12\n', diagnostics: [UNVERIFIED] },
+      rust: { output: '> q3\n^ "alice"    foo=bar (2023-11-14) #12\n', diagnostics: [UNVERIFIED, { ...QUOTE_FIELD_LOSS, message: 'The BBCode quote user_id cannot be represented in Carve and was dropped.' }] },
+      php: { output: '> q3\n^ "alice"    foo=bar (2023-11-14) #12\n', diagnostics: [UNVERIFIED] },
+    },
+  },
+  'bbcode-quote-attribution-only-unknown-field': {
+    byEngine: {
+      js: { output: '> x\n^ foo=bar\n', diagnostics: [UNVERIFIED] },
+      rust: { output: '> x\n^ foo=bar\n', diagnostics: [UNVERIFIED] },
+      php: { output: '> x\n^ foo=bar\n', diagnostics: [UNVERIFIED] },
+    },
+  },
+  'bbcode-quote-attribution-unix-time-wins': {
+    byEngine: {
+      js: { output: '> x\n^ alice (2020-01-01 1700000000)\n', diagnostics: [UNVERIFIED] },
+      rust: { diagnostics: [UNVERIFIED] },
+      php: { diagnostics: [UNVERIFIED] },
+    },
+  },
+  'bbcode-quote-attribution-post-id-wins': {
+    byEngine: {
+      js: { output: '> x\n^ alice  post_id=8 #7\n', diagnostics: [UNVERIFIED] },
+      rust: { output: '> x\n^ alice  post_id=8 #7\n', diagnostics: [UNVERIFIED] },
+      php: { diagnostics: [UNVERIFIED] },
+    },
+  },
+  'bbcode-quote-attribution-repeated-name': {
+    byEngine: {
+      js: { output: '> x\n^ name=\\"bob\\" name=\\"carl\\"\n', diagnostics: [UNVERIFIED] },
+      rust: { diagnostics: [UNVERIFIED] },
+      php: { diagnostics: [UNVERIFIED] },
+    },
+  },
+  'bbcode-quote-attribution-text-beside-name': {
+    byEngine: {
+      js: { diagnostics: [UNVERIFIED] },
+      rust: { diagnostics: [UNVERIFIED] },
+      php: { diagnostics: [UNVERIFIED] },
+    },
+  },
+  'bbcode-quote-attribution-single-quoted': {
+    byEngine: {
+      js: { output: '> x\n^ name=\\\'bob\\\'\n' },
+    },
+  },
+  'bbcode-quote-attribution-unquoted-values': {
+    byEngine: {
+      js: { output: '> x\n^ name=bob date=2020-01-01\n' },
+      rust: { output: '> x\n^ name=bob date=2020-01-01\n' },
+      php: { output: '> x\n^ name=bob date=2020-01-01\n' },
+    },
+  },
+  'bbcode-quote-attribution-author': {
+    byEngine: {
+      js: { output: '> x\n^ author=alice #3\n' },
+      rust: { output: '> x\n^ author=alice #3\n' },
+      php: { output: '> x\n^ author=alice #3\n' },
+    },
+  },
+  'bbcode-quote-attribution-text-spacing': {
+    byEngine: {
+      js: { output: '> x\n^ Bob   Smith\n' },
+      rust: { output: '> x\n^ Bob   Smith\n' },
+      php: { output: '> x\n^ Bob   Smith\n' },
+    },
   },
   'link-fragment-case-rewritten': {
     engines: ['js', 'rust', 'php'],
@@ -103,7 +187,9 @@ for (const id of Object.keys(AHEAD_OF_PIN)) assert.ok(manifest.cases.some(row =>
 const covered = new Set()
 for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
   for (const fixture of manifest.cases.filter(row => row.runner === 'core')) {
-    const ahead = AHEAD_OF_PIN[fixture.id]?.engines.includes(engine) ? AHEAD_OF_PIN[fixture.id][engine] ?? AHEAD_OF_PIN[fixture.id].pinned : {}
+    const entry = AHEAD_OF_PIN[fixture.id]
+    const pinned = entry?.engines?.includes(engine) ? entry[engine] ?? entry.pinned : entry?.byEngine?.[engine]
+    const ahead = pinned ?? {}
     const expected = { ...fixture.expected, ...fixture.expected.engines?.[engine], ...ahead }
     const result = spawnSync(command, [...prefix, 'migrate', '--from', fixture.sourceFormat, '--report', '-', '--check-loss'],
       { input: fixture.input, encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 })
@@ -115,12 +201,14 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
     assert.ok(validateReport(report), `${context}: ${JSON.stringify(validateReport.errors)}`)
     assert.equal(report.sourceFormat, fixture.sourceFormat, context)
     assert.equal(result.stdout, expected.output, context)
-    const diagnostics = report.diagnostics.map(({ code, severity, fidelity, confidence, path }) => ({ code, severity, fidelity, confidence, ...(path ? { path } : {}) }))
-    assert.deepEqual(diagnostics, expected.diagnostics, `${context}${AHEAD_OF_PIN[fixture.id]?.engines.includes(engine) ? ' (AHEAD_OF_PIN: if this engine now writes the ruled report, remove it from the entry)' : ''}`)
+    const diagnostics = report.diagnostics.map(({ code, severity, fidelity, confidence, path, message }, index) => ({
+      code, severity, fidelity, confidence, ...(path ? { path } : {}), ...(expected.diagnostics[index]?.message !== undefined ? { message } : {}),
+    }))
+    assert.deepEqual(diagnostics, expected.diagnostics, `${context}${pinned ? ' (AHEAD_OF_PIN: if this engine now writes the ruled report, remove it from the entry)' : ''}`)
     for (const row of report.diagnostics) {
       assert.ok(row.message.length > 0, context)
       if (row.code === 'structure-unspellable' && fixture.id.includes('ordered-task')) assert.equal(row.message, 'An ordered task item is not spellable as a Carve task item; the checkbox marker was kept as text', context)
-      if (row.code === 'bbcode-quote-field-dropped') assert.ok(row.message.includes('user_id'), `${context}: the message names the dropped field`)
+      if (row.code === 'bbcode-quote-field-dropped' && fixture.id === 'bbcode-quote-field-dropped') assert.ok(row.message.includes('user_id'), `${context}: the message names the dropped field`)
       if (row.code === 'link-fragment-case-rewritten') assert.equal(row.message, FIXUP_MESSAGES[fixture.id], context)
       const contract = classes.get(row.code)
       if (!contract) {
