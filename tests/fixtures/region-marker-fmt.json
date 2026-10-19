@@ -118,6 +118,24 @@
         "q": "::: >\nx\n:::\n"
       },
       "aheadOfPin": true
+    },
+    {
+      "id": "a-definition-above-a-marker-in-a-figure-group-stays",
+      "source": "[ref]: /u\n\n::: figure\n%% #region r\n![a](a.png)\n^ A\n\n%% #endregion r\n:::\n\nSee [it][ref].\n",
+      "fmt": "[ref]: /u\n\n::: figure\n%% #region r\n![a](a.png)\n^ A\n\n%% #endregion r\n:::\n\nSee [it][ref].\n",
+      "regions": {
+        "r": "![a](a.png)\n^ A\n\n"
+      },
+      "aheadOfPin": true
+    },
+    {
+      "id": "a-definition-above-a-marker-in-a-line-block-stays",
+      "source": "[ref]: /u\n\n::: |\n%% #region r\nLine one\n%% #endregion r\n:::\n\nSee [it][ref].\n",
+      "fmt": "[ref]: /u\n\n::: |\n%% #region r\nLine one\n%% #endregion r\n:::\n\nSee [it][ref].\n",
+      "regions": {
+        "r": "Line one\n"
+      },
+      "aheadOfPin": true
     }
   ]
 }
