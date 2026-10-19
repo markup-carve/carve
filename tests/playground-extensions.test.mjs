@@ -82,14 +82,14 @@ test('the Playground highlights CSV directly and inside Carve fences', async () 
     const csv = highlighter.codeToTokens('Plan,Seats\nTeam,"a, b"\n', {
       lang: 'csv', theme: 'github-light', includeExplanation: true,
     }).tokens
-    assert.ok(hasScope(csv, ',', 'punctuation.separator.delimiter.csv'))
+    assert.ok(hasScope(csv, ',', 'keyword.operator.separator.csv'))
     assert.ok(hasScope(csv, 'a, b', 'string.quoted.double.csv'))
 
     const source = '{table}\n```csv\nPlan,Seats\nTeam,"a, b"\n```\n'
     const carve = highlighter.codeToTokens(source, {
       lang: 'carve', theme: 'github-light', includeExplanation: true,
     }).tokens
-    assert.ok(hasScope(carve, ',', 'punctuation.separator.delimiter.csv'))
+    assert.ok(hasScope(carve, ',', 'keyword.operator.separator.csv'))
   } finally {
     highlighter.dispose()
   }
