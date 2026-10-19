@@ -2792,6 +2792,32 @@
         ],
         "exit": 0
       }
+    },
+    {
+      "id": "link-fragment-case-rewritten-names-the-authored-spelling",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "# Über Uns\n\nSee [a](#über-uns).\n",
+      "expected": {
+        "output": "# Über Uns\n\nSee [a](#%C3%9Cber-Uns).\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "link-fragment-case-rewritten",
+            "severity": "info",
+            "fidelity": "normalized",
+            "confidence": "inferred",
+            "path": "link:#über-uns"
+          }
+        ],
+        "exit": 0
+      }
     }
   ]
 }

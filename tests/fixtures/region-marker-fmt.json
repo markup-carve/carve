@@ -73,6 +73,51 @@
         "steps": "- one\n"
       },
       "aheadOfPin": true
+    },
+    {
+      "id": "a-definition-in-a-region-stays-in-it",
+      "source": "%% #region r\n[ref]: /u\n%% #endregion r\n\nSee [it][ref].\n",
+      "fmt": "%% #region r\n[ref]: /u\n%% #endregion r\n\nSee [it][ref].\n",
+      "regions": {
+        "r": "[ref]: /u\n"
+      },
+      "aheadOfPin": true
+    },
+    {
+      "id": "a-footnote-in-a-region-stays-in-it",
+      "source": "%% #region f\n[^f]: note\n\n%% #endregion f\n\nSee[^f].\n",
+      "fmt": "%% #region f\n[^f]: note\n\n%% #endregion f\n\nSee[^f].\n",
+      "regions": {
+        "f": "[^f]: note\n\n"
+      },
+      "aheadOfPin": true
+    },
+    {
+      "id": "a-closer-under-a-table-stays-adjacent",
+      "source": "%% #region t\n| a | b |\n%% #endregion t\n",
+      "fmt": "%% #region t\n| a | b |\n%% #endregion t\n",
+      "regions": {
+        "t": "| a | b |\n"
+      },
+      "aheadOfPin": true
+    },
+    {
+      "id": "a-closer-under-a-closed-div-stays-adjacent",
+      "source": "%% #region d\n::: note\nx\n:::\n%% #endregion d\n",
+      "fmt": "%% #region d\n::: note\nx\n:::\n%% #endregion d\n",
+      "regions": {
+        "d": "::: note\nx\n:::\n"
+      },
+      "aheadOfPin": true
+    },
+    {
+      "id": "a-closer-under-a-fenced-quote-stays-adjacent",
+      "source": "%% #region q\n::: >\nx\n:::\n%% #endregion q\n",
+      "fmt": "%% #region q\n::: >\nx\n:::\n%% #endregion q\n",
+      "regions": {
+        "q": "::: >\nx\n:::\n"
+      },
+      "aheadOfPin": true
     }
   ]
 }
