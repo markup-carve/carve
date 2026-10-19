@@ -209,7 +209,9 @@ order. A dropped field names its key as the source spells it:
 Dropped the quote attribution field user_id.
 ```
 
-Dropped text is one diagnostic for the whole text, placed at its first part:
+Dropped text is one diagnostic per quoted text and one per run of adjacent
+bare words, joined by single spaces, placed at its first part. A vBulletin
+`;` and digits read as the post id are not part of it:
 
 ```text
 Dropped the unnamed quote attribution text "bob", which an explicit name= replaced.

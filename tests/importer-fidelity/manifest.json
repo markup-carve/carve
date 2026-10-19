@@ -3004,6 +3004,49 @@
       }
     },
     {
+      "id": "bbcode-quote-attribution-text-runs-beside-name",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote=\"bob\" name=\"alice\" foo=bar stray words]x[/quote]",
+      "expected": {
+        "output": "> x\n^ alice\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the unnamed quote attribution text \"bob\", which an explicit name= replaced."
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the quote attribution field foo."
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the unnamed quote attribution text \"stray words\", which an explicit name= replaced."
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
       "id": "bbcode-quote-attribution-single-quoted",
       "sourceFormat": "bbcode",
       "runner": "core",

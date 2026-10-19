@@ -129,6 +129,10 @@ const AHEAD_OF_PIN = {
       php: { diagnostics: [UNVERIFIED] },
     },
   },
+  'bbcode-quote-attribution-text-runs-beside-name': {
+    engines: ['js', 'rust', 'php'],
+    pinned: { diagnostics: [UNVERIFIED] },
+  },
   'bbcode-quote-attribution-single-quoted': {
     byEngine: {
       js: { output: '> x\n^ name=\\\'bob\\\'\n' },
