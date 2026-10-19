@@ -28,3 +28,9 @@
 621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-2  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
 621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-3  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
 621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-4  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
+622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-5  carve#3369: pinned reader leaves the caption outside the attached fence.
+622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-6  carve#3369: pinned reader leaves the caption outside the attached fence.
+622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-7  carve#3369: pinned reader leaves the caption outside the attached fence.
+622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-8  carve#3369: pinned reader leaves the caption outside the attached fence.
+623-a-lazily-folded-fence-opener-line-does-not-keep-a-list-tight  carve#3370: pinned looseness scan treats a folded fence line as an open fence.
+623-a-lazily-folded-fence-opener-line-does-not-keep-a-list-tight-2  carve#3370: pinned looseness scan treats a folded fence line as an open fence.

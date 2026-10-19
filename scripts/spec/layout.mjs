@@ -796,6 +796,9 @@ function parseColonOpener(tail) {
   return { type: recovered[1], title: null, label: null, mode: 'div', invalidMetadata: true }
 }
 
+const isFigureGroupOpener = (opener) => opener?.type === 'figure' &&
+  !opener.invalidMetadata && opener.title === null && opener.label === null
+
 function parseValidColonOpener(tail) {
   let s = tail
   const out = { type: null, title: null, label: null, mode: 'div' }
@@ -1857,7 +1860,7 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
       }
     }
     const code = FENCE.exec(line)
-    if (!lines[k].startsWith(LAZY) && code && parseFenceInfo(code[2]) !== null) opaque = { kind: 'code', run: code[1], column: measured.col, base: columns.at(-1) }
+    if (!lines[k].startsWith(LAZY) && !scan.foldedFences?.has(k) && code && parseFenceInfo(code[2]) !== null) opaque = { kind: 'code', run: code[1], column: measured.col, base: columns.at(-1) }
     else {
       const comment = COMMENT_FENCE_BODY.exec(line)
       if (comment && (commentFenceCloserAhead(lines, k, comment[1]) || hasFutureCommentCloser(comment[1], columns.at(-1)))) opaque = { kind: 'comment', run: comment[1] }
@@ -3886,8 +3889,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           } else if (opener.type === 'toc') {
             throw new Refuse('::: toc directive')
           } else if (
-            !opener.invalidMetadata && opener.type === 'figure' && opener.title === null && opener.label === null &&
-            !state.inFigureGroup
+            isFigureGroupOpener(opener) && !state.inFigureGroup
           ) {
             // PART 9 SS4c: a BARE `::: figure` opener is a composite figure
             // group. An opener carrying a quoted title or [label] does not
@@ -6103,14 +6105,22 @@ function collectItems(lines, i, list, state, ind, meas) {
       // inside the extent and they are two blocks; the `+` takes the first, and
       // the second needs a `+` of its own. The item's boundary set adds its
       // sibling marker to the shared one (carve#1782).
-      const end = attachedBlockEnd(lines, i, state, (idx) =>
+      let end = attachedBlockEnd(lines, i, state, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i))
+      const attached = lines.slice(i, end)
+      const codeMatch = FENCE.exec(attached[0] ?? '')
+      const code = codeMatch && parseFenceInfo(codeMatch[2]) !== null ? codeMatch : null
+      const colon = COLON_FENCE.exec(attached[0] ?? '')
+      const unclosedAttached = code && i + 1 < n && !hasCloser(lines.slice(i), 0) && !lines.slice(i).some(isBlank)
+      if (unclosedAttached) end = n
+      const captionable = code ? hasCloser(attached, 0) : colon && isFigureGroupOpener(parseColonOpener(colon[2])) && COLON_CLOSER.test(attached.at(-1) ?? '')
+      if (captionable && CAPTION.test(lines[end] ?? '')) end++
       for (; i < end; i++) {
         // attached VERBATIM, so the line keeps the measurement it has here
         pushLine(lines[i], ind(i))
       }
-      pushLine('', BLANK_MEAS)
+      if (!unclosedAttached) pushLine('', BLANK_MEAS)
       closePara()
       return true
     }
@@ -6563,9 +6573,11 @@ function collectItems(lines, i, list, state, ind, meas) {
           else absorbedNoteFence = true
         }
         const inNoteBody = i <= noteFenceEnd || absorbedNoteFence
+        const priorContent = (lines[i - 1] ?? '').replace(/^(?:[ \t]*>[ \t]?)+/, '')
+        const foldedChildFence = markerLineFence === null && !isBlank(priorContent) && !PURE_FENCE.test(priorContent.trimStart()) && descLive && deepestParagraphOpen() && col < (subCol >= 0 ? subCol : headSubCol) && FENCE.test(lm.rest) &&
+          !fenceCloserFollows(i, dedentMeasured(lm, lines[i], col).text, col)
         const mayOpenAuthoredBlock = !inNoteBody && !foldsIntoLeadTerm && !descendantOwned &&
-          !(descLive && deepestParagraphOpen() && col < subCol && FENCE.test(lm.rest) &&
-            !fenceCloserFollows(i, dedentMeasured(lm, lines[i], col).text, col)) &&
+          !foldedChildFence &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest)
         if (pendingHeadQuote !== null && mayOpenAuthoredBlock) {
           const start = pendingHeadQuote
@@ -6722,7 +6734,6 @@ function collectItems(lines, i, list, state, ind, meas) {
         // The item's own parse asks I4 over the item's lines, and a closer the
         // lookahead found past a below-column line is not among them. Hand it
         // the answer given here so the line is read one way (carve#1399).
-        if (opens) fenceOpensAt.add(itemLines.length - 1)
         // Did this line ARRIVE inside an open comment span? Its payload is
         // opaque (PART 0) and its closer travels with its opener
         // (CARVE-P9-053), so neither may touch the paragraph or the
@@ -6736,7 +6747,6 @@ function collectItems(lines, i, list, state, ind, meas) {
         if (belowCloser) { belowSpan = null; belowSpanClosed = true }
         const inNestedComment = commentHoldsLine(nestedOpaque, dmeas)
         const inCommentSpan = fence.opaque?.kind === 'comment' || inNestedComment
-        if (!belowCloser && !inNestedComment) trackFence(dedented, opens, i)
         // Read with the paragraph state this line ARRIVED with, exactly as
         // `bodyFenceOpens` above is; the chain below then answers for the line.
         const wasNested = nestedOpaque
@@ -6748,6 +6758,9 @@ function collectItems(lines, i, list, state, ind, meas) {
         // spelling of "a known descendant item owns this column".
         absorbedFenceSeen = null
         if (!inPayload) nestedOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody)
+        if ((absorbedFenceSeen && !fence.opaque) || foldedChildFence) (residueFence.foldedFences ??= new Set()).add(itemLines.length - 1)
+        if (opens && !absorbedFenceSeen && !foldedChildFence) fenceOpensAt.add(itemLines.length - 1)
+        if (!belowCloser && !inNestedComment && (!absorbedFenceSeen || fence.opaque) && !foldedChildFence) trackFence(dedented, opens, i)
         // ADVANCE. One line the descendant takes, in the descendant's own
         // coordinates, which is what makes the state readable at its column.
         // A COMMENT SPAN WRITTEN BELOW THIS COLUMN IS NOT THE DESCENDANT'S. Its
@@ -6826,7 +6839,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // the colon fence. This branch tested the line's SHAPE, so an
         // unterminated fence the paragraph had ABSORBED closed it anyway.
         else if (isCodeBlockOpener(dedented)) {
-          if (inPayload || fence.opaque?.payload) openParaWith(dedented)
+          if (foldedChildFence || inPayload || fence.opaque?.payload) openParaWith(dedented)
           else if (fence.opaque && fence.opaque.kind === 'code' && fence.opaque.opens === false) {
             openParaWith(dedented)
           } else closePara()

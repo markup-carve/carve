@@ -1,0 +1,209 @@
+A caption after a continuation marker fence stays with the fence
+
+````
+- x
+  ```
+  x
+  ```
+
+  ^ cap
+- c
+.
+<ul>
+  <li>x
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+````
+
+````
+- x
+  ```
+  x
+  ```
+  ^ cap
+- c
+.
+<ul>
+  <li>x
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+````
+
+```
+- x
+  ~~~
+  x
+  ~~~
+  ^ cap
+- c
+.
+<ul>
+  <li>x
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+````
+- - text
+  ```
+  x
+  ```
+  ^ cap
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+````
+
+````
+- x
++
+```
+x
+```
+^ cap
+- c
+.
+<ul>
+  <li>x
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+````
+
+````
+- +
+```
+x
+```
+^ cap
+- c
+.
+<ul>
+  <li>
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+````
+
+```
+1. x
++
+~~~
+x
+~~~
+^ cap
+2. c
+.
+<ol>
+  <li>x
+    <figure>
+      <pre><code>x
+</code></pre>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ol>
+```
+
+```
+- x
++
+::: figure
+![a](b.png)
+:::
+^ cap
+- c
+.
+<ul>
+  <li>x
+    <figure class="carve-figure-group">
+      <img src="b.png" alt="a">
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- x
++
+::: figure [label]
+hi
+:::
+^ cap
+- c
+.
+<ul>
+  <li>x
+    <div class="figure">
+      <p class="div-label">label</p>
+      <p>hi</p>
+    </div>
+  </li>
+</ul>
+<p>^ cap
+- c</p>
+```
+
+```
+- x
++
+::: figure "t"
+hi
+:::
+^ cap
+- c
+.
+<ul>
+  <li>x
+    <div class="figure">
+      <p class="admonition-title">t</p>
+      <p>hi</p>
+    </div>
+  </li>
+</ul>
+<p>^ cap
+- c</p>
+```

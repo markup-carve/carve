@@ -1,0 +1,84 @@
+A lazily folded fence opener line does not keep a list tight
+
+````
+- - text
+  ```
+  x
+
+  cap
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text
+<code>
+x</code></li>
+    </ul>
+    <p>cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+````
+
+```
+- - text
+  ~~~
+  x
+
+  cap
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text
+~~~
+x</li>
+    </ul>
+    <p>cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+```
+- - text
+  ![i](x.png)
+  x
+
+  cap
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text
+<img src="x.png" alt="i">
+x</li>
+    </ul>
+    <p>cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+````
+- - text
+  ```
+  x
+  cap
+- c
+.
+<ul>
+  <li>
+    <ul>
+      <li>text
+<code>
+x
+cap</code></li>
+    </ul>
+  </li>
+  <li>c</li>
+</ul>
+````

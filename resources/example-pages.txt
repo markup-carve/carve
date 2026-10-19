@@ -260,6 +260,20 @@ index: examples/edge-cases/index.md
 > Markers, looseness, the content-column model, continuation markers and block openers inside items.
 out: examples/edge-cases/lists.md
 index: examples/edge-cases/index.md
+  622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence
+  622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-2
+  622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-3
+  622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-4
+  622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-5
+  622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-6
+  622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-7
+  622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-8
+  622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-9
+  622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-10
+  623-a-lazily-folded-fence-opener-line-does-not-keep-a-list-tight
+  623-a-lazily-folded-fence-opener-line-does-not-keep-a-list-tight-2
+  623-a-lazily-folded-fence-opener-line-does-not-keep-a-list-tight-3
+  623-a-lazily-folded-fence-opener-line-does-not-keep-a-list-tight-4
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3
