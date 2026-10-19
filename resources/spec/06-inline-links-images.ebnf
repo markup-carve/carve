@@ -81,7 +81,10 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    `@{#` and ending at its first unescaped `}` outside a quoted selector
    that fails this grammar is one
    literal source run, including any inline marks within it; without a closing
-   brace, ordinary inline parsing applies. The optional attribute run attaches to the
+   brace before a line break, ordinary inline parsing applies. Every unescaped
+   `"` after `@{#` toggles quote state while finding the candidate's end;
+   a line break ends that scan even when a quote remains open. A decimal
+   selector above 9007199254740991 is rejected here as malformed. The optional attribute run attaches to the
    reference; `{code}` is consumed as its inline-code presentation flag. *)
 table_cell_ref = '@{#', explicit_identifier, '[', cell_ref_selector, ']',
                  '[', cell_ref_selector, ']', '}', [attribute_run] ;

@@ -36,15 +36,18 @@
    own renamed table follows the rename under CARVE-P6-001 I5.
 
    Decimal selectors count from 1. A decimal selector greater than
-   9007199254740991 is malformed; this bound keeps its AST integer exact in
+   9007199254740991 is rejected during inline parsing; this bound keeps its AST integer exact in
    every conforming engine. A row selector counts body rows only,
    excluding every header and footer row; a column selector counts grid
    columns, including positions covered by a span. A covered position reads
    the origin cell once. A ragged row's generated padding is not an authored
    cell and has no value. Out-of-range and missing positions are unresolved.
 
-   A quoted column selector names the plain text of a cell in the final
-   leading header row. It matches exactly, without trimming, case folding or
+   A quoted column selector names the plain text of a cell at a grid position
+   in the final leading header row. A position covered by a span uses its
+   origin cell, including an origin in an earlier header row. A header cell
+   spanning multiple columns supplies the same name at each covered position,
+   making that name ambiguous. Matching is exact, without trimming, case folding or
    numeric conversion. A headerless table has no column names. Empty or
    duplicate header names cannot be selected by name; numeric selectors are
    still available. A quoted row selector names a body-cell value in the
@@ -52,7 +55,9 @@
    consumed table metadata, never an emitted HTML attribute. An explicit
    `row-key` that names no unique nonempty header fails closed and does not
    fall back to the first column. Every candidate key cell MUST be authored,
-   unspanned, plain text, nonempty and unique. No key value is trimmed or
+   unspanned, plain text, nonempty and unique. Here, plain text permits only
+   text, escaped text and smart punctuation inline nodes; emphasis, links,
+   code and references invalidate the key cell. No key value is trimmed or
    coerced. If any candidate is invalid, all named row selections against
    that table are unresolved; positional selections remain available.
 
@@ -76,7 +81,7 @@
    a source-cell stack. Reaching a cell already on that stack is a cycle, not
    an invitation to rescan indefinitely. A malformed complete `@{#...}`
    candidate is rejected during inline parsing and reported there; the
-   remaining errors arise during resolution. A cycle, malformed selector, absent
+   remaining errors arise during resolution. A cycle, absent
    table, invalid key, ambiguous name, missing cell or block-content cell
    emits a diagnostic with the selector and reason, and renders the complete
    authored reference literally. Strict validation fails on the same error.
