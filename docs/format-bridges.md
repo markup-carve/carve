@@ -162,7 +162,8 @@ attributes, so a quote tag spelled there reports nothing.
 Every BBCode importer MUST read a quote attribution the same way, so one tag
 converts to one caption and one report in every engine. The attribution is the
 text after `[quote=` or `[quote ` up to the closing `]`; both openers read it
-alike. It splits into parts at whitespace:
+alike. It splits into parts at ASCII whitespace (space, tab, line feed, form
+feed, carriage return):
 
 - a **field** `key=value`: the key is an ASCII letter or `_` followed by ASCII
   letters, digits, `_` or `-`, compared without regard to case. The value is
@@ -171,8 +172,8 @@ alike. It splits into parts at whitespace:
 - **quoted text**: `"…"` or `'…'` up to the matching quote;
 - a **bare word**: any other run of non-whitespace characters.
 
-The quoted texts and bare words, in order and joined by single spaces, are the
-attribution's **text**. Fields map as follows; the first field of each kind
+The non-empty quoted texts and bare words, in order and joined by single
+spaces, are the attribution's **text**. Fields map as follows; the first field of each kind
 wins, and a later one of the same kind is dropped.
 
 | Part | Reads as |
@@ -189,8 +190,8 @@ wins, and a later one of the same kind is dropped.
 
 These are dropped:
 
-- `user_id=`, a `post_id=` or `id=` whose value is not all digits, and every
-  key the table does not name;
+- `user_id=`, a field with an empty value, a `post_id=` or `id=` whose value
+  is not all ASCII digits, and every key the table does not name;
 - `id=` when `post_id=` is present;
 - `date=` when a Unix `time=` is present;
 - the text when `name=` or `author=` is present.
