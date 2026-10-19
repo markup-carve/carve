@@ -77,13 +77,15 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    is parsed before mention/tag recognition. It is an ordinary inline node,
    including inside emphasis, headings, link labels and table cells, but code
    spans, code blocks, raw payloads, destinations and attribute values remain
-   opaque. An escaped at sign prevents recognition. A malformed candidate stays
-   literal as one source run. The optional attribute run attaches to the
+   opaque. An escaped at sign prevents recognition. A candidate beginning
+   `@{#` and ending at its first unescaped `}` that fails this grammar is one
+   literal source run, including any inline marks within it; without a closing
+   brace, ordinary inline parsing applies. The optional attribute run attaches to the
    reference; `{code}` is consumed as its inline-code presentation flag. *)
 table_cell_ref = '@{#', explicit_identifier, '[', cell_ref_selector, ']',
                  '[', cell_ref_selector, ']', '}', [attribute_run] ;
 cell_ref_selector = positive_decimal | '"', {cell_ref_quoted_char}, '"' ;
-cell_ref_quoted_char = ('\\', ('"' | '\\')) | (character - ('"' | '\\' | newline)) ;
+cell_ref_quoted_char = ('\', ('"' | '\')) | (character - ('"' | '\' | newline)) ;
 positive_decimal = ('1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'), {digit} ;
 (* UNCLOSED RUN. An opener with no equal-length closer ANYWHERE LATER IN THE
    BLOCK is NOT literal text: it opens a verbatim span that runs to
@@ -153,7 +155,8 @@ link_text = {inline_element | text_run | literal_special} ;
      (dest "title")    a link or image destination slot
      <url> <a@b> </#id> an autolink or a cross-reference, through its `>`
 
-   A `]` inside any of them is content, not the close.
+   A `]` inside any of them is content, not the close. The scan also skips
+   a complete table-cell reference, whose quoted selector may contain `]`.
 
    Literal content recognizes no escapes; every future literal construct
    joins this set. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so

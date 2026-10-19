@@ -29,8 +29,8 @@
  *   - a STALE allowlist entry that now renders -> the allowlist is out of date;
  *     remove the entry so the ratchet keeps its grip.
  * This locks in coverage: once an input is conformant it can never silently
- * regress to REFUSED. The allowlist is empty because every corpus input is
- * currently inside the executable subset.
+ * regress to REFUSED. The table-cell projection corpus pairs are deliberately
+ * refused until the executable inline and resolution passes support them.
  *
  * Usage: node scripts/formal-core-check.mjs [--list] [--diff]
  */

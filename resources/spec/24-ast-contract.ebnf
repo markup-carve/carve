@@ -541,10 +541,14 @@
    exact authored `@{...}` run, including the selector escapes, so an
    unresolved reference can be shown without access to its original bytes.
    Optional `value` holds the resolved plain-text scalar, including an empty
-   string for an authored empty cell. Absent `value` means unresolved. `attrs`
+   string for an authored empty cell. Absent `value` means either not yet
+   resolved or unresolved; a renderer MUST resolve the document before output
+   and MUST NOT trust a supplied `value` without resolving it again. `attrs`
    retains the trailing attribute run; the `code` boolean is semantic only
    on this node and is not emitted as an output attribute. `pos` follows
    PART 12 §4. A reader MUST NOT accept a zero, negative or fractional
-   positional selector in this node. The canonical Carve writer writes
+   positional selector in this node. On ingest, a reader MUST parse `source`
+   and reject the node if its decoded target or selectors disagree with the
+   separate fields. The canonical Carve writer writes
    `source`, then any trailing attributes, preserving the projection rather
    than freezing `value` into text. *)

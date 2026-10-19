@@ -2747,6 +2747,7 @@ function normalizeSource(src) {
  */
 export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) {
   src = normalizeSource(src)
+  if (src.includes('@{#')) throw new Refuse('table cell references are outside the executable subset')
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') lines.pop()
   const state = {

@@ -923,27 +923,12 @@
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": [
-              "offset",
-              "line"
-            ],
+            "required": ["offset", "line"],
             "properties": {
-              "offset": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "line": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "row": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "col": {
-                "type": "integer",
-                "minimum": 1
-              }
+              "offset": { "type": "integer", "minimum": 0 },
+              "line": { "type": "integer", "minimum": 1 },
+              "row": { "type": "integer", "minimum": 1 },
+              "col": { "type": "integer", "minimum": 1 }
             },
             "additionalProperties": false
           },
@@ -1015,11 +1000,7 @@
           "description": "True for the braced `{% … %}` inline form (PART 9 §21a). Absent means the trailing `%%` form. An author-choice field: the two spell different documents, since `%%` runs to the end of its inline run and the braced form ends at its closer, so a writer has to reproduce the one that was written."
         },
         "form": {
-          "enum": [
-            "block",
-            "line",
-            "braced"
-          ],
+          "enum": ["block", "line", "braced"],
           "description": "Which comment spelling produced the node: `block` for the fenced `%%%` form, `line` for the trailing `%%` form, `braced` for `{% … %}` (PART 9 §21a). Added in contract 1.2 beside `block` and `delimited`, which stay: a writer emits all three, and a reader refuses a node where `form` disagrees with them (`block` is true exactly when `form` is `block`; `delimited` is true exactly when `form` is `braced`)."
         },
         "content": {
@@ -2702,27 +2683,12 @@
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": [
-              "offset",
-              "line"
-            ],
+            "required": ["offset", "line"],
             "properties": {
-              "offset": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "line": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "row": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "col": {
-                "type": "integer",
-                "minimum": 1
-              }
+              "offset": { "type": "integer", "minimum": 0 },
+              "line": { "type": "integer", "minimum": 1 },
+              "row": { "type": "integer", "minimum": 1 },
+              "col": { "type": "integer", "minimum": 1 }
             },
             "additionalProperties": false
           },
@@ -2920,27 +2886,12 @@
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": [
-              "offset",
-              "line"
-            ],
+            "required": ["offset", "line"],
             "properties": {
-              "offset": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "line": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "row": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "col": {
-                "type": "integer",
-                "minimum": 1
-              }
+              "offset": { "type": "integer", "minimum": 0 },
+              "line": { "type": "integer", "minimum": 1 },
+              "row": { "type": "integer", "minimum": 1 },
+              "col": { "type": "integer", "minimum": 1 }
             },
             "additionalProperties": false
           },
@@ -3340,10 +3291,7 @@
           }
         },
         "sourceFormat": {
-          "enum": [
-            "csv",
-            "tsv"
-          ],
+          "enum": ["csv", "tsv"],
           "description": "Author chose a delimited table fence. The canonical Carve writer keeps this form; absent means a pipe table. Quoting and record separators may be normalized."
         },
         "caption": {
@@ -3718,7 +3666,8 @@
           "const": "table_cell_ref"
         },
         "target": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_-]*$"
         },
         "row": {
           "oneOf": [

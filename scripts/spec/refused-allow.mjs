@@ -8,6 +8,11 @@
  * Keeping one copy means a deliberate refusal cannot be allowed in one gate and
  * silently break the other.
  *
- * Empty: every corpus input is currently inside the executable subset.
+ * Table cell projection is specified by the normative grammar and corpus;
+ * the executable oracle refuses it until its inline and resolution passes
+ * implement the construct.
  */
-export const REFUSED_ALLOW = new Set([])
+export const REFUSED_ALLOW = new Set([
+  '621-table-cell-value-references',
+  '621-table-cell-value-references-2',
+])

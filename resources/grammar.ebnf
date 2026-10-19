@@ -2379,13 +2379,15 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    is parsed before mention/tag recognition. It is an ordinary inline node,
    including inside emphasis, headings, link labels and table cells, but code
    spans, code blocks, raw payloads, destinations and attribute values remain
-   opaque. An escaped at sign prevents recognition. A malformed candidate stays
-   literal as one source run. The optional attribute run attaches to the
+   opaque. An escaped at sign prevents recognition. A candidate beginning
+   `@{#` and ending at its first unescaped `}` that fails this grammar is one
+   literal source run, including any inline marks within it; without a closing
+   brace, ordinary inline parsing applies. The optional attribute run attaches to the
    reference; `{code}` is consumed as its inline-code presentation flag. *)
 table_cell_ref = '@{#', explicit_identifier, '[', cell_ref_selector, ']',
                  '[', cell_ref_selector, ']', '}', [attribute_run] ;
 cell_ref_selector = positive_decimal | '"', {cell_ref_quoted_char}, '"' ;
-cell_ref_quoted_char = ('\\', ('"' | '\\')) | (character - ('"' | '\\' | newline)) ;
+cell_ref_quoted_char = ('\', ('"' | '\')) | (character - ('"' | '\' | newline)) ;
 positive_decimal = ('1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'), {digit} ;
 (* UNCLOSED RUN. An opener with no equal-length closer ANYWHERE LATER IN THE
    BLOCK is NOT literal text: it opens a verbatim span that runs to
@@ -2455,7 +2457,8 @@ link_text = {inline_element | text_run | literal_special} ;
      (dest "title")    a link or image destination slot
      <url> <a@b> </#id> an autolink or a cross-reference, through its `>`
 
-   A `]` inside any of them is content, not the close.
+   A `]` inside any of them is content, not the close. The scan also skips
+   a complete table-cell reference, whose quoted selector may contain `]`.
 
    Literal content recognizes no escapes; every future literal construct
    joins this set. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so
@@ -4025,6 +4028,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       (where that file held several renamed copies, to the FIRST, the
       one the file reaches when read on its own):
         - a `</#id>` cross-reference (PART 9R R4);
+        - a `@{#id[row][column]}` table-cell reference (PART 9R R8);
         - a link or image destination that is exactly `#` followed by the
           id, whether written inline (`[text](#tip)`) or reached through
           that file's own reference definition (`[a]: #tip`, file-local,
@@ -4774,7 +4778,9 @@ EOF = (* end of file *) ;
          makes a fence whose language is exactly `csv` or `tsv` an ordinary
          `table` node rather than a `code_block`. The flag is consumed; other
          table attributes, including `header-rows`, `footer-rows`, `aligns`,
-         `valigns` and `widths`, apply to that table. An unmarked fence stays
+         `valigns` and `widths`, apply to that table. `row-key` is consumed
+         metadata for table-cell references, including on pipe tables, and
+         is never emitted as an HTML attribute. An unmarked fence stays
          code. A caption after the fence becomes the table's caption and is
          numbered by its own label. An empty-valued `table=""` is
          equivalent to the boolean flag under the attribute rules.
@@ -4804,7 +4810,8 @@ EOF = (* end of file *) ;
          delimited-body spelling.
       T1 CELL SPLIT (escape scan, cell-splitting-aware). Scanning a row
          left to right OUTSIDE code spans: an unescaped `|` separates
-         cells; `\|` and a `|` inside a code span are content. (The
+         cells; `\|`, a `|` inside a code span, and a `|` inside a complete
+         table-cell reference's quoted selector are content. (The
          code-span state carried across the scan is what makes this
          non-context-free.)
       T2 VALID TABLE ROW. ONE predicate, used both for the §10 I1
@@ -7646,7 +7653,7 @@ EOF = (* end of file *) ;
    The id MUST identify one table in the assembled document after includes
    expand and explicit-id collision renames finish. An id on a containing
    figure does not identify its table. An included file's reference to its
-   own renamed table follows the rename under CARVE-P6-001 I12.
+   own renamed table follows the rename under CARVE-P6-001 I5.
 
    Decimal selectors count from 1. A row selector counts body rows only,
    excluding every header and footer row; a column selector counts grid
@@ -7675,13 +7682,18 @@ EOF = (* end of file *) ;
    is escaped for the output target and is NEVER reparsed as Carve or HTML.
    A trailing `{code}` renders that value as an inline code node and is
    consumed rather than emitted as `code=""`; no other `as` mode is defined.
+   Other inline attributes on a plain projection wrap the text in a span;
+   on a code projection they apply to the code element. The literal fallback
+   includes the complete authored reference and any trailing attribute run.
    The surrounding emphasis, link label or other inline host keeps its own
    meaning. Code spans, fences, raw content, destinations and attribute
    values never recognize a cell reference.
 
    A cell may itself contain a value reference. Resolve such references with
    a source-cell stack. Reaching a cell already on that stack is a cycle, not
-   an invitation to rescan indefinitely. A cycle, malformed selector, absent
+   an invitation to rescan indefinitely. A malformed complete `@{#...}`
+   candidate is rejected during inline parsing and reported there; the
+   remaining errors arise during resolution. A cycle, malformed selector, absent
    table, invalid key, ambiguous name, missing cell or block-content cell
    emits a diagnostic with the selector and reason, and renders the complete
    authored reference literally. Strict validation fails on the same error.
@@ -12676,11 +12688,15 @@ EOF = (* end of file *) ;
    exact authored `@{...}` run, including the selector escapes, so an
    unresolved reference can be shown without access to its original bytes.
    Optional `value` holds the resolved plain-text scalar, including an empty
-   string for an authored empty cell. Absent `value` means unresolved. `attrs`
+   string for an authored empty cell. Absent `value` means either not yet
+   resolved or unresolved; a renderer MUST resolve the document before output
+   and MUST NOT trust a supplied `value` without resolving it again. `attrs`
    retains the trailing attribute run; the `code` boolean is semantic only
    on this node and is not emitted as an output attribute. `pos` follows
    PART 12 §4. A reader MUST NOT accept a zero, negative or fractional
-   positional selector in this node. The canonical Carve writer writes
+   positional selector in this node. On ingest, a reader MUST parse `source`
+   and reject the node if its decoded target or selectors disagree with the
+   separate fields. The canonical Carve writer writes
    `source`, then any trailing attributes, preserving the projection rather
    than freezing `value` into text. *)
 (* ============================================================================

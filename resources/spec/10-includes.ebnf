@@ -290,6 +290,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       (where that file held several renamed copies, to the FIRST, the
       one the file reaches when read on its own):
         - a `</#id>` cross-reference (PART 9R R4);
+        - a `@{#id[row][column]}` table-cell reference (PART 9R R8);
         - a link or image destination that is exactly `#` followed by the
           id, whether written inline (`[text](#tip)`) or reached through
           that file's own reference definition (`[a]: #tip`, file-local,
