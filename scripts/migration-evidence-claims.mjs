@@ -81,6 +81,16 @@ const AHEAD_OF_PIN = {
       output: '# Über Uns\n\nSee [a](#%C3%BCber-uns).\n',
       diagnostics: [{ code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }],
     },
+    // carve-rs assesses this input completely where carve-js and carve-php do not.
+    rust: {
+      output: '# Über Uns\n\nSee [a](#%C3%BCber-uns).\n',
+      exit: 0,
+      diagnostics: [
+        { code: 'markdown-atx-heading', severity: 'info', fidelity: 'preserved', confidence: 'exact', path: 'line:1' },
+        { code: 'markdown-paragraph', severity: 'info', fidelity: 'preserved', confidence: 'exact', path: 'line:3' },
+        { code: 'markdown-link', severity: 'info', fidelity: 'preserved', confidence: 'exact', path: 'line:3' },
+      ],
+    },
   },
 }
 // The fixup message each row pins (CARVE-P2-031): the old fragment as the link wrote it.
@@ -93,7 +103,7 @@ for (const id of Object.keys(AHEAD_OF_PIN)) assert.ok(manifest.cases.some(row =>
 const covered = new Set()
 for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
   for (const fixture of manifest.cases.filter(row => row.runner === 'core')) {
-    const ahead = AHEAD_OF_PIN[fixture.id]?.engines.includes(engine) ? AHEAD_OF_PIN[fixture.id].pinned : {}
+    const ahead = AHEAD_OF_PIN[fixture.id]?.engines.includes(engine) ? AHEAD_OF_PIN[fixture.id][engine] ?? AHEAD_OF_PIN[fixture.id].pinned : {}
     const expected = { ...fixture.expected, ...fixture.expected.engines?.[engine], ...ahead }
     const result = spawnSync(command, [...prefix, 'migrate', '--from', fixture.sourceFormat, '--report', '-', '--check-loss'],
       { input: fixture.input, encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 })

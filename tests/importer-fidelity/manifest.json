@@ -2816,7 +2816,42 @@
             "path": "link:#über-uns"
           }
         ],
-        "exit": 1
+        "exit": 1,
+        "engines": {
+          "rust": {
+            "diagnostics": [
+              {
+                "code": "markdown-atx-heading",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-paragraph",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:3"
+              },
+              {
+                "code": "markdown-link",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:3"
+              },
+              {
+                "code": "link-fragment-case-rewritten",
+                "severity": "info",
+                "fidelity": "normalized",
+                "confidence": "inferred",
+                "path": "link:#über-uns"
+              }
+            ],
+            "exit": 0
+          }
+        }
       }
     }
   ]
