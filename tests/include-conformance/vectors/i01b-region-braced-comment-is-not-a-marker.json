@@ -1,0 +1,28 @@
+{
+  "name": "i01b-region-braced-comment-is-not-a-marker",
+  "description": "A braced `{% #region %}` comment is not a marker.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @region:demo }}",
+  "files": {
+    "child": "{% #region demo %}\nBody.\n{% #endregion demo %}"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"mention\"><strong>@region</strong></span>:demo }}</p>",
+    "fmt": "{{ child @region:demo }}\n",
+    "warnings": [
+      {
+        "rule": "include-region-invalid"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

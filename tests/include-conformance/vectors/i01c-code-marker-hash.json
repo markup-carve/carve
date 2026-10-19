@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-marker-hash",
+  "description": "A code include recognizes a bare `#region` marker.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.py @region:demo @code:python }}",
+  "files": {
+    "a.py": "import os\n#region demo\nprint(os.name)\n#endregion demo\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-python\">print(os.name)\n</code></pre>",
+    "fmt": "{{ a.py @region:demo @code:python }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.py",
+        "resolved": true
+      }
+    ]
+  }
+}

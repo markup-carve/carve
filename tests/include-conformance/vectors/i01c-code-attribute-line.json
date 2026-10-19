@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-attribute-line",
+  "description": "An attribute line above a code include applies to the code block.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{.diff title=\"server.js\"}\n{{ src/server.js@region:start @code:js }}",
+  "files": {
+    "src/server.js": "import http from 'node:http'\n\n// #region start\nconst server = http.createServer(handler)\nserver.listen(3000)\n// #endregion start\n"
+  },
+  "expected": {
+    "html": "<pre class=\"diff\" title=\"server.js\"><code class=\"language-js\">const server = http.createServer(handler)\nserver.listen(3000)\n</code></pre>",
+    "fmt": "{.diff title=server.js}\n{{ src/server.js@region:start @code:js }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "src/server.js",
+        "resolved": true
+      }
+    ]
+  }
+}

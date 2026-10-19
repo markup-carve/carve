@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-empty-region",
+  "description": "An empty selection is an empty code block.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @region:demo @code:js }}",
+  "files": {
+    "a.js": "// #region demo\n// #endregion demo\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-js\"></code></pre>",
+    "fmt": "{{ a.js @region:demo @code:js }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.js",
+        "resolved": true
+      }
+    ]
+  }
+}

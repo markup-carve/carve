@@ -1,0 +1,28 @@
+{
+  "name": "i01c-code-payload-is-not-parsed",
+  "description": "The payload is not Carve: markup, a directive and a fence line stay text.",
+  "rules": [
+    "I1c",
+    "I9"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.txt @code:text }}",
+  "files": {
+    "a.txt": "*not strong*\n{{ other.crv }}\n```\n<b>&</b>\n",
+    "other.crv": "Never read."
+  },
+  "checkFlattened": true,
+  "expected": {
+    "html": "<pre><code class=\"language-text\">*not strong*\n{{ other.crv }}\n```\n&lt;b&gt;&amp;&lt;/b&gt;\n</code></pre>",
+    "fmt": "{{ a.txt @code:text }}\n",
+    "flattened": "````text\n*not strong*\n{{ other.crv }}\n```\n<b>&</b>\n````\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.txt",
+        "resolved": true
+      }
+    ]
+  }
+}

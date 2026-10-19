@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-section-conflict",
+  "description": "`#section` with `@code` is a selection conflict.",
+  "rules": [
+    "I1c",
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child #intro @code:js }}",
+  "files": {
+    "child": "# Intro\n\nBody."
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"tag\"><strong>#intro</strong></span> <span class=\"mention\"><strong>@code</strong></span>:js }}</p>",
+    "fmt": "{{ child #intro @code:js }}\n",
+    "warnings": [
+      {
+        "rule": "include-selection-conflict"
+      }
+    ],
+    "dependencies": []
+  }
+}

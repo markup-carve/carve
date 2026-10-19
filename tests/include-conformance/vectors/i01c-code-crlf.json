@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-crlf",
+  "description": "CRLF and lone CR line endings become line feeds in the payload.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @code:js }}",
+  "files": {
+    "a.js": "a()\r\nb()\rc()\r\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-js\">a()\nb()\nc()\n</code></pre>",
+    "fmt": "{{ a.js @code:js }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.js",
+        "resolved": true
+      }
+    ]
+  }
+}

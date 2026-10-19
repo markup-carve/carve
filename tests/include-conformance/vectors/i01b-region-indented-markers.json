@@ -1,0 +1,24 @@
+{
+  "name": "i01b-region-indented-markers",
+  "description": "Leading spaces or tabs, and spaces or tabs after the comment marker, are allowed.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @region:demo }}",
+  "files": {
+    "child": "\t  %%\t#region demo\nBody.\n  %% #endregion demo  "
+  },
+  "expected": {
+    "html": "<p>Body.</p>",
+    "fmt": "{{ child @region:demo }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

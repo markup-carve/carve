@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-marker-block-comment",
+  "description": "A code include recognizes a `/* #region */` marker.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.css @region:demo @code:css }}",
+  "files": {
+    "a.css": "/* #region demo */\np { color: red; }\n/* #endregion demo */\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-css\">p { color: red; }\n</code></pre>",
+    "fmt": "{{ a.css @region:demo @code:css }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.css",
+        "resolved": true
+      }
+    ]
+  }
+}

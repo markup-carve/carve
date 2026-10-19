@@ -1,0 +1,29 @@
+{
+  "name": "i01c-code-marker-block-closer-on-the-same-line",
+  "description": "A block comment marker whose closer does not end the line is malformed.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.css @region:demo @code:css }}",
+  "files": {
+    "a.css": "/* #region demo\n*/\np {}\n/* #endregion demo */\n"
+  },
+  "expected": {
+    "html": "<p>{{ a.css <span class=\"mention\"><strong>@region</strong></span>:demo <span class=\"mention\"><strong>@code</strong></span>:css }}</p>",
+    "fmt": "{{ a.css @region:demo @code:css }}\n",
+    "warnings": [
+      {
+        "rule": "include-region-invalid"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a.css",
+        "resolved": true
+      }
+    ]
+  }
+}

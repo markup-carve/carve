@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-bom",
+  "description": "A leading byte order mark is not payload.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @code:js }}",
+  "files": {
+    "a.js": "﻿a()\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-js\">a()\n</code></pre>",
+    "fmt": "{{ a.js @code:js }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.js",
+        "resolved": true
+      }
+    ]
+  }
+}

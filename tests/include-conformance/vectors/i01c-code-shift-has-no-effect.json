@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-shift-has-no-effect",
+  "description": "`@shift` has no effect on a code include and warns about nothing.",
+  "rules": [
+    "I1c",
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.md @shift:2 @code:md }}",
+  "files": {
+    "a.md": "# Title\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-md\"># Title\n</code></pre>",
+    "fmt": "{{ a.md @shift:2 @code:md }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.md",
+        "resolved": true
+      }
+    ]
+  }
+}

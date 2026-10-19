@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-lines",
+  "description": "`@code` composes with `@lines`.",
+  "rules": [
+    "I1",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @lines:2-3 @code:js }}",
+  "files": {
+    "a.js": "one()\ntwo()\nthree()\nfour()\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-js\">two()\nthree()\n</code></pre>",
+    "fmt": "{{ a.js @lines:2-3 @code:js }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.js",
+        "resolved": true
+      }
+    ]
+  }
+}

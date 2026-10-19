@@ -1,0 +1,24 @@
+{
+  "name": "i01b-region-percent-markers-include",
+  "description": "A Carve include selects the lines between `%%` markers.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ readme.crv @region:requirements }}",
+  "files": {
+    "readme.crv": "# Project\n\nIntro.\n\n%% #region requirements\n- PHP 8.3 or later\n- Composer 2.7\n%% #endregion requirements\n\nMore text.\n"
+  },
+  "expected": {
+    "html": "<ul>\n  <li>PHP 8.3 or later</li>\n  <li>Composer 2.7</li>\n</ul>",
+    "fmt": "{{ readme.crv @region:requirements }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "readme.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

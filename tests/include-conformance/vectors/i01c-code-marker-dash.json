@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-marker-dash",
+  "description": "A code include recognizes a `-- #region` marker.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.sql @region:demo @code:sql }}",
+  "files": {
+    "a.sql": "-- #region demo\nSELECT 1;\n-- #endregion demo\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-sql\">SELECT 1;\n</code></pre>",
+    "fmt": "{{ a.sql @region:demo @code:sql }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.sql",
+        "resolved": true
+      }
+    ]
+  }
+}

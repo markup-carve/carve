@@ -1,0 +1,25 @@
+{
+  "name": "i01b-region-nested-shell",
+  "description": "Distinct shell-style regions may nest and the inner content can be selected.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @region:inner @code }}",
+  "files": {
+    "child": "#region outer\nBefore.\n#region inner\nInside.\n#endregion inner\nAfter.\n#endregion outer"
+  },
+  "expected": {
+    "html": "<pre><code>Inside.\n</code></pre>",
+    "fmt": "{{ child @region:inner @code }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

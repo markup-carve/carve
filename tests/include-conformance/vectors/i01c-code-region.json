@@ -1,0 +1,26 @@
+{
+  "name": "i01c-code-region",
+  "description": "The carve#3320 example: a region included as a js code block, byte for byte.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ src/server.js@region:start @code:js }}",
+  "files": {
+    "src/server.js": "import http from 'node:http'\n\n// #region start\nconst server = http.createServer(handler)\nserver.listen(3000)\n// #endregion start\n"
+  },
+  "checkFlattened": true,
+  "expected": {
+    "html": "<pre><code class=\"language-js\">const server = http.createServer(handler)\nserver.listen(3000)\n</code></pre>",
+    "fmt": "{{ src/server.js@region:start @code:js }}\n",
+    "flattened": "```js\nconst server = http.createServer(handler)\nserver.listen(3000)\n```\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "src/server.js",
+        "resolved": true
+      }
+    ]
+  }
+}

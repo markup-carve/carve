@@ -14,6 +14,19 @@
 
 const laterFile = '{#dup}\n# Later\n\nSee [^note].\n\n[^note]: Later note.'
 
+const v = (name, description, rules, entry, files, extra = {}) => ({
+  name,
+  description,
+  rules,
+  mode: 'virtual',
+  resolver: 'virtual',
+  entry,
+  files,
+  ...extra,
+})
+const server = "import http from 'node:http'\n\n// #region start\nconst server = http.createServer(handler)\nserver.listen(3000)\n// #endregion start\n"
+const readme = '# Project\n\nIntro.\n\n%% #region requirements\n- PHP 8.3 or later\n- Composer 2.7\n%% #endregion requirements\n\nMore text.\n'
+
 /** @type {Array<object>} */
 export const vectors = [
   // --- I3 resolution model -------------------------------------------------
@@ -1404,33 +1417,8 @@ export const vectors = [
       'secret.crv': 'TOP SECRET\n',
     },
   },
-]
 
-/*
- * Vectors AHEAD of the include reference pin (carve#3319, carve#3320).
- *
- * The clause landed before carve-js implements it, so these inputs have no
- * golden yet; see "A ruling with no golden yet" in
- * tests/include-conformance/README.md. A name that is already in `vectors`
- * replaces that entry. When the reference pin moves to a carve-js that
- * implements I1b (a)/(b) and I1c, the entries move into `vectors` and the
- * generator writes their goldens.
- */
-const v = (name, description, rules, entry, files, extra = {}) => ({
-  name,
-  description,
-  rules,
-  mode: 'virtual',
-  resolver: 'virtual',
-  entry,
-  files,
-  ...extra,
-})
-const server = "import http from 'node:http'\n\n// #region start\nconst server = http.createServer(handler)\nserver.listen(3000)\n// #endregion start\n"
-const readme = '# Project\n\nIntro.\n\n%% #region requirements\n- PHP 8.3 or later\n- Composer 2.7\n%% #endregion requirements\n\nMore text.\n'
-
-/** @type {Array<object>} */
-export const pendingVectors = [
+  // --- I1b (a)/(b) and I1c (carve#3319, carve#3320) -------------------------
   // --- I1b (a): a Carve include recognizes only `%%` markers ---------------
   v('i01b-region-stable', 'A named region selects physical lines while ignoring surrounding source.', ['I1b'],
     '{{ child @region:demo }}', { child: 'Before.\n%% #region demo\n## Pick\n\nBody.\n%% #endregion demo\nAfter.' }),

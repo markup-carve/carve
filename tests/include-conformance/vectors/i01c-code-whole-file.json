@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-whole-file",
+  "description": "With no selector the whole file is the payload.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.py @code:python }}",
+  "files": {
+    "a.py": "def f():\n    return 1\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-python\">def f():\n    return 1\n</code></pre>",
+    "fmt": "{{ a.py @code:python }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.py",
+        "resolved": true
+      }
+    ]
+  }
+}

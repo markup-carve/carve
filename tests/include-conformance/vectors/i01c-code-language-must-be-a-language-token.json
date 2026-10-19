@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-language-must-be-a-language-token",
+  "description": "A language value that is not a `language_info` token is a malformed option.",
+  "rules": [
+    "I1c",
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @code:=html }}",
+  "files": {
+    "a.js": "x()\n"
+  },
+  "expected": {
+    "html": "<p>{{ a.js <span class=\"mention\"><strong>@code</strong></span>:=html }}</p>",
+    "fmt": "{{ a.js @code:=html }}\n",
+    "warnings": [
+      {
+        "rule": "include-unknown-option"
+      }
+    ],
+    "dependencies": []
+  }
+}

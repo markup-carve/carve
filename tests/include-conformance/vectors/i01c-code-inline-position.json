@@ -1,0 +1,29 @@
+{
+  "name": "i01c-code-inline-position",
+  "description": "A code include inside a sentence is block content in inline position.",
+  "rules": [
+    "I1c",
+    "I2"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "See {{ a.js @code:js }} here.",
+  "files": {
+    "a.js": "x()\n"
+  },
+  "expected": {
+    "html": "<p>See {{ a.js <span class=\"mention\"><strong>@code</strong></span>:js }} here.</p>",
+    "fmt": "See {{ a.js @code:js }} here.\n",
+    "warnings": [
+      {
+        "rule": "include-block-in-inline"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a.js",
+        "resolved": true
+      }
+    ]
+  }
+}

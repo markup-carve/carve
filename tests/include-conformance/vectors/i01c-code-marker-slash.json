@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-marker-slash",
+  "description": "A code include recognizes a `// #region` marker.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.ts @region:demo @code:ts }}",
+  "files": {
+    "a.ts": "const a = 1\n// #region demo\nconst b = a + 1\n// #endregion demo\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-ts\">const b = a + 1\n</code></pre>",
+    "fmt": "{{ a.ts @region:demo @code:ts }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.ts",
+        "resolved": true
+      }
+    ]
+  }
+}

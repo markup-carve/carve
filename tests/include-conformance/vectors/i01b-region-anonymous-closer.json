@@ -1,0 +1,24 @@
+{
+  "name": "i01b-region-anonymous-closer",
+  "description": "A closing marker may omit the name and closes the innermost region.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @region:demo }}",
+  "files": {
+    "child": "%% #region demo\nBody.\n%% #endregion\nAfter."
+  },
+  "expected": {
+    "html": "<p>Body.</p>",
+    "fmt": "{{ child @region:demo }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

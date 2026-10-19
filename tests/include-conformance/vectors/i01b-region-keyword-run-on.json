@@ -1,0 +1,28 @@
+{
+  "name": "i01b-region-keyword-run-on",
+  "description": "A marker keyword followed by punctuation is a malformed marker.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @region:demo }}",
+  "files": {
+    "child": "%% #regional note\n%% #region-x\n%% #region demo\nBody.\n%% #endregion demo"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"mention\"><strong>@region</strong></span>:demo }}</p>",
+    "fmt": "{{ child @region:demo }}\n",
+    "warnings": [
+      {
+        "rule": "include-region-invalid"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

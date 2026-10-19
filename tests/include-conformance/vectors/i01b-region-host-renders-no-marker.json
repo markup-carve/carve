@@ -1,0 +1,17 @@
+{
+  "name": "i01b-region-host-renders-no-marker",
+  "description": "A file holding `%%` region markers renders as if they were not there.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "# Project\n\nIntro.\n\n%% #region requirements\n- PHP 8.3 or later\n- Composer 2.7\n%% #endregion requirements\n\nMore text.\n",
+  "files": {},
+  "expected": {
+    "html": "<section id=\"Project\">\n  <h1>Project</h1>\n  <p>Intro.</p>\n  <ul>\n    <li>PHP 8.3 or later</li>\n    <li>Composer 2.7</li>\n  </ul>\n  <p>More text.</p>\n</section>",
+    "fmt": "# Project\n\nIntro.\n\n%% #region requirements\n\n- PHP 8.3 or later\n- Composer 2.7\n  %% #endregion requirements\n\nMore text.\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

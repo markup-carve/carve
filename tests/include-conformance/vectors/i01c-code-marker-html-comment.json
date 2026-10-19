@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-marker-html-comment",
+  "description": "A code include recognizes a `<!-- #region -->` marker.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.html @region:demo @code:html }}",
+  "files": {
+    "a.html": "<!-- #region demo -->\n<p>Hi</p>\n<!-- #endregion -->\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-html\">&lt;p&gt;Hi&lt;/p&gt;\n</code></pre>",
+    "fmt": "{{ a.html @region:demo @code:html }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.html",
+        "resolved": true
+      }
+    ]
+  }
+}

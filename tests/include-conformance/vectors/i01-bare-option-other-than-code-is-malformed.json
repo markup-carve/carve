@@ -1,0 +1,23 @@
+{
+  "name": "i01-bare-option-other-than-code-is-malformed",
+  "description": "Only `@code` may omit its value; a bare `@shift` is a malformed option.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @shift }}",
+  "files": {
+    "child": "# Title"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"mention\"><strong>@shift</strong></span> }}</p>",
+    "fmt": "{{ child @shift }}\n",
+    "warnings": [
+      {
+        "rule": "include-unknown-option"
+      }
+    ],
+    "dependencies": []
+  }
+}

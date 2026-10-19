@@ -42,7 +42,7 @@ goldens).
 |---|---|---|
 | `name` | all | Unique id; also the file basename. |
 | `description` | all | One-line summary of what the vector pins. |
-| `rules` | all | The CARVE-P6-001 rule ids exercised (`I1`…`I12`, `I15`, `I1b`, `I9a`, plus the pseudo-rules `multi-directive`, `quoted-path`, `slot-adjacency`). |
+| `rules` | all | The CARVE-P6-001 rule ids exercised (`I1`…`I12`, `I15`, `I1b`, `I1c`, `I9a`, plus the pseudo-rules `multi-directive`, `quoted-path`, `slot-adjacency`). |
 | `mode` | all | `virtual` (in-memory files map) or `filesystem` (a real tmp tree). |
 | `resolver` | all | `none` (no resolver → I3 literal), `virtual` (serve `files`), or `filesystem` (fileSystemResolver over the tree). |
 | `entry` | virtual | The top-level document source. |
@@ -213,21 +213,6 @@ the security suite's "Corpus ahead of the engines" (carve#1992).
   to `scripts/include-conformance-vectors.mjs` under rule `I1`, generate against
   THAT engine, read the golden before committing it, and delete this entry.
 
-- **Region markers by include mode, and the code include** (carve#3319,
-  carve#3320; CARVE-P6-001 I1b (a)/(b) and I1c). The clause landed ahead of
-  carve-js, so the inputs live in `pendingVectors` in
-  `scripts/include-conformance-vectors.mjs` and have no golden yet. The 0.1.10
-  `i01b-*` goldens were removed rather than kept: they used `//` and bare
-  markers in a Carve include, which the clause no longer recognizes, and an
-  engine vendoring this directory would otherwise be held to the old reading.
-  Their replacements, under the same names, are among the pending inputs.
-
-  To close this: once the include reference pin
-  (`resources/include-reference-pin.txt`) names a carve-js that implements the
-  clause, move the pending entries into `vectors`, run the generator against
-  that engine, read every golden against the clause before committing it, and
-  delete this entry.
-
 ## How to add a vector
 
 1. Add an input object to `scripts/include-conformance-vectors.mjs` (`name`,
@@ -254,21 +239,22 @@ rules):
 
 | Rule | Vectors | Rule | Vectors |
 |---|---|---|---|
-| I1 syntax / path-required | 32 | I8 heading shift + auto | 16 |
-| I1b named source region | 0 (pending) | I11 dependency reporting | 14 |
-| I2 block vs inline | 8 | I9 verbatim protection | 5 |
+| I1 syntax / path-required | 34 | I8 heading shift + auto | 17 |
+| I1b named source region | 33 | I11 dependency reporting | 15 |
+| I1c code include | 25 | | |
+| I2 block vs inline | 9 | I9 verbatim protection | 6 |
 | I3 resolution model | 2 | I9a recognition run | 7 |
 | I4 fragment containment / attribution | 9 | I10 containment (filesystem) | 7 |
 | I5 cross-file collisions | 16 | | |
 | I6 limits (cycle/depth/budget) | 5 | I12 formatter preservation | 22 |
-| I7 errors, no-leak, no side effects | 13 | I15 the Carve target does not expand | 2 |
+| I7 errors, no-leak, no side effects | 15 | I15 the Carve target does not expand | 2 |
 | heading-include | 3 | multi-directive / quoted-path | 1 / 6 |
 | slot-adjacency | 7 | | |
 
 I13 and I14 are unassigned. Vectors named `i13-*` and `i14-*` keep their file
 names and are tagged I7 and I12.
 
-**133 vectors total.**
+**181 vectors total.**
 
 ### What the virtual model cannot express
 

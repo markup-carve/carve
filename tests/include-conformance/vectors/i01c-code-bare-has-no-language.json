@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-bare-has-no-language",
+  "description": "A bare `@code` gives no language; nothing is inferred from the extension.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @code }}",
+  "files": {
+    "a.js": "x()\n"
+  },
+  "expected": {
+    "html": "<pre><code>x()\n</code></pre>",
+    "fmt": "{{ a.js @code }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.js",
+        "resolved": true
+      }
+    ]
+  }
+}

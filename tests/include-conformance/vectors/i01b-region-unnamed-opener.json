@@ -1,0 +1,28 @@
+{
+  "name": "i01b-region-unnamed-opener",
+  "description": "An opening marker must name its region.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @region:demo }}",
+  "files": {
+    "child": "%% #region\n%% #region demo\nBody.\n%% #endregion demo\n%% #endregion"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"mention\"><strong>@region</strong></span>:demo }}</p>",
+    "fmt": "{{ child @region:demo }}\n",
+    "warnings": [
+      {
+        "rule": "include-region-invalid"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

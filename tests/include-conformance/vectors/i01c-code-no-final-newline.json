@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-no-final-newline",
+  "description": "A last line without a line ending still ends with one in the payload.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @code:js }}",
+  "files": {
+    "a.js": "a()\nb()"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-js\">a()\nb()\n</code></pre>",
+    "fmt": "{{ a.js @code:js }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.js",
+        "resolved": true
+      }
+    ]
+  }
+}

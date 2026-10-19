@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-marker-percent",
+  "description": "A code include recognizes a `%% #region` marker.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.crv @region:demo @code:carve }}",
+  "files": {
+    "a.crv": "%% #region demo\n*Body*\n%% #endregion demo\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-carve\">*Body*\n</code></pre>",
+    "fmt": "{{ a.crv @region:demo @code:carve }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

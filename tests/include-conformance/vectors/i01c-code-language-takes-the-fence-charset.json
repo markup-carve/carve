@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-language-takes-the-fence-charset",
+  "description": "The language takes the fence language charset, `#` and `+` included.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.cs @code:c# }}",
+  "files": {
+    "a.cs": "var x = 1;\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-c#\">var x = 1;\n</code></pre>",
+    "fmt": "{{ a.cs @code:c# }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.cs",
+        "resolved": true
+      }
+    ]
+  }
+}
