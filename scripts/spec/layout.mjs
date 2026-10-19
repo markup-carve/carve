@@ -6190,6 +6190,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         attachFlushLeft()
         continue
       }
+      if (CONT_MARKER.test(lm.rest) && lm.col >= contentCol && nestedOpaque?.kind === 'code' &&
+          lm.col <= Math.max(nestedOpaque.col, contentCol)) {
+        // §17 L3 and PART 0 O1: pass a descendant's attachment through every ancestor.
+        carriesBareContinuation = i + 1 < n && foldablePlainLine(ind(i + 1).rest)
+      }
       if (line.startsWith(LAZY)) {
         // a lazy line from an OUTER context propagates to the deepest open
         // paragraph (PART 9 SS10 I2)
@@ -6304,6 +6309,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const jm = ind(j)
         const { col } = jm
         const nm = matchMarkerAt(jm)
+        if (nestedOpaque?.kind === 'code' && CONT_MARKER.test(jm.rest) &&
+            jm.col >= contentCol && jm.col <= Math.max(nestedOpaque.col, contentCol)) {
+          // §17 L3: a descendant's marker ends its fence after every blank payload line.
+          for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
+          if (jm.col === contentCol && matchMarkerAt(ind(j + 1))?.indent === baseIndent) list.tight = false
+          i = j
+          continue
+        }
         // A CONTINUATION MARKER survives the blank. §17 L3/L4 place the marker
         // at the item's marker column, and nothing there makes a preceding
         // blank line matter - but this branch decided the blank by what the
