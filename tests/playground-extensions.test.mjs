@@ -22,7 +22,7 @@ import {
   unclassifiedExtensions,
   carveExtensions,
 } from '../docs/.vitepress/carve-extensions.js'
-import { PLAYGROUND_CODE_LANGUAGES } from '../docs/.vitepress/playground-code-languages.js'
+import { PLAYGROUND_CODE_LANGUAGES, playgroundDataGrammars } from '../docs/.vitepress/playground-code-languages.js'
 
 test('every carve-js extension is classified as ENABLED or EXCLUDED', () => {
   const unclassified = unclassifiedExtensions()
@@ -62,6 +62,34 @@ test('the Playground loads Shiki support for diff fences', async () => {
       theme: 'github-light',
     })
     assert.match(highlighted, /<span[^>]+>\+new<\/span>/)
+  } finally {
+    highlighter.dispose()
+  }
+})
+
+test('the Playground highlights CSV directly and inside Carve fences', async () => {
+  const carveGrammar = (await import('@markup-carve/carve-grammars/textmate/carve.tmLanguage.json', { with: { type: 'json' } })).default
+  const csvGrammar = (await import('@markup-carve/carve-grammars/textmate/csv.tmLanguage.json', { with: { type: 'json' } })).default
+  const tsvGrammar = (await import('@markup-carve/carve-grammars/textmate/tsv.tmLanguage.json', { with: { type: 'json' } })).default
+  const highlighter = await createHighlighter({
+    themes: ['github-light'],
+    langs: [...PLAYGROUND_CODE_LANGUAGES, carveGrammar, ...playgroundDataGrammars(csvGrammar, tsvGrammar)],
+  })
+  const hasScope = (tokens, content, scope) => tokens.some((line) => line.some((token) =>
+    token.content.includes(content) && token.explanation?.some((part) => part.scopes.some((entry) => entry.scopeName === scope)),
+  ))
+  try {
+    const csv = highlighter.codeToTokens('Plan,Seats\nTeam,"a, b"\n', {
+      lang: 'csv', theme: 'github-light', includeExplanation: true,
+    }).tokens
+    assert.ok(hasScope(csv, ',', 'punctuation.separator.delimiter.csv'))
+    assert.ok(hasScope(csv, 'a, b', 'string.quoted.double.csv'))
+
+    const source = '{table}\n```csv\nPlan,Seats\nTeam,"a, b"\n```\n'
+    const carve = highlighter.codeToTokens(source, {
+      lang: 'carve', theme: 'github-light', includeExplanation: true,
+    }).tokens
+    assert.ok(hasScope(carve, ',', 'punctuation.separator.delimiter.csv'))
   } finally {
     highlighter.dispose()
   }

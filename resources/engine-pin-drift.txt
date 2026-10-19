@@ -39,3 +39,12 @@
 624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-3  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
 624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-4  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
 624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-5  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
+624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-6  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-10  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-11  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-2  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-3  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-4  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-5  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-6  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin

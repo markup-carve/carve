@@ -113,3 +113,26 @@ a
   </li>
 </ul>
 ````
+
+````
+- outer
+  - head
+     ```
+     a
+  ```
+
+    tail
+.
+<ul>
+  <li>outer
+    <ul>
+      <li><p>head
+<code>
+a
+</code></p>
+        <p>tail</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+````

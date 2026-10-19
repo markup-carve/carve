@@ -58649,3 +58649,353 @@ a
 ```
 
 :::::::
+
+::::::: compare
+
+````carve
+- outer
+  - head
+     ```
+     a
+  ```
+
+    tail
+````
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li><p>head
+<code>
+a
+</code></p>
+        <p>tail</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+## A fence closer outside the child folds and leaves the child open
+
+::::::: compare
+
+````carve
+- outer
+  - head
+     ```
+     a
+   ```
+
+    tail
+````
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li><p>head
+<code>
+a
+</code></p>
+        <p>tail</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- outer
+  - head
+     ```
+     a
+```
+
+    tail
+````
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li><p>head
+<code>
+a
+</code></p>
+        <p>tail</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- outer
+  - head
+     ```
+     a
+  ```
+
+
+    tail
+````
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li><p>head
+<code>
+a
+</code></p>
+        <p>tail</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+1. outer
+   - head
+      ```
+      a
+   ```
+
+     tail
+````
+
+```html
+<ol>
+  <li>outer
+    <ul>
+      <li><p>head
+<code>
+a
+</code></p>
+        <p>tail</p>
+      </li>
+    </ul>
+  </li>
+</ol>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- outer
+  - head
+     ```
+     a
+  ```
+
+    tail
+
+    more
+````
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li><p>head
+<code>
+a
+</code></p>
+        <p>tail</p>
+        <p>more</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- outer
+  - head
+     ~~~
+     a
+ ~~~
+
+    tail
+````
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li><p>head
+~~~
+a
+~~~</p>
+        <p>tail</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- outer
+  - head
+     ```
+     a
+```
+
+  tail
+````
+
+```html
+<ul>
+  <li><p>outer</p>
+    <ul>
+      <li>head
+<code>
+a
+</code></li>
+    </ul>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- outer
+  - head
+     ```
+     a
+ ```
+
+  tail
+````
+
+```html
+<ul>
+  <li><p>outer</p>
+    <ul>
+      <li>head
+<code>
+a
+</code></li>
+    </ul>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- outer
+  - head
+     ```
+     a
+    ```
+
+  tail
+````
+
+```html
+<ul>
+  <li><p>outer</p>
+    <ul>
+      <li>head
+        <pre><code>a
+</code></pre>
+      </li>
+    </ul>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- outer
+  - head
+     ````
+     a
+  ```
+
+  tail
+`````
+
+````html
+<ul>
+  <li><p>outer</p>
+    <ul>
+      <li>head
+<code>
+a
+```</code></li>
+    </ul>
+    <p>tail</p>
+  </li>
+</ul>
+````
+
+:::::::
+
+::::::: compare
+
+`````carve
+- outer
+  - head
+     ````
+     a
+  ```
+
+    tail
+`````
+
+````html
+<ul>
+  <li>outer
+    <ul>
+      <li><p>head
+<code>
+a
+```</code></p>
+        <p>tail</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+:::::::

@@ -4,3 +4,7 @@ export const PLAYGROUND_CODE_LANGUAGES = [
   'python', 'yaml', 'json', 'bash', 'javascript', 'typescript', 'tsx',
   'html', 'css', 'rust', 'php', 'markdown', 'sql', 'go', 'c', 'diff',
 ]
+
+export function playgroundDataGrammars(csvGrammar, tsvGrammar) {
+  return [{ ...csvGrammar, name: 'csv' }, { ...tsvGrammar, name: 'tsv' }]
+}

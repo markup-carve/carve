@@ -5,8 +5,18 @@ description: Try Carve in the playground, then render it in your own project.
 
 # Get Started
 
-Use the [Playground](/playground) without installing anything. The [Cheat
-Sheet](/cheatsheet) lists the syntax.
+## Try Carve
+
+Open the [Playground](/playground) to edit and preview Carve without installing
+anything. To keep your changes, save the source as a `.crv` file. If you have
+Node.js 20 or newer, you can render that file to HTML with:
+
+```bash
+npx @markup-carve/carve input.crv > output.html
+```
+
+See the [Cheat Sheet](/cheatsheet) for syntax and [Coming from
+Markdown](/migrate-from-markdown) for the main differences.
 
 ## Choose a workflow
 
