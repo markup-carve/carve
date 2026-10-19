@@ -57893,3 +57893,119 @@ gen-362
 ```
 
 :::::::
+
+## A fence run folded into a child paragraph loosens the outer item
+
+::::::: compare
+
+````carve
+- outer
+  - head
+    ```
+    a
+   ```
+
+  tail
+````
+
+```html
+<ul>
+  <li><p>outer</p>
+    <ul>
+      <li>head
+<code>
+a
+</code></li>
+    </ul>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- outer
+  - head
+    ~~~
+    a
+   ~~~
+
+  tail
+````
+
+```html
+<ul>
+  <li><p>outer</p>
+    <ul>
+      <li>head
+~~~
+a
+~~~</li>
+    </ul>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+1. outer
+   - head
+     ```
+     a
+    ```
+
+   tail
+````
+
+```html
+<ol>
+  <li><p>outer</p>
+    <ul>
+      <li>head
+<code>
+a
+</code></li>
+    </ul>
+    <p>tail</p>
+  </li>
+</ol>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+> - outer
+>   - head
+>     ```
+>     a
+>    ```
+>
+>   tail
+````
+
+```html
+<blockquote>
+  <ul>
+    <li><p>outer</p>
+      <ul>
+        <li>head
+<code>
+a
+</code></li>
+      </ul>
+      <p>tail</p>
+    </li>
+  </ul>
+</blockquote>
+```
+
+:::::::
