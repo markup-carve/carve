@@ -108,7 +108,11 @@ export function authoredDocuments() {
  * does not is a citation definition, which is Tier-2 and outside the subset
  * `scripts/spec` models at all.
  *
- * The last move was 108 -> 110: docs/cheatsheet.md adds the aligned-table
+ * The last move was 110 -> 111: docs/includes.md adds the `@code` include
+ * directive sample (CARVE-P6-001 I1c); answered, like the page's other
+ * directives.
+ *
+ * Before that, 108 -> 110: docs/cheatsheet.md adds the aligned-table
  * input and its `carve fmt --align-tables` output; both answered.
  *
  * Before that, 106 -> 108: docs/includes.md adds a parent and a child
@@ -143,5 +147,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 110
-export const AUTHORED_ANSWERED = 109
+export const AUTHORED_POPULATION = 111
+export const AUTHORED_ANSWERED = 110
