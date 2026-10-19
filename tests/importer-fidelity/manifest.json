@@ -555,6 +555,76 @@
       ]
     },
     {
+      "id": "markdown-image-alone-in-its-paragraph",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "![x](/ü.png)\n",
+      "expected": {
+        "output": "![x](/%C3%BC.png)\n",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-image",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      },
+      "constructs": [
+        "paragraph",
+        "image"
+      ]
+    },
+    {
+      "id": "markdown-link-destination-keeps-its-brackets",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[a](/x[y]) and ![b](/p[q].png)\n",
+      "expected": {
+        "output": "[a](/x[y]) and ![b](/p[q].png)\n",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-image",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      },
+      "constructs": [
+        "paragraph",
+        "link",
+        "image"
+      ]
+    },
+    {
       "id": "markdown-reference",
       "sourceFormat": "markdown",
       "runner": "core",

@@ -314,6 +314,17 @@ same content. Native HTML may use `<s>` for strikethrough and add accessible lab
 checkboxes. Diagnostic order may follow parser traversal; paths identify the
 source occurrences.
 
+A link or image destination keeps its square brackets: the importer writes
+`[a](/x[y])` for that Markdown input, not `[a](/x%5By%5D)`, because a Carve
+destination holds a bracket literally. Assessment compares against the `href`
+Carve renders for it, which keeps the bracket too.
+
+A paragraph whose whole content is one image converts to a Carve block image
+(CARVE-P9R-007), which renders as the bare image without a paragraph wrapper.
+Nothing is lost: the tree keeps the paragraph (`blockImage: true`) and the
+image. Assessment compares that paragraph with the bare image and reports
+`markdown-paragraph` and `markdown-image` as for any other paragraph.
+
 The `--safe` raw HTML switch escapes raw markup. Profiles that deny raw nodes
 may instead remove it.
 

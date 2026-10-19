@@ -12,6 +12,12 @@
     "markdown": "[y](#a%28b%29) and [w](#)\n"
   },
   {
+    "name": "destination-brackets-are-literal",
+    "rule": "CARVE-P11-069",
+    "carve": "[a](/x[y]) and ![b](/p[q].png)\n",
+    "markdown": "[a](/x[y]) and ![b](/p[q].png)\n"
+  },
+  {
     "name": "table-cell-hard-break",
     "rule": "CARVE-P11-048",
     "ast": {

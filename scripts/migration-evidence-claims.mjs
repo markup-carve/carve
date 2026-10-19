@@ -145,6 +145,17 @@ const AHEAD_OF_PIN = {
     rust: { output: '> x\n^ Bob   Smith\n' },
     php: { output: '> x\n^ Bob   Smith\n' },
   },
+  // carve#3373: an image alone in its paragraph is a block image, assessed like any paragraph.
+  'markdown-image-alone-in-its-paragraph': {
+    engines: ['js', 'rust', 'php'],
+    pinned: { exit: 1, diagnostics: [UNVERIFIED] },
+  },
+  // carve#3372: the importer keeps a destination's square brackets.
+  'markdown-link-destination-keeps-its-brackets': {
+    engines: ['rust', 'php'],
+    rust: { output: '[a](/x%5By%5D) and ![b](/p%5Bq%5D.png)\n' },
+    php: { output: '[a](/x%5By%5D) and ![b](/p%5Bq%5D.png)\n', exit: 1, diagnostics: [UNVERIFIED] },
+  },
   'link-fragment-case-rewritten': {
     engines: ['js', 'rust', 'php'],
     pinned: {
