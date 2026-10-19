@@ -626,9 +626,9 @@
           reads this from `pos`: the two are ADJACENT when the later block
           starts on the line after the earlier one ends, counting the
           attribute lines the writer itself puts above the later block. The
-          earlier block MUST be a paragraph, heading, code block, thematic
-          break or comment, since a `%%` line written directly below anything
-          else can be read into it. Otherwise, and in a tree without
+          earlier block MUST be a paragraph, block image, heading, code block,
+          thematic break or comment, since a `%%` line written directly below
+          anything else can be read into it. Otherwise, and in a tree without
           positions, the ordinary separator applies.
 
       (b) A MARKER KEPT IN A LIST ITEM KEEPS ITS COLUMN. A region marker that
