@@ -24,3 +24,7 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
+621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-2  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
+621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-3  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
+621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-4  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
