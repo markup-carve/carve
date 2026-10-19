@@ -56206,3 +56206,138 @@ A quote after item prose still takes its caption
 ```
 
 :::
+
+A caption after plain text is a second paragraph
+
+::: compare
+
+```carve
+- text
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li><p>text</p>
+    <p>^ cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+:::
+
+An earlier caret paragraph does not loosen an attached quote
+
+::: compare
+
+```carve
+- ^ cap
+  > q
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>^ cap
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+A detached quote caption in a sublist does not loosen its parent
+
+::: compare
+
+```carve
+- a
+  - > q
+
+
+    ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote><p>q</p></blockquote>
+        <p>^ cap</p>
+      </li>
+    </ul>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+A multi-line attached caption keeps the list tight
+
+::: compare
+
+```carve
+- ^ cap
+  > q
+
+  ^ cap
+  more
+- c
+```
+
+```html
+<ul>
+  <li>^ cap
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap
+more</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::
+
+An attached quote caption in a sublist keeps both lists tight
+
+::: compare
+
+```carve
+- a
+  - > q
+
+    ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <figure>
+          <blockquote><p>q</p></blockquote>
+          <figcaption>cap</figcaption>
+        </figure>
+      </li>
+    </ul>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+:::

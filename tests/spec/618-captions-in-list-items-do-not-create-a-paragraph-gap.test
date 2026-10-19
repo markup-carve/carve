@@ -184,3 +184,98 @@ Captions in list items do not create a paragraph gap
   <li>c</li>
 </ul>
 ```
+
+```
+- text
+
+  ^ cap
+- c
+.
+<ul>
+  <li><p>text</p>
+    <p>^ cap</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+```
+- ^ cap
+  > q
+
+  ^ cap
+- c
+.
+<ul>
+  <li>^ cap
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- a
+  - > q
+
+
+    ^ cap
+- c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote><p>q</p></blockquote>
+        <p>^ cap</p>
+      </li>
+    </ul>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- ^ cap
+  > q
+
+  ^ cap
+  more
+- c
+.
+<ul>
+  <li>^ cap
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>cap
+more</figcaption>
+    </figure>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- a
+  - > q
+
+    ^ cap
+- c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <figure>
+          <blockquote><p>q</p></blockquote>
+          <figcaption>cap</figcaption>
+        </figure>
+      </li>
+    </ul>
+  </li>
+  <li>c</li>
+</ul>
+```

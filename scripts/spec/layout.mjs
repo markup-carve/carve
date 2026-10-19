@@ -5292,7 +5292,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     }
     let contentCol = head.indent + head.markerWidth
     const itemLines = []
-    const captionGaps = new Set()
+    const captionGaps = []
     const residueFence = { index: 0, opaque: null }
     const commentClosersByColumn = new Map()
     const hasFutureCommentCloser = (run, column) => {
@@ -6311,20 +6311,6 @@ function collectItems(lines, i, list, state, ind, meas) {
           break
         }
         if (col >= contentCol && !(nm && nm.indent >= contentCol)) {
-          if (j > i + 1 && CAPTION.test(jm.rest)) {
-            for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
-            closePara()
-            list.tight = false
-            i = j
-            continue
-          }
-          if (j === i + 1 && CAPTION.test(jm.rest)) {
-            pushLine('', BLANK_MEAS)
-            closePara()
-            captionGaps.add(jm.rest)
-            i = j
-            continue
-          }
           if (pendingHeadTerm !== null) measureHeadTerm()
           if (authoredContainer && pendingAuthoredBlock !== null) {
             authoredBlockLimit = authoredBlockEnd(lines, pendingAuthoredBlock, contentCol, state)
@@ -6344,8 +6330,19 @@ function collectItems(lines, i, list, state, ind, meas) {
             // not loosen this (ancestor) item (carve#322). Attach, stay tight;
             // the recursive parse of itemLines decides the sub-list's looseness.
             //
-            if (!descendantFence) pushLine('', BLANK_MEAS)
+            if (!descendantFence) {
+              const blanks = CAPTION.test(jm.rest) ? j - i : 1
+              for (let k = 0; k < blanks; k++) pushLine('', BLANK_MEAS)
+            }
             closePara()
+            i = j
+            continue
+          }
+          if (CAPTION.test(jm.rest)) {
+            for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
+            closePara()
+            if (j > i + 1) list.tight = false
+            else captionGaps.push({ line: trimLineEnd(jm.rest), text: CAPTION.exec(jm.rest)[1] })
             i = j
             continue
           }
@@ -7294,8 +7291,21 @@ function collectItems(lines, i, list, state, ind, meas) {
      */
     if (descendantQ1.col >= 0) state.descendantQ1Log?.push({ col: descendantQ1.col, ...descendantQ1At(descendantQ1.col) })
     item.blocks = parseBlocks(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
-    if (captionGaps.size && item.blocks.some((block) => block.t === 'para' && captionGaps.has(block.lines?.[0]))) {
-      list.tight = false
+    let beforeBlock = item.blocks.length
+    for (let gap = captionGaps.length - 1; gap >= 0; gap--) {
+      const { line, text } = captionGaps[gap]
+      for (let block = beforeBlock - 1; block >= 0; block--) {
+        const node = item.blocks[block]
+        if (node.t === 'para' && node.lines?.[0] === line && !node.captionSlot) {
+          list.tight = false
+          beforeBlock = block
+          break
+        }
+        if (node.caption === text || node.caption?.startsWith(`${text}\n`) || node.captionSlot?.src?.[0] === line) {
+          beforeBlock = block
+          break
+        }
+      }
     }
     list.items.push(item)
     // Returning rather than breaking leaves `i` on the marker line, so the
