@@ -115,6 +115,10 @@ const NOT_IN_THE_PIN_YET = new Map([
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',
   ],
   [
+    'region-marker-renders-as-text',
+    'specified by markup-carve/carve#3319; carve-js emits it once its pin moves past the region-marker change',
+  ],
+  [
     'table-marker-run-padding',
     'specified by markup-carve/carve#1464; no engine emits it yet, and it ' +
       'supersedes table-alignment-run-padding once they do',

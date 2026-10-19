@@ -141,8 +141,14 @@ export function scanDirective(text, open) {
     if (inner[j] !== '@') break
     const key = IDENTIFIER.exec(inner.slice(j + 1))
     if (!key) return null
-    let k = j + 1 + key[0].length
-    if (inner[k] !== ':') return null
+    const k = j + 1 + key[0].length
+    // The value is optional in the shape (a bare `@code`, I1c); which keys may
+    // omit it is semantics, not recognition.
+    if (inner[k] !== ':') {
+      options.push([key[0], null])
+      i = k
+      continue
+    }
     const value = readValue(inner, k + 1)
     if (!value) return null
     options.push([key[0], value.value])

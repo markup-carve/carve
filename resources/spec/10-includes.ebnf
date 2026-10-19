@@ -40,7 +40,10 @@ include_section = id_attribute ;
    `{#...}` can spell is nameable, digit-leading
    ones such as `{#2024-plan}` included. No new ambiguity: the bare path already
    stops at `#`, and neither identifier class holds a space, `@` or `}`. *)
-include_options = {[space+], '@', identifier, ':', include_option_value}+ ;
+include_options = {[space+], '@', identifier, [':', include_option_value]}+ ;
+(* The value is optional in the shape so a bare `@code` (I1c) is well formed.
+   Every other option takes a value: a bare `@shift` or `@region` is a
+   malformed option (Warning + literal, I7). *)
 include_option_value = include_unquoted_value | quoted_value ;
 include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' - '\t' - newline )+ ;
 (* `unquoted_value` (PART 4) less the `@`. An unquoted value ends at the next
@@ -80,16 +83,32 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       level by the SIGNED integer N (I8). `@shift` MAY accompany `#section`,
       a line-range, a region, or neither. `@shift` takes EITHER a signed integer OR
       the literal value `auto` (context-relative, computed by the processor
-      per I8), never both. Every other `@key` is RESERVED.
+      per I8), never both. A MODE option chooses what the selected content
+      becomes: `@code` and `@code:lang` make it one code block (I1c). Without
+      it the content is read as Carve. Every other `@key` is RESERVED.
 
    I1b NAMED SOURCE REGION (`@region:name`). `name` is an `identifier` and is
-      matched exactly. Recognized marker lines, after optional ASCII spaces or
-      tabs, are `// #region name`, `// #endregion [name]`, `#region name`,
-      and `#endregion [name]`; spaces or tabs may separate the comment marker
-      from `#region`. No non-whitespace content may follow the name.
-      A keyword run on by an ASCII letter, digit or `_` (`#regional`) is
-      not a marker; run on by any other character (`#region-x`) it is a
-      malformed marker. The
+      matched exactly. A marker is a whole physical line: optional ASCII
+      spaces or tabs, one of the comment forms below, and nothing after it
+      but spaces or tabs. The keywords `#region` and `#endregion` are
+      case-sensitive: `#Region` is not a marker. Spaces or tabs MAY separate
+      a comment opener from the keyword and the name from a comment closer.
+      WHICH FORMS ARE MARKERS FOLLOWS THE INCLUDE MODE, so a marker never
+      renders in the file that holds it:
+      (a) An include that reads Carve (no `@code`) recognizes ONLY the `%%`
+          line comment: `%% #region name` and `%% #endregion [name]`. A bare
+          `#region` line, a `// #region` line, a braced `{% #region name %}`
+          comment and every other form are ordinary text in that mode, so
+          an include naming such a region finds no region.
+      (b) A code include (`@code`, I1c) recognizes the source-comment forms
+          `#region name`, `// #region name`, `-- #region name`,
+          `/* #region name */`, `<!-- #region name -->` and
+          `%% #region name`, and the same forms with `#endregion [name]`. A
+          block comment's closer (`*/`, `-->`) MUST end the same line.
+      In both modes a `%` run of three or more (`%%% #region name`) is a
+      block comment fence, never a marker. A keyword run on by an ASCII
+      letter, digit or `_` (`#regional`) is not a marker; run on by any
+      other character (`#region-x`) it is a malformed marker. The
       opening marker MUST name a region; a closing marker MAY omit the name.
       Distinct names MAY nest. A named closer MUST match the innermost open
       name. The same name MUST NOT open twice in one file, even sequentially.
@@ -101,6 +120,35 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       region selects an empty source. Positions in selected content retain
       their original source-file coordinates, as with `@lines`. A resolved
       file stays a resolved dependency even if its region is invalid.
+
+   I1c CODE INCLUDE (`@code`, `@code:lang`). A MODE option (I1): the selected
+      content becomes ONE code block instead of being read as Carve.
+      PAYLOAD. The block's content is the selected source -- the whole file,
+      an `@lines` range or an `@region` region -- unparsed: no Carve
+      construct is recognized in it, so a `{{ ... }}` in it is never
+      expanded (I9) and a fence line in it is content. Lines are split on
+      `newline` as PART 0 defines it, a leading U+FEFF of the file is not
+      content (CARVE-P0-001), and every payload line ends with one line
+      feed, as an authored fence's content does. An empty selection is an
+      empty code block.
+      LANGUAGE. `@code:lang` gives the block the language `lang`, which MUST
+      be a `language_info` token; any other value is a malformed option
+      (Warning + literal, I7). A bare `@code` gives the block NO language: it
+      is not inferred from the file name or its extension.
+      ATTRIBUTES. A block attribute line directly above a BLOCK code include
+      applies to the code block exactly as it applies to an authored fence:
+      classes, an id, `title` and every other key, and an extension that
+      reads a code block (callouts, diff presentation) reads this one.
+      SELECTION. `@code` composes with `@lines`, with `@region` (I1b (b)) or
+      with neither. `#section` selects Carve structure and is NOT available:
+      `#section` with `@code` is an ERROR (`include-selection-conflict`,
+      Warning + literal). `@shift` has no effect, since the payload holds no
+      headings (I8).
+      POSITION. A code block is block structure, so a code include in INLINE
+      position is an ERROR (`include-block-in-inline`, I2).
+      Every other rule is unchanged: resolution and containment (I3, I10),
+      cycles, depth and the byte budget (I6), errors (I7) and dependency
+      reporting (I11).
 
    I1a FRAGMENT SELECTION (`#name`). `name` is an `explicit_identifier`
       (`include_section`), so every explicit id is nameable, digit-leading ones such
@@ -267,7 +315,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
 
    I7 ERRORS. Unreadable path, binary / non-text content, a `#name` that
       selects nothing (I1a), an invalid or missing named region (I1b),
-      more than one of `#section`, `@lines` and `@region` (I1), block-structured
+      more than one of `#section`, `@lines` and `@region` (I1), `#section`
+      with `@code` (I1c), block-structured
       content in INLINE position (I2), cycle, depth-exceeded,
       size-exceeded, call-bound-exceeded, and a directive reached AFTER
       byte-budget or call-bound exhaustion EACH emit a Warning and leave

@@ -213,6 +213,20 @@ the security suite's "Corpus ahead of the engines" (carve#1992).
   to `scripts/include-conformance-vectors.mjs` under rule `I1`, generate against
   THAT engine, read the golden before committing it, and delete this entry.
 
+- **Region markers by include mode, and the code include** (carve#3319,
+  carve#3320; CARVE-P6-001 I1b (a)/(b) and I1c). The clause landed ahead of
+  carve-js, so the inputs live in `pendingVectors` in
+  `scripts/include-conformance-vectors.mjs` and have no golden yet. A pending
+  name that also appears in `vectors` replaces it: the committed goldens of
+  those `i01b-*` vectors still use `//` and bare markers in a Carve include,
+  which the clause no longer recognizes.
+
+  To close this: once the include reference pin
+  (`resources/include-reference-pin.txt`) names a carve-js that implements the
+  clause, move the pending entries into `vectors` (replacing the same-named
+  ones), run the generator against that engine, read every golden against the
+  clause before committing it, and delete this entry.
+
 ## How to add a vector
 
 1. Add an input object to `scripts/include-conformance-vectors.mjs` (`name`,

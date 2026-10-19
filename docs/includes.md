@@ -25,7 +25,9 @@ and security.
   recognizes <code v-pre>{{ … }}</code>. It parses those bytes under ordinary inline rules, so a
   bare-path directive with no active inline markers renders **verbatim**. This
   is corpus-pinned (see [Core behavior](#core-behavior-no-resolver-no-expansion)).
-- **Text-only.** <code v-pre>{{ … }}</code> includes Carve or text sources. A binary or image
+- **Text-only.** <code v-pre>{{ … }}</code> includes Carve or text sources. Content is
+  read as Carve, unless `@code` asks for it as one code block (see
+  [Including source as code](#including-source-as-code-code)). A binary or image
   target is **not** an include (images use `![]()`); a binary or unreadable
   target yields a Warning and a literal directive.
 
@@ -37,6 +39,7 @@ and security.
 {{ path @key:value }}
 {{ path #section @key:value }}
 {{ path @shift:N }}
+{{ path @region:name @code:lang }}
 {{ path#section }}
 {{ path#section@key:value }}
 ```
@@ -89,6 +92,10 @@ nothing to do.
     source comment markers. The name uses Carve's `identifier` spelling.
   - **`@shift:N`** shifts the level of every included heading by the signed
     integer `N` (see [Heading-level shift](#heading-level-shift-shift)).
+  - **`@code:lang`** or a bare **`@code`** includes the selected source as one
+    code block instead of reading it as Carve (see
+    [Including source as code](#including-source-as-code-code)). It is the one
+    option that takes no value.
   - Every other `@key` is **reserved**. A processor that does not recognize an
     option SHOULD treat the directive as unresolvable (Warning, literal).
 
@@ -121,6 +128,8 @@ Directive options fall into two disjoint kinds:
   or a named region `@region:name` (both physical source lines).
 - **Transform options** reshape content that has already been selected:
   `@shift:N` (heading-level shift). Future transform options join this kind.
+- **The mode option** `@code` decides what the selected content becomes: one
+  code block, instead of Carve.
 
 The three **selection** mechanisms are **mutually exclusive**: a single
 directive MUST use at most one of `#section`, `@lines`, and `@region`.
@@ -132,23 +141,127 @@ the directive **literal**, exactly like the other error cases (see
 selection option: it MAY accompany `#section`, a line-range, a region, or neither, and it
 composes with whichever selection (if any) the directive uses.
 
+`@code` composes with `@lines`, with `@region`, or with neither. It does not
+compose with `#section`, which selects Carve structure that a code include never
+parses: that combination is an `include-selection-conflict` error.
+
 ### Selecting a named source region (`@region:name`)
 
-`@region:demo` selects the physical lines between a pair of complete source
-comment lines. Markers may use `// #region demo` and `// #endregion demo`, or
-`#region demo` and `#endregion demo`. Either spelling works in any included
-file. An end marker may omit the name. Leading spaces or tabs and spaces or
-tabs after the comment marker are allowed. Marker lines themselves are not included. A nested region with a
+`@region:demo` selects the physical lines between a pair of marker lines. A
+marker is a whole line: optional leading spaces or tabs, a comment that holds
+`#region demo` or `#endregion demo`, and nothing after it. The keywords are
+case-sensitive, so `#Region demo` is not a marker. An end marker may omit the
+name. Marker lines themselves are not included.
+
+Which comments count as markers depends on what the include produces, because a
+marker must never show up in the file that holds it.
+
+- **An include read as Carve** (no `@code`) recognizes only the `%%` line
+  comment, which renders nothing:
+
+  ```carve
+  # Project
+
+  %% #region requirements
+  - PHP 8.3 or later
+  - Composer 2.7
+  %% #endregion requirements
+  ```
+
+  `{{ readme.crv @region:requirements }}` then includes the two list items, and
+  `readme.crv` itself renders as if the markers were not there. A bare
+  `#region` line, a `// #region` line and a braced `{% #region %}` comment are
+  ordinary text in a Carve file, so an include naming such a region reports
+  `include-region-invalid`.
+
+- **A code include** (`@code`) reads a source file, so it recognizes the
+  comment styles editors fold on, each on one line:
+
+  | Marker | Typical languages |
+  |---|---|
+  | `#region name` | Python, Ruby, shell, YAML |
+  | `// #region name` | JavaScript, TypeScript, C family, Rust, Go, PHP |
+  | `-- #region name` | SQL, Lua |
+  | `/* #region name */` | CSS, C block comments |
+  | `<!-- #region name -->` | HTML, XML |
+  | `%% #region name` | Carve |
+
+  A block comment's closer (`*/`, `-->`) must end the same line.
+
+In both modes a `%%%` line is a block comment fence, not a marker. Spaces or
+tabs may separate the comment opener from the keyword. A nested region with a
 different name is allowed; its marker lines remain inside the outer region's
 source. A keyword run on by a word character, such as `#regional`, is ordinary
-text, while `#region-x` is a malformed marker. Names compare exactly and may occur only once per file.
+text, while `#region-x` is a malformed marker. Names compare exactly and may
+occur only once per file.
 
 A missing name, duplicate opening name, malformed marker, unmatched end,
 mismatched nested end or unclosed start emits `include-region-invalid` and
-leaves the directive literal. The dependency still records the file as read.
-The selected lines retain their original source positions. Insertions before
-the opening marker change line numbers but leave the selected content intact.
-This selector reads from source; it does not write changes back to it.
+leaves the directive literal. Combining `@region` with `#section` or `@lines` is
+a different error, `include-selection-conflict`. Either way the dependency still
+records the file as read. The selected lines retain their original source
+positions. Insertions before the opening marker change line numbers but leave
+the selected content intact. This selector reads from source; it does not write
+changes back to it.
+
+`carve lint` reports a `#region` or `#endregion` line in a Carve file, including
+a case variant such as `#Region`, as `region-marker-renders-as-text`: it renders
+as text and is not a marker for a Carve include. Write `%% #region` instead.
+
+### Including source as code (`@code`)
+
+`@code:lang` includes the selected source as **one code block** with the
+language `lang`. Nothing in it is parsed as Carve. Given `src/server.js`:
+
+```js
+import http from 'node:http'
+
+// #region start
+const server = http.createServer(handler)
+server.listen(3000)
+// #endregion start
+```
+
+the directive
+
+```carve
+{{ src/server.js@region:start @code:js }}
+```
+
+renders
+
+```html
+<pre><code class="language-js">const server = http.createServer(handler)
+server.listen(3000)
+</code></pre>
+```
+
+- **Selection.** `@code` takes the whole file, an `@lines` range or an
+  `@region` region. `#section` with `@code` is an `include-selection-conflict`
+  error.
+- **Payload.** The selected lines, unparsed. A <code v-pre>{{ … }}</code> inside them stays
+  text and a fence line is content. Line endings follow the document's line
+  rules, a leading byte order mark is dropped, and every line ends with a line
+  feed, as in an authored fence. An empty selection is an empty code block.
+- **Language.** `lang` is spelled like a fence's language token. A bare `@code`
+  produces a code block with no language; the language is never guessed from
+  the file extension.
+- **Attributes.** An attribute line directly above the directive applies to the
+  code block exactly as it does to an authored fence:
+
+  ```carve
+  {.diff title="server.js"}
+  {{ src/server.js@region:start @code:js }}
+  ```
+
+  renders `<pre class="diff" title="server.js">`. Extensions that read a code
+  block, such as callouts, read this one too.
+- **Block only.** A code block is block structure, so `@code` inside a sentence
+  is an `include-block-in-inline` error. `@shift` has no effect, since the code
+  holds no headings.
+
+Resolution, containment, the byte budget, cycles, depth and dependency
+reporting work exactly as for any other include.
 
 ### Selecting by id (`#section`)
 
@@ -798,7 +911,7 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 | Unreadable / missing path | Warning + literal directive |
 | Binary / non-text content | Warning + literal directive |
 | A `#section` that selects nothing | Warning + literal directive; a case-only mismatch names the exact id |
-| More than one of `#section`, `@lines` and `@region` | Warning + literal directive |
+| More than one of `#section`, `@lines` and `@region`, or `#section` with `@code` | `include-selection-conflict` Warning + literal directive |
 | Invalid or missing named region | `include-region-invalid` Warning + literal directive |
 | Block-structured content in inline position (inline include) | Warning + literal directive |
 | Inclusion cycle | Warning + literal directive |

@@ -1562,3 +1562,132 @@ export const vectors = [
     },
   },
 ]
+
+/*
+ * Vectors AHEAD of the include reference pin (carve#3319, carve#3320).
+ *
+ * The clause landed before carve-js implements it, so these inputs have no
+ * golden yet; see "A ruling with no golden yet" in
+ * tests/include-conformance/README.md. A name that is already in `vectors`
+ * replaces that entry. When the reference pin moves to a carve-js that
+ * implements I1b (a)/(b) and I1c, the entries move into `vectors` and the
+ * generator writes their goldens.
+ */
+const v = (name, description, rules, entry, files, extra = {}) => ({
+  name,
+  description,
+  rules,
+  mode: 'virtual',
+  resolver: 'virtual',
+  entry,
+  files,
+  ...extra,
+})
+const server = "import http from 'node:http'\n\n// #region start\nconst server = http.createServer(handler)\nserver.listen(3000)\n// #endregion start\n"
+const readme = '# Project\n\nIntro.\n\n%% #region requirements\n- PHP 8.3 or later\n- Composer 2.7\n%% #endregion requirements\n\nMore text.\n'
+
+/** @type {Array<object>} */
+export const pendingVectors = [
+  // --- I1b (a): a Carve include recognizes only `%%` markers ---------------
+  v('i01b-region-stable', 'A named region selects physical lines while ignoring surrounding source.', ['I1b'],
+    '{{ child @region:demo }}', { child: 'Before.\n%% #region demo\n## Pick\n\nBody.\n%% #endregion demo\nAfter.' }),
+  v('i01b-region-missing', 'A missing named region warns, stays literal, and keeps the resolved dependency.', ['I1b', 'I11'],
+    '{{ child @region:demo }}', { child: '%% #region other\nBody.\n%% #endregion other' }),
+  v('i01b-region-mismatch', 'A mismatched closer makes region selection invalid.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #region demo\nBody.\n%% #endregion other' }),
+  v('i01b-region-duplicate', 'A repeated name makes region selection invalid.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #region demo\nOne.\n%% #endregion demo\n%% #region demo\nTwo.\n%% #endregion demo' }),
+  v('i01b-region-selector-conflict', 'A named region cannot be combined with a line range.', ['I1b'],
+    '{{ child @region:demo @lines:1-2 }}', { child: '%% #region demo\nBody.\n%% #endregion demo' }),
+  v('i01b-region-crlf', 'CRLF marker lines are recognized and the selected lines keep their content.', ['I1b'],
+    '{{ child @region:demo }}', { child: 'Before.\r\n%% #region demo\r\nBody.\r\n%% #endregion demo\r\nAfter.\r\n' }),
+  v('i01b-region-anonymous-closer', 'A closing marker may omit the name and closes the innermost region.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #region demo\nBody.\n%% #endregion\nAfter.' }),
+  v('i01b-region-indented-markers', 'Leading spaces or tabs, and spaces or tabs after the comment marker, are allowed.', ['I1b'],
+    '{{ child @region:demo }}', { child: '\t  %%\t#region demo\nBody.\n  %% #endregion demo  ' }),
+  v('i01b-region-empty', 'An empty region selects an empty source.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #region demo\n%% #endregion demo' }),
+  v('i01b-region-unclosed', 'An opening marker without a closer makes region selection invalid.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #region demo\nBody.' }),
+  v('i01b-region-unmatched-end', 'A closing marker with no open region makes region selection invalid.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #region demo\nBody.\n%% #endregion demo\n%% #endregion' }),
+  v('i01b-region-malformed-marker', 'Content after a marker name makes region selection invalid.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #region demo extra\nBody.\n%% #endregion demo' }),
+  v('i01b-region-unnamed-opener', 'An opening marker must name its region.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #region\n%% #region demo\nBody.\n%% #endregion demo\n%% #endregion' }),
+  v('i01b-region-keyword-run-on', 'A marker keyword followed by punctuation is a malformed marker.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #regional note\n%% #region-x\n%% #region demo\nBody.\n%% #endregion demo' }),
+  v('i01b-region-keyword-word-run-on', 'A marker keyword followed by a word character is ordinary content.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #regional note\n%% #endregions\n%% #region demo\nBody.\n%% #endregion demo' }),
+  v('i01b-region-host-renders-no-marker', 'A file holding `%%` region markers renders as if they were not there.', ['I1b'],
+    readme, {}),
+  v('i01b-region-percent-markers-include', 'A Carve include selects the lines between `%%` markers.', ['I1b'],
+    '{{ readme.crv @region:requirements }}', { 'readme.crv': readme }),
+  v('i01b-region-bare-marker-is-text-in-carve', 'A bare `#region` line is not a marker for a Carve include.', ['I1b'],
+    '{{ child @region:demo }}', { child: '#region demo\nBody.\n#endregion demo' }),
+  v('i01b-region-slash-marker-is-text-in-carve', 'A `// #region` line is not a marker for a Carve include.', ['I1b'],
+    '{{ child @region:demo }}', { child: '// #region demo\nBody.\n// #endregion demo' }),
+  v('i01b-region-braced-comment-is-not-a-marker', 'A braced `{% #region %}` comment is not a marker.', ['I1b'],
+    '{{ child @region:demo }}', { child: '{% #region demo %}\nBody.\n{% #endregion demo %}' }),
+  v('i01b-region-keyword-is-case-sensitive', 'A `#Region` keyword is not a marker.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%% #Region demo\nBody.\n%% #EndRegion demo' }),
+  v('i01b-region-block-comment-fence-is-not-a-marker', 'A `%%%` line is a block comment fence, never a marker.', ['I1b'],
+    '{{ child @region:demo }}', { child: '%%% #region demo\nBody.\n%%% #endregion demo' }),
+
+  // --- I1b (b): a code include recognizes the source-comment forms ---------
+  v('i01b-region-nested-shell', 'Distinct shell-style regions may nest and the inner content can be selected.', ['I1b', 'I1c'],
+    '{{ child @region:inner @code }}', { child: '#region outer\nBefore.\n#region inner\nInside.\n#endregion inner\nAfter.\n#endregion outer' }),
+  v('i01b-region-outer-retains-inner-markers', 'Selecting an outer region retains nested marker lines as source content.', ['I1b', 'I1c'],
+    '{{ child @region:outer @code:js }}', { child: '// #region outer\nBefore.\n// #region inner\nInside.\n// #endregion inner\nAfter.\n// #endregion outer' }),
+  v('i01c-code-marker-hash', 'A code include recognizes a bare `#region` marker.', ['I1b', 'I1c'],
+    '{{ a.py @region:demo @code:python }}', { 'a.py': 'import os\n#region demo\nprint(os.name)\n#endregion demo\n' }),
+  v('i01c-code-marker-slash', 'A code include recognizes a `// #region` marker.', ['I1b', 'I1c'],
+    '{{ a.ts @region:demo @code:ts }}', { 'a.ts': 'const a = 1\n// #region demo\nconst b = a + 1\n// #endregion demo\n' }),
+  v('i01c-code-marker-dash', 'A code include recognizes a `-- #region` marker.', ['I1b', 'I1c'],
+    '{{ a.sql @region:demo @code:sql }}', { 'a.sql': '-- #region demo\nSELECT 1;\n-- #endregion demo\n' }),
+  v('i01c-code-marker-block-comment', 'A code include recognizes a `/* #region */` marker.', ['I1b', 'I1c'],
+    '{{ a.css @region:demo @code:css }}', { 'a.css': '/* #region demo */\np { color: red; }\n/* #endregion demo */\n' }),
+  v('i01c-code-marker-html-comment', 'A code include recognizes a `<!-- #region -->` marker.', ['I1b', 'I1c'],
+    '{{ a.html @region:demo @code:html }}', { 'a.html': '<!-- #region demo -->\n<p>Hi</p>\n<!-- #endregion -->\n' }),
+  v('i01c-code-marker-percent', 'A code include recognizes a `%% #region` marker.', ['I1b', 'I1c'],
+    '{{ a.crv @region:demo @code:carve }}', { 'a.crv': '%% #region demo\n*Body*\n%% #endregion demo\n' }),
+  v('i01c-code-marker-block-closer-on-the-same-line', 'A block comment marker whose closer does not end the line is malformed.', ['I1b', 'I1c'],
+    '{{ a.css @region:demo @code:css }}', { 'a.css': '/* #region demo\n*/\np {}\n/* #endregion demo */\n' }),
+  v('i01c-code-marker-keyword-is-case-sensitive', 'A `// #Region` keyword is not a marker in a code include either.', ['I1b', 'I1c'],
+    '{{ a.js @region:demo @code:js }}', { 'a.js': '// #Region demo\nx()\n// #EndRegion demo\n' }),
+
+  // --- I1c code include ------------------------------------------------------
+  v('i01c-code-region', 'The carve#3320 example: a region included as a js code block, byte for byte.', ['I1c'],
+    '{{ src/server.js@region:start @code:js }}', { 'src/server.js': server }, { checkFlattened: true }),
+  v('i01c-code-attribute-line', 'An attribute line above a code include applies to the code block.', ['I1c'],
+    '{.diff title="server.js"}\n{{ src/server.js@region:start @code:js }}', { 'src/server.js': server }),
+  v('i01c-code-whole-file', 'With no selector the whole file is the payload.', ['I1c'],
+    '{{ a.py @code:python }}', { 'a.py': 'def f():\n    return 1\n' }),
+  v('i01c-code-lines', '`@code` composes with `@lines`.', ['I1', 'I1c'],
+    '{{ a.js @lines:2-3 @code:js }}', { 'a.js': 'one()\ntwo()\nthree()\nfour()\n' }),
+  v('i01c-code-bare-has-no-language', 'A bare `@code` gives no language; nothing is inferred from the extension.', ['I1c'],
+    '{{ a.js @code }}', { 'a.js': 'x()\n' }),
+  v('i01c-code-payload-is-not-parsed', 'The payload is not Carve: markup, a directive and a fence line stay text.', ['I1c', 'I9'],
+    '{{ a.txt @code:text }}', { 'a.txt': '*not strong*\n{{ other.crv }}\n```\n<b>&</b>\n', 'other.crv': 'Never read.' },
+    { checkFlattened: true }),
+  v('i01c-code-crlf', 'CRLF and lone CR line endings become line feeds in the payload.', ['I1c'],
+    '{{ a.js @code:js }}', { 'a.js': 'a()\r\nb()\rc()\r\n' }),
+  v('i01c-code-bom', 'A leading byte order mark is not payload.', ['I1c'],
+    '{{ a.js @code:js }}', { 'a.js': '﻿a()\n' }),
+  v('i01c-code-no-final-newline', 'A last line without a line ending still ends with one in the payload.', ['I1c'],
+    '{{ a.js @code:js }}', { 'a.js': 'a()\nb()' }),
+  v('i01c-code-empty-region', 'An empty selection is an empty code block.', ['I1b', 'I1c'],
+    '{{ a.js @region:demo @code:js }}', { 'a.js': '// #region demo\n// #endregion demo\n' }),
+  v('i01c-code-section-conflict', '`#section` with `@code` is a selection conflict.', ['I1c', 'I7'],
+    '{{ child #intro @code:js }}', { child: '# Intro\n\nBody.' }),
+  v('i01c-code-inline-position', 'A code include inside a sentence is block content in inline position.', ['I1c', 'I2'],
+    'See {{ a.js @code:js }} here.', { 'a.js': 'x()\n' }),
+  v('i01c-code-language-must-be-a-language-token', 'A language value that is not a `language_info` token is a malformed option.', ['I1c', 'I7'],
+    '{{ a.js @code:=html }}', { 'a.js': 'x()\n' }),
+  v('i01c-code-language-takes-the-fence-charset', 'The language takes the fence language charset, `#` and `+` included.', ['I1c'],
+    '{{ a.cs @code:c# }}', { 'a.cs': 'var x = 1;\n' }),
+  v('i01c-code-shift-has-no-effect', '`@shift` has no effect on a code include and warns about nothing.', ['I1c', 'I8'],
+    '{{ a.md @shift:2 @code:md }}', { 'a.md': '# Title\n' }),
+  v('i01-bare-option-other-than-code-is-malformed', 'Only `@code` may omit its value; a bare `@shift` is a malformed option.', ['I1'],
+    '{{ child @shift }}', { child: '# Title' }),
+]
