@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-table-malformed-quoting",
+  "description": "Malformed quoting in a `{table}` csv code include keeps the code block, as on an authored fence.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{table}\n{{ data.csv @code:csv }}",
+  "files": {
+    "data.csv": "a,b\n\"bad\n"
+  },
+  "expected": {
+    "html": "<pre table=\"\"><code class=\"language-csv\">a,b\n\"bad\n</code></pre>",
+    "fmt": "{table}\n{{ data.csv @code:csv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "data.csv",
+        "resolved": true
+      }
+    ]
+  }
+}

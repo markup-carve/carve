@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-table-header-rows-zero",
+  "description": "`{table header-rows=0}` above a csv code include makes a table with no header row.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{table header-rows=0}\n{{ data.csv @code:csv }}",
+  "files": {
+    "data.csv": "a,b\n1,2\n"
+  },
+  "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>1</td><td>2</td></tr>\n  </tbody>\n</table>",
+    "fmt": "{table header-rows=0}\n{{ data.csv @code:csv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "data.csv",
+        "resolved": true
+      }
+    ]
+  }
+}

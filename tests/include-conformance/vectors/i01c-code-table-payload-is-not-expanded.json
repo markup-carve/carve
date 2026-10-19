@@ -1,0 +1,26 @@
+{
+  "name": "i01c-code-table-payload-is-not-expanded",
+  "description": "A directive in a field of a `{table}` code include stays text: the payload is not Carve.",
+  "rules": [
+    "I1c",
+    "I9"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{table}\n{{ data.csv @code:csv }}",
+  "files": {
+    "data.csv": "a,b\n1,{{ other.crv }}\n",
+    "other.crv": "Never read."
+  },
+  "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td><td>{{ other.crv }}</td></tr>\n  </tbody>\n</table>",
+    "fmt": "{table}\n{{ data.csv @code:csv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "data.csv",
+        "resolved": true
+      }
+    ]
+  }
+}

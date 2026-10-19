@@ -1,0 +1,24 @@
+{
+  "name": "i01c-code-table-tsv",
+  "description": "`{table}` above a tsv code include makes a table, as on an authored tsv fence.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{table}\n{{ data.tsv @code:tsv }}",
+  "files": {
+    "data.tsv": "Name\tRole\nAda\tEngineer\n"
+  },
+  "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">Name</th><th scope=\"col\">Role</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>Ada</td><td>Engineer</td></tr>\n  </tbody>\n</table>",
+    "fmt": "{table}\n{{ data.tsv @code:tsv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "data.tsv",
+        "resolved": true
+      }
+    ]
+  }
+}
