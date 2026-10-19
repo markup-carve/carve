@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-bom-selection-from-line-1",
+  "description": "A leading byte order mark is dropped when an `@lines` selection includes line 1.",
+  "rules": [
+    "I1",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.txt @lines:1-2 @code }}",
+  "files": {
+    "a.txt": "﻿first\nsecond\nthird\n"
+  },
+  "expected": {
+    "html": "<pre><code>first\nsecond\n</code></pre>",
+    "fmt": "{{ a.txt @lines:1-2 @code }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.txt",
+        "resolved": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-bom-on-a-later-line-region",
+  "description": "A U+FEFF opening the first line of a region is content, not a byte order mark.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.js @region:demo @code:js }}",
+  "files": {
+    "a.js": "// #region demo\n﻿x()\n// #endregion demo\n"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-js\">﻿x()\n</code></pre>",
+    "fmt": "{{ a.js @region:demo @code:js }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.js",
+        "resolved": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "i01c-code-bom-on-a-later-line-lines",
+  "description": "A U+FEFF opening a later line is content: only the file's leading one is dropped (carve-js#3244).",
+  "rules": [
+    "I1",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ data.txt@lines:2-3 @code }}",
+  "files": {
+    "data.txt": "first\n﻿second\nthird\n"
+  },
+  "expected": {
+    "html": "<pre><code>﻿second\nthird\n</code></pre>",
+    "fmt": "{{ data.txt@lines:2-3 @code }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "data.txt",
+        "resolved": true
+      }
+    ]
+  }
+}
