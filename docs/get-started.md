@@ -5,8 +5,33 @@ description: Try Carve in the playground, then render it in your own project.
 
 # Get Started
 
-Use the [Playground](/playground) without installing anything. The [Cheat
-Sheet](/cheatsheet) lists the syntax.
+## Write your first document
+
+Open the [Playground](/playground) to try Carve without installing anything.
+Replace the text in the *Carve source* pane with this:
+
+```carve
+# Weekend plans
+
+Bring a *warm coat* and a notebook.
+
+- Walk by the river
+- Take photos
+```
+
+The *Rendered HTML* pane shows a heading, a paragraph with bold text, and a
+two-item list. Change a list item to see the preview update. Carve uses `*` for
+bold; see [Coming from Markdown](/migrate-from-markdown) if that surprises you.
+
+To keep the document, copy the source into a text editor and save it as
+`weekend.crv`. If you have Node.js installed, you can make an HTML file with:
+
+```bash
+npx @markup-carve/carve weekend.crv > weekend.html
+```
+
+Open `weekend.html` in a browser to see the result. The [Cheat Sheet](/cheatsheet)
+has more syntax when you need it.
 
 ## Choose a workflow
 
