@@ -1,0 +1,66 @@
+A marker below an open div attaches beside the div
+
+```
+- ::: d
++
+tail
+.
+<ul>
+  <li>
+    <div class="d">
+
+    </div>
+    tail
+  </li>
+</ul>
+```
+
+```
+- - ::: d
+  +
+tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="d">
+
+        </div>
+        tail
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+1. ::: d
++
+tail
+.
+<ol>
+  <li>
+    <div class="d">
+
+    </div>
+    tail
+  </li>
+</ol>
+```
+
+```
+- ::: d
+  z
++
+tail
+.
+<ul>
+  <li>
+    <div class="d">
+      <p>z</p>
+    </div>
+    tail
+  </li>
+</ul>
+```

@@ -59228,3 +59228,252 @@ tail
 ```
 
 :::::::
+
+## A refused marker leaves an open fence's blank payload
+
+A refused `+` at the host's marker column is skipped while an open code or raw fence continues. A following blank line stays in the payload at every depth (markup-carve/carve#3400).
+
+::::::: compare
+
+````carve
+- ```
++
+  x
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- ```
++
+
+  x
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>
+x
+</code></pre>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- ```
+  a
++
+  x
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>a
+x
+</code></pre>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- ```
+  x
++
+
+tail
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>x
+
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- - ```
+  +
+
+tail
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- ```
++
+
+tail
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- ```=html
+  x
++
+
+tail
+````
+
+```html
+<ul>
+  <li>
+    x
+
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::::::
+
+## A marker below an open div attaches beside the div
+
+A `+` at the list item's marker column ends an open colon div from the marker line. The next flush-left block joins the item beside the div (markup-carve/carve#3406).
+
+::::::: compare
+
+````carve
+- ::: d
++
+tail
+````
+
+```html
+<ul>
+  <li>
+    <div class="d">
+
+    </div>
+    tail
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- - ::: d
+  +
+tail
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="d">
+
+        </div>
+        tail
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+1. ::: d
++
+tail
+````
+
+```html
+<ol>
+  <li>
+    <div class="d">
+
+    </div>
+    tail
+  </li>
+</ol>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- ::: d
+  z
++
+tail
+````
+
+```html
+<ul>
+  <li>
+    <div class="d">
+      <p>z</p>
+    </div>
+    tail
+  </li>
+</ul>
+```
+
+:::::::

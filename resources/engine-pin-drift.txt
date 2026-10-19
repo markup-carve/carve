@@ -55,3 +55,8 @@
 626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-6  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
 626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-7  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
 626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-8  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
+627-a-refused-marker-leaves-an-open-fence-s-blank-payload-5  carve#3400, carve-js#3285: the carve-js fix lands after the pin
+628-a-marker-below-an-open-div-attaches-beside-the-div  carve#3406, carve-js#3285: the carve-js fix lands after the pin
+628-a-marker-below-an-open-div-attaches-beside-the-div-2  carve#3406, carve-js#3285: the carve-js fix lands after the pin
+628-a-marker-below-an-open-div-attaches-beside-the-div-3  carve#3406, carve-js#3285: the carve-js fix lands after the pin
+628-a-marker-below-an-open-div-attaches-beside-the-div-4  carve#3406, carve-js#3285: the carve-js fix lands after the pin

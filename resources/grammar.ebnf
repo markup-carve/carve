@@ -6230,8 +6230,9 @@ EOF = (* end of file *) ;
          them spelled out.
 
          At the host's marker column, the marker is outside the content column
-         of a preceding code or raw fence. That fence ends before the attached
-         block begins. Separators inserted for attachment are not fence payload.
+         of a preceding code, raw or colon fence. That fence ends before the
+         attached block begins. Separators inserted for attachment are not fence
+         payload.
          With no following block, the marker adds no content or blank line.
          A `+` inside the fence's own content column remains literal payload.
 
@@ -6269,7 +6270,11 @@ EOF = (* end of file *) ;
          With no flush-left block after it (the end of the input, a blank line,
          or a line that is not flush-left), the `+` is not a marker. In a list
          item and a definition description the marker is refused and the body
-         ends. In a block quote and a footnote body the `+` is ordinary text:
+         ends. A refused marker ends the body only where no code or raw fence is
+         open; inside an open code or raw fence, the refused `+` at the host's
+         marker column is skipped, the fence continues, and a blank line after
+         it is payload as it would be without the `+`, at any depth. In a block
+         quote and a footnote body the `+` is ordinary text:
          `> +` is a quote holding the paragraph `+`, `[^a]: +` is a note holding
          the text `+`, and a line that is not flush-left lands wherever the
          ordinary column rules put it. So

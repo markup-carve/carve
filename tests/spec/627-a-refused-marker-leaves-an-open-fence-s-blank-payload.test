@@ -1,0 +1,111 @@
+A refused marker leaves an open fence's blank payload
+
+````
+- ```
++
+  x
+.
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+- ```
++
+
+  x
+.
+<ul>
+  <li>
+    <pre><code>
+x
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+- ```
+  a
++
+  x
+.
+<ul>
+  <li>
+    <pre><code>a
+x
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+- ```
+  x
++
+
+tail
+.
+<ul>
+  <li>
+    <pre><code>x
+
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+````
+- - ```
+  +
+
+tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+````
+- ```
++
+
+tail
+.
+<ul>
+  <li>
+    <pre><code>
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+````
+- ```=html
+  x
++
+
+tail
+.
+<ul>
+  <li>
+    x
+
+  </li>
+</ul>
+<p>tail</p>
+````

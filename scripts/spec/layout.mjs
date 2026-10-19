@@ -1458,7 +1458,8 @@ function markerFenceSummary(text, memo) {
     text = marker.text
   }
   for (let k = path.length - 1; k >= 0; k--) {
-    if (summary) summary = { ...summary, col: summary.col + path[k].width }
+    if (summary) summary = { ...summary, col: summary.col + path[k].width,
+      hostCol: summary.hostCol === undefined ? summary.col : summary.hostCol + path[k].width }
     memo.set(path[k].length, summary)
   }
   return summary
@@ -3853,12 +3854,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (cf) {
         const opener = parseColonOpener(cf[2])
         if (opener) {
-          const close = findColonCloser(lines, i, cf[1].length)
-          const end = close === -1 ? n : close
+          const boundary = state.attachmentBoundaries?.get(lines)?.find(index => index > i) ?? n
+          const close = findColonCloser(lines.slice(0, boundary), i, cf[1].length)
+          const end = close === -1 ? boundary : close
           const body = lines.slice(i + 1, end)
           markMeasuredContainerText(state, lines, i + 1, end, ind)
-          i = close === -1 ? n : close + 1
-          inheritFinalBreak(lines, body, close === -1 ? n : close, state)
+          i = close === -1 ? boundary : close + 1
+          inheritFinalBreak(lines, body, end, state)
           if (opener.mode === 'line-block') {
             push({ t: 'line-block', lines: body.map(stripLazy) })
           } else if (opener.mode === 'hardbreaks') {
@@ -5292,6 +5294,20 @@ function sameAxes(list, head) {
 
 function collectItems(lines, i, list, state, ind, meas, inItem) {
   const n = lines.length
+  const skipped = new Set()
+  const nextVisible = (at) => {
+    while (skipped.has(at)) at++
+    return at
+  }
+  const previousVisible = (at) => {
+    while (skipped.has(at)) at--
+    return at
+  }
+  const visibleDistance = (start, end) => {
+    let count = end - start
+    for (const index of skipped) if (index >= start && index < end) count--
+    return count
+  }
   const baseIndent = matchMarkerAt(ind(i)).indent
   while (i < n) {
     const head = matchMarkerAt(ind(i))
@@ -5832,6 +5848,16 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // in. `%%%` is excluded by the family 1 ruling and FENCE spells only the
     // backtick and tilde kinds, the `=html` raw form among them.
     let nestedOpaque = null
+    const nextFenceVisible = (at) => {
+      at = nextVisible(at)
+      while (at < n && nestedOpaque?.kind === 'code' && CONT_MARKER.test(ind(at).rest) &&
+          ind(at).col === (nestedOpaque.hostCol ?? nestedOpaque.col) &&
+          (at + 1 === n || isBlank(lines[at + 1]) || !attachesFlushLeft(ind(at + 1)))) {
+        skipped.add(at)
+        at = nextVisible(at + 1)
+      }
+      return at
+    }
     // A comment span whose OPENER is written below every content column. The
     // tracker above reads lines at the item's own column, so it never saw that
     // opener and recorded no span: the closer then arrived as a fresh comment
@@ -6044,7 +6070,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       else {
         nestedOpaque = markerComment(head.text.trimStart(), i)
         const lead = markerFenceSummary(head.text, prefixMemo(state, lines, i).markerFence ??= new Map())
-        if (!nestedOpaque && headSubMarker && lead) nestedOpaque = { kind: 'code', run: lead.run, col: lead.col, markerLine: true }
+        if (!nestedOpaque && headSubMarker && lead) nestedOpaque = { kind: 'code', run: lead.run, col: lead.col, hostCol: contentCol + lead.hostCol, markerLine: true }
       }
     }
     i++
@@ -6084,14 +6110,16 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // none - which is the whole of carve#1814. It is `attachesFlushLeft` now,
       // asked once and shared, and an empty range is the refusal.
       if (i >= n || isBlank(lines[i]) || !attachesFlushLeft(ind(i))) return false
-      if (fence.opaque?.kind === 'code' && fence.opaque.opens !== false) {
+      const closesColon = fence.colon.length > 0
+      if ((fence.opaque?.kind === 'code' && fence.opaque.opens !== false) || closesColon) {
         const bounds = state.attachmentBoundaries ??= new WeakMap()
         const indices = bounds.get(itemLines) ?? []
         indices.push(itemLines.length)
         bounds.set(itemLines, indices)
         fence.opaque = null
+        fence.colon.length = 0
       }
-      if (insideFence() || !bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k], hasFutureCommentCloser)) {
+      if (!closesColon && (insideFence() || !bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k], hasFutureCommentCloser))) {
         pushLine('', BLANK_MEAS)
       }
       // ONE block, with the SAME extent rule every other container uses: a
@@ -6184,8 +6212,21 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         (belowSpan !== null && lastCommentCloser(belowSpan.run) >= i) || lm.rest.startsWith('%%')
       captureParagraphState = !commentLine
       if (!commentLine && lm.rest === '') paragraphOpenBeforeComments = false
-      if (lm.rest !== '') fenceBlankRun = 0
+      if (nestedOpaque?.kind === 'code' && CONT_MARKER.test(lm.rest) &&
+          lm.col === (nestedOpaque.hostCol ?? nestedOpaque.col) &&
+          (i + 1 === n || isBlank(lines[i + 1]) || !attachesFlushLeft(ind(i + 1)))) {
+        skipped.add(i)
+        i++
+        continue
+      }
       if (CONT_MARKER.test(line) && lm.col === baseIndent) {
+        if ((fence.opaque?.kind === 'code' ||
+            (nestedOpaque?.kind === 'code' && (nestedOpaque.hostCol ?? nestedOpaque.col) === lm.col)) &&
+            (i + 1 === n || isBlank(lines[i + 1]) || !attachesFlushLeft(ind(i + 1)))) {
+          skipped.add(i)
+          i++
+          continue
+        }
         i++
         attachFlushLeft()
         continue
@@ -6195,6 +6236,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // §17 L3 and PART 0 O1: pass a descendant's attachment through every ancestor.
         carriesBareContinuation = i + 1 < n && foldablePlainLine(ind(i + 1).rest)
       }
+      if (lm.rest !== '') fenceBlankRun = 0
       if (line.startsWith(LAZY)) {
         // a lazy line from an OUTER context propagates to the deepest open
         // paragraph (PART 9 SS10 I2)
@@ -6271,7 +6313,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           // last blank is the one whose next line is content, so testing that
           // line directly reaches the same marker in constant work per line.
           {
-            const next = i + 1 < n ? ind(i + 1) : null
+            const nextIndex = nextFenceVisible(i + 1)
+            const next = nextIndex < n ? ind(nextIndex) : null
             if (next && next.rest !== '') {
               const km = matchMarkerAt(next)
               if (km && km.indent === baseIndent && sameAxes(list, km)) {
@@ -6288,19 +6331,32 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           continue
         }
         // decide with the NEXT content line
-        let j = i + 1
-        while (j < n && ind(j).rest === '') j++
+        let j = nextFenceVisible(i + 1)
+        while (j < n) {
+          if (ind(j).rest === '') { j = nextFenceVisible(j + 1); continue }
+          const candidate = ind(j)
+          if (nestedOpaque?.kind === 'code' && CONT_MARKER.test(candidate.rest) &&
+              candidate.col === (nestedOpaque.hostCol ?? nestedOpaque.col) &&
+              (j + 1 === n || isBlank(lines[j + 1]) || !attachesFlushLeft(ind(j + 1)))) {
+            skipped.add(j)
+            j = nextVisible(j + 1)
+            continue
+          }
+          break
+        }
         const nextCloser = j < n && nestedOpaque?.markerLine && ind(j).col >= nestedOpaque.col
           ? PURE_FENCE.exec(ind(j).rest) : null
         const descendantFence = bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k], hasFutureCommentCloser)
         const closedMarkerFence = nestedOpaque?.kind === 'code' && nestedOpaque.markerLine &&
           nextCloser && nextCloser[1][0] === nestedOpaque.run[0] && nextCloser[1].length >= nestedOpaque.run.length
-        const unfinishedDescendantFence = nestedOpaque?.kind === 'code' && !CONT_MARKER.test(lines[i - 1] ?? '') &&
+        const unfinishedDescendantFence = nestedOpaque?.kind === 'code' &&
+          !CONT_MARKER.test(lines[previousVisible(i - 1)] ?? '') &&
           (j >= n || ind(j).col < contentCol)
         if (descendantFence || unfinishedDescendantFence || closedMarkerFence) {
           // A descendant fence owns the full blank run, including one before
           // its closer. An unfinished fence also owns the run at its boundary.
           for (let k = i; k < j; k++) {
+            if (skipped.has(k)) continue
             const dd = dedentMeasured(ind(k), lines[k], authoredBlockBase ?? contentCol)
             pushLine(dd.text, dd.meas)
           }
@@ -6341,12 +6397,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           // one. One or two blank lines stay the ordinary loose separator
           // (§17 L1), so the shape a document actually uses is untouched.
           //
-          // `j - i` is the exact run length -- `i` is the first blank and `j`
-          // the line that ended the run -- so the test needs no counter.
           // `sameAxes` is what makes it a BOUNDARY rather than a repeat of §11
           // N1's ordinary split: a marker on different axes already opened a
           // different list, and there is nothing for the run to separate.
-          if (j - i >= 3 && sameAxes(list, nm)) {
+          if (visibleDistance(i, j) >= 3 && sameAxes(list, nm)) {
             hardListBoundary = true
             i = j
             break
@@ -6378,7 +6432,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             // the recursive parse of itemLines decides the sub-list's looseness.
             //
             if (!descendantFence && !closedMarkerFence) {
-              const blanks = CAPTION.test(jm.rest) ? j - i : 1
+              const blanks = CAPTION.test(jm.rest) ? visibleDistance(i, j) : 1
               for (let k = 0; k < blanks; k++) pushLine('', BLANK_MEAS)
             }
             closePara()
@@ -6416,7 +6470,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           if (defBodyIndent !== null && defBase !== null && jm.col - defBase > defBodyIndent) {
             const defBody = defBodyIndent
             if (!descendantFence && !closedMarkerFence) {
-              const blanks = CAPTION.test(jm.rest) ? j - i : 1
+              const blanks = CAPTION.test(jm.rest) ? visibleDistance(i, j) : 1
               for (let k = 0; k < blanks; k++) pushLine('', BLANK_MEAS)
             }
             closePara()
@@ -6504,7 +6558,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           // the top level split. Attaching still keeps THIS item tight - that
           // is L2 and is unchanged; what the run decides is whether the marker
           // below it joins the sub-list, which is the nested parse's question.
-          if (!descendantFence && !closedMarkerFence) for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
+          if (!descendantFence && !closedMarkerFence) for (let k = i; k < j; k++) if (!skipped.has(k)) pushLine('', BLANK_MEAS)
           closePara()
           i = j
           continue
@@ -6600,7 +6654,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           else absorbedNoteFence = true
         }
         const inNoteBody = i <= noteFenceEnd || absorbedNoteFence
-        const priorContent = (lines[i - 1] ?? '').replace(/^(?:[ \t]*>[ \t]?)+/, '')
+        const priorContent = (lines[previousVisible(i - 1)] ?? '').replace(/^(?:[ \t]*>[ \t]?)+/, '')
         const foldedChildFence = markerLineFence === null && !isBlank(priorContent) && !PURE_FENCE.test(priorContent.trimStart()) && descLive && deepestParagraphOpen() && col < (subCol >= 0 ? subCol : headSubCol) && FENCE.test(lm.rest) &&
           !fenceCloserFollows(i, dedentMeasured(lm, lines[i], col).text, col)
         const mayOpenAuthoredBlock = !inNoteBody && !foldsIntoLeadTerm && !descendantOwned &&
