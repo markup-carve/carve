@@ -336,6 +336,7 @@ const visibleText = (html) =>
 // fixed points and keep their visible text. Twelve return through HTML; the
 // equation caption returns as plain `cap` without its caret. One control
 // returns through Markdown; attached-caption cases do not.
+// Pin 20ef54b4 adds one HTML source round trip without moving the other counts.
 
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
