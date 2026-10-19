@@ -56181,7 +56181,7 @@ Two blanks detach a figure group caption
 
 :::
 
-A paragraph before a quote-shaped line has no caption slot
+A quote after item prose still takes its caption
 
 ::: compare
 

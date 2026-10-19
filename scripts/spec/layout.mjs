@@ -5292,6 +5292,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     }
     let contentCol = head.indent + head.markerWidth
     const itemLines = []
+    const captionGaps = new Set()
     const residueFence = { index: 0, opaque: null }
     const commentClosersByColumn = new Map()
     const hasFutureCommentCloser = (run, column) => {
@@ -6317,19 +6318,10 @@ function collectItems(lines, i, list, state, ind, meas) {
             i = j
             continue
           }
-          const hostLines = itemLines.slice(itemLines.findLastIndex((entry) => entry === '') + 1)
-          const hostStart = hostLines[0] ?? ''
-          const lastContent = hostLines.at(-1) ?? ''
-          const captionHost = (hostLines.length === 1 &&
-              (/^!\[[^\n]*\]\([^\n]*\)$/.test(hostStart.trim()) || /^\$\$`/.test(hostStart.trim()))) ||
-            (/^\s*\|\s/.test(hostStart) && /^\s*\|\s/.test(lastContent)) ||
-            (/^\s*>\s/.test(hostStart) && /^\s*>\s/.test(lastContent)) ||
-            (/^\s*(?:`{3,}|~{3,})/.test(hostStart) && hostLines.length >= 2 &&
-              /^\s*(?:`{3,}|~{3,})\s*$/.test(lastContent)) ||
-            (/^\s*:{3,}\s+figure\b/.test(hostStart) && /^\s*:{3,}\s*$/.test(lastContent))
-          if (j === i + 1 && CAPTION.test(jm.rest) && captionHost) {
+          if (j === i + 1 && CAPTION.test(jm.rest)) {
             pushLine('', BLANK_MEAS)
             closePara()
+            captionGaps.add(jm.rest)
             i = j
             continue
           }
@@ -7302,6 +7294,9 @@ function collectItems(lines, i, list, state, ind, meas) {
      */
     if (descendantQ1.col >= 0) state.descendantQ1Log?.push({ col: descendantQ1.col, ...descendantQ1At(descendantQ1.col) })
     item.blocks = parseBlocks(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
+    if (captionGaps.size && item.blocks.some((block) => block.t === 'para' && captionGaps.has(block.lines?.[0]))) {
+      list.tight = false
+    }
     list.items.push(item)
     // Returning rather than breaking leaves `i` on the marker line, so the
     // caller parses it as the first item of the next list.
