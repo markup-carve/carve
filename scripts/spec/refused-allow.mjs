@@ -13,7 +13,7 @@
  * implement the construct.
  */
 export const REFUSED_ALLOW = new Set([
-  '624-table-cell-value-references',
-  '624-table-cell-value-references-2',
-  '625-table-value-references-with-another-row-key',
+  '625-table-cell-value-references',
+  '625-table-cell-value-references-2',
+  '626-table-value-references-with-another-row-key',
 ])
