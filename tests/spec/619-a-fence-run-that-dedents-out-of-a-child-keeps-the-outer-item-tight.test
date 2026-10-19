@@ -278,3 +278,86 @@ tail
   </li>
 </ul>
 ````
+
+````
+- outer
+  - head
+
+    ```
+    a
+    ```
+  ```
+  b
+
+  c
+.
+<ul>
+  <li>outer
+    <ul>
+      <li>head
+        <pre><code>a
+</code></pre>
+      </li>
+    </ul>
+    <pre><code>b
+
+c
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+- outer
+  - head
+
+    ~~~
+    a
+  ```
+
+  tail
+.
+<ul>
+  <li>outer
+    <ul>
+      <li>head
+        <pre><code>a
+</code></pre>
+      </li>
+    </ul>
+    <pre><code>
+tail
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+- outer
+  - head
+    - deep
+
+      ```
+      a
+  ```
+
+  tail
+.
+<ul>
+  <li>outer
+    <ul>
+      <li>head
+        <ul>
+          <li>deep
+            <pre><code>a
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <pre><code>
+tail
+</code></pre>
+  </li>
+</ul>
+````

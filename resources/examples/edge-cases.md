@@ -57240,3 +57240,110 @@ A run that closes inside the child leaves a second paragraph
 ```
 
 :::
+
+A run right after a child fence that closed
+
+::: compare
+
+````carve
+- outer
+  - head
+
+    ```
+    a
+    ```
+  ```
+  b
+
+  c
+````
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li>head
+        <pre><code>a
+</code></pre>
+      </li>
+    </ul>
+    <pre><code>b
+
+c
+</code></pre>
+  </li>
+</ul>
+```
+
+:::
+
+A backtick run below an open tilde fence
+
+::: compare
+
+````carve
+- outer
+  - head
+
+    ~~~
+    a
+  ```
+
+  tail
+````
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li>head
+        <pre><code>a
+</code></pre>
+      </li>
+    </ul>
+    <pre><code>
+tail
+</code></pre>
+  </li>
+</ul>
+```
+
+:::
+
+A run that dedents out of a grandchild
+
+::: compare
+
+````carve
+- outer
+  - head
+    - deep
+
+      ```
+      a
+  ```
+
+  tail
+````
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li>head
+        <ul>
+          <li>deep
+            <pre><code>a
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <pre><code>
+tail
+</code></pre>
+  </li>
+</ul>
+```
+
+:::
