@@ -75,6 +75,18 @@ const AHEAD_OF_PIN = {
       ],
     },
   },
+  'link-fragment-case-rewritten-names-the-authored-spelling': {
+    engines: ['js', 'rust', 'php'],
+    pinned: {
+      output: '# Über Uns\n\nSee [a](#%C3%BCber-uns).\n',
+      diagnostics: [{ code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }],
+    },
+  },
+}
+// The fixup message each row pins (CARVE-P2-031): the old fragment as the link wrote it.
+const FIXUP_MESSAGES = {
+  'link-fragment-case-rewritten': 'Rewrote link fragment #install-steps to #Install-Steps, the one heading id it matches without regard to case.',
+  'link-fragment-case-rewritten-names-the-authored-spelling': 'Rewrote link fragment #über-uns to #%C3%9Cber-Uns, the one heading id it matches without regard to case.',
 }
 const manifest = JSON.parse(readFileSync(resolve(root, 'tests/importer-fidelity/manifest.json'), 'utf8'))
 for (const id of Object.keys(AHEAD_OF_PIN)) assert.ok(manifest.cases.some(row => row.id === id), `AHEAD_OF_PIN names ${id}, which no manifest row has`)
@@ -99,7 +111,7 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
       assert.ok(row.message.length > 0, context)
       if (row.code === 'structure-unspellable' && fixture.id.includes('ordered-task')) assert.equal(row.message, 'An ordered task item is not spellable as a Carve task item; the checkbox marker was kept as text', context)
       if (row.code === 'bbcode-quote-field-dropped') assert.ok(row.message.includes('user_id'), `${context}: the message names the dropped field`)
-      if (row.code === 'link-fragment-case-rewritten') assert.equal(row.message, 'Rewrote link fragment #install-steps to #Install-Steps, the one heading id it matches without regard to case.', context)
+      if (row.code === 'link-fragment-case-rewritten') assert.equal(row.message, FIXUP_MESSAGES[fixture.id], context)
       const contract = classes.get(row.code)
       if (!contract) {
         assert.equal(row.code, 'fidelity-unverified', context)
