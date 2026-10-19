@@ -24,7 +24,8 @@ two-item list. Change a list item to see the preview update. Carve uses `*` for
 bold; see [Coming from Markdown](/migrate-from-markdown) if that surprises you.
 
 To keep the document, copy the source into a text editor and save it as
-`weekend.crv`. If you have Node.js installed, you can make an HTML file with:
+`weekend.crv`. If you have Node.js 20 or newer installed, you can make an HTML
+file with:
 
 ```bash
 npx @markup-carve/carve weekend.crv > weekend.html
