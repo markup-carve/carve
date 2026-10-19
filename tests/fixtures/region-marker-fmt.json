@@ -8,8 +8,7 @@
       "fmt": "%% #region requirements\n- PHP 8.3 or later\n- Composer 2.7\n%% #endregion requirements\n",
       "regions": {
         "requirements": "- PHP 8.3 or later\n- Composer 2.7\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "markers-adjacent-to-paragraphs-stay-adjacent",
@@ -17,8 +16,7 @@
       "fmt": "Intro.\n%% #region steps\nRun the installer.\n%% #endregion steps\nOutro.\n",
       "regions": {
         "steps": "Run the installer.\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "blank-lines-beside-markers-stay",
@@ -34,8 +32,7 @@
       "fmt": "%% #region steps\n- one\n\n- two\n%% #endregion steps\n",
       "regions": {
         "steps": "- one\n\n- two\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "a-closer-at-the-content-column-stays-there",
@@ -43,8 +40,7 @@
       "fmt": "%% #region steps\n- one\n  %% #endregion steps\n",
       "regions": {
         "steps": "- one\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "an-attribute-line-after-an-opener-stays-adjacent",
@@ -52,8 +48,7 @@
       "fmt": "%% #region steps\n{.note}\nRun the installer.\n%% #endregion steps\n",
       "regions": {
         "steps": "{.note}\nRun the installer.\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "nested-closers-after-a-list-stay-at-column-0",
@@ -62,8 +57,7 @@
       "regions": {
         "inner": "- one\n",
         "outer": "%% #region inner\n- one\n%% #endregion inner\n"
-      },
-      "aheadOfPin": true
+      }
     },
     {
       "id": "normalization-outside-a-region-leaves-it-alone",
@@ -71,8 +65,7 @@
       "fmt": "***\n\n%% #region steps\n- one\n%% #endregion steps\n",
       "regions": {
         "steps": "- one\n"
-      },
-      "aheadOfPin": true
+      }
     }
   ]
 }

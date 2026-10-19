@@ -10014,16 +10014,19 @@ EOF = (* end of file *) ;
           attribute lines the writer itself puts above the later block. The
           earlier block MUST be a paragraph, block image, heading, code block,
           thematic break or comment, since a `%%` line written directly below
-          anything else can be read into it. Otherwise, and in a tree without
-          positions, the ordinary separator applies.
+          anything else can be read into it. A link reference or footnote
+          definition is collected (§7) and written apart, so it is no sibling
+          here. Otherwise, and in a tree without positions, the ordinary
+          separator applies.
 
       (b) A MARKER KEPT IN A LIST ITEM KEEPS ITS COLUMN. A region marker that
-          is a list item's child, adjacent under (a) to the paragraph above it
-          in that item (or to a marker this rule placed), and whose recorded
-          start column is at or left of the item's own start column, is
-          written at the item's MARKER column, not its content column. PART 0
-          X1 reads it back into the same item: the paragraph's claim admits
-          it, and the retention it sets admits the next such marker.
+          is a list item's child, adjacent under (a) to the paragraph or block
+          image above it in that item (or to a marker this rule placed), and
+          whose recorded start column is at or left of the item's own start
+          column, is written at the item's MARKER column, not its content
+          column. PART 0 X1 reads it back into the same item: the paragraph's
+          claim admits it, and the retention it sets admits the next such
+          marker.
 
       With both, a region whose content is already canonical comes out of
       `fmt` byte for byte, so the include selects the same bytes before and
