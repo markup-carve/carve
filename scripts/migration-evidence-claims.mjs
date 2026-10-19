@@ -156,6 +156,11 @@ const AHEAD_OF_PIN = {
     rust: { output: '[a](/x%5By%5D) and ![b](/p%5Bq%5D.png)\n' },
     php: { output: '[a](/x%5By%5D) and ![b](/p%5Bq%5D.png)\n', exit: 1, diagnostics: [UNVERIFIED] },
   },
+  // carve#3379: a pointy autolink with brackets stays in angle form (CARVE-P11-069).
+  'markdown-pointy-autolink-keeps-its-brackets': {
+    engines: ['rust'],
+    rust: { output: '[https://e.com/a[b]](https://e.com/a%5Bb%5D)\n' },
+  },
   'link-fragment-case-rewritten': {
     engines: ['js', 'rust', 'php'],
     pinned: {

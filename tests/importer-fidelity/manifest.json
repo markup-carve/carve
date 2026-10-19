@@ -625,6 +625,37 @@
       ]
     },
     {
+      "id": "markdown-pointy-autolink-keeps-its-brackets",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "<https://e.com/a[b]>\n",
+      "expected": {
+        "output": "<https://e.com/a[b]>\n",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-autolink",
+            "severity": "info",
+            "fidelity": "normalized",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      },
+      "constructs": [
+        "paragraph",
+        "autolink"
+      ]
+    },
+    {
       "id": "markdown-reference",
       "sourceFormat": "markdown",
       "runner": "core",

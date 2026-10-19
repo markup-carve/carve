@@ -18,6 +18,12 @@
     "markdown": "[a](/x[y]) and ![b](/p[q].png)\n"
   },
   {
+    "name": "autolink-brackets-keep-the-angle-form",
+    "rule": "CARVE-P11-069",
+    "carve": "<https://e.com/a[b]>\n",
+    "markdown": "<https://e.com/a[b]>\n"
+  },
+  {
     "name": "table-cell-hard-break",
     "rule": "CARVE-P11-048",
     "ast": {
