@@ -75,3 +75,10 @@ test('an interior blank in a nested marker-line fence is kept once', () => {
 test('a continuation marker ends the nested fence before the blank', () => {
   assert.equal(payload(`- - ${FENCE}\n+\n\ntail\n`), '')
 })
+
+test('an unterminated fence below a closed description leaves the item', () => {
+  for (const block of ['    ---', '        | a |', '  {#x}']) {
+    const html = renderDoc(parse(`- :: t\n  : para\n${block}\n${FENCE}\nx\n`))
+    assert.match(html, /<\/ul>\n<pre><code>x\n<\/code><\/pre>\n?$/, block)
+  }
+})

@@ -7245,7 +7245,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // Document column zero remains owned by the document.
       // Q1 (or a frame surviving a comment, which Q3 answers), Q3, then Q2 at
       // the frame's own column 0 - the anchor the raw line carries.
-      if (!nm && (deepestParagraphOpen() || (DEFLIST_TERM.test(head.text.replace(/^> ?/, '')) && isCodeBlockOpener(lm.rest) && !hasCloser(lines, i)) || (afterComment && (!atFrameColumn(lm.col) || markedQuoteCommentClaim))) &&
+      if (!nm && (deepestParagraphOpen() || (DEFLIST_TERM.test(head.text.replace(/^> ?/, '')) && itemLines.slice(1).every((l) => l.startsWith(LAZY)) && isCodeBlockOpener(lm.rest) && !hasCloser(lines, i)) || (afterComment && (!atFrameColumn(lm.col) || markedQuoteCommentClaim))) &&
           itemLines.length > 0 && !opensBlockAt(line, i)) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
