@@ -406,6 +406,7 @@ the block below them.
 | `header-rows=N`, `footer-rows=N` | a pipe table | the leading / trailing row ranges become `<thead>` / `<tfoot>` |
 | `body-rows`, `body-header-rows`, `body-header-cols` | a pipe table | body partitions, intermediate headers, and row-header columns; valid positional lists are consumed |
 | `aligns`, `valigns`, `widths` | a pipe table | per-column alignment and width, as positional comma-separated lists |
+| `table` | a fenced code block whose language is `csv` or `tsv` | the fence becomes a table, its records the rows; see [CSV and TSV data](/cheatsheet#csv-and-tsv-data) |
 | `align=left\|right\|center` | a paragraph, div, or heading | renders the modern `text-align` CSS declaration instead of the legacy HTML attribute |
 
 Everything else on that line is an ordinary attribute and reaches the output as

@@ -185,6 +185,98 @@ Total figure keeps the column's right alignment.
 Glued is what makes it alignment; the terminating space ends the run. A
 standalone `| < |` cell is the colspan merge, `| ^ |` the rowspan merge.
 
+### CSV and TSV data
+
+A `{table}` flag on the line above a `csv` or `tsv` fence makes the fence a
+table. The first record is the header row. Fields follow RFC 4180 quoting, so a
+quoted field can hold a comma or a newline, and `""` is a literal quote.
+
+````carve
+{table}
+```csv
+Item,Qty,Note
+Apple,12,fresh
+"Pear, green",3,"picked
+today"
+```
+^ Stock on hand
+````
+
+renders as
+
+```html
+<table>
+  <caption>Stock on hand</caption>
+  <thead>
+    <tr><th scope="col">Item</th><th scope="col">Qty</th><th scope="col">Note</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Apple</td><td>12</td><td>fresh</td></tr>
+    <tr><td>Pear, green</td><td>3</td><td>picked
+today</td></tr>
+  </tbody>
+</table>
+```
+
+A `tsv` fence splits on TAB and quotes the same way. The other table attributes
+work on the same line: `aligns`, `valigns`, `widths`, `footer-rows`, and
+`header-rows=0` for a table without a header row.
+
+````carve
+{table header-rows=0 aligns=left,right}
+```csv
+Apple,12
+Pear,3
+```
+````
+
+Fields are literal text: no inline markup, span markers or cell attributes.
+A short record is padded with empty cells. `carve fmt` keeps the delimited form.
+
+A fence stays a code block when the `{table}` flag is missing, or when the
+quoting is malformed (an unclosed quote, a quote inside an unquoted field, text
+after a closing quote). The malformed case reports `delimited-table-malformed`
+in `carve lint`. A record with more fields than the first one keeps its extra
+cells and reports `delimited-table-wide-row`. See [Validation](/validation).
+
+### Aligned source formatting
+
+`carve fmt` writes one space on each side of a cell, whatever the column width.
+That is the canonical form. Formatters may offer an opt-in mode that pads every
+cell to its column's width (CARVE-P11-071):
+
+```carve
+|= Name |= Score |= Note |
+| Ada | 9 | first try |
+| 山田太郎 | 10 | a longer note |
++ | | that wraps |
+| Total | 19 | < |
+```
+
+`carve fmt --align-tables` writes
+
+```carve
+|= Name    |= Score |= Note         |
+| Ada      | 9      | first try     |
+| 山田太郎 | 10     | a longer note |
++          |        | that wraps    |
+| Total    | 19     | <             |
+```
+
+Padding goes after the content, also in right-aligned columns. Width counts
+wide characters such as CJK as two columns. Both forms render the same table.
+
+Support as of carve-js 0.1.12:
+
+- carve-js CLI: `carve fmt --align-tables`, and `carve fmt --align-tables --check`
+  as the matching CI gate
+- Prettier, through the plugin carve-js ships: `"carveAlignTables": true`
+- carve-lsp: the `format.alignTables` setting
+
+The mode is optional per engine. carve-php 0.1.13 (`Unknown fmt option`) and
+carve-rs 0.1.10 (`unknown option`) do not offer it, and reject the flag instead
+of writing the canonical form.
+
 ## Captions (images, quotes, tables, code listings, equations, figure groups)
 
 One `^` line after the block adds a semantic `<figcaption>`:

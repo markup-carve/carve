@@ -108,7 +108,10 @@ export function authoredDocuments() {
  * does not is a citation definition, which is Tier-2 and outside the subset
  * `scripts/spec` models at all.
  *
- * The last move was 106 -> 108: docs/includes.md adds a parent and a child
+ * The last move was 108 -> 110: docs/cheatsheet.md adds the aligned-table
+ * input and its `carve fmt --align-tables` output; both answered.
+ *
+ * Before that, 106 -> 108: docs/includes.md adds a parent and a child
  * sample showing a paragraph id renamed on collision; both answered.
  *
  * Before that, 105 -> 106: docs/includes.md adds a sample selecting a
@@ -140,5 +143,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 108
-export const AUTHORED_ANSWERED = 107
+export const AUTHORED_POPULATION = 110
+export const AUTHORED_ANSWERED = 109
