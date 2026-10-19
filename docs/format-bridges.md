@@ -192,7 +192,9 @@ These are dropped:
 
 - `user_id=`, a field with an empty value, a `post_id=` or `id=` whose value
   is not all ASCII digits, and every key the table does not name;
-- `id=` when `post_id=` is present;
+- `id=` when `post_id=` is present, and a leading quoted post id
+  (`[quote="9" post_id=12]`) when `post_id=` or `id=` is present; the report
+  names that one as the field `id`;
 - `date=` when a Unix `time=` is present;
 - the text when `name=` or `author=` is present.
 

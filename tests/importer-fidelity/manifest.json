@@ -2915,6 +2915,33 @@
       }
     },
     {
+      "id": "bbcode-quote-attribution-leading-id-loses",
+      "sourceFormat": "bbcode",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[quote=\"9\" post_id=12]q[/quote]",
+      "expected": {
+        "output": "> q\n^ #12\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "bbcode-quote-field-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1",
+            "message": "Dropped the quote attribution field id."
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
       "id": "bbcode-quote-attribution-repeated-name",
       "sourceFormat": "bbcode",
       "runner": "core",

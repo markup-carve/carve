@@ -108,6 +108,13 @@ const AHEAD_OF_PIN = {
       php: { diagnostics: [UNVERIFIED] },
     },
   },
+  'bbcode-quote-attribution-leading-id-loses': {
+    byEngine: {
+      js: { output: '> q\n^ post_id=12 #9\n', diagnostics: [UNVERIFIED] },
+      rust: { output: '> q\n^ post_id=12 #9\n', diagnostics: [UNVERIFIED] },
+      php: { diagnostics: [UNVERIFIED] },
+    },
+  },
   'bbcode-quote-attribution-repeated-name': {
     byEngine: {
       js: { output: '> x\n^ name=\\"bob\\" name=\\"carl\\"\n', diagnostics: [UNVERIFIED] },
