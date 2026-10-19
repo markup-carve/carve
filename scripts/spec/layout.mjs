@@ -4726,7 +4726,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- lists ---
     if (matchMarkerAt(ind(i))) {
       const before = blocks.length
-      i = parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas)
+      i = parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem)
       if (blocks.length > before) {
         if (pending.length) flushAttrs(blocks[before])
         // PART 9 SS17 L7: the consumed boolean loosens the list it rides.
@@ -5187,7 +5187,7 @@ function takeOneBlock(lines, start, state, firstMeas) {
 }
 
 // --- lists: PART 9 SS11 N1-N3, SS17 L1-L4, SS24 C3/C4 ----------------------
-function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas) {
+function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem) {
   const n = lines.length
   while (i < n) {
     const head = matchMarkerAt(ind(i))
@@ -5203,7 +5203,7 @@ function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas) {
     if (head.isOrdered) {
       list.ord = { delim: head.delim, dialects: head.dialects }
     }
-    i = collectItems(lines, i, list, state, ind, meas)
+    i = collectItems(lines, i, list, state, ind, meas, inItem)
     finalizeOrdered(list)
     blocks.push(list)
     // a marker-mismatch sibling list continues the run (SS11 N1)
@@ -5290,7 +5290,7 @@ function sameAxes(list, head) {
   return (head.task !== undefined) === list.task
 }
 
-function collectItems(lines, i, list, state, ind, meas) {
+function collectItems(lines, i, list, state, ind, meas, inItem) {
   const n = lines.length
   const baseIndent = matchMarkerAt(ind(i)).indent
   while (i < n) {
@@ -6206,10 +6206,14 @@ function collectItems(lines, i, list, state, ind, meas) {
           fenceBlankRun++
           const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
           pushLine(dd.text, dd.meas)
-          // §17 L1 / CARVE-P0-015: a lazy closer leaves this item's later paragraph separate.
-          if (fence.opaque?.opens === false && subCol < 0 && headSubCol < 0) {
+          // §17 L1: a child's lazy closer leaves its next paragraph separate.
+          const preceding = i > 0 ? ind(i - 1) : null
+          // Any lazy line qualifies: a shorter run or prose is still a lazy fold.
+          const lazyCloser = preceding !== null && preceding.col < contentCol
+          if (inItem && fence.opaque?.opens === false && lazyCloser && subCol < 0 && headSubCol < 0) {
             const next = i + 1 < n ? ind(i + 1) : null
-            if (next && next.col >= contentCol && foldablePlainLine(next.rest)) list.tight = false
+            if (next && next.col >= contentCol && foldablePlainLine(next.rest) &&
+                !opensSubBlock(next.rest)) list.tight = false
           }
           // AND IT ENDS THE OPEN PARAGRAPH, whatever container is holding the
           // blank. This branch used to leave `openPara` set across it, so a
