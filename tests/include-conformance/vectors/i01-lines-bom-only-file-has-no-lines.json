@@ -1,0 +1,30 @@
+{
+  "name": "i01-lines-bom-only-file-has-no-lines",
+  "description": "A file holding only its leading U+FEFF has no lines, so any line range starts past the end.",
+  "rules": [
+    "I1",
+    "I1c",
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ bom.txt @lines:1-1 @code }}",
+  "files": {
+    "bom.txt": "﻿"
+  },
+  "expected": {
+    "html": "<p>{{ bom.txt <span class=\"mention\"><strong>@lines</strong></span>:1-1 <span class=\"mention\"><strong>@code</strong></span> }}</p>",
+    "fmt": "{{ bom.txt @lines:1-1 @code }}\n",
+    "warnings": [
+      {
+        "rule": "include-lines-out-of-range"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "bom.txt",
+        "resolved": true
+      }
+    ]
+  }
+}

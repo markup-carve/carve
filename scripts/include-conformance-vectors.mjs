@@ -1557,6 +1557,8 @@ export const vectors = [
     '{{ two.txt @lines:3-3 @code }}', { 'two.txt': 'one\ntwo\n' }),
   v('i01-lines-start-past-the-end-carve', 'A line range starting past the last line is an error in a Carve include too.', ['I1', 'I7'],
     '{{ two.txt @lines:3-4 }}', { 'two.txt': 'one\ntwo\n' }),
+  v('i01-lines-bom-only-file-has-no-lines', 'A file holding only its leading U+FEFF has no lines, so any line range starts past the end.', ['I1', 'I1c', 'I7'],
+    '{{ bom.txt @lines:1-1 @code }}', { 'bom.txt': '\uFEFF' }),
   v('i01-lines-end-past-the-end-clamps', 'A line range starting inside the file and ending past it stops at the last line.', ['I1'],
     '{{ two.txt @lines:2-9 @code }}', { 'two.txt': 'one\ntwo\n' }),
   v('i01-repeated-option-code-language', 'The carve#3351 example: two code languages are an error, not "the last one wins".', ['I1', 'I7'],

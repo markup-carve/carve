@@ -81,7 +81,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       stays a resolved dependency (I11). A range that starts on or before
       the last line and ends past it selects through the last line. A final
       line ending does not begin a further line, so an empty file has no
-      lines. The three
+      lines, and neither has a file holding only its leading U+FEFF, which
+      is not content (I1c). The three
       SELECTION mechanisms are MUTUALLY EXCLUSIVE: a directive MUST use at
       most one; a directive carrying two is an ERROR (Warning + literal,
       per I7). TRANSFORM options reshape already-selected content and are

@@ -92,7 +92,7 @@ nothing to do.
     a two-line file includes line 2. A range that **starts** past the last line
     is an `include-lines-out-of-range` error, and the directive stays literal.
     A final line ending does not begin another line, so an empty file has no
-    lines.
+    lines. Neither has a file holding only a byte order mark.
   - **`@region:name`** includes the physical lines between matching named
     source comment markers. The name uses Carve's `identifier` spelling.
   - **`@shift:N`** shifts the level of every included heading by the signed
