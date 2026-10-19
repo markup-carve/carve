@@ -9950,6 +9950,58 @@ EOF = (* end of file *) ;
       next line (`- > p`, then `+`), never a bare `- +` with the block at
       column 0 below it.
 
+   7f. A REGION MARKER KEEPS ITS LINE -- NORMATIVE [CARVE-P11-073]. A region
+      include selects the physical lines strictly between two marker lines
+      (CARVE-P6-001 I1b), so a writer that moves a marker or opens a line
+      beside one changes what the include reads, even when the HTML is the
+      same. `fmt` MUST NOT change what a region selects.
+
+      A REGION MARKER, for this clause, is a line `comment` (not a `%%%` fence
+      and not the delimited `{% %}` form) whose content, after any leading
+      spaces or tabs, starts with `#region` or `#endregion` and does not go on
+      with an ASCII letter, digit or `_`. Every other comment is written as
+      before.
+
+      (a) THE BLANK LINE BESIDE A MARKER IS THE AUTHOR'S. Between a region
+          marker and the sibling block above or below it, the writer writes a
+          blank line where the source had one and none where it had none. It
+          reads this from `pos`: the two are ADJACENT when the later block
+          starts on the line after the earlier one ends, counting the
+          attribute lines the writer itself puts above the later block. The
+          earlier block MUST be a paragraph, heading, code block, thematic
+          break or comment, since a `%%` line written directly below anything
+          else can be read into it. Otherwise, and in a tree without
+          positions, the ordinary separator applies.
+
+      (b) A MARKER KEPT IN A LIST ITEM KEEPS ITS COLUMN. A region marker that
+          is a list item's child, adjacent under (a) to the paragraph above it
+          in that item (or to a marker this rule placed), and whose recorded
+          start column is at or left of the item's own start column, is
+          written at the item's MARKER column, not its content column. PART 0
+          X1 reads it back into the same item: the paragraph's claim admits
+          it, and the retention it sets admits the next such marker.
+
+      With both, a region whose content is already canonical comes out of
+      `fmt` byte for byte, so the include selects the same bytes before and
+      after. `tests/fixtures/region-marker-fmt.json` pins it:
+
+        %% #region requirements
+        - PHP 8.3 or later
+        - Composer 2.7
+        %% #endregion requirements
+
+      is its own canonical form. Without (a) the writer opened a blank line
+      under the opener; without (b) it wrote the closer at the item's content
+      column, two spaces in.
+
+      NOT COVERED. Normalization the writer applies to the content itself
+      (an escape, a run of blank lines, a hoisted definition) changes the
+      selected bytes exactly as it changes any other text. A marker retained
+      in a nested item returns to that item's marker column, which is not
+      necessarily the column it was authored at, and a marker in a footnote
+      body keeps the body's column. Neither moves the marker out of its
+      container, so neither changes which lines lie between the markers.
+
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It answers to a Markdown
       reader, and THIS TABLE IS ITS ESCAPING RULE FOR TEXT. Every condition is

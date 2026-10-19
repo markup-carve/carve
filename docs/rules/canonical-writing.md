@@ -9,7 +9,7 @@ description: "Canonical Carve source, Markdown and plain-text targets, round tri
 
 Canonical Carve source, Markdown and plain-text targets, round trips, and escaping.
 
-This view contains 74 of 345 active rules. Every rule remains mandatory where applicable.
+This view contains 75 of 346 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -37,10 +37,10 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L435) | 11 | A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL `{empty}` |
 | [`CARVE-P11-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L462) | 11 | A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE RE-DERIVES IT |
 | [`CARVE-P11-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L516) | 11 | A LINE WHOSE LAST NODE IS A COMMENT IS EXEMPT |
-| [`CARVE-P11-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L611) | 11 | THE MARKDOWN TARGET'S ESCAPING |
-| [`CARVE-P11-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L667) | 11 | THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE |
-| [`CARVE-P11-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L702) | 11 | M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP |
-| [`CARVE-P11-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L712) | 11 | M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING |
+| [`CARVE-P11-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L663) | 11 | THE MARKDOWN TARGET'S ESCAPING |
+| [`CARVE-P11-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L719) | 11 | THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE |
+| [`CARVE-P11-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L754) | 11 | M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP |
+| [`CARVE-P11-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L764) | 11 | M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING |
 | [`CARVE-P11-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L2) | 11 | THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO |
 | [`CARVE-P11-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L29) | 11 | THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK |
 | [`CARVE-P11-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L78) | 11 | A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES |
@@ -60,6 +60,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L547) | 11 | A COMPOSITE FIGURE SURVIVES EVERY TARGET |
 | [`CARVE-P11-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L591) | 11 | THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH |
 | [`CARVE-P11-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L606) | 11 | A LIST ITEM'S CONTINUATION BLOCKS SIT AT ITS CONTENT COLUMN |
+| [`CARVE-P11-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L611) | 11 | A REGION MARKER KEEPS ITS LINE |
 | [`CARVE-P11-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L711) | 11 | THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS |
 | [`CARVE-P11-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L733) | 11 | A PARAGRAPH LINE CARRIES NO EDGE WHITESPACE |
 | [`CARVE-P11-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L748) | 11 | A TABLE WITHOUT A HEADER ROW GETS AN EMPTY ONE |
