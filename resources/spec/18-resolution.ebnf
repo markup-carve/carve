@@ -28,6 +28,54 @@
      footnoteSeq  : ONE shared document-order counter for both footnote
                     forms
 
+   R8. TABLE CELL VALUE REFERENCES -- NORMATIVE [CARVE-P9R-011]. A
+   `table_cell_ref` is read-only. The author writes `@{#id[row][column]}`.
+   The id MUST identify one table in the assembled document after includes
+   expand and explicit-id collision renames finish. An id on a containing
+   figure does not identify its table. An included file's reference to its
+   own renamed table follows the rename under CARVE-P6-001 I12.
+
+   Decimal selectors count from 1. A row selector counts body rows only,
+   excluding every header and footer row; a column selector counts grid
+   columns, including positions covered by a span. A covered position reads
+   the origin cell once. A ragged row's generated padding is not an authored
+   cell and has no value. Out-of-range and missing positions are unresolved.
+
+   A quoted column selector names the plain text of a cell in the final
+   leading header row. It matches exactly, without trimming, case folding or
+   numeric conversion. A headerless table has no column names. Empty or
+   duplicate header names cannot be selected by name; numeric selectors are
+   still available. A quoted row selector names a body-cell value in the
+   first column unless `row-key` names another header column. `row-key` is
+   consumed table metadata, never an emitted HTML attribute. An explicit
+   `row-key` that names no unique nonempty header fails closed and does not
+   fall back to the first column. Every candidate key cell MUST be authored,
+   unspanned, plain text, nonempty and unique. No key value is trimmed or
+   coerced. If any candidate is invalid, all named row selections against
+   that table are unresolved; positional selections remain available.
+
+   The selected cell MUST have inline children, not block children. CSV and
+   TSV fields remain decoded literal text. A pipe-table cell's value is the
+   plain-text rendering of its inline children, including visible link text
+   and image alt text. An authored empty cell has the empty string as its
+   value. The result is inserted as ONE text value after inline parsing: it
+   is escaped for the output target and is NEVER reparsed as Carve or HTML.
+   A trailing `{code}` renders that value as an inline code node and is
+   consumed rather than emitted as `code=""`; no other `as` mode is defined.
+   The surrounding emphasis, link label or other inline host keeps its own
+   meaning. Code spans, fences, raw content, destinations and attribute
+   values never recognize a cell reference.
+
+   A cell may itself contain a value reference. Resolve such references with
+   a source-cell stack. Reaching a cell already on that stack is a cycle, not
+   an invitation to rescan indefinitely. A cycle, malformed selector, absent
+   table, invalid key, ambiguous name, missing cell or block-content cell
+   emits a diagnostic with the selector and reason, and renders the complete
+   authored reference literally. Strict validation fails on the same error.
+   Projection does no file I/O: it reads only tables already in the assembled
+   document. A processor without include expansion cannot resolve a table
+   that was only named by a literal include directive.
+
    RULES (PASS 2):
    R1 LINK REFERENCES. [text][label] and [text][] (label := text) resolve
       against linkDefs by a shared label key: trim leading and trailing runs

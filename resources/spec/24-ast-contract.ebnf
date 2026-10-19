@@ -532,3 +532,19 @@
       (`resources/ast-schema.json`) pins the shape; an unknown property on a
       `figure_group` is rejected on ingest like any other (CARVE-P12-030).
    ============================================================================ *)
+
+(* A TABLE CELL REFERENCE HAS A PORTABLE WIRE SHAPE -- NORMATIVE
+   [CARVE-P12-070]. The inline `table_cell_ref` node requires `type`, `target`,
+   `row`, `column` and `source`. `target` is the authored table id without `#`.
+   `row` and `column` are each a positive integer or decoded quoted string;
+   their types distinguish positional and named selectors. `source` is the
+   exact authored `@{...}` run, including the selector escapes, so an
+   unresolved reference can be shown without access to its original bytes.
+   Optional `value` holds the resolved plain-text scalar, including an empty
+   string for an authored empty cell. Absent `value` means unresolved. `attrs`
+   retains the trailing attribute run; the `code` boolean is semantic only
+   on this node and is not emitted as an output attribute. `pos` follows
+   PART 12 §4. A reader MUST NOT accept a zero, negative or fractional
+   positional selector in this node. The canonical Carve writer writes
+   `source`, then any trailing attributes, preserving the projection rather
+   than freezing `value` into text. *)

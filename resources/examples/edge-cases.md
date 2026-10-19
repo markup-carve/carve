@@ -58500,6 +58500,75 @@ cap</code></li>
   </li>
   <li>c</li>
 </ul>
+
+## Table cell value references
+
+A named row uses the first column by default. A reference is resolved after
+inline parsing, so inserted punctuation cannot change the surrounding markup.
+The `{code}` flag renders only the value as inline code. Backticks and code
+fences keep the selector literal.
+
+::::: compare
+
+````carve
+{table #sales}
+```csv
+Quarter,Revenue
+Q1,120
+Q2,150
+```
+
+Q2 is @{#sales["Q2"]["Revenue"]}.
+*Q2: @{#sales["Q2"]["Revenue"]}*
+Code value: @{#sales["Q2"]["Revenue"]}{code}.
+Literal: `@{#sales["Q2"]["Revenue"]}`.
+````
+
+```html
+<table id="sales">
+  <thead>
+    <tr><th scope="col">Quarter</th><th scope="col">Revenue</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Q1</td><td>120</td></tr>
+    <tr><td>Q2</td><td>150</td></tr>
+  </tbody>
+</table>
+<p>Q2 is 150.
+<strong>Q2: 150</strong>
+Code value: <code>150</code>.
+Literal: <code>@{#sales["Q2"]["Revenue"]}</code>.</p>
+```
+
+:::::
+
+The same selector reads an ordinary pipe table. Numeric selectors are available
+when a table lacks stable row or column names.
+
+::: compare
+
+```carve
+{#sales}
+|= Quarter |= Revenue |
+| Q1 | 120 |
+| Q2 | 150 |
+
+Named: @{#sales["Q2"]["Revenue"]}.
+Position: @{#sales[2][2]}.
+```
+
+```html
+<table id="sales">
+  <thead>
+    <tr><th scope="col">Quarter</th><th scope="col">Revenue</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Q1</td><td>120</td></tr>
+    <tr><td>Q2</td><td>150</td></tr>
+  </tbody>
+</table>
+<p>Named: 150.
+Position: 150.</p>
 ```
 
 :::

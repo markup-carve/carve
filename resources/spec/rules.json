@@ -2103,6 +2103,24 @@
       "part": "9",
       "title": "A CELL SLOT IS COUNTED, NOT WEIGHED",
       "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P3-026",
+      "part": "3",
+      "title": "TABLE CELL VALUE REFERENCE",
+      "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P9R-011",
+      "part": "9R",
+      "title": "TABLE CELL VALUE REFERENCES",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P12-070",
+      "part": "12",
+      "title": "A TABLE CELL REFERENCE HAS A PORTABLE WIRE SHAPE",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

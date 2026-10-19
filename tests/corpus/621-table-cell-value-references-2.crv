@@ -1,0 +1,7 @@
+{#sales}
+|= Quarter |= Revenue |
+| Q1 | 120 |
+| Q2 | 150 |
+
+Named: @{#sales["Q2"]["Revenue"]}.
+Position: @{#sales[2][2]}.

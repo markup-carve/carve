@@ -1,0 +1,11 @@
+{table #sales}
+```csv
+Quarter,Revenue
+Q1,120
+Q2,150
+```
+
+Q2 is @{#sales["Q2"]["Revenue"]}.
+*Q2: @{#sales["Q2"]["Revenue"]}*
+Code value: @{#sales["Q2"]["Revenue"]}{code}.
+Literal: `@{#sales["Q2"]["Revenue"]}`.

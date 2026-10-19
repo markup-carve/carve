@@ -149,6 +149,7 @@ export default defineConfig({
             items: [
               { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
               { text: 'File Inclusion', link: '/includes' },
+              { text: 'Table Cell References', link: '/table-cell-references' },
               { text: 'Diagrams & Charts', link: '/diagrams' },
               { text: 'SVG Images', link: '/svg-images' },
               { text: 'Styling Recipes', link: '/recipes' },

@@ -2320,6 +2320,7 @@ inline_element = escaped_char
                | code_span
                | autolink
                | auto_text_link
+               | table_cell_ref
                | link
                | inline_span
                | image
@@ -2374,6 +2375,18 @@ code_span = backtick_run, code_span_content, [backtick_run], [attribute_run] ;
 backtick_run = '`'+ ;  (* the OPENER is a MAXIMAL run; the CLOSER is a run of
    the SAME count, also maximal (not part of a longer run) *)
 code_span_content = (* any chars except a closing backtick_run of equal count *) ;
+(* TABLE CELL VALUE REFERENCE -- NORMATIVE [CARVE-P3-026]. This inline form
+   is parsed before mention/tag recognition. It is an ordinary inline node,
+   including inside emphasis, headings, link labels and table cells, but code
+   spans, code blocks, raw payloads, destinations and attribute values remain
+   opaque. An escaped at sign prevents recognition. A malformed candidate stays
+   literal as one source run. The optional attribute run attaches to the
+   reference; `{code}` is consumed as its inline-code presentation flag. *)
+table_cell_ref = '@{#', explicit_identifier, '[', cell_ref_selector, ']',
+                 '[', cell_ref_selector, ']', '}', [attribute_run] ;
+cell_ref_selector = positive_decimal | '"', {cell_ref_quoted_char}, '"' ;
+cell_ref_quoted_char = ('\\', ('"' | '\\')) | (character - ('"' | '\\' | newline)) ;
+positive_decimal = ('1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'), {digit} ;
 (* UNCLOSED RUN. An opener with no equal-length closer ANYWHERE LATER IN THE
    BLOCK is NOT literal text: it opens a verbatim span that runs to
    END_OF_BLOCK (the block's trailing whitespace is stripped; no surrounding
@@ -7628,6 +7641,54 @@ EOF = (* end of file *) ;
      footnoteSeq  : ONE shared document-order counter for both footnote
                     forms
 
+   R8. TABLE CELL VALUE REFERENCES -- NORMATIVE [CARVE-P9R-011]. A
+   `table_cell_ref` is read-only. The author writes `@{#id[row][column]}`.
+   The id MUST identify one table in the assembled document after includes
+   expand and explicit-id collision renames finish. An id on a containing
+   figure does not identify its table. An included file's reference to its
+   own renamed table follows the rename under CARVE-P6-001 I12.
+
+   Decimal selectors count from 1. A row selector counts body rows only,
+   excluding every header and footer row; a column selector counts grid
+   columns, including positions covered by a span. A covered position reads
+   the origin cell once. A ragged row's generated padding is not an authored
+   cell and has no value. Out-of-range and missing positions are unresolved.
+
+   A quoted column selector names the plain text of a cell in the final
+   leading header row. It matches exactly, without trimming, case folding or
+   numeric conversion. A headerless table has no column names. Empty or
+   duplicate header names cannot be selected by name; numeric selectors are
+   still available. A quoted row selector names a body-cell value in the
+   first column unless `row-key` names another header column. `row-key` is
+   consumed table metadata, never an emitted HTML attribute. An explicit
+   `row-key` that names no unique nonempty header fails closed and does not
+   fall back to the first column. Every candidate key cell MUST be authored,
+   unspanned, plain text, nonempty and unique. No key value is trimmed or
+   coerced. If any candidate is invalid, all named row selections against
+   that table are unresolved; positional selections remain available.
+
+   The selected cell MUST have inline children, not block children. CSV and
+   TSV fields remain decoded literal text. A pipe-table cell's value is the
+   plain-text rendering of its inline children, including visible link text
+   and image alt text. An authored empty cell has the empty string as its
+   value. The result is inserted as ONE text value after inline parsing: it
+   is escaped for the output target and is NEVER reparsed as Carve or HTML.
+   A trailing `{code}` renders that value as an inline code node and is
+   consumed rather than emitted as `code=""`; no other `as` mode is defined.
+   The surrounding emphasis, link label or other inline host keeps its own
+   meaning. Code spans, fences, raw content, destinations and attribute
+   values never recognize a cell reference.
+
+   A cell may itself contain a value reference. Resolve such references with
+   a source-cell stack. Reaching a cell already on that stack is a cycle, not
+   an invitation to rescan indefinitely. A cycle, malformed selector, absent
+   table, invalid key, ambiguous name, missing cell or block-content cell
+   emits a diagnostic with the selector and reason, and renders the complete
+   authored reference literally. Strict validation fails on the same error.
+   Projection does no file I/O: it reads only tables already in the assembled
+   document. A processor without include expansion cannot resolve a table
+   that was only named by a literal include directive.
+
    RULES (PASS 2):
    R1 LINK REFERENCES. [text][label] and [text][] (label := text) resolve
       against linkDefs by a shared label key: trim leading and trailing runs
@@ -12606,6 +12667,22 @@ EOF = (* end of file *) ;
       (`resources/ast-schema.json`) pins the shape; an unknown property on a
       `figure_group` is rejected on ingest like any other (CARVE-P12-030).
    ============================================================================ *)
+
+(* A TABLE CELL REFERENCE HAS A PORTABLE WIRE SHAPE -- NORMATIVE
+   [CARVE-P12-070]. The inline `table_cell_ref` node requires `type`, `target`,
+   `row`, `column` and `source`. `target` is the authored table id without `#`.
+   `row` and `column` are each a positive integer or decoded quoted string;
+   their types distinguish positional and named selectors. `source` is the
+   exact authored `@{...}` run, including the selector escapes, so an
+   unresolved reference can be shown without access to its original bytes.
+   Optional `value` holds the resolved plain-text scalar, including an empty
+   string for an authored empty cell. Absent `value` means unresolved. `attrs`
+   retains the trailing attribute run; the `code` boolean is semantic only
+   on this node and is not emitted as an output attribute. `pos` follows
+   PART 12 §4. A reader MUST NOT accept a zero, negative or fractional
+   positional selector in this node. The canonical Carve writer writes
+   `source`, then any trailing attributes, preserving the projection rather
+   than freezing `value` into text. *)
 (* ============================================================================
    17. A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT -- NORMATIVE [CARVE-P12-036].
       `figure.target` admits a `table`, whose own `caption` is optional.

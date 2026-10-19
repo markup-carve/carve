@@ -18,6 +18,7 @@ inline_element = escaped_char
                | code_span
                | autolink
                | auto_text_link
+               | table_cell_ref
                | link
                | inline_span
                | image
@@ -72,6 +73,18 @@ code_span = backtick_run, code_span_content, [backtick_run], [attribute_run] ;
 backtick_run = '`'+ ;  (* the OPENER is a MAXIMAL run; the CLOSER is a run of
    the SAME count, also maximal (not part of a longer run) *)
 code_span_content = (* any chars except a closing backtick_run of equal count *) ;
+(* TABLE CELL VALUE REFERENCE -- NORMATIVE [CARVE-P3-026]. This inline form
+   is parsed before mention/tag recognition. It is an ordinary inline node,
+   including inside emphasis, headings, link labels and table cells, but code
+   spans, code blocks, raw payloads, destinations and attribute values remain
+   opaque. An escaped at sign prevents recognition. A malformed candidate stays
+   literal as one source run. The optional attribute run attaches to the
+   reference; `{code}` is consumed as its inline-code presentation flag. *)
+table_cell_ref = '@{#', explicit_identifier, '[', cell_ref_selector, ']',
+                 '[', cell_ref_selector, ']', '}', [attribute_run] ;
+cell_ref_selector = positive_decimal | '"', {cell_ref_quoted_char}, '"' ;
+cell_ref_quoted_char = ('\\', ('"' | '\\')) | (character - ('"' | '\\' | newline)) ;
+positive_decimal = ('1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'), {digit} ;
 (* UNCLOSED RUN. An opener with no equal-length closer ANYWHERE LATER IN THE
    BLOCK is NOT literal text: it opens a verbatim span that runs to
    END_OF_BLOCK (the block's trailing whitespace is stripped; no surrounding
