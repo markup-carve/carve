@@ -39,3 +39,6 @@
 624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-3  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
 624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-4  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
 624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-5  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
+625-table-cell-value-references  carve#3385: the pinned engine predates table cell references
+625-table-cell-value-references-2  carve#3385: the pinned engine predates table cell references
+626-table-value-references-with-another-row-key  carve#3385: the pinned engine predates table cell references
