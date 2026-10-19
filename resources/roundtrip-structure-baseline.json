@@ -3,14 +3,14 @@
   "engines": {
     "js": {
       "html": {
-        "identical": 2192,
-        "strict": 2057,
-        "total": 2710
+        "identical": 2194,
+        "strict": 2059,
+        "total": 2712
       },
       "md": {
         "identical": 1979,
         "strict": 1527,
-        "total": 2710
+        "total": 2712
       }
     },
     "php": {

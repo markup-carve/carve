@@ -56812,3 +56812,62 @@ A folded image leaves the caption line without a host and loosens the list
 ```
 
 :::
+
+An image paragraph after a nested list loosens the list with a caption gap
+
+::: compare
+
+```carve
+- - text
+
+  ![i](x.png)
+
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <img src="x.png" alt="i">
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+:::
+
+An image paragraph after a nested list loosens the list without a caption gap
+
+::: compare
+
+```carve
+- - text
+
+  ![i](x.png)
+  ^ cap
+- c
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>text</li>
+    </ul>
+    <figure>
+      <img src="x.png" alt="i">
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+:::
