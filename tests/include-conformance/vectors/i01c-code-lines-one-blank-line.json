@@ -1,0 +1,39 @@
+{
+  "name": "i01c-code-lines-one-blank-line",
+  "description": "A selected blank line remains one code payload line.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ t.txt @lines:2-2 @code }}\n",
+  "files": {
+    "t.txt": "x\n\n\n"
+  },
+  "checkPositions": true,
+  "expected": {
+    "html": "<pre><code>\n</code></pre>",
+    "fmt": "{{ t.txt @lines:2-2 @code }}\n",
+    "positions": [
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 2,
+          "startColumn": 1,
+          "endLine": 2,
+          "endColumn": 1,
+          "startOffset": 2,
+          "endOffset": 2,
+          "file": "t.txt"
+        }
+      }
+    ],
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "t.txt",
+        "resolved": true
+      }
+    ]
+  }
+}

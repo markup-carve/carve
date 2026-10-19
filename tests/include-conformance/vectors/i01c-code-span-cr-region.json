@@ -1,0 +1,40 @@
+{
+  "name": "i01c-code-span-cr-region",
+  "description": "A lone-CR region keeps its source offsets and blank line.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ q.js @region:a @code }}\n",
+  "files": {
+    "q.js": "// #region a\rx\r\ryy\r// #endregion a\r"
+  },
+  "checkPositions": true,
+  "expected": {
+    "html": "<pre><code>x\n\nyy\n</code></pre>",
+    "fmt": "{{ q.js @region:a @code }}\n",
+    "positions": [
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 2,
+          "startColumn": 1,
+          "endLine": 4,
+          "endColumn": 3,
+          "startOffset": 13,
+          "endOffset": 18,
+          "file": "q.js"
+        }
+      }
+    ],
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "q.js",
+        "resolved": true
+      }
+    ]
+  }
+}

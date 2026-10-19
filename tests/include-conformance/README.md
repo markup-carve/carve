@@ -55,6 +55,7 @@ goldens).
 | `checkFmtExpandEquivalence` | optional | When true, the runner also asserts that expanding the **formatted** entry yields the same html + dependency set (I12 stronger invariant). |
 | `checkCarveTarget` | optional | When true, the vector carries `expected.carveTarget` (I15). |
 | `checkFlattened` | optional | When true, the vector carries `expected.flattened`. |
+| `checkPositions` | optional | When true, the vector carries `expected.positions` and the runner validates the expanded PART 12 AST JSON. |
 | `checkWarningLocations` | optional | When true, the proof runner checks `expected.warningLocations` as `{ rule, file?, line, column }` for this fixture, with the 1-based line and column of the directive's first character. This is outside the portable §19 warning contract. |
 
 `options` keys: `sourcePath` (warning attribution, I4), `maxDepth` /
@@ -77,6 +78,7 @@ resolver throws the given message, exercising the I7 no-leak path).
 | `fmt` | The Carve serializer output of the **pre-expansion** document. This pins I12: the directive must survive formatting. It is deliberately *not* the serialization of the expanded document. |
 | `flattened` | Optional. The Carve source of the **expanded** document - what `carve flatten` writes. Pins the shape of the assembled tree, which `html` cannot: footnotes are collected globally at render time, so a merged definition left interleaved between the parent's blocks renders identically to one collected at the end. |
 | `carveTarget` | Optional (I15). The Carve source the processor produces for this entry **with the resolver configured**, through whatever path it uses for a Carve-target render. It must equal `fmt`. This is a separate golden because `fmt` cannot pin it: `fmt` is computed from the pre-expansion document by construction, so an engine that expands before calling its writer satisfies `fmt` and still returns a different document - which one engine did, inlining every child on `render --carve` while passing all 94 vectors. |
+| `positions` | Optional. Each expanded PART 12 AST JSON node after the root, in depth-first order, as `{ type, pos? }`. Missing `pos` remains visible as `{ type }`; filesystem paths in `pos.file` use `<TMP>`. |
 | `warnings` | Normalized warning list, in document order (see below). |
 | `dependencies` | Normalized dependency set, in first-encounter order (I11). |
 

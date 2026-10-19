@@ -1,0 +1,51 @@
+{
+  "name": "i01c-code-span-bom",
+  "description": "A leading BOM shifts the first code span start for whole-file and line selection.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ b.txt @code }}\n\n{{ b.txt @lines:1-1 @code }}\n",
+  "files": {
+    "b.txt": "﻿ab\ncd\n"
+  },
+  "checkPositions": true,
+  "expected": {
+    "html": "<pre><code>ab\ncd\n</code></pre>\n<pre><code>ab\n</code></pre>",
+    "fmt": "{{ b.txt @code }}\n\n{{ b.txt @lines:1-1 @code }}\n",
+    "positions": [
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 2,
+          "endLine": 2,
+          "endColumn": 3,
+          "startOffset": 1,
+          "endOffset": 6,
+          "file": "b.txt"
+        }
+      },
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 2,
+          "endLine": 1,
+          "endColumn": 4,
+          "startOffset": 1,
+          "endOffset": 3,
+          "file": "b.txt"
+        }
+      }
+    ],
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "b.txt",
+        "resolved": true
+      }
+    ]
+  }
+}

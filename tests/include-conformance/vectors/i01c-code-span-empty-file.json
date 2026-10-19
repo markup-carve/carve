@@ -1,0 +1,39 @@
+{
+  "name": "i01c-code-span-empty-file",
+  "description": "An empty file gives its code block a zero-width span.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ e.txt @code }}\n",
+  "files": {
+    "e.txt": ""
+  },
+  "checkPositions": true,
+  "expected": {
+    "html": "<pre><code></code></pre>",
+    "fmt": "{{ e.txt @code }}\n",
+    "positions": [
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 1,
+          "endColumn": 1,
+          "startOffset": 0,
+          "endOffset": 0,
+          "file": "e.txt"
+        }
+      }
+    ],
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "e.txt",
+        "resolved": true
+      }
+    ]
+  }
+}

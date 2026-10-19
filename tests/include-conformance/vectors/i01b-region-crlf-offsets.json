@@ -1,0 +1,75 @@
+{
+  "name": "i01b-region-crlf-offsets",
+  "description": "A Carve region preserves CRLF offsets across its blank line.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ c.crv @region:a }}\n",
+  "files": {
+    "c.crv": "%% #region a\r\none\r\n\r\nbeta\r\n%% #endregion a\r\n"
+  },
+  "checkPositions": true,
+  "expected": {
+    "html": "<p>one</p>\n<p>beta</p>",
+    "fmt": "{{ c.crv @region:a }}\n",
+    "positions": [
+      {
+        "type": "paragraph",
+        "pos": {
+          "startLine": 2,
+          "startColumn": 1,
+          "endLine": 2,
+          "endColumn": 4,
+          "startOffset": 14,
+          "endOffset": 17,
+          "file": "c.crv"
+        }
+      },
+      {
+        "type": "text",
+        "pos": {
+          "startLine": 2,
+          "startColumn": 1,
+          "endLine": 2,
+          "endColumn": 4,
+          "startOffset": 14,
+          "endOffset": 17,
+          "file": "c.crv"
+        }
+      },
+      {
+        "type": "paragraph",
+        "pos": {
+          "startLine": 4,
+          "startColumn": 1,
+          "endLine": 4,
+          "endColumn": 5,
+          "startOffset": 21,
+          "endOffset": 25,
+          "file": "c.crv"
+        }
+      },
+      {
+        "type": "text",
+        "pos": {
+          "startLine": 4,
+          "startColumn": 1,
+          "endLine": 4,
+          "endColumn": 5,
+          "startOffset": 21,
+          "endOffset": 25,
+          "file": "c.crv"
+        }
+      }
+    ],
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "c.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

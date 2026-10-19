@@ -1,0 +1,64 @@
+{
+  "name": "i01c-code-region-blank-last-line",
+  "description": "Regions ending in a blank line, holding one blank line, or empty keep distinct spans.",
+  "rules": [
+    "I1b",
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ r.js @region:a @code }}\n\n{{ r.js @region:b @code }}\n\n{{ r.js @region:c @code }}\n",
+  "files": {
+    "r.js": "// #region a\nx\n\n// #endregion a\n// #region b\n\n// #endregion b\n// #region c\n// #endregion c\n"
+  },
+  "checkPositions": true,
+  "expected": {
+    "html": "<pre><code>x\n\n</code></pre>\n<pre><code>\n</code></pre>\n<pre><code></code></pre>",
+    "fmt": "{{ r.js @region:a @code }}\n\n{{ r.js @region:b @code }}\n\n{{ r.js @region:c @code }}\n",
+    "positions": [
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 2,
+          "startColumn": 1,
+          "endLine": 3,
+          "endColumn": 1,
+          "startOffset": 13,
+          "endOffset": 15,
+          "file": "r.js"
+        }
+      },
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 6,
+          "startColumn": 1,
+          "endLine": 6,
+          "endColumn": 1,
+          "startOffset": 45,
+          "endOffset": 45,
+          "file": "r.js"
+        }
+      },
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 9,
+          "startColumn": 1,
+          "endLine": 9,
+          "endColumn": 1,
+          "startOffset": 75,
+          "endOffset": 75,
+          "file": "r.js"
+        }
+      }
+    ],
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "r.js",
+        "resolved": true
+      }
+    ]
+  }
+}

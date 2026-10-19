@@ -1,0 +1,39 @@
+{
+  "name": "i01c-code-span",
+  "description": "A whole-file code block spans both source lines.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ s.js @code:js }}\n",
+  "files": {
+    "s.js": "a\nbb\n"
+  },
+  "checkPositions": true,
+  "expected": {
+    "html": "<pre><code class=\"language-js\">a\nbb\n</code></pre>",
+    "fmt": "{{ s.js @code:js }}\n",
+    "positions": [
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 2,
+          "endColumn": 3,
+          "startOffset": 0,
+          "endOffset": 4,
+          "file": "s.js"
+        }
+      }
+    ],
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "s.js",
+        "resolved": true
+      }
+    ]
+  }
+}

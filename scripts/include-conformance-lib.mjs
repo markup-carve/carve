@@ -285,12 +285,44 @@ export function runVector(vector, carve) {
     // sitting between the parent's blocks renders identically to one collected
     // at the end, and only the writer shows the difference.
     const flattened = foldTmpInText(renderCarve(result.doc), baseReal)
+    const astJson = vector.checkPositions ? carve.toAstJson(result.doc) : undefined
+    const positions = []
+    if (astJson) {
+      const visit = (value) => {
+        if (!value || typeof value !== 'object') return
+        if (Array.isArray(value)) {
+          for (const item of value) visit(item)
+          return
+        }
+        if (typeof value.type === 'string' && value.type !== 'document') {
+          const node = { type: value.type }
+          if (value.pos) {
+            const p = value.pos
+            node.pos = {
+              startLine: p.startLine,
+              startColumn: p.startColumn,
+              endLine: p.endLine,
+              endColumn: p.endColumn,
+              startOffset: p.startOffset,
+              endOffset: p.endOffset,
+              ...(p.file !== undefined ? { file: normalizeFsPath(p.file, baseReal) } : {}),
+            }
+          }
+          positions.push(node)
+        }
+        for (const [key, child] of Object.entries(value)) {
+          if (key !== 'pos') visit(child)
+        }
+      }
+      visit(astJson)
+    }
 
     const out = {
       html,
       fmt,
       ...(vector.checkFlattened ? { flattened } : {}),
       ...(vector.checkCarveTarget ? { carveTarget } : {}),
+      ...(vector.checkPositions ? { positions, astJson } : {}),
       warnings: normalizeWarnings(result.warnings, baseReal),
       ...(vector.checkWarningLocations
         ? { warningLocations: result.warnings.map((w) => ({

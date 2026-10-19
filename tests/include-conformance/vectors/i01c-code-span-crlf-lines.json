@@ -1,0 +1,51 @@
+{
+  "name": "i01c-code-span-crlf-lines",
+  "description": "CRLF source offsets survive whole-file and selected-line code includes.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ s.js @code }}\n\n{{ s.js @lines:2-3 @code }}\n",
+  "files": {
+    "s.js": "a\r\nbb\r\ncc\r\n"
+  },
+  "checkPositions": true,
+  "expected": {
+    "html": "<pre><code>a\nbb\ncc\n</code></pre>\n<pre><code>bb\ncc\n</code></pre>",
+    "fmt": "{{ s.js @code }}\n\n{{ s.js @lines:2-3 @code }}\n",
+    "positions": [
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 3,
+          "endColumn": 3,
+          "startOffset": 0,
+          "endOffset": 9,
+          "file": "s.js"
+        }
+      },
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 2,
+          "startColumn": 1,
+          "endLine": 3,
+          "endColumn": 3,
+          "startOffset": 3,
+          "endOffset": 9,
+          "file": "s.js"
+        }
+      }
+    ],
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "s.js",
+        "resolved": true
+      }
+    ]
+  }
+}

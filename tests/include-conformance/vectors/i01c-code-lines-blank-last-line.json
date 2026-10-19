@@ -1,0 +1,51 @@
+{
+  "name": "i01c-code-lines-blank-last-line",
+  "description": "Whole-file and line-range code includes keep the last blank line.",
+  "rules": [
+    "I1c"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ t.txt @code }}\n\n{{ t.txt @lines:1-3 @code }}\n",
+  "files": {
+    "t.txt": "x\n\n\n"
+  },
+  "checkPositions": true,
+  "expected": {
+    "html": "<pre><code>x\n\n\n</code></pre>\n<pre><code>x\n\n\n</code></pre>",
+    "fmt": "{{ t.txt @code }}\n\n{{ t.txt @lines:1-3 @code }}\n",
+    "positions": [
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 3,
+          "endColumn": 1,
+          "startOffset": 0,
+          "endOffset": 3,
+          "file": "t.txt"
+        }
+      },
+      {
+        "type": "code_block",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 3,
+          "endColumn": 1,
+          "startOffset": 0,
+          "endOffset": 3,
+          "file": "t.txt"
+        }
+      }
+    ],
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "t.txt",
+        "resolved": true
+      }
+    ]
+  }
+}

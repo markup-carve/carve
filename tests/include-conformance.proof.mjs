@@ -20,10 +20,13 @@ import assert from 'node:assert/strict'
 import { readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { Ajv2020 } from 'ajv/dist/2020.js'
 import { loadCarve, runVector, EXPECTED_FIELDS } from '../scripts/include-conformance-lib.mjs'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const VECTOR_DIR = path.join(HERE, 'include-conformance', 'vectors')
+const astSchema = JSON.parse(readFileSync(path.join(HERE, '..', 'resources', 'ast-schema.json'), 'utf8'))
+const validateAst = new Ajv2020({ allErrors: true, strict: true }).compile(astSchema)
 
 const files = readdirSync(VECTOR_DIR)
   .filter((f) => f.endsWith('.json'))
@@ -49,6 +52,13 @@ for (const file of files) {
         result.warningLocations,
         vector.expected.warningLocations,
         `${vector.name}: warning source location mismatch`,
+      )
+    }
+    if (vector.checkPositions) {
+      assert.deepEqual(result.positions, vector.expected.positions, `${vector.name}: positions mismatch`)
+      assert.ok(
+        validateAst({ ...result.astJson, astVersion: carve.AST_CONTRACT_VERSION }),
+        `${vector.name}: expanded AST fails schema: ${JSON.stringify(validateAst.errors)}`,
       )
     }
 

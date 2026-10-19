@@ -48,6 +48,7 @@ const INPUT_FIELDS = [
   'checkFmtExpandEquivalence',
   'checkCarveTarget',
   'checkFlattened',
+  'checkPositions',
   'checkWarningLocations',
 ]
 
@@ -144,6 +145,7 @@ async function main() {
         // produces WITH the resolver configured.
         ...(vector.checkFlattened ? { flattened: result.flattened } : {}),
         ...(vector.checkCarveTarget ? { carveTarget: result.carveTarget } : {}),
+        ...(vector.checkPositions ? { positions: result.positions } : {}),
         warnings: result.warnings,
         ...(vector.checkWarningLocations ? { warningLocations: result.warningLocations } : {}),
         dependencies: result.dependencies,

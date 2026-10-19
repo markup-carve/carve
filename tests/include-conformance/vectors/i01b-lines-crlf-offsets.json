@@ -1,0 +1,124 @@
+{
+  "name": "i01b-lines-crlf-offsets",
+  "description": "Carve line selection preserves CRLF offsets alongside a whole-file include.",
+  "rules": [
+    "I1",
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ c.crv @lines:1-3 }}\n\n{{ c.crv }}\n",
+  "files": {
+    "c.crv": "one\r\n\r\ntwo\r\n"
+  },
+  "checkPositions": true,
+  "expected": {
+    "html": "<p>one</p>\n<p>two</p>\n<p>one</p>\n<p>two</p>",
+    "fmt": "{{ c.crv @lines:1-3 }}\n\n{{ c.crv }}\n",
+    "positions": [
+      {
+        "type": "paragraph",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 1,
+          "endColumn": 4,
+          "startOffset": 0,
+          "endOffset": 3,
+          "file": "c.crv"
+        }
+      },
+      {
+        "type": "text",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 1,
+          "endColumn": 4,
+          "startOffset": 0,
+          "endOffset": 3,
+          "file": "c.crv"
+        }
+      },
+      {
+        "type": "paragraph",
+        "pos": {
+          "startLine": 3,
+          "startColumn": 1,
+          "endLine": 3,
+          "endColumn": 4,
+          "startOffset": 7,
+          "endOffset": 10,
+          "file": "c.crv"
+        }
+      },
+      {
+        "type": "text",
+        "pos": {
+          "startLine": 3,
+          "startColumn": 1,
+          "endLine": 3,
+          "endColumn": 4,
+          "startOffset": 7,
+          "endOffset": 10,
+          "file": "c.crv"
+        }
+      },
+      {
+        "type": "paragraph",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 1,
+          "endColumn": 4,
+          "startOffset": 0,
+          "endOffset": 3,
+          "file": "c.crv"
+        }
+      },
+      {
+        "type": "text",
+        "pos": {
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 1,
+          "endColumn": 4,
+          "startOffset": 0,
+          "endOffset": 3,
+          "file": "c.crv"
+        }
+      },
+      {
+        "type": "paragraph",
+        "pos": {
+          "startLine": 3,
+          "startColumn": 1,
+          "endLine": 3,
+          "endColumn": 4,
+          "startOffset": 7,
+          "endOffset": 10,
+          "file": "c.crv"
+        }
+      },
+      {
+        "type": "text",
+        "pos": {
+          "startLine": 3,
+          "startColumn": 1,
+          "endLine": 3,
+          "endColumn": 4,
+          "startOffset": 7,
+          "endOffset": 10,
+          "file": "c.crv"
+        }
+      }
+    ],
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "c.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

@@ -109,6 +109,10 @@
       "type": "boolean",
       "description": "When true, the vector also carries expected.flattened: the Carve source of the expanded document."
     },
+    "checkPositions": {
+      "type": "boolean",
+      "description": "When true, expected.positions lists every expanded AST node after the document root."
+    },
     "checkWarningLocations": {
       "type": "boolean",
       "description": "When true, assert each warning's source file and 1-based line in expected.warningLocations."
@@ -134,6 +138,32 @@
         "carveTarget": {
           "type": "string",
           "description": "Optional (I15). The Carve source a processor produces for this entry WITH THE RESOLVER CONFIGURED, through whatever path it uses for a Carve-target render. It must equal `fmt`: the Carve target does not expand. `fmt` cannot pin this on its own, because `fmt` is computed from the pre-expansion document by construction, so an engine that expands before writing satisfies it and still returns a different document."
+        },
+        "positions": {
+          "type": "array",
+          "description": "Expanded PART 12 AST JSON nodes in depth-first pre-order, excluding the root.",
+          "items": {
+            "type": "object",
+            "required": ["type"],
+            "additionalProperties": false,
+            "properties": {
+              "type": { "type": "string" },
+              "pos": {
+                "type": "object",
+                "required": ["startLine", "startColumn", "endLine", "endColumn", "startOffset", "endOffset"],
+                "additionalProperties": false,
+                "properties": {
+                  "startLine": { "type": "integer", "minimum": 1 },
+                  "startColumn": { "type": "integer", "minimum": 1 },
+                  "endLine": { "type": "integer", "minimum": 1 },
+                  "endColumn": { "type": "integer", "minimum": 1 },
+                  "startOffset": { "type": "integer", "minimum": 0 },
+                  "endOffset": { "type": "integer", "minimum": 0 },
+                  "file": { "type": "string" }
+                }
+              }
+            }
+          }
         },
         "warnings": {
           "type": "array",
