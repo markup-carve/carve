@@ -56400,7 +56400,7 @@ One blank before a quote caption after a nested list
 
 One blank before a figure group caption after a nested list
 
-::: compare
+:::: compare
 
 ```carve
 - - text
@@ -56427,6 +56427,7 @@ One blank before a figure group caption after a nested list
 </ul>
 ```
 
+::::
 
 Item prose and a nested list before a quote caption
 
@@ -56578,7 +56579,7 @@ A blank opens a quote before its caption
 
 A blank opens a figure group before its caption
 
-::: compare
+:::: compare
 
 ```carve
 - text
@@ -56603,6 +56604,7 @@ A blank opens a figure group before its caption
 </ul>
 ```
 
+::::
 
 A blank opens a table before its caption
 

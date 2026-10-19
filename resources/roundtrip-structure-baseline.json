@@ -15,26 +15,26 @@
     },
     "php": {
       "html": {
-        "identical": 2209,
-        "strict": 2073,
-        "total": 2695
+        "identical": 2226,
+        "strict": 2090,
+        "total": 2712
       },
       "md": {
-        "identical": 1948,
-        "strict": 1469,
-        "total": 2695
+        "identical": 1963,
+        "strict": 1483,
+        "total": 2712
       }
     },
     "rs": {
       "html": {
-        "identical": 2168,
-        "strict": 2035,
-        "total": 2695
+        "identical": 2185,
+        "strict": 2052,
+        "total": 2712
       },
       "md": {
-        "identical": 1994,
-        "strict": 1752,
-        "total": 2695
+        "identical": 2008,
+        "strict": 1763,
+        "total": 2712
       }
     }
   }
