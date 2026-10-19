@@ -169,7 +169,9 @@ marker must never show up in the file that holds it.
   ```
 
   `{{ readme.crv @region:requirements }}` then includes the two list items, and
-  `readme.crv` itself renders as if the markers were not there. A bare
+  `readme.crv` itself renders as if the markers were not there. The selected
+  lines are read as Carve, like any included file; to include source code,
+  use `@code`. A bare
   `#region` line, a `// #region` line and a braced `{% #region %}` comment are
   ordinary text in a Carve file, so an include naming such a region reports
   `include-region-invalid`.
