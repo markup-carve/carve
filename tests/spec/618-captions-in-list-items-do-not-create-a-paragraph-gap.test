@@ -320,11 +320,11 @@ more</figcaption>
 </ul>
 ```
 
-````
+```
 - - text
-  ```
-  x
-  ```
+  ::: figure
+  ![a](b.png)
+  :::
 
   ^ cap
 - c
@@ -334,15 +334,14 @@ more</figcaption>
     <ul>
       <li>text</li>
     </ul>
-    <figure>
-      <pre><code>x
-</code></pre>
+    <figure class="carve-figure-group">
+      <img src="b.png" alt="a">
       <figcaption>cap</figcaption>
     </figure>
   </li>
   <li>c</li>
 </ul>
-````
+```
 
 ```
 - x
@@ -452,27 +451,26 @@ more</figcaption>
 </ul>
 ```
 
-````
+```
 - text
 
-  ```
-  x
-  ```
+  ::: figure
+  ![a](b.png)
+  :::
 
   ^ cap
 - c
 .
 <ul>
   <li>text
-    <figure>
-      <pre><code>x
-</code></pre>
+    <figure class="carve-figure-group">
+      <img src="b.png" alt="a">
       <figcaption>cap</figcaption>
     </figure>
   </li>
   <li>c</li>
 </ul>
-````
+```
 
 ```
 - text

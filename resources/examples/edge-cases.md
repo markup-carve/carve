@@ -56398,19 +56398,19 @@ One blank before a quote caption after a nested list
 
 :::
 
-One blank before a code listing caption after a nested list
+One blank before a figure group caption after a nested list
 
 ::: compare
 
-````carve
+```carve
 - - text
-  ```
-  x
-  ```
+  ::: figure
+  ![a](b.png)
+  :::
 
   ^ cap
 - c
-````
+```
 
 ```html
 <ul>
@@ -56418,9 +56418,8 @@ One blank before a code listing caption after a nested list
     <ul>
       <li>text</li>
     </ul>
-    <figure>
-      <pre><code>x
-</code></pre>
+    <figure class="carve-figure-group">
+      <img src="b.png" alt="a">
       <figcaption>cap</figcaption>
     </figure>
   </li>
@@ -56428,7 +56427,6 @@ One blank before a code listing caption after a nested list
 </ul>
 ```
 
-:::
 
 Item prose and a nested list before a quote caption
 
@@ -56578,27 +56576,26 @@ A blank opens a quote before its caption
 
 :::
 
-A blank opens a code listing before its caption
+A blank opens a figure group before its caption
 
 ::: compare
 
-````carve
+```carve
 - text
 
-  ```
-  x
-  ```
+  ::: figure
+  ![a](b.png)
+  :::
 
   ^ cap
 - c
-````
+```
 
 ```html
 <ul>
   <li>text
-    <figure>
-      <pre><code>x
-</code></pre>
+    <figure class="carve-figure-group">
+      <img src="b.png" alt="a">
       <figcaption>cap</figcaption>
     </figure>
   </li>
@@ -56606,7 +56603,6 @@ A blank opens a code listing before its caption
 </ul>
 ```
 
-:::
 
 A blank opens a table before its caption
 
