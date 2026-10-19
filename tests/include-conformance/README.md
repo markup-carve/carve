@@ -216,16 +216,17 @@ the security suite's "Corpus ahead of the engines" (carve#1992).
 - **Region markers by include mode, and the code include** (carve#3319,
   carve#3320; CARVE-P6-001 I1b (a)/(b) and I1c). The clause landed ahead of
   carve-js, so the inputs live in `pendingVectors` in
-  `scripts/include-conformance-vectors.mjs` and have no golden yet. A pending
-  name that also appears in `vectors` replaces it: the committed goldens of
-  those `i01b-*` vectors still use `//` and bare markers in a Carve include,
-  which the clause no longer recognizes.
+  `scripts/include-conformance-vectors.mjs` and have no golden yet. The 0.1.10
+  `i01b-*` goldens were removed rather than kept: they used `//` and bare
+  markers in a Carve include, which the clause no longer recognizes, and an
+  engine vendoring this directory would otherwise be held to the old reading.
+  Their replacements, under the same names, are among the pending inputs.
 
   To close this: once the include reference pin
   (`resources/include-reference-pin.txt`) names a carve-js that implements the
-  clause, move the pending entries into `vectors` (replacing the same-named
-  ones), run the generator against that engine, read every golden against the
-  clause before committing it, and delete this entry.
+  clause, move the pending entries into `vectors`, run the generator against
+  that engine, read every golden against the clause before committing it, and
+  delete this entry.
 
 ## How to add a vector
 
@@ -254,7 +255,7 @@ rules):
 | Rule | Vectors | Rule | Vectors |
 |---|---|---|---|
 | I1 syntax / path-required | 32 | I8 heading shift + auto | 16 |
-| I1b named source region | 17 | I11 dependency reporting | 15 |
+| I1b named source region | 0 (pending) | I11 dependency reporting | 14 |
 | I2 block vs inline | 8 | I9 verbatim protection | 5 |
 | I3 resolution model | 2 | I9a recognition run | 7 |
 | I4 fragment containment / attribution | 9 | I10 containment (filesystem) | 7 |
@@ -267,7 +268,7 @@ rules):
 I13 and I14 are unassigned. Vectors named `i13-*` and `i14-*` keep their file
 names and are tagged I7 and I12.
 
-**150 vectors total.**
+**133 vectors total.**
 
 ### What the virtual model cannot express
 
