@@ -152,4 +152,4 @@ export function authoredDocuments() {
  * is "look up how this file works" is a red gate that gets deleted.
  */
 export const AUTHORED_POPULATION = 120
-export const AUTHORED_ANSWERED = 118
+export const AUTHORED_ANSWERED = 119
