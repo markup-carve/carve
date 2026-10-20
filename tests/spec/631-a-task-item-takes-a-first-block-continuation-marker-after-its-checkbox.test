@@ -1,0 +1,52 @@
+A task item takes a first-block continuation marker after its checkbox
+
+````
+- [ ] +
+```
+code
+```
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <pre><code>code
+</code></pre>
+  </li>
+</ul>
+````
+
+```
+- [x] +
+> quote
+.
+<ul class="task-list">
+  <li data-task-state="x"><input type="checkbox" checked disabled> 
+    <blockquote><p>quote</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- [ ] + text
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="+ text"> + text</li>
+</ul>
+```
+
+````
+- - [ ] +
+```
+code
+```
+.
+<ul>
+  <li>
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 
+        <pre><code>code
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+````

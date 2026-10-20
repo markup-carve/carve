@@ -336,6 +336,10 @@ index: examples/edge-cases/index.md
   630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-16
   630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-17
   630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-18
+  631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox
+  631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-2
+  631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-3
+  631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-4
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3

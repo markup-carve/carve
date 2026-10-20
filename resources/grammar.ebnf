@@ -6260,6 +6260,9 @@ EOF = (* end of file *) ;
            an item whose body is the following column-0 BLOCK, one of them
            as everywhere else in L3, with no inline lead;
            `- + text` keeps `+ text` as literal text.
+           A task-item opener `- [ ] ` or `- [x] ` followed by `+` has
+           the same first-block form, while `- [ ] + text` is a task item
+           whose text starts with `+`.
          - BLOCK QUOTE: a separate `+` at column 0 immediately after a blockquote line
            attaches the following flush-left block to the quote -- the
            un-prefixed alternative to repeating `>`. "> quoted \n + \n

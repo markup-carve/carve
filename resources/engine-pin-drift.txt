@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-4  carve-js ccbbdcc9 leaves the nested task item empty and puts the column-0 fence at document level (markup-carve/carve#3421).
