@@ -68,7 +68,8 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          # Exact patch: shards compare reports that record the interpreter version.
+          node-version: 24.22.0
           cache: npm
       - run: npm ci
       - uses: actions/checkout@v4
@@ -163,7 +164,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          # Exact patch: shards compare reports that record the interpreter version.
+          node-version: 24.22.0
           cache: npm
 
       - run: npm ci
@@ -337,7 +339,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          # Exact patch: shards compare reports that record the interpreter version.
+          node-version: 24.22.0
           cache: npm
       - run: npm ci
       - uses: actions/download-artifact@v4
@@ -371,7 +374,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          # Exact patch: shards compare reports that record the interpreter version.
+          node-version: 24.22.0
           cache: npm
 
       - run: npm ci
