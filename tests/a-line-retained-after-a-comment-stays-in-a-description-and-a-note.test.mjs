@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { parseFragment } from 'parse5'
-import { parse } from '../scripts/spec/layout.mjs'
+import { parse, layoutWork, resetLayoutWork } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = (src) => renderDoc(parse(src))
@@ -81,10 +81,17 @@ test('a retained list marker is paragraph text in all three hosts', () => {
 })
 
 test('retention does not rescan the body it has already collected', () => {
-  // Each comment reads only the lines since the last one, so doubling the
-  // input may not quadruple the work. A full rescan took minutes here.
-  const time = (src) => { const t = process.hrtime.bigint(); parse(src); return Number(process.hrtime.bigint() - t) / 1e6 }
+  // Each comment reads only the lines since the last one, so 4x the input
+  // may not be 16x the work. A full rescan took minutes here.
   for (const head of ['[^n]: x\n', ':: t\n: x\n']) {
-    assert.ok(time(head + ' %% c\n x\n'.repeat(3000)) < 5000, head)
+    const work = (n) => {
+      resetLayoutWork()
+      parse(head + ' %% c\n x\n'.repeat(n))
+      return layoutWork.commentTail
+    }
+    const baseline = work(750)
+    const scaled = work(3000)
+    assert.ok(baseline > 0, `${head}: the comment tail was never read`)
+    assert.ok(scaled / baseline < 6, `${head}: 750=${baseline} lines, 3000=${scaled} lines`)
   }
 })

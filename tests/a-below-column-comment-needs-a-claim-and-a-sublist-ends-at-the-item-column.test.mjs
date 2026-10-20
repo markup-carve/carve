@@ -1,7 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { performance } from 'node:perf_hooks'
-import { parse } from '../scripts/spec/layout.mjs'
+import { parse, layoutWork, resetLayoutWork } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 const normalize = (html) => html.replace(/>\s+</g, '><').replace(/\s+/g, ' ').trim()
@@ -25,19 +24,14 @@ for (const [name, head] of [['footnote', '[^n]: x\n'], ['description', ':: term\
     const source = (n) => head + ' %% c\n x\n'.repeat(n)
     const small = source(1000)
     const large = source(4000)
-    parse(small)
-    parse(large)
-    const measure = (input) => {
-      const samples = []
-      for (let i = 0; i < 5; i++) {
-        const start = performance.now()
-        parse(input)
-        samples.push(performance.now() - start)
-      }
-      return samples.sort((a, b) => a - b)[2]
+    const work = (input) => {
+      resetLayoutWork()
+      parse(input)
+      return layoutWork.commentTail
     }
-    const baseline = measure(small)
-    const elapsed = measure(large)
-    assert.ok(elapsed / baseline < 8, `${name}: 1000=${baseline} ms, 4000=${elapsed} ms`)
+    const baseline = work(small)
+    const scaled = work(large)
+    assert.ok(baseline > 0, `${name}: the comment tail was never read`)
+    assert.ok(scaled / baseline < 6, `${name}: 1000=${baseline} lines, 4000=${scaled} lines`)
   })
 }
