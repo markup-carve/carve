@@ -20,6 +20,23 @@
       }
     },
     {
+      "name": "default-start",
+      "description": "A first list without an explicit start counts from 1.",
+      "source": "  1. a\n 2. b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 2,
+            "includes": [
+              "same column",
+              "{start=1}"
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "right-aligned-three",
       "description": "The second list can contain two items.",
       "source": " 9. nine\n10. ten\n11. eleven\n",
