@@ -2831,7 +2831,10 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
     }
     return false
   }
-  const lines = sourceLines.map((line, index) => {
+  const sourceHasLonePlus = sourceLines.some(line =>
+    /^[ \t]*(?:>[ \t]*)*\+[ \t]*$/.test(line) ||
+    /^[ \t]*(?:(?:[-*]|\d+[.)])[ \t]+)+(?:\[[ xX_-]\][ \t]+)?\+[ \t]*$/.test(line))
+  const lines = sourceHasLonePlus ? sourceLines.map((line, index) => {
     const stackedFollower = sourceLines[index + 1] === undefined
       ? null : indentCols(sourceLines[index + 1])
     if (/^[ \t]*(?:>[ \t]*)?(?:(?:[-*]|\d+[.)])[ \t]+)+>[ \t]+\+[ \t]*$/.test(line) &&
@@ -2908,7 +2911,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
     if (FOOTNOTE_DEF.test(measured.rest) || /^:{1,2} /.test(measured.rest)) markerColumns.push(measured.col)
     if (QUOTE.test(measured.rest)) quoteColumn = measured.col
     return line
-  })
+  }) : sourceLines
   if (lines[lines.length - 1] === '') lines.pop()
   const state = {
     linkDefs: new Map(),
@@ -2917,9 +2920,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
     authoredBodyBases,
     prefixMemos: new WeakMap(),
     markerLineColumns: new WeakMap(),
-    sourceHasLonePlus: sourceLines.some(line =>
-      /^[ \t]*(?:>[ \t]*)*\+[ \t]*$/.test(line) ||
-      /^[ \t]*(?:(?:[-*]|\d+[.)])[ \t]+)+(?:\[[ xX_-]\][ \t]+)?\+[ \t]*$/.test(line)),
+    sourceHasLonePlus,
     unterminatedLines: new WeakSet(src.endsWith('\n') ? [] : [lines]),
   }
   if (hasOrdinaryPlus) state.ordinaryPlusSentinel = sentinel
@@ -3008,6 +3009,10 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
   delete state.markerCommentClosers
   delete state.prefixMemos
   delete state.attachmentBoundaries
+  delete state.markerLineColumns
+  delete state.sourceHasLonePlus
+  delete state.ordinaryPlusSentinel
+  delete state.refusedSiblingSentinel
   return { blocks, ...state }
 }
 

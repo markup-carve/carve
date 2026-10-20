@@ -108,7 +108,7 @@ test('a bare fence after the blank interrupts, because the absorption did not su
 const exactHtml = (src) => renderDoc(parse(src)).trim()
 
 for (const [source, expected] of [
-    ['- one\n::: \tnote\n+\n', '<ul>\n  <li>one\n::: \tnote</li>\n</ul>'],
+    ['- one\n::: \tnote\n+\n', '<ul>\n  <li>one\n::: \tnote\n+</li>\n</ul>'],
     ['    - c\n::::>\n', '<ul>\n  <li>c\n::::&gt;</li>\n</ul>'],
     ['    - second\n   tail\n::: \t[First]\n', '<ul>\n  <li>second\ntail\n::: \t[First]</li>\n</ul>'],
     ['- b\n:::>\n     ```\n y\n', '<ul>\n  <li>b\n:::&gt;\n<code>\ny</code></li>\n</ul>'],
