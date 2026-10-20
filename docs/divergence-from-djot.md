@@ -157,11 +157,13 @@ content**. A content-less `-`, `- `, or `-   ` is ordinary paragraph text.
 **Djot / CommonMark:** `+`, `-`, and `*` are all bullet markers.
 
 **Carve:** bullets are `-` and `*` only. `+` is reserved as the **continuation
-marker** - a lone `+` on its own line transfers ownership of the next
-flush-left block to the container whose marker column it sits at, keeping a
-list tight instead of breaking it. One block, and the same operation in every
-container that takes the marker: a list item, a block quote, a footnote body
-and a definition description.
+marker**: a lone `+` at column 0 of its quote level, or first after the last
+block opener on the same line when that opener run starts at column 0, attaches
+the next column-0 block. A separate marker belongs to the container at column
+0 of its quote level; a marker after stacked openers belongs to the innermost
+container opened on that line. One block attaches in either form, and a list
+stays tight. A list item, block quote, footnote body, and definition description
+can take the marker. The quote form also accepts `>+` and runs such as `>>+`.
 
 **Why.** Freeing `+` makes a lone `+` unambiguous and gives a container a clean
 way to own a following block (a note, a quote, a code fence) without deep

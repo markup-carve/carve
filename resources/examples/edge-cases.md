@@ -2860,7 +2860,7 @@ as a temporary block base. It remains invisible and the item remains tight.
 
 ## List continuation marker
 
-A lone `+` at the list marker column attaches the following flush-left block to the current item, with no blank line, keeping the list tight — useful for code blocks or tables you would rather not indent.
+A lone `+` at column 0 attaches the following flush-left block to the outer item, with no blank line, keeping the list tight. This helps with code blocks or tables that would be awkward to indent.
 
 Carve's bullet markers are `-` and `*` only. Unlike Markdown and Djot, `+` is **not** a bullet in Carve and never has been — it is reserved as the list-continuation marker. This is what makes a lone `+` unambiguous: there is no `+` list it could belong to. A `+ x` line is therefore ordinary paragraph text, not a list item.
 
@@ -2935,7 +2935,7 @@ Both render:
 </ul>
 ```
 
-Pick whichever reads better. The blank-line form indents the block under the item; the `+` form marks the attach point with a flush-left marker and keeps the block flush-left — handy for wide code or tables you would rather not indent. The marker must be a lone `+` at the list marker column with the block flush-left; an indented `+` is ordinary text, not a continuation marker.
+Pick whichever reads better. The blank-line form indents the block under the item; the `+` form marks the attach point with a flush-left marker and keeps the block flush-left. This helps with wide code or tables. The marker must be a lone `+` at column 0 with the block flush-left; an indented `+` is ordinary text or fence payload.
 
 ### First block of an item
 
@@ -2984,9 +2984,9 @@ Since `+` is not a Carve bullet (use `-` or `*`), the lines below are a single p
 
 :::
 
-### A sub-list's marker column takes the marker too
+### An indented plus under a sub-list stays text
 
-"The current container" in §17 L3 is whichever container the marker's column belongs to, and inside an item that can be a sub-list: a `+` at the sub-list's marker column attaches to the sub-list's item, not to the outer one. What it attaches is the flush-left block, and both spellings are pinned in "A continuation marker attaches only a flush-left block" below.
+A `+` at column 0 attaches to the outer item even while a sub-list is open. An indented `+` stays ordinary text at its own column (markup-carve/carve#3421).
 
 The plainest form of the rule, at a single level: the attached block is written
 flush left, and the item holds it without a blank line.
@@ -3009,7 +3009,7 @@ c
 
 :::
 
-Indent it one step further and it is past every marker column in scope, so it is ordinary text again — the same rule as above, read against the sub-list instead of the outer item:
+The indented `+` below is ordinary text in the nested item:
 
 ::: compare
 
@@ -10431,7 +10431,7 @@ b</p>
 
 ## A continuation marker after a blank line in a loose item
 
-The marker sits at the item's marker column and attaches the flush-left block
+The column-0 marker attaches the flush-left block
 below it, whether or not a blank line comes first. The blank does not loosen
 the item on its own - this item is loose because of the blank between `a` and
 `b`, not because of the one before the marker.
@@ -25769,10 +25769,9 @@ x
 
 ::::
 
-An INDENTED line under the marker is not attached at all. It is read by the
-ordinary column rules, which here fold it into the paragraph the sub-list's item
-left open - so `b` and `c` are one paragraph rather than the two blocks the
-marker would have produced.
+An indented `+` is ordinary text. Here it folds into the paragraph the
+sub-list item left open, so `b`, `+` and `c` stay in one paragraph
+(markup-carve/carve#3421).
 
 ::: compare
 
@@ -25788,6 +25787,7 @@ marker would have produced.
   <li>a
     <ul>
       <li>b
++
 c</li>
     </ul>
   </li>
@@ -25824,8 +25824,7 @@ p</li>
 
 :::
 
-A `+` at a column no container's marker column names is not this marker at all.
-The marker columns here are 0 and 2, so the `+` written at column 1 is ordinary
+An indented `+` is never this marker. The `+` written at column 1 is ordinary
 text and reaches the output, as a lone `+` does outside any container.
 
 ::: compare
@@ -29604,7 +29603,7 @@ written below it.
 ## The continuation marker attaches one block in every container
 
 §17 L3 defines `+` as one operation: ownership of the next flush-left block
-passes to the container whose marker column the line sits at, and the block is
+passes to the container at column 0 of the line's quote level, and the block is
 then parsed like any other. The count is ONE block, and the container does not
 answer differently because of what kind of block it is attaching.
 
@@ -30690,12 +30689,9 @@ more</li>
 
 :::
 
-The gate reads the MARKER's own column as well as the attached block's. A `+`
-is a continuation marker at its container's marker column and nowhere else, so
-in an item holding a quote there are exactly two columns where it is one: the
-list's and the quote's. One column between them names no container, and the
-line is ordinary text that the quote's open paragraph folds in - the answer a
-word in the same slot gets.
+The marker starts only at column 0 of its quote level. In this item, the
+indented `+` is ordinary text, and the open quoted paragraph folds it in
+(markup-carve/carve#3421).
 
 ::: compare
 
@@ -30716,8 +30712,7 @@ word in the same slot gets.
 
 :::
 
-The text control at that column, which is what says the marker is being read as
-text rather than attached by some other route.
+A word at the same column follows the same ordinary text path.
 
 ::: compare
 
@@ -30738,8 +30733,8 @@ ZZZ</p></blockquote>
 
 :::
 
-The quote's own marker column, one column right. Here the `+` IS a marker: it
-is consumed, and with no flush-left block below it attaches nothing.
+The `+` is indented, so it remains ordinary text at its own column
+(markup-carve/carve#3421).
 
 ::: compare
 
@@ -30752,15 +30747,16 @@ is consumed, and with no flush-left block below it attaches nothing.
 ```html
 <ul>
   <li>x
-    <blockquote><p>q</p></blockquote>
+    <blockquote><p>q
++</p></blockquote>
   </li>
 </ul>
 ```
 
 :::
 
-The list's marker column answers the same way, which is what makes the column
-between them the only one in question.
+A column-0 `+` is the marker for the outer item and adds nothing here because
+no flush-left block follows it.
 
 ::: compare
 
@@ -55541,7 +55537,7 @@ A table row below a description body's column folds into its paragraph (carve#32
 
 ::::::
 
-A refused continuation marker attaches nothing, and a quote past the item column then opens in the item (CARVE-P9-031).
+The indented `+` is text in the description body. The quote past the item column then opens in the item (CARVE-P9-031, markup-carve/carve#3421).
 :::::: compare
 
 ````carve
@@ -55557,9 +55553,10 @@ A refused continuation marker attaches nothing, and a quote past the item column
   <li>
     <dl>
       <dt>term</dt>
-      <dd>body</dd>
+      <dd>body
++
+before</dd>
     </dl>
-    before
     <blockquote><p>nested</p></blockquote>
   </li>
 </ul>
@@ -59000,7 +58997,7 @@ a
 
 :::::::
 
-## A plus marker below a nested fence attaches at every depth and keeps every blank
+## An indented plus below a nested fence stays content at every depth
 
 ::::::: compare
 
@@ -59020,13 +59017,14 @@ tail
           <li>
             <pre><code>x
 </code></pre>
-            tail
           </li>
         </ul>
+        +
       </li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -59047,13 +59045,14 @@ tail
         <ul>
           <li>
             <pre><code></code></pre>
-            tail
           </li>
         </ul>
+        +
       </li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -59078,6 +59077,7 @@ tail
 </code></pre>
           </li>
         </ul>
+        +
       </li>
     </ul>
   </li>
@@ -59104,13 +59104,14 @@ tail
         <ul>
           <li>
             x
-            tail
           </li>
         </ul>
+        +
       </li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -59131,11 +59132,11 @@ tail
     <ul>
       <li>
         <pre><code>
-
 </code></pre>
-        tail
       </li>
     </ul>
+    <p>+
+tail</p>
   </li>
 </ul>
 ```
@@ -59162,15 +59163,15 @@ tail
           <li>
             <pre><code>x
 
-
 </code></pre>
-            tail
           </li>
         </ul>
+        <p>+</p>
       </li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -59191,11 +59192,11 @@ tail
     <ol>
       <li>
         <pre><code>
-
 </code></pre>
-        tail
       </li>
     </ol>
+    <p>+
+tail</p>
   </li>
 </ul>
 ```
@@ -59220,9 +59221,10 @@ tail
         <pre><code class="language-js">    x
 
 </code></pre>
-        tail
       </li>
     </ul>
+    <p>+
+tail</p>
   </li>
 </ul>
 ```
@@ -59231,7 +59233,7 @@ tail
 
 ## A refused marker leaves an open fence's blank payload
 
-A refused `+` at the host's marker column is skipped while an open code or raw fence continues. A following blank line stays in the payload at every depth (markup-carve/carve#3400).
+A refused column-0 `+` is skipped while an open code or raw fence continues. An indented `+` stays ordinary content at its own column (markup-carve/carve#3400, markup-carve/carve#3421).
 
 ::::::: compare
 
@@ -59331,10 +59333,10 @@ tail
   <li>
     <ul>
       <li>
-        <pre><code>
-</code></pre>
+        <pre><code></code></pre>
       </li>
     </ul>
+    +
   </li>
 </ul>
 <p>tail</p>
@@ -59385,9 +59387,9 @@ tail
 
 :::::::
 
-## A marker below an open div attaches beside the div
+## A column-zero marker below an open div attaches beside the div
 
-A `+` at the list item's marker column ends an open colon div from the marker line. The next flush-left block joins the item beside the div (markup-carve/carve#3406).
+A column-0 `+` ends an open colon div from the marker line. The next flush-left block joins the outer item beside the div. An indented `+` stays ordinary content (markup-carve/carve#3406, markup-carve/carve#3421).
 
 ::::::: compare
 
@@ -59426,9 +59428,10 @@ tail
         <div class="d">
 
         </div>
-        tail
       </li>
     </ul>
+    +
+tail
   </li>
 </ul>
 ```
@@ -59480,7 +59483,7 @@ tail
 
 ## A dangling plus marker adds nothing and a nested quote reads it like an unnested one
 
-Under §17 L3, a later `+` with no following block adds no content (carve#3415). A nested quote reads its marker at the same body position.
+Under §17 L3, a later column-0 `+` with no following block adds no content (carve#3415). A nested quote reads a valid marker after its quote prefix. An indented `+` stays text (markup-carve/carve#3421).
 
 ::::::: compare
 
@@ -59621,6 +59624,374 @@ para
 <blockquote>
 
 </blockquote>
+<p>para</p>
+```
+
+:::::::
+
+## A continuation marker stands alone at column zero or right after a block opener
+
+A `+` at column 0 of its quote level or first after the last opener on the same line attaches the next column-0 block. An indented `+` stays text or fence payload (markup-carve/carve#3421).
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+para
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++
+para</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+::::::: compare
+
+`````carve
+- a
+  - b
++
+para
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+    para
+  </li>
+</ul>
+```
+
+:::::::
+::::::: compare
+
+`````carve
+> - a
+>   - b
+> +
+> para
+`````
+
+```html
+<blockquote>
+  <ul>
+    <li>a
+      <ul>
+        <li>b</li>
+      </ul>
+      para
+    </li>
+  </ul>
+</blockquote>
+```
+
+:::::::
+::::::: compare
+
+`````carve
+> > q
+> > +
+> > - s
+`````
+
+```html
+<blockquote>
+  <blockquote><p>q
++
+- s</p></blockquote>
+</blockquote>
+```
+
+:::::::
+::::::: compare
+
+`````carve
+> q
+>   +
+> para
+`````
+
+```html
+<blockquote><p>q
++
+para</p></blockquote>
+```
+
+:::::::
+::::::: compare
+
+`````carve
+- a
+  - ```
+    x
+    +
+    ```
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code>x
++
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+> q
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++</li>
+    </ul>
+  </li>
+</ul>
+<blockquote><p>q</p></blockquote>
+```
+
+:::::::
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+  > q
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++</li>
+    </ul>
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+::::::: compare
+
+`````carve
+- - - ```
+      x
+    +
+tail
+`````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code>x
+</code></pre>
+          </li>
+        </ul>
+        +
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::::::
+::::::: compare
+
+`````carve
+  > +
+q
+`````
+
+```html
+<p>&gt; +
+q</p>
+```
+
+:::::::
+::::::: compare
+
+`````carve
+>>+
+q
+`````
+
+```html
+<blockquote>
+  <blockquote><p>q</p></blockquote>
+</blockquote>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+>+
+q
+`````
+
+```html
+<blockquote><p>q</p></blockquote>
+```
+
+:::::::
+
+The last opener is the nested item, so it takes the paragraph.
+
+::::::: compare
+
+`````carve
+- - +
+para
+`````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>para</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+The quote opened inside the item takes the paragraph.
+
+::::::: compare
+
+`````carve
+- > +
+para
+`````
+
+```html
+<ul>
+  <li>
+    <blockquote><p>para</p></blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+The item opened inside the quote takes the paragraph.
+
+::::::: compare
+
+`````carve
+> - +
+> para
+`````
+
+```html
+<blockquote>
+  <ul>
+    <li>para</li>
+  </ul>
+</blockquote>
+```
+
+:::::::
+
+An ordered outer item also gives the paragraph to its nested item.
+
+::::::: compare
+
+`````carve
+1. - +
+para
+`````
+
+```html
+<ol>
+  <li>
+    <ul>
+      <li>para</li>
+    </ul>
+  </li>
+</ol>
+```
+
+:::::::
+
+A later column-0 marker belongs to the outer item, not the nested item.
+
+::::::: compare
+
+`````carve
+- a
+  - b
++
+para
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+    para
+  </li>
+</ul>
+```
+
+:::::::
+
+The indented opener's `+` keeps today's reading: the nested item is empty and the paragraph is outside the list.
+
+::::::: compare
+
+`````carve
+- a
+  - +
+para
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
 <p>para</p>
 ```
 

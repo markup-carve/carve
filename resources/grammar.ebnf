@@ -342,9 +342,11 @@
         column, on its authored base (CARVE-P0-004). The document and a quote
         need the exact column. When the residue is a container opener (a
         quote marker; a list marker at an admissible column; a `+`
-        continuation marker at the marker column, PART 9 §17 L3/L4; a fence
-        opener whose closer-lookahead guard holds when it interrupts or would
-        consume a host closer), push the container and
+        continuation marker alone at column 0 of its quote level or first
+        after the last block opener on the same line when that opener run
+        starts at column 0 of its quote level, PART 9 §17 L3/L4; a
+        fence opener whose closer-lookahead guard holds when it
+        interrupts or would consume a host closer), push the container and
         recurse on the remaining residue.
 
         Ordinary prose reopens a paragraph anywhere among a container's
@@ -1092,7 +1094,8 @@ blockquote = blockquote_line, {blockquote_line | lazy_continuation_line | contin
 (* marked and lazy lines may interleave: `> a` / lazy / `> b` is ONE quote.
    A `+` continuation_marker_block attaches a flush-left block to the quote -- see
    the CONTINUATION MARKER note below and PART 9 §17. *)
-blockquote_line = '>', (newline | (space, inline_content, newline)) ;
+blockquote_line = quote_continuation_line | ('>', (newline | (space, inline_content, newline))) ;
+quote_continuation_line = '>', { [space], '>' }, [space], continuation_marker ;
 
 (* LAZY CONTINUATION -- NORMATIVE [CARVE-P2-008] (CommonMark-compatible). After one or more
    blockquote_lines, a line that does NOT carry the '>' marker still continues
@@ -1256,15 +1259,16 @@ indent = whitespace, {whitespace} ;
    into the same nested list, and a post-blank block indented to that column is
    ABSORBED into the open nested item as a lazy continuation. This matches
    reference djot.js (`@djot/djot`) and CommonMark. *)
-(* Continuation marker (Carve addition; see PART 9 §17): a lone `+` at the
-   current container's marker column attaches the following flush-left block to
-   that container -- a list item OR a block quote -- with no blank line, marker
-   prefix, or indentation, keeping the container tight. *)
-continuation_marker = '+', newline ;
+(* Continuation marker (Carve addition; see PART 9 §17): a `+` alone at
+   column 0 of its quote level, or first after the last block opener on the
+   same line when that opener run starts at column 0 of its quote level,
+   attaches the following column-0 block to that container. A
+   later marker belongs to the container at column 0 of its quote level. *)
+continuation_marker = '+', {whitespace}, newline ;
 continuation_marker_block = continuation_marker, block ;
 (* First-block form (Carve addition; see PART 9 §17 L4): a lone `+` as the
-   sole content right after a container's opener (`- +`, `: +`, `> +`,
-   `[^a]: +`) opens a body that is the ONE flush-left block that follows, with
+   sole content right after a container's last opener (`- +`, `1. +`, `: +`,
+   `> +`, `[^a]: +`, `- - +`) opens a body that is the ONE flush-left block that follows, with
    no inline lead and no indentation. `- + text` keeps `+ text` as literal
    inline content -- only a bare `+` triggers this. With no flush-left block
    after it, `> +` and `[^a]: +` keep the `+` as text. *)
@@ -6166,21 +6170,34 @@ EOF = (* end of file *) ;
 
       L2 COMPACT LIST BLOCKS -- Carve deviation from djot/CommonMark. A
          blank line before an item's sub-BLOCK (sub-list, block quote,
-         fenced code, fenced div, heading, table) does NOT loosen: the item
+         fenced code, fenced div, heading, table, line block, definition
+         list) does NOT loosen: the item
          stays tight, lead text inline, block attached. Only a genuine
          second PARAGRAPH (blank + indented plain prose), or a blank line
          BETWEEN items, loosens. The blank line is still required to START
          the block, so recognition and the uniformity principle are
          unchanged -- only the tight/loose RENDERING differs (djot renders
          these loose). Pinned by corpus compact-list-blocks.
-      L3 CONTINUATION MARKER `+` -- Carve addition. A line whose only
-         content is `+`, at the current container's MARKER COLUMN, attaches
-         the FOLLOWING flush-left block to that container -- ONE block of
-         ANY kind (paragraph, list, fenced code, table, block quote, div,
-         ...), up to the next blank line, sibling marker, or a further `+`
-         -- with no marker prefix or indentation, keeping the container
-         tight. `+` is not a Carve bullet (§11 N1), so a lone `+` is
-         unambiguous; outside any container a lone `+` is literal text.
+      L3 CONTINUATION MARKER `+` -- Carve addition. A `+` is the continuation
+         marker in exactly two places: alone at the start of its own line at
+         column 0 of its quote level, or as the first element right after a
+         block opener on the same line when the opener run starts at column 0
+         of its quote level (`- +`, `1. +`, `> +`, `: +`, `[^a]: +`),
+         with nothing after it except optional trailing whitespace. Runs of
+         quote markers (`> > +`, `>> +`) count as block openers. In both places
+         it pulls the next block to column 0. With several openers on one line
+         (`- - +`, `- > +`, `> - +`, `1. - +`), the `+` after the last opener
+         pulls the next column-0 block into the innermost container opened on
+         that line. A nested item can take the first-block form when opened on
+         that same line; it never takes a later `+` line. A separate marker
+         attaches the FOLLOWING flush-left block to the container whose marker
+         column is column 0 of that line's quote level -- ONE block of ANY kind
+         (paragraph, list, fenced code, table, block quote, div, ...), up to
+         the next blank line, sibling marker, or a further `+` -- with no
+         marker prefix or indentation, keeping the container tight. A `+`
+         preceded by indentation is never the marker, at any depth
+         (markup-carve/carve#3421). `+` is not a Carve bullet (§11 N1), so a
+         lone `+` is unambiguous; outside any container it is literal text.
          The marker only ATTACHES, never separates: `+` cannot end its
          container or break the following block out of it. Ordinary prefix
          and column ownership still decide when that container ends (PART 0
@@ -6191,9 +6208,9 @@ EOF = (* end of file *) ;
          the marker attaches a block that begins at column 0 and NOTHING else.
          A line at any other column is not attached at all - it falls through
          to the ordinary column rules, which place it by its own column inside
-         whichever container survives. A `+` at a column no container's marker
-         column names was never this marker: like the lone `+` outside any
-         container above, it is ordinary text and reaches the output.
+         whichever container survives. An indented `+` was never this marker:
+         it is ordinary text or fence payload, placed by its own column, and
+         reaches the output (markup-carve/carve#3421).
 
          Under a single level the reach rarely matters: below `- +` a line at
          column 2 is the item's OWN content column, so the ordinary rules put it
@@ -6229,22 +6246,21 @@ EOF = (* end of file *) ;
          set above hold in EVERY container in L4, not only in the two that had
          them spelled out.
 
-         At the host's marker column, the marker is outside the content column
-         of a preceding code, raw or colon fence. That fence ends before the
-         attached block begins. Separators inserted for attachment are not fence
-         payload.
+         A column-0 marker is outside the content column of a preceding code,
+         raw or colon fence. That fence ends before the attached block begins.
+         Separators inserted for attachment are not fence payload.
          With no following block, the marker adds no content or blank line.
          A `+` inside the fence's own content column remains literal payload.
 
       L4 CONTAINERS THAT TAKE THE MARKER:
-         - LIST ITEM (pinned by corpus list-continuation-marker): `+` at
-           the item's marker column attaches the block to the item (for
-           code/tables one would rather not indent). FIRST-BLOCK form: the
-           marker may sit on the marker line itself (`- +`, a bare `+`) to
-           open an item whose body is the following flush-left BLOCK, one
-           of them as everywhere else in L3, with no inline lead;
+         - LIST ITEM (pinned by corpus list-continuation-marker): a separate
+           `+` at column 0 of its quote level attaches the block to the
+           top-level item there (for code/tables one would rather not indent).
+           FIRST-BLOCK form: `- +` or a stacked opener ending in `+` opens
+           an item whose body is the following column-0 BLOCK, one of them
+           as everywhere else in L3, with no inline lead;
            `- + text` keeps `+ text` as literal text.
-         - BLOCK QUOTE: `+` at column 0 immediately after a blockquote line
+         - BLOCK QUOTE: a separate `+` at column 0 immediately after a blockquote line
            attaches the following flush-left block to the quote -- the
            un-prefixed alternative to repeating `>`. "> quoted \n + \n
            - item" is a quote whose body is the paragraph "quoted" PLUS a
@@ -6262,18 +6278,18 @@ EOF = (* end of file *) ;
            `<dd>` (`definition_body` carries `continuation_marker_block`).
 
          EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM --
-         NORMATIVE [CARVE-P9-067]. The four containers above take the marker in
-         the FIRST-BLOCK position too. `- +`, `: +`, `> +` and `[^a]: +` open a
-         body whose content is the following flush-left block, one block as
-         everywhere else in L3.
+         NORMATIVE [CARVE-P9-067]. The four containers above take the second
+         marker place in L3: `- +`, `: +`, `> +` and `[^a]: +` open a body whose
+         content is the following column-0 block, one block as everywhere else
+         in L3. A nested item opened on that line takes the block when its
+         opener is the last opener before `+`.
 
          With no flush-left block after it (the end of the input, a blank line,
          or a line that is not flush-left), the `+` is not a marker. In a list
          item and a definition description the marker is refused and the body
          ends. A refused marker ends the body only where no code or raw fence is
-         open; inside an open code or raw fence, the refused `+` at the host's
-         marker column is skipped, the fence continues, and a blank line after
-         it is payload as it would be without the `+`, at any depth. In a block
+         open; inside an open code or raw fence, the refused column-0 `+` is
+         skipped, the fence continues, and a blank line after it is payload as it would be without the `+`, at any depth. In a block
          quote and a footnote body a first-block `+` is ordinary text, while a
          `+` later in the body with nothing after it adds no content (L3):
          `> +` is a quote holding the paragraph `+`, `[^a]: +` is a note holding
@@ -10036,8 +10052,12 @@ EOF = (* end of file *) ;
    7e. A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE -- NORMATIVE [CARVE-P11-042].
       Where a tight list item's first block must be followed by a continuation
       marker, the writer puts that block on the marker line and the `+` on the
-      next line (`- > p`, then `+`), never a bare `- +` with the block at
-      column 0 below it.
+      next line (`- > p`, then `+`) for a top-level item, never a bare `- +`
+      with the block at column 0 below it. The writer never emits an indented
+      `+`. For a nested tight item it writes the block at the item's content
+      column with a blank line before it, as L2 permits. If a following
+      paragraph would fold lazily or loosen the item, it writes the item loose
+      and reports a writer loss.
 
    7f. A REGION MARKER KEEPS ITS LINE -- NORMATIVE [CARVE-P11-073]. A region
       include selects the physical lines strictly between two marker lines
@@ -10604,13 +10624,18 @@ EOF = (* end of file *) ;
        property of the emitted BLOCK SEQUENCE, not only of each child in
        isolation. If two adjacent children written at the item's content
        column would re-parse as one block, the writer emits each child from the
-       first such child onward at the marker column, preceded by its own `+`.
+       first such child onward at the marker column, preceded by its own `+`
+       for a top-level item. The writer never emits an indented `+`. In a
+       nested tight item, it writes the block at the item's content column
+       with a blank line before it; L2 keeps the item tight. If a paragraph
+       after a block child would fold lazily or loosen the item, the writer
+       writes the item loose and reports a writer loss.
 
        This includes adjacent block quotes, tables, line blocks, definition
        lists, and lists whose marker kind is compatible. A single block opener
        that cannot fold into the paragraph above it remains canonically
-       indented at the content column. A blank line is not the fallback: it
-       would make a tight item loose and change its rendered structure.
+       indented at the content column. In a nested item, the blank line is
+       the compact-list separator specified by L2.
 
 
   10d. MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET -- NORMATIVE [CARVE-P11-031].

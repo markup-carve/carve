@@ -17,6 +17,14 @@ test('a quote takes one flush-left paragraph', () => {
   assert.equal(html('> +\nflush'), '<blockquote><p>flush</p></blockquote>')
 })
 
+test('quote first-block markers accept trailing whitespace at every depth', () => {
+  for (const marker of ['>+ ', '>> + ', '> >+\t']) {
+    const depth = marker.match(/>/g).length
+    const expected = '<blockquote>'.repeat(depth) + '<p>flush</p>' + '</blockquote>'.repeat(depth)
+    assert.equal(html(`${marker}\nflush`), expected)
+  }
+})
+
 test('a quote keeps + at end of input or before a blank', () => {
   assert.equal(html('> +'), '<blockquote><p>+</p></blockquote>')
   assert.equal(html('> +\n\nafter'), '<blockquote><p>+</p></blockquote><p>after</p>')

@@ -24,6 +24,9 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+384-a-continuation-marker-attaches-only-a-flush-left-block-6  markup-carve/carve#3421: the pinned reader has not adopted the column-zero continuation rule
+435-the-continuation-marker-s-column-gate-reaches-every-container-16  markup-carve/carve#3421: the pinned reader treats this indented plus as a marker
+616-a-line-is-read-in-the-container-whose-column-it-reaches-18  markup-carve/carve#3421: the pinned reader has not adopted the column-zero continuation rule
 621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
 621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-2  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
 621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-3  carve-js#3267: the fix merged as carve-js 8a10f432, after the pin
@@ -48,15 +51,23 @@
 625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-4  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
 625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-5  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
 625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-6  carve#3403, carve-js#3277/#3278: the carve-js fix lands after the pin
-626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
-626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-2  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
-626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-4  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
-626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-5  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
-626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-6  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
-626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-7  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
-626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-8  carve#3405, carve#3396: carve-js #3279 and #3282 land after the pin
-627-a-refused-marker-leaves-an-open-fence-s-blank-payload-5  carve#3400, carve-js#3285: the carve-js fix lands after the pin
-628-a-marker-below-an-open-div-attaches-beside-the-div  carve#3406, carve-js#3285: the carve-js fix lands after the pin
-628-a-marker-below-an-open-div-attaches-beside-the-div-2  carve#3406, carve-js#3285: the carve-js fix lands after the pin
-628-a-marker-below-an-open-div-attaches-beside-the-div-3  carve#3406, carve-js#3285: the carve-js fix lands after the pin
-628-a-marker-below-an-open-div-attaches-beside-the-div-4  carve#3406, carve-js#3285: the carve-js fix lands after the pin
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth  markup-carve/carve#3421: the pinned reader still applies the superseded nested-marker rule
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-2  markup-carve/carve#3421: the pinned reader still applies the superseded nested-marker rule
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-3  markup-carve/carve#3421: the pinned reader still applies the superseded nested-marker rule
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-4  markup-carve/carve#3421: the pinned reader still applies the superseded nested-marker rule
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-5  markup-carve/carve#3421: the pinned reader still applies the superseded nested-marker rule
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-6  markup-carve/carve#3421: the pinned reader still applies the superseded nested-marker rule
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-7  markup-carve/carve#3421: the pinned reader still applies the superseded nested-marker rule
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  markup-carve/carve#3421: the pinned reader still applies the superseded nested-marker rule
+627-a-refused-marker-leaves-an-open-fence-s-blank-payload-5  carve#3400, carve-js#3285, carve#3421: the pinned reader has the earlier fence and marker behavior
+628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div  carve#3406, carve-js#3285: the carve-js fix lands after the pin
+628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-2  markup-carve/carve#3421: the pinned reader still applies the superseded nested-marker rule
+628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-3  carve#3406, carve-js#3285: the carve-js fix lands after the pin
+628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-4  carve#3406, carve-js#3285: the carve-js fix lands after the pin
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener  markup-carve/carve#3421: the pinned reader has not adopted the column-zero continuation rule
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-11  markup-carve/carve#3421: the pinned reader has not adopted the column-zero continuation rule
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-12  markup-carve/carve#3421: the pinned reader has not adopted the column-zero continuation rule
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-7  markup-carve/carve#3421: the pinned reader has not adopted the column-zero continuation rule
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-8  markup-carve/carve#3421: the pinned reader has not adopted the column-zero continuation rule
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-9  markup-carve/carve#3421: the pinned reader has not adopted the column-zero continuation rule
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-18  markup-carve/carve#3421: the pinned reader treats + after an indented nested opener as a continuation marker

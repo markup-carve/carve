@@ -258,9 +258,11 @@
         column, on its authored base (CARVE-P0-004). The document and a quote
         need the exact column. When the residue is a container opener (a
         quote marker; a list marker at an admissible column; a `+`
-        continuation marker at the marker column, PART 9 §17 L3/L4; a fence
-        opener whose closer-lookahead guard holds when it interrupts or would
-        consume a host closer), push the container and
+        continuation marker alone at column 0 of its quote level or first
+        after the last block opener on the same line when that opener run
+        starts at column 0 of its quote level, PART 9 §17 L3/L4; a
+        fence opener whose closer-lookahead guard holds when it
+        interrupts or would consume a host closer), push the container and
         recurse on the remaining residue.
 
         Ordinary prose reopens a paragraph anywhere among a container's

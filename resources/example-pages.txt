@@ -291,14 +291,14 @@ index: examples/edge-cases/index.md
   625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-9
   625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-10
   625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-11
-  626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank
-  626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-2
-  626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-3
-  626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-4
-  626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-5
-  626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-6
-  626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-7
-  626-a-plus-marker-below-a-nested-fence-attaches-at-every-depth-and-keeps-every-blank-8
+  626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth
+  626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-2
+  626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-3
+  626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-4
+  626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-5
+  626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-6
+  626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-7
+  626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8
   627-a-refused-marker-leaves-an-open-fence-s-blank-payload
   627-a-refused-marker-leaves-an-open-fence-s-blank-payload-2
   627-a-refused-marker-leaves-an-open-fence-s-blank-payload-3
@@ -306,10 +306,10 @@ index: examples/edge-cases/index.md
   627-a-refused-marker-leaves-an-open-fence-s-blank-payload-5
   627-a-refused-marker-leaves-an-open-fence-s-blank-payload-6
   627-a-refused-marker-leaves-an-open-fence-s-blank-payload-7
-  628-a-marker-below-an-open-div-attaches-beside-the-div
-  628-a-marker-below-an-open-div-attaches-beside-the-div-2
-  628-a-marker-below-an-open-div-attaches-beside-the-div-3
-  628-a-marker-below-an-open-div-attaches-beside-the-div-4
+  628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div
+  628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-2
+  628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-3
+  628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-4
   629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one
   629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-2
   629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-3
@@ -318,6 +318,24 @@ index: examples/edge-cases/index.md
   629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-6
   629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-7
   629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-2
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-3
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-4
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-5
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-6
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-7
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-8
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-9
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-10
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-11
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-12
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-13
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-14
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-15
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-16
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-17
+  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-18
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3

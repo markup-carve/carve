@@ -451,11 +451,13 @@ Some other text
 ```
 
 **Resolution:**
-- A **lone** `+` at a container's marker column is the continuation marker: it
-  attaches one following flush-left block to that container (a list item, a
+- A **lone** `+` at column 0 or just after quote markers is the continuation marker.
+  It attaches one following flush-left block to the container at column 0 of
+  that quote level (a list item, a
   block quote, a footnote body or a definition description)
 - A `+ ... |` line (pipe structure) is a table continuation
-- Any other `+ x` line is ordinary paragraph text; `+` never starts a list
+- An indented `+` is ordinary text or fence payload, placed by its own column.
+  A `+ x` line is ordinary paragraph text; `+` never starts a list
 
 ---
 

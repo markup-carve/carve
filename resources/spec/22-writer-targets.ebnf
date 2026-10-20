@@ -386,13 +386,18 @@
        property of the emitted BLOCK SEQUENCE, not only of each child in
        isolation. If two adjacent children written at the item's content
        column would re-parse as one block, the writer emits each child from the
-       first such child onward at the marker column, preceded by its own `+`.
+       first such child onward at the marker column, preceded by its own `+`
+       for a top-level item. The writer never emits an indented `+`. In a
+       nested tight item, it writes the block at the item's content column
+       with a blank line before it; L2 keeps the item tight. If a paragraph
+       after a block child would fold lazily or loosen the item, the writer
+       writes the item loose and reports a writer loss.
 
        This includes adjacent block quotes, tables, line blocks, definition
        lists, and lists whose marker kind is compatible. A single block opener
        that cannot fold into the paragraph above it remains canonically
-       indented at the content column. A blank line is not the fallback: it
-       would make a tight item loose and change its rendered structure.
+       indented at the content column. In a nested item, the blank line is
+       the compact-list separator specified by L2.
 
 
   10d. MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET -- NORMATIVE [CARVE-P11-031].

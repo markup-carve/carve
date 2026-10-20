@@ -6,7 +6,7 @@ import {renderDoc} from '../scripts/spec/html.mjs'
 
 const shapes = JSON.parse(readFileSync(new URL('./fixtures/plus-below-nested-fence-shapes.json', import.meta.url), 'utf8'))
 
-test('a plus below a nested fence follows the item marker at every depth', () => {
+test('only a column-zero plus below a nested fence attaches', () => {
   assert.equal(Object.keys(shapes).length, 252)
   for (const [name, {source, html}] of Object.entries(shapes)) {
     assert.equal(renderDoc(parse(source)).trim(), html, name)

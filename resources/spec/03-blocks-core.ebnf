@@ -326,7 +326,8 @@ blockquote = blockquote_line, {blockquote_line | lazy_continuation_line | contin
 (* marked and lazy lines may interleave: `> a` / lazy / `> b` is ONE quote.
    A `+` continuation_marker_block attaches a flush-left block to the quote -- see
    the CONTINUATION MARKER note below and PART 9 §17. *)
-blockquote_line = '>', (newline | (space, inline_content, newline)) ;
+blockquote_line = quote_continuation_line | ('>', (newline | (space, inline_content, newline))) ;
+quote_continuation_line = '>', { [space], '>' }, [space], continuation_marker ;
 
 (* LAZY CONTINUATION -- NORMATIVE [CARVE-P2-008] (CommonMark-compatible). After one or more
    blockquote_lines, a line that does NOT carry the '>' marker still continues
@@ -490,15 +491,16 @@ indent = whitespace, {whitespace} ;
    into the same nested list, and a post-blank block indented to that column is
    ABSORBED into the open nested item as a lazy continuation. This matches
    reference djot.js (`@djot/djot`) and CommonMark. *)
-(* Continuation marker (Carve addition; see PART 9 §17): a lone `+` at the
-   current container's marker column attaches the following flush-left block to
-   that container -- a list item OR a block quote -- with no blank line, marker
-   prefix, or indentation, keeping the container tight. *)
-continuation_marker = '+', newline ;
+(* Continuation marker (Carve addition; see PART 9 §17): a `+` alone at
+   column 0 of its quote level, or first after the last block opener on the
+   same line when that opener run starts at column 0 of its quote level,
+   attaches the following column-0 block to that container. A
+   later marker belongs to the container at column 0 of its quote level. *)
+continuation_marker = '+', {whitespace}, newline ;
 continuation_marker_block = continuation_marker, block ;
 (* First-block form (Carve addition; see PART 9 §17 L4): a lone `+` as the
-   sole content right after a container's opener (`- +`, `: +`, `> +`,
-   `[^a]: +`) opens a body that is the ONE flush-left block that follows, with
+   sole content right after a container's last opener (`- +`, `1. +`, `: +`,
+   `> +`, `[^a]: +`, `- - +`) opens a body that is the ONE flush-left block that follows, with
    no inline lead and no indentation. `- + text` keeps `+ text` as literal
    inline content -- only a bare `+` triggers this. With no flush-left block
    after it, `> +` and `[^a]: +` keep the `+` as text. *)

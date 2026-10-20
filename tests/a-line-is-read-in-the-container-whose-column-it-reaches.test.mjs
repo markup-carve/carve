@@ -46,9 +46,9 @@ const cases = [
     "<dl>\n<dt>t</dt>\n<dd>para\n^ cap</dd>\n</dl>"
   ],
   [
-    "a refused continuation marker attaches nothing, and a quote past the item column then opens in the item",
+    "an indented plus stays in the description, and a quote past the item column then opens in the item",
     "- :: term\n  : body\n  +\n  before\n   > nested\n",
-    "<ul>\n<li>\n<dl>\n<dt>term</dt>\n<dd>body</dd>\n</dl>\nbefore\n<blockquote><p>nested</p></blockquote>\n</li>\n</ul>"
+    "<ul>\n<li>\n<dl>\n<dt>term</dt>\n<dd>body\n+\nbefore</dd>\n</dl>\n<blockquote><p>nested</p></blockquote>\n</li>\n</ul>"
   ],
   [
     "a table row below a description body's column folds into its paragraph",

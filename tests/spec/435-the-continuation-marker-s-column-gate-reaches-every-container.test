@@ -224,7 +224,8 @@ ZZZ</p></blockquote>
 .
 <ul>
   <li>x
-    <blockquote><p>q</p></blockquote>
+    <blockquote><p>q
++</p></blockquote>
   </li>
 </ul>
 ```

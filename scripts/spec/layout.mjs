@@ -133,7 +133,13 @@ const HEADING = /^(#{1,6}) +(?=.*[^ \t\n\r\f])(.*)$/
 const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
 const FENCE = /^(`{3,}|~{3,})(.*)$/
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/
-const QUOTE = /^>(?: (.*)|[ \t]*$)/
+const QUOTE_LINE = /^>(?: (.*)|[ \t]*$)/
+const QUOTE = {
+  exec(line) {
+    return QUOTE_LINE.exec(line) ?? (/^>(?:> ?)*\+[ \t]*$/.test(line) ? [line, line.slice(1)] : null)
+  },
+  test(line) { return this.exec(line) !== null },
+}
 // `reference_label = (character - ']' - '@'), {character - ']'}` - only those
 // two are excluded, and only `@` only at the first position. `^` was excluded
 // here too, so `[^]: %` matched nothing and fell through as a paragraph, where
@@ -2740,6 +2746,18 @@ function normalizeSource(src) {
   return src
 }
 
+function restoreOrdinaryPlus(value, sentinel) {
+  if (typeof value === 'string') return value.replaceAll(sentinel, '+')
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) value[i] = restoreOrdinaryPlus(value[i], sentinel)
+  } else if (value instanceof Map) {
+    for (const [key, entry] of value) value.set(key, restoreOrdinaryPlus(entry, sentinel))
+  } else if (value && typeof value === 'object' && !(value instanceof WeakMap) && !(value instanceof WeakSet)) {
+    for (const key of Object.keys(value)) value[key] = restoreOrdinaryPlus(value[key], sentinel)
+  }
+  return value
+}
+
 /*
  * `stateSink` is an OBSERVABILITY parameter and nothing else: the collector's
  * cross-container channel (`state`) is internal, so a lifecycle published onto
@@ -2748,7 +2766,17 @@ function normalizeSource(src) {
  */
 export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) {
   src = normalizeSource(src)
-  const lines = src.split('\n')
+  // A private character keeps indented plus lines ordinary through recursive dedents.
+  let hasOrdinaryPlus = false
+  let sentinel = '\uE100'
+  while (src.includes(sentinel)) sentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
+  const lines = src.split('\n').map(line => {
+    if (/^[ \t]+\+[ \t]*$/.test(line) || /^[ \t]+(?:> ?)+\+[ \t]*$/.test(line) || /^(?:> ?)+ {2,}\+[ \t]*$/.test(line)) {
+      hasOrdinaryPlus = true
+      return line.replace(/\+(?=[ \t]*$)/, sentinel)
+    }
+    return line
+  })
   if (lines[lines.length - 1] === '') lines.pop()
   const state = {
     linkDefs: new Map(),
@@ -2816,6 +2844,13 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
     }
   }
   const blocks = parseBlocks(lines, state, true)
+  if (hasOrdinaryPlus) {
+    restoreOrdinaryPlus(blocks, sentinel)
+    restoreOrdinaryPlus(state.linkDefs, sentinel)
+    restoreOrdinaryPlus(state.footnoteDefs, sentinel)
+    restoreOrdinaryPlus(state.abbrDefs, sentinel)
+    if (stateSink) restoreOrdinaryPlus(state.descendantQ1Log, sentinel)
+  }
   // blockDepth is transient recursion bookkeeping (see parseBlocks); it must
   // not leak into the parse-result contract { blocks, linkDefs, footnoteDefs,
   // abbrDefs }. It is back to 0 here, so drop it before spreading state.
