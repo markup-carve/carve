@@ -164,8 +164,98 @@
     },
     {
       "name": "after-blank",
-      "description": "A marker after a blank does not fold into a paragraph.",
+      "description": "A marker below the content column after a blank starts a separate list and is reported.",
       "source": "10. c\n\n   - d\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 4,
+            "includes": [
+              "content column 4",
+              "after a blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "after-blank-same-kind",
+      "description": "A bullet one column in after a blank leaves the item's list.",
+      "source": "- a\n\n - b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 2,
+            "includes": [
+              "content column 2",
+              "after a blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "after-blank-second-item",
+      "description": "Only the first marker of the detached list is reported.",
+      "source": "10. c\n\n   - d\n   - e\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 4,
+            "includes": [
+              "content column 4"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "after-blank-past-a-nested-item",
+      "description": "The item the marker is below supplies the content column, past a nested item it has left.",
+      "source": "- a\n  - b\n\n - c\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 4,
+            "column": 2,
+            "includes": [
+              "content column 2"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "after-blank-at-content-column",
+      "description": "A marker at the content column after a blank nests and is not reported.",
+      "source": "10. c\n\n    - d\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "after-blank-at-marker-column",
+      "description": "A marker at the item's marker column after a blank is a sibling.",
+      "source": "- a\n\n- b\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "after-blank-paragraph-between",
+      "description": "A paragraph between the item and the marker ends the item's reach.",
+      "source": "10. c\n\npara\n\n   - d\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "after-blank-continuing-number",
+      "description": "Numbering that continues is ordered-list-split-by-indent's finding, not this rule's.",
+      "source": "1. a\n\n 2. b\n",
       "expected": {
         "findings": []
       }

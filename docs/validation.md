@@ -172,7 +172,7 @@ the command-line and editor behavior stay aligned.
 | `block-marker-as-text` | a line that opens like a block (`:::`, `{#`, `{.`) but parsed as plain text |
 | `fence-delimiter-indentation` | a fenced-code delimiter whose authored column is noncanonical; top-level fences require column 0, while a fence inside a container may start at or beyond that container's minimum content column and uses that authored column as the base of the complete fenced block. `fmt` moves a structural fence back to the minimum column |
 | `list-item-body-detached` | a block-shaped line indented past the item's marker column but below its exact content column; after a blank it has left the item, so the diagnostic offers the two explicit intentions: indent to the content column to make it structural, or escape the opener to preserve literal text |
-| `list-marker-below-content-column` | a list marker on a paragraph continuation line inside a list item, past the item's marker column but below its content column, renders as text; indent it to the content column to nest it or move it to the marker column for a sibling |
+| `list-marker-below-content-column` | a list marker past a list item's marker column but below its content column: on a paragraph continuation line it renders as text, and after a blank line it starts a separate list; indent it to the content column to nest it or move it to the marker column for a sibling |
 | `ordered-list-split-by-indent` | consecutive ordered lists continue the same numbering style and sequence, but their first markers start in different columns, so they render as two lists |
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column. Reported once per block, on its first line; continuing table rows and quote lines do not open another block. An aligned opener stays unreported when a continuation is overindented, including when the block opens on the item's marker line. The finding also covers the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
 | `continuation-marker-refused` | a `+` continuation marker in a list item or a definition description, including the first-block form `- +`, followed by a blank line or by the end of the input. PART 9 §17 L4 refuses the marker and ends the body, so the block the author meant to attach is not attached and nothing is malformed; see [refused continuation markers](#refused-continuation-markers) |
@@ -350,10 +350,10 @@ The shared vectors are in
 
 ### List markers below the content column
 
-`list-marker-below-content-column` reports a marker-shaped paragraph
-continuation line inside a list item when its first marker character is past
-the item's marker column but below its content column. The line folds into the
-paragraph as text. Carve keeps the strict column model: sibling markers are
+`list-marker-below-content-column` reports a marker-shaped line when its first
+marker character is past a list item's marker column but below its content
+column. Without a blank line it folds into the item's paragraph as text. After a
+blank line it has left the item and starts a separate list. Carve keeps the strict column model: sibling markers are
 not aligned by their delimiter (markup-carve/carve#3439).
 
 ```carve
@@ -369,14 +369,36 @@ marker column 0 to begin a sibling item. The lint does not rewrite the source.
 doc.crv:2:4 list-marker-below-content-column — This list marker starts at column 3, below the list item's content column 4, so it folds into the item's paragraph as text. Indent it to column 4 to nest it under the item, or start it at column 0 to begin a new item at the item's own level.
 ```
 
+The same indentation after a blank line is the loose-item spelling of a child
+list, and it fails the same way:
+
+```carve
+10. c
+
+   - d
+```
+
+This renders an ordered list and then a separate bullet list. The finding sits
+on the `-`, and its message says the marker is after a blank line:
+
+```txt
+doc.crv:3:4 list-marker-below-content-column — This list marker starts at column 3 after a blank line, below the content column 4 of the list item above, so it starts a separate list instead of nesting. Indent it to column 4 to nest it under the item, or start it at column 0 to put it at the item's own level.
+```
+
+Only the first marker of the detached list is reported, and only when nothing
+but blank lines separates it from the item. When the line is an ordered marker
+that continues the list above, `ordered-list-split-by-indent` reports it and
+this rule does not.
+
 Not reported:
 
 - escaped markers, markers without a following space or tab, and lines outside
   a list item;
 - a marker at or past the content column, or at or left of the
   item's marker column;
-- a marker after a blank line or inside code, raw, comment, line-block or
-  other payload.
+- a marker inside code, raw, comment, line-block or other payload;
+- a marker after a blank line when a paragraph or other block sits between it
+  and the item, or when it is the second marker of a list already reported.
 
 The canonical auto-numbered `.` marker avoids this column trap when an
 explicit number would widen the marker. The shared vectors are in
