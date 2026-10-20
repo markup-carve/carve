@@ -60,6 +60,8 @@ const tokenField = StateField.define<DecorationSet>({
 })
 
 const markCache = new Map<string, Decoration>()
+const diffAddMark = Decoration.mark({ class: 'cm-carve-diff-add' })
+const diffRemoveMark = Decoration.mark({ class: 'cm-carve-diff-remove' })
 function markFor(style: string): Decoration {
   let m = markCache.get(style)
   if (!m) {
@@ -75,6 +77,51 @@ function styleString(s: string | Record<string, string> | undefined): string {
   return Object.entries(s)
     .map(([k, v]) => `${k}:${v}`)
     .join(';')
+}
+
+function diffMarkerRanges(text: string, doc: EditorState['doc']): Array<{ from: number; to: number; mark: Decoration }> {
+  if (!/\bdiff\b/i.test(text)) return []
+  const ranges: Array<{ from: number; to: number; mark: Decoration }> = []
+  const visit = (value: unknown): void => {
+    if (value === null || typeof value !== 'object') return
+    if (Array.isArray(value)) {
+      value.forEach(visit)
+      return
+    }
+    const node = value as {
+      type?: string
+      lang?: string
+      attrs?: { classes?: string[] }
+      content?: string
+      pos?: { startLine?: number; endLine?: number }
+    }
+    if (node.type === 'code_block' && (node.lang?.toLowerCase() === 'diff' || node.attrs?.classes?.includes('diff'))
+      && node.pos?.startLine && node.content) {
+      node.content.split('\n').forEach((contentLine, index) => {
+        const marker = contentLine[0]
+        if (marker !== '+' && marker !== '-') return
+        const lineNumber = node.pos!.startLine! + index + 1
+        if (lineNumber > doc.lines) return
+        if (node.pos?.endLine && lineNumber >= node.pos.endLine && node.pos.endLine <= doc.lines
+          && /^[ \t>]*(?:`{3,}|~{3,})[ \t]*$/.test(doc.line(node.pos.endLine).text)) return
+        const sourceLine = doc.line(lineNumber)
+        if (!sourceLine.text.endsWith(contentLine)) return
+        const column = sourceLine.text.length - contentLine.length
+        const from = sourceLine.from + column
+        ranges.push({ from, to: from + 1, mark: marker === '+' ? diffAddMark : diffRemoveMark })
+      })
+      return
+    }
+    for (const [key, child] of Object.entries(node)) {
+      if (key !== 'pos' && key !== 'attrs') visit(child)
+    }
+  }
+  try {
+    visit(parse(text, { positions: true }))
+  } catch {
+    return []
+  }
+  return ranges
 }
 
 let highlightTimer: ReturnType<typeof setTimeout> | undefined
@@ -101,14 +148,21 @@ async function highlight(): Promise<void> {
   } catch {
     return
   }
-  const builder = new RangeSetBuilder<Decoration>()
+  const ranges: Array<{ from: number; to: number; mark: Decoration }> = []
   for (const line of lines) {
     for (const t of line) {
       if (!t.content.length) continue
       const style = styleString(t.htmlStyle)
-      if (style) builder.add(t.offset, t.offset + t.content.length, markFor(style))
+      if (style) ranges.push({ from: t.offset, to: t.offset + t.content.length, mark: markFor(style) })
     }
   }
+  const diffRanges = diffMarkerRanges(text, v.state.doc)
+  if (diffRanges.length) {
+    ranges.push(...diffRanges)
+    ranges.sort((a, b) => a.from - b.from || b.to - a.to)
+  }
+  const builder = new RangeSetBuilder<Decoration>()
+  for (const range of ranges) builder.add(range.from, range.to, range.mark)
   view.value.dispatch({ effects: setTokens.of(builder.finish()) })
 }
 
@@ -456,5 +510,21 @@ defineExpose({
   color: var(--shiki-dark) !important;
   font-style: var(--shiki-dark-font-style, inherit) !important;
   font-weight: var(--shiki-dark-font-weight, inherit) !important;
+}
+.carve-editor .cm-carve-diff-add {
+  color: #22863a;
+  background-color: rgba(46, 160, 67, 0.16);
+  font-weight: 700;
+}
+.carve-editor .cm-carve-diff-remove {
+  color: #b31d28;
+  background-color: rgba(248, 81, 73, 0.16);
+  font-weight: 700;
+}
+.dark .carve-editor .cm-carve-diff-add {
+  color: #85e89d;
+}
+.dark .carve-editor .cm-carve-diff-remove {
+  color: #fdaeb7;
 }
 </style>
