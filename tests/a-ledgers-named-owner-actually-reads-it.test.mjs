@@ -7,7 +7,7 @@
  * and its two siblings, under `npm test` against the PIN. That is not a cosmetic
  * slip. A ruling on carve#2588 read the field, concluded a red cross-engine
  * formatter shard could be declared in that file, and nothing would have read the
- * declaration - `compare:impls --roundtrip` consults no ledger by design, so the
+ * declaration - `compare:impls --roundtrip` does not read that file, so the
  * shard would have stayed red with a line in place saying it was accounted for.
  *
  * So the field is checked here the only way it can be: resolve the owner to an

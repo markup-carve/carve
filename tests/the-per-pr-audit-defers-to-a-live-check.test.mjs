@@ -197,6 +197,20 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
     assert.equal(perPrPolicy(e), 'declared', `${path} must require a declared window per PR`)
     assert.equal(e.policy, 'owed', `${path} must remain owed for release`)
   }
+
+  // Accepted cross-engine fmt layout differences (carve-js#3310) may stand at
+  // a release, so `owed` cannot hold them; `declared` in both modes is the
+  // strictest policy that can. Not `permitted`: a row without a reason fails.
+  const layout = MANIFEST.find((x) => x.repo === 'spec' && x.path === 'resources/engine-fmt-layout.txt')
+  assert.ok(layout, 'resources/engine-fmt-layout.txt left the manifest')
+  assert.equal(layout.policy, 'declared')
+  assert.equal(perPrPolicy(layout), 'declared')
+  assert.equal(layout.guard, 'two-way')
+  assert.match(
+    readFileSync(join(repo, 'scripts/compare-impls.mjs'), 'utf8'),
+    /staleFmtLayout\(/,
+    'compare:impls no longer fails a stale fmt layout line, so a declaration could outlive the fix',
+  )
 })
 
 test('a declared window is declared, and a row that declares nothing is not', () => {

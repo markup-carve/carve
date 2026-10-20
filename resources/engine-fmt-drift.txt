@@ -13,8 +13,8 @@
 # THE SUBJECT IS THE PIN, NOT THE THREE CHECKOUTS. Both readers above run
 # against the build package.json pins. The cross-engine writer gate -
 # `compare:impls --roundtrip`, the formatter shards of ast-conformance.yml -
-# consults no ledger, so a red shard cannot be declared here and clears only
-# when the engine does (carve#2588).
+# never reads this file, so a red shard cannot be declared here (carve#2588).
+# Its only ledger is engine-fmt-layout.txt, for accepted layout differences.
 #
 # Delete a line the moment the pin moves past its fix - the header of
 # engine-pin-drift.txt says the same thing for the same reason.

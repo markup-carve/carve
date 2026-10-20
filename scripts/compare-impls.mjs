@@ -13,7 +13,13 @@ import {
 } from './lib/corpus-targets.mjs'
 import { parseShard, selectShard } from './lib/shard.mjs'
 import { runFast } from './lib/engine-fast-path.mjs'
-import { parseConverterLedger, unusedConverterDeclaration } from './lib/drift-ledger.mjs'
+import {
+  judgeFmtLayout,
+  parseConverterLedger,
+  parseFmtLayoutLedger,
+  staleFmtLayout,
+  unusedConverterDeclaration,
+} from './lib/drift-ledger.mjs'
 import { phpDir, rustBinary, rustDir } from './lib/engine-locations.mjs'
 import { comparisonGateHasFailures } from './lib/comparison-gate.mjs'
 import { comparisonRevisions, printComparisonRevisions } from './lib/comparison-revisions.mjs'
@@ -1277,6 +1283,19 @@ async function runConvertMode() {
 }
 
 const pairs = loadPairs()
+
+/*
+ * Accepted engine-vs-engine `fmt` LAYOUT differences (carve-js#3310). Consulted
+ * on the `carve` target only, and only to excuse a byte difference there: the
+ * round-trip HTML, the PART 11 §1 invariants and the cross-read never read it.
+ * A line whose two engines now write the same bytes fails the gate.
+ */
+const fmtLayoutPath = process.env.CARVE_FMT_LAYOUT_LEDGER ?? join(root, 'resources/engine-fmt-layout.txt')
+const fmtLayout = corpusName === 'core'
+  ? parseFmtLayoutLedger(fmtLayoutPath)
+  : { entries: new Map(), failures: [] }
+const fmtLayoutOutputs = new Map()
+let declaredFmtLayout = 0
 const offeredCases = availableCaseCount()
 const selectedCases = Number.isFinite(limit) ? Math.min(limit, offeredCases) : offeredCases
 const expectedShardCases = selectedCases <= shardIndex
@@ -1540,6 +1559,9 @@ for (const pair of pairs) {
       outputs.push([impl.name, result.stdout])
     }
 
+    if (target === 'carve') {
+      fmtLayoutOutputs.set(pair.slug, new Map(outputs))
+    }
     if (outputs.length < 2) continue
     targetStats[target].compared++
 
@@ -1552,6 +1574,13 @@ for (const pair of pairs) {
     // real divergences.
 
     const unique = new Set(outputs.map(([, out]) => out))
+    if (unique.size > 1 && target === 'carve' && judgeFmtLayout(pair.slug, outputs, fmtLayout.entries).excused) {
+      declaredFmtLayout++
+      console.log(
+        `DECLARED [carve] ${pair.slug} (${pair.feature}): ${agreementPartition(outputs)} - fmt layout, ${basename(fmtLayoutPath)}`,
+      )
+      continue
+    }
     if (unique.size > 1) {
       targetStats[target].diffs++
       // Every target counts. Counting html alone let a Markdown or ANSI
@@ -1702,6 +1731,22 @@ for (const impl of active) {
   console.log(`  mismatching documents: ${new Set(s.mismatched.map((m) => m.split(' ').pop())).size}`)
 }
 console.log(`cross_impl_diffs=${crossImplDiffs}`)
+// Rows no longer diverging fail below. A narrowed corpus cannot say a slug is
+// missing from it, so the existence half needs the default corpus directory.
+const fmtLayoutStale = [
+  ...fmtLayout.failures,
+  ...staleFmtLayout(
+    fmtLayout.entries,
+    fmtLayoutOutputs,
+    corpusName === 'core' && !corpusOverride
+      ? new Set(readdirSync(corpusDir).filter((f) => f.endsWith('.crv')).map((f) => basename(f, '.crv')))
+      : null,
+  ),
+]
+if (fmtLayout.entries.size > 0 || fmtLayoutStale.length > 0) {
+  console.log(`fmt_layout_declared=${declaredFmtLayout} fmt_layout_stale=${fmtLayoutStale.length}`)
+  for (const line of fmtLayoutStale) console.log(`  STALE fmt layout ${line}`)
+}
 if (roundtrip) {
   // Reported apart from the target-agreement block above: the first line is a
   // cross-engine disagreement, the other two are each engine failing its own
@@ -1907,6 +1952,8 @@ if (reportPath) {
         crossReadFailures,
         staleUnreachable,
         undocumentedUnreachable: undocumentedUnreachable.map((u) => u.feature),
+        declaredFmtLayout,
+        staleFmtLayout: fmtLayoutStale,
       },
       null,
       2,
@@ -1955,6 +2002,13 @@ if (failOnDiff) {
     console.error(
       'Delete them. An exemption that exempts nothing is indistinguishable from one that works.',
     )
+    process.exit(1)
+  }
+  if (fmtLayoutStale.length > 0) {
+    console.error(
+      `\n${fmtLayoutStale.length} ${basename(fmtLayoutPath)} line(s) excuse nothing any more - see the STALE fmt layout lines above.`,
+    )
+    console.error('A declared layout difference cannot outlive the fix: delete the line in the commit that proves it.')
     process.exit(1)
   }
   if (undocumentedUnreachable.length > 0) {

@@ -107,9 +107,14 @@ CI green:
    `resources/engine-fmt-drift.txt` is not one of these. It is read by
    `tests/corpus-fmt-roundtrip.test.mjs` and its two siblings under `npm test`, so
    its precondition is the PIN like `engine-pin-drift.txt`'s. The cross-engine
-   writer gate, `compare:impls --roundtrip`, consults no ledger at all: a red
-   formatter shard cannot be declared anywhere and clears only when the engine
-   does (carve#2588).
+   writer gate, `compare:impls --roundtrip`, reads one ledger:
+   `resources/engine-fmt-layout.txt`, the accepted engine-vs-engine `fmt` layout
+   differences (carve-js#3310). A line there excuses only the `carve`-target
+   byte difference for one row and engine pair; the round-trip HTML, the PART 11
+   §1 invariants and the cross-read stay strict, and a line whose engines write
+   the same bytes again fails the run. Rows are measured at
+   `resources/engine-pins.json` and may stand at a release. Any other red
+   formatter shard clears only when the engine does (carve#2588).
 
    `ast:check` also compares carve-rb, from a fourth checkout, `../carve-rb`.
    That comparison declares nothing and needs nothing at a release: it fetches

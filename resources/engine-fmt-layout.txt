@@ -1,0 +1,32 @@
+# Accepted engine-vs-engine `fmt` LAYOUT differences.
+#
+# A line here means two engines write the same corpus row to different Carve
+# bytes, and both writers meet PART 11 section 1: parse(fmt(x)) equals parse(x),
+# fmt is idempotent, and the HTML does not change. No clause fixes the layout
+# yet, so neither engine owes the other.
+#
+# Read by `compare:impls` (the formatter shards of ast-conformance.yml) on the
+# `carve` target only, and only to excuse that byte difference. The round-trip
+# HTML comparison, the PART 11 section 1 invariants and the cross-read stay
+# strict for every row listed here. A DIFF [carve] is excused only when every
+# pair of engines that disagrees on the row is listed.
+#
+# STALE LINES FAIL. When the two engines write the same bytes again, or the
+# row leaves the corpus, the run fails until the line is deleted, so a
+# declaration cannot outlive the fix.
+#
+# Measured at resources/engine-pins.json; a pin bump that changes the set
+# updates this file in the same pull request.
+#
+# Format: <a>|<b>/<slug><two or more spaces><reason naming owner/repo#N>
+# Engines are js, php, rust, written in that order.
+
+js|php/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-3  Where the closer and blank line go for a fence that dedents out of a nested child; both writers meet PART 11 section 1 and no clause fixes the layout yet (markup-carve/carve-js#3310).
+js|rust/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-3  Where the closer and blank line go for a fence that dedents out of a nested child; both writers meet PART 11 section 1 and no clause fixes the layout yet (markup-carve/carve-js#3310).
+js|php/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-13  Where the closer and blank line go for a fence that dedents out of a nested child; both writers meet PART 11 section 1 and no clause fixes the layout yet (markup-carve/carve-js#3310).
+js|php/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-5  Where the closer and blank line go for a fence that dedents out of a nested child; both writers meet PART 11 section 1 and no clause fixes the layout yet (markup-carve/carve-js#3310).
+js|php/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-6  Where the closer and blank line go for a fence that dedents out of a nested child; both writers meet PART 11 section 1 and no clause fixes the layout yet (markup-carve/carve-js#3310).
+js|php/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-7  Where the closer and blank line go for a fence that dedents out of a nested child; both writers meet PART 11 section 1 and no clause fixes the layout yet (markup-carve/carve-js#3310).
+js|php/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-8  Where the closer and blank line go for a fence that dedents out of a nested child; both writers meet PART 11 section 1 and no clause fixes the layout yet (markup-carve/carve-js#3310).
+js|php/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-9  Where the closer and blank line go for a fence that dedents out of a nested child; both writers meet PART 11 section 1 and no clause fixes the layout yet (markup-carve/carve-js#3310).
+js|php/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight  Where the closer and blank line go for a fence that dedents out of a nested child; both writers meet PART 11 section 1 and no clause fixes the layout yet (markup-carve/carve-js#3310).

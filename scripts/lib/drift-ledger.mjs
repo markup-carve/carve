@@ -352,3 +352,108 @@ export function unusedConverterDeclaration(key, run) {
   }
   return `converter-drift.txt declares ${key} and the engine now matches - delete the STALE line in the commit that fixed it.`
 }
+
+/** The engine names `compare:impls` uses, in the order a ledger key spells them. */
+export const FMT_LAYOUT_ENGINES = ['js', 'php', 'rust']
+
+const FULL_REFERENCE = /[\w.-]+\/[\w.-]+#\d+/
+
+/**
+ * `resources/engine-fmt-layout.txt`: `<a>|<b>/<slug>  <reason>`, one line per
+ * corpus row and engine pair whose `fmt` bytes are an accepted layout
+ * difference. Engines are named in FMT_LAYOUT_ENGINES order, so one pair has
+ * one spelling, and the reason must cite a fully qualified `owner/repo#N`.
+ *
+ * Failures are collected, as `parseConverterLedger` does, because the caller
+ * is a run that takes minutes.
+ *
+ * @param {string} path
+ * @returns {{ entries: Map<string, { engines: [string, string], slug: string, reason: string }>, failures: Array<string> }}
+ */
+export function parseFmtLayoutLedger(path) {
+  const name = basename(path)
+  const entries = new Map()
+  const failures = []
+  const lines = readFileSync(path, 'utf8').split('\n')
+  for (const [index, line] of lines.entries()) {
+    if (line.trim() === '' || line.startsWith('#')) continue
+    const at = `${name} line ${index + 1}`
+    const parsed = /^(\w+)\|(\w+)\/(\S+) {2,}(.+)$/.exec(line)
+    if (!parsed) {
+      failures.push(`${at} unparseable: ${JSON.stringify(line)} (format: a|b/slug  reason)`)
+      continue
+    }
+    const [, a, b, slug, reason] = parsed
+    const ia = FMT_LAYOUT_ENGINES.indexOf(a)
+    const ib = FMT_LAYOUT_ENGINES.indexOf(b)
+    if (ia === -1 || ib === -1 || ia >= ib) {
+      failures.push(`${at}: engine pair ${a}|${b} must be two of ${FMT_LAYOUT_ENGINES.join(', ')}, in that order`)
+      continue
+    }
+    if (!FULL_REFERENCE.test(reason)) {
+      failures.push(`${at}: the reason must cite a fully qualified owner/repo#N ticket`)
+      continue
+    }
+    const key = `${a}|${b}/${slug}`
+    if (entries.has(key)) {
+      failures.push(`${at}: duplicate entry ${key}; one of the two reasons is being thrown away, keep the true one.`)
+      continue
+    }
+    entries.set(key, { engines: [a, b], slug, reason })
+  }
+  return { entries, failures }
+}
+
+/**
+ * Whether a `carve`-target disagreement is wholly declared: every pair of
+ * engines that wrote different bytes has a ledger line. An errored engine is
+ * never excused, because an error is not a layout.
+ *
+ * @param {string} slug
+ * @param {Array<[string, string]>} outputs `[engine, stdout]`, errors spelled `ERROR:...`.
+ * @param {Map<string, unknown>} entries
+ * @returns {{ excused: boolean, undeclared: Array<string> }}
+ */
+export function judgeFmtLayout(slug, outputs, entries) {
+  if (outputs.some(([, out]) => out.startsWith('ERROR:'))) return { excused: false, undeclared: [] }
+  const undeclared = []
+  for (let i = 0; i < outputs.length; i++) {
+    for (let j = i + 1; j < outputs.length; j++) {
+      if (outputs[i][1] === outputs[j][1]) continue
+      const [a, b] = [outputs[i][0], outputs[j][0]].sort(
+        (x, y) => FMT_LAYOUT_ENGINES.indexOf(x) - FMT_LAYOUT_ENGINES.indexOf(y),
+      )
+      const key = `${a}|${b}/${slug}`
+      if (!entries.has(key)) undeclared.push(key)
+    }
+  }
+  return { excused: undeclared.length === 0, undeclared }
+}
+
+/**
+ * The declared lines that no longer describe a difference. A line is stale when
+ * its two engines both wrote the row this run and wrote the same bytes, or when
+ * the corpus has no such row. A row this run did not reach, or an engine that
+ * errored or did not run, says nothing either way.
+ *
+ * @param {Map<string, { engines: [string, string], slug: string }>} entries
+ * @param {Map<string, Map<string, string>>} carveOutputs slug to engine to stdout, this run's.
+ * @param {Set<string> | null} corpusSlugs every row of the corpus, or null when unknown.
+ * @returns {Array<string>}
+ */
+export function staleFmtLayout(entries, carveOutputs, corpusSlugs) {
+  const stale = []
+  for (const [key, { engines: [a, b], slug }] of entries) {
+    if (corpusSlugs && !corpusSlugs.has(slug)) {
+      stale.push(`${key}: the corpus has no row ${slug}, so the line excuses nothing. Repoint it or delete it.`)
+      continue
+    }
+    const seen = carveOutputs.get(slug)
+    const outA = seen?.get(a)
+    const outB = seen?.get(b)
+    if (outA === undefined || outB === undefined) continue
+    if (outA.startsWith('ERROR:') || outB.startsWith('ERROR:')) continue
+    if (outA === outB) stale.push(`${key}: ${a} and ${b} now write the same bytes - delete the STALE line.`)
+  }
+  return stale
+}
