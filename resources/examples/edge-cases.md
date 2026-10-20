@@ -5964,14 +5964,13 @@ Mentions and tags are inert stable spans that do not take attributes (they share
 
 ## Under-indented definition attaches, over-indented definition folds
 
-The accepted wider-separator spelling `:  def` is still a definition-list entry
-(PART 9 §24 C3): it attaches as a fresh `<dd>` to its open `:: term` when its
-column is at or below the term's, even under the item's content column. Only a
-definition line indented *above* the term folds into the term text as a lazy
-continuation. The canonical spelling is `: def`; this case deliberately keeps
-the wider separator while testing the marker's authored column.
+The accepted wider-separator spelling `:  def` attaches to `:: term` at the
+definition list's column. Below that column, the surviving host classifies it.
+At the item's marker column the item ends. One column in, the open item keeps
+the line as paragraph text. The canonical spelling is `: def`; these cases
+retain the wider separator to test its authored column (carve#3451).
 
-Under-indented (below the content column, still above column 0): the definition attaches.
+One column in, the line stays in the item as paragraph text.
 
 ::: compare
 
@@ -5986,17 +5985,15 @@ Under-indented (below the content column, still above column 0): the definition 
   <li>one
     <dl>
       <dt>term</dt>
-      <dd>def</dd>
     </dl>
+    :  def
   </li>
 </ul>
 ```
 
 :::
 
-At column 0, the definition still attaches: this accepted wider-separator
-marker is a lenient exception to the column-0 interrupt rule, so it does not
-end the item and orphan the definition.
+At column 0, the item ends and the separator begins a document paragraph.
 
 ::: compare
 
@@ -6011,10 +6008,10 @@ end the item and orphan the definition.
   <li>one
     <dl>
       <dt>term</dt>
-      <dd>def</dd>
     </dl>
   </li>
 </ul>
+<p>:  def</p>
 ```
 
 :::

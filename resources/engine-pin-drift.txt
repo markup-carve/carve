@@ -24,6 +24,8 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+154-under-indented-definition-attaches-over-indented-definition-folds  The separator ownership ruling is ahead of the pinned carve-js build (markup-carve/carve#3451).
+154-under-indented-definition-attaches-over-indented-definition-folds-2  The separator ownership ruling is ahead of the pinned carve-js build (markup-carve/carve#3451).
 327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-5  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
 384-a-continuation-marker-attaches-only-a-flush-left-block-6  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
 384-a-continuation-marker-attaches-only-a-flush-left-block-7  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
