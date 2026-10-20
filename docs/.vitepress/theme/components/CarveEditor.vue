@@ -516,15 +516,27 @@ defineExpose({
   background-color: rgba(46, 160, 67, 0.16);
   font-weight: 700;
 }
+.carve-editor .cm-carve-diff-add span[style] {
+  color: #22863a !important;
+}
 .carve-editor .cm-carve-diff-remove {
   color: #b31d28;
   background-color: rgba(248, 81, 73, 0.16);
   font-weight: 700;
 }
+.carve-editor .cm-carve-diff-remove span[style] {
+  color: #b31d28 !important;
+}
 .dark .carve-editor .cm-carve-diff-add {
   color: #85e89d;
 }
+.dark .carve-editor .cm-carve-diff-add span[style] {
+  color: #85e89d !important;
+}
 .dark .carve-editor .cm-carve-diff-remove {
   color: #fdaeb7;
+}
+.dark .carve-editor .cm-carve-diff-remove span[style] {
+  color: #fdaeb7 !important;
 }
 </style>
