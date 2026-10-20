@@ -60541,18 +60541,23 @@ x[^a]
 ::::::: compare
 
 `````carve
-- a
-	- b
+- x
+  - y
+    - a
 	+
 	> q
 `````
 
 ```html
 <ul>
-  <li>a
+  <li>x
     <ul>
-      <li>b
-        <blockquote><p>q</p></blockquote>
+      <li>y
+        <ul>
+          <li>a
+            <blockquote><p>q</p></blockquote>
+          </li>
+        </ul>
       </li>
     </ul>
   </li>

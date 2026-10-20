@@ -343,16 +343,21 @@ x[^a]
 ```
 
 ```
-- a
-	- b
+- x
+  - y
+    - a
 	+
 	> q
 .
 <ul>
-  <li>a
+  <li>x
     <ul>
-      <li>b
-        <blockquote><p>q</p></blockquote>
+      <li>y
+        <ul>
+          <li>a
+            <blockquote><p>q</p></blockquote>
+          </li>
+        </ul>
       </li>
     </ul>
   </li>
