@@ -100,10 +100,18 @@
     },
     {
       "name": "nested-item",
-      "description": "An indented plus in a nested item is ordinary text.",
+      "description": "An indented plus with a blank follower is refused.",
       "source": "- a\n  - b\n  +\n\npara\n",
       "expected": {
-        "findings": []
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
       }
     },
     {
@@ -143,7 +151,15 @@
       "description": "In a block quote the plus is not a list marker position.",
       "source": "> q\n+\n\npara\n",
       "expected": {
-        "findings": []
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
       }
     },
     {
@@ -151,7 +167,15 @@
       "description": "In a footnote body the plus is ordinary text.",
       "source": "x[^a]\n\n[^a]: note\n+\n\npara\n",
       "expected": {
-        "findings": []
+        "findings": [
+          {
+            "line": 4,
+            "column": 1,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
       }
     },
     {
@@ -159,7 +183,15 @@
       "description": "A line that is not flush-left follows the plus.",
       "source": "- a\n+\n  x\n",
       "expected": {
-        "findings": []
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
       }
     },
     {
@@ -176,6 +208,166 @@
       "source": "- ```\n  +\n\n  x\n  ```\n",
       "expected": {
         "findings": []
+      }
+    },
+    {
+      "name": "nested-left-follower",
+      "description": "The refused plus is reported at its source column.",
+      "source": "- a\n  - b\n  +\ntail\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested-no-follower",
+      "description": "The refused plus is reported at its source column.",
+      "source": "- a\n  - b\n  +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "sibling",
+      "description": "The refused plus is reported at its source column.",
+      "source": "- a\n+\n- b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested-task-sibling",
+      "description": "The refused plus is reported at its source column.",
+      "source": "- foo\n  - [ ] task\n  +\n  - x\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested-task-checkbox-column",
+      "description": "The refused plus is reported at its source column.",
+      "source": "- foo\n  - [ ] task\n    +\n  - x\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 5,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "open-fence-other-column",
+      "description": "The refused plus is reported at its source column.",
+      "source": "- a\n  - ```\n  +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "dangling-mid-body",
+      "description": "The refused plus is reported at its source column.",
+      "source": "- a\n+\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "first-block-sibling",
+      "description": "The first-block plus is refused when it cannot attach.",
+      "source": "- +\n- b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "ordered-first-block-end",
+      "description": "The first-block plus is refused when it cannot attach.",
+      "source": "1. +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 4,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "task-first-block-end",
+      "description": "The first-block plus is refused when it cannot attach.",
+      "source": "- [ ] +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 7,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
       }
     }
   ]

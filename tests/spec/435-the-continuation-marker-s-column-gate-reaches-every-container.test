@@ -26,7 +26,8 @@ see[^a]
 
 see[^a]
 .
-<p>more</p>
+<p>+
+more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
@@ -64,7 +65,8 @@ see[^a]
 
 see[^a]
 .
-<p>more</p>
+<p>+
+more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
@@ -118,9 +120,10 @@ see[^a]
 .
 <dl>
   <dt>term</dt>
-  <dd>intro</dd>
+  <dd>intro
++
+more</dd>
 </dl>
-<p>more</p>
 ```
 
 ```
@@ -165,7 +168,8 @@ more
   more
 .
 <blockquote><p>intro</p></blockquote>
-<p>more</p>
+<p>+
+more</p>
 ```
 
 ```
@@ -187,6 +191,7 @@ more
 .
 <ul>
   <li>intro
++
 more</li>
 </ul>
 ```
@@ -237,7 +242,8 @@ ZZZ</p></blockquote>
 .
 <ul>
   <li>x
-    <blockquote><p>q</p></blockquote>
+    <blockquote><p>q
++</p></blockquote>
   </li>
 </ul>
 ```

@@ -157,17 +157,18 @@ content**. A content-less `-`, `- `, or `-   ` is ordinary paragraph text.
 **Djot / CommonMark:** `+`, `-`, and `*` are all bullet markers.
 
 **Carve:** bullets are `-` and `*` only. `+` is reserved as the **continuation
-marker**: a lone `+` at column 0 of its quote level, or first after the last
-block opener on the same line when that opener run starts at column 0, attaches
-the next column-0 block. A separate marker belongs to the container at column
-0 of its quote level; a marker after stacked openers belongs to the innermost
-container opened on that line. One block attaches in either form, and a list
+marker**: a lone `+` at an open container's marker column or directly after a
+quote prefix attaches the next block at that column. A first-block `+` after
+stacked openers belongs to the innermost container opened on that line. A
+following list item at an open list item's marker column is a sibling, so the `+` is ordinary
+text and the refused-marker lint reports it (markup-carve/carve#3421). One
+block attaches in either form, and a list
 stays tight. A list item, block quote, footnote body, and definition description
 can take the marker. The quote form also accepts `>+` and runs such as `>>+`.
 
 **Why.** Freeing `+` makes a lone `+` unambiguous and gives a container a clean
 way to own a following block (a note, a quote, a code fence) without deep
-indentation. The attached block is written at column 0:
+indentation. The attached block starts at the marker's column:
 
 ```
 - step one

@@ -120,9 +120,9 @@ para</p></blockquote>
   <li>a
     <ul>
       <li>b
-+</li>
+        <blockquote><p>q</p></blockquote>
+      </li>
     </ul>
-    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
 ```
@@ -247,9 +247,8 @@ para
 <ul>
   <li>a
     <ul>
-      <li></li>
+      <li>para</li>
     </ul>
   </li>
 </ul>
-<p>para</p>
 ```

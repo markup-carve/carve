@@ -2,7 +2,7 @@
 // Renders every block-family case with the executable spec and the three
 // engines, and fails on any normalized-HTML difference.
 import { spawnSync } from 'node:child_process'
-import { writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { blockFamilyCases } from './lib/block-family-cases.mjs'
@@ -68,9 +68,15 @@ const verdict = (row) => {
   return [...groups.values()].map(g => g.join('+')).join(' | ')
 }
 const differences = rows.map(r => ({ ...r, odd: verdict(r) })).filter(r => r.odd)
+const aheadPath = resolve(here, '..', 'resources/block-family-ahead-of-pin.json')
+const ahead = JSON.parse(readFileSync(aheadPath, 'utf8'))
+const declared = differences.filter(r => ahead.some(a => a.name === r.name && a.source === r.source))
+const undeclared = differences.filter(r => !declared.includes(r))
+const stale = ahead.filter(a => !cases.some(c => c.name === a.name && c.source === a.source) ||
+  !declared.some(r => r.name === a.name && r.source === a.source))
 const byOdd = {}
 for (const d of differences) byOdd[d.odd] = (byOdd[d.odd] ?? 0) + 1
 
-if (reportPath) writeFileSync(reportPath, JSON.stringify({ total: rows.length, byOdd, differences }, null, 2) + '\n')
-console.log(JSON.stringify({ total: rows.length, differences: differences.length, byOdd }))
-process.exitCode = differences.length ? 1 : 0
+if (reportPath) writeFileSync(reportPath, JSON.stringify({ total: rows.length, byOdd, differences, declared: declared.length, undeclared: undeclared.length, stale }, null, 2) + '\n')
+console.log(JSON.stringify({ total: rows.length, differences: differences.length, declared: declared.length, undeclared: undeclared.length, stale: stale.length, byOdd }))
+process.exitCode = undeclared.length || stale.length ? 1 : 0

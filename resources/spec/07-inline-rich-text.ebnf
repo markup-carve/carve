@@ -207,7 +207,7 @@ footnote_definition = "[^", footnote_label, "]:", space+, inline_content, newlin
 footnote_continuation = (footnote_indent, inline_content, newline) | blank_line ;
 footnote_indent = whitespace, {whitespace} ;
 (* the body extends to following lines indented by >= 2 spaces -- PART 9 §16.
-   A lone `+` also attaches a flush-left block (`continuation_marker_block`,
+   A lone `+` at the definition's marker column also attaches a block there (`continuation_marker_block`,
    PART 9 §17), the same continuation marker lists, block quotes and definition
    bodies use.
 

@@ -1,0 +1,46 @@
+{
+  "nested-item": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  },
+  "block-quote": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  },
+  "footnote-body": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  },
+  "not-flush-left": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  },
+  "nested-left-follower": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  },
+  "nested-no-follower": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  },
+  "sibling": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  },
+  "nested-task-sibling": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  },
+  "nested-task-checkbox-column": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  },
+  "open-fence-other-column": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  },
+  "first-block-sibling": {
+    "actual": [],
+    "reason": "Pinned carve-js does not yet report every refused plus (markup-carve/carve#3421)."
+  }
+}

@@ -2935,7 +2935,7 @@ Both render:
 </ul>
 ```
 
-Pick whichever reads better. The blank-line form indents the block under the item; the `+` form marks the attach point with a flush-left marker and keeps the block flush-left. This helps with wide code or tables. The marker must be a lone `+` at column 0 with the block flush-left; an indented `+` is ordinary text or fence payload.
+The blank-line form indents the block under the item. The `+` form puts a lone `+` at the item's marker column and starts the attached block at that column. A `+` at another column follows ordinary column rules or stays fence payload (markup-carve/carve#3421).
 
 ### First block of an item
 
@@ -2986,7 +2986,7 @@ Since `+` is not a Carve bullet (use `-` or `*`), the lines below are a single p
 
 ### An indented plus under a sub-list stays text
 
-A `+` at column 0 attaches to the outer item even while a sub-list is open. An indented `+` stays ordinary text at its own column (markup-carve/carve#3421).
+A `+` at column 0 attaches to the outer item even while a sub-list is open. A `+` at the nested item's marker column attaches there; one at its content column stays text (markup-carve/carve#3421).
 
 The plainest form of the rule, at a single level: the attached block is written
 flush left, and the item holds it without a blank line.
@@ -3580,7 +3580,7 @@ boundary: a header cell can span into the body rows below, rendering as
 
 ## Block-quote continuation marker
 
-The continuation marker generalizes to block quotes (grammar PART 9 §17): a lone `+` at column 0 immediately after a quoted line attaches the following flush-left block to the quote — the un-prefixed analogue of the list-item form, so a real block joins the quote without repeating `>` on every line.
+The continuation marker also works in block quotes (PART 9 §17): a lone `+` at the quote's marker column attaches the next block at that column without repeating `>` on every line (markup-carve/carve#3421).
 
 ::: compare
 
@@ -8804,7 +8804,7 @@ The caption attaches to a captionable block, and a reference image that resolves
 
 ## A flush-left line after a footnote definition belongs to the document
 
-A note body is the definition line plus lines indented by at least two spaces (§16). A flush-left line is not one of them: it ends the body and is the document's own next block. The `+` continuation marker (§17 L4) is the way to attach a flush-left block to a note, and it is deliberate rather than accidental.
+A note body starts on its definition line and continues through lines indented by at least two spaces (§16). A `+` at the note's marker column attaches the next block at that column (§17 L4, markup-carve/carve#3421).
 
 ::: compare
 
@@ -9396,7 +9396,7 @@ see[^a]
 
 ## A definition attached by a + continuation marker is collected, and the item keeps no trace
 
-The `+` continuation marker (§17 L3/L4) attaches a flush-left block to the container above it like any other block - a definition is not special-cased out of that. It is collected exactly as one written at the item's own content column (above), and the item that held it renders with no trace of the line at all: no empty block, no blank line left behind (carve#665; §17 L6).
+The `+` continuation marker (§17 L3/L4) attaches a block at the container's marker column. A definition follows the same rule, and the marker leaves no rendered content (carve#665; markup-carve/carve#3421).
 
 ::: compare
 
@@ -20301,9 +20301,8 @@ y</p></blockquote>
 
 :::
 
-A sibling marker ends the attachment rather than being swallowed into it, which
-is the measured case that settles the reading on its own — three flat items, in
-every engine:
+A same-column list marker leaves the `+` as text in the preceding item's
+paragraph. The following item is a sibling:
 
 ::: compare
 
@@ -20316,7 +20315,8 @@ every engine:
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
++</li>
   <li>x</li>
   <li>y</li>
 </ul>
@@ -25664,12 +25664,7 @@ too.
 
 ## A continuation marker attaches only a flush-left block
 
-PART 9 §17 L3 means FLUSH-LEFT literally: a `+` attaches the following block
-only when that block begins at document column 0. Under nested markers, every
-other column is interpreted by the ordinary content-column machinery instead
-of being pulled into the innermost item (markup-carve/carve#1436).
-
-At column 0, the nested marker attaches the paragraph to the inner item.
+A `+` at an open marker column attaches one block starting at that column. A block at another column follows ordinary ownership rules (markup-carve/carve#3421).
 
 :::: compare
 
@@ -25769,9 +25764,8 @@ x
 
 ::::
 
-An indented `+` is ordinary text. Here it folds into the paragraph the
-sub-list item left open, so `b`, `+` and `c` stay in one paragraph
-(markup-carve/carve#3421).
+The `+` at the nested item's marker column interrupts its paragraph and
+attaches `c` to that item (markup-carve/carve#3421).
 
 ::: compare
 
@@ -25787,8 +25781,8 @@ sub-list item left open, so `b`, `+` and `c` stay in one paragraph
   <li>a
     <ul>
       <li>b
-+
-c</li>
+        c
+      </li>
     </ul>
   </li>
 </ul>
@@ -25816,6 +25810,7 @@ open. The output is byte-identical to the same document without the marker line
   <li>x
     <ul>
       <li>L
++
 p</li>
     </ul>
   </li>
@@ -25824,8 +25819,8 @@ p</li>
 
 :::
 
-An indented `+` is never this marker. The `+` written at column 1 is ordinary
-text and reaches the output, as a lone `+` does outside any container.
+The `+` at column 1 matches no open marker column, so it reaches the output as
+ordinary text (markup-carve/carve#3421).
 
 ::: compare
 
@@ -30368,19 +30363,7 @@ promotes, and the item holds a figure.
 
 ## The continuation marker's column gate reaches every container
 
-`CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (§17 L3,
-markup-carve/carve#1436) says a `+`
-attaches a block that begins at document column 0 and nothing else: a line at
-any other column is not attached at all, and falls through to the ordinary
-column rules, which place it by its own column inside whichever container
-survives. Only the LIST ITEM
-asked that question - the gate was spelled in the item's attach path and in the
-item collector's nested guard, and the footnote body, the description and the
-block quote had no equivalent - so those three reached out for a line the clause
-leaves where the author put it (markup-carve/carve#1814). Each row below is the
-same document twice, once with the marker and once with a comment line, which
-those rules cannot see either - so the pair isolates which container the line
-reached.
+A `+` at an open marker column attaches one block starting at that column in every container. A block at another column follows ordinary ownership rules (markup-carve/carve#3421).
 
 A column below the body's minimum. The note consumes the comment and retains
 the line as a new paragraph of the note (PART 0 X1, ruled on
@@ -30426,7 +30409,8 @@ see[^a]
 ```
 
 ```html
-<p>more</p>
+<p>+
+more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
@@ -30483,7 +30467,8 @@ see[^a]
 ```
 
 ```html
-<p>more</p>
+<p>+
+more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
@@ -30564,9 +30549,10 @@ outside the `dd`.
 ```html
 <dl>
   <dt>term</dt>
-  <dd>intro</dd>
+  <dd>intro
++
+more</dd>
 </dl>
-<p>more</p>
 ```
 
 :::
@@ -30642,7 +30628,8 @@ else; the blank-line control and the comment control agree with each other.
 
 ```html
 <blockquote><p>intro</p></blockquote>
-<p>more</p>
+<p>+
+more</p>
 ```
 
 :::
@@ -30683,15 +30670,15 @@ its own column, exactly as the comment spelling leaves it.
 ```html
 <ul>
   <li>intro
++
 more</li>
 </ul>
 ```
 
 :::
 
-The marker starts only at column 0 of its quote level. In this item, the
-indented `+` is ordinary text, and the open quoted paragraph folds it in
-(markup-carve/carve#3421).
+The `+` at column 1 matches neither the item's marker column nor the quote's
+marker column, so the quoted paragraph folds it in (markup-carve/carve#3421).
 
 ::: compare
 
@@ -30733,8 +30720,8 @@ ZZZ</p></blockquote>
 
 :::
 
-The `+` is indented, so it remains ordinary text at its own column
-(markup-carve/carve#3421).
+The `+` is at the quote's marker column. With no block following it, the
+marker adds nothing (markup-carve/carve#3421).
 
 ::: compare
 
@@ -30769,7 +30756,8 @@ no flush-left block follows it.
 ```html
 <ul>
   <li>x
-    <blockquote><p>q</p></blockquote>
+    <blockquote><p>q
++</p></blockquote>
   </li>
 </ul>
 ```
@@ -30819,15 +30807,15 @@ column right it is text in the quoted paragraph.
 
 ## An empty description body claims no line below column 0
 
-`CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (§17 L3,
-markup-carve/carve#1436) says a line
-the `+` does not reach falls through to the ordinary column rules, which a
+`CONTINUATION-MARKER REACHES ITS OWN COLUMN` (§17 L3,
+markup-carve/carve#3421) says a line
+the `+` does not reach follows the ordinary column rules, which a
 comment line cannot reach either - so the comment spelling is this section's
 control. In the
 accepted wider-separator FIRST-BLOCK form `:  +` no paragraph is open, so the
 `+` genuinely is a marker
 and the clause reads its payload's column - and a payload at column 1 or 2 is
-not flush-left, so the marker is refused and the body ends where the comment
+not at the opener's marker column, so the marker is refused and the body ends where the comment
 ends it. It did not: the description reached out and put the payload in the
 `dd`, at both columns, while the comment spelling of the same document left it
 outside (markup-carve/carve#1821). Each pair below is one document twice, once
@@ -55537,7 +55525,7 @@ A table row below a description body's column folds into its paragraph (carve#32
 
 ::::::
 
-The indented `+` is text in the description body. The quote past the item column then opens in the item (CARVE-P9-031, markup-carve/carve#3421).
+The `+` at the description marker column attaches the next paragraph to that description. The quote past the item column then opens in the item (CARVE-P9-031, markup-carve/carve#3421).
 :::::: compare
 
 ````carve
@@ -55553,9 +55541,10 @@ The indented `+` is text in the description body. The quote past the item column
   <li>
     <dl>
       <dt>term</dt>
-      <dd>body
-+
-before</dd>
+      <dd>
+        <p>body</p>
+        <p>before</p>
+      </dd>
     </dl>
     <blockquote><p>nested</p></blockquote>
   </li>
@@ -59233,7 +59222,7 @@ tail</p>
 
 ## A refused marker leaves an open fence's blank payload
 
-A refused column-0 `+` is skipped while an open code or raw fence continues. An indented `+` stays ordinary content at its own column (markup-carve/carve#3400, markup-carve/carve#3421).
+A refused `+` is text unless an open fence claims it as payload at its content column. A `+` at the fence content column stays payload (markup-carve/carve#3400, markup-carve/carve#3421).
 
 ::::::: compare
 
@@ -59246,10 +59235,11 @@ A refused column-0 `+` is skipped while an open code or raw fence continues. An 
 ```html
 <ul>
   <li>
-    <pre><code>x
-</code></pre>
+    <pre><code></code></pre>
   </li>
 </ul>
+<p>+
+x</p>
 ```
 
 :::::::
@@ -59266,11 +59256,11 @@ A refused column-0 `+` is skipped while an open code or raw fence continues. An 
 ```html
 <ul>
   <li>
-    <pre><code>
-x
-</code></pre>
+    <pre><code></code></pre>
   </li>
 </ul>
+<p>+</p>
+<p>x</p>
 ```
 
 :::::::
@@ -59288,10 +59278,11 @@ x
 <ul>
   <li>
     <pre><code>a
-x
 </code></pre>
   </li>
 </ul>
+<p>+
+x</p>
 ```
 
 :::::::
@@ -59310,10 +59301,10 @@ tail
 <ul>
   <li>
     <pre><code>x
-
 </code></pre>
   </li>
 </ul>
+<p>+</p>
 <p>tail</p>
 ```
 
@@ -59356,10 +59347,10 @@ tail
 ```html
 <ul>
   <li>
-    <pre><code>
-</code></pre>
+    <pre><code></code></pre>
   </li>
 </ul>
+<p>+</p>
 <p>tail</p>
 ```
 
@@ -59379,9 +59370,9 @@ tail
 <ul>
   <li>
     x
-
   </li>
 </ul>
+<p>+</p>
 <p>tail</p>
 ```
 
@@ -59389,7 +59380,7 @@ tail
 
 ## A column-zero marker below an open div attaches beside the div
 
-A column-0 `+` ends an open colon div from the marker line. The next flush-left block joins the outer item beside the div. An indented `+` stays ordinary content (markup-carve/carve#3406, markup-carve/carve#3421).
+A `+` at the item marker column ends an open colon div from the marker line. The next block at that column joins the item beside the div (markup-carve/carve#3406, markup-carve/carve#3421).
 
 ::::::: compare
 
@@ -59483,7 +59474,7 @@ tail
 
 ## A dangling plus marker adds nothing and a nested quote reads it like an unnested one
 
-Under §17 L3, a later column-0 `+` with no following block adds no content (carve#3415). A nested quote reads a valid marker after its quote prefix. An indented `+` stays text (markup-carve/carve#3421).
+Under §17 L3, a later column-0 `+` with no following block remains text (carve#3415, markup-carve/carve#3421). A nested quote reads a valid marker after its quote prefix. A `+` outside every open marker column stays text (markup-carve/carve#3421).
 
 ::::::: compare
 
@@ -59495,7 +59486,8 @@ para
 ````
 
 ```html
-<blockquote><p>q</p></blockquote>
+<blockquote><p>q
++</p></blockquote>
 <p>para</p>
 ```
 
@@ -59509,7 +59501,8 @@ para
 ````
 
 ```html
-<blockquote><p>q</p></blockquote>
+<blockquote><p>q
++</p></blockquote>
 ```
 
 :::::::
@@ -59525,7 +59518,8 @@ para
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
++</li>
 </ul>
 <p>para</p>
 ```
@@ -59545,6 +59539,7 @@ para
 
 ```html
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p>+</p>
 <p>para</p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
@@ -59587,10 +59582,9 @@ para
 
 ```html
 <blockquote>
-  <blockquote>
-    <p>q</p>
-    <p>para</p>
-  </blockquote>
+  <blockquote><p>q
++
+para</p></blockquote>
 </blockquote>
 ```
 
@@ -59605,7 +59599,8 @@ para
 
 ```html
 <blockquote>
-  <blockquote><p>q</p></blockquote>
+  <blockquote><p>q
++</p></blockquote>
 </blockquote>
 ```
 
@@ -59621,9 +59616,7 @@ para
 ````
 
 ```html
-<blockquote>
-
-</blockquote>
+<blockquote><p>+</p></blockquote>
 <p>para</p>
 ```
 
@@ -59792,9 +59785,9 @@ para</p></blockquote>
   <li>a
     <ul>
       <li>b
-+</li>
+        <blockquote><p>q</p></blockquote>
+      </li>
     </ul>
-    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
 ```
@@ -59988,11 +59981,10 @@ para
 <ul>
   <li>a
     <ul>
-      <li></li>
+      <li>para</li>
     </ul>
   </li>
 </ul>
-<p>para</p>
 ```
 
 :::::::
@@ -60072,3 +60064,2507 @@ code
 ```
 
 :::::::
+
+
+## A continuation marker uses its container column
+
+A lone `+` at an open marker column takes one block at that column; a same-column list item refuses it (markup-carve/carve#3421). These rows pin the relative column rule for nested containers, fences, tables, and first-block forms.
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+  > q
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
++
+> q
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+  para
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        para
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+1. a
++
+> q
+`````
+
+```html
+<ol>
+  <li>a
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ol>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- [ ] task
++
+> q
+`````
+
+```html
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="task"> task
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+x[^a]
+
+[^a]: note
++
+> q
+`````
+
+```html
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <blockquote><p>q</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+:: term
+: body
++
+> q
+`````
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>body</p>
+    <blockquote><p>q</p></blockquote>
+  </dd>
+</dl>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+> q
++
+| a |
+`````
+
+```html
+<blockquote>
+  <p>q</p>
+  <table>
+    <tbody>
+      <tr><td>a</td></tr>
+    </tbody>
+  </table>
+</blockquote>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+> q
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++</li>
+    </ul>
+  </li>
+</ul>
+<blockquote><p>q</p></blockquote>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+  > q
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+    > q
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- foo
+  - [ ] task
+  +
+  - x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task +"> task
++</li>
+    </ul>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
++
+- b
+`````
+
+```html
+<ul>
+  <li>a
++</li>
+  <li>b</li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+> - a
+  +
+`````
+
+```html
+<blockquote>
+  <ul>
+    <li>a
++</li>
+  </ul>
+</blockquote>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  > q
+  +
+  para
+`````
+
+```html
+<ul>
+  <li>a
+    <blockquote>
+      <p>q</p>
+      <p>para</p>
+    </blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - ```
+  +
+  > q
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code></code></pre>
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - ```
+    +
+    ```
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code>+
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - ```
+  +
+
+  tail
+`````
+
+```html
+<ul>
+  <li><p>a</p>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    <p>+</p>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+
+  tail
+`````
+
+```html
+<ul>
+  <li><p>a</p>
+    <ul>
+      <li>b
++</li>
+    </ul>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
+
+  +
+  > q
+`````
+
+```html
+<ul>
+  <li><p>a</p>
+    <ul>
+      <li>b
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+	- b
+	+
+	> q
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  | h |
+  | v |
++
+> q
+`````
+
+```html
+<ul>
+  <li>a
+    <table>
+      <tbody>
+        <tr><td>h</td></tr>
+        <tr><td>v</td></tr>
+      </tbody>
+    </table>
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  | h |
+  | v |
+  + text |
+`````
+
+```html
+<ul>
+  <li>a
+    <table>
+      <tbody>
+        <tr><td>h</td></tr>
+        <tr><td>v text</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
++
+> q
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- foo
+  - [ ] task
+  +
+  ```sh
+  npm test
+  ```
+  - [ ] more
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task"> task
+        <pre><code class="language-sh">npm test
+</code></pre>
+      </li>
+      <li><input type="checkbox" disabled aria-label="more"> more</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - +
+  > b
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - +
+> b
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- - +
+> q
+`````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- - [ ] +
+> q
+`````
+
+```html
+<ul>
+  <li>
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- > +
+> q
+`````
+
+```html
+<ul>
+  <li>
+    <blockquote>
+      <blockquote><p>q</p></blockquote>
+    </blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+> - +
+> q
+`````
+
+```html
+<blockquote>
+  <ul>
+    <li>q</li>
+  </ul>
+</blockquote>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+1. - +
+> q
+`````
+
+```html
+<ol>
+  <li>
+    <ul>
+      <li>
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ol>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+ - a
+ +
+ > q
+`````
+
+```html
+<ul>
+  <li>a
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+## A first-block marker on an indented opener reads two columns
+
+An indented first-block opener takes one non-list block at document column 0
+or its own column. A list follower at an open list's column is a sibling
+(markup-carve/carve#3421).
+
+::: compare
+
+`````carve
+- foo
+  - +
+- x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+  <li>x</li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- a
++
+- b
+`````
+
+```html
+<ul>
+  <li>a
++</li>
+  <li>b</li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - [ ] task
+  +
+  1. x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task +"> task
++</li>
+    </ul>
+    <ol>
+      <li>x</li>
+    </ol>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - b
+  +
+    - x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li>b
++
+        <ul>
+          <li>x</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+> b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+ x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+> b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+ > b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>&gt; b</p>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+  > b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+    > b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - [ ] +
+> b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - [ ] +
+ > b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> </li>
+    </ul>
+  </li>
+</ul>
+<p>&gt; b</p>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - [ ] +
+  > b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - [ ] +
+    > b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  1. +
+> b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ol>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ol>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  1. +
+ > b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ol>
+      <li></li>
+    </ol>
+  </li>
+</ul>
+<p>&gt; b</p>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  1. +
+  > b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ol>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ol>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  1. +
+    > b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ol>
+      <li></li>
+    </ol>
+    <blockquote><p>b</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+```
+x
+```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+ ```
+ x
+ ```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p><code>
+x
+</code></p>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+  ```
+  x
+  ```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+    ```
+    x
+    ```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - [ ] +
+```
+x
+```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - [ ] +
+ ```
+ x
+ ```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> </li>
+    </ul>
+  </li>
+</ul>
+<p><code>
+x
+</code></p>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - [ ] +
+  ```
+  x
+  ```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - [ ] +
+    ```
+    x
+    ```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  1. +
+```
+x
+```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ol>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
+    </ol>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  1. +
+ ```
+ x
+ ```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ol>
+      <li></li>
+    </ol>
+  </li>
+</ul>
+<p><code>
+x
+</code></p>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  1. +
+  ```
+  x
+  ```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ol>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
+    </ol>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  1. +
+    ```
+    x
+    ```
+`````
+
+```html
+<ul>
+  <li>foo
+    <ol>
+      <li></li>
+    </ol>
+    <pre><code>x
+</code></pre>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+  - x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li></li>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+  + x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li>+ x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+  * x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li></li>
+    </ul>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+  1. x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li></li>
+    </ul>
+    <ol>
+      <li>x</li>
+    </ol>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+  - [ ] x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li></li>
+    </ul>
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="x"> x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- foo
+  - +
+    - x
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li>
+        <ul>
+          <li>x</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+
+::: compare
+
+`````carve
+- a
+
++
+- s
+`````
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>+</p>
+<ul>
+  <li>s</li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+- ```
++
+- s
+`````
+
+```html
+<ul>
+  <li>
+    <pre><code></code></pre>
+  </li>
+</ul>
+<p>+</p>
+<ul>
+  <li>s</li>
+</ul>
+```
+
+:::
+
+::: compare
+
+`````carve
+> - ```
+> +
+> - s
+`````
+
+```html
+<blockquote>
+  <ul>
+    <li>
+      <pre><code></code></pre>
+    </li>
+  </ul>
+  <p>+</p>
+  <ul>
+    <li>s</li>
+  </ul>
+</blockquote>
+```
+
+:::
+
+## A refused continuation plus remains text
+
+A refused `+` on its own line stays text, or fence payload at the fence content column. A first-block `+` that attaches nothing (`- +`, `- [ ] +`) leaves its item empty instead (markup-carve/carve#3421).
+
+::::::: compare
+
+````carve
+- a
+  - b
+  +
+tail
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++
+tail</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- a
+  - b
+  +
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- a
+
++
+- s
+````
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>+</p>
+<ul>
+  <li>s</li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- ```
++
+- s
+````
+
+```html
+<ul>
+  <li>
+    <pre><code></code></pre>
+  </li>
+</ul>
+<p>+</p>
+<ul>
+  <li>s</li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- a
+  - ```
+    +
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code>+
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- a
+  - ```
+  +
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    +
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- a
+  - ```
+  x
+  +
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    x
++
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- a
+  - ```
+  x
+    +
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    x
++
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+1. [ ] +
+````
+
+```html
+<ol>
+  <li>[ ] +</li>
+</ol>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- foo
+  - [ ] task
+  +
+  > q
+````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task"> task
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- foo
+  - [ ] task
+    +
+  - x
+````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task +"> task
++</li>
+    </ul>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+````carve
+- foo
+  - [ ] task
+  +
+  - x
+````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task +"> task
++</li>
+    </ul>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+> - a
+> +
+`````
+
+```html
+<blockquote>
+  <ul>
+    <li>a
++</li>
+  </ul>
+</blockquote>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+  - c
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++</li>
+      <li>c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- foo
+  - [ ] task
+  +
+  ```sh
+  npm test
+  ```
+  - [ ] more
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task"> task
+        <pre><code class="language-sh">npm test
+</code></pre>
+      </li>
+      <li><input type="checkbox" disabled aria-label="more"> more</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- foo
+  - [ ] task
+    +
+    q
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task + q"> task
++
+q</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - ``` =html
+    +
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        +
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - ``` =html
+  +
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    +
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+left
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++
+left</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - b
+  +
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- > a
+  +
+  b
+`````
+
+```html
+<ul>
+  <li>
+    <blockquote>
+      <p>a</p>
+      <p>b</p>
+    </blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- x
+  - > a
+    +
+    b
+`````
+
+```html
+<ul>
+  <li>x
+    <ul>
+      <li>
+        <blockquote>
+          <p>a</p>
+          <p>b</p>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- +
+`````
+
+```html
+<ul>
+  <li></li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- +
+
+para
+`````
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>para</p>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- +
+- b
+`````
+
+```html
+<ul>
+  <li></li>
+  <li>b</li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+1. +
+`````
+
+```html
+<ol>
+  <li></li>
+</ol>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- [ ] +
+`````
+
+```html
+<ul class="task-list">
+  <li><input type="checkbox" disabled> </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- foo
+  - +
+  - b
+`````
+
+```html
+<ul>
+  <li>foo
+    <ul>
+      <li></li>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+> +
+flush
+`````
+
+```html
+<blockquote><p>flush</p></blockquote>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+> > +
+flush
+`````
+
+```html
+<blockquote>
+  <blockquote><p>flush</p></blockquote>
+</blockquote>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - - +
+  > b
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <blockquote><p>b</p></blockquote>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - - +
+> b
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <blockquote><p>b</p></blockquote>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - > +
+  b
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+> > +
+> b
+`````
+
+```html
+<blockquote>
+  <blockquote><p>b</p></blockquote>
+</blockquote>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- > +
+# h
+`````
+
+```html
+<ul>
+  <li>
+    <blockquote>
+      <h1 id="h">h</h1>
+    </blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- > +
+```
+x
+```
+`````
+
+```html
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- > +
+| a |
+`````
+
+```html
+<ul>
+  <li>
+    <blockquote>
+      <table>
+        <tbody>
+          <tr><td>a</td></tr>
+        </tbody>
+      </table>
+    </blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- > +
+> q
+`````
+
+```html
+<ul>
+  <li>
+    <blockquote>
+      <blockquote><p>q</p></blockquote>
+    </blockquote>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - > +
+# h
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote>
+          <h1 id="h">h</h1>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+
+::::::: compare
+
+`````carve
+- a
+  - > +
+  # h
+`````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote>
+          <h1 id="h">h</h1>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::::
+

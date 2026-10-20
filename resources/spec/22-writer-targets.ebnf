@@ -386,12 +386,14 @@
        property of the emitted BLOCK SEQUENCE, not only of each child in
        isolation. If two adjacent children written at the item's content
        column would re-parse as one block, the writer emits each child from the
-       first such child onward at the marker column, preceded by its own `+`
-       for a top-level item. The writer never emits an indented `+`. In a
-       nested tight item, it writes the block at the item's content column
-       with a blank line before it; L2 keeps the item tight. If a paragraph
-       after a block child would fold lazily or loosen the item, the writer
-       writes the item loose and reports a writer loss.
+       first such child onward at the item's marker column, preceded by its
+       own `+` when required for the round-trip contract.
+       In a nested tight item, the writer first writes the block at the item's
+       content column with a blank line before it; L2 keeps the item tight.
+       It MAY emit a `+` at that nested item's marker column only when the
+       blank-line spelling changes the parsed tree, including its tightness or
+       the block's owner (markup-carve/carve#3421). If no spelling round-trips,
+       the writer reports a writer loss.
 
        This includes adjacent block quotes, tables, line blocks, definition
        lists, and lists whose marker kind is compatible. A single block opener

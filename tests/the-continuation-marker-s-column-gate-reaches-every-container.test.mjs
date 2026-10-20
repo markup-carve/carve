@@ -46,6 +46,8 @@ const html = (src) => renderDoc(parse(src))
 // The same document twice, `+` where the control has its invisible line.
 const marker = (src) => src.replace('@', '+')
 const comment = (src) => src.replace('@', '%% c')
+// A refused `+` is text, so it renders as a letter at its column would (carve#3421).
+const letter = (src) => html(src.replace('@', 'Z')).replaceAll('Z', '+')
 
 const retainedNote =
   '<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>' +
@@ -65,18 +67,18 @@ const BAND = [
 
 for (const [what, src, retained] of BAND) {
   test(retained === undefined
-    ? `the marker reaches no further than a comment does in ${what}`
+    ? `a refused marker renders as text in ${what}`
     : `a low comment retains the follower beyond the marker gate in ${what}`, () => {
     if (retained !== undefined) {
       assert.equal(html(comment(src)), retained)
       assert.notEqual(html(marker(src)), html(comment(src)))
-    } else assert.equal(html(marker(src)), html(comment(src)))
+    } else assert.equal(html(marker(src)), letter(src))
   })
 }
 
-test('the quote agrees with its blank-line control too', () => {
+test('the refused quote marker is never dropped', () => {
   const src = '> intro\n>\n@\n  more\n'
-  assert.equal(html(marker(src)), html(src.replace('@\n', '')))
+  assert.equal(html(marker(src)), '<blockquote><p>intro</p></blockquote><p>+ more</p>')
 })
 
 /*

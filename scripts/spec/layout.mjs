@@ -1445,8 +1445,11 @@ function markerCarriesContinuation(text, memo) {
     if (text === '+') { result = true; break }
     const marker = text[0] !== ' ' && text[0] !== '\t'
       ? matchMarkerAt({ col: 0, rest: text }) : null
-    if (!marker) break
-    text = marker.text.trim()
+    if (!marker) {
+      const quote = QUOTE.exec(text)
+      if (!quote) break
+      text = (quote[1] ?? '').trim()
+    } else text = marker.text.trim()
     if (path.length === MAX_NESTING_DEPTH) return false
   }
   for (let k = path.length - 1; k >= 0; k--) {
@@ -2782,11 +2785,128 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
   let hasOrdinaryPlus = false
   let sentinel = '\uE100'
   while (src.includes(sentinel)) sentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
-  const lines = src.split('\n').map(line => {
-    if (/^[ \t]+\+[ \t]*$/.test(line) || /^[ \t]+(?:> ?)+\+[ \t]*$/.test(line) || /^(?:> ?)+ {2,}\+[ \t]*$/.test(line)) {
+  let refusedSiblingSentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
+  while (src.includes(refusedSiblingSentinel)) refusedSiblingSentinel = String.fromCharCode(refusedSiblingSentinel.charCodeAt(0) + 1)
+  const sourceLines = src.split('\n')
+  const refusedPlusLines = []
+  const markerColumns = []
+  const quotedMarkerColumns = new Map()
+  let quoteColumn = -1
+  const sourceFenceOpenBefore = at => {
+    let open = null
+    for (let row = 0; row < at; row++) {
+      let rest = indentCols(sourceLines[row]).rest
+      while (QUOTE.test(rest)) rest = QUOTE.exec(rest)[1] ?? ''
+      const marker = matchMarkerAt(indentCols(rest))
+      if (marker) rest = marker.text.trimStart()
+      const run = PURE_FENCE.exec(rest)?.[1]
+      if (open && run && run[0] === open[0] && run.length >= open.length) open = null
+      else if (!open) {
+        const fence = FENCE.exec(rest)
+        if (fence && parseFenceInfo(fence[2]) !== null) open = fence[1]
+      }
+    }
+    return open !== null
+  }
+  const quoteLeaf = line => {
+    let rest = indentCols(line).rest
+    let depth = 0
+    while (QUOTE.test(rest)) { rest = QUOTE.exec(rest)[1] ?? ''; depth++ }
+    return { depth, leaf: rest, measured: indentCols(rest) }
+  }
+  const openSiblingList = (index, col, depth) => {
+    for (let row = index - 1; row >= 0; row--) {
+      const leaf = quoteLeaf(sourceLines[row])
+      if (leaf.depth !== depth) {
+        const host = depth === 1 ? matchMarkerAt(indentCols(sourceLines[row])) : null
+        const hosted = host ? quoteLeaf(host.text) : null
+        return hosted?.depth === depth && hosted.measured.col === col && !!matchMarkerAt(hosted.measured)
+      }
+      const measured = depth === 0 ? indentCols(sourceLines[row]) : leaf.measured
+      if (measured.rest === '') continue
+      if (measured.col > col) continue
+      if (matchMarkerAt(measured)) return measured.col === col
+      if (CONT_MARKER.test(measured.rest)) continue
+      return false
+    }
+    return false
+  }
+  const lines = sourceLines.map((line, index) => {
+    const stackedFollower = sourceLines[index + 1] === undefined
+      ? null : indentCols(sourceLines[index + 1])
+    if (/^[ \t]*(?:>[ \t]*)?(?:(?:[-*]|\d+[.)])[ \t]+)+>[ \t]+\+[ \t]*$/.test(line) &&
+        (!stackedFollower?.rest || matchMarkerAt(stackedFollower))) {
       hasOrdinaryPlus = true
       return line.replace(/\+(?=[ \t]*$)/, sentinel)
     }
+    const measured = indentCols(line)
+    const barePlus = CONT_MARKER.test(measured.rest)
+    const quoted = quoteLeaf(line)
+    if (quoted.depth > 0) {
+      quoteColumn = measured.col
+      const stack = quotedMarkerColumns.get(quoted.depth) ?? []
+      const next = sourceLines[index + 1] === undefined ? null : quoteLeaf(sourceLines[index + 1])
+      if (CONT_MARKER.test(quoted.measured.rest)) {
+        const sameLevel = next?.depth === quoted.depth
+        const sibling = sameLevel && stack.includes(quoted.measured.col) &&
+          openSiblingList(index, quoted.measured.col, quoted.depth) &&
+          next.measured.col === quoted.measured.col && matchMarkerAt(next.measured)
+        const quoteOpenedHere = index === 0 ||
+          quoteLeaf(sourceLines[index - 1]).depth < quoted.depth
+        const firstBlockFollower = next?.depth < quoted.depth && next.measured.col === 0 &&
+          quoted.measured.col === 0 && !matchMarkerAt(next.measured) && quoteOpenedHere
+        const refused = (!sameLevel && !firstBlockFollower) ||
+          !next.measured.rest || (!firstBlockFollower && next.measured.col !== quoted.measured.col)
+        if (sibling) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, refusedSiblingSentinel) }
+        if (refused) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, sentinel) }
+        return line
+      }
+      let opener = matchMarkerAt(quoted.measured)
+      if (opener) while (stack.length && stack.at(-1) >= quoted.measured.col) stack.pop()
+      let openerCol = quoted.measured.col
+      for (let depth = 0; opener && depth < MAX_NESTING_DEPTH; depth++) {
+        stack.push(openerCol)
+        const nested = indentCols(opener.text)
+        openerCol += opener.markerWidth + nested.col
+        opener = matchMarkerAt(nested)
+      }
+      quotedMarkerColumns.set(quoted.depth, stack)
+      return line
+    }
+    if (barePlus) {
+      const next = sourceLines[index + 1] === undefined ? null : indentCols(sourceLines[index + 1])
+      const sibling = markerColumns.includes(measured.col) && openSiblingList(index, measured.col, 0) &&
+        next && next.col === measured.col && matchMarkerAt(next)
+      const refused = !next || !next.rest || next.col !== measured.col
+      if (sibling || refused || !markerColumns.includes(measured.col) && quoteColumn !== measured.col) {
+        refusedPlusLines.push(index)
+        hasOrdinaryPlus = true
+        return line.replace(/\+(?=[ \t]*$)/, sibling ? refusedSiblingSentinel : sentinel)
+      }
+      return line
+    }
+    if (measured.rest === '') {
+      quoteColumn = -1
+      return line
+    }
+    let opener = matchMarkerAt(measured)
+    if (opener) while (markerColumns.length && markerColumns.at(-1) >= measured.col) markerColumns.pop()
+    let openerCol = measured.col
+    for (let depth = 0; opener && depth < MAX_NESTING_DEPTH; depth++) {
+      markerColumns.push(openerCol)
+      const nested = indentCols(opener.text)
+      const hosted = quoteLeaf(opener.text)
+      if (hosted.depth > 0 && matchMarkerAt(hosted.measured)) {
+        const stack = quotedMarkerColumns.get(hosted.depth) ?? []
+        stack.push(hosted.measured.col)
+        quotedMarkerColumns.set(hosted.depth, stack)
+      }
+      openerCol += opener.markerWidth + nested.col
+      if (hosted.depth > 0) quoteColumn = openerCol
+      opener = matchMarkerAt(nested)
+    }
+    if (FOOTNOTE_DEF.test(measured.rest) || /^:{1,2} /.test(measured.rest)) markerColumns.push(measured.col)
+    if (QUOTE.test(measured.rest)) quoteColumn = measured.col
     return line
   })
   if (lines[lines.length - 1] === '') lines.pop()
@@ -2796,11 +2916,18 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
     abbrDefs: new Map(),
     authoredBodyBases,
     prefixMemos: new WeakMap(),
+    markerLineColumns: new WeakMap(),
+    sourceHasLonePlus: sourceLines.some(line =>
+      /^[ \t]*(?:>[ \t]*)*\+[ \t]*$/.test(line) ||
+      /^[ \t]*(?:(?:[-*]|\d+[.)])[ \t]+)+(?:\[[ xX_-]\][ \t]+)?\+[ \t]*$/.test(line)),
     unterminatedLines: new WeakSet(src.endsWith('\n') ? [] : [lines]),
   }
+  if (hasOrdinaryPlus) state.ordinaryPlusSentinel = sentinel
+  if (hasOrdinaryPlus) state.refusedSiblingSentinel = refusedSiblingSentinel
   // Only when a sink is passed. An always-present key would change the state
   // object's own shape, which a structural test deep-compares.
   if (stateSink) state.descendantQ1Log = (stateSink.descendantQ1 = [])
+  if (stateSink) stateSink.refusedPlusLines = refusedPlusLines
   // frontmatter (PART 1): consumed; renders nothing. The closer-lookahead
   // guard: with no closing --- the line is an ordinary thematic break.
   // The slot before the format token is PADDING and takes `space` (PART 7;
@@ -2858,10 +2985,17 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
   const blocks = parseBlocks(lines, state, true)
   if (hasOrdinaryPlus) {
     restoreOrdinaryPlus(blocks, sentinel)
+    restoreOrdinaryPlus(blocks, refusedSiblingSentinel)
     restoreOrdinaryPlus(state.linkDefs, sentinel)
+    restoreOrdinaryPlus(state.linkDefs, refusedSiblingSentinel)
     restoreOrdinaryPlus(state.footnoteDefs, sentinel)
+    restoreOrdinaryPlus(state.footnoteDefs, refusedSiblingSentinel)
     restoreOrdinaryPlus(state.abbrDefs, sentinel)
-    if (stateSink) restoreOrdinaryPlus(state.descendantQ1Log, sentinel)
+    restoreOrdinaryPlus(state.abbrDefs, refusedSiblingSentinel)
+    if (stateSink) {
+      restoreOrdinaryPlus(state.descendantQ1Log, sentinel)
+      restoreOrdinaryPlus(state.descendantQ1Log, refusedSiblingSentinel)
+    }
   }
   // blockDepth is transient recursion bookkeeping (see parseBlocks); it must
   // not leak into the parse-result contract { blocks, linkDefs, footnoteDefs,
@@ -3170,11 +3304,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     let m
     if ((m = FOOTNOTE_DEF.exec(line))) {
       const label = m[1]
+      const sourceDefCol = ind(i).L?.col ?? ind(i).col
       const absorbedNoteMarker = i === 0 && state.absorbedMarkerNotes?.has(lines)
       const bodyLines = [m[2]]
       i++
-      if (CONT_MARKER.test(m[2]) && i < n && !isBlank(lines[i]) && attachesFlushLeft(ind(i))) {
-        const attached = takeOneBlock(lines, i, state, ind(i))
+      if (CONT_MARKER.test(m[2]) && i < n && !isBlank(lines[i]) && attachesFlushLeft(ind(i), sourceDefCol)) {
+        const attached = takeOneBlock(lines, i, state, ind(i), sourceDefCol)
         bodyLines[0] = ''
         bodyLines.push(...attached.rawMarker, '')
         i = attached.next
@@ -3248,12 +3383,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // kept it through the continuation branch without the pull branch
           // ever being asked.
           i++
-          if (!attachesFlushLeft(ind(i))) break
+          if (!attachesFlushLeft(ind(i), sourceDefCol)) break
           bodyLines.push('')
           pullPending = true
         } else if (pullPending && !isBlank(lines[i] ?? '')) {
           // the whole flush-left block pulled in by the preceding `+` marker
-          const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i))
+          const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i), sourceDefCol)
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           pullPending = false
           i = end
@@ -3528,6 +3663,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         if ((dm = /^:( +)(?=[ \t]*[^ \t])(.*)$/.exec(cur0))) {
           const bodyColumn = 1 + dm[1].length
+          const sourceDescriptionCol = ind(i).L?.col ?? ind(i).col
           // definition (dd): collect its full body, then parse it to blocks. A
           // definition body continues like a list item (SS17): lazy
           // continuations, a blank-separated indented paragraph, and a `+`
@@ -3614,7 +3750,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // `  para` pulled a column-2 line into the `<dd>` while the
               // comment spelling of the same document left it outside.
               i++
-              if (!attachesFlushLeft(ind(i))) break
+              if (!attachesFlushLeft(ind(i), sourceDescriptionCol)) break
               pushBody('')
               pullPending = true
               continue
@@ -3658,7 +3794,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // flush-left line: either the block pulled in by a preceding `+` /
             // first-block marker, or a lazy continuation of the open paragraph.
             if (pullPending) {
-              const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i))
+              const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i), sourceDescriptionCol)
               for (let k = i; k < end; k++) pushBody(lines[k], k)
               pullPending = false
               i = end
@@ -4098,6 +4234,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- block quote ---
     if (QUOTE.test(line)) {
       const inner = []
+      const sourceQuoteCol = ind(i).L?.col ?? ind(i).col
       // The quote's own container ladder and the fence a container in it holds
       // open (carve#2538). `qHost.fence` replaces the run string this used to
       // carry, because the column it was written at is what answers.
@@ -4639,10 +4776,18 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         layoutWork.quoteStrips += 1
         const qm = QUOTE.exec(lines[i])
         if (qm) {
+          const firstBlockPlus = /^[> \t]*\+[ \t]*$/.test(qm[1] ?? '')
+          const firstBlockQuoteCol = firstBlockPlus
+            ? state.markerLineColumns.get(lines)?.get(i) ?? ind(i).L?.col ?? sourceQuoteCol
+            : sourceQuoteCol
+          const firstBlockAtZero = firstBlockPlus && firstBlockQuoteCol > 0 &&
+            (ind(i + 1)?.L?.col ?? ind(i + 1)?.col) === 0 && !matchMarkerAt(ind(i + 1))
           // `+` on the line that opens the innermost quote is its first-block marker.
           // Depths are counted only for a candidate, so deep nesting stays linear.
-          if (!qHost.fence && openComment === null && /^[> \t]*\+[ \t]*$/.test(qm[1] ?? '') &&
-              i + 1 < n && !isBlank(lines[i + 1]) && !QUOTE.test(lines[i + 1]) && attachesFlushLeft(ind(i + 1))) {
+          if (!qHost.fence && openComment === null && firstBlockPlus &&
+              i + 1 < n && !isBlank(lines[i + 1]) &&
+              (!QUOTE.test(lines[i + 1]) || (inItem && i === 0)) &&
+              (firstBlockAtZero || attachesFlushLeft(ind(i + 1), firstBlockQuoteCol))) {
             const depthOf = (line) => {
               let d = 0
               while (QUOTE.test(line)) {
@@ -4653,7 +4798,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             const here = depthOf(lines[i])
             if (CONT_MARKER.test(here.rest) && here.d > (qLastMarked < 0 ? 0 : depthOf(lines[qLastMarked]).d)) {
-              const attached = takeOneBlock(lines, i + 1, state, ind(i + 1))
+              const attached = takeOneBlock(lines, i + 1, state, ind(i + 1),
+                firstBlockAtZero ? 0 : firstBlockQuoteCol)
               inner.push(here.d > 1 ? qm[1] : '', ...attached.rawMarker, '')
               qLastMarked = i
               i = attached.next
@@ -4668,7 +4814,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i++
           continue
         }
-        if (lines[i] !== undefined && CONT_MARKER.test(lines[i])) {
+        if (lines[i] !== undefined && CONT_MARKER.test(ind(i).rest) &&
+            (ind(i).col === 0 || (ind(i).L?.col ?? ind(i).col) === sourceQuoteCol)) {
           // PART 9 SS17 L4: `+` at column 0 attaches ONE following block
           i++
           // ... and CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0 says WHICH block, asked in
@@ -4684,15 +4831,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // body or a `<dd>` does: those two end at a comment line in that
           // position and a quote does not, and the difference belongs to each
           // container's invisible-line rule rather than to the marker.
-          const attached = takeOneBlock(lines, i, state, ind(i))
+          const attached = takeOneBlock(lines, i, state, ind(i), ind(i - 1).L?.col ?? sourceQuoteCol)
           if (attached.next > i) {
+            const bounds = state.attachmentBoundaries ??= new WeakMap()
+            const indices = bounds.get(inner) ?? []
+            indices.push(inner.length)
+            bounds.set(inner, indices)
             // blank separators force the attached lines to parse as their own
             // block instead of lazily folding into the open paragraph
             if (qHost.fence) {
-              const bounds = state.attachmentBoundaries ??= new WeakMap()
-              const indices = bounds.get(inner) ?? []
-              indices.push(inner.length)
-              bounds.set(inner, indices)
               qHost.fence = null
             }
             inner.push('', ...attached.rawMarker, '')
@@ -4701,6 +4848,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           continue
         }
         if (qHost.fence || openComment !== null) break
+        if (CONT_MARKER.test(ind(i).rest) &&
+            ((ind(i).L?.col ?? ind(i).col) < sourceQuoteCol || qItemPara || !qOpenPara)) break
         // A COMMENT IS COLUMN-EXEMPT (§10 I5's first exception, §24 C3). The
         // other four invisible kinds are ordinary text below a column and fold;
         // a comment stays invisible at ANY column, and folding one would make it
@@ -4817,6 +4966,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5
       if (ind(i).rest.startsWith('%%')) break // SS10 I5 (comment line or fence)
       if (inItem && para.length > 0 && matchMarkerAt(ind(i))) break // SS24 C3
+      // A refused sibling marker that starts its own paragraph yields to that sibling.
+      if (para.length === 1 && para[0].trim() === state.refusedSiblingSentinel && matchMarkerAt(ind(i))) break
       if (para.length > 0) {
         if (startsParagraphBlock(lines[i], top)) break // I1/I5
         if (fenceOpens?.has(i)) break
@@ -5155,52 +5306,12 @@ function foldedDefinitionEnd(lines, start, end, seen) {
   return end
 }
 
-/*
- * THE MARKER IS ONE OPERATION -- PART 9 SS17 L3, carve#1782.
- *
- * `+` transfers ownership of the NEXT flush-left block to the container whose
- * marker column the line sits at, and every container reaches that block the
- * same way: measure the marker's EXTENT - a blank line, a further `+`, or a
- * sibling marker of that container - then narrow it to the ONE block L3 counts.
- *
- * WHAT THE ATTACHED BLOCK IS is not a parameter of the operation. This file
- * held FOUR spellings of the extent, and only three of them narrowed: a `+` in
- * a footnote body or a `<dd>` attached everything up to the boundary, so L3's
- * own example - `+` / `para` / `> q` - gave the quote to the note and left it
- * outside the item one container over. The other spelling tested QUOTE, so a
- * `+` inside a block quote declined to attach a following quote line and the
- * marker did nothing at all, where L3 says the marker only ever ATTACHES.
- *
- * AND WHICH LINE IT REACHES is not a parameter of the operation either
- * (carve#1814). `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (SS17 L3, carve#1436) says the
- * marker attaches a block that BEGINS AT COLUMN 0 and nothing else; a line at
- * any other column is not attached at all and falls through to the ordinary
- * column rules, which place it by its own column inside whichever container
- * survives. That gate was spelled TWICE -
- * once in the list item's `attachFlushLeft`, once in the item collector's
- * nested-attachment guard - and the other three attach sites had no equivalent,
- * so a `<dd>` pulled a column-1 or column-2 line in, a footnote body pulled a
- * column-1 line in, and a block quote reached out for a column-2 line that
- * `A QUOTE IS REACHED BY ITS MARKER` (SS10 I5, carve#1384) puts in no quote at
- * all. Both readers agreed with each other on all of it, because the corpus
- * only ever asked the container that had the gate (carve#1814).
- *
- * So the gate is asked HERE, once, off the SOURCE column: `firstMeas.L` is the
- * measured line's own record and `L.col` is its DOCUMENT column, no matter how
- * many strips the frame is behind. A frame-relative `ind(i).col` cannot answer
- * it - inside a container that is the column the strip left, not the column the
- * author wrote - which is why both surviving spellings read `.L.col`.
- *
- * A refused attachment returns `start`, an EMPTY range. Every caller reads that
- * as "the marker attached nothing" and lets its own ordinary rules have the
- * line; the marker line is still consumed and still contributes nothing, which
- * is exactly what the clause's comment spelling does.
- */
-const attachesFlushLeft = (firstMeas) =>
-  !!firstMeas && (firstMeas.L ? firstMeas.L.col : firstMeas.col) === 0
+// A marker takes one block at its source marker column (markup-carve/carve#3421).
+const attachesFlushLeft = (firstMeas, column = 0) =>
+  !!firstMeas && (firstMeas.L ? firstMeas.L.col : firstMeas.col) === column
 
-function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas) {
-  if (!attachesFlushLeft(firstMeas)) return start
+function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas, column = 0) {
+  if (!attachesFlushLeft(firstMeas, column)) return start
   return firstBlockEnd(lines, start, oneBlockEnd(lines, start, endsAttachment), state)
 }
 
@@ -5227,11 +5338,12 @@ function authoredBlockEnd(lines, start, base, state) {
     measuringAuthoredBlock: true,
   })
 }
-// Parse ONE following flush-left block (for the `+` continuation marker).
-// `next === start` means the gate refused: the line is not at column 0, so the
-// marker attaches nothing and the caller's ordinary rules keep the line.
-function takeOneBlock(lines, start, state, firstMeas) {
-  const one = attachedBlockEnd(lines, start, state, attachmentBoundary(lines), firstMeas)
+// A refused marker leaves an empty attached range for ordinary column rules.
+function takeOneBlock(lines, start, state, firstMeas, column = 0) {
+  const startsList = !!matchMarkerAt(indentCols(lines[start] ?? ''))
+  const boundary = (idx) => attachmentBoundary(lines)(idx) ||
+    (startsList && idx > start && indentCols(lines[idx]).col === column && QUOTE.test(indentCols(lines[idx]).rest))
+  const one = attachedBlockEnd(lines, start, state, boundary, firstMeas, column)
   return { rawMarker: lines.slice(start, one), next: one }
 }
 
@@ -5356,6 +5468,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     return count
   }
   const baseIndent = matchMarkerAt(ind(i)).indent
+  const sourceMarkerCol = (state.sourceHasLonePlus ? state.markerLineColumns.get(lines)?.get(i) : undefined) ??
+    ind(i).L?.col ?? ind(i).col
   while (i < n) {
     const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
@@ -5417,12 +5531,20 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     carryPrefixMemo(state, lines, i, itemLines, 0)
     const headIndex = i
     pushLine(head.text)
+    if (matchMarkerAt(indentCols(head.text))) state.markerLineColumns.set(itemLines, new Map([[0,
+      head.text.includes('+') && markerCarriesContinuation(head.text.trim(), prefixMemo(state, itemLines, 0).continuation)
+        ? sourceMarkerCol : sourceMarkerCol + head.markerWidth]]))
+    else if (QUOTE.test(head.text) && head.text.includes('+') && markerCarriesContinuation(head.text.trim(),
+        prefixMemo(state, itemLines, 0).continuation)) {
+      state.markerLineColumns.set(itemLines, new Map([[0, sourceMarkerCol]]))
+    }
     // Whether the marker line opens nested items whose innermost item is the
     // FIRST-BLOCK `+` form. An enclosing collector must carry a following
     // flush-left block down to that item even though the empty `+` leaves no
     // paragraph open at the enclosing levels.
     let carriesBareContinuation = i + 1 < n &&
       markerCarriesContinuation(head.text.trim(), prefixMemo(state, itemLines, 0).continuation)
+    let nestedAttachmentColumn = sourceMarkerCol
     let nestedAttachmentEnd = -1
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
@@ -6121,8 +6243,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       }
     }
     i++
-    // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
-    // opens an item whose body is the following flush-left block(s)
+    // FIRST-BLOCK form starts the item body at its opener column (SS17 L4).
     //
     // A TASK MARKER DOES NOT TAKE THE FORM AWAY. The grammar spells the item as
     // `bullet_marker, [item_attributes], space, [task_marker], list_item_content`
@@ -6148,15 +6269,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       closePara()
     }
     const attachFlushLeft = () => {
-      // The marker names a FLUSH-LEFT block, not merely the next block. Its
-      // first line must therefore begin at document column 0. In particular,
-      // do not feed an indented line into this item's body: its own column is
-      // what selects the enclosing container (markup-carve/carve#1436).
-      //
-      // The test used to be spelled HERE, and the three other attach sites had
-      // none - which is the whole of carve#1814. It is `attachesFlushLeft` now,
-      // asked once and shared, and an empty range is the refusal.
-      if (i >= n || isBlank(lines[i]) || !attachesFlushLeft(ind(i))) return false
+      const attachmentCol = attachNext ? (ind(headIndex).L?.col ?? ind(headIndex).col) : sourceMarkerCol
+      const follower = ind(i)
+      const followerCol = follower?.L?.col ?? follower?.col
+      const firstBlockAtZero = attachNext && attachmentCol > 0 && followerCol === 0 &&
+        !matchMarkerAt(follower)
+      if (i >= n || isBlank(lines[i]) ||
+          (!firstBlockAtZero && !attachesFlushLeft(follower, attachmentCol))) return false
+      const blockColumn = firstBlockAtZero ? 0 : attachmentCol
       const closesColon = fence.colon.length > 0
       if ((fence.opaque?.kind === 'code' && fence.opaque.opens !== false) || closesColon) {
         const bounds = state.attachmentBoundaries ??= new WeakMap()
@@ -6166,7 +6286,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         fence.opaque = null
         fence.colon.length = 0
       }
-      if (!closesColon && (insideFence() || !bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k], hasFutureCommentCloser))) {
+      if (!closesColon && nestedOpaque?.kind !== 'code' &&
+          (insideFence() || !bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k], hasFutureCommentCloser))) {
         pushLine('', BLANK_MEAS)
       }
       // ONE block, with the SAME extent rule every other container uses: a
@@ -6182,7 +6303,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // sibling marker to the shared one (carve#1782).
       let end = attachedBlockEnd(lines, i, state, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-        matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i))
+        matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i), blockColumn)
       const attached = lines.slice(i, end)
       const codeMatch = FENCE.exec(attached[0] ?? '')
       const code = codeMatch && parseFenceInfo(codeMatch[2]) !== null ? codeMatch : null
@@ -6192,8 +6313,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const captionable = code ? hasCloser(attached, 0) : colon && isFigureGroupOpener(parseColonOpener(colon[2])) && COLON_CLOSER.test(attached.at(-1) ?? '')
       if (captionable && CAPTION.test(lines[end] ?? '')) end++
       for (; i < end; i++) {
-        // attached VERBATIM, so the line keeps the measurement it has here
-        pushLine(lines[i], ind(i))
+        // Measure the attached block from the marker column.
+        const measured = ind(i)
+        const body = dedentMeasured(measured, lines[i], blockColumn)
+        pushLine(body.text, body.meas)
       }
       if (!unclosedAttached) pushLine('', BLANK_MEAS)
       closePara()
@@ -6233,8 +6356,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     while (i < n) {
       if (captureParagraphState) paragraphOpenBeforeComments = deepestParagraphOpen()
       const line = lines[i]
-      // `+` at the item's MARKER column attaches ONE following flush-left
-      // block to this item (SS17 L3/L4)
+      // `+` at the item's marker column attaches one block there (SS17 L3/L4).
       const lm = ind(i)
       if (markerNoteEligible && i > noteFenceEnd && lm.col >= markerNoteBodyColumn &&
           COMMENT_LINE.test(lm.rest) && !insideFence()) markerNoteCommentSeen = true
@@ -6259,23 +6381,28 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         (belowSpan !== null && lastCommentCloser(belowSpan.run) >= i) || lm.rest.startsWith('%%')
       captureParagraphState = !commentLine
       if (!commentLine && lm.rest === '') paragraphOpenBeforeComments = false
+      if (CONT_MARKER.test(lm.rest) && lm.col === contentCol && subCol >= 0) closePara()
       if (nestedOpaque?.kind === 'code' && CONT_MARKER.test(lm.rest) &&
           lm.col === (nestedOpaque.hostCol ?? nestedOpaque.col) &&
-          (i + 1 === n || isBlank(lines[i + 1]) || !attachesFlushLeft(ind(i + 1)))) {
+          (i + 1 === n || isBlank(lines[i + 1]) ||
+            !attachesFlushLeft(ind(i + 1), lm.L?.col ?? lm.col))) {
         skipped.add(i)
         i++
         continue
       }
-      if (CONT_MARKER.test(line) && lm.col === baseIndent) {
+      if (CONT_MARKER.test(lm.rest) && lm.col === baseIndent) {
         if ((fence.opaque?.kind === 'code' ||
             (nestedOpaque?.kind === 'code' && (nestedOpaque.hostCol ?? nestedOpaque.col) === lm.col)) &&
-            (i + 1 === n || isBlank(lines[i + 1]) || !attachesFlushLeft(ind(i + 1)))) {
+            (i + 1 === n || isBlank(lines[i + 1]))) {
           skipped.add(i)
           i++
           continue
         }
         i++
-        attachFlushLeft()
+        if (!attachFlushLeft() && i < n && !isBlank(lines[i]) &&
+            (ind(i).L?.col ?? ind(i).col) < sourceMarkerCol) {
+          break
+        }
         continue
       }
       if (CONT_MARKER.test(lm.rest) && lm.col >= contentCol && nestedOpaque?.kind === 'code' &&
@@ -6849,6 +6976,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           col > colonBases.at(-1) &&
           col === authoredBlockBase && COLON_CLOSER.test(lm.rest)
         pushLine(codeColonText ? LAZY + dedented : dedented, dmeas)
+        if (nm && lm.rest.includes('+') && markerCarriesContinuation(lm.rest.trim(),
+            prefixMemo(state, lines, i).continuation ??= new Map())) {
+          const columns = state.markerLineColumns.get(itemLines) ?? new Map()
+          columns.set(itemLines.length - 1, lm.L?.col ?? lm.col)
+          state.markerLineColumns.set(itemLines, columns)
+        }
         // Advance the incremental three-kind tracker so the blank-line branch
         // above knows whether an interior blank is fence content.
         if (openerBase !== null && !termAttributes) {
@@ -6936,6 +7069,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (subCol < 0 && nm && nm.indent >= contentCol && !inDefBody) {
           subCol = nm.indent + nm.markerWidth
           paraBeforeSublist = paragraphIsOpen() ? [...para] : []
+        }
+        if (nm && nm.indent >= contentCol && markerCarriesContinuation(lm.rest.trim(),
+            prefixMemo(state, lines, i).continuation ??= new Map())) {
+          carriesBareContinuation = true
+          nestedAttachmentColumn = lm.L?.col ?? lm.col
+          nestedAttachmentEnd = -1
         }
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
@@ -7176,10 +7315,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // spelling, and a rule with two spellings is a rule that drifts. A
         // refusal leaves the end UNSET rather than empty, because this loop
         // asks once per line and the marker stays live for the next one.
-        if (nestedAttachmentEnd < 0 && attachesFlushLeft(lm)) {
+        const firstBlockAtZero = (lm.L?.col ?? lm.col) === 0 && !matchMarkerAt(lm)
+        const attachmentColumn = firstBlockAtZero ? 0 : nestedAttachmentColumn
+        if (nestedAttachmentEnd < 0 && attachesFlushLeft(lm, attachmentColumn)) {
           nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
             ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-            matchMarkerAt(ind(idx))?.indent === baseIndent, lm)
+            matchMarkerAt(ind(idx))?.indent === baseIndent, lm, attachmentColumn)
         }
         if (i < nestedAttachmentEnd) {
           pushLine(line, lm)

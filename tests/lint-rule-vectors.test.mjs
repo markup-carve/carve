@@ -25,6 +25,7 @@ const engineDir = process.env.CARVE_JS_DIR
   : resolve(root, 'node_modules/@markup-carve/carve')
 const { lintCarve } = await import(pathToFileURL(resolve(engineDir, 'dist/index.js')).href)
 const lintSource = readFileSync(resolve(engineDir, 'dist/lint.js'), 'utf8')
+const ahead = JSON.parse(readFileSync(resolve(root, 'resources/lint-vector-ahead-of-pin.json'), 'utf8'))
 
 test('the vector directory is not empty', () => {
   assert.ok(files.length > 0)
@@ -38,6 +39,9 @@ for (const file of files) {
     assert.equal(file, `${data.rule}.json`)
     assert.ok(page.includes(`| \`${data.rule}\` |`), `${data.rule} has no row in docs/validation.md`)
     const names = data.vectors.map((v) => v.name)
+    if (data.rule === 'continuation-marker-refused') {
+      assert.deepEqual(Object.keys(ahead).filter((name) => !names.includes(name)), [])
+    }
     assert.equal(new Set(names).size, names.length, 'duplicate vector name')
     const positives = data.vectors.filter((v) => v.expected.findings.length > 0)
     assert.ok(positives.length > 0 && positives.length < data.vectors.length,
@@ -63,11 +67,15 @@ for (const file of files) {
   test(`${file}: carve-js`, { skip: carried ? false : `${engineDir} does not carry ${data.rule}` }, () => {
     for (const v of data.vectors) {
       const actual = lintCarve(v.source).filter((w) => w.rule === data.rule)
+      const pinned = data.rule === 'continuation-marker-refused' ? ahead[v.name] : undefined
+      const expected = v.expected.findings.map((f) => [f.line, f.column])
+      if (pinned) assert.notDeepEqual(pinned.actual, expected, `${v.name}: stale pin declaration`)
       assert.deepEqual(
         actual.map((w) => [w.line, w.column]),
-        v.expected.findings.map((f) => [f.line, f.column]),
+        pinned?.actual ?? expected,
         v.name,
       )
+      if (pinned) continue
       v.expected.findings.forEach((f, i) => {
         if ('includes' in f) {
           for (const part of f.includes) {

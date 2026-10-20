@@ -1,0 +1,603 @@
+A refused continuation plus remains text
+
+```
+- a
+  - b
+  +
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
++
+tail</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+  +
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
++</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+
++
+- s
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>+</p>
+<ul>
+  <li>s</li>
+</ul>
+```
+
+````
+- ```
++
+- s
+.
+<ul>
+  <li>
+    <pre><code></code></pre>
+  </li>
+</ul>
+<p>+</p>
+<ul>
+  <li>s</li>
+</ul>
+````
+
+````
+- a
+  - ```
+    +
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code>+
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- a
+  - ```
+  +
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    +
+  </li>
+</ul>
+````
+
+````
+- a
+  - ```
+  x
+  +
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    x
++
+  </li>
+</ul>
+````
+
+````
+- a
+  - ```
+  x
+    +
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    x
++
+  </li>
+</ul>
+````
+
+```
+1. [ ] +
+.
+<ol>
+  <li>[ ] +</li>
+</ol>
+```
+
+```
+- foo
+  - [ ] task
+  +
+  > q
+.
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task"> task
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- foo
+  - [ ] task
+    +
+  - x
+.
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task +"> task
++</li>
+    </ul>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- foo
+  - [ ] task
+  +
+  - x
+.
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task +"> task
++</li>
+    </ul>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+> - a
+> +
+.
+<blockquote>
+  <ul>
+    <li>a
++</li>
+  </ul>
+</blockquote>
+```
+
+```
+- a
+  - b
+  +
+  - c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
++</li>
+      <li>c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+````
+- foo
+  - [ ] task
+  +
+  ```sh
+  npm test
+  ```
+  - [ ] more
+.
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task"> task
+        <pre><code class="language-sh">npm test
+</code></pre>
+      </li>
+      <li><input type="checkbox" disabled aria-label="more"> more</li>
+    </ul>
+  </li>
+</ul>
+````
+
+```
+- foo
+  - [ ] task
+    +
+    q
+.
+<ul>
+  <li>foo
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="task + q"> task
++
+q</li>
+    </ul>
+  </li>
+</ul>
+```
+
+````
+- a
+  - ``` =html
+    +
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        +
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- a
+  - ``` =html
+  +
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    +
+  </li>
+</ul>
+````
+
+```
+- a
+  - b
+  +
+left
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
++
+left</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+  +
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
++</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- > a
+  +
+  b
+.
+<ul>
+  <li>
+    <blockquote>
+      <p>a</p>
+      <p>b</p>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- x
+  - > a
+    +
+    b
+.
+<ul>
+  <li>x
+    <ul>
+      <li>
+        <blockquote>
+          <p>a</p>
+          <p>b</p>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- +
+.
+<ul>
+  <li></li>
+</ul>
+```
+
+```
+- +
+
+para
+.
+<ul>
+  <li></li>
+</ul>
+<p>para</p>
+```
+
+```
+- +
+- b
+.
+<ul>
+  <li></li>
+  <li>b</li>
+</ul>
+```
+
+```
+1. +
+.
+<ol>
+  <li></li>
+</ol>
+```
+
+```
+- [ ] +
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled> </li>
+</ul>
+```
+
+```
+- foo
+  - +
+  - b
+.
+<ul>
+  <li>foo
+    <ul>
+      <li></li>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+> +
+flush
+.
+<blockquote><p>flush</p></blockquote>
+```
+
+```
+> > +
+flush
+.
+<blockquote>
+  <blockquote><p>flush</p></blockquote>
+</blockquote>
+```
+
+```
+- a
+  - - +
+  > b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <blockquote><p>b</p></blockquote>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - - +
+> b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <blockquote><p>b</p></blockquote>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - > +
+  b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+> > +
+> b
+.
+<blockquote>
+  <blockquote><p>b</p></blockquote>
+</blockquote>
+```
+
+```
+- > +
+# h
+.
+<ul>
+  <li>
+    <blockquote>
+      <h1 id="h">h</h1>
+    </blockquote>
+  </li>
+</ul>
+```
+
+````
+- > +
+```
+x
+```
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+  </li>
+</ul>
+````
+
+```
+- > +
+| a |
+.
+<ul>
+  <li>
+    <blockquote>
+      <table>
+        <tbody>
+          <tr><td>a</td></tr>
+        </tbody>
+      </table>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > +
+> q
+.
+<ul>
+  <li>
+    <blockquote>
+      <blockquote><p>q</p></blockquote>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
+  - > +
+# h
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote>
+          <h1 id="h">h</h1>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - > +
+  # h
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote>
+          <h1 id="h">h</h1>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```

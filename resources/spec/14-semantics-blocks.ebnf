@@ -101,6 +101,8 @@
          continuation; a list needs a blank line before it (matching Djot).
          "Liste: \n - eins \n - zwei" is ONE paragraph, so is
          "x = 5 \n * 3 + 17"; a blank line starts the list.
+         The only exception is the one-line paragraph formed by a refused
+         sibling `+` under §17 L3. A following list item may interrupt it.
          TIGHT NESTED LISTS UNAFFECTED:
          indented marker inside an open list ITEM opens a sublist with no
          blank line -- that is §24 C3 (content column), not this relation.

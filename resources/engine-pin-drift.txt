@@ -24,4 +24,84 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-5  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+384-a-continuation-marker-attaches-only-a-flush-left-block-6  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+384-a-continuation-marker-attaches-only-a-flush-left-block-7  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+435-the-continuation-marker-s-column-gate-reaches-every-container-11  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+435-the-continuation-marker-s-column-gate-reaches-every-container-13  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+435-the-continuation-marker-s-column-gate-reaches-every-container-17  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+435-the-continuation-marker-s-column-gate-reaches-every-container-2  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+435-the-continuation-marker-s-column-gate-reaches-every-container-4  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+435-the-continuation-marker-s-column-gate-reaches-every-container-7  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+616-a-line-is-read-in-the-container-whose-column-it-reaches-18  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+627-a-refused-marker-leaves-an-open-fence-s-blank-payload  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+627-a-refused-marker-leaves-an-open-fence-s-blank-payload-2  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+627-a-refused-marker-leaves-an-open-fence-s-blank-payload-3  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+627-a-refused-marker-leaves-an-open-fence-s-blank-payload-4  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+627-a-refused-marker-leaves-an-open-fence-s-blank-payload-6  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+627-a-refused-marker-leaves-an-open-fence-s-blank-payload-7  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-2  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-3  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-6  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-7  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-18  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-8  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
 631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-4  carve-js ccbbdcc9 leaves the nested task item empty and puts the column-0 fence at document level (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-10  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-13  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-15  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-16  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-21  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-22  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-26  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-27  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-28  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-3  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-30  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-31  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+632-a-continuation-marker-uses-its-container-column-34  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-11  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-12  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-13  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-15  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-16  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-17  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-19  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-2  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-20  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-21  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-23  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-24  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-25  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-27  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-28  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-29  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-32  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-37  The refused sibling text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-38  The refused sibling text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-39  The refused sibling text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-5  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-6  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-7  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-8  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-9  The dual-column first-block ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-10  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-13  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-15  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-21  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-22  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-3  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-31  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-32  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-33  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-35  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-36  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-37  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-38  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-39  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-4  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+634-a-refused-continuation-plus-remains-text-40  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).

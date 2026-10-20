@@ -1,12 +1,4420 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-10-14",
-    "spec": "fc88493a153ac850d3b884de18e9654db07300da",
-    "js": "26ccd5a57b9b88aeac75c6404f67f3fb8945cce5",
-    "php": "8b006142c53ffb3684388a2856062c8fe3d0904b",
-    "rust": "204af9cd5a2e144c54bca7efa0146cdd0a882cc6",
-    "documents": 2618
+    "date": "2026-10-20",
+    "spec": "964c48de484d37048b8863f98db6d840010c6ddb",
+    "js": "ccbbdcc983b01ffb9a53e4293bd63d0540325643",
+    "php": "34865bf37a34135b4e9b3ce7c1047b2281b91f15",
+    "rust": "8192aca313f4dd9ad81fa1f9f2c258780b68f365",
+    "documents": 2981
   },
-  "differences": []
+  "differences": [
+    {
+      "file": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            4,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            4,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            4,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-7.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/366-a-raw-block-keeps-the-blank-line-at-the-end-of-its-payload-too-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-17.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/476-an-item-s-fence-is-read-once-whatever-block-it-follows-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/476-an-item-s-fence-is-read-once-whatever-block-it-follows.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            4,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            4,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            4,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/480-a-bare-colon-opener-in-a-description-body-is-an-opener-7.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-10.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            6,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-11.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            7,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            7,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            7,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-body-detached",
+            6,
+            2
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-body-detached",
+            6,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-body-detached",
+            6,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-7.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-8.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-body-detached",
+            6,
+            2
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-body-detached",
+            6,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-body-detached",
+            6,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-9.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/511-a-fence-in-a-quote-stores-no-continuation-claim-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/511-a-fence-in-a-quote-stores-no-continuation-claim-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/513-a-comment-span-opened-below-every-content-column-is-located-there-8.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-10.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            5
+          ],
+          [
+            "unused-footnote-definition",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unused-footnote-definition",
+            1,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unused-footnote-definition",
+            1,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-8.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-9.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            9
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            9
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            9
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/521-a-zero-line-and-a-one-blank-raw-payload-are-not-the-same-block-7.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/521-a-zero-line-and-a-one-blank-raw-payload-are-not-the-same-block-8.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-10.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-11.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-12.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-18.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-19.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-20.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-32.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-35.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            6,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            6,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            6,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/547-an-info-string-does-not-change-how-a-flush-left-fence-folds-into-a-description-body-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/547-an-info-string-does-not-change-how-a-flush-left-fence-folds-into-a-description-body.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/548-a-description-body-whose-own-block-is-a-fence-keeps-no-line-below-its-column.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-16.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-17.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-19.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-20.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-22.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-29.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/555-an-unterminated-raw-fence-keeps-literal-payload-termination-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/555-an-unterminated-raw-fence-keeps-literal-payload-termination-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/555-an-unterminated-raw-fence-keeps-literal-payload-termination.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/557-a-line-retained-after-a-comment-opens-a-paragraph-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ],
+          [
+            "unclosed-container-fence",
+            2,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ],
+          [
+            "unclosed-container-fence",
+            2,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ],
+          [
+            "unclosed-container-fence",
+            2,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/557-a-line-retained-after-a-comment-opens-a-paragraph.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/558-a-container-boundary-is-read-at-the-container-s-own-column-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            5
+          ],
+          [
+            "list-item-block-overindented",
+            7,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            5
+          ],
+          [
+            "list-item-block-overindented",
+            7,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            5
+          ],
+          [
+            "list-item-block-overindented",
+            7,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/566-an-opener-past-a-hosted-container-s-column-opens-there-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            5,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            5,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            5,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            4,
+            8
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            8
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            4,
+            8
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            4,
+            8
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-10.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            7,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            9,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            6
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            7,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            7,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            9
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/584-a-fence-past-the-column-after-an-attribute-line-opens-on-its-authored-base-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            4,
+            4
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            4,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            4,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/584-a-fence-past-the-column-after-an-attribute-line-opens-on-its-authored-base.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            6,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            6,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/592-a-fence-closer-below-the-authored-base-is-measured-as-its-payload-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-7.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-8.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            2,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unattached-block-attribute",
+            2,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unattached-block-attribute",
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            2,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unattached-block-attribute",
+            2,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unattached-block-attribute",
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/607-a-quoted-comment-or-attribute-line-closes-the-quote-s-paragraph-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/607-a-quoted-comment-or-attribute-line-closes-the-quote-s-paragraph.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            3,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unattached-block-attribute",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "unattached-block-attribute",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unused-footnote-definition",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unused-footnote-definition",
+            3,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unused-footnote-definition",
+            3,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-7.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ],
+          [
+            "unused-footnote-definition",
+            2,
+            6
+          ]
+        ],
+        "php": [
+          [
+            "unused-footnote-definition",
+            2,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "unused-footnote-definition",
+            2,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            3,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unattached-block-attribute",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "unattached-block-attribute",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/616-a-line-is-read-in-the-container-whose-column-it-reaches-10.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/616-a-line-is-read-in-the-container-whose-column-it-reaches-13.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/616-a-line-is-read-in-the-container-whose-column-it-reaches-21.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/616-a-line-is-read-in-the-container-whose-column-it-reaches-22.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/616-a-line-is-read-in-the-container-whose-column-it-reaches-23.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/616-a-line-is-read-in-the-container-whose-column-it-reaches-24.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/616-a-line-is-read-in-the-container-whose-column-it-reaches-25.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-10.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-12.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            7,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-13.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-14.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            4,
+            9
+          ],
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            9
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            4,
+            9
+          ],
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            4,
+            9
+          ],
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            6,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-7.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            4
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-8.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-9.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/620-generated-container-documents-17.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unresolved-footnote",
+            2,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "unresolved-footnote",
+            2,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "unused-footnote-definition",
+            2,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/620-generated-container-documents-21.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ],
+          [
+            "unused-footnote-definition",
+            4,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unused-footnote-definition",
+            4,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-footnote-definition",
+            4,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/620-generated-container-documents-22.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/620-generated-container-documents-23.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-footnote-definition",
+            3,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "duplicate-footnote-definition",
+            3,
+            1
+          ],
+          [
+            "unresolved-reference-link",
+            5,
+            1
+          ],
+          [
+            "unused-footnote-definition",
+            2,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "duplicate-footnote-definition",
+            3,
+            1
+          ],
+          [
+            "unused-footnote-definition",
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/620-generated-container-documents-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unresolved-footnote",
+            3,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unresolved-footnote",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "unused-footnote-definition",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/620-generated-container-documents-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ],
+          [
+            "unused-footnote-definition",
+            5,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unused-footnote-definition",
+            5,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unresolved-footnote",
+            5,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-7.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            6
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            9
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload-2.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload-7.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-container-fence",
+            1,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-container-fence",
+            1,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-4.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-9.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-16.crv",
+      "reason": "Relative-column continuation diagnostics differ across pinned engines.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-18.crv",
+      "reason": "Relative-column continuation diagnostics differ across pinned engines.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-22.crv",
+      "reason": "Relative-column continuation diagnostics differ across pinned engines.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            4,
+            2
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            4,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-18.crv",
+      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-20.crv",
+      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-24.crv",
+      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-28.crv",
+      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/69-opaque-spans-inside-a-container-5.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/69-opaque-spans-inside-a-container-6.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/85-blockquote-lazy-continuation-stops-at-a-fenced-block-3.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/85-blockquote-lazy-continuation-stops-at-a-fenced-block.crv",
+      "reason": "Pinned lint engines disagree on this source at the current pins.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    }
+  ]
 }

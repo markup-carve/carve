@@ -606,11 +606,12 @@
       Where a tight list item's first block must be followed by a continuation
       marker, the writer puts that block on the marker line and the `+` on the
       next line (`- > p`, then `+`) for a top-level item, never a bare `- +`
-      with the block at column 0 below it. The writer never emits an indented
-      `+`. For a nested tight item it writes the block at the item's content
-      column with a blank line before it, as L2 permits. If a following
-      paragraph would fold lazily or loosen the item, it writes the item loose
-      and reports a writer loss.
+      with the block at column 0 below it. For a nested tight item it first
+      writes the block at the item's content column with a blank line before
+      it, as L2 permits. It MAY write a `+` at the nested item's marker column
+      only when that blank-line spelling would change the parsed tree, including
+      tightness or block ownership (markup-carve/carve#3421). If no spelling
+      round-trips, it reports a writer loss.
 
    7f. A REGION MARKER KEEPS ITS LINE -- NORMATIVE [CARVE-P11-073]. A region
       include selects the physical lines strictly between two marker lines
