@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { parse, normalizeAuthoredBodyBases } from '../scripts/spec/layout.mjs'
+import { parse, normalizeAuthoredBodyBases, layoutWork, resetLayoutWork } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 const F = '`'.repeat(3)
@@ -63,19 +63,14 @@ for (const [name, head, repeated, check = parse] of [
   test(`absorbed markers and fence searches scale linearly in a ${name}`, () => {
     const small = head + repeated.repeat(2000)
     const large = head + repeated.repeat(8000)
-    check(small)
-    check(large)
-    const measure = (src) => {
-      const samples = []
-      for (let i = 0; i < 5; i++) {
-        const start = performance.now()
-        check(src)
-        samples.push(performance.now() - start)
-      }
-      return samples.sort((a, b) => a - b)[2]
+    const work = (src) => {
+      resetLayoutWork()
+      check(src)
+      return layoutWork.forwardSearch
     }
-    const baseline = measure(small)
-    const elapsed = measure(large)
-    assert.ok(elapsed / baseline < 8, `${name}: 2000=${baseline} ms, 8000=${elapsed} ms`)
+    const baseline = work(small)
+    const scaled = work(large)
+    assert.ok(baseline > 0, `${name}: the closer search never ran`)
+    assert.ok(scaled / baseline < 6, `${name}: 2000=${baseline} steps, 8000=${scaled} steps`)
   })
 }

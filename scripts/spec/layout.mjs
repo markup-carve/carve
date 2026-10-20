@@ -71,13 +71,15 @@ const MAX_NESTING_DEPTH = 200
 /// for; carve-rs was doing 77 times that on a deep quote (carve-rs#731), from a
 /// loop that unwound the whole remaining prefix to answer a question about the
 /// innermost line. A counter here is what would have caught it.
+/// `forwardSearch` counts the lines `cachedForwardSearch` visits for the marker-note and
+/// description closer searches.
 /// `fenceCloserLookahead` is the one question about a quote's body that no
 /// incremental tracker can answer from the line in front of it: SS10 I4 opens a
 /// fence under a paragraph only when a closer FOLLOWS. Asking it with a forward
 /// scan per opener is quadratic on a body of fenced bodies, which is carve#2509,
 /// so the answer comes from an index built once per depth and this counts the
 /// lines that index reads.
-export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0 }
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
@@ -86,6 +88,7 @@ export function resetLayoutWork() {
   layoutWork.quoteStrips = 0
   layoutWork.lineVisits = 0
   layoutWork.fenceCloserLookahead = 0
+  layoutWork.forwardSearch = 0
 }
 
 /**
@@ -2407,6 +2410,7 @@ function cachedForwardSearch(cache, key, from, length, visit) {
   let end = from
   let result = -1
   for (; end < length; end++) {
+    layoutWork.forwardSearch++
     const outcome = visit(end)
     if (outcome === null) break
     if (outcome) { result = end; break }
