@@ -1745,6 +1745,8 @@ With no leading header row, every first cell can still be a row header — the t
 
 ## Fenced code
 
+A long block can be bounded in height with `{.scroll}` on the line above the fence. That is a stylesheet recipe, not syntax; see [Scrolling code blocks](../recipes#scrolling-code-blocks).
+
 ::: compare
 
 ````carve
@@ -1759,8 +1761,6 @@ print("hi")
 ```
 
 :::
-
-A long block can be bounded in height with `{.scroll}` on the line above the fence. That is a stylesheet recipe, not syntax; see [Scrolling code blocks](https://markup-carve.github.io/carve/recipes#scrolling-code-blocks).
 
 Literal tabs in code content are preserved verbatim (a tab is not the same as spaces; display width is a CSS `tab-size` concern). Opt in to tab→space expansion with a tab-normalize extension.
 
