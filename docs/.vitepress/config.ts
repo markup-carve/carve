@@ -163,7 +163,6 @@ export default defineConfig({
               { text: 'Parsed Document JSON', link: '/ast-json' },
               { text: 'Import HTML', link: '/html-import' },
               { text: 'Format Conversion', link: '/format-bridges' },
-              { text: 'File Inclusion Rules', link: '/includes' },
               { text: 'Output Without JavaScript', link: '/graceful-degradation' },
             ],
           },
