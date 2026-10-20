@@ -112,8 +112,9 @@ CI green:
    differences (carve-js#3310). A line there excuses only the `carve`-target
    byte difference for one row and engine pair; the round-trip HTML, the PART 11
    §1 invariants and the cross-read stay strict, and a line whose engines write
-   the same bytes again fails the run. Rows are measured at
-   `resources/engine-pins.json` and may stand at a release. Any other red
+   the same bytes again fails any run whose engines are at
+   `resources/engine-pins.json`, where the rows are measured. Rows may stand at
+   a release. Any other red
    formatter shard clears only when the engine does (carve#2588).
 
    `ast:check` also compares carve-rb, from a fourth checkout, `../carve-rb`.

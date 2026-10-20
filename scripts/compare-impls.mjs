@@ -14,6 +14,7 @@ import {
 import { parseShard, selectShard } from './lib/shard.mjs'
 import { runFast } from './lib/engine-fast-path.mjs'
 import {
+  fmtLayoutStaleBlocker,
   judgeFmtLayout,
   parseConverterLedger,
   parseFmtLayoutLedger,
@@ -1731,13 +1732,17 @@ for (const impl of active) {
   console.log(`  mismatching documents: ${new Set(s.mismatched.map((m) => m.split(' ').pop())).size}`)
 }
 console.log(`cross_impl_diffs=${crossImplDiffs}`)
-// Rows no longer diverging fail below. A narrowed corpus cannot say a slug is
-// missing from it, so the existence half needs the default corpus directory.
+// Rows no longer diverging fail below, judged only at the revisions the rows
+// were measured at. A narrowed corpus cannot say a slug is missing from it, so
+// the existence half needs the default corpus directory.
+const fmtLayoutBlocker = fmtLayout.entries.size > 0
+  ? fmtLayoutStaleBlocker(revisions, JSON.parse(readFileSync(process.env.CARVE_ENGINE_PINS_FILE ?? join(root, 'resources/engine-pins.json'), 'utf8')).engines)
+  : null
 const fmtLayoutStale = [
   ...fmtLayout.failures,
   ...staleFmtLayout(
     fmtLayout.entries,
-    fmtLayoutOutputs,
+    fmtLayoutBlocker === null ? fmtLayoutOutputs : new Map(),
     corpusName === 'core' && !corpusOverride
       ? new Set(readdirSync(corpusDir).filter((f) => f.endsWith('.crv')).map((f) => basename(f, '.crv')))
       : null,
@@ -1745,6 +1750,7 @@ const fmtLayoutStale = [
 ]
 if (fmtLayout.entries.size > 0 || fmtLayoutStale.length > 0) {
   console.log(`fmt_layout_declared=${declaredFmtLayout} fmt_layout_stale=${fmtLayoutStale.length}`)
+  if (fmtLayoutBlocker !== null) console.log(`  fmt layout lines not judged stale: ${fmtLayoutBlocker}`)
   for (const line of fmtLayoutStale) console.log(`  STALE fmt layout ${line}`)
 }
 if (roundtrip) {

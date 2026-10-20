@@ -17,7 +17,12 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { judgeFmtLayout, parseFmtLayoutLedger, staleFmtLayout } from '../scripts/lib/drift-ledger.mjs'
+import {
+  fmtLayoutStaleBlocker,
+  judgeFmtLayout,
+  parseFmtLayoutLedger,
+  staleFmtLayout,
+} from '../scripts/lib/drift-ledger.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const SLUG = '001-a'
@@ -79,7 +84,19 @@ function plantEngines(dir, tags, htmlTag = {}) {
   return { rs, php, js }
 }
 
-function compare({ tags, htmlTag, ledger }) {
+/** Commit a stub checkout so it has a HEAD the pins file can name. */
+function commitStub(dir) {
+  const git = (...args) => spawnSync('git', ['-C', dir, ...args], {
+    encoding: 'utf8',
+    env: { ...process.env, GIT_AUTHOR_NAME: 'stub', GIT_AUTHOR_EMAIL: 'stub@example.invalid', GIT_COMMITTER_NAME: 'stub', GIT_COMMITTER_EMAIL: 'stub@example.invalid' },
+  })
+  git('init', '-q')
+  git('add', '-A')
+  git('commit', '-q', '-m', 'stub')
+  return git('rev-parse', 'HEAD').stdout.trim()
+}
+
+function compare({ tags, htmlTag, ledger, atPins = true }) {
   const dir = mkdtempSync(join(tmpdir(), 'carve-fmt-layout-'))
   try {
     const engines = plantEngines(dir, tags, htmlTag)
@@ -89,6 +106,10 @@ function compare({ tags, htmlTag, ledger }) {
     writeFileSync(join(corpus, `${SLUG}.html`), 'para\n')
     const ledgerPath = join(dir, 'engine-fmt-layout.txt')
     writeFileSync(ledgerPath, `# test ledger\n${ledger.join('\n')}\n`)
+    const pins = { js: commitStub(engines.js), php: commitStub(engines.php), rs: commitStub(engines.rs) }
+    if (!atPins) pins.rs = '0'.repeat(40)
+    const pinsPath = join(dir, 'engine-pins.json')
+    writeFileSync(pinsPath, `${JSON.stringify({ engines: pins })}\n`)
     const run = spawnSync(
       process.execPath,
       [join(root, 'scripts/compare-impls.mjs'), '--roundtrip', '--fail-on-diff', `--corpus-dir=${corpus}`],
@@ -102,6 +123,7 @@ function compare({ tags, htmlTag, ledger }) {
           CARVE_JS_DIR: engines.js,
           CARGO_TARGET_DIR: '',
           CARVE_FMT_LAYOUT_LEDGER: ledgerPath,
+          CARVE_ENGINE_PINS_FILE: pinsPath,
         },
       },
     )
@@ -141,6 +163,23 @@ test('a declared line whose engines agree again fails as stale', () => {
   assert.equal(status, 1, out)
   assert.match(out, /STALE fmt layout js\|php\/001-a: js and php now write the same bytes/)
   assert.match(out, /STALE fmt layout js\|rust\/001-a/)
+})
+
+test('away from the engine pins a line is not judged stale, and says so', () => {
+  // The per-PR formatter job runs the engines' latest releases, not the pins
+  // the rows were measured at, so agreement there proves nothing about them.
+  const { status, out } = compare({ tags: { rust: 'r', php: 'r', js: 'r' }, ledger: BOTH_PAIRS, atPins: false })
+  assert.equal(status, 0, out)
+  assert.match(out, /fmt layout lines not judged stale: engines not at resources\/engine-pins.json: rust=/)
+  assert.doesNotMatch(out, /STALE fmt layout/)
+})
+
+test('the pin check names every engine off its pin', () => {
+  const pins = { js: 'a'.repeat(40), php: 'b'.repeat(40), rs: 'c'.repeat(40) }
+  const at = { engines: { rust: { head: pins.rs }, js: { head: pins.js }, php: { head: pins.php } } }
+  assert.equal(fmtLayoutStaleBlocker(at, pins), null)
+  const off = { engines: { ...at.engines, php: { head: 'd'.repeat(40) }, js: { head: null } } }
+  assert.match(fmtLayoutStaleBlocker(off, pins), /js=unknown .* php=dddddddddddd/)
 })
 
 test('a declaration does not excuse a difference in the HTML of the formatted output', () => {

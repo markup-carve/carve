@@ -15,8 +15,11 @@
 # row leaves the corpus, the run fails until the line is deleted, so a
 # declaration cannot outlive the fix.
 #
-# Measured at resources/engine-pins.json; a pin bump that changes the set
-# updates this file in the same pull request.
+# Measured at resources/engine-pins.json, and judged stale only by a run whose
+# engines are checked out at those pins (the scheduled formatter shards). The
+# per-PR formatter job runs the engines' latest releases, so there a line can
+# excuse a difference but is never called stale. A pin bump that changes the
+# set updates this file in the same pull request.
 #
 # Format: <a>|<b>/<slug><two or more spaces><reason naming owner/repo#N>
 # Engines are js, php, rust, written in that order.

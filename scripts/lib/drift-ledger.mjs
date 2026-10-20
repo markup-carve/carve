@@ -457,3 +457,22 @@ export function staleFmtLayout(entries, carveOutputs, corpusSlugs) {
   }
   return stale
 }
+
+/**
+ * Why this run cannot judge `engine-fmt-layout.txt` lines stale, or null when it
+ * can. The rows are measured at `resources/engine-pins.json`, so only a run
+ * whose engines are checked out at those pins can say a difference is gone; the
+ * per-PR formatter job runs the engines' latest releases instead.
+ *
+ * @param {{ engines: Record<string, { head: string | null }> }} revisions
+ * @param {Record<string, string>} pins `resources/engine-pins.json` `engines`.
+ * @returns {string | null}
+ */
+export function fmtLayoutStaleBlocker(revisions, pins) {
+  const off = []
+  for (const [name, { head }] of Object.entries(revisions.engines)) {
+    const pin = pins[name === 'rust' ? 'rs' : name]
+    if (!head || head !== pin) off.push(`${name}=${head ? head.slice(0, 12) : 'unknown'} (pin ${pin ? pin.slice(0, 12) : 'none'})`)
+  }
+  return off.length ? `engines not at resources/engine-pins.json: ${off.join(', ')}` : null
+}
