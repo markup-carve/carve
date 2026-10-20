@@ -127,17 +127,15 @@ const AHEAD_OF_PIN = {
     php: { output: '> x\n^ Bob   Smith\n' },
   },
   // carve#3373: an image alone in its paragraph is a block image, assessed like any paragraph.
-  // carve#3378: every pin still percent-encodes the non-ASCII destination.
+  // carve#3378: carve-js now keeps this destination as written; the other pins still encode it.
   'markdown-image-alone-in-its-paragraph': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '![x](/%C3%BC.png)\n' },
+    engines: ['rust', 'php'],
     rust: { output: '![x](/%C3%BC.png)\n', exit: 1, diagnostics: [UNVERIFIED] },
     php: { output: '![x](/%C3%BC.png)\n', exit: 1, diagnostics: [UNVERIFIED] },
   },
   // carve#3378: the importer keeps a non-ASCII destination as written.
   'markdown-destination-keeps-non-ascii': {
-    engines: ['js', 'rust', 'php'],
-    js: { output: '[a](/%C3%BC.png) and ![b](/%C3%BC.png) and [c](/%C3%BC)\n' },
+    engines: ['rust', 'php'],
     rust: { output: '[a](/%C3%BC.png) and ![b](/%C3%BC.png) and [c](/%C3%BC)\n' },
     php: { output: '[a](/%C3%BC.png) and ![b](/%C3%BC.png) and [c](/%C3%BC)\n', exit: 1, diagnostics: [UNVERIFIED] },
   },
@@ -154,74 +152,68 @@ const AHEAD_OF_PIN = {
   },
   // carve#3413: every engine assesses these Markdown shapes completely.
   'markdown-destination-pipe-in-a-table-cell-stays-encoded': {
-    engines: ['js', 'php'],
+    engines: ['php'],
     pinned: { exit: 1, diagnostics: [UNVERIFIED] },
   },
   'markdown-paragraph-holding-a-pipe-is-assessed': {
-    engines: ['js', 'php'],
+    engines: ['php'],
     pinned: { exit: 1, diagnostics: [UNVERIFIED] },
   },
-  // The pins also predate the literal destination (carve#3390).
+  // The Rust and PHP pins predate the literal destination (carve#3390).
   'markdown-link-destination-holding-a-pipe-is-assessed': {
-    engines: ['js', 'rust', 'php'],
+    engines: ['rust', 'php'],
     pinned: { output: '[c](/a%7Cb)\n', exit: 1, diagnostics: [UNVERIFIED] },
     rust: { output: '[c](/a%7Cb)\n' },
   },
   'markdown-bracket-that-opens-no-link-is-assessed': {
-    engines: ['js', 'rust', 'php'],
+    engines: ['rust', 'php'],
     pinned: { output: 'a [b [https://e.com/\\]](https://e.com/%5D) c\n', exit: 1, diagnostics: [UNVERIFIED] },
     rust: { output: 'a [b [https://e.com/\\]](https://e.com/%5D) c\n' },
   },
   // carve#3389: an autolink that falls back to an explicit link keeps its brackets.
   'markdown-autolink-fallback-keeps-its-brackets': {
-    engines: ['js', 'rust', 'php'],
+    engines: ['rust', 'php'],
     pinned: { output: '[https://example.com/\\\\\\[\\\\](https://example.com/%5C%5B%5C)\n', diagnostics: [UNVERIFIED], exit: 1 },
     rust: { output: '[https://example.com/\\\\\\[\\\\](https://example.com/%5C%5B%5C)\n' },
   },
   // carve#3390: an angle-bracket destination is assessed like any other link.
   'markdown-angle-destination-is-assessed': {
-    engines: ['js', 'php'],
+    engines: ['php'],
     pinned: { diagnostics: [UNVERIFIED], exit: 1 },
   },
   // carve#3391, carve#3393: a bare URL escapes only what the parse needs and keeps its text as destination.
   'markdown-bare-url-label-escapes-only-what-it-must': {
-    engines: ['js', 'php', 'rust'],
-    js: { output: "see [https://example.com/[a]b](https://example.com/%5Ba%5Db) here\n" },
+    engines: ['php', 'rust'],
     php: { output: "see [https://example.com/\\[a\\]b](https://example.com/%5Ba%5Db) here\n" },
     rust: { output: "see [https://example.com/[a]b](https://example.com/%5Ba%5Db) here\n" },
   },
   // carve#3392: a destination keeps ASCII punctuation Carve reads literally.
   'markdown-destination-keeps-ascii-punctuation': {
-    engines: ['js', 'php', 'rust'],
-    js: { output: "[a](/x%5Cy) [b](/a%60b) [c](/a%5Eb%7Bc%7D) [d](/a%22b) [e](/a%3Cb%3E)\n" },
+    engines: ['php', 'rust'],
     php: { output: "[a](/x%5Cy) [b](/a%60b) [c](/a%5Eb%7Bc%7D) [d](/a%22b) [e](/a%3Cb%3E)\n", diagnostics: [UNVERIFIED], exit: 1 },
     rust: { output: "[a](/x%5Cy) [b](/a%60b) [c](/a%5Eb%7Bc%7D) [d](/a%22b) [e](/a%3Cb%3E)\n", diagnostics: [UNVERIFIED], exit: 1 },
   },
   // carve#3392: a backslash doubles only before a backslash, a parenthesis or the end.
   'markdown-destination-backslash-takes-the-minimal-escape': {
-    engines: ['js', 'php', 'rust'],
-    js: { output: "[e](/x%5C) [f](/a%5C\\() [g](/a%5C%5Cb)\n", diagnostics: [UNVERIFIED], exit: 1 },
+    engines: ['php', 'rust'],
     php: { output: "[e](/x%5C) [f](/a%5C\\() [g](/a%5C%5Cb)\n", diagnostics: [UNVERIFIED], exit: 1 },
     rust: { output: "[e](/x%5C) [f](/a%5C\\() [g](/a%5C%5Cb)\n" },
   },
   // carve#3392: a paired parenthesis stays bare.
   'markdown-destination-pairs-its-parentheses': {
-    engines: ['js', 'php', 'rust'],
-    js: { output: "[a](/x\\)\\(a) [b](/x\\(a\\)\\)) [c](/x\\(\\(a\\)) [d](/x%5C\\(a\\))\n", diagnostics: [UNVERIFIED], exit: 1 },
+    engines: ['php', 'rust'],
     php: { output: "[a](/x\\)\\(a) [b](/x\\(a\\)\\)) [c](/x\\(\\(a\\)) [d](/x%5C\\(a\\))\n", diagnostics: [UNVERIFIED], exit: 1 },
     rust: { output: "[a](/x\\)\\(a) [b](/x(a)\\)) [c](/x\\((a)) [d](/x%5C(a))\n" },
   },
   // carve#3393: a bare URL keeps its text as its destination.
   'markdown-bare-url-keeps-its-text-as-destination': {
-    engines: ['js', 'php', 'rust'],
-    js: { output: "see [https://e.com/ü](https://e.com/%C3%BC) here\n" },
+    engines: ['php', 'rust'],
     php: { output: "see [https://e.com/ü](https://e.com/%C3%BC) here\n" },
     rust: { output: "see [https://e.com/ü](https://e.com/%C3%BC) here\n" },
   },
   // carve#3399: a link whose text holds an autolink stays a link.
   'markdown-autolink-in-link-text-keeps-the-link': {
-    engines: ['js', 'php', 'rust'],
-    js: { output: "[x [https://e.com/a\\]b](https://e.com/a%5Db) y](/u)\n" },
+    engines: ['php', 'rust'],
     php: { output: "[x [https://e.com/a\\]b](https://e.com/a%5Db) y]\\(/u)\n" },
     rust: { output: "[x [https://e.com/a\\]b](https://e.com/a%5Db) y](/u)\n" },
   },
@@ -237,15 +229,10 @@ const AHEAD_OF_PIN = {
     },
   },
   'link-fragment-case-rewritten-names-the-authored-spelling': {
-    engines: ['js', 'rust', 'php'],
+    engines: ['rust', 'php'],
     pinned: {
       output: '# Über Uns\n\nSee [a](#%C3%BCber-uns).\n',
       diagnostics: [{ code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }],
-    },
-    // carve#3378: the js pin rewrites the fragment but still percent-encodes it.
-    js: {
-      output: '# Über Uns\n\nSee [a](#%C3%9Cber-Uns).\n',
-      message: 'Rewrote link fragment #über-uns to #%C3%9Cber-Uns, the one heading id it matches without regard to case.',
     },
     // carve-rs assesses this input completely where carve-php does not.
     rust: {

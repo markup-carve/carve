@@ -100,18 +100,10 @@
     },
     {
       "name": "nested-item",
-      "description": "The nested item's marker column.",
+      "description": "An indented plus in a nested item is ordinary text.",
       "source": "- a\n  - b\n  +\n\npara\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 3,
-            "includes": [
-              "blank line"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {

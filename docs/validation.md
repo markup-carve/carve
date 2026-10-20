@@ -305,10 +305,11 @@ The shared vectors are in
 
 ### Refused continuation markers
 
-`continuation-marker-refused` reports a `+` that sits where PART 9 §17 L3
-reads a continuation marker, at the marker column of an open list item or
-definition description, or alone after the item marker in the first-block
-form (`- +`, `1. +`, `: +`), when the next line is blank or the input ends.
+`continuation-marker-refused` reports a `+` that PART 9 §17 L3 reads as a
+continuation marker: alone at column 0 of its quote level while a list item or
+definition description is open, or first after a block opener in the
+first-block form (`- +`, `1. +`, `: +`). It reports when the next line is blank
+or the input ends.
 PART 9 §17 L4 refuses the marker and ends the body. The block below the
 blank line is not attached, and the list or description ends at the `+`:
 
@@ -333,11 +334,12 @@ Not reported:
 - a `+` followed by a line that is not flush-left; L4 refuses that marker
   too, but the line lands by the ordinary column rules and often stays in
   the item;
-- a `+` in a block quote or a footnote body, where L4 makes it ordinary
-  text that renders;
+- an indented `+` in a nested item, which is ordinary text;
+- a `+` with no open list item or definition description to attach to,
+  including the block quote and footnote body vectors;
 - a `+` inside a code fence's content column, which is payload.
 
-A `+` at the marker column under a fence that is still open is reported like
+A column-0 `+` under a fence that is still open is reported like
 any other: the marker is refused whatever the fence does with the blank line
 after it (markup-carve/carve#3400 settles that payload, not the refusal).
 
@@ -542,30 +544,31 @@ published page: the **caption of a captioned listing**, and the body of a
 
 ### Which implementations provide these rules
 
-All three engines provide `carve lint`. The default triggers in
+All three engines provide `carve lint`. `npm run parity:check` runs the default
+triggers in
 [`resources/lint-default-triggers.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-default-triggers.json)
-pass in the builds recorded in
-[`resources/lint-corpus-drift.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-corpus-drift.json),
-except the ones declared in
+against the pinned builds. The missing PHP and Rust rules are declared in
 [`resources/lint-parity-drift.txt`](https://github.com/markup-carve/carve/blob/main/resources/lint-parity-drift.txt).
-Those builds agree on 2,167 of the 2,168 corpus documents; the one declared
-difference is listed in the same file. Passing a trigger establishes that a rule
-can fire; corpus agreement does not establish correctness for every possible
-input.
+[`resources/lint-corpus-drift.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-corpus-drift.json)
+records an earlier pin measurement; its corpus agreement count does not describe
+the current pins. Passing a trigger establishes that a rule can fire; it does
+not establish correctness for every possible input.
 
 | implementation | measured coverage |
 |---|---|
-| carve-js | 37 default triggers; `unattached-block-attribute`; Djot and Markdown migration checks; opt-in platform checks |
-| carve-php | 37 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; opt-in platform checks |
-| carve-rs | 37 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; no platform checks |
+| carve-js | 43 default triggers; `unattached-block-attribute`; Djot and Markdown migration checks; opt-in platform checks |
+| carve-php | 41 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; opt-in platform checks |
+| carve-rs | 41 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; no platform checks |
 
 `bibliography-placement-in-container` and `table-marker-run-padding` are
 specified but absent from these builds, and none of them reports
 `unresolved-reference-link` for a reference image yet. `consumed-key-near-miss`
-is in carve-js; carve-php and carve-rs port it next (markup-carve/carve#3340). `unclosed-code-fence` and `continuation-marker-refused` are specified ahead of the engines (markup-carve/carve#3407); their default triggers are declared missing in `resources/lint-parity-drift.txt` until the pins carry them. The engines still emit
-`table-alignment-run-padding`. The broader Djot migration checks remain specific
-to carve-js. Diagnostic message wording is engine-specific; compare the rule id
-and source location.
+is in carve-js; carve-php and carve-rs port it next (markup-carve/carve#3340).
+`unclosed-code-fence` and `continuation-marker-refused` are in carve-js;
+carve-php and carve-rs still owe them (markup-carve/carve#3407). The engines
+still emit `table-alignment-run-padding`. The broader Djot migration checks
+remain specific to carve-js. Diagnostic message wording is engine-specific;
+compare the rule id and source location.
 
 #### Checking lint parity
 

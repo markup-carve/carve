@@ -121,8 +121,6 @@ const NOT_IN_THE_PIN_YET = new Map([
     'specified by markup-carve/carve#1464; no engine emits it yet, and it ' +
       'supersedes table-alignment-run-padding once they do',
   ],
-  ['unclosed-code-fence', 'specified by markup-carve/carve#3407; the pinned build does not carry it yet'],
-  ['continuation-marker-refused', 'specified by markup-carve/carve#3407; the pinned build does not carry it yet'],
 ])
 
 /*

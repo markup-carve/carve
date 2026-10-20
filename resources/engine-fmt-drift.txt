@@ -20,7 +20,3 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence  carve#3369: pinned reader loses the caption when rereading its canonical continuation fence.
-622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-2  carve#3369: pinned reader loses the caption when rereading its canonical continuation fence.
-622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-3  carve#3369: pinned reader loses the caption when rereading its canonical continuation fence.
-622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence-4  carve#3369: pinned reader loses the caption when rereading its canonical continuation fence.
