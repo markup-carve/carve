@@ -115,8 +115,8 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L244) | 9 | CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0 |
 | [`CARVE-P9-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L257) | 9 | ONE IS A COUNT AND THE BOUNDARY IS NOT |
 | [`CARVE-P9-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L277) | 9 | THE MARKER IS ONE OPERATION IN EVERY CONTAINER |
-| [`CARVE-P9-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L359) | 9 | L6 A COLLECTED DEFINITION LEAVES NO TRACE |
-| [`CARVE-P9-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L375) | 9 | L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN |
+| [`CARVE-P9-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L360) | 9 | L6 A COLLECTED DEFINITION LEAVES NO TRACE |
+| [`CARVE-P9-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L376) | 9 | L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN |
 | [`CARVE-P9-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L2) | 9 | TRAILING LINE COMMENTS |
 | [`CARVE-P9-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L30) | 9 | DELIMITED INLINE COMMENTS |
 | [`CARVE-P9-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L73) | 9 | FORCED EMPHASIS AND EXPLICIT SAME-TYPE NESTING |

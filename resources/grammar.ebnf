@@ -6274,7 +6274,8 @@ EOF = (* end of file *) ;
          open; inside an open code or raw fence, the refused `+` at the host's
          marker column is skipped, the fence continues, and a blank line after
          it is payload as it would be without the `+`, at any depth. In a block
-         quote and a footnote body the `+` is ordinary text:
+         quote and a footnote body a first-block `+` is ordinary text, while a
+         `+` later in the body with nothing after it adds no content (L3):
          `> +` is a quote holding the paragraph `+`, `[^a]: +` is a note holding
          the text `+`, and a line that is not flush-left lands wherever the
          ordinary column rules put it. So

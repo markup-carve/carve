@@ -310,6 +310,14 @@ index: examples/edge-cases/index.md
   628-a-marker-below-an-open-div-attaches-beside-the-div-2
   628-a-marker-below-an-open-div-attaches-beside-the-div-3
   628-a-marker-below-an-open-div-attaches-beside-the-div-4
+  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one
+  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-2
+  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-3
+  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4
+  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-5
+  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-6
+  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-7
+  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3
