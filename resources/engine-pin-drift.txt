@@ -105,3 +105,4 @@
 634-a-refused-continuation-plus-remains-text-39  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
 634-a-refused-continuation-plus-remains-text-4  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
 634-a-refused-continuation-plus-remains-text-40  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-3  The relative-column follow-up is ahead of the pinned carve-js build (markup-carve/carve#3421).

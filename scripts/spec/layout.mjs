@@ -2792,21 +2792,37 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
   const markerColumns = []
   const quotedMarkerColumns = new Map()
   let quoteColumn = -1
+  let sourceFenceScanAt = 0
+  let sourceFenceOpen = null
+  let sourceFenceQuoteDepth = 0
+  const sourceFenceLine = line => {
+    const quoted = quoteLeaf(line)
+    let rest = quoted.measured.rest
+    let depth = quoted.depth
+    const marker = matchMarkerAt(quoted.measured)
+    if (marker) {
+      rest = marker.text.trimStart()
+      while (QUOTE.test(rest)) { rest = QUOTE.exec(rest)[1] ?? ''; depth++ }
+    }
+    return { rest, depth }
+  }
   const sourceFenceOpenBefore = at => {
-    let open = null
-    for (let row = 0; row < at; row++) {
-      let rest = indentCols(sourceLines[row]).rest
-      while (QUOTE.test(rest)) rest = QUOTE.exec(rest)[1] ?? ''
-      const marker = matchMarkerAt(indentCols(rest))
-      if (marker) rest = marker.text.trimStart()
+    for (let row = sourceFenceScanAt; row < at; row++) {
+      const { rest, depth } = sourceFenceLine(sourceLines[row])
+      if (sourceFenceOpen && depth < sourceFenceQuoteDepth) sourceFenceOpen = null
       const run = PURE_FENCE.exec(rest)?.[1]
-      if (open && run && run[0] === open[0] && run.length >= open.length) open = null
-      else if (!open) {
+      if (sourceFenceOpen && run && run[0] === sourceFenceOpen[0] && run.length >= sourceFenceOpen.length) sourceFenceOpen = null
+      else if (!sourceFenceOpen) {
         const fence = FENCE.exec(rest)
-        if (fence && parseFenceInfo(fence[2]) !== null) open = fence[1]
+        if (fence && parseFenceInfo(fence[2]) !== null) {
+          sourceFenceOpen = fence[1]
+          sourceFenceQuoteDepth = depth
+        }
       }
     }
-    return open !== null
+    sourceFenceScanAt = at
+    if (sourceFenceOpen && sourceFenceLine(sourceLines[at]).depth < sourceFenceQuoteDepth) sourceFenceOpen = null
+    return sourceFenceOpen !== null
   }
   const quoteLeaf = line => {
     let rest = indentCols(line).rest
@@ -2814,10 +2830,46 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
     while (QUOTE.test(rest)) { rest = QUOTE.exec(rest)[1] ?? ''; depth++ }
     return { depth, leaf: rest, measured: indentCols(rest) }
   }
+  const sourceHasLonePlus = sourceLines.some(line =>
+    /^[ \t]*(?:>[ \t]*)*\+[ \t]*$/.test(line) ||
+    /^[ \t]*(?:(?:[-*]|\d+[.)])[ \t]+)+(?:\[[ xX_-]\][ \t]+)?\+[ \t]*$/.test(line))
+  const quotePathBefore = []
+  const sourceFenceBefore = []
+  let liveQuoteDepth = 0
+  let hostedQuoteColumn = null
+  let hostedMarkerQuote = false
+  let liveQuoteItem = false
+  if (sourceHasLonePlus) for (const [index, line] of sourceLines.entries()) {
+    quotePathBefore.push({ depth: liveQuoteDepth, hostedColumn: hostedQuoteColumn, hostedMarker: hostedMarkerQuote, item: liveQuoteItem })
+    const inFence = sourceFenceOpenBefore(index)
+    sourceFenceBefore.push(inFence)
+    if (inFence) continue
+    const quoted = quoteLeaf(line)
+    const rest = quoted.measured.rest
+    const marker = matchMarkerAt(quoted.measured)
+    if (rest === '' || marker || startsVisibleBlock(rest) || FENCE.test(rest)) {
+      liveQuoteDepth = quoted.depth
+      hostedQuoteColumn = null
+      hostedMarkerQuote = false
+      liveQuoteItem = !!marker
+    } else if (quoted.depth > liveQuoteDepth) {
+      liveQuoteDepth = quoted.depth
+      hostedQuoteColumn = null
+      hostedMarkerQuote = false
+      liveQuoteItem = false
+    }
+    if (QUOTE.test(rest)) { hostedQuoteColumn = quoted.measured.col; hostedMarkerQuote = false }
+    if (marker && quoteLeaf(marker.text).depth > 0) {
+      hostedQuoteColumn = marker.indent + marker.markerWidth
+      hostedMarkerQuote = true
+    }
+  }
   const openSiblingList = (index, col, depth) => {
     for (let row = index - 1; row >= 0; row--) {
       const leaf = quoteLeaf(sourceLines[row])
       if (leaf.depth !== depth) {
+        const quotedCol = indentCols(sourceLines[row]).col
+        if (depth === 0 && leaf.depth > 0 && (quotedCol > col || col > 0 && quotedCol === col)) continue
         const host = depth === 1 ? matchMarkerAt(indentCols(sourceLines[row])) : null
         const hosted = host ? quoteLeaf(host.text) : null
         return hosted?.depth === depth && hosted.measured.col === col && !!matchMarkerAt(hosted.measured)
@@ -2831,9 +2883,6 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
     }
     return false
   }
-  const sourceHasLonePlus = sourceLines.some(line =>
-    /^[ \t]*(?:>[ \t]*)*\+[ \t]*$/.test(line) ||
-    /^[ \t]*(?:(?:[-*]|\d+[.)])[ \t]+)+(?:\[[ xX_-]\][ \t]+)?\+[ \t]*$/.test(line))
   const lines = sourceHasLonePlus ? sourceLines.map((line, index) => {
     const stackedFollower = sourceLines[index + 1] === undefined
       ? null : indentCols(sourceLines[index + 1])
@@ -2851,6 +2900,13 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
       const next = sourceLines[index + 1] === undefined ? null : quoteLeaf(sourceLines[index + 1])
       if (CONT_MARKER.test(quoted.measured.rest)) {
         const sameLevel = next?.depth === quoted.depth
+        const owner = quotePathBefore[index]
+        const prior = index === 0 ? null : quoteLeaf(sourceLines[index - 1])
+        const missingInnerPrefix = sameLevel && !sourceFenceBefore[index] &&
+          (owner.depth > quoted.depth && (owner.item || prior?.depth > quoted.depth && startsVisibleBlock(prior.measured.rest)) ||
+            owner.depth === quoted.depth &&
+            owner.hostedColumn !== null && quoted.measured.col >= owner.hostedColumn &&
+            (!owner.hostedMarker || !!matchMarkerAt(next.measured) || FENCE.test(next.measured.rest)))
         const sibling = sameLevel && stack.includes(quoted.measured.col) &&
           openSiblingList(index, quoted.measured.col, quoted.depth) &&
           next.measured.col === quoted.measured.col && matchMarkerAt(next.measured)
@@ -2861,7 +2917,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
         const refused = (!sameLevel && !firstBlockFollower) ||
           !next.measured.rest || (!firstBlockFollower && next.measured.col !== quoted.measured.col)
         if (sibling) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, refusedSiblingSentinel) }
-        if (refused) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, sentinel) }
+        if (refused || missingInnerPrefix) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, sentinel) }
         return line
       }
       let opener = matchMarkerAt(quoted.measured)
@@ -2881,7 +2937,12 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
       const sibling = markerColumns.includes(measured.col) && openSiblingList(index, measured.col, 0) &&
         next && next.col === measured.col && matchMarkerAt(next)
       const refused = !next || !next.rest || next.col !== measured.col
-      if (sibling || refused || !markerColumns.includes(measured.col) && quoteColumn !== measured.col) {
+      const owner = quotePathBefore[index]
+      const missingQuotePrefix = !sourceFenceBefore[index] &&
+        (owner.hostedColumn !== null && measured.col >= owner.hostedColumn &&
+          (!owner.hostedMarker || !!next && (!!matchMarkerAt(next) || FENCE.test(next.rest))) ||
+          owner.depth > 0 && markerColumns.length > 0 && !!next && !!matchMarkerAt(next))
+      if (sibling || refused || missingQuotePrefix || !markerColumns.includes(measured.col) && quoteColumn !== measured.col) {
         refusedPlusLines.push(index)
         hasOrdinaryPlus = true
         return line.replace(/\+(?=[ \t]*$)/, sibling ? refusedSiblingSentinel : sentinel)

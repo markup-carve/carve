@@ -423,6 +423,8 @@ const INVENTORY = [
   { base: '620-generated-container-documents-21', crv: [], html: [] },
   { base: '620-generated-container-documents-22', crv: [], html: [] },
   { base: '620-generated-container-documents-23', crv: [], html: [] },
+  { base: '635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-3', crv: ['trailing-WS'], html: [] }, // the refused `+  ` keeps its trailing spaces
+  { base: '635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-4', crv: ['trailing-WS'], html: [] }, // the refused `+  ` keeps its trailing spaces
 ]
 
 function scan(text) {

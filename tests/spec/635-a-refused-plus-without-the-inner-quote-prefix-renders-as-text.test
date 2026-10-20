@@ -1,0 +1,65 @@
+A refused plus without the inner quote prefix renders as text
+
+```
+> > - a
+>   +
+>   - b
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>a
++
+- b</li>
+    </ul>
+  </blockquote>
+</blockquote>
+```
+
+```
+> > - a
+>   Q
+>   - b
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>a
+Q
+- b</li>
+    </ul>
+  </blockquote>
+</blockquote>
+```
+
+```
+1. ordered
+  > > quote
++  
+- item
+.
+<ol>
+  <li>ordered
+&gt; &gt; quote
++</li>
+</ol>
+<ul>
+  <li>item</li>
+</ul>
+```
+
+```
+1. ordered
+  > > quote
+Q  
+- item
+.
+<ol>
+  <li>ordered
+&gt; &gt; quote
+Q</li>
+</ol>
+<ul>
+  <li>item</li>
+</ul>
+```
