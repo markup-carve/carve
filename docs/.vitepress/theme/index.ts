@@ -1,4 +1,5 @@
 import DefaultTheme from 'vitepress/theme'
+import { getScrollOffset } from 'vitepress'
 import type { Theme } from 'vitepress'
 import '@markup-carve/carve-grammars/shiki/carve.css'
 // The tokens and the opt-in recipes layer from the shipped stylesheet, rather
@@ -85,6 +86,35 @@ function enhanceCompareBlocks(root: ParentNode): void {
   })
 }
 
+/**
+ * VitePress scrolls to the URL hash once, at load. Enhancing the compare blocks
+ * afterward changes the height above the target (the HTML pane is hidden), so the
+ * heading ends up away from where it was placed. Re-align once after enhancing,
+ * unless the reader has already scrolled.
+ */
+let readerScrolled = false
+let realigned = false
+let alignedPath = ''
+function realignHash(): void {
+  if (location.pathname !== alignedPath) {
+    alignedPath = location.pathname
+    realigned = false
+    readerScrolled = false
+  }
+  if (realigned || readerScrolled || !location.hash) return
+  realigned = true
+  let target: HTMLElement | null = null
+  try {
+    target = document.getElementById(decodeURIComponent(location.hash).slice(1))
+  } catch {
+    return
+  }
+  if (!target) return
+  const padding = parseInt(getComputedStyle(target).paddingTop, 10) || 0
+  const top = window.scrollY + target.getBoundingClientRect().top - getScrollOffset() + padding
+  if (Math.abs(top - window.scrollY) > 1) window.scrollTo(0, top)
+}
+
 export default {
   extends: DefaultTheme,
   enhanceApp({ app, router }) {
@@ -98,7 +128,11 @@ export default {
         requestAnimationFrame(() => {
           enhanceCompareBlocks(document.body)
           void renderMathIn(document.body)
+          realignHash()
         })
+      }
+      for (const type of ['wheel', 'touchstart', 'keydown', 'mousedown']) {
+        window.addEventListener(type, () => { readerScrolled = true }, { passive: true })
       }
       // Chain rather than clobber, in case another hook is already installed.
       const prevHook = router.onAfterRouteChanged
