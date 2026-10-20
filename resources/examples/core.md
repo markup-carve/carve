@@ -1745,8 +1745,6 @@ With no leading header row, every first cell can still be a row header — the t
 
 ## Fenced code
 
-A long block can be bounded in height with `{.scroll}` on the line above the fence. That is a stylesheet recipe, not syntax; see [Scrolling code blocks](../recipes#scrolling-code-blocks).
-
 ::: compare
 
 ````carve
@@ -1988,6 +1986,8 @@ print("hi")
 `````
 
 :::
+
+To bound the height of a long block, put `{.scroll}` on the line above the fence. That is a stylesheet recipe, not syntax; see [Scrolling code blocks](../recipes#scrolling-code-blocks).
 
 Code-block content is never parsed for Carve syntax — emphasis, headings, and tags inside are literal.
 
