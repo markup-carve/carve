@@ -13,9 +13,9 @@ for (const depth of [1, 2, 3]) {
   })
 }
 
-test('one column inside the item keeps the separator as paragraph text', () => {
+test('one column inside the item folds the separator into the open term', () => {
   const html = renderDoc(parse('- a\n  :: m\n : l\n'))
-  assert.match(html, /<\/dl>\s*: l/)
+  assert.match(html, /<dt>m\n: l<\/dt>/)
   assert.doesNotMatch(html, /<dd>/)
 })
 

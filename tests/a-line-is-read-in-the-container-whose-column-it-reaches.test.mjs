@@ -126,9 +126,9 @@ const cases = [
     "<ul>\n<li>\n<dl>\n<dt>t</dt>\n<dd>\n<p>para</p>\n<pre><code></code></pre>\n</dd>\n</dl>\n</li>\n</ul>"
   ],
   [
-    "control: unchanged",
+    "a marker past the item column below its description opens a sibling list (CARVE-P2-017)",
     "- :: t\n  : para\n   - li\n",
-    "<ul>\n<li>\n<dl>\n<dt>t</dt>\n<dd>para\n- li</dd>\n</dl>\n</li>\n</ul>"
+    "<ul>\n<li>\n<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n<ul>\n<li>li</li>\n</ul>\n</li>\n</ul>"
   ],
   [
     "control: unchanged",

@@ -5966,11 +5966,11 @@ Mentions and tags are inert stable spans that do not take attributes (they share
 
 The accepted wider-separator spelling `:  def` attaches to `:: term` at the
 definition list's column. Below that column, the surviving host classifies it.
-At the item's marker column the item ends. One column in, the open item keeps
-the line as paragraph text. The canonical spelling is `: def`; these cases
+At the item's marker column the item ends. One column in, the open term keeps
+the line as term text. The canonical spelling is `: def`; these cases
 retain the wider separator to test its authored column (carve#3451).
 
-One column in, the line stays in the item as paragraph text.
+One column in, the line folds into the open term.
 
 ::: compare
 
@@ -5984,9 +5984,9 @@ One column in, the line stays in the item as paragraph text.
 <ul>
   <li>one
     <dl>
-      <dt>term</dt>
+      <dt>term
+:  def</dt>
     </dl>
-    :  def
   </li>
 </ul>
 ```
