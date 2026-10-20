@@ -269,6 +269,47 @@ people install a table plugin for.
 There is no cell-level attribute in Carve, so a row is the finest grain these
 can address. `{.ok}` written inside a cell is literal text, not a class.
 
+## Scrolling code blocks
+
+A long listing pushes the rest of the page out of view. `{.scroll}` on the line
+above a code fence, a captioned fence, or an `@code` include bounds the `<pre>`
+at 25 lines and scrolls it on both axes. A figure caption stays in view because
+only the `<pre>` scrolls, and the block prints at full height.
+
+::: compare
+
+````carve
+{.scroll}
+```js
+const first = 1;
+const second = 2;
+```
+````
+
+```html
+<pre class="scroll"><code class="language-js">const first = 1;
+const second = 2;
+</code></pre>
+```
+
+:::
+
+Two custom properties tune the height. Set them on the block with a `style`
+attribute, or on a wrapper to change every block inside it:
+
+| Property | Default | Effect |
+| --- | --- | --- |
+| `--carve-scroll-lines` | `25` | visible lines of the block |
+| `--carve-scroll-max-height` | unset | a length that replaces the line count |
+
+```carve
+{.scroll style="--carve-scroll-lines: 20"}
+{{ src/example.js @code:js }}
+```
+
+For keyboard scrolling the `<pre>` must be focusable, which depends on the
+renderer adding `tabindex="0"`.
+
 ## Where CSS stops
 
 CSS cannot hold state. Anything that has to remember whether it is open, or

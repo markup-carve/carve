@@ -30,6 +30,11 @@ You can include one section by its id, or show a source file as code:
 {{ src/example.js @code:js }}
 ```
 
+A long `@code` include can be capped with `{.scroll}` on the line above it, see
+[Scrolling code blocks](./recipes#scrolling-code-blocks). Selecting the part
+you need with `@lines:` or `@region:` is usually better than scrolling the
+whole file.
+
 File inclusion is a processor feature. A parser without a file resolver leaves
 the directive as text; the browser Playground cannot read local files. Use
 `carve lint --include-root . handbook.crv` to check included files and report
