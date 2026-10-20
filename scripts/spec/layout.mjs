@@ -3009,6 +3009,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
   delete state.markerCommentClosers
   delete state.prefixMemos
   delete state.attachmentBoundaries
+  delete state.quoteAttachmentOrigins
   delete state.markerLineColumns
   delete state.sourceHasLonePlus
   delete state.ordinaryPlusSentinel
@@ -4043,11 +4044,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const opener = parseColonOpener(cf[2])
         if (opener) {
           const boundary = state.attachmentBoundaries?.get(lines)?.find(index => index > i) ?? n
-          const close = findColonCloser(lines.slice(0, boundary), i, cf[1].length)
-          const end = close === -1 ? boundary : close
+          const attachedOrigin = state.quoteAttachmentOrigins?.get(lines)?.get(boundary)
+          const extent = attachedOrigin === undefined ? boundary : n
+          const close = findColonCloser(lines.slice(0, extent), i, cf[1].length)
+          const end = close === -1 ? extent : close
           const body = lines.slice(i + 1, end)
           markMeasuredContainerText(state, lines, i + 1, end, ind)
-          i = close === -1 ? boundary : close + 1
+          i = close === -1 ? extent : close + 1
           inheritFinalBreak(lines, body, end, state)
           if (opener.mode === 'line-block') {
             push({ t: 'line-block', lines: body.map(stripLazy) })
@@ -4249,6 +4252,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let qItemPara = false // and is that paragraph an item's?
       let qTermOpen = false
       let qPara = [] // its lines, for SS12's absorption test below
+      const qColonRuns = []
       /*
        * IS A TABLE OPEN INSIDE THE QUOTE? -- PART 9 SS5 T6 (carve#1348).
        *
@@ -4814,6 +4818,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qLastMarked = i
           carryPrefixMemo(state, lines, i, inner, inner.length)
           inner.push(qm[1] ?? '')
+          if (!qHost.fence && openComment === null) {
+            const colon = COLON_FENCE.exec(qm[1] ?? '')
+            if (colon && COLON_CLOSER.test(qm[1] ?? '') && colon[1].length === qColonRuns.at(-1)?.length) qColonRuns.pop()
+            else if (qColonRuns.at(-1)?.mode !== 'line-block' && colon && isColonBlockOpener(qm[1] ?? '') &&
+                (!qOpenPara || isColonParagraphInterrupt(qm[1] ?? ''))) {
+              qColonRuns.push({ length: colon[1].length, mode: parseColonOpener(colon[2]).mode })
+            }
+          }
           // The final line has no follower whose ownership needs this state.
           if (i + 1 < n) trackFence(qm[1] ?? '', i)
           i++
@@ -4838,16 +4850,25 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // container's invisible-line rule rather than to the marker.
           const attached = takeOneBlock(lines, i, state, ind(i), ind(i - 1).L?.col ?? sourceQuoteCol)
           if (attached.next > i) {
+            const colonMode = qColonRuns.at(-1)?.mode
+            const insideColon = colonMode && colonMode !== 'line-block' && !qHost.fence
             const bounds = state.attachmentBoundaries ??= new WeakMap()
             const indices = bounds.get(inner) ?? []
             indices.push(inner.length)
             bounds.set(inner, indices)
-            // blank separators force the attached lines to parse as their own
-            // block instead of lazily folding into the open paragraph
+            if (insideColon) {
+              const origins = state.quoteAttachmentOrigins ??= new WeakMap()
+              const source = origins.get(inner) ?? new Map()
+              const parentOrigins = state.opaqueMeasurement?.origins.get(lines)
+              source.set(inner.length,
+                typeof parentOrigins === 'number' ? parentOrigins + i : parentOrigins?.[i] ?? i)
+              origins.set(inner, source)
+            }
             if (qHost.fence) {
               qHost.fence = null
             }
-            inner.push('', ...attached.rawMarker, '')
+            if (!insideColon || qOpenPara) inner.push('')
+            inner.push(...attached.rawMarker, '')
             i = attached.next
           }
           continue
