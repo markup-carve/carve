@@ -72,14 +72,15 @@ const MAX_NESTING_DEPTH = 200
 /// loop that unwound the whole remaining prefix to answer a question about the
 /// innermost line. A counter here is what would have caught it.
 /// `forwardSearch` counts the lines `cachedForwardSearch` visits for the marker-note and
-/// description closer searches.
+/// description closer searches. `commentTail` counts the body lines a note or description
+/// re-reads after the last comment it kept.
 /// `fenceCloserLookahead` is the one question about a quote's body that no
 /// incremental tracker can answer from the line in front of it: SS10 I4 opens a
 /// fence under a paragraph only when a closer FOLLOWS. Asking it with a forward
 /// scan per opener is quadratic on a body of fenced bodies, which is carve#2509,
 /// so the answer comes from an index built once per depth and this counts the
 /// lines that index reads.
-export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0 }
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
@@ -89,6 +90,7 @@ export function resetLayoutWork() {
   layoutWork.lineVisits = 0
   layoutWork.fenceCloserLookahead = 0
   layoutWork.forwardSearch = 0
+  layoutWork.commentTail = 0
 }
 
 /**
@@ -1026,8 +1028,14 @@ function lineBlockSpanEnd(lines, idx) {
 // A comment closes the paragraph, so only the lines after the last one the
 // body kept can hold it open; scanning from there keeps collection linear.
 function paragraphOpenSince(bodyLines, from) {
-  const tail = from === 0 ? bodyLines : bodyLines.slice(from)
+  const tail = commentTailSince(bodyLines, from)
   return tail.some((line) => line.trim() !== '') && bodyLeavesParagraphOpen(tail)
+}
+
+function commentTailSince(bodyLines, from) {
+  const tail = from === 0 ? bodyLines : bodyLines.slice(from)
+  layoutWork.commentTail += tail.length
+  return tail
 }
 
 function isColonBlockOpener(line) {
@@ -3214,7 +3222,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           pullPending = false
           i = end
-        } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(commentScanFrom === 0 ? bodyLines : bodyLines.slice(commentScanFrom))) {
+        } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom))) {
           // carve#2488, the same arm the `dd` carries. This body ends at a
           // comment below column 2, and a comment INSIDE a span the body already
           // holds is not one - see `bodyHoldsOpenCommentSpan`. carve#2488 reads
@@ -3531,7 +3539,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // span open, so the fold questions below read the tail only.
           let ddScanFrom = 0
           let retainedParagraph = false
-          const sinceComment = () => (ddScanFrom === 0 ? bodyLines : bodyLines.slice(ddScanFrom))
+          const sinceComment = () => commentTailSince(bodyLines, ddScanFrom)
           let openFence = -1
           const nestedLeadFenceUnterminated = descriptionLeadHasUnterminatedNestedFence(
             bodyLines[0] ?? '', lines, i, bodyColumn, endsBodyAt,
