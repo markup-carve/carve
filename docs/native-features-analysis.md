@@ -1,40 +1,20 @@
 ---
-description: Why some features are built into Carve while others must be enabled separately.
+description: Design history for what Carve includes in its language and what remains optional.
 ---
 
-# Feature availability
+# Feature design notes
 
-Use this page to see what works without configuration, what can be switched
-off, and what needs an extension. For syntax examples, start with the
-[cheat sheet](/cheatsheet).
+Current feature availability is listed in [Optional features and
+extensions](./extensions). This page records the design decisions behind that
+split and the syntax ideas Carve adopted or left to applications. For syntax
+examples, use the [cheat sheet](/cheatsheet).
 
-## What is available by default
+## Syntax choices
 
-Features fall into three groups: always available, available by default with an
-opt-out, and opt-in or application-supplied - for example Mermaid rendering in
-a documentation site.
+The table compares selected Carve spellings with their Djot predecessors.
+These comparisons explain the design; [Optional features and extensions](./extensions)
+records what is available now.
 
----
-
-## Core syntax
-
-### Familiar document features
-
-| Feature | Carve Syntax | Status |
-|---------|-------------|--------|
-| Smart typography | `--`, `---`, `...`, quotes | ✅ In spec (4.18) |
-| @mentions | `@username` | ✅ In spec (4.20) |
-| #tags | `#tagname` | ✅ In spec (4.20) |
-| Admonitions | `::: note`, `::: warning` | ✅ In spec (4.12) |
-| Frontmatter | `---` YAML block | ✅ In spec (4.23) |
-| Footnotes | `[^ref]` | ✅ In spec (4.11) |
-| Definition lists | `:: term` / `: definition` | ✅ In spec (4.5) |
-| Task lists | `- [ ]`, `- [x]` | ✅ In spec (4.5) |
-| Profiles | Feature restriction | ✅ In spec (4.21) |
-| Attributes | `{#id .class key=value}` | ✅ In spec (4.10) |
-| Extensions | `:type[content]{attrs}` | ✅ In spec (4.20) |
-
-### Carve-specific features
 
 These features are part of Carve today. The comparison column shows the
 equivalent spelling in djot-php, one of the projects Carve originally drew
@@ -136,9 +116,12 @@ combine on one span where the `:type[…]` form cannot nest.
 
 ---
 
-## Optional and application features
+## Why other features remain optional
 
-These should remain implementation-specific, not part of Carve syntax:
+These Djot/PHP extension examples informed Carve's split between document
+syntax and application behavior. The [current availability
+table](./extensions#feature-tiers-quick-reference) is the source for what a
+processor provides today.
 
 | djot-php extension | Why it stays outside core syntax |
 |--------------------|----------------|
@@ -155,89 +138,9 @@ These should remain implementation-specific, not part of Carve syntax:
 
 ---
 
-## Summary
+## Deliberate exclusions
 
-**Added to Carve native syntax:**
-1. Captions (`^`)
-2. Abbreviations (`*[ABBR]: ...`)
-3. Table multi-line (`+`), rowspan (`^`), colspan (`<`)
-
-**Native, confirmed in spec:**
-1. Semantic elements via the attribute form (`[Ctrl+C]{kbd}`, see section 3)
-2. Angle-bracket autolinks (`<url>` / `<email>`) - bare URLs stay literal
-
-**Keep as implementation extensions:**
-- External link attributes
-- Heading permalinks
-- Table of contents generation
-- Mermaid/diagram support
-- Tabbed UI components
-- Wiki-style links (context-dependent)
-
----
-
-## Disabling / Restricting Features
-
-Can a processor turn features off? It depends on the tier; the availability
-summary below gives the full split.
-
-> This MUST / SHOULD / MAY split is the same model as the Tier-1/2/3 taxonomy in
-> the normative [extensions contract](./extensions): **MUST** = Tier-1 core
-> (not disableable); **SHOULD** = Tier-1 default-on but a processor MAY disable
-> it; **MAY** = Tier-2 (spec-listed, off by default) / Tier-3 (per-impl). The
-> extensions contract has the consolidated feature → tier table.
-
-| Tier | Features | Disableable? |
-|------|----------|--------------|
-| **Core (MUST)** | captions, abbreviations, tables (rowspan/colspan/multi-line), autolinks, emphasis family, links, math, footnotes, crossrefs, the `:type[content]` extension *syntax* | **No.** Corpus-pinned; identical across implementations. Disabling one means the processor is no longer Carve-conformant. |
-| **Default-on (SHOULD)** | `@mention`, `#tag`, smart typography | **Yes.** On by default in the conformant core; a processor MAY disable them. Normative: `resources/grammar.ebnf` PART 9 §19. |
-| **Out of core (MAY)** | includes (<code v-pre>{{ … }}</code>) - **specified in PART 9 §19** (processor-level; the core leaves the directive literal), the extension *registry* beyond the generic fallback, all "implementation extensions" above | **Yes / opt-in.** Processor-level; a conformant core MAY omit them entirely (e.g. leave <code v-pre>{{ … }}</code> literal). Includes now have a full normative spec (syntax, host-resolver contract, collision + limit + security rules) even though the core builds none of it. |
-
-Separately, **Profiles** (case-study spec §4.21) restrict which features are
-*allowed* in a given context rather than disabling output globally. A profile
-(`Profile::comment()`, `Profile::article()`, …) marks node types as
-disallowed and applies a `STRIP` / `TO_TEXT` / `ERROR` action. This is a
-processor-level mechanism; it is not encoded in `resources/grammar.ebnf`.
-
----
-
-## Availability summary
-
-The availability split answers what an author can use everywhere and what
-requires configuration. Exact output rules live in `resources/grammar.ebnf`;
-this section stays at the feature level.
-
-### Always available
-
-- **Blocks:** headings (+ `<section>` wrapping, §13), paragraphs,
-  thematic breaks, fenced code, blockquotes, lists (ordered
-  decimal/alpha/roman with `.` and `)` delimiters + `start`, §10/§11;
-  unordered, task; tight/loose §17), tables (`|=` headers, alignment,
-  rowspan/colspan/multi-line), the two-tier `:::` model (canonical
-  `<aside class="admonition …">` / custom `<div class="…">`, §12),
-  figures/captions, abbreviation definitions, raw blocks, comments.
-- **Inline:** emphasis family (bare `/ * _ ~ =` + `/* */`; sup/sub braced-only `{^ ^}` / `{, ,}`, §9), code
-  spans, raw inline (`` `…`{=format} `` passthrough, §20), links
-  (inline / reference / collapsed), angle-bracket autolinks
-  (`<url>` / `<email>`), images, spans (§14), math (djot form, §18), footnotes
-  (reference form, §16), abbreviations, editorial markup, crossrefs
-  (`</#id>`, markup-preserving §19), hard/soft breaks.
-- **Semantics:** automatic heading ids (jgm/djot#393 run-replacement, case-preserving, non-ASCII preserved, smart typography reversed to ASCII before slugging; opt-in lowercase and opt-in ASCII fold; cross-references match ids exactly), id de-duplication,
-  order-independent reference/abbreviation/footnote resolution.
-
-### Available by default, with an opt-out
-
-- `@mention` and `#tag` shorthands, smart typography (grammar PART 9 §19).
-
-### Opt-in or supplied by an application
-
-- Includes (<code v-pre>{{ … }}</code>) - specified in PART 9 §19 (host-resolver
-  model, collision + limit + security rules; the [File inclusion](/includes)
-  page); processor-level, and the core leaves the directive literal.
-- The `:type[content]` extension *registry* beyond the generic fallback.
-- Everything under "Keep as implementation extensions" above.
-
-### Not implemented, and not planned
+### Not planned
 
 - Sidenotes (`[>content]`), dismissed: a sidenote is footnote content placed
   in the margin by CSS, so it needs no syntax of its own. `[>` is unclaimed and

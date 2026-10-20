@@ -1619,7 +1619,7 @@ The same-site link. A page name becomes a URL through a generator the host
 supplies, because the URL a page name maps to depends on the site - the routing,
 the extension, whether pages live in folders - and none of that is visible to a
 parser. That is the taxonomy rule in
-[Native Features](/native-features-analysis) applied literally: a feature whose
+[Feature design notes](/native-features-analysis) applied literally: a feature whose
 answer depends on the surrounding system is an extension, not syntax.
 
 Four forms:

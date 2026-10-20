@@ -15,6 +15,8 @@ shows complete input and output.
 
 ## Inline
 
+### Formatting
+
 | Write | Get | Mnemonic |
 |-------|-----|----------|
 | `/italic/` | *italic* | slashes lean like italics |
@@ -27,6 +29,11 @@ shows complete input and output.
 | `=highlight=` | highlight | like a highlighter pen |
 | `` `code` `` | `code` | backticks |
 | `` !`/kaet/` `` | /kaet/ | inline literal — verbatim prose, no `code` styling; `!` mirrors `$`-math |
+
+### Links, references, and extensions
+
+| Write | Get | Mnemonic |
+|-------|-----|----------|
 | `[text](url)` | link | |
 | `[text][ref]` | reference link | `[ref]: https://url` on its own line, anywhere |
 | `[Page Name][]` | wiki-style link | resolves to a heading |
@@ -37,12 +44,20 @@ shows complete input and output.
 | `[span]{.class}` | span | `{…}` adds class, id, or attributes |
 | `:youtube[ID]` ✦ | extension | `:type[content]{attrs}` — syntax is core; the handler is opt-in |
 | `@user` `#tag` | mention / tag | social conventions |
+
+### Escapes and typography
+
+| Write | Get | Mnemonic |
+|-------|-----|----------|
 | `\*literal\*` | escape | backslash + any ASCII punctuation |
-| `--` `---` `...` `-->` `==>` `(c)` | – — … → ⇒ © | smart typography; a bare HYPHEN RUN with a space before it and a non-space after it is a CLI flag and stays literal (`x --next`) - the arrows are matched before that guard and still convert there (`x -->next` is `x →next`) |
+| `--` `---` `...` `-->` `==>` `(c)` | – — … → ⇒ © | smart typography; see the note below |
 | `{--}` | – | braced en dash — converts in the flag position the bare run refuses |
 | `\` at end of line | hard break | `\ ` is a hard break here too — the trailing space is stripped before the escape is read |
 | `\ ` mid-line | no-break space | backslash-space; in the last column it is the hard break above |
 | `` `<br>`{=html} `` | raw inline | emitted only in HTML output; other format names are retained for external converters ([security and configuration](/security)) |
+
+A bare hyphen run stays literal when it looks like a CLI flag: `x --next`.
+Arrows still convert in that position, so `x -->next` becomes `x →next`.
 
 Bare delimiters work only at word boundaries; force one intraword with the brace form, e.g. `H{,2,}O`, `mc{^2^}`. The braces need content: an empty pair like `{^^}` is text.
 

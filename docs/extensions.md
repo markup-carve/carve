@@ -16,7 +16,8 @@ For the API rules used to implement an extension, read the
 
 | Availability | What it means | Default |
 |---|---|---|
-| **Core** | Every conforming Carve processor supports it. | On |
+| **Core syntax** | Every conforming Carve processor supports it, including headings, links, lists, tables, captions, footnotes, and math. | On |
+| **Default-on behavior** | Every reference processor supplies it, but applications may disable it. This includes smart typography and `@mention` / `#tag` recognition. | On |
 | **Standard optional** | The reference implementations provide it, but applications enable it explicitly. | Off |
 | **Application extension** | A particular implementation or host supplies it. Check that application. | Off |
 
@@ -35,8 +36,8 @@ document has a useful fallback when the feature is not enabled.
 | Code callouts | Standard optional | Numbered explanations attached to code | Code and explanation list remain |
 | Semantic spans | Standard optional | `samp`, `var`, `cite`, and `dfn` elements | A span carrying the semantic attribute |
 
-The [feature availability](./native-features-analysis) page includes core
-syntax and features that are available by default with an opt-out.
+For the reasons behind these boundaries, see [Feature design
+notes](./native-features-analysis). Use this page for current availability.
 
 ## Features supplied by applications
 

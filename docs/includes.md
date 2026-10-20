@@ -6,6 +6,9 @@ normative: true
 
 # File inclusion
 
+For the authoring workflow and common examples, start with
+[Include files](./include-files). This page defines the processor rules.
+
 This page gives the normative rules for Carve's file-inclusion (transclusion) directive,
 <code v-pre>{{ … }}</code>. Inclusion is a processor feature. The core parser does not
 expand files and leaves the directive as text. The syntax is defined in

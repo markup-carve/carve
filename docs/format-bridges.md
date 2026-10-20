@@ -4,16 +4,31 @@ description: Convert Carve to and from Pandoc and ProseMirror without using rend
 
 # Format conversion
 
-For the existing JSON, source-writer and rendering round-trip requirements,
-see [Reading the round-trip requirements](./ast-json-contract#reading-the-round-trip-requirements).
-An AST-returning bridge can preserve information that its source-writing exit
-must degrade; validity under the JSON schema does not guarantee a Carve 0.1
-source spelling.
-
 Carve can convert to and from Pandoc documents for LaTeX, Typst, or DOCX output,
 and ProseMirror documents used by editors such as Tiptap. These converters work
 with structured documents instead of using rendered HTML as an intermediate
 format. This preserves information that HTML cannot represent.
+
+## Choose a bridge
+
+| If you need | Use | Directions and requirements |
+|---|---|---|
+| DOCX, EPUB, LaTeX, Typst, PDF, or another Pandoc format | [pandoc-carve](https://github.com/markup-carve/pandoc-carve) | Carve ↔ Pandoc JSON. Install Node and Pandoc 3.x for document formats; plain Pandoc JSON needs no Pandoc executable. |
+| A ProseMirror document in a PHP application | carve-php's [ProseMirror bridge](https://github.com/markup-carve/carve-php/blob/main/docs/prosemirror.md) | Carve ↔ ProseMirror JSON in PHP. |
+| A ProseMirror document in Node or an editor | [carve-grammars](https://github.com/markup-carve/carve-grammars) | Carve ↔ ProseMirror JSON in Node. |
+
+Check the bridge's loss report before storing converted content. A target format
+may not represent every Carve construct. For measured Pandoc format coverage,
+see [pandoc-format-fidelity](https://markup-carve.github.io/pandoc-format-fidelity/).
+For HTML input, use [Import HTML](./html-import).
+
+## How the bridges preserve content
+
+For the JSON, source-writer and rendering round-trip requirements, see
+[Reading the round-trip requirements](./ast-json-contract#reading-the-round-trip-requirements).
+An AST-returning bridge can preserve information that its source-writing exit
+must degrade; validity under the JSON schema does not guarantee a Carve 0.1
+source spelling.
 
 This page explains the design; it does not define required behavior. [Parsed
 document JSON](./ast-json) defines the data exchanged between programs. [HTML
@@ -472,17 +487,12 @@ converters in `resources/import-roundtrip-baseline.json`. Those measurements
 are development gates rather than compatibility promises, so this guide does
 not publish their changing totals.
 
-## The bridges that exist
+## Bridge details
 
-| Bridge | Carve to target | Target to Carve | Runtime |
-|---|---|---|---|
-| [pandoc-carve](https://github.com/markup-carve/pandoc-carve) | `carveToPandoc()` - Pandoc JSON, then every pandoc writer (LaTeX, Typst, DOCX, PDF, RST, JATS, EPUB) | `pandocToCarve()` - anything pandoc reads (DOCX, LaTeX, RST, Org, MediaWiki) | Node, plus a `pandoc` 3.x executable on PATH. Emitting or reading plain JSON needs no pandoc. |
-| carve-php's [ProseMirror bridge](https://github.com/markup-carve/carve-php/blob/main/docs/prosemirror.md) | `ProseMirrorRenderer::renderJson()` | `ProseMirrorToCarve::convertJson()` | PHP only. No Node runtime, which is what lets a Tiptap editor in the browser and PHP rendering in a queue worker or CLI command share one stored document. |
-| [carve-grammars](https://github.com/markup-carve/carve-grammars) | `carveToProseMirror()` | `serializeToCarve()` | Node. Owns the `CarveKit` schema and the shared name map. |
-
-How much of a document survives each pandoc writer and reader, and what the
-pandoc-carve bridge preserves on the same probes, is measured in
-[pandoc-format-fidelity](https://markup-carve.github.io/pandoc-format-fidelity/).
+The [Pandoc bridge](https://github.com/markup-carve/pandoc-carve) exposes
+`carveToPandoc()` and `pandocToCarve()`. The PHP bridge exposes
+`ProseMirrorRenderer::renderJson()` and `ProseMirrorToCarve::convertJson()`;
+the Node bridge exposes `carveToProseMirror()` and `serializeToCarve()`.
 
 Two of those bridges reach the same target model from different runtimes, which
 is the arrangement to expect rather than a duplication to resolve: an editor

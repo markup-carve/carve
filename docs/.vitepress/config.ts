@@ -148,7 +148,7 @@ export default defineConfig({
             text: 'Write',
             items: [
               { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
-              { text: 'File Inclusion', link: '/includes' },
+              { text: 'Include Files', link: '/include-files' },
               { text: 'Diagrams & Charts', link: '/diagrams' },
               { text: 'SVG Images', link: '/svg-images' },
               { text: 'Styling Recipes', link: '/recipes' },
@@ -163,6 +163,7 @@ export default defineConfig({
               { text: 'Parsed Document JSON', link: '/ast-json' },
               { text: 'Import HTML', link: '/html-import' },
               { text: 'Format Conversion', link: '/format-bridges' },
+              { text: 'File Inclusion Rules', link: '/includes' },
               { text: 'Output Without JavaScript', link: '/graceful-degradation' },
             ],
           },
@@ -170,7 +171,7 @@ export default defineConfig({
             text: 'Understand',
             items: [
               { text: 'Technical Rationale', link: '/technical-rationale' },
-              { text: 'Feature Availability', link: '/native-features-analysis' },
+              { text: 'Feature Design Notes', link: '/native-features-analysis' },
               { text: 'Security', link: '/security' },
               { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
               { text: 'Compare Implementations', link: '/implementation-comparison' },
@@ -209,6 +210,7 @@ export default defineConfig({
             { text: 'Coming from Markdown', link: '/migrate-from-markdown' },
             { text: 'Playground', link: '/playground' },
             { text: 'Cheat Sheet', link: '/cheatsheet' },
+            { text: 'Include Files', link: '/include-files' },
             {
               text: 'Examples',
               link: '/examples',
@@ -238,7 +240,7 @@ export default defineConfig({
           items: [
             { text: 'Technical Rationale', link: '/technical-rationale' },
             { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
-            { text: 'File Inclusion', link: '/includes' },
+            { text: 'File Inclusion Rules', link: '/includes' },
             { text: 'Validation', link: '/validation' },
             { text: 'Optional Features & Extensions', link: '/extensions' },
             { text: 'Write an Extension', link: '/extension-tutorial' },

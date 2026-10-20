@@ -64,7 +64,7 @@ the smallest counterexample needed to distinguish a rule. Git history supplies
 issue provenance. Put these elsewhere:
 
 - retired readings and compatibility measurements: `docs/spec-history.md`
-- implementation status and engine drift: `docs/implementation-comparison.md`
+- implementation status and engine drift: `docs/implementation-comparison-methodology.md`
 - extended examples: `resources/examples/` and `tests/corpus/`
 - design rationale: `docs/technical-rationale.md`
 
