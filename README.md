@@ -35,8 +35,13 @@ HEADINGS AND LINKS
 
 LISTS
   - unordered item
-  1. ordered item
-  - [ ] task  - [x] done
+  . ordered item               auto-numbered (canonical)
+  3. ordered item              explicit start number
+  - [ ] open task
+  - [x] done task
+  - item
+  +                            continuation marker: attaches the next
+  > note                       flush-left block to the item
 
 CODE AND CONTAINERS
   ```js

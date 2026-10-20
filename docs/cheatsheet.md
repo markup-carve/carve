@@ -69,10 +69,13 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 
 ---                          (thematic break: --- *** ___)
 
-- unordered      1. ordered  (numbered form is Markdown/Djot-portable;
-- [ ] task        - [x] done  dialects: a. A. i. I. and the ) delimiter)
+- unordered
 . auto-numbered              (preferred native Carve form; counts from 1 and
                               keeps nested indentation stable at 10, 100, ...)
+1. ordered                   (explicit number: Markdown/Djot-portable, sets the
+                              start; dialects: a. A. i. I. and the ) delimiter)
+- [ ] open task              (task items: one per line)
+- [x] done task
 -{.c} styled item            (attrs abutting the marker target the <li>)
 
 - step one                   (lone + attaches the next flush-left block
