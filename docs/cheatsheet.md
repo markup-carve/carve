@@ -78,8 +78,9 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 - [x] done task
 -{.c} styled item            (attrs abutting the marker target the <li>)
 
-- step one                   (lone + attaches the next flush-left block
-+                             to the item - no deep indenting)
+- step one                   (lone + at the item's marker column attaches
++                             the next block at that column - no deep
+                              indenting; nested items work the same way)
 > note for step one
 
 :: term                      (definition list)
@@ -94,8 +95,8 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 > blockquote
 ^ Attribution                (caption: ^ prefix; wraps the quote in a figure)
 
-> quoted                     (+ at col 0 attaches the next flush-left
-+                             block to the quote - no > prefixing)
+> quoted                     (+ at the quote's column attaches the next
++                             block there to the quote - no > prefixing)
 - list now lives inside the quote
 
 ::: >                        (the SAME block quote, fenced: no marker on

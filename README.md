@@ -41,7 +41,7 @@ LISTS
   - [x] done task
   - item
   +                            continuation marker: attaches the next
-  > note                       flush-left block to the item
+  > note                       block at its column to the item
 
 CODE AND CONTAINERS
   ```js
