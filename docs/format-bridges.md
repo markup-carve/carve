@@ -13,7 +13,7 @@ format. This preserves information that HTML cannot represent.
 
 | If you need | Use | Directions and requirements |
 |---|---|---|
-| DOCX, EPUB, LaTeX, Typst, PDF, or another Pandoc format | [pandoc-carve](https://github.com/markup-carve/pandoc-carve) | Carve ↔ Pandoc JSON. Install Node and Pandoc 3.x for document formats; plain Pandoc JSON needs no Pandoc executable. |
+| DOCX, EPUB, LaTeX, Typst, PDF, or another Pandoc format | [pandoc-carve](https://github.com/markup-carve/pandoc-carve) | Carve ↔ Pandoc JSON. Pandoc can read DOCX, LaTeX, RST, Org, and MediaWiki. Install Node and Pandoc 3.x for document formats; plain Pandoc JSON needs no Pandoc executable. |
 | A ProseMirror document in a PHP application | carve-php's [ProseMirror bridge](https://github.com/markup-carve/carve-php/blob/main/docs/prosemirror.md) | Carve ↔ ProseMirror JSON in PHP. |
 | A ProseMirror document in Node or an editor | [carve-grammars](https://github.com/markup-carve/carve-grammars) | Carve ↔ ProseMirror JSON in Node. |
 
@@ -493,6 +493,7 @@ The [Pandoc bridge](https://github.com/markup-carve/pandoc-carve) exposes
 `carveToPandoc()` and `pandocToCarve()`. The PHP bridge exposes
 `ProseMirrorRenderer::renderJson()` and `ProseMirrorToCarve::convertJson()`;
 the Node bridge exposes `carveToProseMirror()` and `serializeToCarve()`.
+The Node bridge also owns the `CarveKit` schema and shared name map.
 
 Two of those bridges reach the same target model from different runtimes, which
 is the arrangement to expect rather than a duplication to resolve: an editor

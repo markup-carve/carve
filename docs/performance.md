@@ -9,7 +9,7 @@ throughput, and how they compare to their Markdown / CommonMark / Djot
 counterparts in the same language.
 
 This page is about **speed**. For **correctness and conformance** across the
-implementations, see [Implementation Comparison](/implementation-comparison),
+implementations, see [Implementation Comparison](/implementation-comparison-methodology),
 which is a different axis (corpus pass rate, cross-implementation diffs,
 extension-hook surface).
 

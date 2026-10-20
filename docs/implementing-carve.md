@@ -58,7 +58,7 @@ comparison runner (`scripts/compare-impls.mjs`). It runs sibling implementation
 checkouts against the same `.crv` / `.html` pairs and reports default
 conformance, optional Tier-2 adapter coverage, rough CLI timing, and the
 extension hook surface each implementation exposes. See
-[Implementation Comparison](./implementation-comparison) for the current
+[Implementation Comparison](./implementation-comparison-methodology) for the current
 snapshot and how the runner is wired.
 
 A new parser only needs to:

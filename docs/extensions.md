@@ -19,6 +19,7 @@ For the API rules used to implement an extension, read the
 | **Core syntax** | Every conforming Carve processor supports it, including headings, links, lists, tables, captions, footnotes, and math. | On |
 | **Default-on behavior** | Every reference processor supplies it, but applications may disable it. This includes smart typography and `@mention` / `#tag` recognition. | On |
 | **Standard optional** | The reference implementations provide it, but applications enable it explicitly. | Off |
+| **Processor feature** | A host supplies file access, as with `{{ path }}` includes. Check that processor’s settings. | Off without a file resolver |
 | **Application extension** | A particular implementation or host supplies it. Check that application. | Off |
 
 These are availability groups, not quality levels. “Optional” means that a

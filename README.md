@@ -161,7 +161,7 @@ Carve 0.1 is specified. Before 1.0, minor releases may change the grammar.
 
 The reference implementations are tested with the same Carve documents and
 expected output. Current differences are recorded in the
-[implementation comparison](https://markup-carve.github.io/carve/implementation-comparison).
+[implementation comparison](https://markup-carve.github.io/carve/implementation-comparison-methodology).
 
 ## Influences
 

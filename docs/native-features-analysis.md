@@ -11,14 +11,10 @@ examples, use the [cheat sheet](/cheatsheet).
 
 ## Syntax choices
 
-The table compares selected Carve spellings with their Djot predecessors.
-These comparisons explain the design; [Optional features and extensions](./extensions)
-records what is available now.
-
-
-These features are part of Carve today. The comparison column shows the
-equivalent spelling in djot-php, one of the projects Carve originally drew
-experience from. Grammar references point at `resources/grammar.ebnf`.
+The table compares Carve spellings with djot-php, one of the projects Carve
+originally drew experience from. These features are available today; grammar
+references point at `resources/grammar.ebnf`. For current availability, see
+[Optional features and extensions](./extensions).
 
 | Feature | djot-php Syntax | Carve Syntax | Status |
 |---------|-----------------|-------------|--------|

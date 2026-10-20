@@ -268,7 +268,7 @@ export default defineConfig({
                 { text: 'Import, Security & Extensions', link: '/rules/imports-security-extensions' },
               ],
             },
-            { text: 'Feature Availability', link: '/native-features-analysis' },
+            { text: 'Feature Design Notes', link: '/native-features-analysis' },
             { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
             { text: 'Divergence from Djot', link: '/divergence-from-djot' },
             { text: 'Whitespace Across Formats', link: '/portable-whitespace' },

@@ -7,7 +7,7 @@ description: Every implementation, editor integration and tool that speaks Carve
 Everything that speaks Carve, grouped by role. All of it lives under the
 [markup-carve](https://github.com/markup-carve) organization. For live corpus
 conformance numbers of the reference parsers, see
-[Implementation Comparison](./implementation-comparison).
+[Implementation Comparison](./implementation-comparison-methodology).
 
 ## Parsers
 
