@@ -55277,7 +55277,7 @@ An opener past the note body and below the item opens in the note (CARVE-P0-004)
 
 ::::::
 
-A marker between the item and description body columns stays text (PART 9 §10 I2).
+A marker below the description body column opens a sibling list when it reaches the item's content column (CARVE-P2-017).
 :::::: compare
 
 ````carve
@@ -55291,9 +55291,11 @@ A marker between the item and description body columns stays text (PART 9 §10 I
   <li>
     <dl>
       <dt>t</dt>
-      <dd>para
-- li</dd>
+      <dd>para</dd>
     </dl>
+    <ul>
+      <li>li</li>
+    </ul>
   </li>
 </ul>
 ```

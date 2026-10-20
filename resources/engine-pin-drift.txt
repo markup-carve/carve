@@ -34,6 +34,7 @@
 435-the-continuation-marker-s-column-gate-reaches-every-container-4  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
 435-the-continuation-marker-s-column-gate-reaches-every-container-7  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
 616-a-line-is-read-in-the-container-whose-column-it-reaches-18  The relative-column continuation ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
+616-a-line-is-read-in-the-container-whose-column-it-reaches-7  The description sibling-list ruling is ahead of the pinned carve-js build (CARVE-P2-017, markup-carve/carve-js#3322).
 627-a-refused-marker-leaves-an-open-fence-s-blank-payload  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
 627-a-refused-marker-leaves-an-open-fence-s-blank-payload-2  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
 627-a-refused-marker-leaves-an-open-fence-s-blank-payload-3  The refused continuation text ruling is ahead of the pinned carve-js build (markup-carve/carve#3421).
