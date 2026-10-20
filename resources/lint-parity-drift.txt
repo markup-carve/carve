@@ -9,3 +9,9 @@ php/unclosed-code-fence  specified ahead of the engines by markup-carve/carve#34
 rust/unclosed-code-fence  specified ahead of the engines by markup-carve/carve#3407; retire at the pin bump that carries it
 php/continuation-marker-refused  specified ahead of the engines by markup-carve/carve#3407; retire at the pin bump that carries it
 rust/continuation-marker-refused  specified ahead of the engines by markup-carve/carve#3407; retire at the pin bump that carries it
+js/list-marker-below-content-column  specified ahead of the engines by markup-carve/carve#3439; retire at the pin bump that carries it
+php/list-marker-below-content-column  specified ahead of the engines by markup-carve/carve#3439; retire at the pin bump that carries it
+rust/list-marker-below-content-column  specified ahead of the engines by markup-carve/carve#3439; retire at the pin bump that carries it
+js/ordered-list-split-by-indent  specified ahead of the engines by markup-carve/carve#3439; retire at the pin bump that carries it
+php/ordered-list-split-by-indent  specified ahead of the engines by markup-carve/carve#3439; retire at the pin bump that carries it
+rust/ordered-list-split-by-indent  specified ahead of the engines by markup-carve/carve#3439; retire at the pin bump that carries it

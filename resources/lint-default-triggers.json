@@ -16,6 +16,8 @@
   "block-marker-as-text": "  ::: note\n",
   "fence-delimiter-indentation": "  ```\n  x\n  ```\n",
   "list-item-body-detached": "1. item\n\n  # heading\n",
+  "list-marker-below-content-column": "10. c\n   - d\n",
+  "ordered-list-split-by-indent": " 9. nine\n10. ten\n",
   "list-item-block-overindented": "-{.x1} item\n\n       # heading\n",
   "continuation-marker-refused": "- item\n+\n\npara\n",
   "definition-term-block-folded": ":: term\n  # heading\n",

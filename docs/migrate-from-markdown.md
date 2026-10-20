@@ -105,7 +105,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Fenced code | `` `code fence` `` with a language | same | Write the language next to the fence; a space is also accepted |
 | Blockquotes | `> text` | same | Carve adds captions (see below) |
 | Unordered lists | `- item` or `* item` | same | Carve bullets are `-`/`*`; a Markdown `+` bullet is not a Carve bullet |
-| Ordered lists | `1. item` | `1. item` or `. item` | Numbered markers work in both languages; `. ` asks Carve to number the list from 1 |
+| Ordered lists | `1. item` | `1. item` or `. item` | Numbered markers work in both languages; `. ` asks Carve to number the list from 1. Right-aligned Markdown numbers (` 9.` above `10.`) are one list there; the importer writes them left-aligned so they stay one list |
 | Task lists | `- [ ] todo` / `- [x] done` | same | |
 | Thematic break | `---` | same | Contiguous `---`, `***`, or `___` (no spaced forms) |
 | **Italic** | `*italic*` or `_italic_` | `/italic/` | **Changed** - see below |

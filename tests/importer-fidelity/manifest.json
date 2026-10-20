@@ -293,6 +293,55 @@
       ]
     },
     {
+      "id": "markdown-ordered-list-right-aligned-numbers",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": " 9. nine\n10. ten\n11. eleven\n",
+      "expected": {
+        "output": "9. nine\n10. ten\n11. eleven\n",
+        "diagnostics": [
+          {
+            "code": "markdown-ordered-list",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-list-item",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-list-item",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:2"
+          },
+          {
+            "code": "markdown-list-item",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:3"
+          }
+        ],
+        "exit": 0,
+        "html": {
+          "default": "<ol start=\"9\">\n  <li>nine</li>\n  <li>ten</li>\n  <li>eleven</li>\n</ol>\n",
+          "safe": "<ol start=\"9\">\n  <li>nine</li>\n  <li>ten</li>\n  <li>eleven</li>\n</ol>\n"
+        }
+      },
+      "constructs": [
+        "ordered-list",
+        "list-item"
+      ]
+    },
+    {
       "id": "markdown-fenced-code",
       "sourceFormat": "markdown",
       "runner": "core",

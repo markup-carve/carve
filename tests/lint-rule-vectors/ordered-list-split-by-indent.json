@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "rule": "ordered-list-split-by-indent",
+  "vectors": [
+    {
+      "name": "right-aligned-pair",
+      "description": "Right-aligned decimal markers split a continuing list.",
+      "source": " 9. nine\n10. ten\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "same column",
+              "{start=9}"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "right-aligned-three",
+      "description": "The second list can contain two items.",
+      "source": " 9. nine\n10. ten\n11. eleven\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "same column",
+              "{start=9}"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "three-digit-transition",
+      "description": "The column shift at three digits splits the list.",
+      "source": "  98. a\n  99. b\n 100. c\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 2,
+            "includes": [
+              "same column",
+              "{start=98}"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "parenthesis-delimiter",
+      "description": "A continuing parenthesis-delimited list splits.",
+      "source": " 9) nine\n10) ten\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "same column"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "blank-between",
+      "description": "A blank line does not separate the adjacent lists for lint.",
+      "source": " 9. nine\n\n10. ten\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "same column",
+              "{start=9}"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "shift-right",
+      "description": "The second marker may shift to the right.",
+      "source": "9. nine\n\n 10. ten\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 2,
+            "includes": [
+              "same column",
+              "{start=9}"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "restart",
+      "description": "A numbering restart does not continue the first list.",
+      "source": " 1. a\n1. b\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "different-delimiter",
+      "description": "Different delimiters do not match.",
+      "source": " 9. nine\n10) ten\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "same-column",
+      "description": "Markers at the same column form one list.",
+      "source": "9. nine\n10. ten\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "intervening-paragraph",
+      "description": "An intervening paragraph breaks adjacency.",
+      "source": " 9. nine\n\npara\n\n10. ten\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "numbering-gap",
+      "description": "A gap in numbering is not a continuation.",
+      "source": " 9. nine\n11. ten\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

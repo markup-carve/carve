@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "rule": "list-marker-below-content-column",
+  "vectors": [
+    {
+      "name": "two-digit-transitions",
+      "description": "A folded bullet after a two-digit marker is reported.",
+      "source": "9. a\n   - b\n10. c\n   - d\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 4,
+            "column": 4,
+            "includes": [
+              "content column 4"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "two-digit-first",
+      "description": "A folded bullet below a two-digit content column is reported.",
+      "source": "10. a\n   - b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 4,
+            "includes": [
+              "content column 4"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "one-digit-first",
+      "description": "A folded bullet below a one-digit content column is reported.",
+      "source": "1. a\n  - b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "content column 3"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "ordered-continuation",
+      "description": "A folded ordered marker is reported.",
+      "source": "9. nine\n 10. ten\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 2,
+            "includes": [
+              "content column 3"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "innermost-item",
+      "description": "The innermost matching item supplies the content column.",
+      "source": "- a\n  10. b\n     - c\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 6,
+            "includes": [
+              "content column 6"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "bullet-host",
+      "description": "A folded ordered marker inside a bullet item is reported.",
+      "source": "- a\n 1. b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 2,
+            "includes": [
+              "content column 2"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "paragraph-after-blank",
+      "description": "A marker folded into a later paragraph is reported.",
+      "source": "10. c\n\n    para\n   - d\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 4,
+            "column": 4,
+            "includes": [
+              "content column 4"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "escaped-marker",
+      "description": "An escaped marker remains literal text.",
+      "source": "10. c\n   \\- d\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "nested-marker",
+      "description": "A marker at the content column nests.",
+      "source": "10. c\n    - d\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "sibling-marker",
+      "description": "A marker at the host marker column starts a sibling.",
+      "source": "10. c\n- d\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "wrapped-text",
+      "description": "A plain continuation line is not a marker.",
+      "source": "10. long\n  wrapped text\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "missing-space",
+      "description": "A marker without a following space stays text.",
+      "source": "10. c\n   -d\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "auto-numbered",
+      "description": "The auto-numbered marker avoids the changing-width trap.",
+      "source": ". a\n  - b\n. c\n  - d\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "after-blank",
+      "description": "A marker after a blank does not fold into a paragraph.",
+      "source": "10. c\n\n   - d\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "outside-list",
+      "description": "A paragraph outside a list has no host item.",
+      "source": "Total\n1. not a list\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

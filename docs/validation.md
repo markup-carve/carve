@@ -172,6 +172,8 @@ the command-line and editor behavior stay aligned.
 | `block-marker-as-text` | a line that opens like a block (`:::`, `{#`, `{.`) but parsed as plain text |
 | `fence-delimiter-indentation` | a fenced-code delimiter whose authored column is noncanonical; top-level fences require column 0, while a fence inside a container may start at or beyond that container's minimum content column and uses that authored column as the base of the complete fenced block. `fmt` moves a structural fence back to the minimum column |
 | `list-item-body-detached` | a block-shaped line indented past the item's marker column but below its exact content column; after a blank it has left the item, so the diagnostic offers the two explicit intentions: indent to the content column to make it structural, or escape the opener to preserve literal text |
+| `list-marker-below-content-column` | a list marker on a paragraph continuation line inside a list item, past the item's marker column but below its content column, renders as text; indent it to the content column to nest it or move it to the marker column for a sibling |
+| `ordered-list-split-by-indent` | consecutive ordered lists continue the same numbering style and sequence, but their first markers start in different columns, so they render as two lists |
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column. Reported once per block, on its first line; continuing table rows and quote lines do not open another block. An aligned opener stays unreported when a continuation is overindented, including when the block opens on the item's marker line. The finding also covers the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
 | `continuation-marker-refused` | a `+` continuation marker in a list item or a definition description, including the first-block form `- +`, followed by a blank line or by the end of the input. PART 9 §17 L4 refuses the marker and ends the body, so the block the author meant to attach is not attached and nothing is malformed; see [refused continuation markers](#refused-continuation-markers) |
 | `empty-include-path` | a <code v-pre>{{ ... }}</code> run shaped like an include directive but containing no path, including empty braces and spaced directive forms containing only a `#section` or `@option`; it remains literal text, so add a path or remove the braces |
@@ -345,6 +347,71 @@ after it (markup-carve/carve#3400 settles that payload, not the refusal).
 
 The shared vectors are in
 [`tests/lint-rule-vectors/continuation-marker-refused.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/continuation-marker-refused.json).
+
+### List markers below the content column
+
+`list-marker-below-content-column` reports a marker-shaped paragraph
+continuation line inside a list item when its first marker character is past
+the item's marker column but below its content column. The line folds into the
+paragraph as text. Carve keeps the strict column model: sibling markers are
+not aligned by their delimiter (markup-carve/carve#3439).
+
+```carve
+10. c
+   - d
+```
+
+This renders one ordered item whose text contains `- d`, not a nested list.
+The finding sits on the `-`. Move it to content column 4 to nest it, or to
+marker column 0 to begin a sibling item. The lint does not rewrite the source.
+
+```txt
+doc.crv:2:4 list-marker-below-content-column — This list marker starts at column 3, below the list item's content column 4, so it folds into the item's paragraph as text. Indent it to column 4 to nest it under the item, or start it at column 0 to begin a new item at the item's own level.
+```
+
+Not reported:
+
+- escaped markers, markers without a following space or tab, and lines outside
+  a list item;
+- a marker at or past the content column, or at or left of the
+  item's marker column;
+- a marker after a blank line or inside code, raw, comment, line-block or
+  other payload.
+
+The canonical auto-numbered `.` marker avoids this column trap when an
+explicit number would widen the marker. The shared vectors are in
+[`tests/lint-rule-vectors/list-marker-below-content-column.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/list-marker-below-content-column.json).
+
+### Ordered lists split by indentation
+
+`ordered-list-split-by-indent` reports adjacent sibling ordered lists when
+the second list continues the first list's numbering, both use the same
+numbering style and delimiter, and their first markers start at different
+source columns. Blank lines between the lists do not prevent the report.
+
+```carve
+ 9. nine
+10. ten
+```
+
+This renders two ordered lists: one starting at 9 and one starting at 10.
+The finding sits on the `1` of `10.`. Start both markers at the same column.
+For decimal lists, `{start=9}` above an auto-numbered `.` list avoids both
+this split and the content-column trap. Carve keeps the strict column model;
+sibling markers are not aligned by their delimiter (markup-carve/carve#3439).
+
+```txt
+doc.crv:2:1 ordered-list-split-by-indent — This ordered list continues the numbering of the list above (9, then 10), but its marker starts at column 0 and the list above starts at column 1, so they are two lists. Start the markers at the same column, or write {start=9} on the line above and use the auto-numbered . marker.
+```
+
+Not reported:
+
+- a restart, a numbering gap, or a different style or delimiter;
+- markers in the same column or lists separated by another block;
+- either list using the auto-numbered `.` marker.
+
+The shared vectors are in
+[`tests/lint-rule-vectors/ordered-list-split-by-indent.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/ordered-list-split-by-indent.json).
 
 ### Declaring a target version
 
@@ -564,7 +631,10 @@ not establish correctness for every possible input.
 specified but absent from these builds, and none of them reports
 `unresolved-reference-link` for a reference image yet. `consumed-key-near-miss`
 is in carve-js; carve-php and carve-rs port it next (markup-carve/carve#3340).
-`unclosed-code-fence` and `continuation-marker-refused` are in carve-js;
+`list-marker-below-content-column` and `ordered-list-split-by-indent` are
+specified ahead of the engines (markup-carve/carve#3439). Their default triggers
+are declared missing in `resources/lint-parity-drift.txt` until the pins carry
+them. `unclosed-code-fence` and `continuation-marker-refused` are in carve-js;
 carve-php and carve-rs still owe them (markup-carve/carve#3407). The engines
 still emit `table-alignment-run-padding`. The broader Djot migration checks
 remain specific to carve-js. Diagnostic message wording is engine-specific;
