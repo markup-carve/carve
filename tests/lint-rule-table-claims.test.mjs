@@ -112,8 +112,6 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  ['list-marker-below-content-column', 'specified by markup-carve/carve#3439; no engine emits it yet'],
-  ['ordered-list-split-by-indent', 'specified by markup-carve/carve#3439; no engine emits it yet'],
   [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',
@@ -289,6 +287,8 @@ test('an opt-in rule reports nothing until it is asked for', () => {
 // `semantic-span` is an extension name broken-fragment-link compares against.
 // The three include-* ids are render warnings lint skips by name: CARVE-P6-001
 // I16 says renames and heading clamps are not lint findings.
+// `wrong-column` and `fence-payload` are refusal reasons that pick the
+// continuation-marker-refused message (carve-js#3338).
 const NOT_A_RULE = new Set([
   'definition-list',
   'footnote-definition',
@@ -296,6 +296,8 @@ const NOT_A_RULE = new Set([
   'include-id-rename',
   'include-footnote-rename',
   'include-heading-clamp',
+  'wrong-column',
+  'fence-payload',
 ])
 
 function ruleIdsInBuild() {

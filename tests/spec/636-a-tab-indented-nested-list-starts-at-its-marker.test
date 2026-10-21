@@ -1,0 +1,16 @@
+A tab-indented nested list starts at its marker
+
+```
+- a
+	- b
+	c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+c</li>
+    </ul>
+  </li>
+</ul>
+```

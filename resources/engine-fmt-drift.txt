@@ -20,9 +20,7 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-618-captions-in-list-items-do-not-create-a-paragraph-gap-22  The pinned carve-js writer spells this with the superseded absolute column-0 marker, which the relative-column oracle reads differently (markup-carve/carve#3421).
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-5  The pinned carve-js writer spells this with the superseded absolute column-0 marker, which the relative-column oracle reads differently (markup-carve/carve#3421).
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-7  The pinned carve-js writer spells this with the superseded absolute column-0 marker, which the relative-column oracle reads differently (markup-carve/carve#3421).
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  The pinned carve-js writer spells this with the superseded absolute column-0 marker, which the relative-column oracle reads differently (markup-carve/carve#3421).
 628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-2  The pinned carve-js writer spells this with the superseded absolute column-0 marker, which the relative-column oracle reads differently (markup-carve/carve#3421).
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-30  The pinned carve-js writer spells this with the superseded absolute column-0 marker, which the relative-column oracle reads differently (markup-carve/carve#3421).
