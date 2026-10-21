@@ -520,8 +520,12 @@
   list-style: none;
 }
 .vp-doc li > input[type='checkbox'] {
-  margin: 0 0.5em 0 -1.4em;
-  vertical-align: middle;
+  float: inline-start;
+  font-size: inherit;
+  inline-size: 1em;
+  block-size: 1em;
+  margin-block: calc((1lh - 1em) / 2) 0;
+  margin-inline: calc(-1em - 0.5em) 0.5em;
 }
 
 /*
