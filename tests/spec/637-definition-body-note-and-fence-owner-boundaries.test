@@ -1,0 +1,87 @@
+Definition body, note, and fence owner boundaries
+
+````
+:: t
+: a
+	```
+  ```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <pre><code></code></pre>
+  </dd>
+</dl>
+````
+
+````
+:: t
+: a
+	```
+ ```
+.
+<dl>
+  <dt>t</dt>
+  <dd>a
+<code>
+</code></dd>
+</dl>
+````
+
+```
+. d
+   [^n]: e
+     - a
+.
+<ol>
+  <li>d</li>
+</ol>
+```
+
+```
+. d
+   [^n]: e
+    - a
+.
+<ol>
+  <li>d
+    <ul>
+      <li>a</li>
+    </ul>
+  </li>
+</ol>
+```
+
+````
+:: m
+: l
+     ```
+e
+     ```
+.
+<dl>
+  <dt>m</dt>
+  <dd>
+    <p>l</p>
+    <pre><code>e
+</code></pre>
+  </dd>
+</dl>
+````
+
+````
+:: m
+: l
+     ```
+e
+ ```
+.
+<dl>
+  <dt>m</dt>
+  <dd>l
+<code>
+e
+</code></dd>
+</dl>
+````

@@ -1,0 +1,53 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { parse } from '../scripts/spec/layout.mjs'
+
+const cases = [
+  {
+    name: 'tabbed fence with an in-body closer',
+    source: ':: t\n: a\n\t```\n  ```\n',
+    owner: ['deflist', 'dd', 'code'],
+    code: '',
+  },
+  {
+    name: 'tabbed fence with a closer below the body',
+    source: ':: t\n: a\n\t```\n ```\n',
+    owner: ['deflist', 'dd', 'para'],
+  },
+  {
+    name: 'nested marker at the invisible note body column',
+    source: '. d\n   [^n]: e\n     - a\n',
+    owner: ['list', 'item', 'para'],
+  },
+  {
+    name: 'nested marker below the invisible note body column',
+    source: '. d\n   [^n]: e\n    - a\n',
+    owner: ['list', 'item', 'list'],
+  },
+  {
+    name: 'definition fence with payload and a closer at its authored base',
+    source: ':: m\n: l\n     ```\ne\n     ```\n',
+    owner: ['deflist', 'dd', 'code'],
+    code: 'e\n',
+  },
+  {
+    name: 'definition fence with a closer outside its body',
+    source: ':: m\n: l\n     ```\ne\n ```\n',
+    owner: ['deflist', 'dd', 'para'],
+  },
+]
+
+for (const { name, source, owner, code } of cases) {
+  test(name, () => {
+    const doc = parse(source)
+    const block = doc.blocks[0]
+    const child = owner[1] === 'dd' ? block.items[1].ddBlocks.at(-1) : block.items[0].blocks.at(-1)
+    assert.equal(block.t, owner[0])
+    assert.equal(child.t, owner[2])
+    if (code !== undefined) assert.equal(child.text, code)
+    if (name.includes('invisible note')) {
+      const noteLines = doc.footnoteDefs.get('n')[0].lines
+      assert.deepEqual(noteLines, name.includes('at the invisible') ? ['e', '- a'] : ['e'])
+    }
+  })
+}
