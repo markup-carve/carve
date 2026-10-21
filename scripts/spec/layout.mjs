@@ -2408,7 +2408,7 @@ function opensSubBlock(line) {
 
 function opensHostedColonBlock(line) {
   if (FOOTNOTE_DEF.test(line) || isLinkDef(line) || parseAttrList(trimLineEnd(line)) !== null) return true
-  if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) || isTableRow(line)) return true
+  if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) || isTableRow(line) || DEFLIST_TERM.test(line)) return true
   const fence = FENCE.exec(line)
   if (fence) return parseFenceInfo(fence[2]) !== null
   const colon = COLON_FENCE.exec(line)
@@ -2618,11 +2618,15 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
     })
     let relativeEnd = Math.max(1, invisibleAuthoredEnd(candidate, 0, candidate.length) ??
       firstBlockEnd(candidate, 0, candidate.length, state, candidateColumns))
-    const firstItem = footnoteBody && measured.col === 0 ? matchMarkerAt(measured) : null
+    const firstItem = matchMarkerAt(measured)
     if (firstItem) {
       for (let at = index + 1; at < index + relativeEnd; at++) {
+        if (!(footnoteBody && measured.col === 0) && !lines[at].includes(':: ')) continue
         const next = indentCols(lines[at])
-        if (next.col > 0 && next.col < firstItem.markerWidth && opensAuthoredBase(next.rest)) {
+        const endsItem = footnoteBody && measured.col === 0
+          ? next.col > 0 && next.col < firstItem.markerWidth && opensAuthoredBase(next.rest)
+          : next.col >= base && next.col < base + firstItem.markerWidth && DEFLIST_TERM.test(next.rest)
+        if (endsItem) {
           relativeEnd = at - index
           break
         }
@@ -2829,7 +2833,8 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
       if (sourceFenceOpen && run && run[0] === sourceFenceOpen[0] && run.length >= sourceFenceOpen.length) sourceFenceOpen = null
       else if (!sourceFenceOpen) {
         const fence = FENCE.exec(rest)
-        if (fence && parseFenceInfo(fence[2]) !== null) {
+        if (fence && parseFenceInfo(fence[2]) !== null &&
+            !(liveQuoteDepth > 0 && depth === 0 && indentCols(sourceLines[row]).col > 0)) {
           sourceFenceOpen = fence[1]
           sourceFenceQuoteDepth = depth
         }
@@ -2862,7 +2867,9 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
     const quoted = quoteLeaf(line)
     const rest = quoted.measured.rest
     const marker = matchMarkerAt(quoted.measured)
-    if (rest === '' || marker || startsVisibleBlock(rest) || FENCE.test(rest)) {
+    if (rest === '' || marker ||
+        ((startsVisibleBlock(rest) || FENCE.test(rest)) &&
+          !(liveQuoteDepth > 0 && quoted.depth === 0 && indentCols(line).col > 0))) {
       liveQuoteDepth = quoted.depth
       hostedQuoteColumn = null
       hostedMarkerQuote = false
@@ -2913,6 +2920,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
       quoteColumn = measured.col
       const stack = quotedMarkerColumns.get(quoted.depth) ?? []
       const next = sourceLines[index + 1] === undefined ? null : quoteLeaf(sourceLines[index + 1])
+      if (next?.depth === 0) next.measured = indentCols(sourceLines[index + 1])
       if (CONT_MARKER.test(quoted.measured.rest)) {
         const sameLevel = next?.depth === quoted.depth
         const owner = quotePathBefore[index]
@@ -3778,15 +3786,31 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // X2: lazy prose keeps the quote's claim until a block closes it.
           let quoteParagraphClaim = false
           let noteBodyReach = null
+          let noteBodyQuoted = false
           const pushBody = (text, row = i) => {
             bodyLines.push(text)
             const source = ind(row)
             bodySourceColumns.push(sourceColumns?.[row] ?? source.L?.col ?? source.col)
-            if (FOOTNOTE_DEF.test(stripIndent(text))) noteBodyReach =
-              (row === descriptionStart ? sourceBodyColumn : source.col) + FOOTNOTE_BODY_COLUMN
-            else if (source.rest !== '' && noteBodyReach !== null && source.col < noteBodyReach) noteBodyReach = null
             const raw = stripLazy(text)
-            if (QUOTE.test(stripIndent(raw))) quoteParagraphClaim = bodyLeavesParagraphOpen(asRead(bodyLines))
+            let quoted = stripIndent(raw)
+            let quoteWidth = 0
+            while (QUOTE.test(quoted)) {
+              const prefix = QUOTE.exec(quoted)
+              quoteWidth += quoted.length - (prefix[1] ?? '').length
+              quoted = prefix[1] ?? ''
+            }
+            const quotedContent = indentCols(quoted)
+            const sourceContentCol = source.col + quoteWidth + quotedContent.col
+            if (!text.startsWith(LAZY) && FOOTNOTE_DEF.test(quotedContent.rest)) {
+              noteBodyReach = (row === descriptionStart ? sourceBodyColumn : sourceContentCol) + FOOTNOTE_BODY_COLUMN
+              noteBodyQuoted = quoteWidth > 0
+              quoteParagraphClaim = false
+            } else if (source.rest !== '' && noteBodyReach !== null &&
+                (noteBodyQuoted ? sourceContentCol : source.col) < noteBodyReach) {
+              noteBodyReach = null
+              noteBodyQuoted = false
+            }
+            if (QUOTE.test(stripIndent(raw)) && noteBodyReach === null) quoteParagraphClaim = bodyLeavesParagraphOpen(asRead(bodyLines))
             else if (isBlank(raw) || !text.startsWith(LAZY) &&
                 (startsVisibleBlock(raw) || isDefinitionOrAttributeLine(raw))) quoteParagraphClaim = false
             // Rebasing can expose an indented fence. Keep the full scan for
@@ -4055,6 +4079,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // (PART 0 O3, CARVE-P0-021); in an item it opens there unless a quote holds the band (X2).
             const lastBlock = stripIndent([...bodyLines].reverse().find((l) => !l.startsWith(LAZY)) ?? '')
             if (authoredCol > 0 && authoredCol < bodyColumn && (!inItem || QUOTE.test(lastBlock)) &&
+                descriptionOpenFenceAt(asRead(bodyLines), lines, i, bodyColumn, endsBodyAt) === -1 &&
                 bodyLeavesParagraphOpen(asRead(bodyLines)) &&
                 (HEADING.test(dedented) || HR.test(dedented) || isTableRow(dedented) ||
                  QUOTE.test(dedented) || (QUOTE.test(lastBlock) && isCodeBlockOpener(dedented)))) {
@@ -5990,14 +6015,28 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     const advanceDescendantQ1 = (text, absorbed, verbatim = false, idx = -1, lineCol = -1) => {
       if (descendantQ1.col < 0) return
       const close = () => { descendantQ1.open = false; descendantQ1.para = [] }
+      const checkNote = descendantQ1.noteCol !== null || text.includes('[^')
+      let noteContent = null
+      let noteLineColumn = -1
+      if (checkNote) {
+        let noteText = text
+        let quoteWidth = 0
+        while (QUOTE.test(noteText)) {
+          const quote = QUOTE.exec(noteText)
+          quoteWidth += noteText.length - (quote[1] ?? '').length
+          noteText = quote[1] ?? ''
+        }
+        noteContent = indentCols(noteText)
+        noteLineColumn = lineCol + quoteWidth + noteContent.col
+      }
       // A footnote's extent takes no lazy line (CARVE-P0-012 DEFINITION EXTENT):
       // its blanks and the lines reaching its body column hold nothing open.
       if (descendantQ1.noteCol !== null) {
-        if (text.trim() === '' || lineCol >= descendantQ1.noteCol) { close(); return }
+        if (text.trim() === '' || noteLineColumn >= descendantQ1.noteCol) { close(); return }
         descendantQ1.noteCol = null
       }
-      if (lineCol >= 0 && FOOTNOTE_DEF.test(text)) {
-        descendantQ1.noteCol = lineCol + FOOTNOTE_BODY_COLUMN
+      if (lineCol >= 0 && noteContent && FOOTNOTE_DEF.test(noteContent.rest)) {
+        descendantQ1.noteCol = noteLineColumn + FOOTNOTE_BODY_COLUMN
         close()
         return
       }
@@ -6070,6 +6109,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // `contentCol`; this is only the source collector's local zero.
     let authoredBlockBase = null
     let authoredBlockLimit = null
+    let heldContainerEnd = -1
+    const descriptionBodyColumns = []
     // Whether that block is a container (a quote or a definition list), whose
     // own last block answers for the line below once the block has ended.
     let authoredContainer = false
@@ -6535,6 +6576,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const line = lines[i]
       // `+` at the item's marker column attaches one block there (SS17 L3/L4).
       const lm = ind(i)
+      if (lm.rest !== '' && !insideFence() && !nestedVerbatim()) {
+        while (descriptionBodyColumns.length && lm.col < descriptionBodyColumns.at(-1)) descriptionBodyColumns.pop()
+        const description = /^:( +)(?=[ \t]*[^ \t])/.exec(lm.rest)
+        if (description && lm.col >= contentCol) descriptionBodyColumns.push(lm.col + 1 + description[1].length)
+      }
       if (markerNoteEligible && i > noteFenceEnd && lm.col >= markerNoteBodyColumn &&
           COMMENT_LINE.test(lm.rest) && !insideFence()) markerNoteCommentSeen = true
       if (markerNoteEligible && i > noteFenceEnd && i > markerNoteCommentEnd && lm.col >= markerNoteBodyColumn &&
@@ -6770,7 +6816,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           }
           // A paragraph inside a held container is not the item's own
           // second paragraph (PART 9 section 17 L1, carve#2988).
-          if (authoredContainer && authoredBlockLimit !== null && j < authoredBlockLimit) {
+          if (authoredContainer && (descriptionBodyColumns.some(body => col >= body) ||
+              j < heldContainerEnd ||
+              authoredBlockLimit !== null && j < authoredBlockLimit)) {
             if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)
             closePara()
             i = j
@@ -6936,6 +6984,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       else if (pendingSeparation && col >= contentCol && !insideFence() &&
           lm.rest !== '' && !isDefinitionOrAttributeLine(lm.rest)) lastListBlock = 'paragraph'
       if (col >= contentCol) {
+        if (subCol >= 0 && col < subCol && opensAuthoredBase(lm.rest) &&
+            !FENCE.test(lm.rest) && !nestedVerbatim()) {
+          subCol = -1
+          descLive = false
+          deepestIsDescendant = false
+        }
         // A completed span ends the paragraph for a new matched body line,
         // while its below-column continuation claim remains available.
         if (belowSpanClosed && !COMMENT_LINE.test(line)) {
@@ -7038,6 +7092,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         }
         if (pendingAuthoredBlock !== null && mayOpenAuthoredBlock) {
           authoredBlockLimit = authoredBlockEnd(lines, pendingAuthoredBlock, contentCol, state)
+          if (DEFLIST_TERM.test(ind(pendingAuthoredBlock).rest)) heldContainerEnd = authoredBlockLimit
           pendingAuthoredBlock = null
         }
         if (authoredBlockLimit !== null && i >= authoredBlockLimit && !insideFence()) {
@@ -7180,6 +7235,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           authoredContainer = DEFLIST_TERM.test(dedented) || QUOTE.test(dedented)
           if (openerBase === contentCol) pendingAuthoredBlock = i
           else authoredBlockLimit = authoredBlockEnd(lines, i, openerBase, state)
+          if (DEFLIST_TERM.test(dedented) && authoredBlockLimit !== null) heldContainerEnd = Math.max(heldContainerEnd, authoredBlockLimit)
         }
         // The old descendant cannot supply a paragraph to an ancestor's new fence.
         const opens = bodyFenceOpens(i, dedented, localBase, nestedOpaque?.kind === 'code' && !descendantOwned)
