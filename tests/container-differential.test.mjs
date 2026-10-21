@@ -36,7 +36,7 @@ for (const marker of ['> ', '- ', '1. ', '> - ', '- > ', '1. > ']) for (const fo
 })
 
 test('a list term retains its separate continuation rule', () => {
-  const source = '- :: term\n: body\ntail\n'
+  const source = '- :: term\n  : body\ntail\n'
   assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
 })
 
