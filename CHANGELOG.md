@@ -49,6 +49,8 @@ Releases before 0.1.6 are archived in
 - BBCode quote attribution has one importer reading and a
   `bbcode-quote-field-dropped` fidelity code for fields the target cannot
   carry (#3327, #3357).
+- A lazy colon-shaped line in a quote paragraph keeps no indentation
+  (#3506).
 
 ### Tooling and documentation
 
