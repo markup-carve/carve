@@ -15,6 +15,11 @@ const baseline = JSON.parse(
   await readFile(new URL('../resources/import-roundtrip-baseline.json', import.meta.url), 'utf8'),
 )
 
+// Corpus 637 adds six documents. All six complete HTML import, reformat to a
+// fixed point, and preserve rendered text. Only row 5 round-trips through HTML
+// to the same canonical source; none round-trips through Markdown with this pin.
+// These are corpus-population changes, not an engine pin change.
+
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 
