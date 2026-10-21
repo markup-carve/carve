@@ -57440,13 +57440,11 @@ gen-020
   <li>
     <dl>
       <dt>t</dt>
-      <dd>
-        <p>head</p>
-        <p>a</p>
-      </dd>
     </dl>
   </li>
 </ul>
+<p>:  head</p>
+<p>a</p>
 ```
 
 :::::::
