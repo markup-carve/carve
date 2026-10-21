@@ -44,3 +44,51 @@ test('a separator below a deeper list ends that list after its body paragraph', 
   assert.match(html, /<dd>d more<\/dd>/)
   assert.match(html, /<\/ul> <p>: l<\/p>$/)
 })
+
+for (const depth of [1, 2, 3]) {
+  test(`separator at a nested item marker column ends that item at depth ${depth}`, () => {
+    const prefix = '- '.repeat(depth)
+    const source = `${prefix}a\n${'  '.repeat(depth)}:: m\n${'  '.repeat(depth - 1)}: l\n`
+    const html = renderDoc(parse(source))
+    assert.match(html, /<dt>m<\/dt>/)
+    assert.doesNotMatch(html, /<dt>m\n: l<\/dt>|<dd>/)
+  })
+}
+
+for (const marker of ['- ', '1. ', '- [ ] ']) {
+  test(`a ${marker.trim()} child releases the separator at its marker column`, () => {
+    const source = `- ${marker}a\n${' '.repeat(2 + marker.length)}:: m\n  : l\n`
+    const html = renderDoc(parse(source))
+    assert.match(html, /<dt>m<\/dt>/)
+    assert.doesNotMatch(html, /<dt>m\n: l<\/dt>|<dd>/)
+  })
+}
+
+for (const quoteDepth of [1, 2]) {
+  test(`a nested separator releases its item inside ${quoteDepth} quote levels`, () => {
+    const quote = '> '.repeat(quoteDepth)
+    const source = `${quote}- - a\n${quote}    :: m\n${quote}  : l\n`
+    const html = renderDoc(parse(source))
+    assert.match(html, /<dt>m<\/dt>/)
+    assert.doesNotMatch(html, /<dt>m\n: l<\/dt>|<dd>/)
+  })
+}
+
+test('a folded separator leaves the item paragraph interruptible', () => {
+  const html = renderDoc(parse('- a\n   :: term\n  :  detail\n    :: term\n    :  detail\n      [^n]: note\n       q\n1. ordered\n'))
+  assert.match(html, /<dt>term<\/dt>\n\s*<dd>detail<\/dd>/)
+  assert.match(html, /<\/dl>\n\s*q\n\s*<\/li>/)
+  assert.doesNotMatch(html, /\[\^n\]: note/)
+})
+
+test('a document quote ends a description before a later fence closer', () => {
+  const html = renderDoc(parse(':: term\n: detail\n  ```\n  code\n> payload\n  ```\nafter\n'))
+  assert.doesNotMatch(html, /<pre><code>/)
+  assert.match(html, /<\/dl>\n<blockquote>/)
+})
+
+test('a document definition ends a description before a later fence closer', () => {
+  const html = renderDoc(parse(':: term\n: detail\n  ```\n  code\n[r]: /url\n  ```\nafter\n'))
+  assert.doesNotMatch(html, /<pre><code>/)
+  assert.match(html, /<\/dl>/)
+})

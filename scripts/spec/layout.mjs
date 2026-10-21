@@ -1382,6 +1382,10 @@ function isBlank(line) {
 // Without the `\S`, `:: ` was a paragraph and `::··` a definition list -
 // stripping one trailing space changed the structure (carve#512).
 const DEFLIST_TERM = /^:: (?=[ \t]*[^ \t\n\r])/
+const DEFLIST_SEPARATOR = /^: +(?=[^ \t])/
+// A nested marker on its parent's first line has no physical-column entry in
+// the continuation-marker cache. Keep that column for separator ownership.
+const separatorMarkerColumns = new WeakMap()
 // A line a term folds at its own column: not blank, not an opener, not a
 // definition, list marker, fence, caption, entry or comment.
 // Stands for a comment folded into a term; html.mjs splits the term on it.
@@ -2340,6 +2344,10 @@ function markerFreeContent(line) {
 function descriptionCloserAhead(run, lines, from, bodyColumn, endsBodyAt) {
   for (let j = from; j < lines.length && !endsBodyAt(j); j++) {
     const m = indentCols(lines[j])
+    // A document opener ends this description before a later closer can
+    // belong to it. An indented plain line may still fold into its paragraph.
+    if (m.col === 0 && bodyColumn > 0 &&
+        (QUOTE.test(m.rest) || isDefinitionOrAttributeLine(m.rest))) break
     // Searched past, never matched: a closer below the column is not written
     // inside the body (carve#2145).
     if (m.col < bodyColumn) continue
@@ -5667,6 +5675,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
   const baseIndent = matchMarkerAt(ind(i)).indent
   const sourceMarkerCol = (state.sourceHasLonePlus ? state.markerLineColumns.get(lines)?.get(i) : undefined) ??
     ind(i).L?.col ?? ind(i).col
+  const authoredMarkerCol = separatorMarkerColumns.get(lines)?.get(i) ?? sourceMarkerCol
   while (i < n) {
     const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
@@ -5922,6 +5931,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // not this item, so a descendant's looseness must not propagate up to this
     // item (carve#322).
     const headSubMarker = matchMarkerAt(indentCols(head.text))
+    if (headSubMarker) separatorMarkerColumns.set(itemLines,
+      new Map([[0, authoredMarkerCol + head.markerWidth]]))
     const headSubCol = headSubMarker
       ? contentCol + headSubMarker.indent + headSubMarker.markerWidth
       : -1
@@ -6979,7 +6990,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (DEFLIST_TERM.test(lm.rest) && col >= contentCol && !insideFence() &&
           !nestedVerbatim() && noteFrames.length === 0) {
         lastListBlock = 'term'
-        lastTermSourceCol = col
+        lastTermSourceCol = lm.L?.col ?? col
       } else if (nm && col >= contentCol && !insideFence()) lastListBlock = 'item'
       else if (pendingSeparation && col >= contentCol && !insideFence() &&
           lm.rest !== '' && !isDefinitionOrAttributeLine(lm.rest)) lastListBlock = 'paragraph'
@@ -7101,6 +7112,15 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
               !bodyLeavesParagraphOpen([ind(i - 1).rest])) closePara()
           authoredBlockBase = null
           authoredBlockLimit = null
+        }
+        // A separator at the item's content column but below the current
+        // definition list's column is paragraph text. It ends that list's
+        // authored reach, so a later opener can interrupt the paragraph.
+        if (authoredBlockBase !== null && col === contentCol && col < authoredBlockBase &&
+            DEFLIST_SEPARATOR.test(lm.rest)) {
+          authoredBlockBase = null
+          authoredBlockLimit = null
+          pendingAuthoredBlock = null
         }
         const insideAuthoredBlock = pendingAuthoredBlock !== null ||
           (authoredBlockLimit !== null && i < authoredBlockLimit)
@@ -7618,7 +7638,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         break // sibling or outer list
       }
       // CARVE-P2-028: the authored column keeps a folded separator inside its live term.
-      if (!nm && /^: +(?=[^ \t])/.test(lm.rest) && (lm.L?.col ?? col) <= sourceMarkerCol && !bodyQuote.open &&
+      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
           lastListBlock === 'term' && (lm.L?.col ?? col) < lastTermSourceCol) break
       if (nm && columnOwner(nm.indent) === 'below' && deepestParagraphOpen() && itemLines.length > 0) {
         // a marker BELOW the content column folds as lazy item text
