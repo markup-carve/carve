@@ -25,3 +25,4 @@
 #
 # Format: <slug><space><space><reason>
 620-generated-container-documents  carve#3488: marker-line term separator now leaves the list item at column 0; pinned JS still attaches it
+641-an-unclosed-fence-run-with-no-closer-in-its-item-does-not-hide-a-blank-line-2  carve#3495: pinned reader keeps the item tight after a lazy line folds into the unclosed fence run.
