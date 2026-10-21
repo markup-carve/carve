@@ -6077,8 +6077,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // block, and the item holds no paragraph for the line below.
       if (absorbed) {
         descendantQ1.absorbedFence = absorbed
-        if (!descendantQ1.open) descendantQ1.open = true
-        descendantQ1.para.push(text)
+        if (descLive && deepestIsDescendant) {
+          descendantQ1.open = true
+          descendantQ1.para.push(text)
+        }
         return
       }
       // A VERBATIM PAYLOAD IS OPAQUE (PART 0), so it may not touch the colon or
