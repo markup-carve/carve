@@ -79,9 +79,9 @@ test('without a blank, the folded fence line leaves the list tight', () => {
     '<ul><li><ul><li>text <code> x cap</code></li></ul></li><li>c</li></ul>')
 })
 
-test('a real fence in the outer item and its inline code span stay tight', () => {
+test('a real fence stays tight while blank-separated inline span paragraphs loosen', () => {
   assert.equal(html(doc('- outer', '  - head', '', '    ```', '    a', '  ```', '', '  tail')),
     '<ul><li>outer <ul><li>head <pre><code>a </code></pre></li></ul><pre><code> tail </code></pre></li></ul>')
   assert.equal(html(doc('- a', '  ```', '  x', '', '  z', '', '  w')),
-    '<ul><li>a <code> x</code> z w </li></ul>')
+    '<ul><li><p>a <code> x</code></p><p>z</p><p>w</p></li></ul>')
 })

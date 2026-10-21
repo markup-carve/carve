@@ -6077,7 +6077,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // block, and the item holds no paragraph for the line below.
       if (absorbed) {
         descendantQ1.absorbedFence = absorbed
-        if (descendantQ1.open) descendantQ1.para.push(text)
+        if (descLive && deepestIsDescendant) {
+          descendantQ1.open = true
+          descendantQ1.para.push(text)
+        }
         return
       }
       // A VERBATIM PAYLOAD IS OPAQUE (PART 0), so it may not touch the colon or
@@ -6678,13 +6681,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           fenceBlankRun++
           const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
           pushLine(dd.text, dd.meas)
-          // §17 L1: a child's lazy closer leaves its next paragraph separate.
-          const preceding = i > 0 ? ind(i - 1) : null
-          // Any lazy line qualifies: a shorter run or prose is still a lazy fold.
-          const lazyCloser = preceding !== null && preceding.col < contentCol
-          if (inItem && fence.opaque?.opens === false && lazyCloser && subCol < 0 && headSubCol < 0) {
+          // An absorbed fence is paragraph text. A blank before the next
+          // paragraph makes the item loose even while the inline span is open.
+          if (fence.opaque?.opens === false && subCol < 0 && headSubCol < 0) {
             const next = i + 1 < n ? ind(i + 1) : null
-            if (next && next.col >= contentCol && foldablePlainLine(next.rest) &&
+            if (next && next.col >= contentCol && !isDefinitionOrAttributeLine(next.rest) && foldablePlainLine(next.rest) &&
                 !opensSubBlock(next.rest)) list.tight = false
           }
           // AND IT ENDS THE OPEN PARAGRAPH, whatever container is holding the

@@ -1,0 +1,17 @@
+A folded fence run leaves a later paragraph loose
+
+````
+- o
+  ```
+```
+
+  t
+.
+<ul>
+  <li><p>o
+<code>
+</code></p>
+    <p>t</p>
+  </li>
+</ul>
+````

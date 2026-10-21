@@ -1,0 +1,18 @@
+A folded child fence keeps the below-column line in its paragraph
+
+````
+- o
+  - h
+    ```
+```
+.
+<ul>
+  <li>o
+    <ul>
+      <li>h
+<code>
+</code></li>
+    </ul>
+  </li>
+</ul>
+````

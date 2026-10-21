@@ -62920,3 +62920,52 @@ The nested description keeps the attached fence
 `````
 
 :::::::
+
+## A folded fence run leaves a later paragraph loose
+
+::::::: compare
+
+`````carve
+- o
+  ```
+```
+
+  t
+`````
+
+`````html
+<ul>
+  <li><p>o
+<code>
+</code></p>
+    <p>t</p>
+  </li>
+</ul>
+`````
+
+:::::::
+
+## A folded child fence keeps the below-column line in its paragraph
+
+::::::: compare
+
+`````carve
+- o
+  - h
+    ```
+```
+`````
+
+`````html
+<ul>
+  <li>o
+    <ul>
+      <li>h
+<code>
+</code></li>
+    </ul>
+  </li>
+</ul>
+`````
+
+:::::::
