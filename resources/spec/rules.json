@@ -1565,6 +1565,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-074",
+      "part": "11",
+      "title": "A FENCE A DEDENT ENDED IN A NESTED CHILD IS WRITTEN CLOSED",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-043",
       "part": "11",
       "title": "THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST",

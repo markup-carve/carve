@@ -10084,6 +10084,23 @@ EOF = (* end of file *) ;
       tightness or block ownership (markup-carve/carve#3421). If no spelling
       round-trips, it reports a writer loss.
 
+   7e2. A FENCE A DEDENT ENDED IN A NESTED CHILD IS WRITTEN CLOSED -- NORMATIVE [CARVE-P11-074].
+      A fenced code block that ended because a line below its nested list
+      item's column closed that item is written with its closer at the
+      fence's base column. In a tight item, the item's next block follows
+      without a blank line before the nested sub-list or between that closer
+      and the next block's first line:
+
+        - outer
+          - head
+            ```
+            a
+            ```
+          ```
+
+          tail
+          ```
+
    7f. A REGION MARKER KEEPS ITS LINE -- NORMATIVE [CARVE-P11-073]. A region
       include selects the physical lines strictly between two marker lines
       (CARVE-P6-001 I1b), so a writer that moves a marker or opens a line
