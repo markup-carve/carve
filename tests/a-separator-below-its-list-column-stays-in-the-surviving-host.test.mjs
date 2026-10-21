@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { parse } from '../scripts/spec/layout.mjs'
+import { parse, layoutWork, resetLayoutWork } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 for (const depth of [1, 2, 3]) {
@@ -34,8 +34,25 @@ test('a term spelled inside code gives no separator claim', () => {
   assert.match(html, /<pre><code>:: x <\/code><\/pre> para : l <\/li>/)
 })
 
-test('a marker line term accepts a separator at its source column', () => {
-  assert.match(renderDoc(parse('- :: t\n: d\n')), /<dd>d<\/dd>/)
+test('a marker-line term uses the item content column for its separator', () => {
+  assert.equal(renderDoc(parse('- :: t\n:  head\n\n     a\n')),
+    '<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n    </dl>\n  </li>\n</ul>\n<p>:  head</p>\n<p>a</p>')
+  assert.match(renderDoc(parse('- :: t\n :  head\n')), /<dt>t\n:  head<\/dt>/)
+  assert.match(renderDoc(parse('- :: t\n  :  head\n')), /<dd>head<\/dd>/)
+  assert.match(renderDoc(parse('- intro\n  :: t\n:  head\n')), /<\/ul>\n<p>:  head<\/p>/)
+  assert.match(renderDoc(parse('1. :: t\n:  head\n')), /<\/ol>\n<p>:  head<\/p>/)
+  assert.match(renderDoc(parse('> - :: t\n> :  head\n')), /<\/ul>\n  <p>:  head<\/p>\n<\/blockquote>/)
+  assert.match(renderDoc(parse('> - :: t\n>  :  head\n')), /<dt>t\n:  head<\/dt>/)
+  assert.match(renderDoc(parse('> - :: t\n>   :  head\n')), /<dd>head<\/dd>/)
+})
+
+test('marker-line term ownership visits scale with the number of items', () => {
+  const visits = count => {
+    resetLayoutWork()
+    parse('- :: t\n:  head\n\n     a\n'.repeat(count))
+    return layoutWork.lineVisits
+  }
+  assert.ok(visits(256) <= 2 * visits(128) + 2)
 })
 
 test('a separator below a deeper list ends that list after its body paragraph', () => {

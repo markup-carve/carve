@@ -3684,7 +3684,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // it resolved from a line the engines leave as text.
     if (DEFLIST_TERM.test(line) && !/^:::/.test(line)) {
       const node = { t: 'deflist', items: [] }
-      let sourceTermCol = ind(i).L?.col ?? ind(i).col
+      let sourceTermCol = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
       // A plain line that folds (as a lazy continuation) into an open term or
       // the open paragraph of a definition (SS17): not blank, not a visible
       // block, not a definition/list/fence/caption opener.
@@ -3698,18 +3698,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         !isCodeBlockOpener(cur) &&
         !CAPTION.test(cur)
       const isEntry = (s) => /^::?[ ](?=[ \t]*[^ \t\n\r])/.test(s) && !/^:::/.test(s)
-      // A definition/term line folded into an open item BELOW its content column
-      // arrives LAZY-framed (the item-fold pass at C3). A `:  def` marker is a
-      // LENIENT def-list entry: it attaches as a fresh <dd> to its open term even
-      // when it lands at or below column 0 (PART 9 §24 C3 def-list exception), so
-      // the frame must be stripped before matching entries -- otherwise the framed
-      // line is mistaken for a plain continuation and folds into the <dt>.
+      // A line folded into an open item below its content column arrives
+      // LAZY-framed. Its authored column still decides whether `:  def`
+      // reaches the term's column; a separator below it remains term text.
+      // Strip the frame only when testing an entry that reaches that column.
       const unlazy = (s) => (s.startsWith(LAZY) ? s.slice(LAZY.length) : s)
       while (i < n) {
         const cur0 = unlazy(lines[i] ?? '')
         let dm
         if ((dm = /^:: (?=[ \t]*[^ \t\n\r])(.*)$/.exec(cur0))) {
-          sourceTermCol = ind(i).L?.col ?? ind(i).col
+          sourceTermCol = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
           // term (dt): folds plain wrapped continuation lines so a wrapped term
           // line does not strand its definition. (This used to say "like a
           // heading". A heading ends at its newline and folds nothing; the term
@@ -3724,7 +3722,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // attach, so it is a plain line and folds (CARVE-P2-028, carve#3145).
             if (isEntry(cur) || isBlank(cur) || cur.startsWith(LAZY) &&
                 /^: (?=[ \t]*[^ \t])/.test(unlazy(cur)) &&
-                (ind(i).L?.col ?? ind(i).col) === sourceTermCol) break
+                (sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) >= sourceTermCol) break
             // A comment at the container's column ends the term. Past it the
             // comment stays a comment, fence body included, and the term goes
             // on (carve#2411). Inline content never reaches across it, so it
@@ -5723,6 +5721,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // synthesized, or one whose run held a tab - and the inner parse walks it
     // once. Every push goes through `pushLine` so the two arrays cannot drift.
     const itemMeas = []
+    const termSourceColumns = DEFLIST_TERM.test(head.text) ? [] : null
     const measurement = state.opaqueMeasurement
     const parentOrigins = measurement?.origins.get(lines)
     const itemOrigins = parentOrigins === undefined ? undefined : []
@@ -5734,10 +5733,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // block, and the blank a blank-line branch pushes, which ends the run.
     let tableOpen = false
     let lastListBlock = DEFLIST_TERM.test(head.text) ? 'term' : 'item'
-    let lastTermSourceCol = DEFLIST_TERM.test(head.text) ? sourceMarkerCol : null
+    let lastTermSourceCol = DEFLIST_TERM.test(head.text) ? contentCol : null
     const pushLine = (text, m = null) => {
       itemLines.push(text)
       itemMeas.push(m)
+      if (termSourceColumns) termSourceColumns.push(itemLines.length === 1 ? contentCol : ind(i).L?.col ?? ind(i).col)
       if (itemOrigins) itemOrigins.push(text === '' ? undefined :
         typeof parentOrigins === 'number' ? parentOrigins + i : parentOrigins[i])
       tableOpen = tableRunStep(tableOpen, text)
@@ -7901,6 +7901,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
      * carve#2746 asks to be readable at the descendant's column.
      */
     if (descendantQ1.col >= 0) state.descendantQ1Log?.push({ col: descendantQ1.col, ...descendantQ1At(descendantQ1.col) })
+    if (termSourceColumns) (state.descriptionSourceColumns ??= new WeakMap()).set(itemLines, termSourceColumns)
     item.blocks = parseBlocks(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
     let beforeBlock = item.blocks.length
     for (let gap = captionGaps.length - 1; gap >= 0; gap--) {
