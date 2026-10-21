@@ -1,5 +1,5 @@
-// The docs site's own stylesheet, measured against engine output rather than
-// hand-written HTML: a tab set, a highlight and an uncaptioned block image.
+// The shared stylesheet as loaded by the docs, measured against engine output:
+// a tab set, a highlight and an uncaptioned block image.
 //
 // Measurement limits, stated because a weak assertion dressed up as proof is
 // worse than a disclosed gap. jsdom (reached indirectly, through
@@ -22,6 +22,9 @@ const CUSTOM_CSS = readFileSync(
   new URL('../docs/.vitepress/theme/custom.css', import.meta.url),
   'utf8',
 )
+const SHARED_CSS = ['tokens.css', 'core.css', 'extensions.css', 'recipes.css']
+  .map((file) => readFileSync(new URL(`../node_modules/@markup-carve/carve-css/src/${file}`, import.meta.url), 'utf8'))
+  .join('\n')
 
 // The VitePress variables custom.css reads. The site defines them; a bare jsdom
 // document does not, so name them here and nowhere else.
@@ -30,17 +33,20 @@ const VP_VARS = `:root {
   --vp-c-divider: #e2e2e3; --vp-c-bg-soft: #f6f6f7;
   --vp-c-brand-1: #3451b2; --vp-c-brand-soft: rgba(52, 81, 178, 0.14);
   --vp-c-yellow-soft: rgba(234, 179, 8, 0.22);
-}`
+}
+img { display: block; }
+h1, h2, h3, h4, h5, h6 { font-size: 16px; font-weight: 400; }
+ul, ol { list-style: none; padding: 0; }`
 
 /** Render Carve through the docs site's own extension set. */
 const render = (src) => carveToHtml(src, { extensions: carveExtensions() })
 
-/** A jsdom document carrying the site's stylesheet around engine output. */
+/** A jsdom document carrying the same CSS layers and scope as rendered output. */
 function mount(html) {
   const dom = new JSDOM(
     `<!doctype html><html><head><style>${VP_VARS}</style>` +
-      `<style>${CUSTOM_CSS}</style></head>` +
-      `<body><div class="carve-result carve-render">${html}</div></body></html>`,
+      `<style>${SHARED_CSS}</style><style>${CUSTOM_CSS}</style></head>` +
+      `<body><div class="carve-result carve carve-render">${html}</div></body></html>`,
   )
   return dom.window
 }
@@ -158,4 +164,36 @@ test("a figure's image keeps the caption's spacing, not the block-image margin",
   assert.ok(img, 'the engine emitted no figure for a captioned image')
   assert.equal(win.getComputedStyle(img).display, 'block')
   assert.equal(win.getComputedStyle(img).marginBottom, '')
+})
+
+test('an image inside a paragraph stays inline under the VitePress image reset', () => {
+  const win = mount(render('before ![Alt](a.png) after\n'))
+  const img = win.document.querySelector('p img')
+  assert.ok(img)
+  assert.equal(win.getComputedStyle(img).display, 'inline')
+})
+
+test('keycaps and table captions retain the docs presentation', () => {
+  const win = mount(render('[Ctrl+C]{kbd}\n\n| a | b |\n^ cap\n'))
+  const kbd = win.document.querySelector('kbd')
+  const caption = win.document.querySelector('caption')
+  assert.ok(kbd)
+  assert.ok(caption)
+  assert.equal(win.getComputedStyle(kbd).display, 'inline-block')
+  assert.equal(win.getComputedStyle(kbd).borderBottomWidth, '2px')
+  assert.equal(win.getComputedStyle(caption).captionSide, 'bottom')
+  assert.equal(win.getComputedStyle(caption).textAlign, 'left')
+})
+
+test('headings and lists survive the VitePress reset', () => {
+  const win = mount(render('# Heading\n\n- one\n- two\n\n1. three\n'))
+  const heading = win.document.querySelector('h1')
+  const unordered = win.document.querySelector('ul')
+  const ordered = win.document.querySelector('ol')
+  assert.ok(heading && unordered && ordered)
+  assert.equal(win.getComputedStyle(heading).fontSize, '2em')
+  assert.equal(win.getComputedStyle(heading).fontWeight, '600')
+  assert.equal(win.getComputedStyle(unordered).listStyle, 'disc')
+  assert.equal(win.getComputedStyle(ordered).listStyle, 'decimal')
+  assert.equal(win.getComputedStyle(unordered).paddingInlineStart, '1.25rem')
 })

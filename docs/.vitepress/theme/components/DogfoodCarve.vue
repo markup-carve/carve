@@ -11,7 +11,7 @@ import html, { source } from '../../examples/quick.crv'
     <div>
       <h3>Rendered HTML</h3>
       <!-- The source is local docs content rendered at build time. -->
-      <div class="dogfood-carve-output" v-html="html" />
+      <div class="dogfood-carve-output carve carve-render" v-html="html" />
     </div>
   </div>
 </template>

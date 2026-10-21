@@ -942,7 +942,7 @@ void mermaidInit
         </div>
         <div
           ref="outputEl"
-          class="output vp-doc carve-render"
+          class="output carve carve-render"
           v-html="html"
           @pointerenter="claimScroll(outputEl)"
           @wheel.passive="claimScroll(outputEl)"

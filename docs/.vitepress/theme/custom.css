@@ -299,74 +299,43 @@
   }
 }
 
-/*
- * Carve rendered output (Playground + dogfood). The container also carries
- * `vp-doc`, so prose (headings, lists, tables, code, blockquotes) inherits the
- * VitePress document styling. These rules add the Carve-specific constructs
- * VitePress has no styling for: admonitions, kbd keycaps, mentions/tags,
- * figure captions, table captions, and inline/display math.
- */
-
-/* Admonitions: <aside class="admonition {type}"> with optional title <p>. */
-.carve-render .admonition {
-  margin: 1rem 0;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border-left: 4px solid var(--vp-c-default-1);
-  background: var(--vp-c-default-soft);
-}
-.carve-render .admonition > :first-child {
-  margin-top: 0;
-}
-.carve-render .admonition > :last-child {
-  margin-bottom: 0;
-}
-.carve-render .admonition-title {
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  font-size: 0.8rem;
-  margin-bottom: 0.4rem;
-}
-/* The graceful-degradation floor for an unconsumed grouping [label]: a small
-   muted caption, visually distinct from the admonition-title heading line so
-   the two opener tokens don't read as the same thing. */
-.carve-render .div-label {
-  font-weight: 600;
-  font-size: 0.75rem;
-  color: var(--vp-c-text-2);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.4rem;
-}
-.carve-render .admonition.note,
-.carve-render .admonition.info {
-  border-left-color: var(--vp-c-note-1, var(--vp-c-brand-1));
-  background: var(--vp-c-note-soft, var(--vp-c-brand-soft));
-}
-.carve-render .admonition.tip,
-.carve-render .admonition.success {
-  border-left-color: var(--vp-c-green-1);
-  background: var(--vp-c-green-soft);
-}
-.carve-render .admonition.warning {
-  border-left-color: var(--vp-c-yellow-1);
-  background: var(--vp-c-yellow-soft);
-}
-.carve-render .admonition.danger {
-  border-left-color: var(--vp-c-red-1);
-  background: var(--vp-c-red-soft);
-}
-.carve-render .admonition.example {
-  border-left-color: var(--vp-c-purple-1);
-  background: var(--vp-c-purple-soft);
-}
-.carve-render .admonition.quote {
-  border-left-color: var(--vp-c-default-1);
-  background: var(--vp-c-default-soft);
+/* Shared constructs come from carve-css; these values follow the docs theme. */
+.carve-render {
+  --carve-surface: var(--vp-c-bg);
+  --carve-sunk: var(--vp-c-bg-soft);
+  --carve-raised: var(--vp-c-bg);
+  --carve-ink: var(--vp-c-text-1);
+  --carve-ink-soft: var(--vp-c-text-2);
+  --carve-rule: var(--vp-c-divider);
+  --carve-border: var(--vp-c-divider);
+  --carve-accent: var(--vp-c-brand-1);
+  --carve-accent-soft: var(--vp-c-brand-soft);
+  --carve-accent-ink: var(--vp-c-text-1);
+  --carve-quote-ink: var(--vp-c-text-1);
+  --carve-info: var(--vp-c-note-1);
+  --carve-info-wash: var(--vp-c-note-soft);
+  --carve-success: var(--vp-c-green-1);
+  --carve-success-wash: var(--vp-c-green-soft);
+  --carve-warn: var(--vp-c-warning-1);
+  --carve-warn-wash: var(--vp-c-warning-soft);
+  --carve-danger: var(--vp-c-danger-1);
+  --carve-danger-wash: var(--vp-c-danger-soft);
 }
 
-/* Keyboard keys: a subtle keycap. */
+/* VitePress resets the browser's heading and list defaults globally. */
+.carve-render :is(h1, h2, h3, h4, h5, h6) { font-weight: 600; }
+.carve-render h1 { font-size: 2em; }
+.carve-render h2 { font-size: 1.5em; }
+.carve-render h3 { font-size: 1.25em; }
+.carve-render h4 { font-size: 1.125em; }
+.carve-render :is(ul, ol) { padding-inline-start: 1.25rem; }
+.carve-render ul { list-style: disc; }
+.carve-render ol { list-style: decimal; }
+
+.carve-render p img {
+  display: inline;
+}
+
 .carve-render kbd {
   display: inline-block;
   padding: 0.15em 0.45em;
@@ -378,74 +347,8 @@
   border: 1px solid var(--vp-c-divider);
   border-bottom-width: 2px;
   border-radius: 5px;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
 }
 
-/* Mentions and tags: a flat, colored pill. */
-.carve-render .mention,
-.carve-render .tag {
-  display: inline-block;
-  padding: 0.05em 0.5em;
-  border-radius: 999px;
-  font-size: 0.9em;
-  font-weight: 500;
-  line-height: 1.4;
-  text-decoration: none;
-}
-.carve-render .mention,
-.carve-render .mention strong {
-  color: var(--vp-c-brand-1);
-  background: var(--vp-c-brand-soft);
-  font-weight: 500;
-}
-.carve-render .tag,
-.carve-render .tag strong {
-  color: var(--vp-c-green-1, var(--vp-c-brand-1));
-  background: var(--vp-c-green-soft, var(--vp-c-brand-soft));
-  font-weight: 500;
-}
-
-/* Figure (image / blockquote with `^ caption`) and its caption. */
-.carve-render figure {
-  margin: 1rem 0;
-}
-.carve-render figure img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 6px;
-  display: block;
-}
-
-/* VitePress' reset makes every image a block. Carve keeps an image that shares
- * a paragraph inline, and the playground is where that difference is taught. */
-.carve-render p img {
-  display: inline;
-  max-width: 100%;
-  height: auto;
-}
-
-/* An uncaptioned block image is a bare <img> with no wrapper - a direct child of
-   the render root, an admonition or a list item - so it matches neither rule
-   above and stays inline, putting two consecutive block images on one line.
-   Figure images are excluded because their spacing belongs to the caption. The
-   gallery and scroll-container exclusions carve-css carries are left out: this
-   site renders neither. */
-.carve-render img:not(p img):not(figure img) {
-  display: block;
-  margin: 0 0 1rem;
-  max-width: 100%;
-  height: auto;
-}
-.carve-render figcaption {
-  margin-top: 0.45rem;
-  padding-left: 0.6rem;
-  border-left: 2px solid var(--vp-c-brand-1);
-  color: var(--vp-c-text-2);
-  font-size: 0.88rem;
-  font-style: italic;
-}
-
-/* Table caption. */
 .carve-render table caption {
   caption-side: bottom;
   margin-top: 0.5rem;
@@ -454,15 +357,21 @@
   text-align: left;
 }
 
-/* Inline / display math (KaTeX not loaded — show the TeX legibly). */
-.carve-render .math {
-  font-family: var(--vp-font-family-mono, ui-monospace, monospace);
-  font-size: 0.95em;
+.carve-render .mention,
+.carve-render .tag {
+  display: inline-block;
+  padding: 0.05em 0.5em;
+  border-radius: 999px;
+  font-size: 0.9em;
+  background: var(--vp-c-brand-soft);
 }
-.carve-render .math.display {
-  display: block;
-  text-align: center;
-  margin: 1rem 0;
+.carve-render .tag {
+  color: var(--vp-c-green-1);
+  background: var(--vp-c-green-soft);
+}
+.carve-render .admonition.example {
+  --carve-adm: var(--vp-c-purple-1);
+  --carve-adm-wash: var(--vp-c-purple-soft);
 }
 
 /*
@@ -513,13 +422,13 @@
 }
 
 /*
- * Task lists. Style checkbox items directly so the pinned renderer and the
- * task-list class both place the checkbox in the marker gutter. Applies in prose and the Playground output (both `.vp-doc`).
+ * VitePress prose has no `.carve` scope. Rendered Carve uses the package's
+ * task-list rule; keep the same gutter layout for prose task items.
  */
-.vp-doc li:has(> input[type='checkbox']) {
+.vp-doc li:not(.carve li):has(> input[type='checkbox']) {
   list-style: none;
 }
-.vp-doc li > input[type='checkbox'] {
+.vp-doc li:not(.carve li) > input[type='checkbox'] {
   float: inline-start;
   font-size: inherit;
   inline-size: 1em;
@@ -596,7 +505,6 @@
   padding-top: 2px;
   padding-bottom: 2px;
 }
-
 /* ---- Spoiler extension (Tier-2) ----
    Inline `:spoiler[…]` blurs until clicked; block `::: spoiler` is a native
    <details> collapse. Reveal JS lives in Playground.vue (inline only). */
@@ -709,70 +617,6 @@
   margin: 10px 0;
 }
 
-/* Carve heading permalinks (headingPermalinks extension): show the ¶ anchor
-   only when the heading is hovered or the anchor is focused, not always. */
-.carve-render .permalink,
-.carve-playground .permalink {
-  opacity: 0;
-  text-decoration: none;
-  transition: opacity 0.15s;
-}
-.carve-render :is(h1, h2, h3, h4, h5, h6):hover .permalink,
-.carve-render .permalink:focus,
-.carve-playground :is(h1, h2, h3, h4, h5, h6):hover .permalink,
-.carve-playground .permalink:focus {
-  opacity: 1;
-}
-
-/* Editorial (critic) markup: {+ added +} -> <ins>, {- deleted -} -> <del>,
-   {~ old ~> new ~} -> <del><ins>, {# note #} -> <span class="critic-comment">.
-   Default <ins>/<del> get no color, and .critic-comment is unstyled, so add it. */
-.carve-render ins,
-.carve-playground ins {
-  background: rgba(64, 180, 96, 0.2);
-  text-decoration: none;
-  border-radius: 2px;
-  padding: 0 2px;
-}
-.carve-render del,
-.carve-playground del {
-  background: rgba(220, 84, 84, 0.18);
-  border-radius: 2px;
-  padding: 0 2px;
-}
-.carve-render .critic-comment,
-.carve-playground .critic-comment {
-  color: var(--vp-c-text-2);
-  font-style: italic;
-  border-bottom: 1px dotted var(--vp-c-text-3);
-}
-
-/* Highlight (`=text=` -> <mark>). Unstyled, a <mark> takes the browser default
-   yellow wash and keeps the surrounding ink, so a highlight inside a link or a
-   caption can land unreadable and ignores the dark theme. Name a background and
-   an ink together, both from variables each theme defines, and let a nested
-   inline take the highlight ink instead of its own palette color.
-
-   Duplicates carve-css; replace with an import of its core.css layer once a
-   published release carries the corrected extension rules. */
-.carve-render mark,
-.carve-playground mark {
-  --carve-highlight-bg: var(--vp-c-yellow-soft, rgba(234, 179, 8, 0.22));
-  --carve-highlight-ink: var(--vp-c-text-1);
-  background: var(--carve-highlight-bg);
-  color: var(--carve-highlight-ink);
-  border-radius: 2px;
-  padding: 0 2px;
-}
-.carve-render mark a,
-.carve-render mark del,
-.carve-render mark ins,
-.carve-playground mark a,
-.carve-playground mark del,
-.carve-playground mark ins {
-  color: inherit;
-}
-
 /* Code-block chrome (playground output): hover shows the language + copy icon
    in the top-right corner. Decoration wired in Playground.vue. */
 .carve-render pre[data-pill] {
@@ -838,114 +682,4 @@
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-/* Code-group (codeGroup extension): CSS-only radio tabs. The render emits
-   all <input.code-group-radio>+<label> first, then the <div.code-group-panel>s,
-   so :checked ~ nth-of-type wires each tab to its label + panel. */
-/* `position: relative` so the visually-hidden radio is contained in the widget;
-   otherwise focusing it on tab click scrolls the page to wherever it landed. */
-.carve-render .code-group { margin: 12px 0; position: relative; }
-.carve-render .code-group-radio { position: absolute; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-.carve-render .code-group-label {
-  display: inline-block; cursor: pointer; padding: 4px 12px; font-size: 13px;
-  color: var(--vp-c-text-2); border: 1px solid transparent; border-bottom: none;
-  border-radius: 6px 6px 0 0;
-}
-.carve-render .code-group-panel { display: none; border: 1px solid var(--vp-c-divider); border-radius: 0 6px 6px 6px; }
-.carve-render .code-group-panel > pre,
-.carve-render .code-group-panel > div[class*="language-"] { margin: 0; }
-.carve-render .code-group-radio:nth-of-type(1):checked ~ .code-group-label:nth-of-type(1) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .code-group-radio:nth-of-type(1):checked ~ .code-group-panel:nth-of-type(1) { display: block; }
-.carve-render .code-group-radio:nth-of-type(2):checked ~ .code-group-label:nth-of-type(2) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .code-group-radio:nth-of-type(2):checked ~ .code-group-panel:nth-of-type(2) { display: block; }
-.carve-render .code-group-radio:nth-of-type(3):checked ~ .code-group-label:nth-of-type(3) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .code-group-radio:nth-of-type(3):checked ~ .code-group-panel:nth-of-type(3) { display: block; }
-.carve-render .code-group-radio:nth-of-type(4):checked ~ .code-group-label:nth-of-type(4) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .code-group-radio:nth-of-type(4):checked ~ .code-group-panel:nth-of-type(4) { display: block; }
-.carve-render .code-group-radio:nth-of-type(5):checked ~ .code-group-label:nth-of-type(5) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .code-group-radio:nth-of-type(5):checked ~ .code-group-panel:nth-of-type(5) { display: block; }
-.carve-render .code-group-radio:nth-of-type(6):checked ~ .code-group-label:nth-of-type(6) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .code-group-radio:nth-of-type(6):checked ~ .code-group-panel:nth-of-type(6) { display: block; }
-
-/* Tab set (tabs extension, default `mode: "css"`). Measured against the pinned
-   engine: the render emits every <input.tabs-radio>+<label.tabs-label> first and
-   then all the <div.tabs-panel>s, so the wiring is :checked plus a general
-   sibling and nth-of-type - an adjacency ladder would pair a checked radio with
-   the next radio and leave every panel hidden. Same shape as code-group above.
-
-   These rules duplicate carve-css. Replace them with an import of its
-   core.css + extensions.css layers once a published release carries the
-   corrected panel wiring (0.1.0 is what resolves today, and its extensions
-   layer has the broken adjacency). */
-.carve-render .tabs { margin: 12px 0; position: relative; }
-/* Visually hidden rather than display:none so the radio stays focusable and
-   keyboard-reachable; absolute so focusing it does not scroll the page. */
-.carve-render .tabs-radio { position: absolute; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-.carve-render .tabs-label {
-  display: inline-block; cursor: pointer; padding: 4px 12px; font-size: 13px;
-  color: var(--vp-c-text-2); border: 1px solid transparent; border-bottom: none;
-  border-radius: 6px 6px 0 0;
-}
-.carve-render .tabs-panel { display: none; border: 1px solid var(--vp-c-divider); border-radius: 0 6px 6px 6px; padding: 0 16px; }
-.carve-render .tabs-radio:nth-of-type(1):checked ~ .tabs-label:nth-of-type(1) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .tabs-radio:nth-of-type(1):checked ~ .tabs-panel:nth-of-type(1) { display: block; }
-.carve-render .tabs-radio:nth-of-type(2):checked ~ .tabs-label:nth-of-type(2) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .tabs-radio:nth-of-type(2):checked ~ .tabs-panel:nth-of-type(2) { display: block; }
-.carve-render .tabs-radio:nth-of-type(3):checked ~ .tabs-label:nth-of-type(3) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .tabs-radio:nth-of-type(3):checked ~ .tabs-panel:nth-of-type(3) { display: block; }
-.carve-render .tabs-radio:nth-of-type(4):checked ~ .tabs-label:nth-of-type(4) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .tabs-radio:nth-of-type(4):checked ~ .tabs-panel:nth-of-type(4) { display: block; }
-.carve-render .tabs-radio:nth-of-type(5):checked ~ .tabs-label:nth-of-type(5) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .tabs-radio:nth-of-type(5):checked ~ .tabs-panel:nth-of-type(5) { display: block; }
-.carve-render .tabs-radio:nth-of-type(6):checked ~ .tabs-label:nth-of-type(6) {
-  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
-}
-.carve-render .tabs-radio:nth-of-type(6):checked ~ .tabs-panel:nth-of-type(6) { display: block; }
-
-/* Quote bodies use document ink; only the attribution is secondary text. */
-.carve-render blockquote {
-  color: var(--vp-c-text-1);
-  border-inline-start: 3px solid color-mix(in srgb, var(--vp-c-text-1) 50%, var(--vp-c-bg));
-  border-inline-end: 0;
-  padding-inline-end: 0;
-  padding-inline-start: 1rem;
-  padding-block: .25rem;
-  margin-inline: 0;
-}
-.carve-render blockquote > p { margin-block: 0 .75rem; }
-.carve-render blockquote > :first-child { margin-block-start: 0; }
-.carve-render blockquote > :last-child { margin-block-end: 0; }
-.carve-render figure:has(> blockquote) { text-align: start; }
-.carve-render figure > blockquote { margin-block-end: 0; }
-.carve-render figure:has(> blockquote) > figcaption {
-  border: 0;
-  padding-inline-end: 0;
-  padding-inline-start: calc(1rem + 3px);
-  font-style: normal;
-}
-@media (forced-colors: active) {
-  .carve-render blockquote { border-color: CanvasText; }
 }
