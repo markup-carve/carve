@@ -51,6 +51,8 @@ Releases before 0.1.6 are archived in
   carry (#3327, #3357).
 - A lazy colon-shaped line in a quote paragraph keeps no indentation
   (#3506).
+- The first-block `+` of a footnote or a description no longer pulls a
+  list item from column 0 (#3482).
 
 ### Tooling and documentation
 

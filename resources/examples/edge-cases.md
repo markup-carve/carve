@@ -63083,3 +63083,57 @@ Six spaces of indentation are stripped the same way
 `````
 
 :::::::
+
+## The first-block form of a note or description pulls no list from column 0
+
+A first-block `+` in a footnote or a description takes one following non-list block; a list item at column 0 is never pulled in (CARVE-P9-067, carve#3482). The refused `+` follows the ordinary rules: in a footnote it is text and the list item interrupts that one-line paragraph, and in a description it adds no block, so the list follows at document level.
+
+A footnote keeps the refused `+` as text and the list stays outside it
+
+::::::: compare
+
+`````carve
+Note[^a]
+
+[^a]: +
+- a list
+`````
+
+`````html
+<p>Note<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<ul>
+  <li>a list</li>
+</ul>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+`````
+
+:::::::
+
+A description stays empty and the list follows the definition list
+
+::::::: compare
+
+`````carve
+:: t
+: +
+- a list
+`````
+
+`````html
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<ul>
+  <li>a list</li>
+</ul>
+`````
+
+:::::::

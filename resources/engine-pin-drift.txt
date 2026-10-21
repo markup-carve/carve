@@ -24,3 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+643-the-first-block-form-of-a-note-or-description-pulls-no-list-from-column-0  carve#3482: pinned reader pulls the column-0 list into the note through the first-block +
+643-the-first-block-form-of-a-note-or-description-pulls-no-list-from-column-0-2  carve#3482: pinned reader pulls the column-0 list into the description through the first-block +
