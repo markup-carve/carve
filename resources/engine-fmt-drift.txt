@@ -20,17 +20,3 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-3  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-7  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-12  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-13  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-14  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-2  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-3  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-4  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-5  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-6  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-7  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-8  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-9  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
