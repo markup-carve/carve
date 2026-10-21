@@ -1,14 +1,30 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-10-20",
-    "spec": "964c48de484d37048b8863f98db6d840010c6ddb",
-    "js": "ccbbdcc983b01ffb9a53e4293bd63d0540325643",
+    "date": "2026-10-21",
+    "spec": "132a6db9c43751879007ff182d758398472b2816",
+    "js": "34ba9eeb0b41aaeefef2a012821462dde3f27395",
     "php": "34865bf37a34135b4e9b3ce7c1047b2281b91f15",
     "rust": "8192aca313f4dd9ad81fa1f9f2c258780b68f365",
-    "documents": 2981
+    "documents": 3066
   },
   "differences": [
+    {
+      "file": "tests/corpus/05-lists-8.crv",
+      "reason": "carve-js reports a list marker below the content column after a blank line (#3443); the carve-php and carve-rs ports are merged but not yet pinned.",
+      "issue": "https://github.com/markup-carve/carve/issues/3464",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-below-content-column",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
     {
       "file": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-2.crv",
       "reason": "Pinned lint engines disagree on this source at the current pins.",
@@ -157,6 +173,59 @@
       }
     },
     {
+      "file": "tests/corpus/277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open-4.crv",
+      "reason": "carve-js reports a list marker below the content column after a blank line (#3443); the carve-php and carve-rs ports are merged but not yet pinned.",
+      "issue": "https://github.com/markup-carve/carve/issues/3464",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-below-content-column",
+            3,
+            2
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/290-adjacent-sibling-lists-survive-the-round-trip-2.crv",
+      "reason": "carve-js reports a list marker below the content column after a blank line (#3443); the carve-php and carve-rs ports are merged but not yet pinned.",
+      "issue": "https://github.com/markup-carve/carve/issues/3464",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-below-content-column",
+            3,
+            2
+          ],
+          [
+            "list-marker-below-content-column",
+            5,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/290-adjacent-sibling-lists-survive-the-round-trip.crv",
+      "reason": "carve-js reports a list marker below the content column after a blank line (#3443); the carve-php and carve-rs ports are merged but not yet pinned.",
+      "issue": "https://github.com/markup-carve/carve/issues/3464",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-below-content-column",
+            3,
+            2
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
       "file": "tests/corpus/291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-2.crv",
       "reason": "Pinned lint engines disagree on this source at the current pins.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -237,6 +306,22 @@
       }
     },
     {
+      "file": "tests/corpus/327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-5.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
       "file": "tests/corpus/365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it-2.crv",
       "reason": "Pinned lint engines disagree on this source at the current pins.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -301,6 +386,86 @@
       }
     },
     {
+      "file": "tests/corpus/384-a-continuation-marker-attaches-only-a-flush-left-block-2.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/384-a-continuation-marker-attaches-only-a-flush-left-block-3.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/384-a-continuation-marker-attaches-only-a-flush-left-block-5.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/384-a-continuation-marker-attaches-only-a-flush-left-block-7.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-13.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
       "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-17.crv",
       "reason": "Pinned lint engines disagree on this source at the current pins.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -314,6 +479,175 @@
         ],
         "php": [],
         "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-7.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/436-an-empty-description-body-claims-no-line-below-column-0-7.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-2.crv",
+      "reason": "carve-js reports a list marker below the content column after a blank line (#3443); the carve-php and carve-rs ports are merged but not yet pinned.",
+      "issue": "https://github.com/markup-carve/carve/issues/3464",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-below-content-column",
+            2,
+            2
+          ],
+          [
+            "unresolved-reference-link",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unresolved-reference-link",
+            4,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            4,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-5.crv",
+      "reason": "carve-js reports a list marker below the content column after a blank line (#3443); the carve-php and carve-rs ports are merged but not yet pinned.",
+      "issue": "https://github.com/markup-carve/carve/issues/3464",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-below-content-column",
+            2,
+            3
+          ],
+          [
+            "unresolved-reference-link",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unresolved-reference-link",
+            4,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            4,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-6.crv",
+      "reason": "carve-js reports a list marker below the content column after a blank line (#3443); the carve-php and carve-rs ports are merged but not yet pinned.",
+      "issue": "https://github.com/markup-carve/carve/issues/3464",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-below-content-column",
+            2,
+            4
+          ],
+          [
+            "unresolved-reference-link",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unresolved-reference-link",
+            4,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            4,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-9.crv",
+      "reason": "carve-js reports a list marker below the content column after a blank line (#3443); the carve-php and carve-rs ports are merged but not yet pinned.",
+      "issue": "https://github.com/markup-carve/carve/issues/3464",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-below-content-column",
+            2,
+            2
+          ],
+          [
+            "list-marker-below-content-column",
+            3,
+            2
+          ],
+          [
+            "unresolved-reference-link",
+            5,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unresolved-reference-link",
+            5,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            5,
+            5
+          ]
+        ]
       }
     },
     {
@@ -557,6 +891,54 @@
             "fence-delimiter-indentation",
             6,
             3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-16.crv",
+      "reason": "carve-js reports a list marker below the content column after a blank line (#3443); the carve-php and carve-rs ports are merged but not yet pinned.",
+      "issue": "https://github.com/markup-carve/carve/issues/3464",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            7
+          ],
+          [
+            "list-marker-below-content-column",
+            6,
+            2
+          ],
+          [
+            "unclosed-container-fence",
+            3,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            3,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            3,
+            7
           ]
         ]
       }
@@ -3960,6 +4342,11 @@
       "diagnostics": {
         "js": [
           [
+            "continuation-marker-refused",
+            3,
+            1
+          ],
+          [
             "unclosed-code-fence",
             1,
             3
@@ -4055,6 +4442,11 @@
       "diagnostics": {
         "js": [
           [
+            "continuation-marker-refused",
+            2,
+            1
+          ],
+          [
             "unclosed-code-fence",
             1,
             3
@@ -4147,6 +4539,38 @@
       }
     },
     {
+      "file": "tests/corpus/630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-6.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            4,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-7.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
       "file": "tests/corpus/630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-9.crv",
       "reason": "Pinned lint engines disagree on this source at the current pins.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -4156,6 +4580,70 @@
             "unclosed-code-fence",
             1,
             7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-11.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-12.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-13.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
           ]
         ],
         "php": [],
@@ -4179,8 +4667,675 @@
       }
     },
     {
+      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-17.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
       "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-18.crv",
       "reason": "Relative-column continuation diagnostics differ across pinned engines.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-19.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-20.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-9.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-10.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-12.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            9
+          ],
+          [
+            "list-item-body-detached",
+            3,
+            2
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-14.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            9
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-16.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            6
+          ],
+          [
+            "list-item-body-detached",
+            3,
+            2
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-18.crv",
+      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-2.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-20.crv",
+      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ],
+          [
+            "list-item-body-detached",
+            3,
+            2
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-22.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-24.crv",
+      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            9
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ],
+          [
+            "list-item-body-detached",
+            3,
+            2
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-26.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            9
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-28.crv",
+      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            6
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ],
+          [
+            "list-item-body-detached",
+            3,
+            2
+          ]
+        ],
+        "php": [
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "fence-delimiter-indentation",
+            3,
+            2
+          ],
+          [
+            "fence-delimiter-indentation",
+            5,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-3.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-30.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-31.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-33.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-34.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-35.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-36.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-37.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-38.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-39.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-4.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-6.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-8.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ],
+          [
+            "list-item-body-detached",
+            3,
+            2
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-12.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-13.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-14.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-17.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
         "js": [
@@ -4195,161 +5350,311 @@
       }
     },
     {
-      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-22.crv",
-      "reason": "Relative-column continuation diagnostics differ across pinned engines.",
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-18.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
         "js": [
           [
-            "list-item-block-overindented",
-            4,
-            2
-          ]
-        ],
-        "php": [],
-        "rust": [
-          [
-            "list-item-block-overindented",
-            4,
-            2
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-18.crv",
-      "reason": "Pinned lint engines differ on the indented first-block form.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [
-          [
-            "list-item-block-overindented",
+            "continuation-marker-refused",
             3,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            2,
             5
           ]
         ],
         "php": [],
-        "rust": [
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-19.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
           [
-            "list-item-block-overindented",
+            "continuation-marker-refused",
             3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-2.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-20.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-23.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-24.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-25.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-26.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            4
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-27.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-28.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
             5
           ]
-        ]
+        ],
+        "php": [],
+        "rust": []
       }
     },
     {
-      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-20.crv",
-      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-3.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
         "js": [
           [
-            "fence-delimiter-indentation",
+            "continuation-marker-refused",
             3,
-            2
-          ],
-          [
-            "fence-delimiter-indentation",
-            5,
-            2
+            1
           ]
         ],
-        "php": [
-          [
-            "fence-delimiter-indentation",
-            5,
-            2
-          ]
-        ],
-        "rust": [
-          [
-            "fence-delimiter-indentation",
-            3,
-            2
-          ],
-          [
-            "fence-delimiter-indentation",
-            5,
-            2
-          ]
-        ]
+        "php": [],
+        "rust": []
       }
     },
     {
-      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-24.crv",
-      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-4.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
         "js": [
           [
-            "fence-delimiter-indentation",
-            3,
-            2
+            "continuation-marker-refused",
+            2,
+            1
           ],
           [
-            "fence-delimiter-indentation",
-            5,
-            2
+            "unclosed-code-fence",
+            1,
+            3
           ]
         ],
-        "php": [
-          [
-            "fence-delimiter-indentation",
-            5,
-            2
-          ]
-        ],
-        "rust": [
-          [
-            "fence-delimiter-indentation",
-            3,
-            2
-          ],
-          [
-            "fence-delimiter-indentation",
-            5,
-            2
-          ]
-        ]
+        "php": [],
+        "rust": []
       }
     },
     {
-      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-28.crv",
-      "reason": "Pinned lint engines differ on the indented first-block form.",
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-5.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
         "js": [
           [
-            "fence-delimiter-indentation",
+            "continuation-marker-refused",
             3,
-            2
+            5
           ],
           [
-            "fence-delimiter-indentation",
-            5,
-            2
+            "unclosed-code-fence",
+            2,
+            5
           ]
         ],
-        "php": [
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-6.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
           [
-            "fence-delimiter-indentation",
-            5,
-            2
-          ]
-        ],
-        "rust": [
-          [
-            "fence-delimiter-indentation",
+            "continuation-marker-refused",
             3,
-            2
+            3
           ],
           [
-            "fence-delimiter-indentation",
-            5,
-            2
+            "unclosed-code-fence",
+            2,
+            5
           ]
-        ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-7.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-8.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-3.crv",
+      "reason": "carve-js 34ba9eeb reads the continuation marker at relative column 0 and lints the refused marker; carve-php and carve-rs have not ported it yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
       }
     },
     {
