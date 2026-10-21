@@ -24,4 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-620-generated-container-documents  carve#3488: marker-line term separator now leaves the list item at column 0; pinned JS still attaches it
