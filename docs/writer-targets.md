@@ -18,48 +18,48 @@ The sections below were PART 11 clauses. Each keeps its rule ID as a heading, so
 The Markdown renderer is not the canonical writer and does not follow PART 11 §2. It answers to a Markdown reader, and THIS TABLE IS ITS ESCAPING RULE FOR TEXT. Every condition is read on the EMITTED LINE, across nodes (CARVE-P11-050). The first column is the row's label, or the clause that states the row in full.
 
 ``` text
-row   character      escaped when                             written
-M1    `\` `` ` ``    always                                   `\` and the
-      `~` `]`                                                 character
-M1a   `*`            always                                   `\*`
-M1b   `_`            ADJACENT to an unescaped `_`, or where   `\_`
-                     another live `_` in the same inline
-                     content could close the emphasis it
-                     could open (CARVE-P11-023)
-M1b   `[`            ADJACENT to an unescaped `[`, or inside  `\[`
-                     an emitted link label or image
-                     description (CARVE-P11-023)
-M1c   `-` `+`        at a paragraph line's content position,  `\-` `\+`
-                     before a space or tab
-M1c   `.` `)`        after one to nine ASCII digits at a      `\.` `\)`
-                     paragraph line's content position,
-                     before a space or tab
-M1e   `<`            before an ASCII letter, `/`, `!` or `?`  `\<`
-M1e   `>`            at a line's content position             `\>`
-M1f   `#`            opening a run of one to six hashes at a  `\#`
-                     line's content position, closed by a
-                     space, a tab or the line's end; and a
-                     trailing run of any length after a
-                     space or tab on a line emitted as a
-                     heading
+row             character      escaped when                             written
+M1              `\` `` ` ``    always                                   `\` and the
+                `~` `]`                                                 character
+M1a             `*`            always                                   `\*`
+M1b             `_`            ADJACENT to an unescaped `_`, or where   `\_`
+                               another live `_` in the same inline
+                               content could close the emphasis it
+                               could open (CARVE-P11-023)
+M1b             `[`            ADJACENT to an unescaped `[`, or inside  `\[`
+                               an emitted link label or image
+                               description (CARVE-P11-023)
+M1c             `-` `+`        at a paragraph line's content position,  `\-` `\+`
+                               before a space or tab
+M1c             `.` `)`        after one to nine ASCII digits at a      `\.` `\)`
+                               paragraph line's content position,
+                               before a space or tab
+M1e             `<`            before an ASCII letter, `/`, `!` or `?`  `\<`
+M1e             `>`            at a line's content position             `\>`
+M1f             `#`            opening a run of one to six hashes at a  `\#`
+                               line's content position, closed by a
+                               space, a tab or the line's end; and a
+                               trailing run of any length after a
+                               space or tab on a line emitted as a
+                               heading
 CARVE-P11-051   `&`            where the line after it completes a      `\&`
-                     character reference
+                               character reference
 CARVE-P11-052   `!`            before a `[` the writer emits as markup  `\!`
-§8g   a line's       a paragraph line that would read as a    `\` on that
-      first or       thematic break, a setext underline or    character
-      marker         an empty list item (T1 to T3)
-      character
+CARVE-P11-053   a line's       a paragraph line that would read as a    `\` on that
+                first or       thematic break, a setext underline or    character
+                marker         an empty list item (T1 to T3)
+                character
 CARVE-P11-054   `|`            in a pipe-table cell                     `\|`
-§8i   `:` `.`        in a URL form GFM would autolink (U1,    `\:` `\.`
-                     U2)
+CARVE-P11-060   `:` `.`        in a URL form GFM would autolink (U1,    `\:` `\.`
+                               U2)
 CARVE-P11-060   `@`            in an address GFM would autolink (E1)    `<!---->@`
-M2    the character  M2a: it could be read as markup at the   `\` and the
-      of an          position the writer has reached, or it   character
-      `escaped_text` is `"`, `'`, `-` or `.`. M2b: a `#`
-      node           qualifies only at a line's content
-                     position (CARVE-P11-025)
-M3    any other      never                                    bare
-      character
+M2              the character  M2a: it could be read as markup at the   `\` and the
+                of an          position the writer has reached, or it   character
+                `escaped_text` is `"`, `'`, `-` or `.`. M2b: a `#`
+                node           qualifies only at a line's content
+                               position (CARVE-P11-025)
+M3              any other      never                                    bare
+                character
 ```
 
 M2 EXISTS BECAUSE AN AUTHORED ESCAPE CARRIES INTENT. `\-\-` was written so that a processor with smart punctuation on would not read an en dash, and `"` `'` `-` `.` are not Markdown metacharacters, so no M1 row covers them. A document that escapes nothing gains no backslashes from M2. An implementation whose AST has no `escaped_text` node cannot honor M2; that is a defect in the AST, not license to skip the row.
@@ -90,28 +90,21 @@ THE TABLE IS THE BOUNDARY, NOT A FLOOR. Each conditional row is an if-and-only-i
 
 **`<` is escaped when the emitted line would read it as markup.**
 
-An opening tag, a closing tag, a comment
+An opening tag, a closing tag, a comment and a processing instruction open raw HTML through a CommonMark reader, and those four next-characters are the whole hazard. The escape is a BACKSLASH, not an entity, and the closing `>` needs none: a tag that cannot open cannot be closed.
 
 ``` text
-and a processing instruction open raw HTML through a CommonMark
-reader, and those four next-characters are the whole hazard. The
-escape is a BACKSLASH, not an entity, and the closing `>` needs
-none: a tag that cannot open cannot be closed.
-
-  a \<b> c       ->  a &lt;b&gt; c
+a \<b> c       ->  a &lt;b&gt; c
 ```
 
 ### CARVE-P11-044
 
 **`#` is escaped where the emitted line would open or close an ATX heading.**
 
-The content position is the
+The content position is the one [CARVE-P11-025](#carve-p11-025) defines, and the escape goes on the `#` that opens the run:
 
 ``` text
-one CARVE-P11-025 defines, and the escape goes on the `#` that opens the run:
-
-  a               ->  a
-     # heading    ->  \# heading
+a               ->  a
+   # heading    ->  \# heading
 ```
 
 ### CARVE-P11-025
@@ -446,17 +439,14 @@ THE TEST IS WHETHER THIS DEFINITION'S EXPANSION IS EMITTED, not whether its term
 - AN AUTHORED `abbr` OUTRANKS THE DEFINITION. CARVE-P10-003 makes `[HTML]{abbr="Custom"}` authoritative and a resolved `abbreviation` child contributes only its visible text there, so the definition's own expansion reaches no target. `45-inline-extensions-11` pins `HTML (Custom)` on plain and on the terminal with the definition line above it, and this clause leaves that case unchanged.
 - A LATER DEFINITION OF THE SAME TERM WON. PART 9R R3 is last-wins, so in
 
-``` text
-    *[A]: a
-    *[A]: b
+  ``` text
+  *[A]: a
+  *[A]: b
 
-    A here.
+  A here.
+  ```
 
-only `b` is ever emitted. `*[A]: b` goes and `*[A]: a` stays, on
-plain and on the terminal alike. Dropping every definition of a term
-that expanded anywhere would delete the string `a` from the document
-outright, which is the loss this clause moves to prevent.
-```
+  only `b` is ever emitted. `*[A]: b` goes and `*[A]: a` stays, on plain and on the terminal alike. Dropping every definition of a term that expanded anywhere would delete the string `a` from the document outright, which is the loss this clause moves to prevent.
 
 THE MARKDOWN TARGET NEEDS NONE OF THAT TEST -- it keeps every definition line whatever became of it. So does the canonical writer, where PART 11 §1's `parse(fmt(x)) == parse(x)` requires it, which leaves the round trip intact on both of the targets that have one.
 
