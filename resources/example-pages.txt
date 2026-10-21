@@ -458,6 +458,12 @@ index: examples/edge-cases/index.md
   634-a-refused-continuation-plus-remains-text-9
   634-a-refused-continuation-plus-remains-text
   636-a-tab-indented-nested-list-starts-at-its-marker
+  637-definition-body-note-and-fence-owner-boundaries
+  637-definition-body-note-and-fence-owner-boundaries-2
+  637-definition-body-note-and-fence-owner-boundaries-3
+  637-definition-body-note-and-fence-owner-boundaries-4
+  637-definition-body-note-and-fence-owner-boundaries-5
+  637-definition-body-note-and-fence-owner-boundaries-6
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3

@@ -27,3 +27,6 @@
 154-under-indented-definition-attaches-over-indented-definition-folds  The separator ownership ruling is ahead of the pinned carve-js build (markup-carve/carve#3451).
 154-under-indented-definition-attaches-over-indented-definition-folds-2  The separator ownership ruling is ahead of the pinned carve-js build (markup-carve/carve#3451).
 616-a-line-is-read-in-the-container-whose-column-it-reaches-7  The description sibling-list ruling is ahead of the pinned carve-js build (CARVE-P2-017, markup-carve/carve-js#3322).
+637-definition-body-note-and-fence-owner-boundaries  The definition body fence ruling is ahead of the pinned carve-js build (markup-carve/carve#3446).
+637-definition-body-note-and-fence-owner-boundaries-3  The invisible footnote body ruling is ahead of the pinned carve-js build (markup-carve/carve#3448).
+637-definition-body-note-and-fence-owner-boundaries-5  The definition fence payload ruling is ahead of the pinned carve-js build (markup-carve/carve#3452).
