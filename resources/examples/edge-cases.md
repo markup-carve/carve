@@ -2268,7 +2268,7 @@ spaces leave the line as paragraph text.
 
 :::
 
-A trailing hash run is heading text. The Markdown target escapes the run's first `#` so a CommonMark reader does not strip it as a closing sequence (PART 11 §8a M1f).
+A trailing hash run is heading text. The Markdown target escapes the run's first `#` so a CommonMark reader does not strip it as a closing sequence (CARVE-P11-023 M1f).
 
 ::: compare
 
@@ -16859,7 +16859,7 @@ break.
 
 ## An angle bracket is escaped only where it opens markup
 
-PART 11 §8a M1e. On the Markdown target a `<` is escaped with a backslash when
+CARVE-P11-023 M1e. On the Markdown target a `<` is escaped with a backslash when
 the next character is an ASCII letter, `/`, `!` or `?` - the four things that can
 open raw HTML - and left alone otherwise. A `>` takes nothing: mid-line it is
 inert, and at the start of a line it is a block quote marker M1 already covers.
@@ -21662,7 +21662,7 @@ The comma-separated half of the set is pinned separately, because its split is t
 
 ## An escaped hash keeps its escape at a container's content position
 
-PART 11 §8b M2b is decided on the EMITTED LINE, so a container prefix is passed
+CARVE-P11-025 M2b is decided on the EMITTED LINE, so a container prefix is passed
 over before the position is read. A hash at the start of a block quote's or a
 list item's content opens an ATX heading exactly as one at column 0 does, and
 its escape is kept there. All three engines dropped it, and a round trip through
@@ -35732,7 +35732,7 @@ A table below a table stays inside the item in a quote host too.
 
 ## An underscore pair in text is escaped where the line would pair it
 
-PART 11 §8a M1b. On the Markdown target a literal `_` is escaped when another
+CARVE-P11-023 M1b. On the Markdown target a literal `_` is escaped when another
 live `_` on the emitted line could close the emphasis it could open. A run that
 flanks on both sides can neither open nor close, so `company_id` stays bare, and
 so does an underscore no second one can pair with.
@@ -35818,7 +35818,7 @@ E2a), so the slashes of a URL cannot close emphasis opened before the link.
 
 ## An underscore pair split across a line break is escaped
 
-PART 11 §8a M1b. The underscore's pair condition reads the whole inline content
+CARVE-P11-023 M1b. The underscore's pair condition reads the whole inline content
 of the block, because a Markdown reader pairs emphasis across a line break
 inside a paragraph.
 
@@ -38509,7 +38509,7 @@ CONTROL. Plain source needs no escaping and renders unchanged.
 
 ## Adjacent strong spans use HTML only where their delimiters merge
 
-PART 11 §8c requires Markdown delimiters where they read back as the same
+CARVE-P11-045 requires Markdown delimiters where they read back as the same
 construct. Two adjacent strong spans need an HTML fallback for the second span
 because the two delimiter runs otherwise merge into one strong span.
 

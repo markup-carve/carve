@@ -474,10 +474,10 @@ Attributes and tables:
 Canonical form and the non-HTML targets:
 
 - **PART 11 §6e: a table cell's content is padded** (carve#1233), **PART 11 §6d: a code fence opener is written glued to its info string** (carve#1219), and **PART 11 §6c: a value-less attribute is written as a boolean** (carve#1137).
-- **PART 11 §8b: the Markdown target's authored escape narrows too** (carve#1321), and **a line's content position is after its container prefix** (carve#1332). The position is read on the emitted line past every container prefix, so `> \# heading` does not come back as a heading.
+- **CARVE-P11-025: the Markdown target's authored escape narrows too** (carve#1321), and **a line's content position is after its container prefix** (carve#1332). The position is read on the emitted line past every container prefix, so `> \# heading` does not come back as a heading.
 - **The Markdown target escapes an angle bracket only where it opens markup** (carve#1172, carve#1148).
-- **PART 11 §10h: the plain-text target preserves list depth** (carve#1084). The clause now carries its own number rather than sitting inside §8a's body (carve#1365); the `10d` slot of that same run is retired, since carve#1213 withdrew the clause it named, so the run reads `10c`, `10e`.
-- **PART 11 §10e: a presentation target keeps a caption, a fence title and a fence label** (carve#1179), and **PART 11 §10f: a referenced abbreviation definition splits by target** (carve#1185).
+- **CARVE-P11-035: the plain-text target preserves list depth** (carve#1084). The clause now carries its own number rather than sitting inside §8a's body (carve#1365); the `10d` slot of that same run is retired, since carve#1213 withdrew the clause it named, so the run reads `10c`, `10e`.
+- **CARVE-P11-032: a presentation target keeps a caption, a fence title and a fence label** (carve#1179), and **PART 11 §10f: a referenced abbreviation definition splits by target** (carve#1185).
 - **Bidi controls are stripped by presentation target** (carve#1082, carve#1083).
 
 ### Security
@@ -961,7 +961,7 @@ Defects in the specification text:
   case-sensitive link-definition matching in the same rule), and a heading with a
   blockquote ancestor is declined in either nesting order.
 
-- **PART 11 §10a: an unused definition survives the non-HTML targets, and the
+- **CARVE-P11-028: an unused definition survives the non-HTML targets, and the
   clause is narrowed to the kinds that have a node.** A footnote or abbreviation
   definition nothing references is still emitted by the Markdown, plain-text and
   terminal renderers, with its marker as written; HTML still drops it. The LINK

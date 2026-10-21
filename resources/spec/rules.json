@@ -1265,93 +1265,15 @@
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-022",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET'S ESCAPING",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-023",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-024",
-      "part": "11",
-      "title": "M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-044",
-      "part": "11",
-      "title": "M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-025",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-045",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK",
-      "scope": "canonical-writing"
-    },
-    {
       "id": "CARVE-P11-050",
       "part": "11",
       "title": "A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES",
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-051",
-      "part": "11",
-      "title": "AN AMPERSAND THAT WOULD READ AS A CHARACTER REFERENCE IS ESCAPED",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-052",
-      "part": "11",
-      "title": "A `!` BEFORE A LINK IS ESCAPED",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-053",
-      "part": "11",
-      "title": "A PARAGRAPH LINE MUST NOT BECOME A THEMATIC BREAK OR A SETEXT UNDERLINE",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-054",
-      "part": "11",
-      "title": "A PIPE IN A TABLE CELL IS ESCAPED",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-026",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET'S HARD BREAK",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-048",
-      "part": "11",
-      "title": "A HARD BREAK IN A TABLE CELL IS `<br>`",
-      "scope": "canonical-writing"
-    },
-    {
       "id": "CARVE-P11-027",
       "part": "11",
       "title": "A LIST ITEM'S CONTINUATION LINES ARE ALIGNED",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-028",
-      "part": "11",
-      "title": "AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS",
       "scope": "canonical-writing"
     },
     {
@@ -1367,21 +1289,9 @@
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-031",
-      "part": "11",
-      "title": "MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-032",
-      "part": "11",
-      "title": "A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE LABEL",
-      "scope": "canonical-writing"
-    },
-    {
       "id": "CARVE-P11-033",
       "part": "11",
-      "title": "A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET",
+      "title": "A MARKDOWN IMPORT READS AN ABBREVIATION DEFINITION LINE",
       "scope": "canonical-writing"
     },
     {
@@ -1391,117 +1301,21 @@
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-035",
-      "part": "11",
-      "title": "THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-072",
-      "part": "11",
-      "title": "A LIST ITEM'S CONTINUATION BLOCKS SIT AT ITS CONTENT COLUMN",
-      "scope": "canonical-writing"
-    },
-    {
       "id": "CARVE-P11-073",
       "part": "11",
       "title": "A REGION MARKER KEEPS ITS LINE",
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-047",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-055",
-      "part": "11",
-      "title": "A PARAGRAPH LINE CARRIES NO EDGE WHITESPACE",
-      "scope": "canonical-writing"
-    },
-    {
       "id": "CARVE-P11-056",
       "part": "11",
-      "title": "A TABLE WITHOUT A HEADER ROW GETS AN EMPTY ONE",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-057",
-      "part": "11",
-      "title": "ADJACENT LISTS OF ONE KIND ALTERNATE THEIR MARKER",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-058",
-      "part": "11",
-      "title": "A DEFINITION LIST IS WRITTEN AS ITS TERMS AND BLOCKS",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-059",
-      "part": "11",
-      "title": "A LIST TABLE IS WRITTEN AS A PIPE TABLE",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-060",
-      "part": "11",
-      "title": "TEXT THAT GFM WOULD AUTOLINK IS ESCAPED",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-061",
-      "part": "11",
-      "title": "A SOFT BREAK IN A TABLE CELL IS ONE SPACE",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-062",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET KEEPS FRONTMATTER",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-063",
-      "part": "11",
-      "title": "AN OPT-IN MODE CARRIES AN ELEMENT-LESS CONTAINER IN A COMMENT",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-064",
-      "part": "11",
-      "title": "INLINE CODE PRESERVES ITS PAYLOAD",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-065",
-      "part": "11",
-      "title": "A HARD BREAK AT AN INLINE BOUNDARY SURVIVES",
+      "title": "A HEADER ROW IS A ROW OF HEADER CELLS, AND A MARKDOWN IMPORT OMITS AN EMPTY ONE",
       "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-066",
       "part": "11",
       "title": "A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-067",
-      "part": "11",
-      "title": "THE CARRIER MODE ALSO CARRIES AN ATTRIBUTE LINE, A DEFINITION LIST AND A CAPTION",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-068",
-      "part": "11",
-      "title": "THE CARRIER MODE CARRIES AN INLINE CONSTRUCT'S ATTRIBUTES, A SPAN AND A CROSS-REFERENCE IN INLINE MARKERS",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-069",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET KEEPS AN AUTOLINK'S ANGLE SPELLING",
       "scope": "canonical-writing"
     },
     {
@@ -1526,18 +1340,6 @@
       "id": "CARVE-P11-037",
       "part": "11",
       "title": "AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-038",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-049",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET KEEPS A FRAGMENT LINK",
       "scope": "canonical-writing"
     },
     {
@@ -2141,6 +1943,204 @@
       "part": "9",
       "title": "A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT",
       "replacement": "CARVE-P3-023"
+    },
+    {
+      "id": "CARVE-P11-022",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET'S ESCAPING",
+      "replacement": "docs/writer-targets.md#carve-p11-022"
+    },
+    {
+      "id": "CARVE-P11-023",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE",
+      "replacement": "docs/writer-targets.md#carve-p11-023"
+    },
+    {
+      "id": "CARVE-P11-024",
+      "part": "11",
+      "title": "M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP",
+      "replacement": "docs/writer-targets.md#carve-p11-024"
+    },
+    {
+      "id": "CARVE-P11-044",
+      "part": "11",
+      "title": "M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING",
+      "replacement": "docs/writer-targets.md#carve-p11-044"
+    },
+    {
+      "id": "CARVE-P11-025",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO",
+      "replacement": "docs/writer-targets.md#carve-p11-025"
+    },
+    {
+      "id": "CARVE-P11-045",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK",
+      "replacement": "docs/writer-targets.md#carve-p11-045"
+    },
+    {
+      "id": "CARVE-P11-051",
+      "part": "11",
+      "title": "AN AMPERSAND THAT WOULD READ AS A CHARACTER REFERENCE IS ESCAPED",
+      "replacement": "docs/writer-targets.md#carve-p11-051"
+    },
+    {
+      "id": "CARVE-P11-052",
+      "part": "11",
+      "title": "A `!` BEFORE A LINK IS ESCAPED",
+      "replacement": "docs/writer-targets.md#carve-p11-052"
+    },
+    {
+      "id": "CARVE-P11-053",
+      "part": "11",
+      "title": "A PARAGRAPH LINE MUST NOT BECOME A THEMATIC BREAK OR A SETEXT UNDERLINE",
+      "replacement": "docs/writer-targets.md#carve-p11-053"
+    },
+    {
+      "id": "CARVE-P11-054",
+      "part": "11",
+      "title": "A PIPE IN A TABLE CELL IS ESCAPED",
+      "replacement": "docs/writer-targets.md#carve-p11-054"
+    },
+    {
+      "id": "CARVE-P11-026",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET'S HARD BREAK",
+      "replacement": "docs/writer-targets.md#carve-p11-026"
+    },
+    {
+      "id": "CARVE-P11-048",
+      "part": "11",
+      "title": "A HARD BREAK IN A TABLE CELL IS `<br>`",
+      "replacement": "docs/writer-targets.md#carve-p11-048"
+    },
+    {
+      "id": "CARVE-P11-028",
+      "part": "11",
+      "title": "AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS",
+      "replacement": "docs/writer-targets.md#carve-p11-028"
+    },
+    {
+      "id": "CARVE-P11-031",
+      "part": "11",
+      "title": "MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET",
+      "replacement": "docs/writer-targets.md#carve-p11-031"
+    },
+    {
+      "id": "CARVE-P11-032",
+      "part": "11",
+      "title": "A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE LABEL",
+      "replacement": "docs/writer-targets.md#carve-p11-032"
+    },
+    {
+      "id": "CARVE-P11-035",
+      "part": "11",
+      "title": "THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH",
+      "replacement": "docs/writer-targets.md#carve-p11-035"
+    },
+    {
+      "id": "CARVE-P11-072",
+      "part": "11",
+      "title": "A LIST ITEM'S CONTINUATION BLOCKS SIT AT ITS CONTENT COLUMN",
+      "replacement": "docs/writer-targets.md#carve-p11-072"
+    },
+    {
+      "id": "CARVE-P11-047",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS",
+      "replacement": "docs/writer-targets.md#carve-p11-047"
+    },
+    {
+      "id": "CARVE-P11-055",
+      "part": "11",
+      "title": "A PARAGRAPH LINE CARRIES NO EDGE WHITESPACE",
+      "replacement": "docs/writer-targets.md#carve-p11-055"
+    },
+    {
+      "id": "CARVE-P11-057",
+      "part": "11",
+      "title": "ADJACENT LISTS OF ONE KIND ALTERNATE THEIR MARKER",
+      "replacement": "docs/writer-targets.md#carve-p11-057"
+    },
+    {
+      "id": "CARVE-P11-058",
+      "part": "11",
+      "title": "A DEFINITION LIST IS WRITTEN AS ITS TERMS AND BLOCKS",
+      "replacement": "docs/writer-targets.md#carve-p11-058"
+    },
+    {
+      "id": "CARVE-P11-059",
+      "part": "11",
+      "title": "A LIST TABLE IS WRITTEN AS A PIPE TABLE",
+      "replacement": "docs/writer-targets.md#carve-p11-059"
+    },
+    {
+      "id": "CARVE-P11-060",
+      "part": "11",
+      "title": "TEXT THAT GFM WOULD AUTOLINK IS ESCAPED",
+      "replacement": "docs/writer-targets.md#carve-p11-060"
+    },
+    {
+      "id": "CARVE-P11-061",
+      "part": "11",
+      "title": "A SOFT BREAK IN A TABLE CELL IS ONE SPACE",
+      "replacement": "docs/writer-targets.md#carve-p11-061"
+    },
+    {
+      "id": "CARVE-P11-062",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET KEEPS FRONTMATTER",
+      "replacement": "docs/writer-targets.md#carve-p11-062"
+    },
+    {
+      "id": "CARVE-P11-063",
+      "part": "11",
+      "title": "AN OPT-IN MODE CARRIES AN ELEMENT-LESS CONTAINER IN A COMMENT",
+      "replacement": "docs/writer-targets.md#carve-p11-063"
+    },
+    {
+      "id": "CARVE-P11-064",
+      "part": "11",
+      "title": "INLINE CODE PRESERVES ITS PAYLOAD",
+      "replacement": "docs/writer-targets.md#carve-p11-064"
+    },
+    {
+      "id": "CARVE-P11-065",
+      "part": "11",
+      "title": "A HARD BREAK AT AN INLINE BOUNDARY SURVIVES",
+      "replacement": "docs/writer-targets.md#carve-p11-065"
+    },
+    {
+      "id": "CARVE-P11-067",
+      "part": "11",
+      "title": "THE CARRIER MODE ALSO CARRIES AN ATTRIBUTE LINE, A DEFINITION LIST AND A CAPTION",
+      "replacement": "docs/writer-targets.md#carve-p11-067"
+    },
+    {
+      "id": "CARVE-P11-068",
+      "part": "11",
+      "title": "THE CARRIER MODE CARRIES AN INLINE CONSTRUCT'S ATTRIBUTES, A SPAN AND A CROSS-REFERENCE IN INLINE MARKERS",
+      "replacement": "docs/writer-targets.md#carve-p11-068"
+    },
+    {
+      "id": "CARVE-P11-069",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET KEEPS AN AUTOLINK'S ANGLE SPELLING",
+      "replacement": "docs/writer-targets.md#carve-p11-069"
+    },
+    {
+      "id": "CARVE-P11-038",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG",
+      "replacement": "docs/writer-targets.md#carve-p11-038"
+    },
+    {
+      "id": "CARVE-P11-049",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET KEEPS A FRAGMENT LINK",
+      "replacement": "docs/writer-targets.md#carve-p11-049"
     }
   ]
 }

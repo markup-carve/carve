@@ -1,6 +1,6 @@
 # Roundtrip export acceptance fixtures
 
-`roundtrip-export-acceptance-fixtures.json` samples PART 10 §13 and PART 11 §10s to §10u.
+`roundtrip-export-acceptance-fixtures.json` samples PART 10 §13 and CARVE-P11-063 to §10u.
 
 HTML cases supply source, carrier values and hosts, ordinary attributes, import modes and promised AST fields. A null carrier value requires presence only. Payload carriers declare their text; their elements must contain no child markup. An array lists permitted encodings, allowing an abbreviation definition with or without its final LF. `expectedNodes` is a multiset of projections; dotted keys address nested fields, and null requires an absent field. Positions and incidental serialization choices are excluded.
 

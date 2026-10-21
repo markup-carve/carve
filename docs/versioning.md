@@ -135,7 +135,7 @@ a typo rather than half-parsing.
 
 **6. The plain-text target stopped flattening nested lists.** Before, depth was
 erased and every item came out a sibling; now each list ancestor indents its
-item by two spaces (PART 11 §10h). A pipeline that parsed the plain output by
+item by two spaces (CARVE-P11-035). A pipeline that parsed the plain output by
 column will see different columns.
 
 To find affected documents, search for the seven names used as attributes on a

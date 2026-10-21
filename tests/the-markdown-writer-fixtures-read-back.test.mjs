@@ -22,11 +22,19 @@ import { cmarkGfmToHtml } from '../scripts/lib/markdown-oracle.mjs'
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (path) => readFileSync(resolve(repo, path), 'utf8')
 const grammar = read('resources/grammar.ebnf')
+const guidance = read('docs/writer-targets.md')
 const cases = JSON.parse(read('tests/fixtures/markdown-writer-targets.json'))
 
 const clauseText = (id) => {
   const start = grammar.indexOf(`[${id}]`)
-  assert.notEqual(start, -1, `${id} is absent from the grammar`)
+  // A Markdown-target clause that is now informative lives in the writer guidance.
+  if (start === -1) {
+    const heading = guidance.indexOf(`\n### ${id}\n`)
+    assert.notEqual(heading, -1, `${id} is absent from the grammar and the writer guidance`)
+    const body = guidance.slice(heading + id.length + 6)
+    const next = body.indexOf('\n### ')
+    return body.slice(0, next === -1 ? body.length : next).replace(/\*\*/g, '').replace(/\n\s*/g, ' ')
+  }
   const rest = grammar.slice(start + id.length + 2)
   const end = rest.search(/--\s+NORMATIVE\s+\[CARVE-/)
   return rest.slice(0, end === -1 ? rest.length : end).replace(/\n\s+/g, ' ')
@@ -39,7 +47,7 @@ const rows = (html) => (html.match(/<tr>/g) ?? []).length
 const ownHtml = (c) =>
   c.carve !== undefined ? carveToHtml(c.carve, { extensions: [listTable()] }) : renderHtml(fromAstJson(c.ast))
 
-// Elements a GFM reader can build. A `dl` is not one (PART 11 §10p), and a
+// Elements a GFM reader can build. A `dl` is not one (CARVE-P11-058), and a
 // `section` wrapper is the HTML target's own.
 const STRUCTURE = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'ul', 'ol', 'blockquote', 'pre', 'a', 'img', 'hr']
 const structure = (html) =>

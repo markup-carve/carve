@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "scope": "The clause each row names in PART 11 sections 10a through 11. The rows are a sample, not every cross-target rule of those sections.",
+  "scope": "The rule each row names, in PART 11 or in docs/writer-targets.md. The html and carve answers restate normative rules; the markdown, plain and ansi answers restate informative writer guidance. The rows are a sample, not every cross-target rule.",
   "features": {
     "unused_definition": {
       "rule": "CARVE-P11-028",

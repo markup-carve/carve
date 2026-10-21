@@ -1222,8 +1222,8 @@ whitespace-ONLY lines can tell `> >` from `> > `.
 :::
 
 In the plain-text and ANSI targets an item's continuation blocks keep the
-item's content column, the same two-space step a nested item takes (PART 11
-§10h2). The `.txt` and `.ansi` sidecars hold those outputs.
+item's content column, the same two-space step a nested item takes (CARVE-P11-072,
+informative). The `.txt` and `.ansi` sidecars hold those outputs.
 
 ::: compare
 

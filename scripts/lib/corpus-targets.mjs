@@ -54,6 +54,13 @@ export const DEFAULT_TARGET = 'html'
  */
 export const COMPARISON_TARGETS = ['html', 'markdown', 'plain', 'carve', 'ansi']
 
+/*
+ * Targets whose output is informative writer guidance (docs/writer-targets.md),
+ * not normative spec. Their engine disagreements and fixture mismatches are
+ * still compared and reported, but no gate fails on them (carve#3501).
+ */
+export const INFORMATIVE_TARGETS = ['markdown', 'plain', 'ansi']
+
 /** Targets compared with no expected file anywhere - engine agreement only. */
 export function fixturelessTargets() {
   return COMPARISON_TARGETS.filter((t) => !Object.hasOwn(TARGET_EXTENSIONS, t))

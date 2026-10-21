@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 import {
   COMPARISON_TARGETS,
   DEFAULT_TARGET,
+  INFORMATIVE_TARGETS,
   TARGET_EXTENSIONS,
   expectedFileFor,
   targetOf,
@@ -1377,7 +1378,7 @@ const activeTargets = ALL_TARGETS.filter((target) =>
  * engines-agree check. This is what gives a Tier-1 rule about the Markdown,
  * plain or terminal output somewhere to live: engine-against-engine agreement
  * is a necessary invariant, not a sufficient one, and it cannot tell "all three
- * are right" from "all three are wrong" - which is the state PART 11 §10a is in
+ * are right" from "all three are wrong" - which is the state CARVE-P11-028 is in
  * (carve#589).
  *
  * A fixture that should exist and does not is a hard error: continuing without
@@ -1484,6 +1485,9 @@ function agreementPartition(outputs) {
 }
 
 let crossImplDiffs = 0
+// Reported, never gated: see INFORMATIVE_TARGETS.
+let informativeDiffs = 0
+const informativeMismatched = []
 const targetStats = Object.fromEntries(
   activeTargets.map((t) => [t, { compared: 0, diffs: 0, errors: 0 }]),
 )
@@ -1548,7 +1552,9 @@ for (const pair of pairs) {
       // optional case, and the html target of the core corpus.
       if (expected !== null) {
         if (result.stdout === expected) stats[impl.name].ok++
-        else {
+        else if (INFORMATIVE_TARGETS.includes(target)) {
+          informativeMismatched.push(`${impl.name} ${target} ${pair.slug}`)
+        } else {
           stats[impl.name].mismatch++
           // NAME the case. The summary counted mismatches and printed nothing
           // that said WHICH, so `rust: pass=594/595 mismatch=1` was a number
@@ -1584,10 +1590,10 @@ for (const pair of pairs) {
     }
     if (unique.size > 1) {
       targetStats[target].diffs++
-      // Every target counts. Counting html alone let a Markdown or ANSI
-      // divergence print its DIFF line while the headline said zero, which is
-      // the number a reader takes away and the one the docs snapshot pins.
-      crossImplDiffs++
+      // Every target is counted and printed. Only the normative ones (html and
+      // carve) reach the gated total.
+      if (INFORMATIVE_TARGETS.includes(target)) informativeDiffs++
+      else crossImplDiffs++
       console.log(
         `DIFF [${target}] ${pair.slug} (${pair.feature}): ${agreementPartition(outputs)}`,
       )
@@ -1732,6 +1738,11 @@ for (const impl of active) {
   console.log(`  mismatching documents: ${new Set(s.mismatched.map((m) => m.split(' ').pop())).size}`)
 }
 console.log(`cross_impl_diffs=${crossImplDiffs}`)
+console.log(
+  `informative_diffs=${informativeDiffs} informative_mismatches=${informativeMismatched.length} ` +
+    `(${INFORMATIVE_TARGETS.join(', ')}: reported, not gated)`,
+)
+for (const name of informativeMismatched) console.log(`  informative mismatch: ${name}`)
 // Rows no longer diverging fail below, judged only at the revisions the rows
 // were measured at. A narrowed corpus cannot say a slug is missing from it, so
 // the existence half needs the default corpus directory.
@@ -1946,6 +1957,8 @@ if (reportPath) {
         // The cross-implementation half of the gate: engines disagreeing with
         // each other, and engines disagreeing with a fixture.
         crossImplDiffs,
+        informativeDiffs,
+        informativeMismatches: informativeMismatched.length,
         mismatches: active.reduce((total, impl) => total + stats[impl.name].mismatch, 0),
         mismatchedBy: Object.fromEntries(
           active.map((impl) => [impl.name, stats[impl.name].mismatch]),

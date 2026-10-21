@@ -33,9 +33,10 @@ filename order, so their numeric prefixes are part of the build contract.
 - The interchange fallback table in `23-ast-foundations.ebnf` summarizes
   existing PART 12 rules. `spec:write` derives its docs view; `spec:check`
   validates its node/field names, rule IDs, actions and diagnostic codes.
-- `target-capabilities.json` restates a sample of the cross-target rules of
-  PART 11 sections 10a through 11, one row per named clause. The clause
-  governs; the file is not the complete set.
+- `target-capabilities.json` restates a sample of the cross-target rules, one
+  row per named clause. The clause governs; the file is not the complete set.
+  Its `markdown`, `plain` and `ansi` answers come from the informative writer
+  guidance.
 - `rules.json` assigns one closed implementation scope to every clause carrying
   `-- NORMATIVE [CARVE-…]`; the source marker binds its stable ID directly.
 
@@ -67,6 +68,8 @@ issue provenance. Put these elsewhere:
 - implementation status and engine drift: `docs/implementation-comparison-methodology.md`
 - extended examples: `resources/examples/` and `tests/corpus/`
 - design rationale: `docs/technical-rationale.md`
+- Markdown, plain-text and ANSI writer targets: `docs/writer-targets.md`
+  (informative; only the canonical writer and HTML output are normative)
 
 `tests/normativity.test.mjs` enforces the boundary for known volatile headings
 and verifies the structured contracts.

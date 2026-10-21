@@ -6,6 +6,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const scanReferences = (files, rules) => {
   const active = new Set(rules.rules.map(({ id }) => id))
+  // An id retired to an informative guidance page stays a citable anchor.
+  const redirected = new Set((rules.retired ?? [])
+    .filter(({ replacement }) => replacement?.startsWith('docs/')).map(({ id }) => id))
   const sections = new Map()
   let part = 'PRE'
   const sources = [...files].sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
@@ -44,7 +47,7 @@ const scanReferences = (files, rules) => {
     for (const match of flat.matchAll(/CARVE-(?:P\d+R?|PRE)-\d{3}/g)) {
       if (/NORMATIVE\s*\[$/.test(flat.slice(Math.max(0, match.index - 20), match.index))) continue
       clauseIds += 1
-      if (!active.has(match[0])) report(match.index, `clause id ${match[0]} is not an active rule in rules.json`)
+      if (!active.has(match[0]) && !redirected.has(match[0])) report(match.index, `clause id ${match[0]} is not an active rule in rules.json`)
     }
     for (const match of flat.matchAll(/\bSS(\d+[a-z]?)\b/g)) report(match.index, `SS${match[1]} spells the section sign as SS; write §${match[1]}`)
     const covered = new Set()
@@ -96,11 +99,15 @@ const scanReferences = (files, rules) => {
 export const checkReferences = (files, rules) => scanReferences(files, rules).violations
 
 const selfTest = () => {
-  const rules = { rules: [{ id: 'CARVE-P12-001' }], retired: [] }
+  const rules = {
+    rules: [{ id: 'CARVE-P12-001' }],
+    retired: [{ id: 'CARVE-P9-998', replacement: 'docs/x.md#a' }, { id: 'CARVE-P9-997', replacement: 'CARVE-P12-001' }],
+  }
   const part9 = { name: '09.ebnf', text: 'PART 9:\n  1. ONE\n  2. TWO\n' }
   const part12 = { name: '12.ebnf', text: 'PART 12:\nPART 9 §1 and §2\nsyntax.md §4.1\n   1. FROM §1 -- NORMATIVE [CARVE-P12-001]. Body.\n' }
   const cases = [
     ['clause id', [{ name: '00.ebnf', text: 'Cites CARVE-P9-999' }], 'clause id CARVE-P9-999 is not an active rule in rules.json'],
+    ['retired id', [{ name: '00.ebnf', text: 'Cites CARVE-P9-998 and CARVE-P9-997' }], 'clause id CARVE-P9-997 is not an active rule in rules.json'],
     ['section reference', [{ ...part9, text: `${part9.text}PART 9 §${99}\n§1` }], `PART 9 §${99} names no section heading in PART 9`],
     ['bare reference', [part9, { ...part12, text: `${part12.text}§3` }], 'bare §3 in PART 12; write a clause id or PART <n> §3'],
     ['mangled section sign', [{ ...part9, text: `${part9.text}see SS2` }], 'SS2 spells the section sign as SS; write §2'],

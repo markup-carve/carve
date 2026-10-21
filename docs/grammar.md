@@ -16,7 +16,7 @@ resolution and canonical writing together.
 | PART 9 | Semantic constraints a context-free production cannot carry | Operational semantics, with interruption and ownership tables published as data |
 | PART 9R | Whole-document resolution (references, footnotes, crossrefs, numbering) | Two-pass rules over declared symbol tables |
 | PART 10 | HTML serialization | Tree-transform conventions |
-| PART 11 | Canonical source writer and other non-HTML targets | Round-trip invariants, contextual escape test and target-specific spelling rules |
+| PART 11 | Canonical source writer | Round-trip invariants and the contextual escape test. The Markdown, plain-text and ANSI targets are informative: see [writer target guidance](./writer-targets) |
 | PART 12 | AST serialization: the JSON shape a parsed document exchanges as | Reference-implementation field names + a round-trip invariant |
 
 ::: info Why layers instead of one grammar?
@@ -42,7 +42,7 @@ The modules follow the processing pipeline:
 | `13-semantics-foundations.ebnf` to `17-semantics-unicode-controls.ebnf` | Operational semantics, split by concern |
 | `18-resolution.ebnf` | Whole-document resolution |
 | `19-html-serialization.ebnf` | HTML serialization |
-| `20-writer-invariants.ebnf` to `22a-writer-target-metadata.ebnf` | Canonical and non-HTML writers |
+| `20-writer-invariants.ebnf` to `22-writer-targets.ebnf` | Canonical writer |
 | `23-ast-foundations.ebnf` to `26-ast-interchange.ebnf` | AST wire contract |
 
 [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf)
@@ -54,7 +54,7 @@ parsing English prose:
 
 - `layout-transitions.json` restates every ownership boundary transition of `CARVE-P0-003`; the clause governs.
 - `paragraph-interruption.json` partitions interrupting and non-interrupting constructs.
-- `target-capabilities.json` restates a sample of PART 11's cross-target rules, one row per named clause; the clause governs.
+- `target-capabilities.json` restates a sample of cross-target rules, one row per named clause; the clause governs. Its Markdown, plain and ANSI answers are informative.
 - `rules.json` assigns stable identifiers and an implementation scope to every
   normative clause. The generated [normative rule index](./rules/) provides
   focused views without making any rule optional.

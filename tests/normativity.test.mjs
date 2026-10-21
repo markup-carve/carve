@@ -33,7 +33,7 @@ test('the checked-in grammar is assembled from its normative modules', () => {
     cwd: repo,
     encoding: 'utf8',
   })
-  assert.match(output, /grammar aggregate matches 29 normative source modules/)
+  assert.match(output, /grammar aggregate matches 28 normative source modules/)
 
   const modules = readdirSync(resolve(repo, 'resources/spec')).filter((file) => file.endsWith('.ebnf'))
   for (const module of modules) {
@@ -143,10 +143,13 @@ test('interruption and target tables use closed vocabularies', () => {
 
   const capabilities = readJson('resources/spec/target-capabilities.json')
   const targets = ['html', 'markdown', 'plain', 'ansi', 'carve']
-  const ruleIds = new Set(readJson('resources/spec/rules.json').rules.map(({ id }) => id))
+  const registry = readJson('resources/spec/rules.json')
+  const ruleIds = new Set(registry.rules.map(({ id }) => id))
+  const guidanceIds = new Set(registry.retired
+    .filter(({ replacement }) => replacement.startsWith('docs/writer-targets.md#')).map(({ id }) => id))
   assert.ok(ruleIds.has(interruption.recognitionBoundary.rule), 'interruption boundary cites an unknown rule')
   for (const [feature, matrix] of Object.entries(capabilities.features)) {
-    assert.ok(ruleIds.has(matrix.rule), `${feature} cites an unknown rule`)
+    assert.ok(ruleIds.has(matrix.rule) || guidanceIds.has(matrix.rule), `${feature} cites an unknown rule`)
     const { rule, ...answers } = matrix
     assert.deepEqual(Object.keys(answers), targets, `${feature} does not answer every target`)
   }
@@ -352,7 +355,7 @@ test('the section index finds a plausible set for every sectioned PART', () => {
 
 test("every PART's section labels are unique", () => {
   // PART 11 carried two sections labelled §8b for a week: a citation to
-  // "PART 11 §8b" named either of them and nothing failed, because the only
+  // that label named either of them and nothing failed, because the only
   // citation gates looked at PART 9 and PART 12 (carve#1365).
   const collisions = []
   for (const [part, labels] of partSections) {

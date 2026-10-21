@@ -1,5 +1,5 @@
 /*
- * PART 11 section 10l, and the corpus sidecar that pins its one worked shape.
+ * CARVE-P11-047, and the corpus sidecar that pins its one worked shape.
  *
  * The clause is checked here rather than only by a fixture because two of the
  * three shapes it decides have no corpus case yet, and the shape it does pin
@@ -19,11 +19,19 @@ import { cmarkGfmToHtml } from '../scripts/lib/markdown-oracle.mjs'
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (path) => readFileSync(resolve(repo, path), 'utf8')
 const grammar = read('resources/grammar.ebnf')
+const guidance = read('docs/writer-targets.md')
 
 /* The clause text, from its stable id to the next clause marker. */
 const clauseText = (id) => {
   const start = grammar.indexOf(`[${id}]`)
-  assert.notEqual(start, -1, `${id} is absent from the grammar`)
+  // A Markdown-target clause that is now informative lives in the writer guidance.
+  if (start === -1) {
+    const heading = guidance.indexOf(`\n### ${id}\n`)
+    assert.notEqual(heading, -1, `${id} is absent from the grammar and the writer guidance`)
+    const body = guidance.slice(heading + id.length + 6)
+    const next = body.indexOf('\n### ')
+    return body.slice(0, next === -1 ? body.length : next).replace(/\*\*/g, '').replace(/\n\s*/g, ' ')
+  }
   const rest = grammar.slice(start + id.length + 2)
   const end = rest.search(/--\s+NORMATIVE\s+\[CARVE-/)
   return rest.slice(0, end === -1 ? rest.length : end).replace(/\n\s+/g, ' ')

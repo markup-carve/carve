@@ -211,7 +211,7 @@ the active algorithm together and are retained here for traceability:
 - HTML security requirements first lived only in `docs/security.md`; moving
   them into PART 9 made them conformance requirements rather than guidance.
 - Non-HTML output of link-reference definitions became an explicit consequence
-  of PART 11 §10a when those definitions gained AST nodes.
+  of CARVE-P11-028 when those definitions gained AST nodes.
 - Canonical table padding replaced writer guards for `<`, `>`, `~` and `{` in
   the three glued table-prefix positions (carve#1601). The current writer rule
   states the required strategy without narrating that transition.

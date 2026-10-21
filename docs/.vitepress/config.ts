@@ -274,6 +274,7 @@ export default defineConfig({
                   { text: 'Parsed Document JSON', link: '/rules/ast-interchange' },
                   { text: 'Standard Formatting', link: '/rules/canonical-writing' },
                   { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
+                  { text: 'Writer Target Guidance', link: '/writer-targets' },
                   { text: 'Import, Security & Extensions', link: '/rules/imports-security-extensions' },
                 ],
               },

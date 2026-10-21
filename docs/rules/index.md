@@ -14,10 +14,10 @@ Carve has one normative language contract. These views filter that contract by i
 | [Parsing](./parsing) | 122 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
 | [Resolution and rendering](./resolution-rendering) | 52 | Document-wide resolution, core semantic behavior, and HTML serialization. |
 | [AST interchange](./ast-interchange) | 60 | The core serialized tree shape, source positions, and cross-implementation AST guarantees. |
-| [Canonical writing](./canonical-writing) | 76 | Canonical Carve source, Markdown and plain-text targets, round trips, and escaping. |
+| [Canonical writing](./canonical-writing) | 43 | Canonical Carve source, Markdown and plain-text targets, round trips, and escaping. |
 | [Imports, security, and extensions](./imports-security-extensions) | 37 | Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces. |
 
-Together the views cover all 347 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
+Together the views cover all 314 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
 
 ## Retired rule IDs
 
@@ -30,3 +30,36 @@ Retired IDs are never reused. Their replacement points to the document that now 
 | `CARVE-PRE-002` | A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-PRE-003` | A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-P9-079` | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT | [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L507) |
+| `CARVE-P11-022` | THE MARKDOWN TARGET'S ESCAPING | [`docs/writer-targets.md#carve-p11-022`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-022) |
+| `CARVE-P11-023` | THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE | [`docs/writer-targets.md#carve-p11-023`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-023) |
+| `CARVE-P11-024` | M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP | [`docs/writer-targets.md#carve-p11-024`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-024) |
+| `CARVE-P11-044` | M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING | [`docs/writer-targets.md#carve-p11-044`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-044) |
+| `CARVE-P11-025` | THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO | [`docs/writer-targets.md#carve-p11-025`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-025) |
+| `CARVE-P11-045` | THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK | [`docs/writer-targets.md#carve-p11-045`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-045) |
+| `CARVE-P11-051` | AN AMPERSAND THAT WOULD READ AS A CHARACTER REFERENCE IS ESCAPED | [`docs/writer-targets.md#carve-p11-051`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-051) |
+| `CARVE-P11-052` | A `!` BEFORE A LINK IS ESCAPED | [`docs/writer-targets.md#carve-p11-052`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-052) |
+| `CARVE-P11-053` | A PARAGRAPH LINE MUST NOT BECOME A THEMATIC BREAK OR A SETEXT UNDERLINE | [`docs/writer-targets.md#carve-p11-053`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-053) |
+| `CARVE-P11-054` | A PIPE IN A TABLE CELL IS ESCAPED | [`docs/writer-targets.md#carve-p11-054`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-054) |
+| `CARVE-P11-026` | THE MARKDOWN TARGET'S HARD BREAK | [`docs/writer-targets.md#carve-p11-026`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-026) |
+| `CARVE-P11-048` | A HARD BREAK IN A TABLE CELL IS `<br>` | [`docs/writer-targets.md#carve-p11-048`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-048) |
+| `CARVE-P11-028` | AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS | [`docs/writer-targets.md#carve-p11-028`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-028) |
+| `CARVE-P11-031` | MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET | [`docs/writer-targets.md#carve-p11-031`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-031) |
+| `CARVE-P11-032` | A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE LABEL | [`docs/writer-targets.md#carve-p11-032`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-032) |
+| `CARVE-P11-035` | THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH | [`docs/writer-targets.md#carve-p11-035`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-035) |
+| `CARVE-P11-072` | A LIST ITEM'S CONTINUATION BLOCKS SIT AT ITS CONTENT COLUMN | [`docs/writer-targets.md#carve-p11-072`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-072) |
+| `CARVE-P11-047` | THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS | [`docs/writer-targets.md#carve-p11-047`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-047) |
+| `CARVE-P11-055` | A PARAGRAPH LINE CARRIES NO EDGE WHITESPACE | [`docs/writer-targets.md#carve-p11-055`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-055) |
+| `CARVE-P11-057` | ADJACENT LISTS OF ONE KIND ALTERNATE THEIR MARKER | [`docs/writer-targets.md#carve-p11-057`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-057) |
+| `CARVE-P11-058` | A DEFINITION LIST IS WRITTEN AS ITS TERMS AND BLOCKS | [`docs/writer-targets.md#carve-p11-058`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-058) |
+| `CARVE-P11-059` | A LIST TABLE IS WRITTEN AS A PIPE TABLE | [`docs/writer-targets.md#carve-p11-059`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-059) |
+| `CARVE-P11-060` | TEXT THAT GFM WOULD AUTOLINK IS ESCAPED | [`docs/writer-targets.md#carve-p11-060`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-060) |
+| `CARVE-P11-061` | A SOFT BREAK IN A TABLE CELL IS ONE SPACE | [`docs/writer-targets.md#carve-p11-061`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-061) |
+| `CARVE-P11-062` | THE MARKDOWN TARGET KEEPS FRONTMATTER | [`docs/writer-targets.md#carve-p11-062`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-062) |
+| `CARVE-P11-063` | AN OPT-IN MODE CARRIES AN ELEMENT-LESS CONTAINER IN A COMMENT | [`docs/writer-targets.md#carve-p11-063`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-063) |
+| `CARVE-P11-064` | INLINE CODE PRESERVES ITS PAYLOAD | [`docs/writer-targets.md#carve-p11-064`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-064) |
+| `CARVE-P11-065` | A HARD BREAK AT AN INLINE BOUNDARY SURVIVES | [`docs/writer-targets.md#carve-p11-065`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-065) |
+| `CARVE-P11-067` | THE CARRIER MODE ALSO CARRIES AN ATTRIBUTE LINE, A DEFINITION LIST AND A CAPTION | [`docs/writer-targets.md#carve-p11-067`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-067) |
+| `CARVE-P11-068` | THE CARRIER MODE CARRIES AN INLINE CONSTRUCT'S ATTRIBUTES, A SPAN AND A CROSS-REFERENCE IN INLINE MARKERS | [`docs/writer-targets.md#carve-p11-068`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-068) |
+| `CARVE-P11-069` | THE MARKDOWN TARGET KEEPS AN AUTOLINK'S ANGLE SPELLING | [`docs/writer-targets.md#carve-p11-069`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-069) |
+| `CARVE-P11-038` | THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG | [`docs/writer-targets.md#carve-p11-038`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-038) |
+| `CARVE-P11-049` | THE MARKDOWN TARGET KEEPS A FRAGMENT LINK | [`docs/writer-targets.md#carve-p11-049`](https://github.com/markup-carve/carve/blob/main/docs/writer-targets.md#carve-p11-049) |

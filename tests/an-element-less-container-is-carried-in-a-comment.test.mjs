@@ -23,7 +23,7 @@
  * CAPTION_LAG below for the detector and what retires it.
  *
  * PART 10 §13 names roundtrip export as the switch for either target.
- * `roundtrip: true` below is its JavaScript spelling. PART 11 §10s uses
+ * `roundtrip: true` below is its JavaScript spelling. CARVE-P11-063 uses
  * that switch for Markdown container comments.
  */
 

@@ -353,12 +353,15 @@ DIFF [markdown] 05-lists-19 (core): rust+php | js
 Two engines joined by `+` wrote the same bytes; groups separated by `|` did not.
 A line reading `rust+js+php` means all three wrote something different, and is
 the only shape from which no engine can be used as a reference.
-`cross_impl_diffs` is the total across every target compared, not the HTML
-count.
+`cross_impl_diffs` counts the normative targets, `html` and `carve`, and
+`--fail-on-diff` gates on it. Markdown, plain and ANSI output is informative
+([writer target guidance](./writer-targets)), so their DIFF lines and fixture
+mismatches are still printed and totaled in `informative_diffs` and
+`informative_mismatches`, and no gate fails on them.
 
 ### Declared engine lag on the Markdown target
 
-PART 11 §10l makes the Markdown target preserve a list's tight/loose
+CARVE-P11-047 makes the Markdown target preserve a list's tight/loose
 distinction, and `tests/corpus/05-lists-19.md` pins it. Two engines are behind
 that clause and one is behind part of it, so the fixture half of the Markdown
 target is expected to name them until their fixes land:

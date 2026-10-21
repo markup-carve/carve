@@ -125,6 +125,12 @@ console.log(
   `Read ${path}: ${mode.engines.join(', ')} over the ${mode.corpus} corpus, ` +
     `targets ${mode.targets.join(', ')}.`,
 )
+// Markdown, plain and ANSI output is informative (docs/writer-targets.md), so
+// the report counts it apart and this gate only prints it.
+console.log(
+  `Informative targets (not gated): ${report.informativeDiffs ?? 0} difference(s), ` +
+    `${report.informativeMismatches ?? 0} fixture mismatch(es).`,
+)
 
 if (crossImplDiffs > 0 || mismatches > 0) {
   if (crossImplDiffs > 0) {
