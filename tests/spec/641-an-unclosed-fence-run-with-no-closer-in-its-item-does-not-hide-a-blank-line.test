@@ -1,0 +1,33 @@
+An unclosed fence run with no closer in its item does not hide a blank line
+
+````
+- h
+  ```
+
+  b
+```
+.
+<ul>
+  <li><p>h
+<code></code></p>
+    <p>b
+<code></code></p>
+  </li>
+</ul>
+````
+
+````
+- o
+  ```
+x
+
+  t
+.
+<ul>
+  <li><p>o
+<code>
+x</code></p>
+    <p>t</p>
+  </li>
+</ul>
+````

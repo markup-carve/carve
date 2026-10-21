@@ -62969,3 +62969,55 @@ The nested description keeps the attached fence
 `````
 
 :::::::
+
+## An unclosed fence run with no closer in its item does not hide a blank line
+
+These rows follow up the folded fence run section (carve#3495). A fence-shaped line with no closer inside its item is paragraph text (PART 9 §10 I4), so a blank line after it separates two paragraphs and the list is loose (§17 L1), whether a closer-shaped line or a letter follows below the item column.
+
+A closer-shaped line below the item column closes nothing, so the blank before it separates two paragraphs
+
+::::::: compare
+
+`````carve
+- h
+  ```
+
+  b
+```
+`````
+
+`````html
+<ul>
+  <li><p>h
+<code></code></p>
+    <p>b
+<code></code></p>
+  </li>
+</ul>
+`````
+
+:::::::
+
+A lazy letter after an unclosed fence run reads the same way
+
+::::::: compare
+
+`````carve
+- o
+  ```
+x
+
+  t
+`````
+
+`````html
+<ul>
+  <li><p>o
+<code>
+x</code></p>
+    <p>t</p>
+  </li>
+</ul>
+`````
+
+:::::::

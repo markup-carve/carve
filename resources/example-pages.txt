@@ -469,6 +469,8 @@ index: examples/edge-cases/index.md
   638-nested-plus-below-fence-and-description-3
   639-a-folded-fence-run-leaves-a-later-paragraph-loose
   640-a-folded-child-fence-keeps-the-below-column-line-in-its-paragraph
+  641-an-unclosed-fence-run-with-no-closer-in-its-item-does-not-hide-a-blank-line
+  641-an-unclosed-fence-run-with-no-closer-in-its-item-does-not-hide-a-blank-line-2
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3
