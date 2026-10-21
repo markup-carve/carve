@@ -34,4 +34,3 @@
 619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-7  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
 619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-8  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
 619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-9  The pinned carve-js writer adds blank lines around the nested sub-list; the canonical form is CARVE-P11-074 (markup-carve/carve-js#3310).
-620-generated-container-documents  The pinned carve-js writer still attaches a marker-line term's following separator when written back; the corrected oracle reads that separator outside the item (markup-carve/carve#3488).
