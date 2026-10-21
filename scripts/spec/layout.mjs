@@ -5089,7 +5089,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // A line that reached HERE already framed came from an outer
           // collector's own fold; framing it twice leaks the sentinel into the
           // rendered text, which the paragraph collector strips only once.
-          inner.push(lines[i].startsWith(LAZY) ? lines[i] : LAZY + (/^: /.test(ind(i).rest) ? ' ' : '') + ind(i).rest)
+          inner.push(lines[i].startsWith(LAZY) ? lines[i] : LAZY + ind(i).rest)
           i++
           continue
         }

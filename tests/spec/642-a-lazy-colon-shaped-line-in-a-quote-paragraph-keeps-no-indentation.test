@@ -1,0 +1,35 @@
+A lazy colon-shaped line in a quote paragraph keeps no indentation
+
+```
+> :  d
+   :  b
+.
+<blockquote><p>:  d
+:  b</p></blockquote>
+```
+
+```
+> - :: t
+> :  d
+   :  b
+.
+<blockquote>
+  <ul>
+    <li>
+      <dl>
+        <dt>t</dt>
+      </dl>
+    </li>
+  </ul>
+  <p>:  d
+:  b</p>
+</blockquote>
+```
+
+```
+> :  d
+      :  b
+.
+<blockquote><p>:  d
+:  b</p></blockquote>
+```
