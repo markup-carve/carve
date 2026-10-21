@@ -2101,7 +2101,7 @@
       "repository": "markup-carve/carve",
       "input": " hello",
       "expected": {
-        "output": " hello",
+        "output": "hello",
         "diagnostics": [
           {
             "code": "markdown-paragraph",
@@ -2144,6 +2144,9 @@
         ],
         "exit": 0,
         "engines": {
+          "js": {
+            "output": "hello"
+          },
           "rust": {
             "output": "hello\n"
           }
@@ -2391,6 +2394,9 @@
         ],
         "exit": 0,
         "engines": {
+          "js": {
+            "output": "hello\n"
+          },
           "rust": {
             "output": "hello\n"
           }
@@ -2419,6 +2425,9 @@
         ],
         "exit": 0,
         "engines": {
+          "js": {
+            "output": "hello\n"
+          },
           "rust": {
             "output": "hello\n"
           }
@@ -2683,7 +2692,7 @@
       "repository": "markup-carve/carve",
       "input": "> [a]: /u\n",
       "expected": {
-        "output": "> \n\n[a]: /u\n",
+        "output": ">\n\n[a]: /u\n",
         "diagnostics": [
           {
             "code": "markdown-block-quote",
