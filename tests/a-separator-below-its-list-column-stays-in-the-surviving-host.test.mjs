@@ -92,3 +92,19 @@ test('a document definition ends a description before a later fence closer', () 
   assert.doesNotMatch(html, /<pre><code>/)
   assert.match(html, /<\/dl>/)
 })
+
+for (const quoteDepth of [0, 1, 2]) {
+  for (const marker of ['- ', '1. ', '- [ ] ']) {
+    for (const fence of ['```', '~~~']) {
+      test(`a fence after a ${marker.trim()} child opens in its surviving item at quote depth ${quoteDepth}`, () => {
+        const quote = '> '.repeat(quoteDepth)
+        const source = ['- outer', `  ${marker}inner`, `  ${fence}`, ' y', `  ${fence}`, 'next']
+          .map(line => quote + line).join('\n') + '\n'
+        const html = renderDoc(parse(source))
+        assert.match(html, /<\/ul>|<\/ol>/)
+        assert.match(html, /<pre><code><\/code><\/pre>/)
+        assert.doesNotMatch(html, /<li>inner\n\s*<pre>/)
+      })
+    }
+  }
+}

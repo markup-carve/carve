@@ -5831,7 +5831,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
      */
     const opensBlockAt = (text, idx) =>
       startsVisibleBlock(text) || isTableRow(text) || isColonBlockOpener(text) ||
-      (FENCE.test(text) && hasCloser(lines, idx))
+      (FENCE.test(text) && (hasCloser(lines, idx) || state.fenceOpensAt?.get(lines)?.has(idx)))
     /*
      * Q3. WHICH CONTAINER OWNS A COLUMN?
      *
