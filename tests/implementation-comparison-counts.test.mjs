@@ -33,6 +33,10 @@ const declaredAfterRun = (label) => {
 
 const laggedCategories = declaredAfterRun('Corpus')
 
+// A sidecar added to a document the run did measure: the document stays in the
+// denominators, only the new target fixture is outside them.
+const laggedSidecars = declaredAfterRun('Sidecars')
+
 // The OPTIONAL corpus needs the same declaration, and used to be excused from
 // it on the grounds that "nothing has ever added to it from a host that could
 // not re-run the tool". carve#560 is that host: it adds the two cases that pin
@@ -43,6 +47,7 @@ const laggedCategories = declaredAfterRun('Corpus')
 const laggedOptional = declaredAfterRun('Optional corpus')
 
 const corpusFiles = readdirSync(resolve(root, 'tests/corpus')).filter((f) => f.endsWith('.crv'))
+const corpusSidecars = readdirSync(resolve(root, 'tests/corpus')).filter((f) => /\.(md|txt|fmt|ansi)$/.test(f))
 const optionalFiles = readdirSync(resolve(root, 'tests/corpus-optional')).filter((f) =>
   f.endsWith('.crv'),
 )
@@ -122,6 +127,7 @@ test('every declared-lag category still contributes fixtures', () => {
   const declared = [
     ...laggedCategories.map((c) => [c, fixturesOf(c)]),
     ...laggedOptional.map((c) => [c, optionalFixturesOf(c)]),
+    ...laggedSidecars.map((f) => [f, corpusSidecars.includes(f) ? [f] : []]),
   ]
   for (const [category, files] of declared) {
     assert.ok(
@@ -208,7 +214,7 @@ test('the core table scores the fixtures present in the corpus', () => {
   const sidecars = readdirSync(resolve(root, 'tests/corpus'))
   const scored = corpusFiles.length - lagged.size + sidecars.filter((f) => {
     const match = f.match(/^(.*)\.(md|txt|fmt|ansi)$/)
-    return match && stems.has(match[1]) && !lagged.has(match[1])
+    return match && stems.has(match[1]) && !lagged.has(match[1]) && !laggedSidecars.includes(f)
   }).length
   const rows = coreRows()
   assert.equal(rows.length, 3)
