@@ -39,3 +39,6 @@
 648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth  pinned carve-js predates the hosted quote-plus fix carve-js#3455 (carve#3421)
 648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth-2  pinned carve-js predates the hosted quote-plus fix carve-js#3455 (carve#3421)
 648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth-3  pinned carve-js predates the hosted quote-plus fix carve-js#3455 (carve#3421)
+649-a-first-block-plus-refuses-a-follower-at-an-intervening-column  pinned carve-js reads the follower at an intervening column as attached (carve#3421)
+649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-2  pinned carve-js reads the follower at an intervening column as attached (carve#3421)
+649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-3  pinned carve-js reads the follower at an intervening column as attached (carve#3421)

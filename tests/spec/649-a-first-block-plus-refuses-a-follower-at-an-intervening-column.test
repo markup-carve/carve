@@ -1,0 +1,72 @@
+A first-block plus refuses a follower at an intervening column
+
+```
+- > +
+ b
+.
+<ul>
+  <li>
+    <blockquote><p>+
+b</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
+  - > +
+ b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote><p>+
+b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - > +
+   b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <blockquote><p>+
+b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+> > +
+  > q
+.
+<blockquote>
+  <blockquote><p>+
+&gt; q</p></blockquote>
+</blockquote>
+```
+
+```
+- a
+  > > +
+    > q
+.
+<ul>
+  <li>a
+    <blockquote>
+      <blockquote><p>+
+&gt; q</p></blockquote>
+    </blockquote>
+  </li>
+</ul>
+```

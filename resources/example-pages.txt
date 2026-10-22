@@ -498,6 +498,11 @@ index: examples/edge-cases/index.md
   648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth
   648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth-2
   648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth-3
+  649-a-first-block-plus-refuses-a-follower-at-an-intervening-column
+  649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-2
+  649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-3
+  649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-4
+  649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-5
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3

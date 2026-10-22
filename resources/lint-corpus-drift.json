@@ -669,6 +669,82 @@
       }
     },
     {
+      "file": "tests/corpus/649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-3.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "continuation-marker-refused",
+            2,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            2,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-4.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-5.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            2,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/649-a-first-block-plus-refuses-a-follower-at-an-intervening-column.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "continuation-marker-refused",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
       "file": "tests/corpus/88-list-continuation-marker-6.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",

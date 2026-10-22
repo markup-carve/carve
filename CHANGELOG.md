@@ -74,6 +74,9 @@ Releases before 0.1.6 are archived in
 - A `> +` under a stacked quote opened on a list item's or description's
   first line attaches a following quote at its own depth, as at document
   level (#3421, #3528).
+- A first-block `+` refuses a follower that starts anywhere but column 0, the
+  opener line's column or the quote's column; the `+` then reads like a letter
+  at its column (#3421).
 
 ### Tooling and documentation
 

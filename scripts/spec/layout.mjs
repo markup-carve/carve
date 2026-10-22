@@ -4982,9 +4982,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             attachesFlushLeft(ind(i + 1), markerQuoteCol) && !matchMarkerAt(ind(i + 1))
           const firstBlockAtZero = firstBlockPlus && firstBlockQuoteCol > 0 &&
             (ind(i + 1)?.L?.col ?? ind(i + 1)?.col) === 0 && !matchMarkerAt(ind(i + 1))
+          // A lazily folded follower from an ineligible column refuses the marker (CARVE-P9-067).
+          const lazyRefused = lines[i + 1]?.startsWith(LAZY) && lazyFollowerEligible.get(lines)?.[i + 1] === false
           // `+` on the line that opens the innermost quote is its first-block marker.
           // Depths are counted only for a candidate, so deep nesting stays linear.
-          if (!qHost.fence && openComment === null && firstBlockPlus &&
+          if (!qHost.fence && openComment === null && firstBlockPlus && !lazyRefused &&
               i + 1 < n && !isBlank(lines[i + 1]) &&
               (!QUOTE.test(lines[i + 1]) || (inItem && i === 0)) &&
               (firstBlockAtZero || quoteColFollower || attachesFlushLeft(ind(i + 1), firstBlockQuoteCol))) {
@@ -5120,6 +5122,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // collector's own fold; framing it twice leaks the sentinel into the
           // rendered text, which the paragraph collector strips only once.
           inner.push(lines[i].startsWith(LAZY) ? lines[i] : LAZY + ind(i).rest)
+          recordLazyFollower(inner, lines[i].startsWith(LAZY) ? lazyFollowerEligible.get(lines)?.[i] : ind(i).col === 0)
           i++
           continue
         }
@@ -5579,6 +5582,15 @@ function authoredBlockEnd(lines, start, base, state) {
 }
 // The quote column of a `- > +` item head, keyed by the item's line array.
 const markerLineQuoteColumns = new WeakMap()
+// Per lazily folded line: whether it started at a column a first-block `+`
+// may pull from (column 0 of the frame it was read in, or the opener line's
+// own column). Keyed by the line array the fold pushed it into.
+const lazyFollowerEligible = new WeakMap()
+const recordLazyFollower = (target, eligible) => {
+  let rows = lazyFollowerEligible.get(target)
+  if (!rows) lazyFollowerEligible.set(target, rows = [])
+  rows[target.length - 1] = eligible
+}
 // A refused marker leaves an empty attached range for ordinary column rules.
 function takeOneBlock(lines, start, state, firstMeas, column = 0) {
   const startsList = !!matchMarkerAt(indentCols(lines[start] ?? ''))
@@ -5769,6 +5781,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     const pushLine = (text, m = null) => {
       itemLines.push(text)
       itemMeas.push(m)
+      if (text.startsWith(LAZY) && itemLines.length > 1) {
+        recordLazyFollower(itemLines, lines[i]?.startsWith(LAZY)
+          ? lazyFollowerEligible.get(lines)?.[i]
+          : ind(i).col === 0 || ind(i).col === ind(headIndex).col)
+      }
       if (termSourceColumns) termSourceColumns.push(itemLines.length === 1 ? contentCol : ind(i).L?.col ?? ind(i).col)
       if (itemOrigins) itemOrigins.push(text === '' ? undefined :
         typeof parentOrigins === 'number' ? parentOrigins + i : parentOrigins[i])
