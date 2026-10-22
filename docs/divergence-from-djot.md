@@ -164,7 +164,8 @@ following list item at an open list item's marker column is a sibling, so the `+
 text and the refused-marker lint reports it (markup-carve/carve#3421). One
 block attaches in either form, and a list
 stays tight. A list item, block quote, footnote body, and definition description
-can take the marker. The quote form also accepts `>+` and runs such as `>>+`.
+can take the marker. The quote form follows the quote spacing rule: `> +` and `> > +`
+are markers, while `>+`, `>>+` and `>> +` read as text and `> >+` is a quote holding the text `>+`.
 
 **Why.** Freeing `+` makes a lone `+` unambiguous and gives a container a clean
 way to own a following block (a note, a quote, a code fence) without deep

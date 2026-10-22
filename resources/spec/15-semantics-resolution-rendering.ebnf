@@ -232,7 +232,10 @@
       L3 CONTINUATION MARKER `+` -- Carve addition (markup-carve/carve#3421).
          A lone `+` at an open container's marker column attaches one following
          block that starts at that same column. A lone `+` directly after one
-         or more quote prefixes is a marker for that quote level. Check the `+`
+         or more quote prefixes is a marker for that quote level. Each `>`
+         takes one space, as on every quote line: `> +` and `> > +` are
+         markers, while `>+`, `>>+` and `>> +` are not quote lines and read
+         as text, and `> >+` is a quote holding the text `>+`. Check the `+`
          before closing containers by column, and let it interrupt an open
          paragraph. For a separate-line marker, a follower at another column
          refuses attachment and follows ordinary column rules; text left of

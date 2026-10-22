@@ -24,3 +24,13 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-11  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-12  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)
+646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-10  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)
+646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-3  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)
+646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-4  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)
+646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-5  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)
+646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-6  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)
+646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-7  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)
+646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-8  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)
+646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-9  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)

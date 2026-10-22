@@ -18,11 +18,18 @@ test('a quote takes one flush-left paragraph', () => {
 })
 
 test('quote first-block markers accept trailing whitespace at every depth', () => {
-  for (const marker of ['>+ ', '>> + ', '> >+\t']) {
+  for (const marker of ['> + ', '> > + ', '> > +\t']) {
     const depth = marker.match(/>/g).length
     const expected = '<blockquote>'.repeat(depth) + '<p>flush</p>' + '</blockquote>'.repeat(depth)
     assert.equal(html(`${marker}\nflush`), expected)
   }
+})
+
+test('a glued quote plus is not a quote line', () => {
+  for (const marker of ['>+', '>>+', '>> +']) {
+    assert.equal(html(`${marker}\nflush`), `<p>${marker.replaceAll('>', '&gt;')}\nflush</p>`)
+  }
+  assert.equal(html('> >+\nflush'), '<blockquote><p>&gt;+\nflush</p></blockquote>')
 })
 
 test('a quote keeps + at end of input or before a blank', () => {

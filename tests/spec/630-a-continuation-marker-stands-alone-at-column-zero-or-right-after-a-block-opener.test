@@ -163,16 +163,16 @@ q</p>
 >>+
 q
 .
-<blockquote>
-  <blockquote><p>q</p></blockquote>
-</blockquote>
+<p>&gt;&gt;+
+q</p>
 ```
 
 ```
 >+
 q
 .
-<blockquote><p>q</p></blockquote>
+<p>&gt;+
+q</p>
 ```
 
 ```

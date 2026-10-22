@@ -19,6 +19,8 @@ Releases before 0.1.6 are archived in
   Refused markers stay text and receive lint. Explicit ordered-list column
   traps and markers below the content column have defined diagnostics (#3409,
   #3433, #3436, #3441, #3442, #3443, #3445, #3456).
+- A quote-prefixed `+` needs one space after each `>`: `>+`, `>>+` and `>> +`
+  read as text, and a quote attached by `> +` nests (#3421).
 - Fence runs and nested markers keep their source list owner. A folded fence
   line, lazy closer, blank below a marker-line fence or unattached `+` can
   affect list tightness, code content and where later blocks land. Caption

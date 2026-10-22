@@ -141,7 +141,7 @@ const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/
 const QUOTE_LINE = /^>(?: (.*)|[ \t]*$)/
 const QUOTE = {
   exec(line) {
-    return QUOTE_LINE.exec(line) ?? (/^>(?:> ?)*\+[ \t]*$/.test(line) ? [line, line.slice(1)] : null)
+    return QUOTE_LINE.exec(line)
   },
   test(line) { return this.exec(line) !== null },
 }
@@ -2933,19 +2933,21 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
         const sameLevel = next?.depth === quoted.depth
         const owner = quotePathBefore[index]
         const prior = index === 0 ? null : quoteLeaf(sourceLines[index - 1])
+        const quoteOpenedHere = index === 0 || prior.depth < quoted.depth
+        const quoteFollower = next?.depth > quoted.depth &&
+          (owner.depth > quoted.depth || stack.includes(quoted.measured.col))
         const missingInnerPrefix = sameLevel && !sourceFenceBefore[index] &&
-          (owner.depth > quoted.depth && (owner.item || prior?.depth > quoted.depth && startsVisibleBlock(prior.measured.rest)) ||
+          (quoted.measured.col > 0 && owner.depth > quoted.depth &&
+            (owner.item || prior?.depth > quoted.depth && startsVisibleBlock(prior.measured.rest)) ||
             owner.depth === quoted.depth &&
             owner.hostedColumn !== null && quoted.measured.col >= owner.hostedColumn &&
             (!owner.hostedMarker || !!matchMarkerAt(next.measured) || FENCE.test(next.measured.rest)))
         const sibling = sameLevel && stack.includes(quoted.measured.col) &&
           openSiblingList(index, quoted.measured.col, quoted.depth) &&
           next.measured.col === quoted.measured.col && matchMarkerAt(next.measured)
-        const quoteOpenedHere = index === 0 ||
-          quoteLeaf(sourceLines[index - 1]).depth < quoted.depth
         const firstBlockFollower = next?.depth < quoted.depth && next.measured.col === 0 &&
           quoted.measured.col === 0 && !matchMarkerAt(next.measured) && quoteOpenedHere
-        const refused = (!sameLevel && !firstBlockFollower) ||
+        const refused = (!sameLevel && !quoteFollower && !firstBlockFollower) ||
           !next.measured.rest || (!firstBlockFollower && next.measured.col !== quoted.measured.col)
         if (sibling) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, refusedSiblingSentinel) }
         if (refused || missingInnerPrefix) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, sentinel) }

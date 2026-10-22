@@ -328,7 +328,10 @@ blockquote = blockquote_line, {blockquote_line | lazy_continuation_line | contin
    marker column -- see
    the CONTINUATION MARKER note below and PART 9 §17. *)
 blockquote_line = quote_continuation_line | ('>', (newline | (space, inline_content, newline))) ;
-quote_continuation_line = '>', { [space], '>' }, [space], continuation_marker ;
+quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
+(* Every '>' takes one space, as on any quote line: `>+`, `>>+` and `>> +`
+   are not quote lines and read as text, and `> >+` is a quote holding the
+   text `>+` (markup-carve/carve#3421). *)
 
 (* LAZY CONTINUATION -- NORMATIVE [CARVE-P2-008] (CommonMark-compatible). After one or more
    blockquote_lines, a line that does NOT carry the '>' marker still continues

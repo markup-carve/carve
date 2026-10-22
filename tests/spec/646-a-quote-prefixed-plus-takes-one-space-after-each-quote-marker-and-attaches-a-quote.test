@@ -1,0 +1,113 @@
+A quote-prefixed plus takes one space after each quote marker and attaches a quote
+
+```
+> +
+q
+.
+<blockquote><p>q</p></blockquote>
+```
+
+```
+> > +
+q
+.
+<blockquote>
+  <blockquote><p>q</p></blockquote>
+</blockquote>
+```
+
+```
+>+
+q
+.
+<p>&gt;+
+q</p>
+```
+
+```
+>>+
+q
+.
+<p>&gt;&gt;+
+q</p>
+```
+
+```
+> >+
+q
+.
+<blockquote><p>&gt;+
+q</p></blockquote>
+```
+
+```
+>> +
+q
+.
+<p>&gt;&gt; +
+q</p>
+```
+
+```
+> q
+>+
+> para
+.
+<blockquote><p>q
+&gt;+
+para</p></blockquote>
+```
+
+```
+> > q
+> +
+> > r
+.
+<blockquote>
+  <blockquote>
+    <p>q</p>
+    <blockquote><p>r</p></blockquote>
+  </blockquote>
+</blockquote>
+```
+
+```
+> - a
+> +
+> > r
+.
+<blockquote>
+  <ul>
+    <li>a
+      <blockquote><p>r</p></blockquote>
+    </li>
+  </ul>
+</blockquote>
+```
+
+```
+> > - a
+> +
+> para
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>a</li>
+    </ul>
+    <p>para</p>
+  </blockquote>
+</blockquote>
+```
+
+```
+> a
+> +
+> > q
+.
+<blockquote>
+  <p>a
++</p>
+  <blockquote><p>q</p></blockquote>
+</blockquote>
+```

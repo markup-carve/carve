@@ -45,19 +45,19 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P2-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L222) | 2 | CODE-FENCE INFO STRING |
 | [`CARVE-P2-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L270) | 2 | COLUMN-EXACT DELIMITERS |
 | [`CARVE-P2-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L317) | 2 | TABS IN CODE |
-| [`CARVE-P2-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L333) | 2 | LAZY CONTINUATION |
-| [`CARVE-P2-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L375) | 2 | MARKER REQUIRES CONTENT |
-| [`CARVE-P2-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L385) | 2 | THE DESCRIPTION MARKER |
-| [`CARVE-P2-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L397) | 2 | WHICH CHARACTERS THE CONTENT TEST IGNORES |
-| [`CARVE-P2-028`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L578) | 2 | A TERM HAS NO CONTENT COLUMN |
-| [`CARVE-P2-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L390) | 2 | A LEADING CONTENT TAB FOLLOWS NORMAL INDENTATION |
-| [`CARVE-P2-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L415) | 2 | A BARE DOT OPENS A DECIMAL LIST |
-| [`CARVE-P2-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L434) | 2 | A BARE DOT AFTER A BLANK LINE OPENS A LIST |
-| [`CARVE-P2-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L458) | 2 | WHITESPACE IS THE DISCRIMINATOR |
-| [`CARVE-P2-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L488) | 2 | MARKER-LINE NESTED LIST |
-| [`CARVE-P2-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L650) | 2 | INDENTATION IS COLUMNS, NOT CHARACTERS |
-| [`CARVE-P2-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L665) | 2 | BELOW THE BODY'S COLUMN THE BODY ENDS |
-| [`CARVE-P2-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L734) | 2 | AUTHORED BLOCK BASES |
+| [`CARVE-P2-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L336) | 2 | LAZY CONTINUATION |
+| [`CARVE-P2-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L378) | 2 | MARKER REQUIRES CONTENT |
+| [`CARVE-P2-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L388) | 2 | THE DESCRIPTION MARKER |
+| [`CARVE-P2-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L400) | 2 | WHICH CHARACTERS THE CONTENT TEST IGNORES |
+| [`CARVE-P2-028`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L581) | 2 | A TERM HAS NO CONTENT COLUMN |
+| [`CARVE-P2-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L393) | 2 | A LEADING CONTENT TAB FOLLOWS NORMAL INDENTATION |
+| [`CARVE-P2-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L418) | 2 | A BARE DOT OPENS A DECIMAL LIST |
+| [`CARVE-P2-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L437) | 2 | A BARE DOT AFTER A BLANK LINE OPENS A LIST |
+| [`CARVE-P2-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L461) | 2 | WHITESPACE IS THE DISCRIMINATOR |
+| [`CARVE-P2-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L491) | 2 | MARKER-LINE NESTED LIST |
+| [`CARVE-P2-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L653) | 2 | INDENTATION IS COLUMNS, NOT CHARACTERS |
+| [`CARVE-P2-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L668) | 2 | BELOW THE BODY'S COLUMN THE BODY ENDS |
+| [`CARVE-P2-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L737) | 2 | AUTHORED BLOCK BASES |
 | [`CARVE-P2-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L21) | 2 | THE ROW TERMINATOR AND AN OPEN RUN |
 | [`CARVE-P2-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L150) | 2 | THE CAPTION MARKER SEPARATOR IS A RUN |
 | [`CARVE-P2-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L169) | 2 | MULTI-LINE CAPTIONS |
@@ -112,11 +112,11 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L711) | 9 | A4 DROP IF DANGLING |
 | [`CARVE-P9-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L161) | 9 | L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER |
 | [`CARVE-P9-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L176) | 9 | L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION |
-| [`CARVE-P9-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L265) | 9 | CONTINUATION-MARKER REACHES ITS OWN COLUMN |
-| [`CARVE-P9-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L272) | 9 | ONE IS A COUNT AND THE BOUNDARY IS NOT |
-| [`CARVE-P9-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L292) | 9 | THE MARKER IS ONE OPERATION IN EVERY CONTAINER |
-| [`CARVE-P9-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L386) | 9 | L6 A COLLECTED DEFINITION LEAVES NO TRACE |
-| [`CARVE-P9-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L402) | 9 | L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN |
+| [`CARVE-P9-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L268) | 9 | CONTINUATION-MARKER REACHES ITS OWN COLUMN |
+| [`CARVE-P9-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L275) | 9 | ONE IS A COUNT AND THE BOUNDARY IS NOT |
+| [`CARVE-P9-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L295) | 9 | THE MARKER IS ONE OPERATION IN EVERY CONTAINER |
+| [`CARVE-P9-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L389) | 9 | L6 A COLLECTED DEFINITION LEAVES NO TRACE |
+| [`CARVE-P9-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L405) | 9 | L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN |
 | [`CARVE-P9-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L2) | 9 | TRAILING LINE COMMENTS |
 | [`CARVE-P9-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L30) | 9 | DELIMITED INLINE COMMENTS |
 | [`CARVE-P9-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L73) | 9 | FORCED EMPHASIS AND EXPLICIT SAME-TYPE NESTING |
