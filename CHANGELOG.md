@@ -79,7 +79,7 @@ Releases before 0.1.6 are archived in
   at its column (#3421, #3529).
 - A block attribute wrapped over several lines at column 0 below a list item
   or description closes it like a one-line attribute line, and the block
-  below takes the attributes (#3421).
+  below takes the attributes (#3421, #3531).
 
 ### Tooling and documentation
 
