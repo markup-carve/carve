@@ -76,7 +76,7 @@ Releases before 0.1.6 are archived in
   level (#3421, #3528).
 - A first-block `+` refuses a follower that starts anywhere but column 0, the
   opener line's column or the quote's column; the `+` then reads like a letter
-  at its column (#3421).
+  at its column (#3421, #3529).
 
 ### Tooling and documentation
 
