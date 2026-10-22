@@ -69,6 +69,8 @@ Releases before 0.1.6 are archived in
   does with no comment line between (#3518).
 - `continuation-marker-refused` says what a refused first-block `+` leaves
   behind, and reports a refused first-block `> +` (#3524).
+- A `> +` that opens a quote on its own line in a list item attaches the
+  following block at that column to the quote (#3421, #3526).
 
 ### Tooling and documentation
 
