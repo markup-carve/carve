@@ -53,6 +53,8 @@ Releases before 0.1.6 are archived in
   (#3493, #3506).
 - A first-block `+` in a footnote or description leaves a column-zero list
   at document scope (#3482, #3507).
+- A separate `+` after description content attaches a following list to the
+  description again (#3482, #3513).
 
 ### Tooling and documentation
 
