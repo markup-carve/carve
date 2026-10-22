@@ -70,5 +70,9 @@
   "quote-first-block-quoted-blank": {
     "actual": [],
     "reason": "The pinned carve-js does not report a refused first-block quote plus yet (CARVE-P9-067)."
+  },
+  "document-unclaimed-before-list": {
+    "actual": [],
+    "reason": "carve-js does not report a lone plus at document level that no open container claims yet (markup-carve/carve#3421)."
   }
 }
