@@ -4447,6 +4447,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        */
       let qTableOpen = false
       let qLastMarked = -1 // the last marked line collected, for the first-block test
+      let hostedFirstBlockPending = false
       /*
        * The same run, one level down and per depth: a nested quote's own table
        * state. `opensParagraph` is handed ONE line and cannot see it, so the
@@ -4972,6 +4973,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         layoutWork.quoteStrips += 1
         const qm = QUOTE.exec(lines[i])
         if (qm) {
+          hostedFirstBlockPending = false
           const firstBlockPlus = /^[> \t]*\+[ \t]*$/.test(qm[1] ?? '')
           const firstBlockQuoteCol = firstBlockPlus
             ? state.markerLineColumns.get(lines)?.get(i) ?? ind(i).L?.col ?? sourceQuoteCol
@@ -4983,12 +4985,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const firstBlockAtZero = firstBlockPlus && firstBlockQuoteCol > 0 &&
             (ind(i + 1)?.L?.col ?? ind(i + 1)?.col) === 0 && !matchMarkerAt(ind(i + 1))
           // A lazily folded follower from an ineligible column refuses the marker (CARVE-P9-067).
-          const lazyRefused = lines[i + 1]?.startsWith(LAZY) && lazyFollowerEligible.get(lines)?.[i + 1] === false
+          const lazyRefused = lazyFollowerEligible.get(lines)?.[i + 1] === false
           // `+` on the line that opens the innermost quote is its first-block marker.
           // Depths are counted only for a candidate, so deep nesting stays linear.
           if (!qHost.fence && openComment === null && firstBlockPlus && !lazyRefused &&
               i + 1 < n && !isBlank(lines[i + 1]) &&
-              (!QUOTE.test(lines[i + 1]) || (inItem && i === 0)) &&
+              (!QUOTE.test(lines[i + 1]) || (inItem && i === 0) ||
+                (i === 0 && quotePulledFollowers.has(lines))) &&
               (firstBlockAtZero || quoteColFollower ||
                 (attachesFlushLeft(ind(i + 1), firstBlockQuoteCol) &&
                   !matchMarkerAt(indentCols(stripLazy(lines[i + 1])))))) {
@@ -5004,7 +5007,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (CONT_MARKER.test(here.rest) && here.d > (qLastMarked < 0 ? 0 : depthOf(lines[qLastMarked]).d)) {
               const attached = takeOneBlock(lines, i + 1, state, ind(i + 1),
                 firstBlockAtZero ? 0 : quoteColFollower ? markerQuoteCol : firstBlockQuoteCol)
-              inner.push(here.d > 1 ? qm[1] : '', ...attached.rawMarker, '')
+              // The innermost quote owns the `+`: a follower at its column is read at that quote's column 0.
+              const shift = here.d > 1 && quoteColFollower ? ind(i + 1).col : 0
+              inner.push(here.d > 1 ? qm[1] : '',
+                ...(shift ? attached.rawMarker.map((line) => line.replace(new RegExp(`^ {0,${shift}}`), '')) : attached.rawMarker), '')
+              if (here.d > 1 && QUOTE.test(lines[i + 1])) quotePulledFollowers.add(inner)
               qLastMarked = i
               i = attached.next
               continue
@@ -5013,6 +5020,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qLastMarked = i
           carryPrefixMemo(state, lines, i, inner, inner.length)
           inner.push(qm[1] ?? '')
+          // Only a stacked opener line (`- > +`) pulls past the host quote's end (CARVE-P9-067).
+          hostedFirstBlockPending = !qHost.fence && openComment === null && (!qOpenPara || qItemPara) &&
+            !!matchMarkerAt(indentCols((qm[1] ?? '').replace(/^(?:> ?)*/, ''))) &&
+            firstBlockQuoteColumn((qm[1] ?? '').replace(/^(?:> ?)*/, '')) !== undefined
+          if (i > 0 && markerCarriesContinuation(lines[i - 1].trim(), prefixMemo(state, lines, i - 1).continuation))
+            recordLazyFollower(inner, lazyFollowerEligible.get(lines)?.[i] ??
+            [0, markerLineQuoteColumns.get(lines), state.markerLineColumns.get(lines)?.get(0)].includes(ind(i).L?.col ?? ind(i).col))
           if (!qHost.fence && openComment === null) {
             const colon = COLON_FENCE.exec(qm[1] ?? '')
             if (colon && COLON_CLOSER.test(qm[1] ?? '') && colon[1].length === qColonRuns.at(-1)?.length) qColonRuns.pop()
@@ -5069,6 +5083,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           continue
         }
         if (qHost.fence || openComment !== null) break
+        if (hostedFirstBlockPending &&
+            (ind(i).L?.col ?? ind(i).col) === 0 &&
+            !matchMarkerAt(ind(i)) && !isBlank(lines[i])) {
+          const attached = takeOneBlock(lines, i, state, ind(i), 0)
+          inner.push(...attached.rawMarker)
+          hostedFirstBlockPending = false
+          i = attached.next
+          continue
+        }
         if (CONT_MARKER.test(ind(i).rest) &&
             ((ind(i).L?.col ?? ind(i).col) < sourceQuoteCol || qItemPara || !qOpenPara)) break
         // A COMMENT IS COLUMN-EXEMPT (§10 I5's first exception, §24 C3). The
@@ -5124,7 +5147,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // collector's own fold; framing it twice leaks the sentinel into the
           // rendered text, which the paragraph collector strips only once.
           inner.push(lines[i].startsWith(LAZY) ? lines[i] : LAZY + ind(i).rest)
-          recordLazyFollower(inner, lines[i].startsWith(LAZY) ? lazyFollowerEligible.get(lines)?.[i] : ind(i).col === 0)
+          recordLazyFollower(inner, lines[i].startsWith(LAZY) ? lazyFollowerEligible.get(lines)?.[i] : (ind(i).L?.col ?? ind(i).col) === 0)
           i++
           continue
         }
@@ -5584,6 +5607,22 @@ function authoredBlockEnd(lines, start, base, state) {
 }
 // The quote column of a `- > +` item head, keyed by the item's line array.
 const markerLineQuoteColumns = new WeakMap()
+const quotePulledFollowers = new WeakSet()
+const firstBlockQuoteColumn = (source) => {
+  if (!source.includes('+')) return undefined
+  let rest = source
+  for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+    const marker = matchMarkerAt(indentCols(rest))
+    if (marker) { rest = marker.text; continue }
+    const measured = indentCols(rest)
+    const quote = QUOTE.exec(measured.rest)
+    if (!quote) return undefined
+    const column = indentCols(source.slice(0, source.length - measured.rest.length).replace(/[^\t]/g, ' ')).col
+    rest = quote[1] ?? ''
+    if (CONT_MARKER.test(rest)) return column
+  }
+  return undefined
+}
 // Per lazily folded line: whether it started at a column a first-block `+`
 // may pull from (column 0 of the frame it was read in, or the opener line's
 // own column). Keyed by the line array the fold pushed it into.
@@ -5729,6 +5768,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
   while (i < n) {
     const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
+    const sourceQuoteCol = (i === 0 ? markerLineQuoteColumns.get(lines) : undefined) ??
+      firstBlockQuoteColumn(ind(i).L?.src ?? lines[i])
     if (list.ord && list.items.length > 0) {
       // narrow the dialect set per item (SS11 N2)
       const heads = new Set(head.dialects.map((d) => d.dialect))
@@ -5786,7 +5827,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (text.startsWith(LAZY) && itemLines.length > 1) {
         recordLazyFollower(itemLines, lines[i]?.startsWith(LAZY)
           ? lazyFollowerEligible.get(lines)?.[i]
-          : [0, state.markerLineColumns?.get(lines)?.get(headIndex) ?? sourceMarkerCol].includes(ind(i).L?.col ?? ind(i).col))
+          : [0, state.markerLineColumns?.get(lines)?.get(headIndex) ?? sourceMarkerCol, sourceQuoteCol].includes(ind(i).L?.col ?? ind(i).col))
       }
       if (termSourceColumns) termSourceColumns.push(itemLines.length === 1 ? contentCol : ind(i).L?.col ?? ind(i).col)
       if (itemOrigins) itemOrigins.push(text === '' ? undefined :
@@ -5796,13 +5837,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     carryPrefixMemo(state, lines, i, itemLines, 0)
     const headIndex = i
     pushLine(head.text)
+    if (sourceQuoteCol !== undefined) markerLineQuoteColumns.set(itemLines, sourceQuoteCol)
     if (matchMarkerAt(indentCols(head.text))) state.markerLineColumns.set(itemLines, new Map([[0,
       head.text.includes('+') && markerCarriesContinuation(head.text.trim(), prefixMemo(state, itemLines, 0).continuation)
         ? sourceMarkerCol : sourceMarkerCol + head.markerWidth]]))
     else if (QUOTE.test(head.text) && head.text.includes('+') && markerCarriesContinuation(head.text.trim(),
         prefixMemo(state, itemLines, 0).continuation)) {
       state.markerLineColumns.set(itemLines, new Map([[0, sourceMarkerCol]]))
-      markerLineQuoteColumns.set(itemLines, sourceMarkerCol + head.markerWidth)
+      markerLineQuoteColumns.set(itemLines, sourceQuoteCol ?? sourceMarkerCol + head.markerWidth)
     }
     // Whether the marker line opens nested items whose innermost item is the
     // FIRST-BLOCK `+` form. An enclosing collector must carry a following
@@ -6660,6 +6702,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const line = lines[i]
       // `+` at the item's marker column attaches one block there (SS17 L3/L4).
       const lm = ind(i)
+      if (i <= wrappedAttrEnd) {
+        const body = dedentMeasured(lm, line, contentCol)
+        pushLine(body.text, body.meas)
+        closePara()
+        i++
+        continue
+      }
       if (lm.rest !== '' && !insideFence() && !nestedVerbatim()) {
         while (descriptionBodyColumns.length && lm.col < descriptionBodyColumns.at(-1)) descriptionBodyColumns.pop()
         const description = /^:( +)(?=[ \t]*[^ \t])/.exec(lm.rest)
@@ -6982,7 +7031,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             COMMENT_FENCE.test(dedented) ||
             FOOTNOTE_DEF.test(dedented) ||
             isLinkDef(dedented) ||
-            parseAttrList(trimLineEnd(dedented)) !== null
+            parseAttrList(trimLineEnd(dedented)) !== null ||
+            !!tryAttrLine(dedentedWindow(lines, j, contentCol), 0)
           ) {
             // An INVISIBLE construct is not a second paragraph, and SS17 L1
             // asks for one: "some item holds a blank-line-separated second
@@ -6993,7 +7043,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             // + `  %% c` rendered `<li><p>a</p></li>` - an item wrapped because
             // of a line that produces no output at all. carve-rs renders every
             // one of these tight; carve-js does for two of the three.
-            if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)
+            if (!descendantFence && !closedMarkerFence &&
+                (tryAttrLine(dedentedWindow(lines, j, contentCol), 0)?.next ?? 0) <= 1) pushLine('', BLANK_MEAS)
             closePara()
             blankBeforeInvisible = true
             // §17 L1b: the invisible line is not a separator either, so the
@@ -7257,6 +7308,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         }
         if (
           pendingSeparation &&
+          i > wrappedAttrEnd &&
           !insideFence() &&
           dmeas.rest !== '' &&
           !opensSubBlock(dedented) &&

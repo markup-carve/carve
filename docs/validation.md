@@ -176,7 +176,7 @@ the command-line and editor behavior stay aligned.
 | `description-separator-below-content-column` | a `:` or `::` separator below the column of a definition list it appears to continue inside an indentation container, so it adds no entry: past the item's marker column it folds into the open term or description as text, and a `:` at the marker column ends the item as a paragraph. Indent it to the definition list's column |
 | `ordered-list-split-by-indent` | consecutive ordered lists continue the same numbering style and sequence, but their first markers start in different columns, so they render as two lists |
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column. Reported once per block, on its first line; continuing table rows and quote lines do not open another block. An aligned opener stays unreported when a continuation is overindented, including when the block opens on the item's marker line. The finding also covers the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
-| `continuation-marker-refused` | any refused lone `+`, including a first-block `- +`, a sibling follower, a column-0 list below `[^a]: +` or `: +`, a follower at another column, or no follower. PART 9 §17 L4 refuses attachment; see [refused continuation markers](#refused-continuation-markers) |
+| `continuation-marker-refused` | a refused lone `+`, including a first-block `- +`, a sibling follower, a column-0 list below `[^a]: +` or `: +`, a follower at another column, no follower, or a `+` no container claims (at document level, only with a block below it). PART 9 §17 L4 refuses attachment; see [refused continuation markers](#refused-continuation-markers) |
 | `empty-include-path` | a <code v-pre>{{ ... }}</code> run shaped like an include directive but containing no path, including empty braces and spaced directive forms containing only a `#section` or `@option`; it remains literal text, so add a path or remove the braces |
 | `region-marker-renders-as-text` | a line whose content is a `#region` or `#endregion` marker in a source-comment form (`#region name`, `// #region name`, `-- #region name`, `/* #region name */`, `<!-- #region name -->`), or a `%%` marker whose keyword is not lowercase (`%% #Region name`). In a Carve file the first kind renders as visible text and none of them is a region marker for a Carve include (CARVE-P6-001 I1b), so write `%% #region name` |
 | `include-unresolved` | a Warning for an include whose path the resolver cannot read: missing, unreadable or outside the containment root; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
@@ -313,7 +313,10 @@ continuation marker: alone at an open container's marker column, or first
 after a block opener in the first-block form (`- +`, `1. +`, `: +`). It reports
 when the next line is blank, the input ends, or a sibling list item starts at
 that column (markup-carve/carve#3421). It also reports a follower at another
-column and a `+` that no open container claims. The first-block form of a
+column and a `+` past an open container's marker column that the container
+does not claim. At document level, where no container is open, it reports a
+lone `+` when a block follows it: a list, a table, a heading, a fence or a
+quote. The first-block form of a
 footnote, a description or a block quote (`[^a]: +`, `: +`, `> +`) is refused
 when a column-0 list follows, because that form pulls only non-list blocks
 (markup-carve/carve#3482), and when no eligible block follows at all: the end
@@ -343,6 +346,8 @@ doc.crv:2:1 continuation-marker-refused — This + attaches nothing: a blank lin
 Not reported:
 
 - a `+` inside a code fence's content column, which is payload.
+- a document-level `+` between two text lines (`q` / `+` / `para`), which is
+  ordinary paragraph text.
 
 A refused `+` inside an open fence is payload at its content column and text
 at another column (markup-carve/carve#3400, markup-carve/carve#3421).

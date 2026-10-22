@@ -44,6 +44,11 @@ const baseline = JSON.parse(
 // to a fixed point and preserve rendered text; the HTML round-trip count gains
 // two and the Markdown count one.
 
+// Corpora 653 to 656 add thirteen documents. All thirteen complete HTML import,
+// reformat to a fixed point, preserve rendered text and round-trip through
+// HTML. Nine round-trip through Markdown: 653-5 is a description list, and
+// the three 655 documents do not return through Markdown with this pin.
+
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 

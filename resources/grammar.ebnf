@@ -320,6 +320,10 @@
         A wrapped attribute block applies T once across its complete source
         extent. In `- {.a` / `  .b}` / `tail`, the attribute_line transition
         leaves no claim or open paragraph, so `tail` is outside the item.
+        A block attribute opened at a container's column is one construct, and
+        its continuation lines may sit at any column: `- a` / `  {.c` / `}` /
+        `para` reads like the one-line `{.c}`, so the attribute reaches no
+        block and `para` is outside the item (markup-carve/carve#3421).
 
         A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES -- NORMATIVE [CARVE-P0-015].
         A lazy fold closes no container. A later line returning to the
@@ -6310,10 +6314,19 @@ EOF = (* end of file *) ;
          line's own column is its first marker's column, so a block at an inner
          list opener's column (column 2 below `- - > +`) is at an intervening
          column: the `+` is refused and reads like a letter there
-         (markup-carve/carve#3421). A list item at a column owned by
-         an open list is always a sibling; the first-block form pulls only
-         non-list blocks from column 0. Stacked openers on one line keep the
-         innermost owner.
+         (markup-carve/carve#3421). The column of the quote that owns the `+`
+         stays eligible at every stacking depth, next to column 0 and the
+         line's own column: `- > +` / `  b` and `- - > +` / `    b` both attach
+         `b` to the quote. The columns are raw line columns, so below
+         `- > > +` a `> q` at column 0 attaches and, being a quote, nests in
+         the innermost quote, while `  > q` at column 2 is at an intervening
+         column and `q` folds into the refused `+`. The first-block pull takes
+         precedence over a host quote ending at an unprefixed line (§10 I5):
+         below `> - > +` a heading or a table row at column 0 attaches to the
+         inner quote, as a paragraph line does (CARVE-P9-033). A list item at
+         a column owned by an open list is always a sibling; the first-block
+         form pulls only non-list blocks from column 0. Stacked openers on one
+         line keep the innermost owner.
 
          With no eligible block after it (the end of the input, a blank line,
          or a line at an ineligible column), the `+` is refused. In a list

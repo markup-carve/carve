@@ -869,6 +869,156 @@
       }
     },
     {
+      "file": "tests/corpus/653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-2.crv",
+      "reason": "The measured engines disagree on `unattached-block-attribute` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-3.crv",
+      "reason": "The measured engines disagree on `unattached-block-attribute` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-4.crv",
+      "reason": "The measured engines disagree on `unattached-block-attribute` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-5.crv",
+      "reason": "The measured engines disagree on `unattached-block-attribute` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct.crv",
+      "reason": "The measured engines disagree on `unattached-block-attribute` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column-2.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth-2.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            9
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth-3.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "continuation-marker-refused",
+            1,
+            7
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
       "file": "tests/corpus/88-list-continuation-marker-6.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",

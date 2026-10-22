@@ -78,5 +78,13 @@
   "quote-unclaimed-indented": {
     "actual": [],
     "reason": "carve-js does not report a plus past a quote's marker column that no open container claims yet (markup-carve/carve#3421)."
+  },
+  "document-unclaimed-before-table": {
+    "actual": [],
+    "reason": "carve-js does not report a lone plus at document level before a table yet (markup-carve/carve#3421)."
+  },
+  "document-unclaimed-before-heading": {
+    "actual": [],
+    "reason": "carve-js does not report a lone plus at document level before a heading yet (markup-carve/carve#3421)."
   }
 }

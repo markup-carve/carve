@@ -45,3 +45,7 @@
 651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column  pinned carve-js reads the follower at the inner item's column as attached (carve#3421)
 652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host-2  pinned carve-js ends the item at a column-0 list below a hosted quote's first-block plus (carve#3421)
 652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host-3  pinned carve-js attaches a list below a stacked quote's first-block plus (carve#3421)
+654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column-2  pinned carve-js attaches a quote follower at an intervening column below stacked quote openers (carve#3421)
+655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero  pinned carve-js ends the host quote at a column-0 heading below a hosted quote's first-block plus (carve#3421)
+655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero-2  pinned carve-js ends the host quote at a column-0 table row below a hosted quote's first-block plus (carve#3421)
+655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero-3  pinned carve-js ends the host quote at a column-0 heading below a sibling item's stacked first-block plus (carve#3421)

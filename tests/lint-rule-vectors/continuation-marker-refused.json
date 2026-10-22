@@ -768,6 +768,46 @@
           }
         ]
       }
+    },
+    {
+      "name": "document-unclaimed-before-table",
+      "description": "A plus no open container claims is reported when a table follows it (carve#3421).",
+      "source": "q\n+\n| a |\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "document-unclaimed-before-heading",
+      "description": "A plus no open container claims is reported when a heading follows it (carve#3421).",
+      "source": "q\n+\n# h\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "document-unclaimed-between-text-lines",
+      "description": "A plus no open container claims between two text lines is paragraph text and is not reported (carve#3421).",
+      "source": "q\n+\npara\n",
+      "expected": {
+        "findings": []
+      }
     }
   ]
 }
