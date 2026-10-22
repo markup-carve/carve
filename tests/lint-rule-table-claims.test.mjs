@@ -64,6 +64,7 @@ const TRIGGERS = {
   'delimited-table-wide-row': '{table}\n```csv\na,b\n1\n2,3,4\n```\n',
   'region-marker-renders-as-text': '// #region demo\nBody.\n// #endregion demo\n',
   'consumed-key-near-miss': '{tabel}\n```csv\na,b\n```\n',
+  'description-separator-below-content-column': '- a\n  :: term\n : detail\n',
   'platform-mention-token': {
     source: 'Use @minutely for that cron alias.\n',
     options: { platforms: ['github'] },
@@ -112,10 +113,6 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  [
-    'description-separator-below-content-column',
-    'specified by markup-carve/carve#3455; no engine emits it yet',
-  ],
   [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',

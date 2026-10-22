@@ -49,6 +49,12 @@ const baseline = JSON.parse(
 // HTML. Nine round-trip through Markdown: 653-5 is a description list, and
 // the three 655 documents do not return through Markdown with this pin.
 
+// The carve-js pin move to 0b7f9ade (carve#3421 rulings) moves round trips in
+// sections 630 to 655: HTML gains 7 and loses 14, Markdown gains 3 and loses 9.
+// The losses are documents the pin now reads with a refused `+` or `>` as
+// paragraph text; a soft break in it returns from HTML as a space, and a
+// leading `>` returns from Markdown escaped.
+
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 

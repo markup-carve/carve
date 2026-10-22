@@ -4,12 +4,12 @@
     "js": {
       "html": {
         "identical": 2494,
-        "strict": 2347,
+        "strict": 2348,
         "total": 3022
       },
       "md": {
-        "identical": 2263,
-        "strict": 1726,
+        "identical": 2262,
+        "strict": 1717,
         "total": 3022
       }
     },
