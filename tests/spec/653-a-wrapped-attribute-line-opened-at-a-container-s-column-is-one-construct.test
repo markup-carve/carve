@@ -1,0 +1,64 @@
+A wrapped attribute line opened at a container's column is one construct
+
+```
+- a
+  {.c
+}
+para
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>para</p>
+```
+
+```
+- a
+  {.c
+ }
+para
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>para</p>
+```
+
+```
+- a
+  {.c
+.d}
+para
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>para</p>
+```
+
+```
+- a
+
+  {.c
+}
+para
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>para</p>
+```
+
+```
+:: t
+: d
+  {.c
+}
+para
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>para</p>
+```

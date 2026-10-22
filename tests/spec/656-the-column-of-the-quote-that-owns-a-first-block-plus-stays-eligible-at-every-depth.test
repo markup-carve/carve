@@ -1,0 +1,35 @@
+The column of the quote that owns a first-block plus stays eligible at every depth
+
+```
+- - > +
+    b
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- - - > +
+      b
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <blockquote><p>b</p></blockquote>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```

@@ -63997,3 +63997,267 @@ A stacked quote opener in an item refuses a list at the item's column
 `````
 
 :::::::
+
+## A wrapped attribute line opened at a container's column is one construct
+
+A block attribute opened at a container's column is one construct, and its continuation lines may sit at any column (PART 0, `block_attributes`). It reads like the one-line `{.c}` at that column: the attribute reaches no block and the line below it is outside the container (carve#3421).
+
+A closer at column 0 ends the attribute the item opened, and `para` stays at document level
+
+::::::: compare
+
+`````carve
+- a
+  {.c
+}
+para
+`````
+
+`````html
+<ul>
+  <li>a</li>
+</ul>
+<p>para</p>
+`````
+
+:::::::
+
+A closer at column 1 reads the same
+
+::::::: compare
+
+`````carve
+- a
+  {.c
+ }
+para
+`````
+
+`````html
+<ul>
+  <li>a</li>
+</ul>
+<p>para</p>
+`````
+
+:::::::
+
+A continuation line holding more of the attribute reads the same
+
+::::::: compare
+
+`````carve
+- a
+  {.c
+.d}
+para
+`````
+
+`````html
+<ul>
+  <li>a</li>
+</ul>
+<p>para</p>
+`````
+
+:::::::
+
+A blank line before the attribute changes nothing
+
+::::::: compare
+
+`````carve
+- a
+
+  {.c
+}
+para
+`````
+
+`````html
+<ul>
+  <li>a</li>
+</ul>
+<p>para</p>
+`````
+
+:::::::
+
+The description twin reads the same
+
+::::::: compare
+
+`````carve
+:: t
+: d
+  {.c
+}
+para
+`````
+
+`````html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>para</p>
+`````
+
+:::::::
+
+## A quote follower below stacked quote openers in an item is read at its raw column
+
+Below `- > > +` the first-block `+` takes a follower at column 0 or at the opener line's own column (CARVE-P9-067). A `>` at column 0 is no prefix of the quotes at columns 2 and 4, so it opens a quote that attaches and nests inside the innermost quote. A `>` at column 2 is at an intervening column: the `+` is refused and the line folds into its text (carve#3421).
+
+A quote at column 0 attaches and nests three quotes deep
+
+::::::: compare
+
+`````carve
+- > > +
+> q
+`````
+
+`````html
+<ul>
+  <li>
+    <blockquote>
+      <blockquote>
+        <blockquote><p>q</p></blockquote>
+      </blockquote>
+    </blockquote>
+  </li>
+</ul>
+`````
+
+:::::::
+
+A quote at the item's content column is refused, and `q` folds into the `+` text
+
+::::::: compare
+
+`````carve
+- > > +
+  > q
+`````
+
+`````html
+<ul>
+  <li>
+    <blockquote>
+      <blockquote><p>+
+q</p></blockquote>
+    </blockquote>
+  </li>
+</ul>
+`````
+
+:::::::
+
+## A hosted quote's first-block plus attaches any non-list block at column zero
+
+Below `> - > +` the first-block `+` pulls a non-list block at column 0 into the inner quote whatever its kind, as it already pulls a paragraph line (CARVE-P9-033, CARVE-P9-067). The pull takes precedence over the host quote ending at an unprefixed line (§10 I5, carve#3421).
+
+A heading at column 0 attaches to the inner quote
+
+::::::: compare
+
+`````carve
+> - > +
+# h
+`````
+
+`````html
+<blockquote>
+  <ul>
+    <li>
+      <blockquote>
+        <h1 id="h">h</h1>
+      </blockquote>
+    </li>
+  </ul>
+</blockquote>
+`````
+
+:::::::
+
+A table row at column 0 attaches to the inner quote
+
+::::::: compare
+
+`````carve
+> - > +
+| c |
+`````
+
+`````html
+<blockquote>
+  <ul>
+    <li>
+      <blockquote>
+        <table>
+          <tbody>
+            <tr><td>c</td></tr>
+          </tbody>
+        </table>
+      </blockquote>
+    </li>
+  </ul>
+</blockquote>
+`````
+
+:::::::
+
+## The column of the quote that owns a first-block plus stays eligible at every depth
+
+Next to column 0 and the opener line's own column, the column of the quote that owns the `+` is eligible at every stacking depth, as it is for `- > +` (CARVE-P9-067, carve#3421). A follower at an inner item's column stays refused (corpus 651).
+
+A follower at the quote's column below `- - > +` attaches
+
+::::::: compare
+
+`````carve
+- - > +
+    b
+`````
+
+`````html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+`````
+
+:::::::
+
+One level deeper, a follower at the quote's column attaches too
+
+::::::: compare
+
+`````carve
+- - - > +
+      b
+`````
+
+`````html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <blockquote><p>b</p></blockquote>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+`````
+
+:::::::

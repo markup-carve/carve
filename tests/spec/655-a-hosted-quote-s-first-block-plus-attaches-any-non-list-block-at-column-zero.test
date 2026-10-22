@@ -1,0 +1,35 @@
+A hosted quote's first-block plus attaches any non-list block at column zero
+
+```
+> - > +
+# h
+.
+<blockquote>
+  <ul>
+    <li>
+      <blockquote>
+        <h1 id="h">h</h1>
+      </blockquote>
+    </li>
+  </ul>
+</blockquote>
+```
+
+```
+> - > +
+| c |
+.
+<blockquote>
+  <ul>
+    <li>
+      <blockquote>
+        <table>
+          <tbody>
+            <tr><td>c</td></tr>
+          </tbody>
+        </table>
+      </blockquote>
+    </li>
+  </ul>
+</blockquote>
+```

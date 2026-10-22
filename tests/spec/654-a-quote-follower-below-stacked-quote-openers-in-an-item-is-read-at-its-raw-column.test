@@ -1,0 +1,30 @@
+A quote follower below stacked quote openers in an item is read at its raw column
+
+```
+- > > +
+> q
+.
+<ul>
+  <li>
+    <blockquote>
+      <blockquote>
+        <blockquote><p>q</p></blockquote>
+      </blockquote>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > > +
+  > q
+.
+<ul>
+  <li>
+    <blockquote>
+      <blockquote><p>+
+q</p></blockquote>
+    </blockquote>
+  </li>
+</ul>
+```
