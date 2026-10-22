@@ -1,0 +1,40 @@
+A separate plus after content attaches a list to a note or description
+
+```
+:: t
+: a
++
+- b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <ul>
+      <li>b</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+[^a]: x
++
+- b
+
+see[^a]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x</p>
+      <ul>
+        <li>b</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

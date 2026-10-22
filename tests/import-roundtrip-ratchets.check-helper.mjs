@@ -20,6 +20,10 @@ const baseline = JSON.parse(
 // to the same canonical source; none round-trips through Markdown with this pin.
 // These are corpus-population changes, not an engine pin change.
 
+// Corpus 644 adds two documents. Both complete HTML import, reformat to a
+// fixed point and preserve rendered text; the HTML and the Markdown round-trip
+// counts each gain one.
+
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 

@@ -3942,7 +3942,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (pullPending) {
               // The first-block form takes one non-list block. A list at the
               // description's marker column begins after the empty <dd>.
-              if (matchMarkerAt(ind(i))) break
+              // A separate `+` after content attaches a list (§17 L3).
+              if (bodyLines.length === 0 && matchMarkerAt(ind(i))) break
               const sourceColumn = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
               const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), { col: sourceColumn }, sourceDescriptionCol)
               for (let k = i; k < end; k++) pushBody(lines[k], k)

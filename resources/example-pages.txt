@@ -476,6 +476,8 @@ index: examples/edge-cases/index.md
   642-a-lazy-colon-shaped-line-in-a-quote-paragraph-keeps-no-indentation-3
   643-a-first-block-marker-does-not-pull-a-column-zero-list-into-a-note-or-description
   643-a-first-block-marker-does-not-pull-a-column-zero-list-into-a-note-or-description-2
+  644-a-separate-plus-after-content-attaches-a-list-to-a-note-or-description
+  644-a-separate-plus-after-content-attaches-a-list-to-a-note-or-description-2
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3
