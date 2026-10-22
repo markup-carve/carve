@@ -63,6 +63,8 @@ Releases before 0.1.6 are archived in
 - `continuation-marker-refused` reports a first-block `+` in a footnote or
   description with no eligible block below: the end of the input, a blank line,
   or an indented line (#3519).
+- A fence after a comment line stays in a description's list item, as it
+  does with no comment line between (#3518).
 
 ### Tooling and documentation
 

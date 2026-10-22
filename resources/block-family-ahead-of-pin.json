@@ -10,16 +10,6 @@
     "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
   },
   {
-    "name": "n:desc/ordered-5420",
-    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: 1. para\n %% c\n```\nx\n",
-    "reason": "The spec model moved at 163a6094 (#3476) and all three engines kept the earlier reading; which owner the column-0 fence gets after the comment line is unruled (markup-carve/carve#3518)."
-  },
-  {
-    "name": "n:desc/ordered-5421",
-    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: 1. para\n %%%\n c\n %%%\n```\nx\n",
-    "reason": "The spec model moved at 163a6094 (#3476) and all three engines kept the earlier reading; which owner the column-0 fence gets after the comment line is unruled (markup-carve/carve#3518)."
-  },
-  {
     "name": "n:desc/footnote-5823",
     "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: [^c]: para\n   | a |\n```\nx\n",
     "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
