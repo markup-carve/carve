@@ -1,47 +1,57 @@
 [
   {
-    "name": "n:item/desc-5746",
-    "source": "[r][] [^p] [^c] [^d]\n\n- :: t\n  : para\n    more\n   - li\n::::\ntail\n",
-    "reason": "CARVE-P2-017 opens a list marker below the description body in the surviving item; the pinned engines still fold it into the description."
+    "name": "n:desc/footnote-4902",
+    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: [^c]: para\n    more\n   {#x}\ntail\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
   },
   {
-    "name": "n:item/desc-8105",
-    "source": "[r][] [^p] [^c] [^d]\n\n- :: t\n  : para\n   - li\n    tail\n",
-    "reason": "CARVE-P2-017 opens a list marker below the description body in the surviving item; the pinned engines still fold it into the description."
+    "name": "n:item/quote-5131",
+    "source": "[r][] [^p] [^c] [^d]\n\n- > para\n    more\n    | a |\ntail\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
   },
   {
-    "name": "seed-8307",
-    "source": "- :: term\n  : body\n  +\n  before\n   > nested\n",
-    "reason": "The relative-column description marker is ahead of the pinned engines (markup-carve/carve#3421)."
+    "name": "n:desc/footnote-5823",
+    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: [^c]: para\n   | a |\n```\nx\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
   },
   {
-    "name": "n:desc/desc-4122",
-    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: :: t\n  : para\n   - li\n\ntail\n",
-    "reason": "CARVE-P2-017 gives a marker that reaches the outer description to that owner; the pinned engines still fold it into the inner description (markup-carve/carve#3450)."
+    "name": "n:ordered/quote-6307",
+    "source": "[r][] [^p] [^c] [^d]\n\n1. > para\n     more\n     | a |\ntail\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
   },
   {
-    "name": "n:desc/desc-4416",
-    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: :: t\n  : para\n    more\n  - li\ntail\n",
-    "reason": "CARVE-P2-017 gives a marker that reaches the outer description to that owner; the pinned engines still fold it into the inner description (markup-carve/carve#3450)."
+    "name": "n:ordered/quote-6381",
+    "source": "[r][] [^p] [^c] [^d]\n\n1. > para\n      | a |\ntail\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
   },
   {
-    "name": "n:desc/desc-4824",
-    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: :: t\n  : para\n    more\n  - li\n::::\ntail\n",
-    "reason": "CARVE-P2-017 gives a marker that reaches the outer description to that owner; the pinned engines still fold it into the inner description (markup-carve/carve#3450)."
+    "name": "n:desc/footnote-6779",
+    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: [^c]: para\n   ---\ntail\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
   },
   {
-    "name": "n:desc/desc-5372",
-    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: :: t\n  : para\n    more\n   - li\ntail\n",
-    "reason": "CARVE-P2-017 gives a marker that reaches the outer description to that owner; the pinned engines still fold it into the inner description (markup-carve/carve#3450)."
+    "name": "n:desc/footnote-6849",
+    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: [^c]: para\n    more\n   ---\n```\nx\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
   },
   {
-    "name": "n:desc/desc-5963",
-    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: :: t\n  : para\n    more\n  - li\n    tail\n",
-    "reason": "CARVE-P2-017 gives a marker that reaches the outer description to that owner; the pinned engines still fold it into the inner description (markup-carve/carve#3450)."
+    "name": "n:desc/footnote-6921",
+    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: [^c]: para\n   # H\ntail\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
   },
   {
-    "name": "n:desc/desc-7995",
-    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: :: t\n  : para\n    more\n   - li\n::::\ntail\n",
-    "reason": "CARVE-P2-017 gives a marker that reaches the outer description to that owner; the pinned engines still fold it into the inner description (markup-carve/carve#3450)."
+    "name": "n:desc/footnote-7206",
+    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: [^c]: para\n    more\n   | a |\n```\nx\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
+  },
+  {
+    "name": "n:desc/footnote-7982",
+    "source": "[r][] [^p] [^c] [^d]\n\n:: t\n: [^c]: para\n   # H\n```\nx\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
+  },
+  {
+    "name": "n:ordered/quote-8291",
+    "source": "[r][] [^p] [^c] [^d]\n\n1. > para\n    | a |\n```\nx\n",
+    "reason": "carve-js regressed here after 34ba9eeb (git bisect: carve-js#3351 for most); the spec model, carve-php and carve-rs agree (markup-carve/carve-js#3444)."
   }
 ]

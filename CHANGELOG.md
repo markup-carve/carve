@@ -35,6 +35,9 @@ Releases before 0.1.6 are archived in
   lint expands included content and reports consumed-key near misses (#3326,
   #3337, #3343, #3345, #3346, #3347, #3360, #3361, #3365, #3366, #3367,
   #3371).
+- `description-separator-below-content-column` reports a `:` or `::` below
+  the column of the definition list it would continue inside a container
+  (#3477).
 
 ### Fixed
 
@@ -55,6 +58,13 @@ Releases before 0.1.6 are archived in
   at document scope (#3482, #3507).
 - A separate `+` after description content attaches a following list to the
   description again (#3482, #3513).
+- `continuation-marker-refused` reports a first-block `+` in a footnote or
+  description that a column-0 list leaves unattached (#3482, #3517).
+- `continuation-marker-refused` reports a first-block `+` in a footnote or
+  description with no eligible block below: the end of the input, a blank line,
+  or an indented line (#3519).
+- A fence after a comment line stays in a description's list item, as it
+  does with no comment line between (#3518).
 
 ### Tooling and documentation
 

@@ -2,5 +2,37 @@
   "block-quote": {
     "actual": [],
     "reason": "Carve-js 83e8b837 does not report this refused quote marker yet (markup-carve/carve#3421)."
+  },
+  "footnote-first-block-list": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a first-block plus refused above a column-0 list yet (markup-carve/carve#3482)."
+  },
+  "footnote-first-block-ordered-list": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a first-block plus refused above a column-0 list yet (markup-carve/carve#3482)."
+  },
+  "description-first-block-list": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a first-block plus refused above a column-0 list yet (markup-carve/carve#3482)."
+  },
+  "description-first-block-ordered-list": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a first-block plus refused above a column-0 list yet (markup-carve/carve#3482)."
+  },
+  "footnote-first-block-end-of-input": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a first-block plus with no eligible block below yet (markup-carve/carve#3519)."
+  },
+  "footnote-first-block-blank": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a first-block plus with no eligible block below yet (markup-carve/carve#3519)."
+  },
+  "footnote-first-block-indented-list": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a first-block plus with no eligible block below yet (markup-carve/carve#3519)."
+  },
+  "description-first-block-indented-list": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a first-block plus with no eligible block below yet (markup-carve/carve#3519)."
   }
 }

@@ -39,3 +39,4 @@
 # AN EMPTY FILE IS A REAL STATE, not a missing one: it says the three engines
 # agreed on every scalar the last run compared. It does not say they agree on
 # fields no corpus document reaches.
+list.tight  1  corpus 638: carve-php publishes the stacked outer list tight; a blank before the nested item's + loosens it (PART 9 §17 L1a, corpus 638-2); markup-carve/carve-php#3717

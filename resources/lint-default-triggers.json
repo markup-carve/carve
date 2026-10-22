@@ -18,6 +18,7 @@
   "list-item-body-detached": "1. item\n\n  # heading\n",
   "list-marker-below-content-column": "10. c\n   - d\n",
   "ordered-list-split-by-indent": " 9. nine\n10. ten\n",
+  "description-separator-below-content-column": "- a\n  :: term\n : detail\n",
   "list-item-block-overindented": "-{.x1} item\n\n       # heading\n",
   "continuation-marker-refused": "- item\n+\n\npara\n",
   "definition-term-block-folded": ":: term\n  # heading\n",

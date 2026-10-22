@@ -5,11 +5,6 @@
 # An empty file is a real state and not a missing one. It says the last
 # measurement found no engine short of a default trigger; it does not say the
 # trigger population is complete, which `parity:check` asserts separately.
-php/unclosed-code-fence  specified ahead of the engines by markup-carve/carve#3407; retire at the pin bump that carries it
-rust/unclosed-code-fence  specified ahead of the engines by markup-carve/carve#3407; retire at the pin bump that carries it
-php/continuation-marker-refused  specified ahead of the engines by markup-carve/carve#3407; retire at the pin bump that carries it
-rust/continuation-marker-refused  specified ahead of the engines by markup-carve/carve#3407; retire at the pin bump that carries it
-php/list-marker-below-content-column  specified ahead of the engines by markup-carve/carve#3439; retire at the pin bump that carries it
-rust/list-marker-below-content-column  specified ahead of the engines by markup-carve/carve#3439; retire at the pin bump that carries it
-php/ordered-list-split-by-indent  specified ahead of the engines by markup-carve/carve#3439; retire at the pin bump that carries it
-rust/ordered-list-split-by-indent  specified ahead of the engines by markup-carve/carve#3439; retire at the pin bump that carries it
+js/description-separator-below-content-column  specified ahead of the engines by markup-carve/carve#3455; retire at the pin bump that carries it
+php/description-separator-below-content-column  specified ahead of the engines by markup-carve/carve#3455; retire at the pin bump that carries it
+rust/description-separator-below-content-column  specified ahead of the engines by markup-carve/carve#3455; retire at the pin bump that carries it

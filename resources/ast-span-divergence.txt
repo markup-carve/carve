@@ -48,5 +48,6 @@
 # and neither engine has a row to answer for. The document arrived with
 # markup-carve/carve#2426.
 
-list (extent)  1  carve-php opens the section 503 list at its parent content column; all three spans conform under markup-carve/carve#1928
-list_item (extent)  1  the section 503 list item has the same conformant column difference as its list; markup-carve/carve#1928
+code_block (extent)  3  corpus 626-5/6/7: carve-js and carve-php end the unterminated nested fence one blank line past its payload (CARVE-P12-064, PART 12 §4); carve-rs ends with the content; markup-carve/carve-js#3445, markup-carve/carve-php#3718
+list (extent)  5  corpus 503-9 and 636: carve-php (and carve-rs on 636) open the list inside the leading indentation, which a container may do; all spans conform under markup-carve/carve#1928. Corpus 626-5/6/7: the inner list ends at the over-long code_block; markup-carve/carve-js#3445, markup-carve/carve-php#3718
+list_item (extent)  6  the list rows above, plus corpus 245, where carve-php and carve-rs open the tab-indented sibling item inside its indentation; conformant under markup-carve/carve#1928. The 626 items follow markup-carve/carve-js#3445, markup-carve/carve-php#3718
