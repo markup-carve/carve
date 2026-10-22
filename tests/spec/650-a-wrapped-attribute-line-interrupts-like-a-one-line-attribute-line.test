@@ -1,0 +1,65 @@
+A wrapped attribute line interrupts like a one-line attribute line
+
+```
+- a
+{.c
+}
+~~~
+y
+~~~
+.
+<ul>
+  <li>a</li>
+</ul>
+<pre class="c"><code>y
+</code></pre>
+```
+
+```
+- a
+{.c
+.d}
+para
+.
+<ul>
+  <li>a</li>
+</ul>
+<p class="c d">para</p>
+```
+
+````
+- - ```
+  +
+{.c
+}
+~~~
+y
+~~~
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    +
+  </li>
+</ul>
+<pre class="c"><code>y
+</code></pre>
+````
+
+```
+:: t
+: d
+{.c
+}
+para
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p class="c">para</p>
+```

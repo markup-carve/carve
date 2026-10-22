@@ -4044,7 +4044,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // The item owns an attribute below the description body column;
             // it ends the paragraph there and cannot fold into the description.
             if (inItem && authoredCol > 0 && tryAttrLine([dedented], 0)) break
-            if (authoredCol === 0 && isDefinitionOrAttributeLine(dedented)) break
+            if (authoredCol === 0 && (isDefinitionOrAttributeLine(dedented) || !!tryAttrLine(lines, i))) break
             // CARVE-P2-017: a surviving description can own a marker below this nested body.
             if ((inItem || descriptionOwnerColumn !== null &&
                 (sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) >= descriptionOwnerColumn) &&
@@ -7887,7 +7887,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // A definition BELOW every open content column is untouched - it never
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
-      if (!nm && atFrameColumn(lm.col) && isDefinitionOrAttributeLine(line)) break
+      // A wrapped attribute line is one attribute line (CARVE-P9-013 I5).
+      if (!nm && atFrameColumn(lm.col) && (isDefinitionOrAttributeLine(line) || !!tryAttrLine(lines, i))) break
       // A surviving frame after a comment can own a nonzero below-column line,
       // which begins a new paragraph rather than continuing the closed one.
       // Document column zero remains owned by the document.

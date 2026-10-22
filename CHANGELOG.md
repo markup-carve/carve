@@ -77,6 +77,9 @@ Releases before 0.1.6 are archived in
 - A first-block `+` refuses a follower that starts anywhere but column 0, the
   opener line's column or the quote's column; the `+` then reads like a letter
   at its column (#3421, #3529).
+- A block attribute wrapped over several lines at column 0 below a list item
+  or description closes it like a one-line attribute line, and the block
+  below takes the attributes (#3421).
 
 ### Tooling and documentation
 

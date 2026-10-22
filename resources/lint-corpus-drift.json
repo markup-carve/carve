@@ -745,6 +745,60 @@
       }
     },
     {
+      "file": "tests/corpus/650-a-wrapped-attribute-line-interrupts-like-a-one-line-attribute-line-3.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            2,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/650-a-wrapped-attribute-line-interrupts-like-a-one-line-attribute-line.crv",
+      "reason": "The measured engines disagree on `unattached-block-attribute` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unattached-block-attribute",
+            2,
+            1
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
       "file": "tests/corpus/88-list-continuation-marker-6.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
