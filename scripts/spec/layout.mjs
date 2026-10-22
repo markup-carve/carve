@@ -2962,6 +2962,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
         openerCol += opener.markerWidth + nested.col
         opener = matchMarkerAt(nested)
       }
+      if (FOOTNOTE_DEF.test(quoted.measured.rest) || /^:{1,2} /.test(quoted.measured.rest)) stack.push(quoted.measured.col)
       quotedMarkerColumns.set(quoted.depth, stack)
       return line
     }
