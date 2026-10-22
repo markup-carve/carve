@@ -60,6 +60,9 @@ Releases before 0.1.6 are archived in
   description again (#3482, #3513).
 - `continuation-marker-refused` reports a first-block `+` in a footnote or
   description that a column-0 list leaves unattached (#3482, #3517).
+- `continuation-marker-refused` reports a first-block `+` in a footnote or
+  description with no eligible block below: the end of the input, a blank line,
+  or an indented line (#PRNUM).
 
 ### Tooling and documentation
 

@@ -441,6 +441,102 @@
       "expected": {
         "findings": []
       }
+    },
+    {
+      "name": "footnote-first-block-end-of-input",
+      "description": "The first-block plus is refused with no eligible block below (CARVE-P9-067).",
+      "source": "[^a]: +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 7,
+            "includes": [
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "footnote-first-block-blank",
+      "description": "The first-block plus is refused with no eligible block below (CARVE-P9-067).",
+      "source": "[^a]: +\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 7,
+            "includes": [
+              "blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "footnote-first-block-indented-list",
+      "description": "The first-block plus is refused with no eligible block below (CARVE-P9-067).",
+      "source": "[^a]: +\n  - a\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 7,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "description-first-block-end-of-input",
+      "description": "The first-block plus is refused with no eligible block below (CARVE-P9-067).",
+      "source": ":: t\n: +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "description-first-block-indented-list",
+      "description": "The first-block plus is refused with no eligible block below (CARVE-P9-067).",
+      "source": ":: t\n: +\n  - a\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "footnote-first-block-paragraph",
+      "description": "A column-0 paragraph below the first-block plus is attached.",
+      "source": "[^a]: +\npara\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "description-first-block-paragraph",
+      "description": "A column-0 paragraph below the first-block plus is attached.",
+      "source": ":: t\n: +\npara\n",
+      "expected": {
+        "findings": []
+      }
     }
   ]
 }

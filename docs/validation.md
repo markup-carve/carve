@@ -315,7 +315,9 @@ when the next line is blank, the input ends, or a sibling list item starts at
 that column (markup-carve/carve#3421). It also reports a follower at another
 column and a `+` that no open container claims. The first-block form of a
 footnote or a description (`[^a]: +`, `: +`) is refused when a column-0 list
-follows, because that form pulls only non-list blocks (markup-carve/carve#3482).
+follows, because that form pulls only non-list blocks (markup-carve/carve#3482),
+and when no eligible block follows at all: the end of the input, a blank line,
+or an indented line (CARVE-P9-067).
 PART 9 §17 L4 refuses the marker. The `+` remains text, or fence payload
 when the fence content column claims it:
 
