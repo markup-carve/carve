@@ -69,12 +69,16 @@ for (const file of files) {
       const actual = lintCarve(v.source).filter((w) => w.rule === data.rule)
       const pinned = data.rule === 'continuation-marker-refused' ? ahead[v.name] : undefined
       const expected = v.expected.findings.map((f) => [f.line, f.column])
-      if (pinned) assert.notDeepEqual(pinned.actual, expected, `${v.name}: stale pin declaration`)
+      if (pinned?.actual) assert.notDeepEqual(pinned.actual, expected, `${v.name}: stale pin declaration`)
       assert.deepEqual(
         actual.map((w) => [w.line, w.column]),
         pinned?.actual ?? expected,
         v.name,
       )
+      // A `message` declaration names a phrase the pinned build's wording still lacks.
+      if (pinned?.message) {
+        assert.ok(actual.some((w) => !w.message.includes(pinned.message)), `${v.name}: stale pin declaration`)
+      }
       if (pinned) continue
       v.expected.findings.forEach((f, i) => {
         if ('includes' in f) {

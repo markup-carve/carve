@@ -76,7 +76,8 @@
             "line": 1,
             "column": 3,
             "includes": [
-              "blank line"
+              "blank line",
+              "stays empty"
             ]
           }
         ]
@@ -92,7 +93,8 @@
             "line": 1,
             "column": 3,
             "includes": [
-              "end of the document"
+              "end of the document",
+              "stays empty"
             ]
           }
         ]
@@ -332,7 +334,8 @@
             "line": 1,
             "column": 3,
             "includes": [
-              "+"
+              "+",
+              "stays empty"
             ]
           }
         ]
@@ -348,7 +351,8 @@
             "line": 1,
             "column": 4,
             "includes": [
-              "+"
+              "+",
+              "stays empty"
             ]
           }
         ]
@@ -364,7 +368,8 @@
             "line": 1,
             "column": 7,
             "includes": [
-              "+"
+              "+",
+              "stays empty"
             ]
           }
         ]
@@ -380,7 +385,8 @@
             "line": 1,
             "column": 7,
             "includes": [
-              "a list"
+              "a list",
+              "remains text"
             ]
           }
         ]
@@ -396,7 +402,8 @@
             "line": 1,
             "column": 7,
             "includes": [
-              "a list"
+              "a list",
+              "remains text"
             ]
           }
         ]
@@ -412,7 +419,8 @@
             "line": 2,
             "column": 3,
             "includes": [
-              "a list"
+              "a list",
+              "stays empty"
             ]
           }
         ]
@@ -428,7 +436,8 @@
             "line": 2,
             "column": 3,
             "includes": [
-              "a list"
+              "a list",
+              "stays empty"
             ]
           }
         ]
@@ -452,7 +461,8 @@
             "line": 1,
             "column": 7,
             "includes": [
-              "end of the document"
+              "end of the document",
+              "remains text"
             ]
           }
         ]
@@ -468,7 +478,8 @@
             "line": 1,
             "column": 7,
             "includes": [
-              "blank line"
+              "blank line",
+              "remains text"
             ]
           }
         ]
@@ -484,7 +495,8 @@
             "line": 1,
             "column": 7,
             "includes": [
-              "+"
+              "+",
+              "remains text"
             ]
           }
         ]
@@ -500,7 +512,8 @@
             "line": 2,
             "column": 3,
             "includes": [
-              "end of the document"
+              "end of the document",
+              "stays empty"
             ]
           }
         ]
@@ -516,7 +529,8 @@
             "line": 2,
             "column": 3,
             "includes": [
-              "+"
+              "+",
+              "column rules"
             ]
           }
         ]
@@ -534,6 +548,158 @@
       "name": "description-first-block-paragraph",
       "description": "A column-0 paragraph below the first-block plus is attached.",
       "source": ":: t\n: +\npara\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "description-first-block-blank",
+      "description": "A refused first-block plus leaves the description empty (CARVE-P9-067).",
+      "source": ":: t\n: +\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "blank line",
+              "stays empty"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "item-first-block-indented",
+      "description": "A refused first-block plus adds no block; the indented line follows the column rules (CARVE-P9-067).",
+      "source": "- +\n  x\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "+",
+              "column rules"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote-first-block-end-of-input",
+      "description": "A refused first-block plus stays text in the quote (CARVE-P9-067).",
+      "source": "> +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "end of the document",
+              "remains text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote-first-block-blank",
+      "description": "A refused first-block plus stays text in the quote (CARVE-P9-067).",
+      "source": "> +\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "blank line",
+              "remains text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote-first-block-quoted-blank",
+      "description": "A quoted blank line refuses the first-block plus too (CARVE-P9-067).",
+      "source": "> +\n>\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "blank line",
+              "remains text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote-first-block-indented",
+      "description": "A refused first-block plus stays text in the quote (CARVE-P9-067).",
+      "source": "> +\n  x\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "right",
+              "remains text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote-first-block-list",
+      "description": "The first-block form does not pull a column-0 list (CARVE-P9-067).",
+      "source": "> +\n- a\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "a list",
+              "remains text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested-quote-first-block-end",
+      "description": "The inner quote of a nested quote takes the first-block form (CARVE-P9-067).",
+      "source": "> > +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "end of the document",
+              "remains text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote-first-block-paragraph",
+      "description": "A column-0 paragraph below the first-block plus is attached.",
+      "source": "> +\nflush\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "quote-first-block-in-item",
+      "description": "A quote opened in a list item attaches a line at its own column.",
+      "source": "- > +\n  x\n",
       "expected": {
         "findings": []
       }

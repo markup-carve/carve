@@ -314,10 +314,10 @@ after a block opener in the first-block form (`- +`, `1. +`, `: +`). It reports
 when the next line is blank, the input ends, or a sibling list item starts at
 that column (markup-carve/carve#3421). It also reports a follower at another
 column and a `+` that no open container claims. The first-block form of a
-footnote or a description (`[^a]: +`, `: +`) is refused when a column-0 list
-follows, because that form pulls only non-list blocks (markup-carve/carve#3482),
-and when no eligible block follows at all: the end of the input, a blank line,
-or an indented line (CARVE-P9-067).
+footnote, a description or a block quote (`[^a]: +`, `: +`, `> +`) is refused
+when a column-0 list follows, because that form pulls only non-list blocks
+(markup-carve/carve#3482), and when no eligible block follows at all: the end
+of the input, a blank line, or an indented line (CARVE-P9-067).
 PART 9 §17 L4 refuses the marker. The `+` remains text, or fence payload
 when the fence content column claims it:
 
@@ -331,7 +331,10 @@ Meant for the item.
 renders a one-item list and a paragraph containing `+`. The finding is at the `+`.
 The message says what follows it, a `blank line` or the `end of the
 document`, and names the fix: delete the blank line to attach the next
-block, or delete the `+`.
+block, or delete the `+`. A refused first-block `+` in a list item or a description is
+not text: it adds no block, so the item or description stays empty or holds an
+indented follower by the ordinary column rules. The message says which, and
+says `remains text` for a note or a quote.
 
 ```txt
 doc.crv:2:1 continuation-marker-refused — This + attaches nothing: a blank line follows it, so the marker is refused and the list item ends here. Delete the blank line to attach the next block, or delete the +.

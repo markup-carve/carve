@@ -34,5 +34,41 @@
   "description-first-block-indented-list": {
     "actual": [],
     "reason": "The pinned carve-js does not report a first-block plus with no eligible block below yet (markup-carve/carve#3519)."
+  },
+  "quote-first-block-end-of-input": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a refused first-block quote plus yet (CARVE-P9-067)."
+  },
+  "quote-first-block-blank": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a refused first-block quote plus yet (CARVE-P9-067)."
+  },
+  "quote-first-block-indented": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a refused first-block quote plus yet (CARVE-P9-067)."
+  },
+  "quote-first-block-list": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a refused first-block quote plus yet (CARVE-P9-067)."
+  },
+  "nested-quote-first-block-end": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a refused first-block quote plus yet (CARVE-P9-067)."
+  },
+  "description-first-block-end-of-input": {
+    "message": "stays empty",
+    "reason": "The pinned carve-js words the effect of a refused first-block plus from before the corrected message (CARVE-P9-067)."
+  },
+  "description-first-block-blank": {
+    "message": "stays empty",
+    "reason": "The pinned carve-js words the effect of a refused first-block plus from before the corrected message (CARVE-P9-067)."
+  },
+  "item-first-block-indented": {
+    "message": "column rules",
+    "reason": "The pinned carve-js words the effect of a refused first-block plus from before the corrected message (CARVE-P9-067)."
+  },
+  "quote-first-block-quoted-blank": {
+    "actual": [],
+    "reason": "The pinned carve-js does not report a refused first-block quote plus yet (CARVE-P9-067)."
   }
 }
