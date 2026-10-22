@@ -410,3 +410,5 @@ carve-rs   617-csv-and-tsv-table-bodies-9.crv  text        1  permitted
 # Corpus 632-24 joins a table cell across a continuation marker. Its value is
 # assembled from separate source lines, so the cell has no honest span (PART 12 §4).
 carve-js   632-a-continuation-marker-uses-its-container-column-24.crv  table_cell  1  permitted
+carve-rs   632-a-continuation-marker-uses-its-container-column-24.crv  table_cell  1  permitted
+carve-php  632-a-continuation-marker-uses-its-container-column-24.crv  table_cell  1  permitted
