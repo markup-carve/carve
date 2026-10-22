@@ -752,6 +752,22 @@
           }
         ]
       }
+    },
+    {
+      "name": "quote-unclaimed-indented",
+      "description": "A plus past the quote's marker column is claimed by no open container; it is reported and stays text in the quote (corpus 630-5, carve#3421).",
+      "source": "> q\n>   +\n> para\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 5,
+            "includes": [
+              "remains text"
+            ]
+          }
+        ]
+      }
     }
   ]
 }
