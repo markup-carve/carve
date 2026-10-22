@@ -55,6 +55,8 @@ Releases before 0.1.6 are archived in
   at document scope (#3482, #3507).
 - A separate `+` after description content attaches a following list to the
   description again (#3482, #3513).
+- `continuation-marker-refused` reports a first-block `+` in a footnote or
+  description that a column-0 list leaves unattached (#3482, #3517).
 
 ### Tooling and documentation
 
