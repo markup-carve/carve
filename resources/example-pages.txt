@@ -495,6 +495,9 @@ index: examples/edge-cases/index.md
   646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-13
   647-a-quote-opened-on-its-own-line-in-an-item-takes-the-first-block-form
   647-a-quote-opened-on-its-own-line-in-an-item-takes-the-first-block-form-2
+  648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth
+  648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth-2
+  648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth-3
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3

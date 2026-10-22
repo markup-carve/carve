@@ -643,6 +643,22 @@
       }
     },
     {
+      "file": "tests/corpus/648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth-3.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
       "file": "tests/corpus/88-list-continuation-marker-6.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",

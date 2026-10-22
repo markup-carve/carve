@@ -2866,9 +2866,12 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
   let liveQuoteDepth = 0
   let hostedQuoteColumn = null
   let hostedMarkerQuote = false
+  let hostedMarkerDepth = 0
+  let hostedMarkerSourceColumn = null
   let liveQuoteItem = false
   if (sourceHasLonePlus) for (const [index, line] of sourceLines.entries()) {
-    quotePathBefore.push({ depth: liveQuoteDepth, hostedColumn: hostedQuoteColumn, hostedMarker: hostedMarkerQuote, item: liveQuoteItem })
+    quotePathBefore.push({ depth: liveQuoteDepth, hostedColumn: hostedQuoteColumn, hostedMarker: hostedMarkerQuote,
+      hostedDepth: hostedMarkerDepth, hostedSourceColumn: hostedMarkerSourceColumn, item: liveQuoteItem })
     const inFence = sourceFenceOpenBefore(index)
     sourceFenceBefore.push(inFence)
     if (inFence) continue
@@ -2881,17 +2884,26 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
       liveQuoteDepth = quoted.depth
       hostedQuoteColumn = null
       hostedMarkerQuote = false
+      hostedMarkerDepth = 0
       liveQuoteItem = !!marker
     } else if (quoted.depth > liveQuoteDepth) {
       liveQuoteDepth = quoted.depth
       hostedQuoteColumn = null
       hostedMarkerQuote = false
+      hostedMarkerDepth = 0
       liveQuoteItem = false
     }
-    if (QUOTE.test(rest)) { hostedQuoteColumn = quoted.measured.col; hostedMarkerQuote = false }
+    if (QUOTE.test(rest)) { hostedQuoteColumn = quoted.measured.col; hostedMarkerQuote = false; hostedMarkerDepth = 0 }
     if (marker && quoteLeaf(marker.text).depth > 0) {
       hostedQuoteColumn = marker.indent + marker.markerWidth
       hostedMarkerQuote = true
+      hostedMarkerDepth = quoteLeaf(marker.text).depth
+      hostedMarkerSourceColumn = indentCols(line).col + marker.indent + marker.markerWidth
+    }
+    const bodyLead = quoted.depth === 0 && !marker ? /^(?::|\[\^[^\]]+\]:) +(?=> )/.exec(rest) : null
+    if (bodyLead) {
+      hostedMarkerDepth = quoteLeaf(rest.slice(bodyLead[0].length)).depth
+      hostedMarkerSourceColumn = indentCols(line).col + bodyLead[0].length
     }
   }
   const openSiblingList = (index, col, depth) => {
@@ -2934,8 +2946,11 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
         const owner = quotePathBefore[index]
         const prior = index === 0 ? null : quoteLeaf(sourceLines[index - 1])
         const quoteOpenedHere = index === 0 || prior.depth < quoted.depth
+        // A quote opened on an item's marker line is as deep as its `>` run (CARVE-P9-033).
+        const hostedDeeper = !!next && owner.hostedDepth > quoted.depth &&
+          measured.col === owner.hostedSourceColumn && indentCols(sourceLines[index + 1]).col === measured.col
         const quoteFollower = next?.depth > quoted.depth &&
-          (owner.depth > quoted.depth || stack.includes(quoted.measured.col))
+          (owner.depth > quoted.depth || hostedDeeper || stack.includes(quoted.measured.col))
         const missingInnerPrefix = sameLevel && !sourceFenceBefore[index] &&
           (quoted.measured.col > 0 && owner.depth > quoted.depth &&
             (owner.item || prior?.depth > quoted.depth && startsVisibleBlock(prior.measured.rest)) ||

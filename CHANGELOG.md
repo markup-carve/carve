@@ -71,6 +71,9 @@ Releases before 0.1.6 are archived in
   behind, and reports a refused first-block `> +` (#3524).
 - A `> +` that opens a quote on its own line in a list item attaches the
   following block at that column to the quote (#3421, #3526).
+- A `> +` under a stacked quote opened on a list item's or description's
+  first line attaches a following quote at its own depth, as at document
+  level (#3421).
 
 ### Tooling and documentation
 

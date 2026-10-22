@@ -36,3 +36,6 @@
 646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-9  pinned carve-js still reads a glued quote plus or the pre-fix quote follower (carve#3421)
 646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-12  pinned carve-js does not attach a quote to a quoted description or note yet (carve#3421)
 646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-13  pinned carve-js does not attach a quote to a quoted description or note yet (carve#3421)
+648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth  pinned carve-js predates the hosted quote-plus fix carve-js#3455 (carve#3421)
+648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth-2  pinned carve-js predates the hosted quote-plus fix carve-js#3455 (carve#3421)
+648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth-3  pinned carve-js predates the hosted quote-plus fix carve-js#3455 (carve#3421)

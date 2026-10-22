@@ -1,0 +1,54 @@
+A quote opened on an item's marker line attaches a quote at its own depth
+
+```
+- > > q
+  > +
+  > > r
+.
+<ul>
+  <li>
+    <blockquote>
+      <blockquote>
+        <p>q</p>
+        <blockquote><p>r</p></blockquote>
+      </blockquote>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > > > q
+  > +
+  > > r
+.
+<ul>
+  <li>
+    <blockquote>
+      <blockquote>
+        <blockquote><p>q</p></blockquote>
+        <blockquote><p>r</p></blockquote>
+      </blockquote>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+:: t
+: > > q
+  > +
+  > > r
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote>
+      <blockquote>
+        <p>q</p>
+        <blockquote><p>r</p></blockquote>
+      </blockquote>
+    </blockquote>
+  </dd>
+</dl>
+```
