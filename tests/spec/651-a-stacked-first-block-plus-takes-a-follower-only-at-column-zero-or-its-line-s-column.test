@@ -1,0 +1,51 @@
+A stacked first-block plus takes a follower only at column zero or its line's column
+
+```
+- - > +
+  b
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <blockquote><p>+
+b</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- - +
+  b
+.
+<ul>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+    b
+  </li>
+</ul>
+```
+
+```
+- a
+  - - > +
+  b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <blockquote><p>b</p></blockquote>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```

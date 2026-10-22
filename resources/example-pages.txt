@@ -507,6 +507,9 @@ index: examples/edge-cases/index.md
   650-a-wrapped-attribute-line-interrupts-like-a-one-line-attribute-line-2
   650-a-wrapped-attribute-line-interrupts-like-a-one-line-attribute-line-3
   650-a-wrapped-attribute-line-interrupts-like-a-one-line-attribute-line-4
+  651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column
+  651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column-2
+  651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column-3
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3

@@ -5784,7 +5784,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (text.startsWith(LAZY) && itemLines.length > 1) {
         recordLazyFollower(itemLines, lines[i]?.startsWith(LAZY)
           ? lazyFollowerEligible.get(lines)?.[i]
-          : ind(i).col === 0 || ind(i).col === ind(headIndex).col)
+          : [0, state.markerLineColumns?.get(lines)?.get(headIndex) ?? sourceMarkerCol].includes(ind(i).L?.col ?? ind(i).col))
       }
       if (termSourceColumns) termSourceColumns.push(itemLines.length === 1 ? contentCol : ind(i).L?.col ?? ind(i).col)
       if (itemOrigins) itemOrigins.push(text === '' ? undefined :
