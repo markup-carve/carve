@@ -65,6 +65,8 @@ Releases before 0.1.6 are archived in
   or an indented line (#3519).
 - A fence after a comment line stays in a description's list item, as it
   does with no comment line between (#3518).
+- `continuation-marker-refused` says what a refused first-block `+` leaves
+  behind, and reports a refused first-block `> +` (#3524).
 
 ### Tooling and documentation
 
