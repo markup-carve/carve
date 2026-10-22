@@ -2945,7 +2945,8 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
         const sibling = sameLevel && stack.includes(quoted.measured.col) &&
           openSiblingList(index, quoted.measured.col, quoted.depth) &&
           next.measured.col === quoted.measured.col && matchMarkerAt(next.measured)
-        const firstBlockFollower = next?.depth < quoted.depth && next.measured.col === 0 &&
+        const firstBlockFollower = next?.depth < quoted.depth &&
+          (next.measured.col === 0 || next.depth === 0 && next.measured.col === measured.col) &&
           quoted.measured.col === 0 && !matchMarkerAt(next.measured) && quoteOpenedHere
         const refused = (!sameLevel && !quoteFollower && !firstBlockFollower) ||
           !next.measured.rest || (!firstBlockFollower && next.measured.col !== quoted.measured.col)
