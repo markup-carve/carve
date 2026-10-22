@@ -1,0 +1,47 @@
+A quote's first-block plus refuses a list follower in every host
+
+```
+> - > q
+>   > > +
+>   > - s
+.
+<blockquote>
+  <ul>
+    <li>
+      <blockquote>
+        <p>q</p>
+        <blockquote><p>+
+- s</p></blockquote>
+      </blockquote>
+    </li>
+  </ul>
+</blockquote>
+```
+
+```
+> - > +
+- s
+.
+<blockquote>
+  <ul>
+    <li>
+      <blockquote><p>+
+- s</p></blockquote>
+    </li>
+  </ul>
+</blockquote>
+```
+
+```
+- > > +
+  - s
+.
+<ul>
+  <li>
+    <blockquote>
+      <blockquote><p>+
+- s</p></blockquote>
+    </blockquote>
+  </li>
+</ul>
+```

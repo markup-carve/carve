@@ -43,3 +43,5 @@
 649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-2  pinned carve-js reads the follower at an intervening column as attached (carve#3421)
 649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-3  pinned carve-js reads the follower at an intervening column as attached (carve#3421)
 651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column  pinned carve-js reads the follower at the inner item's column as attached (carve#3421)
+652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host-2  pinned carve-js ends the item at a column-0 list below a hosted quote's first-block plus (carve#3421)
+652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host-3  pinned carve-js attaches a list below a stacked quote's first-block plus (carve#3421)

@@ -4989,7 +4989,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (!qHost.fence && openComment === null && firstBlockPlus && !lazyRefused &&
               i + 1 < n && !isBlank(lines[i + 1]) &&
               (!QUOTE.test(lines[i + 1]) || (inItem && i === 0)) &&
-              (firstBlockAtZero || quoteColFollower || attachesFlushLeft(ind(i + 1), firstBlockQuoteCol))) {
+              (firstBlockAtZero || quoteColFollower ||
+                (attachesFlushLeft(ind(i + 1), firstBlockQuoteCol) &&
+                  !matchMarkerAt(indentCols(stripLazy(lines[i + 1])))))) {
             const depthOf = (line) => {
               let d = 0
               while (QUOTE.test(line)) {

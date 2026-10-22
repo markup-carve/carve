@@ -40,6 +40,10 @@ const baseline = JSON.parse(
 // to a fixed point and preserve rendered text; the HTML round-trip count gains
 // three and the Markdown count two.
 
+// Corpus 652 adds three documents. All three complete HTML import, reformat
+// to a fixed point and preserve rendered text; the HTML round-trip count gains
+// two and the Markdown count one.
+
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 
