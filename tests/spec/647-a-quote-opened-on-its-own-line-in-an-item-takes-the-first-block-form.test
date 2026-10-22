@@ -1,0 +1,36 @@
+A quote opened on its own line in an item takes the first-block form
+
+```
+- a
+  > +
+  q
+.
+<ul>
+  <li>a
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+1. a
+   - b
+     > +
+     | c |
+.
+<ol>
+  <li>a
+    <ul>
+      <li>b
+        <blockquote>
+          <table>
+            <tbody>
+              <tr><td>c</td></tr>
+            </tbody>
+          </table>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+</ol>
+```
