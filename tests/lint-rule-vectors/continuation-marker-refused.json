@@ -703,6 +703,22 @@
       "expected": {
         "findings": []
       }
+    },
+    {
+      "name": "stacked-quote-first-block-in-nested-item",
+      "description": "A stacked list and quote opener attaches a paragraph at that line's column.",
+      "source": "- a\n  - > +\n  b\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "stacked-quote-first-block-heading-in-nested-item",
+      "description": "A stacked list and quote opener attaches a heading at that line's column.",
+      "source": "- a\n  - > +\n  # h\n",
+      "expected": {
+        "findings": []
+      }
     }
   ]
 }
