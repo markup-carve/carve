@@ -369,6 +369,78 @@
           }
         ]
       }
+    },
+    {
+      "name": "footnote-first-block-list",
+      "description": "The first-block form does not pull a column-0 list (carve#3482).",
+      "source": "[^a]: +\n- a list\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 7,
+            "includes": [
+              "a list"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "footnote-first-block-ordered-list",
+      "description": "The first-block form does not pull a column-0 list (carve#3482).",
+      "source": "[^a]: +\n1. b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 7,
+            "includes": [
+              "a list"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "description-first-block-list",
+      "description": "The first-block form does not pull a column-0 list (carve#3482).",
+      "source": ":: t\n: +\n- a list\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "a list"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "description-first-block-ordered-list",
+      "description": "The first-block form does not pull a column-0 list (carve#3482).",
+      "source": ":: t\n: +\n1. b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "a list"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "description-separate-plus-list",
+      "description": "A separate plus after description content attaches the list (carve#3513).",
+      "source": ":: t\n: a\n+\n- b\n",
+      "expected": {
+        "findings": []
+      }
     }
   ]
 }

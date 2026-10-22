@@ -175,7 +175,7 @@ the command-line and editor behavior stay aligned.
 | `list-marker-below-content-column` | a list marker past a list item's marker column but below its content column: on a paragraph continuation line it renders as text, and after a blank line it starts a separate list; indent it to the content column to nest it or move it to the marker column for a sibling |
 | `ordered-list-split-by-indent` | consecutive ordered lists continue the same numbering style and sequence, but their first markers start in different columns, so they render as two lists |
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column. Reported once per block, on its first line; continuing table rows and quote lines do not open another block. An aligned opener stays unreported when a continuation is overindented, including when the block opens on the item's marker line. The finding also covers the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
-| `continuation-marker-refused` | any refused lone `+`, including a first-block `- +`, a sibling follower, a follower at another column, or no follower. PART 9 §17 L4 refuses attachment; see [refused continuation markers](#refused-continuation-markers) |
+| `continuation-marker-refused` | any refused lone `+`, including a first-block `- +`, a sibling follower, a column-0 list below `[^a]: +` or `: +`, a follower at another column, or no follower. PART 9 §17 L4 refuses attachment; see [refused continuation markers](#refused-continuation-markers) |
 | `empty-include-path` | a <code v-pre>{{ ... }}</code> run shaped like an include directive but containing no path, including empty braces and spaced directive forms containing only a `#section` or `@option`; it remains literal text, so add a path or remove the braces |
 | `region-marker-renders-as-text` | a line whose content is a `#region` or `#endregion` marker in a source-comment form (`#region name`, `// #region name`, `-- #region name`, `/* #region name */`, `<!-- #region name -->`), or a `%%` marker whose keyword is not lowercase (`%% #Region name`). In a Carve file the first kind renders as visible text and none of them is a region marker for a Carve include (CARVE-P6-001 I1b), so write `%% #region name` |
 | `include-unresolved` | a Warning for an include whose path the resolver cannot read: missing, unreadable or outside the containment root; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
@@ -312,7 +312,9 @@ continuation marker: alone at an open container's marker column, or first
 after a block opener in the first-block form (`- +`, `1. +`, `: +`). It reports
 when the next line is blank, the input ends, or a sibling list item starts at
 that column (markup-carve/carve#3421). It also reports a follower at another
-column and a `+` that no open container claims.
+column and a `+` that no open container claims. The first-block form of a
+footnote or a description (`[^a]: +`, `: +`) is refused when a column-0 list
+follows, because that form pulls only non-list blocks (markup-carve/carve#3482).
 PART 9 §17 L4 refuses the marker. The `+` remains text, or fence payload
 when the fence content column claims it:
 
