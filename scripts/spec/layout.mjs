@@ -4961,6 +4961,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const firstBlockQuoteCol = firstBlockPlus
             ? state.markerLineColumns.get(lines)?.get(i) ?? ind(i).L?.col ?? sourceQuoteCol
             : sourceQuoteCol
+          // `- > +` also takes a follower at the quote's own column (CARVE-P9-067, carve#3421).
+          const markerQuoteCol = i === 0 ? markerLineQuoteColumns.get(lines) : undefined
+          const quoteColFollower = firstBlockPlus && markerQuoteCol !== undefined &&
+            attachesFlushLeft(ind(i + 1), markerQuoteCol) && !matchMarkerAt(ind(i + 1))
           const firstBlockAtZero = firstBlockPlus && firstBlockQuoteCol > 0 &&
             (ind(i + 1)?.L?.col ?? ind(i + 1)?.col) === 0 && !matchMarkerAt(ind(i + 1))
           // `+` on the line that opens the innermost quote is its first-block marker.
@@ -4968,7 +4972,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (!qHost.fence && openComment === null && firstBlockPlus &&
               i + 1 < n && !isBlank(lines[i + 1]) &&
               (!QUOTE.test(lines[i + 1]) || (inItem && i === 0)) &&
-              (firstBlockAtZero || attachesFlushLeft(ind(i + 1), firstBlockQuoteCol))) {
+              (firstBlockAtZero || quoteColFollower || attachesFlushLeft(ind(i + 1), firstBlockQuoteCol))) {
             const depthOf = (line) => {
               let d = 0
               while (QUOTE.test(line)) {
@@ -4980,7 +4984,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const here = depthOf(lines[i])
             if (CONT_MARKER.test(here.rest) && here.d > (qLastMarked < 0 ? 0 : depthOf(lines[qLastMarked]).d)) {
               const attached = takeOneBlock(lines, i + 1, state, ind(i + 1),
-                firstBlockAtZero ? 0 : firstBlockQuoteCol)
+                firstBlockAtZero ? 0 : quoteColFollower ? markerQuoteCol : firstBlockQuoteCol)
               inner.push(here.d > 1 ? qm[1] : '', ...attached.rawMarker, '')
               qLastMarked = i
               i = attached.next
@@ -5558,6 +5562,8 @@ function authoredBlockEnd(lines, start, base, state) {
     measuringAuthoredBlock: true,
   })
 }
+// The quote column of a `- > +` item head, keyed by the item's line array.
+const markerLineQuoteColumns = new WeakMap()
 // A refused marker leaves an empty attached range for ordinary column rules.
 function takeOneBlock(lines, start, state, firstMeas, column = 0) {
   const startsList = !!matchMarkerAt(indentCols(lines[start] ?? ''))
@@ -5762,6 +5768,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     else if (QUOTE.test(head.text) && head.text.includes('+') && markerCarriesContinuation(head.text.trim(),
         prefixMemo(state, itemLines, 0).continuation)) {
       state.markerLineColumns.set(itemLines, new Map([[0, sourceMarkerCol]]))
+      markerLineQuoteColumns.set(itemLines, sourceMarkerCol + head.markerWidth)
     }
     // Whether the marker line opens nested items whose innermost item is the
     // FIRST-BLOCK `+` form. An enclosing collector must carry a following
