@@ -9,7 +9,7 @@
       },
       "md": {
         "identical": 2263,
-        "strict": 1717,
+        "strict": 1719,
         "total": 3023
       }
     },
@@ -20,8 +20,8 @@
         "total": 3023
       },
       "md": {
-        "identical": 2218,
-        "strict": 1648,
+        "identical": 2216,
+        "strict": 1653,
         "total": 3023
       }
     },
@@ -32,8 +32,8 @@
         "total": 3023
       },
       "md": {
-        "identical": 2311,
-        "strict": 2013,
+        "identical": 2310,
+        "strict": 2015,
         "total": 3023
       }
     }
