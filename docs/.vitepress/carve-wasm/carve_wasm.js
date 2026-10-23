@@ -58,6 +58,102 @@ export function sanitizeSvg(source, options) {
  * @param {string} source
  * @returns {string}
  */
+export function toAnsi(source) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.toAnsi(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Render to ANSI text with an options object. See
+ * [`to_markdown_with_options`].
+ * @param {string} source
+ * @param {RenderOptions | null} options
+ * @returns {string}
+ */
+export function toAnsiWithOptions(source, options) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.toAnsiWithOptions(ptr0, len0, isLikeNone(options) ? 0 : addToExternrefTable0(options));
+        var ptr2 = ret[0];
+        var len2 = ret[1];
+        if (ret[3]) {
+            ptr2 = 0; len2 = 0;
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        deferred3_0 = ptr2;
+        deferred3_1 = len2;
+        return getStringFromWasm0(ptr2, len2);
+    } finally {
+        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+    }
+}
+
+/**
+ * @param {string} source
+ * @returns {string}
+ */
+export function toCarve(source) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.toCarve(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Write canonical Carve with an options object.
+ *
+ * `profile` and `alignTables` are the only options this target reads; see
+ * [`to_markdown_with_options`] for why.
+ * @param {string} source
+ * @param {RenderOptions | null} options
+ * @returns {string}
+ */
+export function toCarveWithOptions(source, options) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.toCarveWithOptions(ptr0, len0, isLikeNone(options) ? 0 : addToExternrefTable0(options));
+        var ptr2 = ret[0];
+        var len2 = ret[1];
+        if (ret[3]) {
+            ptr2 = 0; len2 = 0;
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        deferred3_0 = ptr2;
+        deferred3_1 = len2;
+        return getStringFromWasm0(ptr2, len2);
+    } finally {
+        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+    }
+}
+
+/**
+ * @param {string} source
+ * @returns {string}
+ */
 export function toHtml(source) {
     let deferred2_0;
     let deferred2_1;
@@ -313,6 +409,119 @@ export function toHtmlWithSymbols(source, symbols) {
         const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.toHtmlWithSymbols(ptr0, len0, isLikeNone(symbols) ? 0 : addToExternrefTable0(symbols));
+        var ptr2 = ret[0];
+        var len2 = ret[1];
+        if (ret[3]) {
+            ptr2 = 0; len2 = 0;
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        deferred3_0 = ptr2;
+        deferred3_1 = len2;
+        return getStringFromWasm0(ptr2, len2);
+    } finally {
+        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+    }
+}
+
+/**
+ * @param {string} source
+ * @returns {string}
+ */
+export function toMarkdown(source) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.toMarkdown(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Render to Markdown with the same options object as
+ * [`to_html_with_options`].
+ *
+ * `profile` is why this exists. Without it a host can hold an untrusted
+ * document to a profile on the way to HTML and not on the way to Markdown,
+ * out of one package: the max-length bound, the denied constructs and the
+ * link policy were all unreachable here. A document the profile rejects
+ * throws a `ProfileViolationError` rather than resolving to an empty string.
+ *
+ * What these targets read is narrower than HTML's list: `profile` and
+ * `smartTypography` change the output and extensions run, while `symbols`
+ * (markup-carve/carve-rs#1668), `labels`, `sections`, `sourceLine`, `mode` and
+ * the heading-id switches are HTML-side concerns the engine's other renderers
+ * do not consult. `renderers` is refused for the reason
+ * [`to_html_with_options`] refuses it.
+ *
+ * [`to_carve_with_options`] is narrower again and reads `profile` and
+ * `alignTables` alone: the
+ * engine's canonical writer is parse-only by contract, so extensions and
+ * `smartTypography` are inert there. They are accepted rather than refused
+ * because one options object is meant to serve every target.
+ * @param {string} source
+ * @param {RenderOptions | null} options
+ * @returns {string}
+ */
+export function toMarkdownWithOptions(source, options) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.toMarkdownWithOptions(ptr0, len0, isLikeNone(options) ? 0 : addToExternrefTable0(options));
+        var ptr2 = ret[0];
+        var len2 = ret[1];
+        if (ret[3]) {
+            ptr2 = 0; len2 = 0;
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        deferred3_0 = ptr2;
+        deferred3_1 = len2;
+        return getStringFromWasm0(ptr2, len2);
+    } finally {
+        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+    }
+}
+
+/**
+ * @param {string} source
+ * @returns {string}
+ */
+export function toPlainText(source) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.toPlainText(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
+ * Render to plain text with an options object. See
+ * [`to_markdown_with_options`].
+ * @param {string} source
+ * @param {RenderOptions | null} options
+ * @returns {string}
+ */
+export function toPlainTextWithOptions(source, options) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.toPlainTextWithOptions(ptr0, len0, isLikeNone(options) ? 0 : addToExternrefTable0(options));
         var ptr2 = ret[0];
         var len2 = ret[1];
         if (ret[3]) {

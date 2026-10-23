@@ -15,13 +15,30 @@ npm run sync-carve-wasm
 
 That rebuilds `../carve-wasm` with `wasm-pack` and copies its `pkg/` output here.
 
-It builds the RENDERING-ONLY profile (`--no-default-features`). The Playground
-calls one export, `toHtmlWithOptions`, so the AST, import, report and
-other-renderer surfaces are dropped: 0.85 MB gzip against 3.0 MB for the
-default build (carve-wasm v0.1.9; it was 0.54 MB on v0.1.2). A page that needs `parseJson`, an importer or a checked renderer
-has to drop that flag.
+It builds the rendering profile plus the writer:
+`--no-default-features --features other-renderers`. The Playground calls two
+exports, `toHtmlWithOptions` to render and `toCarveWithOptions` for Format, so
+the AST, import, report and patch surfaces are dropped. `other-renderers` is
+the only carve-wasm feature that gates the writer; it also brings `toMarkdown`,
+`toPlainText` and `toAnsi`. The feature list lives in
+`scripts/sync-carve-wasm.mjs`.
 
-Build from a released carve-wasm tag, not an arbitrary `main` commit.
+Sizes on carve-wasm v0.1.9, gzip of `carve_wasm_bg.wasm`:
+
+| Build | gzip |
+|---|---|
+| default features | 3.0 MB |
+| `--no-default-features` (render only) | 0.89 MB |
+| `--no-default-features --features other-renderers` (this copy) | 1.54 MB |
+
+The writer itself is most of the step: a build exporting only
+`toCarveWithOptions` measured 1.43 MB. The module loads only when a visitor
+selects the Rust engine, so the JavaScript-only page does not pay for it.
+A page that needs `parseJson`, an importer or a checked renderer has to add
+that feature to the script.
+
+Build from a released carve-wasm tag, not an arbitrary `main` commit. Point
+`CARVE_WASM_DIR` at a checkout of that tag when it is not `../carve-wasm`.
 
 The sync script passes `--remap-path-prefix` for `CARGO_HOME` and the
 carve-wasm checkout, because a release build otherwise embeds the build
@@ -32,8 +49,9 @@ fails the suite if a rebuild reintroduces a real one.
 
 ## Provenance
 
-This copy was built from carve-wasm **v0.1.9**, which pins the published
-carve-rs crate **`carve-lang` 0.1.11**.
+This copy was built from carve-wasm **v0.1.9** (`f5a5bb2`), which pins the
+published carve-rs crate **`carve-lang` 0.1.11**, with
+`--no-default-features --features other-renderers`.
 
 The bundle carries its own stamp: `version()` returns the carve-wasm version it
 was built from, so the vendored engine can be identified at runtime without

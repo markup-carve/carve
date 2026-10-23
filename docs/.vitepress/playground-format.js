@@ -1,6 +1,6 @@
 // The playground's Format action: rewrite Carve source through the canonical
-// writer of the selected engine. The vendored WASM build is rendering-only and
-// has no writer export, so Rust mode falls back to carve-js and says so.
+// writer of the selected engine. A WASM build without the writer export makes
+// Rust mode fall back to carve-js and say so.
 
 /** The writer export a carve-wasm module offers, or null when the build omits it. */
 export function wasmWriter(mod) {

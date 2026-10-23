@@ -31,18 +31,23 @@ test('without alignTables the writer leaves columns unpadded', () => {
   assert.notEqual(plain, aligned)
 })
 
-test('Rust mode falls back to carve-js when the vendored build has no writer, and says so', async () => {
-  const mod = await vendoredWasm()
-  const wasmFormat = wasmWriter(mod)
-  const result = formatCarve(TABLE, { engine: 'rust', alignTables: true, jsFormat: carveToCarve, wasmFormat })
-  if (wasmFormat === null) {
-    assert.equal(result.engine, 'js')
-    assert.equal(result.fellBack, true)
-  } else {
+test('the vendored WASM build exports the writer, so Rust mode formats natively', async () => {
+  const wasmFormat = wasmWriter(await vendoredWasm())
+  assert.notEqual(wasmFormat, null, 'rebuild with `npm run sync-carve-wasm`: the bundle lacks toCarveWithOptions')
+  for (const alignTables of [true, false]) {
+    const result = formatCarve(TABLE, { engine: 'rust', alignTables, jsFormat: carveToCarve, wasmFormat })
     assert.equal(result.engine, 'rust')
     assert.equal(result.fellBack, false)
+    assert.equal(result.text, carveToCarve(TABLE, { alignTables }))
   }
-  assert.equal(result.text, carveToCarve(TABLE, { alignTables: true }))
+})
+
+test('Rust mode falls back to carve-js when a build has no writer, and says so', () => {
+  const wasmFormat = wasmWriter({ toHtmlWithOptions: () => '' })
+  assert.equal(wasmFormat, null)
+  const result = formatCarve(TABLE, { engine: 'rust', alignTables: true, jsFormat: carveToCarve, wasmFormat })
+  assert.equal(result.engine, 'js')
+  assert.equal(result.fellBack, true)
 })
 
 test('a writer export is used when the build has one', () => {

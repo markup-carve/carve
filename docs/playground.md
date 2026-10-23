@@ -12,7 +12,7 @@ parser](https://github.com/markup-carve/carve-js) tested by this project's
 shared input/output tests.
 
 ::: details Formatting the source
-**Format** rewrites the source in the canonical Carve layout, the same output as `carve fmt`. With **Align tables** on, table columns are padded so their pipes line up. One undo (Ctrl+Z) restores the previous text. The bundled Rust (WASM) engine only renders, so in Rust mode the JavaScript formatter does the work and the note above the source says so.
+**Format** rewrites the source in the canonical Carve layout, the same output as `carve fmt`. With **Align tables** on, table columns are padded so their pipes line up. One undo (Ctrl+Z) restores the previous text. The selected engine does the formatting: in Rust mode the bundled WASM build runs its own writer.
 :::
 
 ::: details Sharing a document as a link

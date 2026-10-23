@@ -27,7 +27,8 @@ import { homedir } from 'node:os'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
-const wasmRoot = resolve(repoRoot, '../carve-wasm')
+// CARVE_WASM_DIR points at a checkout elsewhere, e.g. a worktree at a release tag.
+const wasmRoot = resolve(process.env.CARVE_WASM_DIR || resolve(repoRoot, '../carve-wasm'))
 const libDir = resolve(repoRoot, 'docs/.vitepress/carve-wasm')
 
 // Only these runtime files are vendored; the rest of pkg/ (package.json,
@@ -48,16 +49,17 @@ if (!existsSync(wasmRoot)) {
   process.exit(1)
 }
 
-// THE RENDERING-ONLY PROFILE, not the default build. The Playground calls
-// exactly one export - `toHtmlWithOptions` - and `--no-default-features` keeps
-// the HTML renderers while dropping the AST, import, report and other-renderer
-// surfaces nobody here loads. Measured on carve-wasm v0.1.2: 0.54 MB gzip
-// against 1.45 MB for the default build, which every visitor to the page
-// downloads.
+// THE RENDERING-ONLY PROFILE plus the writer, not the default build. The
+// Playground calls `toHtmlWithOptions` to render and `toCarveWithOptions` to
+// format. `--no-default-features` drops the AST, import, report and patch
+// surfaces nobody here loads; `other-renderers` is the one feature that gates
+// the writer (it also brings `toMarkdown`, `toPlainText` and `toAnsi`, which
+// carve-wasm does not split out).
 //
-// If a page ever needs `parseJson`, an importer or a checked renderer, this
-// flag is what removed it - drop the flag rather than reaching around it.
-//
+// If a page ever needs `parseJson`, an importer or a checked renderer, add its
+// feature here rather than reaching around the flag.
+const FEATURES = ['other-renderers']
+
 // RUSTFLAGS remaps the build host's source prefixes out of the artifact. Rust
 // embeds panic locations as absolute paths, so a release build writes the
 // developer's cargo home into the committed .wasm - 30 such strings shipped on
@@ -72,14 +74,17 @@ const remap = [
 ].join(' ')
 
 console.log(`Building carve-wasm at ${wasmRoot}...`)
-execSync('wasm-pack build --target web --release --no-default-features', {
-  cwd: wasmRoot,
-  stdio: 'inherit',
-  env: {
-    ...process.env,
-    RUSTFLAGS: `${process.env.RUSTFLAGS ?? ''} ${remap}`.trim(),
+execSync(
+  `wasm-pack build --target web --release --no-default-features --features ${FEATURES.join(',')}`,
+  {
+    cwd: wasmRoot,
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      RUSTFLAGS: `${process.env.RUSTFLAGS ?? ''} ${remap}`.trim(),
+    },
   },
-})
+)
 
 const pkgDir = resolve(wasmRoot, 'pkg')
 mkdirSync(libDir, { recursive: true })

@@ -161,7 +161,7 @@ const alignTables = ref(true)
 const formatNote = ref('')
 // The text the last format produced; any other edit clears the note.
 let formattedText: string | null = null
-const FORMAT_FALLBACK_NOTE = 'formatted with the JS engine: the bundled Rust build only renders'
+const FORMAT_FALLBACK_NOTE = 'formatted with the JS engine: the bundled Rust build has no writer'
 
 async function formatSource(): Promise<void> {
   if (engine.value === 'rust') await ensureWasm()
@@ -200,7 +200,7 @@ const engine = ref<Engine>('js')
 // ../../carve-wasm). It is loaded lazily on first selection so the JS-only
 // experience never pays for the ~250 KB module download.
 let wasmRender: ((source: string, options: object) => string) | null = null
-// The build's canonical writer, or null: the rendering-only profile omits it.
+// The build's canonical writer, or null when the build omits it.
 let wasmFormat: ((source: string, options: object) => string) | null = null
 const wasmCanFormat = ref(false)
 const wasmReady = ref(false)
@@ -899,7 +899,7 @@ void mermaidInit
             type="button"
             :title="
               engine === 'rust' && !wasmCanFormat
-                ? 'Format the source. The bundled Rust build only renders, so this uses the JS formatter.'
+                ? 'Format the source. This Rust build has no writer, so this uses the JS formatter.'
                 : 'Format the source with the canonical Carve writer (Ctrl+Z undoes it)'
             "
             @click="formatSource"

@@ -248,6 +248,13 @@ export interface ProseMirrorResult {
 
 
 
+export function toMarkdownWithOptions(source: string, options?: RenderOptions | null): string;
+export function toPlainTextWithOptions(source: string, options?: RenderOptions | null): string;
+export function toAnsiWithOptions(source: string, options?: RenderOptions | null): string;
+export function toCarveWithOptions(source: string, options?: RenderOptions | null): string;
+
+
+
 /**
  * Every extension name this build accepts, in registry order.
  *
@@ -274,6 +281,10 @@ export function parseLocator(loc: string): ParsedLocator;
  * the strict setting.
  */
 export function sanitizeSvg(source: string, options?: object | null): SanitizeResult;
+
+export function toAnsi(source: string): string;
+
+export function toCarve(source: string): string;
 
 export function toHtml(source: string): string;
 
@@ -311,6 +322,10 @@ export function toHtmlFull(source: string, symbols?: object | null): string;
  */
 export function toHtmlWithSymbols(source: string, symbols?: object | null): string;
 
+export function toMarkdown(source: string): string;
+
+export function toPlainText(source: string): string;
+
 export function version(): string;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -320,11 +335,19 @@ export interface InitOutput {
     readonly extensions: () => [number, number];
     readonly parseLocator: (a: number, b: number) => [number, number, number];
     readonly sanitizeSvg: (a: number, b: number, c: number) => [number, number, number];
+    readonly toAnsi: (a: number, b: number) => [number, number];
+    readonly toAnsiWithOptions: (a: number, b: number, c: number) => [number, number, number, number];
+    readonly toCarve: (a: number, b: number) => [number, number];
+    readonly toCarveWithOptions: (a: number, b: number, c: number) => [number, number, number, number];
     readonly toHtml: (a: number, b: number) => [number, number];
     readonly toHtmlFull: (a: number, b: number, c: number) => [number, number, number, number];
     readonly toHtmlWithOptions: (a: number, b: number, c: number) => [number, number, number, number];
     readonly toHtmlWithRenderers: (a: number, b: number, c: number) => [number, number, number];
     readonly toHtmlWithSymbols: (a: number, b: number, c: number) => [number, number, number, number];
+    readonly toMarkdown: (a: number, b: number) => [number, number];
+    readonly toMarkdownWithOptions: (a: number, b: number, c: number) => [number, number, number, number];
+    readonly toPlainText: (a: number, b: number) => [number, number];
+    readonly toPlainTextWithOptions: (a: number, b: number, c: number) => [number, number, number, number];
     readonly version: () => [number, number];
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
