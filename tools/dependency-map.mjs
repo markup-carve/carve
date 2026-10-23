@@ -631,7 +631,16 @@ async function resolveEdge(edge) {
     }
     if (!/^[0-9a-f]{7,40}$/i.test(edge.ref)) {
       const latest = state.latestRelease ?? state.latestTag
-      const { verdict, note } = vendorVerdict(edge.ref, state.tags.map((tag) => tag.name), latest)
+      const names = state.tags.map((tag) => tag.name)
+      // The tag list is one page of 100; ask for an older tag by name before calling it untagged.
+      for (const name of [edge.ref, `v${edge.ref.replace(/^v/, '')}`, edge.ref.replace(/^v/, '')]) {
+        if (names.includes(name)) break
+        if (await api(`repos/${ORG}/${edge.target}/git/ref/tags/${encodeURIComponent(name)}`)) {
+          names.push(name)
+          break
+        }
+      }
+      const { verdict, note } = vendorVerdict(edge.ref, names, latest)
       return { ...edge, resolved: edge.ref, latest, verdict, note: `vendored in ${edge.path}, ${note}` }
     }
     const resolved = await distance(edge.target, edge.ref, state.branch)
