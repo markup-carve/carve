@@ -10,88 +10,69 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-## [0.1.11] - 2026-10-21
+## [0.1.11] - 2026-10-23
 
-### Changed
+### Fixes
 
-- A lone `+` follows the column-zero or first-element-after-opener continuation
-  rule, including task checkboxes, nested containers and relative columns.
-  Refused markers stay text and receive lint. Explicit ordered-list column
-  traps and markers below the content column have defined diagnostics (#3409,
-  #3433, #3436, #3441, #3442, #3443, #3445, #3456).
-- A quote-prefixed `+` needs one space after each `>`: `>+`, `>>+` and `>> +`
-  read as text, and a quote attached by `> +` nests (#3421).
-- Fence runs and nested markers keep their source list owner. A folded fence
-  line, lazy closer, blank below a marker-line fence or unattached `+` can
-  affect list tightness, code content and where later blocks land. Caption
-  gaps follow the same boundaries (#3325, #3368, #3376, #3381, #3386,
-  #3387, #3395, #3402, #3404, #3411, #3416, #3417, #3497, #3498).
+- A `+` continues only at column 0 or as the first element after a block
+  opener, task checkboxes and nested containers included, with columns read
+  relative to the host. A refused `+` now renders as text where it stands and
+  gets a lint report (#3409, #3433, #3435, #3436, #3445, #3456).
+- A quote-prefixed `+` needs one space after each `>`: `>+`, `>>+` and
+  `>> +` now read as text. A spaced `> +` under an inner quote attaches the
+  following quote at that depth (#3421, #3521).
+- A `> +` attaches a following quote in a quoted description or note, in a
+  quote opened on its own line in a list item, and under a stacked quote on
+  an item's or description's first line (#3525, #3526, #3528).
+- A first-block `+` in a footnote or description no longer pulls a column-0
+  list in: the list stays at document scope. A separate `+` after
+  description content still attaches a following list (#3482, #3507, #3513).
+- A first-block `+` takes a follower only at column 0, its opener line's
+  column or its quote's column, and a quote's first-block `+` refuses a list
+  follower in every host. Otherwise the `+` reads as a letter (#3529, #3532,
+  #3534, #3535).
+- A `:` or `::` separator below its definition list's column no longer
+  continues that list: it ends the item and reads as paragraph text
+  (#3458, #3492).
+- Fence runs and nested markers keep their source list owner, so folded
+  fence lines, lazy closers and blanks below a marker-line fence can change
+  list tightness, code content and where later blocks land. Caption gaps
+  follow the same boundaries (#3325, #3368, #3376, #3381, #3386, #3387,
+  #3395, #3402, #3404, #3411, #3416, #3417, #3497, #3498).
 - Description, definition, footnote and list boundaries follow the reached
-  source column. Container examples, invisible-note controls, nested marker
-  ownership and the corpus 620 separator correction pin the resulting HTML
-  and AST ownership (#3377, #3397, #3458, #3483, #3485, #3492).
-- Includes can select a whole file or a region as code. Region markers keep
-  their line; definitions and blank lines stay inside the region. A BOM before
-  a line-one marker, repeated option and out-of-range selection have explicit
-  error rules. Code includes retain a blank final line and selected-line span;
-  lint expands included content and reports consumed-key near misses (#3326,
-  #3337, #3343, #3345, #3346, #3347, #3360, #3361, #3365, #3366, #3367,
-  #3371).
-- `description-separator-below-content-column` reports a `:` or `::` below
-  the column of the definition list it would continue inside a container
-  (#3477).
-
-### Fixed
-
+  source column, and a tab-indented nested list starts at its marker
+  (#3377, #3397, #3459, #3483, #3485).
+- A block attribute wrapped over several lines, at column 0 or opened in a
+  nested item, closes the item like a one-line attribute line, and the block
+  below takes the attributes (#3531, #3537).
+- A lazy colon-shaped line in a quote paragraph keeps no indentation, and a
+  fence after a comment line stays in a description's list item (#3493,
+  #3506, #3518, #3522).
 - The canonical writer aligns escaped table cells and closes a nested fence
-  when a dedent ended it (#3329, #3494).
+  a dedent ended (#3329, #3494).
 - Markdown migration resolves heading fragments by exact and case-only
-  matches and reports rewritten or unresolved targets. Destinations retain
-  brackets, non-ASCII characters and literal Carve characters. Standalone
-  images, pointy autolinks and autolinks in link text have shared fidelity
-  controls (#3331, #3338, #3374, #3380, #3383, #3398, #3414, #3419,
+  matches, and destinations keep brackets, non-ASCII and literal Carve
+  characters (#3331, #3338, #3374, #3380, #3383, #3398, #3414, #3419,
   #3422, #3460).
-- BBCode quote attribution has one importer reading and a
-  `bbcode-quote-field-dropped` fidelity code for fields the target cannot
-  carry (#3327, #3357).
-- A lazy colon-shaped line in a quote paragraph keeps no indentation
-  (#3493, #3506).
-- A first-block `+` in a footnote or description leaves a column-zero list
-  at document scope (#3482, #3507).
-- A separate `+` after description content attaches a following list to the
-  description again (#3482, #3513).
-- `continuation-marker-refused` reports a first-block `+` in a footnote or
-  description that a column-0 list leaves unattached (#3482, #3517).
-- `continuation-marker-refused` reports a first-block `+` in a footnote or
-  description with no eligible block below: the end of the input, a blank line,
-  or an indented line (#3519).
-- A fence after a comment line stays in a description's list item, as it
-  does with no comment line between (#3518).
-- `continuation-marker-refused` says what a refused first-block `+` leaves
-  behind, and reports a refused first-block `> +` (#3524).
-- A `> +` that opens a quote on its own line in a list item attaches the
-  following block at that column to the quote (#3421, #3526).
-- A `> +` under a stacked quote opened on a list item's or description's
-  first line attaches a following quote at its own depth, as at document
-  level (#3421, #3528).
-- A first-block `+` refuses a follower that starts anywhere but column 0, the
-  opener line's column or the quote's column; the `+` then reads like a letter
-  at its column (#3421, #3529).
-- A block attribute wrapped over several lines at column 0 below a list item
-  or description closes it like a one-line attribute line, and the block
-  below takes the attributes (#3421, #3531).
+- BBCode quote attribution has one importer reading (#3357).
 
-### Tooling and documentation
+### Improvements
 
-- Block structure is stated as one ordered normative procedure. The
-  duplicate outline and optional writer escape strategy leave the spec text;
-  the completed empty-destination rollout marker is cleared (#3313, #3315,
-  #3317, #3318).
-- Engine pins, structural roundtrip and Markdown import baselines, lint drift
-  and conformance integration now match the ruled language (#3314, #3435,
-  #3459, #3461, #3465, #3486, #3487, #3504, #3508, #3510).
-- Reader paths and guidance for scrolling long code blocks are clearer
-  (#3423, #3425, #3428).
+- Includes can select a whole file or a region as a code block, with
+  explicit errors for a BOM before a line-one marker, a repeated option and
+  an out-of-range selection. Lint expands included content (#3326, #3337,
+  #3343, #3345, #3346, #3347, #3360, #3361, #3365, #3366, #3367, #3371).
+- `continuation-marker-refused` reports a refused first-block `+` and what
+  it leaves behind, including `> +` and a `+` with no eligible block below
+  (#3517, #3519, #3524, #3527, #3530, #3533).
+- New lint: `description-separator-below-content-column`, a list marker
+  below the content column after a blank line, and the ordered-list column
+  traps of explicit numbers (#3441, #3442, #3443, #3477).
+- `bbcode-quote-field-dropped` reports each BBCode quote attribution field
+  the target cannot carry (#3327).
+- Block structure is one ordered normative procedure; the duplicate outline
+  and the optional writer escape strategy leave the spec text (#3313, #3317,
+  #3318).
 
 ## [0.1.10] - 2026-10-17
 

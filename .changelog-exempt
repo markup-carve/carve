@@ -129,3 +129,19 @@
 3308: 0.1.10 - moves the engine pins to the block-family zero-divergence mains; the rulings are cited under #3279 and #3295. Pin bump.
 3310: 0.1.10 - moves the engine pins to the CSV and list-continuation mains and records positions for synthesized cells. Pin bump and gate ledger.
 3312: 0.1.10 - accepts CSV and TSV table starts in the AST checker. Gate machinery.
+3314: 0.1.11 - moves all four engine pins. Pin bump.
+3315: 0.1.11 - clears a finished rollout marker from the empty-destination cases. No case or clause moved.
+3423: 0.1.11 - reader paths in the spec README. Prose only, no clause moved.
+3425: 0.1.11 - describes the scroll recipe for long code blocks in the example pages. Prose only, no clause moved.
+3428: 0.1.11 - renders the scroll note from carve#3425 in the core example page. Prose only, no clause moved.
+3461: 0.1.11 - rebases the structural roundtrip baseline on a carve-js pin. Measurement ledger.
+3465: 0.1.11 - declares the lint drift a carve-js pin opens. Measurement ledger.
+3486: 0.1.11 - moves the engine pins for the release and re-measures the ledgers, including one engine's importer-fidelity output. Pin bump.
+3487: 0.1.11 - moves the engine pins and re-measures the conformance ledgers. Pin bump.
+3504: 0.1.11 - moves the carve-js pin to its main. Pin bump.
+3508: 0.1.11 - moves the engine pins for the cut and re-measures the ledgers. Pin bump.
+3510: 0.1.11 - moves the carve-js pin and the Markdown import baseline. Pin bump.
+3512: 0.1.11 - moves the Playground grammar dependency in package.json. No clause, corpus row or oracle answer moved.
+3515: 0.1.11 - moves the carve-rb pin. Pin bump.
+3516: 0.1.11 - raises the structural roundtrip baseline for section 644. Measurement ledger.
+3520: 0.1.11 - re-measures the AST conformance ledgers at the current engine pins. Measurement ledger.
