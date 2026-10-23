@@ -2,10 +2,10 @@
   "version": 1,
   "measured": {
     "date": "2026-10-23",
-    "spec": "76e119259bccb81826b8107204ed24c658b26be8",
-    "js": "a255e61787ed3ca3d9fb1ed7e8197571df10af9d",
-    "php": "093df15c5c37b519aaa2ffb24d177a03025cee77",
-    "rust": "d66f629927085a75152ccd94f010518e4cd99739",
+    "spec": "7840718432fd2f9eb35449bc129cc35338c70da1",
+    "js": "6706ff83c405f354ef6412683eb3c26140034ef7",
+    "php": "8f1822274f6ae89ba5728107ec6458a35ace5311",
+    "rust": "4d0df469a5ecd12a0da606f4ab83c9102bfa70be",
     "documents": 3135
   },
   "differences": [
@@ -45,28 +45,6 @@
             3
           ]
         ]
-      }
-    },
-    {
-      "file": "tests/corpus/329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-6.crv",
-      "reason": "The measured engines disagree on `unattached-block-attribute` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/3094",
-      "diagnostics": {
-        "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
-        ],
-        "php": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
-        ],
-        "rust": []
       }
     },
     {
@@ -432,28 +410,6 @@
             9
           ]
         ]
-      }
-    },
-    {
-      "file": "tests/corpus/653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-5.crv",
-      "reason": "The measured engines disagree on `unattached-block-attribute` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
-        ],
-        "rust": []
       }
     },
     {
