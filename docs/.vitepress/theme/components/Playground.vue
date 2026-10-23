@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
 import { withBase } from 'vitepress'
-import { carveToHtml, markdownToCarve } from '@markup-carve/carve'
+import { carveToCarve, carveToHtml, markdownToCarve } from '@markup-carve/carve'
 import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from '../../carve-extensions.js'
@@ -11,6 +11,8 @@ import { PLAYGROUND_CODE_LANGUAGES, playgroundDataGrammars } from '../../playgro
 import { renderMathIn } from '../../render-math.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { encodeShare, decodeShare } from '../../share-link.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { formatCarve, wasmWriter } from '../../playground-format.js'
 
 // Render the JS engine with every documented extension enabled, so the demo
 // showcases the full feature set (real Mermaid extension, wikilinks, tabs,
@@ -154,6 +156,41 @@ function confirmImport(): void {
   void nextTick(() => editorRef.value?.focus())
 }
 
+// --- Format: rewrite the source through the selected engine's canonical writer. ---
+const alignTables = ref(true)
+const formatNote = ref('')
+// The text the last format produced; any other edit clears the note.
+let formattedText: string | null = null
+const FORMAT_FALLBACK_NOTE = 'formatted with the JavaScript engine: the bundled Rust build only renders'
+
+async function formatSource(): Promise<void> {
+  if (engine.value === 'rust') await ensureWasm()
+  const before = source.value
+  try {
+    const result = formatCarve(before, {
+      engine: engine.value,
+      alignTables: alignTables.value,
+      jsFormat: carveToCarve,
+      wasmFormat,
+    })
+    formattedText = result.text
+    if (editorRef.value) editorRef.value.replaceAll(result.text)
+    else source.value = result.text
+    formatNote.value = result.fellBack
+      ? FORMAT_FALLBACK_NOTE
+      : result.text === before
+        ? 'already formatted'
+        : 'formatted'
+  } catch (err) {
+    formattedText = before
+    formatNote.value = `format failed: ${err instanceof Error ? err.message : String(err)}`
+  }
+}
+
+watch(source, (value) => {
+  if (value !== formattedText) formatNote.value = ''
+})
+
 // --- Engine selection: JS (default, in-page) or Rust/WASM (in-page, lazy). ---
 type Engine = 'js' | 'rust'
 const engine = ref<Engine>('js')
@@ -162,6 +199,9 @@ const engine = ref<Engine>('js')
 // ../../carve-wasm). It is loaded lazily on first selection so the JS-only
 // experience never pays for the ~250 KB module download.
 let wasmRender: ((source: string, options: object) => string) | null = null
+// The build's canonical writer, or null: the rendering-only profile omits it.
+let wasmFormat: ((source: string, options: object) => string) | null = null
+const wasmCanFormat = ref(false)
 const wasmReady = ref(false)
 const wasmError = ref<string | null>(null)
 // Whether the vendored build honors `rawHtml: false`. See the probe below.
@@ -186,6 +226,8 @@ async function ensureWasm(): Promise<void> {
     wasmCanDisableRawHtml.value = !render(RAW_HTML_PROBE, { rawHtml: false }).includes(
       '<b>probe</b>',
     )
+    wasmFormat = wasmWriter(mod)
+    wasmCanFormat.value = wasmFormat !== null
     wasmRender = render
     wasmReady.value = true
     // A shared document selected Rust before this probe could run. If the build
@@ -221,6 +263,7 @@ const CarveEditor = defineAsyncComponent(() => import('./CarveEditor.vue'))
 const previewSource = ref<string | null>(null)
 const editorRef = ref<{
   focus: () => void
+  replaceAll: (text: string) => void
   scroller: () => HTMLElement | null
   topLine: () => number
   lineOffset: (line: number) => number
@@ -849,6 +892,22 @@ void mermaidInit
           </svg>
         </button>
         <span class="pg-sr-only" role="status" aria-live="polite">{{ shareMessage }}</span>
+        <button
+          class="pg-btn"
+          type="button"
+          :title="
+            engine === 'rust' && !wasmCanFormat
+              ? 'Format the source. The bundled Rust build only renders, so this uses the JavaScript formatter.'
+              : 'Format the source with the canonical Carve writer (Ctrl+Z undoes it)'
+          "
+          @click="formatSource"
+        >
+          Format
+        </button>
+        <label class="pg-check" title="Pad table columns so they line up when formatting">
+          <input v-model="alignTables" type="checkbox" />
+          Align tables
+        </label>
         <button class="pg-btn pg-import" type="button" @click="openImport">
           Import Markdown
         </button>
@@ -906,7 +965,10 @@ void mermaidInit
     </div>
     <div class="pg-grid">
       <div class="pane">
-        <label>Carve source</label>
+        <div class="pane-label-row">
+          <label>Carve source</label>
+          <span v-if="formatNote" class="pg-shared-note" role="status">{{ formatNote }}</span>
+        </div>
         <div
           class="carve-editor-wrap"
           @pointerenter="claimScroll(sourceEl)"
@@ -1100,6 +1162,15 @@ void mermaidInit
    Stated rather than hidden: silence would read as a rendering bug. It sits in
    the rendered pane's label row, beside what it describes, because a sentence
    in the toolbar wraps the button row onto a second line. */
+.pg-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  white-space: nowrap;
+}
 .pg-shared-note {
   font-size: 0.75rem;
   color: var(--vp-c-text-2);

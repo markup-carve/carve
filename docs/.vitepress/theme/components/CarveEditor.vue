@@ -12,7 +12,7 @@ import {
   drawSelection,
   highlightSpecialChars,
 } from '@codemirror/view'
-import { defaultKeymap, history, historyKeymap, indentMore, indentLess } from '@codemirror/commands'
+import { defaultKeymap, history, historyKeymap, indentMore, indentLess, isolateHistory } from '@codemirror/commands'
 import type { Command } from '@codemirror/view'
 import { parse } from '@markup-carve/carve'
 import {
@@ -469,6 +469,16 @@ function documentOffset(v: EditorView): number {
 
 defineExpose({
   focus: () => view.value?.focus(),
+  // Replace the whole document as ONE undo step, never merged with nearby typing.
+  replaceAll(text: string): void {
+    const v = view.value
+    if (!v || v.state.doc.toString() === text) return
+    v.dispatch({
+      changes: { from: 0, to: v.state.doc.length, insert: text },
+      annotations: isolateHistory.of('full'),
+      userEvent: 'input.format',
+    })
+  },
   scroller: () => view.value?.scrollDOM ?? null,
   // Fractional 1-based source line at the top of the visible area.
   topLine(): number {

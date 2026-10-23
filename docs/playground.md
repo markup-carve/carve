@@ -11,6 +11,10 @@ server. The playground uses the [JavaScript
 parser](https://github.com/markup-carve/carve-js) tested by this project's
 shared input/output tests.
 
+::: details Formatting the source
+**Format** rewrites the source in the canonical Carve layout, the same output as `carve fmt`. With **Align tables** on, table columns are padded so their pipes line up. One undo (Ctrl+Z) restores the previous text. The bundled Rust (WASM) engine only renders, so in Rust mode the JavaScript formatter does the work and the note above the source says so.
+:::
+
 ::: details Sharing a document as a link
 The **share button** in the toolbar puts the whole document in the URL fragment, so a playground state is bookmarkable and sendable. The fragment never reaches a server: it is compressed and base64-encoded in the browser, and decoded there again. Very large documents are refused rather than turned into a link that arrives truncated.
 
