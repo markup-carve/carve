@@ -3421,10 +3421,12 @@ smart_quote = '"' | "'" ;
    applies to both quote characters: `"'q'"` renders `“‘q’”`.
    A single quote before an ASCII digit is an APOSTROPHE: `'90s` renders `’90s`.
 
-   R1. AFTER A DASH (`-`, `–`, or `—`), a quote CLOSES when the next source
-   character is absent, a `typography_flank` character, or one of `" ' . , ; : ! ? ) ]`.
-   Otherwise it opens. Thus `"Wait---" he said.` renders `“Wait—” he said.`,
-   while `he said—"Go"` renders `he said—“Go”`.
+   R1. AFTER A DASH (`-`, `–`, or `—`) OR A SLASH (`/`), a quote CLOSES when
+   the next source character is absent, a `typography_flank` character, or one
+   of `" ' . , ; : ! ? ) ]`. Otherwise it opens. Thus `"Wait---" he said.`
+   renders `“Wait—” he said.`, while `he said—"Go"` renders `he said—“Go”`.
+   A path or URL that ends in a slash closes its quote: `"app/config/".`
+   renders `“app/config/”.`, while `and/"or"` renders `and/“or”`.
 
    R2. LISTED ELISIONS. A single quote that would open and is followed by
    a maximal run of Unicode letters equal, case-insensitively, to one of

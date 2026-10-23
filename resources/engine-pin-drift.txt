@@ -25,3 +25,4 @@
 #
 # Format: <slug><space><space><reason>
 658-a-definition-marker-line-keeps-a-straddling-tab-s-residual-columns  pinned carve-js consumes the straddling tab before a nested `:: ` term whole and attaches `  : zq` to it; C5 counts definition marker lines as list-marker lines (carve#3550, carve-js#3489)
+19-smart-typography-dashes-and-quotes-35  pinned carve-js opens a quote after `/` whatever follows; R1 now closes it before end, whitespace or closing punctuation (carve#3554)

@@ -291,3 +291,15 @@ a　"q"
 .
 <p>a　”q”</p>
 ```
+
+```
+Exclude "\/trunk/app/config/".
+
+see "https://example.org/" here
+
+the 'tmp/' folder, and/"or" too
+.
+<p>Exclude “/trunk/app/config/”.</p>
+<p>see “https://example.org/” here</p>
+<p>the ‘tmp/’ folder, and/“or” too</p>
+```
