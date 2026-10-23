@@ -67,6 +67,10 @@ const baseline = JSON.parse(
 // fixed point, preserves rendered text and round-trips through HTML. It is a
 // description list, so it does not round-trip through Markdown.
 
+// Corpus 19-smart-typography-dashes-and-quotes-35 adds one document. It
+// completes HTML import, reformats to a fixed point and preserves rendered
+// text, but round-trips through neither HTML nor Markdown.
+
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 
