@@ -328,7 +328,6 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // pinned engines; sections 556 to 575 moved the counts below.
 // Re-measured 2026-10-23 at the pinned JS, PHP and Rust revisions.
 const LAST_MEASURED = new Map([
-  ['block_quote (extent)', 1],
   ['list (extent)', 2],
   ['list_item (extent)', 3],
 ])
