@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, shallowRef } from 'vue'
-import { EditorState, Compartment, RangeSetBuilder, StateEffect, StateField } from '@codemirror/state'
+import { EditorState, Compartment, RangeSetBuilder, StateEffect, StateField, Text } from '@codemirror/state'
 import {
   EditorView,
   Decoration,
@@ -473,8 +473,15 @@ defineExpose({
   replaceAll(text: string): void {
     const v = view.value
     if (!v || v.state.doc.toString() === text) return
+    // Keep the cursor on the same line and column, clamped to the new text.
+    const head = v.state.doc.lineAt(v.state.selection.main.head)
+    const column = v.state.selection.main.head - head.from
+    const next = Text.of(text.split('\n'))
+    const line = next.line(Math.min(head.number, next.lines))
     v.dispatch({
-      changes: { from: 0, to: v.state.doc.length, insert: text },
+      changes: { from: 0, to: v.state.doc.length, insert: next },
+      selection: { anchor: line.from + Math.min(column, line.length) },
+      scrollIntoView: true,
       annotations: isolateHistory.of('full'),
       userEvent: 'input.format',
     })
