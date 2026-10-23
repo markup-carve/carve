@@ -20,7 +20,7 @@ import * as nodePath from 'node:path'
 import { parseDependencyLedger, auditDependencyLedger } from '../scripts/lib/drift-ledger.mjs'
 import { test } from 'node:test'
 
-import { VENDOR_CANDIDATE, classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange } from '../tools/dependency-map.mjs'
+import { VENDOR_CANDIDATE, VENDOR_NOTE, VENDOR_SCRIPT, vendorNotePins, vendorScriptPins, vendorVerdict, classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange } from '../tools/dependency-map.mjs'
 
 const cases = [
   ['github: shorthand', '@markup-carve/carve', 'github:markup-carve/carve-js#3ba8ba32', 'carve-js', '3ba8ba32'],
@@ -417,6 +417,50 @@ test('a vendored build with no commit still names its source', () => {
 
 test('a vendor header naming something that is not a repo is rejected', () => {
   assert.equal(vendorProvenance('// Bundled from markup-carve/package', 'x', KNOWN), null)
+})
+
+test('a vendor note table row pins the linked org repo at its version cell', () => {
+  // intellij-carve 0.1.15 shipped carve-grammars v0.1.18 with v0.1.19 out; this row was the only pin.
+  assert.ok(VENDOR_NOTE.test('src/main/resources/preview-assets/VENDOR.md'))
+  assert.ok(VENDOR_NOTE.test('themes/UPSTREAM.md'))
+  assert.ok(!VENDOR_NOTE.test('docs/vendoring-guide.txt'))
+  const note = [
+    '| Package | Version | Files | Bytes | Licence |',
+    '| --- | --- | --- | --- | --- |',
+    '| [highlight.js](https://github.com/highlightjs/highlight.js) | 11.9.0 | `highlight/highlight.min.js` | 124,351 | BSD-3-Clause |',
+    '| [carve-grammars](https://github.com/markup-carve/carve-grammars) | v0.1.18 | `carve/highlightjs-carve.js` | 167,551 | MIT |',
+    '| [carve-rs](https://github.com/markup-carve/carve-rs) | latest | `x` | 1 | MIT |',
+  ].join('\n')
+  const known = new Set(['carve-grammars', 'carve-rs'])
+  assert.deepEqual(vendorNotePins(note, 'intellij-carve', known), [{ target: 'carve-grammars', ref: 'v0.1.18' }])
+  assert.deepEqual(vendorNotePins(note, 'carve-grammars', known), [], 'not an edge to itself')
+})
+
+test('a vendor script variable pins the repo its prefix names, only if the file links it', () => {
+  assert.ok(VENDOR_SCRIPT.test('tools/vendor-preview-assets.sh'))
+  assert.ok(!VENDOR_SCRIPT.test('tools/build.sh'))
+  const script = [
+    'HLJS_VERSION="11.9.0"',
+    'CARVE_GRAMMARS_TAG="v0.1.18"',
+    'export CARVE_RS_REF=37ed8904',
+    'CARVE_CSS_VERSION="${CARVE_CSS_VERSION:-0.1.5}"',
+    'base="https://raw.githubusercontent.com/markup-carve/carve-grammars/$CARVE_GRAMMARS_TAG"',
+    'css="https://github.com/markup-carve/carve-css"',
+  ].join('\n')
+  const known = new Set(['carve-grammars', 'carve-rs', 'carve-css'])
+  assert.deepEqual(vendorScriptPins(script, 'intellij-carve', known), [
+    { target: 'carve-grammars', ref: 'v0.1.18' },
+    { target: 'carve-css', ref: '0.1.5' },
+  ], 'CARVE_RS_REF is dropped: the file never links markup-carve/carve-rs')
+  assert.deepEqual(vendorScriptPins('NOT_A_REPO_TAG="v1.0.0" markup-carve/not-a-repo', 'x', known), [])
+})
+
+test('a vendored tag older than the latest release is behind-release', () => {
+  const tags = ['v0.1.19', 'v0.1.18', 'v0.1.9']
+  assert.equal(vendorVerdict('v0.1.18', tags, 'v0.1.19').verdict, 'behind-release')
+  assert.equal(vendorVerdict('0.1.19', tags, 'v0.1.19').verdict, 'released')
+  assert.equal(vendorVerdict('v0.1.9', ['v0.1.10', 'v0.1.9'], 'v0.1.10').verdict, 'behind-release', 'numeric, not lexical')
+  assert.equal(vendorVerdict('v0.2.0', tags, 'v0.1.19').verdict, 'unreleased', 'not a tag')
 })
 
 test('a vendored build layers like a declared edge, a CI checkout does not', () => {

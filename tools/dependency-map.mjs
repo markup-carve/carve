@@ -86,12 +86,13 @@ const MANIFESTS = new Map([
 /** One request per repo: the whole tree, so only manifests that exist are read. */
 async function repoManifestPaths(repo, branch) {
   const tree = await api(`repos/${ORG}/${repo}/git/trees/${branch}?recursive=1`)
-  if (!tree?.tree) return { manifests: [], gitlinks: new Map() }
+  if (!tree?.tree) return { manifests: [], gitlinks: new Map(), vendorPins: [] }
   const wanted = []
   // A gitlink carries the submodule commit; `.gitmodules` only names its URL.
   const gitlinks = new Map()
   const workflows = []
   const vendored = []
+  const vendorPins = []
   for (const entry of tree.tree) {
     if (entry.type === 'commit') gitlinks.set(entry.path, entry.sha)
     if (entry.type !== 'blob') continue
@@ -99,6 +100,9 @@ async function repoManifestPaths(repo, branch) {
     if (/^\.github\/workflows\/[^/]+\.ya?ml$/.test(entry.path)) workflows.push(entry.path)
     // Check candidate artifacts for a provenance header below.
     if (VENDOR_CANDIDATE.test(entry.path)) vendored.push(entry.path)
+    if (!/(^|\/)node_modules\//.test(entry.path) && (VENDOR_NOTE.test(entry.path) || VENDOR_SCRIPT.test(entry.path))) {
+      vendorPins.push(entry.path)
+    }
     // Include `ext/<name>/Cargo.lock` while skipping deeper test fixtures.
     const segments = entry.path.split('/')
     if (segments.length > 3) continue
@@ -110,7 +114,7 @@ async function repoManifestPaths(repo, branch) {
       wanted.push({ path: entry.path, kind: 'ruby' })
     }
   }
-  return { manifests: wanted, gitlinks, workflows, vendored }
+  return { manifests: wanted, gitlinks, workflows, vendored, vendorPins }
 }
 
 /*
@@ -186,6 +190,43 @@ function vendorProvenance(head, self, known) {
   const target = match[1].replace(/\.git$/, '')
   if (target === self || !known.has(target)) return null
   return { target, ref: VENDOR_COMMIT.exec(head)?.[1] ?? null }
+}
+
+// A copy pinned only in prose or in the script that fetches it: no header carries it.
+const VENDOR_NOTE = /(^|\/)([^/]*VENDOR[^/]*|UPSTREAM)\.md$/i
+const VENDOR_SCRIPT = /(^|\/)[^/]*vendor[^/]*\.(sh|bash|zsh|mjs|cjs|js|py|rb|ps1)$/i
+const SEMVER_OR_SHA = String.raw`v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?|[0-9a-f]{7,40}`
+
+/** Table rows in a vendor note that link an org repo and give it a version cell. */
+function vendorNotePins(text, self, known) {
+  const found = []
+  for (const line of String(text).split('\n')) {
+    if (!line.trimStart().startsWith('|')) continue
+    const repo = /github\.com\/markup-carve\/([a-z0-9][a-z0-9.-]*?)(?:\.git)?(?=[)\s/#|]|$)/i.exec(line)?.[1]
+    if (!repo || repo === self || !known.has(repo)) continue
+    const cells = line.split('|').map((cell) => cell.trim().replace(/^`(.*)`$/, '$1'))
+    const version = cells.find((cell) => /^v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(cell))
+    if (version) found.push({ target: repo, ref: version })
+  }
+  return found
+}
+
+/** `CARVE_GRAMMARS_TAG="v0.1.18"` names carve-grammars, if the file also links that repo. */
+function vendorScriptPins(text, self, known) {
+  const body = String(text)
+  const assignment = new RegExp(
+    String.raw`^[ \t]*(?:export\s+|readonly\s+|declare\s+(?:-\w+\s+)*|const\s+|let\s+|var\s+|\$)?` +
+      String.raw`([A-Z][A-Z0-9_]*?)_(?:TAG|VERSION|REF)\s*:?=\s*["']?(?:\$\{\w+:-)?(${SEMVER_OR_SHA})\}?["']?\s*;?[ \t]*(?:#.*)?$`,
+    'gm',
+  )
+  const found = new Map()
+  for (const match of body.matchAll(assignment)) {
+    const target = match[1].toLowerCase().replace(/_/g, '-')
+    if (target === self || !known.has(target)) continue
+    if (!body.includes(`markup-carve/${target}`)) continue
+    if (!found.has(target)) found.set(target, { target, ref: match[2] })
+  }
+  return [...found.values()]
 }
 
 function ciReferences(text, self, known) {
@@ -540,6 +581,20 @@ async function distance(repo, base, head) {
   return { ahead: compare.ahead_by, behind: compare.behind_by, status: compare.status }
 }
 
+const semverParts = (name) => name.replace(/^v/, '').split(/[-+]/)[0].split('.').map(Number)
+
+/** A vendored copy pinned by tag name: released, behind the latest release, or not a tag at all. */
+function vendorVerdict(ref, tagNames, latest) {
+  const bare = (name) => name.replace(/^v/, '')
+  const tag = tagNames.find((name) => bare(name) === bare(ref))
+  if (!tag) return { verdict: 'unreleased', note: `names ${ref}, which is not a tag` }
+  if (!latest || bare(tag) === bare(latest)) return { verdict: 'released', note: `the ${tag} tag` }
+  const [a, b] = [semverParts(tag), semverParts(latest)]
+  const order = a.map((part, i) => part - (b[i] ?? 0)).find((diff) => diff !== 0) ?? 0
+  if (order < 0) return { verdict: 'behind-release', note: `the ${tag} tag; latest is ${latest}` }
+  return { verdict: 'released', note: `the ${tag} tag, at or past ${latest}` }
+}
+
 /**
  * The verdict for one edge.
  *
@@ -561,6 +616,11 @@ async function resolveEdge(edge) {
   if (edge.kind === 'vendor') {
     if (!edge.ref) {
       return { ...edge, verdict: 'unpinned', note: `vendored in ${edge.path}, header names no commit` }
+    }
+    if (!/^[0-9a-f]{7,40}$/i.test(edge.ref)) {
+      const latest = state.latestRelease ?? state.latestTag
+      const { verdict, note } = vendorVerdict(edge.ref, state.tags.map((tag) => tag.name), latest)
+      return { ...edge, resolved: edge.ref, latest, verdict, note: `vendored in ${edge.path}, ${note}` }
     }
     const resolved = await distance(edge.target, edge.ref, state.branch)
     const tagged = state.tagBySha.get(edge.ref)
@@ -1242,7 +1302,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states, source }
 
 // ---------------------------------------------------------------------------
 
-export { VENDOR_CANDIDATE, classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
+export { VENDOR_CANDIDATE, VENDOR_NOTE, VENDOR_SCRIPT, vendorNotePins, vendorScriptPins, vendorVerdict, classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
 
 /*
  * What this run was generated FROM, for staleSourceBanner above.
@@ -1274,7 +1334,7 @@ async function main() {
   const liveNames = new Set(live.map((repo) => repo.name))
 
   const perRepo = await mapLimit(live, CONCURRENCY, async (repo) => {
-    const { manifests, gitlinks, workflows, vendored } = await repoManifestPaths(repo.name, repo.default_branch)
+    const { manifests, gitlinks, workflows, vendored, vendorPins } = await repoManifestPaths(repo.name, repo.default_branch)
     const found = []
     for (const manifest of manifests) {
       const text = await readFile(repo.name, manifest.path, repo.default_branch)
@@ -1303,6 +1363,25 @@ async function main() {
         path,
         repo: repo.name,
       })
+    }
+
+    for (const path of vendorPins ?? []) {
+      const text = await readFile(repo.name, path, repo.default_branch)
+      if (!text) continue
+      const note = VENDOR_NOTE.test(path)
+      const pins = note ? vendorNotePins(text, repo.name, liveNames) : vendorScriptPins(text, repo.name, liveNames)
+      for (const { target, ref } of pins) {
+        found.push({
+          kind: 'vendor',
+          ref,
+          target,
+          name: target,
+          spec: `${target}@${ref}`,
+          field: note ? 'vendor note' : 'vendor script',
+          path,
+          repo: repo.name,
+        })
+      }
     }
 
     // CI SECOND, so a repo that both declares and checks out a target keeps the
@@ -1343,7 +1422,8 @@ async function main() {
   // and double every count.
   const byPin = new Map()
   for (const edge of perRepo.flat()) {
-    const key = `${edge.repo}|${edge.target}|${edge.ref ?? edge.spec}`
+    // `v0.1.18` in a script and `0.1.18` in a note are one pin.
+    const key = `${edge.repo}|${edge.target}|${String(edge.ref ?? edge.spec).replace(/^v(?=\d)/, '')}`
     const seen = byPin.get(key)
     if (seen) seen.paths.push(edge.path)
     else byPin.set(key, { ...edge, paths: [edge.path] })
