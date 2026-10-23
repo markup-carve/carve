@@ -23,3 +23,5 @@
 # enclosing footnote, and it left the ledger when carve-js and carve-rs shipped
 # the fix rather than by being named here.
 
+list (extent)@2: corpus 503-9 and 636 - the engines start the list at different columns inside the line's leading indentation, which a container may do (markup-carve/carve#1928).
+list_item (extent)@3: corpus 245, 503-9 and 636 - the engines start the item at different columns inside the line's leading indentation, which a container may do (markup-carve/carve#1928).
