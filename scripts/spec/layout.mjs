@@ -5063,13 +5063,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // (SS10 I5, carve#1384): a column-2 line under `> a` is in no quote,
           // and with no gate here the marker reached out and took it anyway.
           //
-          // A refused marker is consumed and contributes NOTHING - no blank
-          // separators, because a separator would close the quote's open
-          // paragraph, and the clause says the line behaves as if the `+` had
-          // been a comment. The quote does not END at it the way a footnote
-          // body or a `<dd>` does: those two end at a comment line in that
-          // position and a quote does not, and the difference belongs to each
-          // container's invisible-line rule rather than to the marker.
+          // A refused marker adds no blank separator, which would close the
+          // quote's open paragraph: it folds into that paragraph, or the
+          // enclosing parse reads it as text (§17 L3).
           const attached = takeOneBlock(lines, i, state, ind(i), ind(i - 1).L?.col ?? sourceQuoteCol)
           if (attached.next > i) {
             const colonMode = qColonRuns.at(-1)?.mode
@@ -5092,8 +5088,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (!insideColon || qOpenPara) inner.push('')
             inner.push(...attached.rawMarker, '')
             i = attached.next
+            continue
           }
-          continue
+          // §17 L3: a refused `+` is never dropped; it folds into the open paragraph.
+          if (qOpenPara) {
+            inner.push(LAZY + ind(i - 1).rest)
+            continue
+          }
+          i--
+          break
         }
         if (qHost.fence || openComment !== null) break
         if (hostedFirstBlockPending &&
@@ -5105,8 +5108,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i = attached.next
           continue
         }
-        if (CONT_MARKER.test(ind(i).rest) &&
-            ((ind(i).L?.col ?? ind(i).col) < sourceQuoteCol || qItemPara || !qOpenPara)) break
+        if (CONT_MARKER.test(ind(i).rest)) {
+          const plusCol = ind(i).L?.col ?? ind(i).col
+          if (plusCol < sourceQuoteCol || !qOpenPara || qItemPara && plusCol === sourceQuoteCol) break
+          // Right of the `>`, an unprefixed `+` reaches no marker column, so it folds (§17 L3).
+          if (qItemPara) {
+            inner.push(LAZY + ind(i).rest)
+            i++
+            continue
+          }
+        }
         // A COMMENT IS COLUMN-EXEMPT (§10 I5's first exception, §24 C3). The
         // other four invisible kinds are ordinary text below a column and fold;
         // a comment stays invisible at ANY column, and folding one would make it
@@ -6769,11 +6780,15 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           i++
           continue
         }
-        i++
-        if (!attachFlushLeft() && i < n && !isBlank(lines[i]) &&
-            (ind(i).L?.col ?? ind(i).col) < sourceMarkerCol) {
-          break
+        const plusRow = i++
+        if (attachFlushLeft()) continue
+        // §17 L3: a refused `+` is never dropped; it folds into the open paragraph.
+        if (paragraphIsOpen()) {
+          i = plusRow
+          pushLine(LAZY + '+', LAZY_MEAS('+'))
+          i++
         }
+        if (i < n && !isBlank(lines[i]) && (ind(i).L?.col ?? ind(i).col) < sourceMarkerCol) break
         continue
       }
       if (CONT_MARKER.test(lm.rest) && lm.col >= contentCol && nestedOpaque?.kind === 'code' &&
