@@ -60,7 +60,7 @@ jobs:
           ref: ${{ needs.engine-revisions.outputs.rs }}
           path: carve-rs
           submodules: recursive
-      # Keyed on the release commit, so the four shards build it once per release.
+      # Keyed on the pinned commit, so the four shards build it once per pin.
       - name: Restore carve-rs binaries
         id: rs-cache
         uses: actions/cache@v4
@@ -164,20 +164,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     outputs:
-      js: ${{ steps.releases.outputs.js }}
-      rs: ${{ steps.releases.outputs.rs }}
-      php: ${{ steps.releases.outputs.php }}
+      js: ${{ steps.pins.outputs.js }}
+      rs: ${{ steps.pins.outputs.rs }}
+      php: ${{ steps.pins.outputs.php }}
     steps:
-      # Releases, not main: an engine merge must not flip a spec PR's verdict.
-      - name: Resolve each engine's latest release once for formatter shards
-        id: releases
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          for engine in js rs php; do
-            tag=$(gh api "repos/markup-carve/carve-$engine/releases/latest" --jq .tag_name)
-            sha=$(gh api "repos/markup-carve/carve-$engine/commits/$tag" --jq .sha)
-            echo "carve-$engine $tag -> $sha"
-            echo "$engine=$sha" >> "$GITHUB_OUTPUT"
-          done
+      # The reviewed pins, the same reader ast-conformance.yml uses: an engine
+      # merge must not flip a spec PR's verdict, so a pin moves only by an
+      # explicit pull request (bump-engine-pin.yml), never by a release or a
+      # merge landing mid-run.
+      - uses: actions/checkout@v4
+      - name: Read the reviewed engine pins for the formatter shards
+        id: pins
+        run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"

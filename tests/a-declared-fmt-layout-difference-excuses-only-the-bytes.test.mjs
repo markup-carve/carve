@@ -166,8 +166,8 @@ test('a declared line whose engines agree again fails as stale', () => {
 })
 
 test('away from the engine pins a line is not judged stale, and says so', () => {
-  // The per-PR formatter job runs the engines' latest releases, not the pins
-  // the rows were measured at, so agreement there proves nothing about them.
+  // A run off the pins the rows were measured at (a local run against sibling
+  // checkouts) proves nothing about them when the engines agree.
   const { status, out } = compare({ tags: { rust: 'r', php: 'r', js: 'r' }, ledger: BOTH_PAIRS, atPins: false })
   assert.equal(status, 0, out)
   assert.match(out, /fmt layout lines not judged stale: engines not at resources\/engine-pins.json: rust=/)

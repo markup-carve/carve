@@ -713,9 +713,10 @@ Four shards check all five render targets, source round trips, formatting
 idempotence and cross-reading by the current spec renderer. Engines are built
 once before comparison. The scheduled formatter workflow keeps measuring the
 entire latest corpus, so pending rulings remain visible there. Each engine is
-checked out at its latest published release, resolved once per run, so a merge
-to an engine's main cannot change the verdict on a spec PR. Engine regressions
-on main surface in the scheduled workflow instead.
+checked out at its reviewed pin in `resources/engine-pins.json`, the same
+revision every other job here uses, so a merge to an engine's main cannot
+change the verdict on a spec PR. A pin moves only through its own pull request,
+which `bump-engine-pin.yml` opens daily.
 
 ## Structural roundtrip baseline
 

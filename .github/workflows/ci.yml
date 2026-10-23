@@ -85,7 +85,7 @@ jobs:
           ref: ${{ needs.engine-pins.outputs.rs }}
           path: engines/carve-rs
           submodules: recursive
-      # Keyed on the pin, like formatter-pr.yml's release binaries.
+      # Keyed on the pin, like formatter-pr.yml's binaries.
       - name: Restore Rust importer
         id: rs-cache
         uses: actions/cache@v4

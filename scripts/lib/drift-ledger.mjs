@@ -461,8 +461,8 @@ export function staleFmtLayout(entries, carveOutputs, corpusSlugs) {
 /**
  * Why this run cannot judge `engine-fmt-layout.txt` lines stale, or null when it
  * can. The rows are measured at `resources/engine-pins.json`, so only a run
- * whose engines are checked out at those pins can say a difference is gone; the
- * per-PR formatter job runs the engines' latest releases instead.
+ * whose engines are checked out at those pins can say a difference is gone. A
+ * local run against sibling checkouts usually is not.
  *
  * @param {{ engines: Record<string, { head: string | null }> }} revisions
  * @param {Record<string, string>} pins `resources/engine-pins.json` `engines`.
