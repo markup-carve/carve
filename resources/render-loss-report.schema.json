@@ -27,7 +27,7 @@
         "type": "object",
         "required": ["code", "target", "nodeType", "message"],
         "properties": {
-          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "list-style-dropped", "list-delimiter-changed", "table-span-flattened", "table-header-row-demoted", "table-header-row-hoisted", "table-header-cell-demoted"] },
+          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "list-style-dropped", "list-delimiter-changed", "table-span-flattened", "table-header-row-demoted", "table-header-row-hoisted", "table-header-cell-demoted", "markdown-container-flattened", "markdown-caption-flattened", "markdown-attributes-dropped", "raw-html-escaped"] },
           "attribute": { "type": "string" },
           "style": { "enum": ["lower-alpha", "upper-alpha", "lower-roman", "upper-roman"] },
           "delim": { "enum": [".", ")"] },
@@ -43,6 +43,42 @@
         "if": { "properties": { "code": { "const": "table-span-flattened" } }, "required": ["code"] },
         "else": { "properties": { "colspan": false, "rowspan": false } },
         "oneOf": [
+          {
+            "properties": {
+              "code": { "const": "markdown-container-flattened" },
+              "target": { "const": "markdown" },
+              "nodeType": { "const": "block" },
+              "format": false,
+              "attribute": false
+            }
+          },
+          {
+            "properties": {
+              "code": { "const": "markdown-caption-flattened" },
+              "target": { "const": "markdown" },
+              "nodeType": { "const": "block" },
+              "format": false,
+              "attribute": false
+            }
+          },
+          {
+            "properties": {
+              "code": { "const": "markdown-attributes-dropped" },
+              "target": { "const": "markdown" },
+              "nodeType": { "const": "block" },
+              "format": false,
+              "attribute": false
+            }
+          },
+          {
+            "properties": {
+              "code": { "const": "raw-html-escaped" },
+              "target": { "const": "markdown" },
+              "nodeType": { "enum": ["block", "inline"] },
+              "format": false,
+              "attribute": false
+            }
+          },
           {
             "properties": {
               "code": { "const": "carrier-attribute-dropped" },

@@ -2174,6 +2174,19 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    content of the finding and a message is not compared. Only the HTML target
    writes carriers, so only that target reports this code.
 
+   Default Markdown export reports a flattened `div` as
+   `markdown-container-flattened`, each block whose authored attributes have
+   no Markdown representation as `markdown-attributes-dropped`, and each figure
+   or table caption written as ordinary text as `markdown-caption-flattened`.
+   A source-to-Markdown checked entry point also reports an unattached block
+   attribute run with `markdown-attributes-dropped`, since parsing discards it
+   before the renderer receives a tree. An AST-only renderer has no such run.
+   Escaped raw HTML contributes `raw-html-escaped` for a block or inline node.
+   These records have `target` `markdown`, the source `pos` when recorded, and
+   `nodeType` `block` except for raw HTML inlines. Roundtrip carriers preserve
+   containers, attributes and captions, so those three codes are omitted when
+   roundtrip export carries them. Escaped raw HTML still reports its loss.
+
    Each alphabetic or roman ordered list (`a.`, `A.`, `i.`, `I.`) the
    Markdown target writes contributes one loss in document order with the
    stable code `list-style-dropped`, the selected `target`, `nodeType` of
@@ -2239,7 +2252,7 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    in a `data-carve-raw` span (CARVE-P10-015): the carrier keeps the content
    for an import, and this output still does not render it.
    Matching HTML passes through (or is visibly escaped by a safe
-   policy, [CARVE-P10-013]) with no loss. Markdown visibly escapes HTML raw content with no loss.
+   policy, [CARVE-P10-013]) with no loss. Markdown visibly escapes HTML raw content and reports `raw-html-escaped`.
    ANSI visibly degrades a raw BLOCK to `[raw:format] content` with no loss, but
    reports a raw INLINE it omits. Plain text reports every raw node it omits.
    The canonical Carve writer preserves raw nodes and reports none.
@@ -2262,8 +2275,12 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--allow-loss list-delimiter-changed`,
    `--allow-loss table-span-flattened`,
    `--allow-loss table-header-row-demoted`,
-   `--allow-loss table-header-row-hoisted` and
-   `--allow-loss table-header-cell-demoted`. The list is closed:
+   `--allow-loss table-header-row-hoisted`,
+   `--allow-loss table-header-cell-demoted`,
+   `--allow-loss markdown-container-flattened`,
+   `--allow-loss markdown-caption-flattened`,
+   `--allow-loss markdown-attributes-dropped` and
+   `--allow-loss raw-html-escaped`. The list is closed:
    `destination-denied` is not waivable, because a blanked destination is a
    policy refusal, not a loss the target cannot carry: CARVE-P9-054 applies
    the denylist in both safe modes, and the path that keeps a denied
