@@ -63,6 +63,10 @@ const baseline = JSON.parse(
 // a fixed point and preserve rendered text; none round-trips through HTML or
 // Markdown with this pin.
 
+// Corpus 658 adds one document. It completes HTML import, reformats to a
+// fixed point, preserves rendered text and round-trips through HTML. It is a
+// description list, so it does not round-trip through Markdown.
+
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 

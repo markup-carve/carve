@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+658-a-definition-marker-line-keeps-a-straddling-tab-s-residual-columns  pinned carve-js consumes the straddling tab before a nested `:: ` term whole and attaches `  : zq` to it; C5 counts definition marker lines as list-marker lines (carve#3550, carve-js#3489)

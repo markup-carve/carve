@@ -7111,7 +7111,9 @@ EOF = (* end of file *) ;
          payload line (§28). On a LIST-MARKER line or comment payload line,
          the straddling tab's unconsumed columns are re-inserted as spaces.
          This keeps mixed tab/space list markers aligned and preserves the
-         comment payload's indentation beyond the host column.
+         comment payload's indentation beyond the host column. A LIST-MARKER
+         line is a bullet or ordered marker line and equally a definition-list
+         `:: ` term or `: ` description marker line.
 
    25. SECURITY REQUIREMENTS -- NORMATIVE [CARVE-P9-054] (HTML output target). These rules
       bind any implementation that emits HTML for UNTRUSTED input, so an

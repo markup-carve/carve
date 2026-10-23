@@ -1,0 +1,19 @@
+A definition marker line keeps a straddling tab's residual columns
+
+```
+:: a
+: b
+	:: t
+  : zq
+.
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>t</dt>
+    </dl>
+    <p>: zq</p>
+  </dd>
+</dl>
+```
