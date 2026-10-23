@@ -461,6 +461,7 @@ test('a vendored tag older than the latest release is behind-release', () => {
   assert.equal(vendorVerdict('0.1.19', tags, 'v0.1.19').verdict, 'released')
   assert.equal(vendorVerdict('v0.1.9', ['v0.1.10', 'v0.1.9'], 'v0.1.10').verdict, 'behind-release', 'numeric, not lexical')
   assert.equal(vendorVerdict('v0.2.0', tags, 'v0.1.19').verdict, 'unreleased', 'not a tag')
+  assert.equal(vendorVerdict('v1.2.0-rc.1', ['v1.2.0', 'v1.2.0-rc.1'], 'v1.2.0').verdict, 'behind-release', 'a prerelease precedes its release')
 })
 
 test('a vendored build layers like a declared edge, a CI checkout does not', () => {

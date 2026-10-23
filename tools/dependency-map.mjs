@@ -591,7 +591,8 @@ function vendorVerdict(ref, tagNames, latest) {
   if (!latest || bare(tag) === bare(latest)) return { verdict: 'released', note: `the ${tag} tag` }
   const [a, b] = [semverParts(tag), semverParts(latest)]
   const order = a.map((part, i) => part - (b[i] ?? 0)).find((diff) => diff !== 0) ?? 0
-  if (order < 0) return { verdict: 'behind-release', note: `the ${tag} tag; latest is ${latest}` }
+  const prerelease = (name) => /^v?\d+\.\d+\.\d+-/.test(name)
+  if (order < 0 || (order === 0 && prerelease(tag) && !prerelease(latest))) return { verdict: 'behind-release', note: `the ${tag} tag; latest is ${latest}` }
   return { verdict: 'released', note: `the ${tag} tag, at or past ${latest}` }
 }
 
