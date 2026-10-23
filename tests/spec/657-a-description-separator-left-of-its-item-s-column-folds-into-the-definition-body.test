@@ -1,0 +1,73 @@
+A description separator left of its item's column folds into the definition body
+
+```
+- item
+
+  :: Term
+  :  Def
+ :  under
+.
+<ul>
+  <li>item
+    <dl>
+      <dt>Term</dt>
+      <dd>Def
+:  under</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+- item
+
+  :: Term
+  :  Def
+:  under
+.
+<ul>
+  <li>item
+    <dl>
+      <dt>Term</dt>
+      <dd>Def</dd>
+    </dl>
+  </li>
+</ul>
+<p>:  under</p>
+```
+
+```
+- item
+
+  :: Term
+  :  Def
+
+ :  under
+.
+<ul>
+  <li>item
+    <dl>
+      <dt>Term</dt>
+      <dd>Def</dd>
+    </dl>
+  </li>
+</ul>
+<p>:  under</p>
+```
+
+```
+- item
+  :: Term
+  :  Def
+ :  under
+.
+<ul>
+  <li>item
+    <dl>
+      <dt>Term</dt>
+      <dd>Def
+:  under</dd>
+    </dl>
+  </li>
+</ul>
+```

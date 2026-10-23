@@ -527,6 +527,10 @@ index: examples/edge-cases/index.md
   656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth
   656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth-2
   656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth-3
+  657-a-description-separator-left-of-its-item-s-column-folds-into-the-definition-body
+  657-a-description-separator-left-of-its-item-s-column-folds-into-the-definition-body-2
+  657-a-description-separator-left-of-its-item-s-column-folds-into-the-definition-body-3
+  657-a-description-separator-left-of-its-item-s-column-folds-into-the-definition-body-4
   an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3
