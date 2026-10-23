@@ -87,13 +87,13 @@ const sharedFellBackToJs = computed<boolean>(
 
 const sharedNoteText = computed<string>(() =>
   sharedFellBackToJs.value
-    ? 'shared link: raw HTML off, JavaScript engine'
+    ? 'shared link: raw HTML off, JS engine'
     : 'shared link: raw HTML off',
 )
 
 const sharedNoteTitle = computed<string>(() =>
   sharedFellBackToJs.value
-    ? 'This document arrived in a link made in Rust (WASM) mode. This vendored WASM build cannot turn raw HTML off, so it renders here on the JavaScript engine instead - which carries a few extensions carve-rs does not, so the output can differ from what the sender saw.'
+    ? 'This document arrived in a link made in Rust (WASM) mode. This vendored WASM build cannot turn raw HTML off, so it renders here on the JS engine instead - which carries a few extensions carve-rs does not, so the output can differ from what the sender saw.'
     : 'This document arrived in a link, so raw HTML is not rendered',
 )
 
@@ -161,7 +161,7 @@ const alignTables = ref(true)
 const formatNote = ref('')
 // The text the last format produced; any other edit clears the note.
 let formattedText: string | null = null
-const FORMAT_FALLBACK_NOTE = 'formatted with the JavaScript engine: the bundled Rust build only renders'
+const FORMAT_FALLBACK_NOTE = 'formatted with the JS engine: the bundled Rust build only renders'
 
 async function formatSource(): Promise<void> {
   if (engine.value === 'rust') await ensureWasm()
@@ -487,7 +487,7 @@ const renderStatus = computed<string>(() => {
   }
   // The engine that RENDERED, which is not always the one selected: a shared
   // document falls back when the vendored build cannot turn raw HTML off.
-  const label = engine.value === 'rust' && rustMayRender.value ? 'Rust (WASM)' : 'JavaScript'
+  const label = engine.value === 'rust' && rustMayRender.value ? 'Rust (WASM)' : 'JS'
   const ms = mounted.value ? rendered.value.ms : null
   return ms === null ? label : `${label}: ${ms < 1 ? ms.toFixed(3) : ms.toFixed(2)} ms`
 })
@@ -819,7 +819,7 @@ void mermaidInit
           :aria-pressed="engine === 'js'"
           @click="engine = 'js'"
         >
-          JavaScript
+          JS
         </button>
         <button
           class="pg-engine"
@@ -847,120 +847,48 @@ void mermaidInit
         </a>
       </div>
       <div class="pg-toolbar-right">
-        <button
-          class="pg-btn pg-icon-btn"
-          type="button"
-          :class="{ 'is-copied': shareState === 'copied', 'is-error': shareState === 'error' }"
-          :title="shareTitle"
-          aria-label="Copy a link to this document"
-          @click="copyShareLink"
-        >
-          <svg
-            v-if="shareState === 'idle'"
-            viewBox="0 0 24 24"
-            width="15"
-            height="15"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
+        <div class="pg-split" role="group" aria-label="Format">
+          <button
+            class="pg-btn"
+            type="button"
+            :title="
+              engine === 'rust' && !wasmCanFormat
+                ? 'Format the source. The bundled Rust build only renders, so this uses the JS formatter.'
+                : 'Format the source with the canonical Carve writer (Ctrl+Z undoes it)'
+            "
+            @click="formatSource"
           >
-            <circle cx="18" cy="5" r="3" />
-            <circle cx="6" cy="12" r="3" />
-            <circle cx="18" cy="19" r="3" />
-            <line x1="8.6" y1="10.7" x2="15.4" y2="6.3" />
-            <line x1="8.6" y1="13.3" x2="15.4" y2="17.7" />
-          </svg>
-          <svg
-            v-else
-            viewBox="0 0 24 24"
-            width="15"
-            height="15"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
+            Format
+          </button>
+          <button
+            class="pg-btn pg-icon-btn"
+            type="button"
+            :class="{ active: alignTables }"
+            :aria-pressed="alignTables"
+            :title="alignTables ? 'Align tables when formatting: on' : 'Align tables when formatting: off'"
+            aria-label="Align tables"
+            @click="alignTables = !alignTables"
           >
-            <polyline v-if="shareState === 'copied'" points="20 6 9 17 4 12" />
-            <template v-else>
-              <line x1="6" y1="6" x2="18" y2="18" />
-              <line x1="18" y1="6" x2="6" y2="18" />
-            </template>
-          </svg>
-        </button>
-        <span class="pg-sr-only" role="status" aria-live="polite">{{ shareMessage }}</span>
-        <button
-          class="pg-btn"
-          type="button"
-          :title="
-            engine === 'rust' && !wasmCanFormat
-              ? 'Format the source. The bundled Rust build only renders, so this uses the JavaScript formatter.'
-              : 'Format the source with the canonical Carve writer (Ctrl+Z undoes it)'
-          "
-          @click="formatSource"
-        >
-          Format
-        </button>
-        <label class="pg-check" title="Pad table columns so they line up when formatting">
-          <input v-model="alignTables" type="checkbox" />
-          Align tables
-        </label>
+            <svg
+              viewBox="0 0 24 24"
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="3" y="4" width="18" height="16" rx="1.5" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+              <line x1="9.5" y1="4" x2="9.5" y2="20" />
+              <line x1="15" y1="4" x2="15" y2="20" />
+            </svg>
+          </button>
+        </div>
         <button class="pg-btn pg-import" type="button" @click="openImport">
           Import Markdown
-        </button>
-        <button
-          class="pg-btn pg-icon-btn"
-          type="button"
-          :class="{ active: wrapLines }"
-          :aria-pressed="wrapLines"
-          :title="wrapLines ? 'Wrap long lines: on' : 'Wrap long lines: off (scroll horizontally)'"
-          aria-label="Wrap long lines"
-          @click="toggleWrap"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            width="15"
-            height="15"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <path d="M3 12h15a3 3 0 0 1 0 6h-4" />
-            <polyline points="16 16 14 18 16 20" />
-            <line x1="3" y1="18" x2="10" y2="18" />
-          </svg>
-        </button>
-        <button
-          class="pg-btn pg-icon-btn"
-          type="button"
-          :class="{ active: fullscreen }"
-          :aria-pressed="fullscreen"
-          :title="fullscreen ? 'Exit full screen (Esc)' : 'Full screen'"
-          aria-label="Full screen"
-          @click="toggleFullscreen"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            width="15"
-            height="15"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path v-if="!fullscreen" d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-            <path v-else d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-          </svg>
         </button>
       </div>
     </div>
@@ -968,7 +896,105 @@ void mermaidInit
       <div class="pane">
         <div class="pane-label-row">
           <label>Carve source</label>
-          <span v-if="formatNote" class="pg-shared-note" role="status">{{ formatNote }}</span>
+          <span v-if="formatNote" class="pg-shared-note pg-format-note" role="status" :title="formatNote">{{ formatNote }}</span>
+          <div class="pg-pane-actions">
+            <button
+              class="pg-btn pg-icon-btn"
+              type="button"
+              :class="{ 'is-copied': shareState === 'copied', 'is-error': shareState === 'error' }"
+              :title="shareTitle"
+              aria-label="Copy a link to this document"
+              @click="copyShareLink"
+            >
+              <svg
+                v-if="shareState === 'idle'"
+                viewBox="0 0 24 24"
+                width="15"
+                height="15"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.6" y1="10.7" x2="15.4" y2="6.3" />
+                <line x1="8.6" y1="13.3" x2="15.4" y2="17.7" />
+              </svg>
+              <svg
+                v-else
+                viewBox="0 0 24 24"
+                width="15"
+                height="15"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline v-if="shareState === 'copied'" points="20 6 9 17 4 12" />
+                <template v-else>
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                </template>
+              </svg>
+            </button>
+            <span class="pg-sr-only" role="status" aria-live="polite">{{ shareMessage }}</span>
+            <button
+              class="pg-btn pg-icon-btn"
+              type="button"
+              :class="{ active: wrapLines }"
+              :aria-pressed="wrapLines"
+              :title="wrapLines ? 'Wrap long lines: on' : 'Wrap long lines: off (scroll horizontally)'"
+              aria-label="Wrap long lines"
+              @click="toggleWrap"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="15"
+                height="15"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M3 12h15a3 3 0 0 1 0 6h-4" />
+                <polyline points="16 16 14 18 16 20" />
+                <line x1="3" y1="18" x2="10" y2="18" />
+              </svg>
+            </button>
+            <button
+              class="pg-btn pg-icon-btn"
+              type="button"
+              :class="{ active: fullscreen }"
+              :aria-pressed="fullscreen"
+              :title="fullscreen ? 'Exit full screen (Esc)' : 'Full screen'"
+              aria-label="Full screen"
+              @click="toggleFullscreen"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="15"
+                height="15"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path v-if="!fullscreen" d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                <path v-else d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+              </svg>
+            </button>
+          </div>
         </div>
         <div
           class="carve-editor-wrap"
@@ -1049,9 +1075,10 @@ void mermaidInit
 }
 .pg-toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.5rem 1rem;
   margin-bottom: 0.6rem;
 }
 .pg-engines {
@@ -1096,7 +1123,7 @@ void mermaidInit
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: 0.4rem;
 }
 .pg-status {
   font-size: 0.78rem;
@@ -1163,14 +1190,42 @@ void mermaidInit
    Stated rather than hidden: silence would read as a rendering bug. It sits in
    the rendered pane's label row, beside what it describes, because a sentence
    in the toolbar wraps the button row onto a second line. */
-.pg-check {
+.pg-pane-actions {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.8rem;
-  color: var(--vp-c-text-2);
-  cursor: pointer;
-  white-space: nowrap;
+  margin-left: auto;
+}
+/* Compact icon buttons in a pane header, below the toolbar's 2rem controls. */
+.pg-pane-actions .pg-icon-btn {
+  height: 1.6rem;
+  width: 1.6rem;
+}
+.pg-format-note {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pg-split {
+  display: inline-flex;
+}
+.pg-split > .pg-btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.pg-split > .pg-btn:last-child {
+  margin-left: -1px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+/* Every toolbar control shares one height, whatever its content. */
+.pg-engine,
+.pg-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  height: 2rem;
+  line-height: 1;
 }
 .pg-shared-note {
   font-size: 0.75rem;
@@ -1200,9 +1255,11 @@ void mermaidInit
    beside the icon buttons. */
 .pane-label-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  /* The source header holds icon buttons; the others match its height. */
+  min-height: 1.6rem;
 }
 .pg-modal-backdrop {
   position: fixed;
