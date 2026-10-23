@@ -64105,6 +64105,31 @@ para
 
 :::::::
 
+In a nested list the attribute is one construct for the outer item too, and `para` stays at document level
+
+::::::: compare
+
+`````carve
+- a
+  - b
+    {.c
+}
+para
+`````
+
+`````html
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+<p>para</p>
+`````
+
+:::::::
+
 ## A quote follower below stacked quote openers in an item is read at its raw column
 
 Below `- > > +` the first-block `+` takes a follower at column 0 or at the opener line's own column (CARVE-P9-067). A `>` at column 0 is no prefix of the quotes at columns 2 and 4, so it opens a quote that attaches and nests inside the innermost quote. A `>` at column 2 is at an intervening column: the `+` is refused and the line folds into its text (carve#3421).

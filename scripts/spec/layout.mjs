@@ -7305,6 +7305,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           })
           const attributes = tryAttrLine(window, 0)
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
+        } else if (i > wrappedAttrEnd && !insideFence() && !nestedVerbatim() && dmeas.rest.startsWith('{')) {
+          // A wrapped attribute opened in a nested child is one construct here too (carve#3421).
+          const window = lines.slice(i).map((candidate) => {
+            const measured = indentCols(candidate)
+            return dedentMeasured(measured, candidate, lm.col).text
+          })
+          const attributes = tryAttrLine(window, 0)
+          if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
         }
         if (
           pendingSeparation &&

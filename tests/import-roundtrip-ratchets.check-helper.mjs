@@ -55,6 +55,10 @@ const baseline = JSON.parse(
 // paragraph text; a soft break in it returns from HTML as a space, and a
 // leading `>` returns from Markdown escaped.
 
+// Corpus 653-6 adds one document. It completes HTML import, reformats to a
+// fixed point, preserves rendered text and round-trips through HTML; with this
+// pin it does not round-trip through Markdown.
+
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 

@@ -933,6 +933,22 @@
       }
     },
     {
+      "file": "tests/corpus/653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-6.crv",
+      "reason": "The measured engines disagree on `unattached-block-attribute` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            3,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
       "file": "tests/corpus/653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct.crv",
       "reason": "The measured engines disagree on `unattached-block-attribute` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",

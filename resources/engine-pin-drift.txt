@@ -25,3 +25,4 @@
 #
 # Format: <slug><space><space><reason>
 655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero-3  pinned carve-js ends the host quote at a column-0 heading below a sibling item's stacked first-block plus (carve#3421)
+653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-6  pinned carve-js keeps the line below a wrapped attribute in a nested list in the outer item (carve#3421)
