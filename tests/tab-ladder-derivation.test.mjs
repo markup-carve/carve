@@ -119,6 +119,7 @@ test('a tab ladder off the stop nests the way a walk says it does', () => {
 
 for (const source of [
   '- x\n  \t:: t\n    : zq\n',
+  '- x\n      :: t\n    : zq\n',
   '- x\n  \t:: t\n\t: zq\n',
   '- x\n  - y\n  \t:: t\n     : zq\n',
 ]) {
@@ -128,3 +129,8 @@ for (const source of [
     assert.doesNotMatch(html, /<dd>/)
   })
 }
+
+test('a tab on the description line reaches the deeper term', () => {
+  const html = renderDoc(parse('- x\n    :: t\n  \t: zq\n'))
+  assert.match(html, /<dd>zq<\/dd>/)
+})

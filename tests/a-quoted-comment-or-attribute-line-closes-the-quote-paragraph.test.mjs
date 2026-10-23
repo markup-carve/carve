@@ -41,3 +41,8 @@ for (const head of ['{x', '{.c} x', 'p']) {
     assert.doesNotMatch(html, /<li>/)
   })
 }
+
+test('a wrapped quoted attribute closes the preceding paragraph', () => {
+  const html = renderDoc(parse('> para\n> {.c\n>  #x}\n'))
+  assert.doesNotMatch(html, /<p>para\n\{\.c/)
+})
