@@ -30,13 +30,13 @@ js|php/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-23  Byt
 js|php/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-24  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|php/556-a-closed-block-leaves-no-frame-for-the-line-below-5  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|php/590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open-3  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
+js|php/618-captions-in-list-items-do-not-create-a-paragraph-gap-22  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|php/632-a-continuation-marker-uses-its-container-column-12  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|php/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-18  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|php/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-30  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|php/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-35  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|php/634-a-refused-continuation-plus-remains-text-11  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|php/634-a-refused-continuation-plus-remains-text-12  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
-js|php/638-nested-plus-below-fence-and-description  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|rust/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-19  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|rust/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-20  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|rust/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-23  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
@@ -55,6 +55,7 @@ js|rust/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-35  Byt
 js|rust/634-a-refused-continuation-plus-remains-text-11  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 js|rust/634-a-refused-continuation-plus-remains-text-12  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 php|rust/556-a-closed-block-leaves-no-frame-for-the-line-below-5  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
+php|rust/618-captions-in-list-items-do-not-create-a-paragraph-gap-22  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 php|rust/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 php|rust/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-2  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 php|rust/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-3  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
@@ -63,4 +64,3 @@ php|rust/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-
 php|rust/630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-9  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 php|rust/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-18  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
 php|rust/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-30  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
-php|rust/638-nested-plus-below-fence-and-description  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
