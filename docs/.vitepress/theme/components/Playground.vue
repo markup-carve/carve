@@ -174,8 +174,9 @@ async function formatSource(): Promise<void> {
       wasmFormat,
     })
     formattedText = result.text
-    if (editorRef.value) editorRef.value.replaceAll(result.text)
-    else source.value = result.text
+    editorRef.value?.replaceAll(result.text)
+    // The view may still be mounting; it then starts from `source`.
+    source.value = result.text
     formatNote.value = result.fellBack
       ? FORMAT_FALLBACK_NOTE
       : result.text === before
