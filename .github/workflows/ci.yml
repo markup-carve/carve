@@ -88,7 +88,7 @@ jobs:
       # Keyed on the pin, like formatter-pr.yml's binaries.
       - name: Restore Rust importer
         id: rs-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: engines/carve-rs/target/debug/carve
           key: carve-rs-debug-bin-${{ runner.os }}-${{ needs.engine-pins.outputs.rs }}
@@ -136,7 +136,7 @@ jobs:
       # roundtrip-structure.rs, so both are in the key.
       - name: Restore Rust roundtrip driver
         id: driver-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ runner.temp }}/cargo-target/debug/carve-structural-roundtrip
           key: carve-rs-roundtrip-driver-${{ runner.os }}-${{ needs.engine-pins.outputs.rs }}-${{ hashFiles('scripts/roundtrip-structure.rs', 'scripts/build-roundtrip-structure-rs.mjs') }}

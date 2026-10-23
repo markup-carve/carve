@@ -37,7 +37,7 @@ jobs:
       matrix:
         shard: ['0/4', '1/4', '2/4', '3/4']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0
@@ -45,7 +45,7 @@ jobs:
         uses: ./.github/actions/npm-ci
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-js
           ref: ${{ needs.engine-revisions.outputs.js }}
@@ -54,7 +54,7 @@ jobs:
       - name: Build carve-js
         working-directory: carve-js
         run: npm ci && npm run build
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-rs
           ref: ${{ needs.engine-revisions.outputs.rs }}
@@ -63,7 +63,7 @@ jobs:
       # Keyed on the pinned commit, so the four shards build it once per pin.
       - name: Restore carve-rs binaries
         id: rs-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             carve-rs/target/release/carve
@@ -73,7 +73,7 @@ jobs:
         if: steps.rs-cache.outputs.cache-hit != 'true'
         working-directory: carve-rs
         run: cargo build --release --bin carve --example social_resolvers
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-php
           ref: ${{ needs.engine-revisions.outputs.php }}
@@ -116,7 +116,7 @@ jobs:
 
       - name: Upload comparison and corpus selection
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: formatter-${{ strategy.job-index }}
           path: |
@@ -134,7 +134,7 @@ jobs:
     steps:
       - name: Look up carve-rs binaries
         id: lookup
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: |
             carve-rs/target/release/carve
@@ -142,7 +142,7 @@ jobs:
           key: carve-rs-bin-${{ runner.os }}-${{ needs.engine-revisions.outputs.rs }}
           lookup-only: true
       - if: steps.lookup.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-rs
           ref: ${{ needs.engine-revisions.outputs.rs }}
@@ -153,7 +153,7 @@ jobs:
         working-directory: carve-rs
         run: cargo build --release --bin carve --example social_resolvers
       - if: steps.lookup.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             carve-rs/target/release/carve
@@ -172,7 +172,7 @@ jobs:
       # merge must not flip a spec PR's verdict, so a pin moves only by an
       # explicit pull request (bump-engine-pin.yml), never by a release or a
       # merge landing mid-run.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Read the reviewed engine pins for the formatter shards
         id: pins
         run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"

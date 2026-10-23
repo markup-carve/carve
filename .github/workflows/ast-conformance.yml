@@ -63,16 +63,16 @@ jobs:
       matrix:
         shard: ['0/4', '1/4', '2/4', '3/4']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           # Exact patch: shards compare reports that record the interpreter version.
           node-version: 24.22.0
           cache: npm
       - run: npm ci
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-js
           ref: ${{ needs.ast-revisions.outputs.js }}
@@ -81,7 +81,7 @@ jobs:
       - name: Build carve-js
         working-directory: carve-js
         run: npm ci && npm run build
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-rs
           ref: ${{ needs.ast-revisions.outputs.rs }}
@@ -90,7 +90,7 @@ jobs:
       - name: Build carve-rs
         working-directory: carve-rs
         run: cargo build --release --bin carve --example social_resolvers
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-php
           ref: ${{ needs.ast-revisions.outputs.php }}
@@ -142,7 +142,7 @@ jobs:
       # 04:00 UTC then failed this job on a repository whose commits had not
       # touched any of it (carve#2869, carve#2881). bump-engine-pin.yml moves
       # the pins daily, so the move is reviewed rather than discovered here.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Read the reviewed engine pins for all AST shards
         id: heads
         run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"
@@ -158,11 +158,11 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Check out carve
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           # Exact patch: shards compare reports that record the interpreter version.
           node-version: 24.22.0
@@ -175,7 +175,7 @@ jobs:
       # stale one reports the old behavior under the current name - which is
       # exactly how carve#475's own figures came to be wrong.
       - name: Check out carve-js
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-js
           ref: ${{ needs.ast-revisions.outputs.js }}
@@ -187,7 +187,7 @@ jobs:
         run: npm ci && npm run build
 
       - name: Check out carve-rs
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-rs
           ref: ${{ needs.ast-revisions.outputs.rs }}
@@ -199,7 +199,7 @@ jobs:
         run: cargo build --release --bin carve --example social_resolvers
 
       - name: Check out carve-php
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-php
           ref: ${{ needs.ast-revisions.outputs.php }}
@@ -217,7 +217,7 @@ jobs:
         run: composer install --no-interaction --no-progress
 
       - name: Check out carve-rb
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-rb
           ref: ${{ needs.ast-revisions.outputs.rb }}
@@ -267,7 +267,7 @@ jobs:
         run: node scripts/engine-pin-fields.mjs carve-rb/ext/carve/Cargo.toml >> "$GITHUB_OUTPUT"
 
       - name: Cache the pinned carve-lang build
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ runner.temp }}/carve-lang-pin
           key: carve-lang-pin-${{ runner.os }}-${{ steps.rb-pin.outputs.cache }}
@@ -308,7 +308,7 @@ jobs:
         run: npm run ast:ingest -- --shard=${{ matrix.shard }} --report ingest-${{ strategy.job-index }}.json
       - name: Upload AST shard measurements
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ast-shard-${{ strategy.job-index }}
           path: |
@@ -336,14 +336,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           # Exact patch: shards compare reports that record the interpreter version.
           node-version: 24.22.0
           cache: npm
       - run: npm ci
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: ast-shard-*
           path: shard-reports
@@ -357,7 +357,7 @@ jobs:
         run: npm run ast:ingest -- --merge-reports=shard-reports --report ingest-comparison-report.json
       - name: Upload combined AST ingest comparison
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ast-comparisons
           path: ingest-comparison-report.json
@@ -368,11 +368,11 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Check out carve
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           # Exact patch: shards compare reports that record the interpreter version.
           node-version: 24.22.0
@@ -385,7 +385,7 @@ jobs:
       # stale one reports the old behavior under the current name - which is
       # exactly how carve#475's own figures came to be wrong.
       - name: Check out carve-js
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-js
           ref: ${{ needs.ast-revisions.outputs.js }}
@@ -397,7 +397,7 @@ jobs:
         run: npm ci && npm run build
 
       - name: Check out carve-rs
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-rs
           ref: ${{ needs.ast-revisions.outputs.rs }}
@@ -409,7 +409,7 @@ jobs:
         run: cargo build --release --bin carve --example social_resolvers
 
       - name: Check out carve-php
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-php
           ref: ${{ needs.ast-revisions.outputs.php }}
@@ -539,7 +539,7 @@ jobs:
 
       - name: Upload importer comparisons
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: import-comparisons
           path: '*-comparison-report.json'
