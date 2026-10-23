@@ -200,12 +200,20 @@ const SEMVER_OR_SHA = String.raw`v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?|[0-9a-f]{7,
 /** Table rows in a vendor note that link an org repo and give it a version cell. */
 function vendorNotePins(text, self, known) {
   const found = []
+  const isVersion = (cell) => /^v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(cell ?? '')
+  // A header cell named Version decides the column; any version-shaped cell is the fallback.
+  let versionColumn = -1
   for (const line of String(text).split('\n')) {
-    if (!line.trimStart().startsWith('|')) continue
+    if (!line.trimStart().startsWith('|')) {
+      versionColumn = -1
+      continue
+    }
+    const cells = line.split('|').map((cell) => cell.trim().replace(/^`(.*)`$/, '$1'))
+    const header = cells.findIndex((cell) => /^(version|tag|ref|pin)$/i.test(cell))
+    if (header >= 0) versionColumn = header
     const repo = /github\.com\/markup-carve\/([a-z0-9][a-z0-9.-]*?)(?:\.git)?(?=[)\s/#|]|$)/i.exec(line)?.[1]
     if (!repo || repo === self || !known.has(repo)) continue
-    const cells = line.split('|').map((cell) => cell.trim().replace(/^`(.*)`$/, '$1'))
-    const version = cells.find((cell) => /^v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(cell))
+    const version = versionColumn >= 0 ? (isVersion(cells[versionColumn]) ? cells[versionColumn] : null) : cells.find(isVersion)
     if (version) found.push({ target: repo, ref: version })
   }
   return found
@@ -591,8 +599,11 @@ function vendorVerdict(ref, tagNames, latest) {
   if (!latest || bare(tag) === bare(latest)) return { verdict: 'released', note: `the ${tag} tag` }
   const [a, b] = [semverParts(tag), semverParts(latest)]
   const order = a.map((part, i) => part - (b[i] ?? 0)).find((diff) => diff !== 0) ?? 0
-  const prerelease = (name) => /^v?\d+\.\d+\.\d+-/.test(name)
-  if (order < 0 || (order === 0 && prerelease(tag) && !prerelease(latest))) return { verdict: 'behind-release', note: `the ${tag} tag; latest is ${latest}` }
+  // Same numbers: no suffix outranks any prerelease, and rc.2 outranks rc.1.
+  const suffix = (name) => /^v?\d+\.\d+\.\d+-(.+)$/.exec(name)?.[1] ?? null
+  const [sa, sb] = [suffix(tag), suffix(latest)]
+  const tie = sa === sb ? 0 : sa === null ? 1 : sb === null ? -1 : sa.localeCompare(sb, 'en', { numeric: true })
+  if (order < 0 || (order === 0 && tie < 0)) return { verdict: 'behind-release', note: `the ${tag} tag; latest is ${latest}` }
   return { verdict: 'released', note: `the ${tag} tag, at or past ${latest}` }
 }
 

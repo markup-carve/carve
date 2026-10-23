@@ -434,6 +434,12 @@ test('a vendor note table row pins the linked org repo at its version cell', () 
   const known = new Set(['carve-grammars', 'carve-rs'])
   assert.deepEqual(vendorNotePins(note, 'intellij-carve', known), [{ target: 'carve-grammars', ref: 'v0.1.18' }])
   assert.deepEqual(vendorNotePins(note, 'carve-grammars', known), [], 'not an edge to itself')
+  const twoVersions = [
+    '| Package | Built with | Version |',
+    '| --- | --- | --- |',
+    '| [carve-css](https://github.com/markup-carve/carve-css) | 2.0.0 | 0.1.5 |',
+  ].join('\n')
+  assert.deepEqual(vendorNotePins(twoVersions, 'x', new Set(['carve-css'])), [{ target: 'carve-css', ref: '0.1.5' }], 'the Version column wins')
 })
 
 test('a vendor script variable pins the repo its prefix names, only if the file links it', () => {
@@ -462,6 +468,7 @@ test('a vendored tag older than the latest release is behind-release', () => {
   assert.equal(vendorVerdict('v0.1.9', ['v0.1.10', 'v0.1.9'], 'v0.1.10').verdict, 'behind-release', 'numeric, not lexical')
   assert.equal(vendorVerdict('v0.2.0', tags, 'v0.1.19').verdict, 'unreleased', 'not a tag')
   assert.equal(vendorVerdict('v1.2.0-rc.1', ['v1.2.0', 'v1.2.0-rc.1'], 'v1.2.0').verdict, 'behind-release', 'a prerelease precedes its release')
+  assert.equal(vendorVerdict('v1.2.0-rc.2', ['v1.2.0-rc.10', 'v1.2.0-rc.2'], 'v1.2.0-rc.10').verdict, 'behind-release')
 })
 
 test('a vendored build layers like a declared edge, a CI checkout does not', () => {
