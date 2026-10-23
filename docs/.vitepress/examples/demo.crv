@@ -92,6 +92,13 @@ Definition list:
 :: Djot
 : The markup language Carve evolves from.
 
+A lone `+` attaches the next block to an item without indenting it:
+
+- install the CLI
++
+> Needs Node 20 or newer.
+- render a file
+
 ## Blockquotes
 
 > The best way to predict the future is to invent it.
@@ -104,6 +111,15 @@ Definition list:
 | Banana       |    0.50 |   In     |
 | Dragon fruit |    4.00 |   Out    |
 ^ Table #: column alignment - left, right, center.
+
+A `{table}` flag turns a `csv` or `tsv` fence into a table:
+
+{table}
+```csv
+Fruit,Qty,Note
+Apple,12,fresh
+"Pear, green",3,quoted because it holds a comma
+```
 
 ## Code and raw blocks
 

@@ -88,6 +88,13 @@ email autolink <a href="mailto:hello@example.com">hello@example.com</a>, and a r
       <dt>Djot</dt>
       <dd>The markup language Carve evolves from.</dd>
     </dl>
+    <p>A lone <code>+</code> attaches the next block to an item without indenting it:</p>
+    <ul>
+      <li>install the CLI
+        <blockquote><p>Needs Node 20 or newer.</p></blockquote>
+      </li>
+      <li>render a file</li>
+    </ul>
   </section>
   <section id="Blockquotes">
     <h2>Blockquotes</h2>
@@ -107,6 +114,16 @@ email autolink <a href="mailto:hello@example.com">hello@example.com</a>, and a r
         <tr><td>Apple</td><td style="text-align: right;">1.20</td><td style="text-align: center;">In</td></tr>
         <tr><td>Banana</td><td style="text-align: right;">0.50</td><td style="text-align: center;">In</td></tr>
         <tr><td>Dragon fruit</td><td style="text-align: right;">4.00</td><td style="text-align: center;">Out</td></tr>
+      </tbody>
+    </table>
+    <p>A <code>{table}</code> flag turns a <code>csv</code> or <code>tsv</code> fence into a table:</p>
+    <table>
+      <thead>
+        <tr><th scope="col">Fruit</th><th scope="col">Qty</th><th scope="col">Note</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Apple</td><td>12</td><td>fresh</td></tr>
+        <tr><td>Pear, green</td><td>3</td><td>quoted because it holds a comma</td></tr>
       </tbody>
     </table>
   </section>
