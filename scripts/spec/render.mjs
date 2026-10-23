@@ -1721,7 +1721,7 @@ function settleQuotes(html, run, prevCtx) {
         const r = run.records[Number(quote[2])]
         if (r.initialContext !== undefined) prev = r.initialContext
         if (r.spanStart) prev = ''
-        const dashClose = '-–—'.includes(prev) && prev !== '' && (r.next === '' || isTypographyFlank(r.next) || '"\'.,;:!?)]'.includes(r.next))
+        const dashClose = '-–—/'.includes(prev) && prev !== '' && (r.next === '' || isTypographyFlank(r.next) || '"\'.,;:!?)]'.includes(r.next))
         const opening = (r.spanStart ?? (prev === '' || isTypographyFlank(prev) || QUOTE_OPEN_PREV.has(prev))) && !dashClose
         let apostrophe = r.single && (/[0-9]/.test(r.next) || (!opening && quoteAlnum(r.next)))
         if (r.single && !apostrophe && !opening && !isTypographyFlank(prev)) span = null

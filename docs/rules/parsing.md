@@ -83,7 +83,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P3-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L439) | 3 | PRECEDENCE vs SMART TYPOGRAPHY |
 | [`CARVE-P3-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L457) | 3 | A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION |
 | [`CARVE-P3-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L470) | 3 | A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH |
-| [`CARVE-P3-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L561) | 3 | THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES |
+| [`CARVE-P3-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L563) | 3 | THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES |
 | [`CARVE-P4-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L19) | 4 | ATTRIBUTE PADDING IS SPACE-ONLY |
 | [`CARVE-P4-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L88) | 4 | THE SIGIL TAKES NO PADDING |
 | [`CARVE-P4-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L97) | 4 | LANGUAGE SHORTHAND USES THE `lang` KEY |

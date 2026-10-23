@@ -3381,6 +3381,26 @@ a　"q"
 
 :::
 
+A path or URL ending in a slash closes its quote the same way (R1); a slash before quoted text still opens one.
+
+::: compare
+
+```carve
+Exclude "\/trunk/app/config/".
+
+see "https://example.org/" here
+
+the 'tmp/' folder, and/"or" too
+```
+
+```html
+<p>Exclude “/trunk/app/config/”.</p>
+<p>see “https://example.org/” here</p>
+<p>the ‘tmp/’ folder, and/“or” too</p>
+```
+
+:::
+
 ## Smart typography arrows and symbols
 
 Arrows, comparisons, plus/minus and symbols are converted. Fractions are
