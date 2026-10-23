@@ -18,6 +18,8 @@
  * footnote. Markdown roundtrip escapes the footnote's literal `+`, leaving
  * the normalized tree equal but changing text to escaped_text in the strict
  * carrier comparison. This moves JS/md strict from 1689 to 1688.
+ * The RS 4d0df469 pin reads corpus 652-2's quoted `+` as text (carve-rs#3106),
+ * which Markdown roundtrip escapes the same way. RS/md strict 2015 to 2014.
  */
 import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'
