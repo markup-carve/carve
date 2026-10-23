@@ -15,6 +15,46 @@ export function extensions() {
 }
 
 /**
+ * Parse the locator portion of a citation into `{ label, value, suffixText }`.
+ *
+ * A field the source did not carry is `null`. Same shape as carve-js
+ * `parseLocator`; pure, and never throws on bad input.
+ * @param {string} loc
+ * @returns {ParsedLocator}
+ */
+export function parseLocator(loc) {
+    const ptr0 = passStringToWasm0(loc, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.parseLocator(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * Sanitize an SVG document, the helper a host embedding SVG would otherwise
+ * reimplement.
+ *
+ * `{ svg, ok }`. `ok` false means the input was not a single well-formed
+ * `<svg>` root, and a caller must then show the SOURCE rather than the input:
+ * `svg` carries nothing to display. Every option defaults to `false`, which is
+ * the strict setting.
+ * @param {string} source
+ * @param {object | null} [options]
+ * @returns {SanitizeResult}
+ */
+export function sanitizeSvg(source, options) {
+    const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.sanitizeSvg(ptr0, len0, isLikeNone(options) ? 0 : addToExternrefTable0(options));
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * @param {string} source
  * @returns {string}
  */
@@ -124,15 +164,27 @@ export function toHtmlFull(source, symbols) {
  * * `labels` - override the engine-written strings (admonition names, the
  *   endnotes heading, backlink text) for a page that is not in English. These
  *   are TEXT and are escaped where they land, unlike `symbols`.
- * * `smartTypography` - `"glyph"` (default) resolves `...` to an ellipsis,
- *   `"source"` keeps the author's run.
+ * * `smartTypography` - `"glyph"` or `true` (default) resolves `...` to an
+ *   ellipsis, `"source"` or `false` keeps the author's run, and
+ *   `{ quotes: false }` keeps only the author's quotes.
  * * `lowercaseHeadingIds` (default `false`) and `asciiHeadingIds`
  *   (`"off"` (default), `"fold"`, `"strict"`) - the slug policy, for a host
  *   whose anchors have to match another generator's.
+ * * `mentionUrl` and `tagUrl` - URL templates for `@mention` and `#tag`.
+ *   Without them both render as inert spans, which is why a host that wants
+ *   them linked has to say where to. The token name is percent-encoded into
+ *   `{name}` - `{user}` works too for a mention - and the result goes through
+ *   the same URL sanitizer as an authored link. These are the HOST's
+ *   configuration, not the document's: the template is trusted, the name
+ *   substituted into it is not.
  *
  * An unrecognized key is ignored: the object is configuration, and a caller
  * who mistypes one deserves the render to still work. A wrong TYPE on a key
  * that is recognized does throw, because that changes behavior silently.
+ *
+ * `renderers` is the one recognized key this entry point refuses, because a
+ * render callback can fail and a bare string has nowhere to report that. Use
+ * [`to_html_with_renderers`].
  *
  * Turning sections off changes nothing else. Ids, collision dedup, `</#id>`
  * crossrefs, implicit `[Heading][]` references and heading numbering all
@@ -140,7 +192,7 @@ export function toHtmlFull(source, symbols) {
  * endnotes `<section role="doc-endnotes">` is a separate construct that is
  * still emitted.
  * @param {string} source
- * @param {object | null} [options]
+ * @param {RenderOptions | null} options
  * @returns {string}
  */
 export function toHtmlWithOptions(source, options) {
@@ -162,6 +214,77 @@ export function toHtmlWithOptions(source, options) {
     } finally {
         wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
     }
+}
+
+/**
+ * Render with a build-time math renderer, the option `mode: "static"` needs.
+ *
+ * Static output carries no client scripts, so a formula it contains has to be
+ * rendered while the HTML is being written. `renderers.math` is the callback
+ * the engine calls for each ``` ```math ``` fence, with the TeX source and a
+ * display flag; KaTeX's `renderToString` has that exact shape.
+ *
+ * ```js
+ * toHtmlWithRenderers(src, {
+ *   mode: 'static',
+ *   extensions: ['math-block'],
+ *   renderers: { math: (tex, display) => katex.renderToString(tex, { displayMode: display }) },
+ * })
+ * // { html: '…', rendererErrors: [] }
+ * ```
+ *
+ * SECURITY: what the callback returns is inserted as **TRUSTED RAW HTML**, the
+ * same trust class as a `symbols` value. The difference worth stating: a symbol
+ * value is host configuration keyed by a NAME, while a renderer is host
+ * configuration that is HANDED DOCUMENT CONTENT and typically echoes some of it
+ * back. A host rendering documents it did not author is accepting whatever its
+ * renderer makes of that input, so the escaping is the renderer's job.
+ *
+ * The engine consults the renderer only under `mode: "static"`; interactive
+ * output keeps the `\[…\]` source for the client to typeset, and so does a
+ * static render with no renderer supplied.
+ *
+ * The callback must be SYNCHRONOUS. wasm-bindgen cannot await across it, so an
+ * `async` renderer returns a Promise the engine has no way to resolve; that is
+ * recorded as a failure rather than stringified into the document.
+ *
+ * `renderers.diagrams` is the same callback one level down, keyed by the
+ * fence's css class: `{ mermaid: (source) => html }`. A host that renders its
+ * diagrams beforehand passes the lookup in that one line -
+ * `(source) => prerendered.get(source)`. Mermaid itself cannot be passed,
+ * because its `render` returns a Promise from v10 on.
+ *
+ * ```js
+ * toHtmlWithRenderers(src, {
+ *   mode: 'static',
+ *   extensions: ['fenced-render'],
+ *   renderers: { diagrams: { mermaid: (source) => prerendered.get(source) } },
+ * })
+ * ```
+ *
+ * A diagram key the document never uses renders nothing and reports nothing.
+ * So does a fence whose class the caller did not configure: the engine
+ * degrades it to an escaped source block, and this binding never sees the
+ * node.
+ *
+ * A callback that throws, or returns anything other than a string, does not
+ * abort the render: the node it was called for emits nothing and the failure
+ * is reported in `rendererErrors`, with `renderer` naming the css class.
+ * This entry point exists because [`to_html_with_options`] returns a bare
+ * string with nowhere to put that, and so it rejects `renderers` rather than
+ * dropping the failures.
+ * @param {string} source
+ * @param {StaticRenderOptions | null} options
+ * @returns {any}
+ */
+export function toHtmlWithRenderers(source, options) {
+    const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.toHtmlWithRenderers(ptr0, len0, isLikeNone(options) ? 0 : addToExternrefTable0(options));
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
 }
 
 /**
@@ -228,8 +351,17 @@ function __wbg_get_imports() {
             const ret = typeof(v) === 'boolean' ? v : undefined;
             return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
         },
+        __wbg___wbindgen_is_function_49868bde5eb1e745: function(arg0) {
+            const ret = typeof(arg0) === 'function';
+            return ret;
+        },
         __wbg___wbindgen_is_null_344c8750a8525473: function(arg0) {
             const ret = arg0 === null;
+            return ret;
+        },
+        __wbg___wbindgen_is_object_40c5a80572e8f9d3: function(arg0) {
+            const val = arg0;
+            const ret = typeof(val) === 'object' && val !== null;
             return ret;
         },
         __wbg___wbindgen_is_undefined_c0cca72b82b86f4d: function(arg0) {
@@ -247,6 +379,18 @@ function __wbg_get_imports() {
         __wbg___wbindgen_throw_81fc77679af83bc6: function(arg0, arg1) {
             throw new Error(getStringFromWasm0(arg0, arg1));
         },
+        __wbg___wbindgen_typeof_ec2e006152efc95c: function(arg0) {
+            const ret = typeof arg0;
+            return ret;
+        },
+        __wbg_call_368fa9c372d473ba: function() { return handleError(function (arg0, arg1, arg2, arg3) {
+            const ret = arg0.call(arg1, arg2, arg3);
+            return ret;
+        }, arguments); },
+        __wbg_call_d578befcc3145dee: function() { return handleError(function (arg0, arg1, arg2) {
+            const ret = arg0.call(arg1, arg2);
+            return ret;
+        }, arguments); },
         __wbg_entries_616b1a459b85be0b: function(arg0) {
             const ret = Object.entries(arg0);
             return ret;
@@ -271,6 +415,16 @@ function __wbg_get_imports() {
             const ret = arg0[arg1 >>> 0];
             return ret;
         },
+        __wbg_instanceof_Error_e3390d6805733dad: function(arg0) {
+            let result;
+            try {
+                result = arg0 instanceof Error;
+            } catch (_) {
+                result = false;
+            }
+            const ret = result;
+            return ret;
+        },
         __wbg_instanceof_Map_a10a2795ef4bfe97: function(arg0) {
             let result;
             try {
@@ -291,16 +445,38 @@ function __wbg_get_imports() {
             const ret = result;
             return ret;
         },
+        __wbg_instanceof_Promise_95d523058012a13d: function(arg0) {
+            let result;
+            try {
+                result = arg0 instanceof Promise;
+            } catch (_) {
+                result = false;
+            }
+            const ret = result;
+            return ret;
+        },
         __wbg_isArray_db61795ad004c139: function(arg0) {
             const ret = Array.isArray(arg0);
+            return ret;
+        },
+        __wbg_keys_e611eeb7873788db: function(arg0) {
+            const ret = Object.keys(arg0);
             return ret;
         },
         __wbg_length_6e821edde497a532: function(arg0) {
             const ret = arg0.length;
             return ret;
         },
+        __wbg_message_7367f8c7d0fa1589: function(arg0) {
+            const ret = arg0.message;
+            return ret;
+        },
         __wbg_new_47dfee3855dec446: function(arg0, arg1) {
             const ret = new TypeError(getStringFromWasm0(arg0, arg1));
+            return ret;
+        },
+        __wbg_new_4f9fafbb3909af72: function() {
+            const ret = new Object();
             return ret;
         },
         __wbg_new_e3b04b4d53d1b593: function(arg0, arg1) {

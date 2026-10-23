@@ -17,8 +17,8 @@ That rebuilds `../carve-wasm` with `wasm-pack` and copies its `pkg/` output here
 
 It builds the RENDERING-ONLY profile (`--no-default-features`). The Playground
 calls one export, `toHtmlWithOptions`, so the AST, import, report and
-other-renderer surfaces are dropped: 0.54 MB gzip against 1.45 MB for the
-default build. A page that needs `parseJson`, an importer or a checked renderer
+other-renderer surfaces are dropped: 0.85 MB gzip against 3.0 MB for the
+default build (carve-wasm v0.1.9; it was 0.54 MB on v0.1.2). A page that needs `parseJson`, an importer or a checked renderer
 has to drop that flag.
 
 Build from a released carve-wasm tag, not an arbitrary `main` commit.
@@ -32,8 +32,8 @@ fails the suite if a rebuild reintroduces a real one.
 
 ## Provenance
 
-This copy was built from carve-wasm **v0.1.2**, which pins carve-rs
-**`da45f9d2`** (20 commits past the `0.1.4` tag).
+This copy was built from carve-wasm **v0.1.9**, which pins the published
+carve-rs crate **`carve-lang` 0.1.11**.
 
 The bundle carries its own stamp: `version()` returns the carve-wasm version it
 was built from, so the vendored engine can be identified at runtime without

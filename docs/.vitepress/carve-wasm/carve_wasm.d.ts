@@ -1,6 +1,90 @@
 /* tslint:disable */
 /* eslint-disable */
 
+
+export function toHtmlWithOptions(source: string, options?: RenderOptions | null): string;
+export function toHtmlWithRenderers(source: string, options?: StaticRenderOptions | null): StaticRenderResult;
+
+export interface IncludeContext {
+    sourcePath: string | null;
+    stack: string[];
+    depth: number;
+}
+export type IncludeDenial = "outside-root" | "not-found" | "no-root" | "include-denied" | "include-non-text" | "include-unresolved";
+export interface IncludeOptions {
+    resolve: (path: string, context: IncludeContext) => string | { source: string; id?: string } | { denial: IncludeDenial } | null;
+    sourcePath?: string;
+    extensions?: string[];
+    maxDepth?: number;
+    maxBytes?: number;
+    maxResolverCalls?: number;
+    maxWarnings?: number;
+}
+export interface IncludeExpansion {
+    json: string;
+    warnings: { rule: string; message: string; file: string | null }[];
+    suppressedWarnings: number;
+    /** A `include-non-text` refusal reports `denial: null`, like NUL content. */
+    dependencies: { id: string; resolved: boolean; denial: Exclude<IncludeDenial, "include-non-text"> | null }[];
+    chargedBytes: number;
+    resolverErrors: { path: string; message: string }[];
+}
+export interface SourcePosition {
+    startLine: number;
+    endLine: number;
+    startColumn: number;
+    endColumn: number;
+    /** Unicode codepoint offsets, not UTF-8 bytes or UTF-16 units. */
+    startOffset: number;
+    endOffset: number;
+}
+export interface RenderLoss {
+    code: string;
+    format: string;
+    target: string;
+    nodeType: string;
+    message: string;
+    pos?: SourcePosition;
+}
+export interface RenderResult {
+    value: string;
+    losses: RenderLoss[];
+    totalLosses: number;
+    /**
+     * How many losses each code accounts for, across the WHOLE render.
+     * `losses` is bounded, so counting codes off that array under-reports as
+     * soon as `truncated` is true; these totals do not.
+     */
+    totalsByCode: Record<string, number>;
+    truncated: boolean;
+}
+export interface RenderOptions {
+    full?: boolean;
+    extensions?: string[];
+    symbols?: Record<string, string> | Map<string, string>;
+    rawHtml?: boolean;
+    sections?: boolean;
+    sourceLine?: boolean;
+    positions?: boolean;
+    lowercaseHeadingIds?: boolean;
+    asciiHeadingIds?: "off" | "fold" | "strict";
+    smartTypography?: "glyph" | "source" | boolean | { quotes?: boolean };
+    mode?: "interactive" | "static";
+    profile?: "full" | "article" | "comment" | "minimal";
+    profileBaseHost?: string;
+    mentionUrl?: string;
+    tagUrl?: string;
+    labels?: Record<string, string>;
+    /** Pad table columns in `toCarveWithOptions` output. Other targets ignore it. */
+    alignTables?: boolean;
+}
+export interface StaticRenderOptions extends RenderOptions {
+    renderers?: {
+        math?: (source: string, display: boolean) => string;
+        diagrams?: Record<string, (source: string) => string>;
+    };
+}
+
 export interface LintWarning {
     /** 1-based line number. */
     line: number;
@@ -9,10 +93,49 @@ export interface LintWarning {
     /** Stable rule id, shared with carve-js and carve-php. */
     rule: string;
     message: string;
-    /** 0-based BYTE offset into the source, inclusive. */
+    /**
+     * 0-based offset into the source in UTF-16 CODE UNITS, inclusive. That is
+     * what indexes a JavaScript string, so `source.slice(start, end)` selects the
+     * span the warning is about. It was a UTF-8 byte offset before 0.1.6, which
+     * agreed with this on an ASCII document and not outside one.
+     */
     start: number;
-    /** 0-based BYTE offset into the source, exclusive. */
+    /** 0-based UTF-16 code unit offset into the source, exclusive. */
     end: number;
+    /** The included file the finding arose in; null for the document itself. */
+    file: string | null;
+    /** The include directives that reached `file`, top-level first. */
+    includedBy: { file: string; line: number; column: number }[];
+}
+/** The `includes` option of `lintCarveWithOptions`: `IncludeOptions` without `extensions`. */
+export type LintIncludeOptions = Omit<IncludeOptions, "extensions">;
+export interface LintOptions extends RenderOptions {
+    /** Follow include directives through `resolve` and lint the included Carve files too. */
+    includes?: LintIncludeOptions;
+}
+/**
+ * A finding from a lint that followed includes. `start` and `end` are null on
+ * findings from another file, since they would index a text the caller did not pass.
+ */
+export interface IncludeLintWarning extends Omit<LintWarning, "start" | "end"> {
+    start: number | null;
+    end: number | null;
+}
+
+export interface ProfileViolation {
+    /** Canonical node type that was disallowed. */
+    nodeType: string;
+    /** Machine reason: element_not_allowed | max_nesting_exceeded | link_not_allowed | image_not_allowed. */
+    reason: string;
+    /** The profile's own wording for the denial, when it carries one. */
+    reasonDescription: string | null;
+    /** The engine's prose, the same text a thrown ProfileViolationError lists. */
+    message: string;
+}
+export interface ProfileFilterResult {
+    /** The filtered tree, as AST JSON. */
+    json: string;
+    violations: ProfileViolation[];
 }
 
 export interface Stamp {
@@ -20,6 +143,107 @@ export interface Stamp {
     version: string;
     /** The engine that wrote the marker, when it recorded one. */
     generatedBy: string | null;
+}
+
+export type MigrationFidelity = "preserved" | "normalized" | "degraded" | "dropped";
+export type MigrationConfidence = "exact" | "inferred" | "fallback";
+export interface MigrationDiagnostic {
+    code: string;
+    message: string;
+    severity: "info" | "warning" | "error";
+    fidelity: MigrationFidelity;
+    confidence: MigrationConfidence;
+    path?: string;
+}
+export interface MigrationReport {
+    schemaVersion: 2;
+    sourceFormat: string;
+    mode?: string;
+    adapter?: string;
+    diagnostics: MigrationDiagnostic[];
+}
+export interface MigrationResult { value: string; report: MigrationReport; }
+
+export type SourceEditKind = "formatting" | "syntax-migration" | "quick-fix" | "refactor";
+export interface SourceEdit {
+    /** Inclusive UTF-8 byte offset. */
+    start: number;
+    /** Exclusive UTF-8 byte offset. */
+    end: number;
+    replacement: string;
+    kind: SourceEditKind;
+    code: string;
+}
+export interface SourceSuggestion extends SourceEdit { message: string; }
+export interface SourcePatch {
+    version: 1;
+    sourceFingerprint: string;
+    sourceBytes: number;
+    edits: SourceEdit[];
+    unresolved: SourceSuggestion[];
+}
+
+export interface StaticRendererError {
+    /** "math", or the diagram fence class. */
+    renderer: string;
+    /** Present for math callbacks only. */
+    display?: boolean;
+    /** The source the renderer was handed. */
+    source: string;
+    message: string;
+}
+export interface StaticRenderResult {
+    html: string;
+    /** Empty unless a render callback threw or returned a non-string. */
+    rendererErrors: StaticRendererError[];
+}
+
+export interface AccessibilityDiagnostic {
+    /** Stable rule id, e.g. a11y/image-alt. */
+    rule: string;
+    severity: "warning" | "error";
+    message: string;
+    /**
+     * 0-based Unicode CODEPOINT offset, or null when the node carried none.
+     * Codepoints, not the UTF-8 bytes `LintWarning` counts: the two lint
+     * families answer in different units.
+     */
+    startOffset: number | null;
+    endOffset: number | null;
+    /**
+     * The same span in UTF-16 code units, which is what indexes a JavaScript
+     * string. Null exactly when `startOffset` / `endOffset` are.
+     */
+    startUtf16: number | null;
+    endUtf16: number | null;
+}
+
+export interface SanitizeSvgOptions {
+    allowStyle?: boolean;
+    allowLinks?: boolean;
+    allowAnimation?: boolean;
+    allowExternalImages?: boolean;
+}
+export interface SanitizeResult {
+    /** Meaningful only when ok is true. */
+    svg: string;
+    /** False when the input was not a single well-formed <svg> root. */
+    ok: boolean;
+}
+
+export interface ParsedLocator {
+    label: string | null;
+    value: string | null;
+    suffixText: string | null;
+}
+
+export interface ProseMirrorResult {
+    /** The ProseMirror document, JSON-encoded. */
+    json: string;
+    /** Carve node type -> why its content is gone. */
+    dropped: Record<string, string>;
+    /** Carve node type -> why its node type is gone while its text survives. */
+    degraded: Record<string, string>;
 }
 
 
@@ -31,6 +255,25 @@ export interface Stamp {
  * moves. Nothing here lists names.
  */
 export function extensions(): string[];
+
+/**
+ * Parse the locator portion of a citation into `{ label, value, suffixText }`.
+ *
+ * A field the source did not carry is `null`. Same shape as carve-js
+ * `parseLocator`; pure, and never throws on bad input.
+ */
+export function parseLocator(loc: string): ParsedLocator;
+
+/**
+ * Sanitize an SVG document, the helper a host embedding SVG would otherwise
+ * reimplement.
+ *
+ * `{ svg, ok }`. `ok` false means the input was not a single well-formed
+ * `<svg>` root, and a caller must then show the SOURCE rather than the input:
+ * `svg` carries nothing to display. Every option defaults to `false`, which is
+ * the strict setting.
+ */
+export function sanitizeSvg(source: string, options?: object | null): SanitizeResult;
 
 export function toHtml(source: string): string;
 
@@ -49,77 +292,6 @@ export function toHtml(source: string): string;
  * are emitted UNESCAPED, so never feed it untrusted input.
  */
 export function toHtmlFull(source: string, symbols?: object | null): string;
-
-/**
- * Render with an options object, the general form of the three shorthands
- * above.
- *
- * ```js
- * toHtmlWithOptions('# A\n\np\n', { sections: false })
- * // '<h1 id="A">A</h1>\n<p>p</p>'
- *
- * toHtmlWithOptions(src, { sections: false, symbols: { rocket: '🚀' }, full: true })
- *
- * toHtmlWithOptions(untrusted, { rawHtml: false })
- * ```
- *
- * Every field is optional:
- *
- * * `sections` (default `true`) - wrap each top-level heading, and the content
- *   following it up to the next same-or-shallower heading, in a
- *   `<section id="…">` (spec PART 9 §13). `false` renders headings flat with
- *   the id back on the `<h*>` and the former section children as siblings.
- *   For a host whose CSS or JS assumes rendered blocks are direct children of
- *   the content container - the `.stack > * + *` spacing idiom,
- *   `:first-child`, `nth-child()` counting, `element.children` walks - the
- *   wrapper is the one output change a clean source migration still breaks.
- * * `symbols` - the same map as [`to_html_with_symbols`], with the same
- *   TRUSTED-RAW contract: mapped values are emitted UNESCAPED, so never build
- *   it from untrusted input.
- * * `extensions` - an array of extension names to enable, e.g.
- *   `["glossary", "table-of-contents"]`. `extensions()` reports what this
- *   build accepts. An unknown name throws: a silently ignored extension would
- *   render as missing behavior that looks like a Carve bug. Takes precedence
- *   over `full`.
- * * `full` (default `false`) - enable the preview extension set instead of
- *   rendering core-only.
- * * `rawHtml` (default `true`) - render an explicit passthrough - the `=html`
- *   raw block and the `` `…`{=html} `` inline raw span - as markup. `false`
- *   emits it as escaped text instead, the same switch carve-js spells
- *   `allowRawHtml`. A host that renders a document it did not author (a shared
- *   link, a comment field, anything a reader supplies) wants `false`: without
- *   it a passthrough is a way to run script on the host's origin.
- * * `profile` - one of `"full"`, `"article"`, `"comment"`, `"minimal"`. The
- *   rest of the untrusted-input story: input length, denied constructs, link
- *   policy. A document the profile REJECTS throws a `ProfileViolationError`
- *   carrying `violations`, rather than resolving to an empty string.
- * * `profileBaseHost` - the host counted as internal when the profile's link
- *   policy distinguishes internal from external links.
- * * `mode` - `"interactive"` (default) or `"static"`, the self-contained form
- *   for print, PDF and archival: no client scripts.
- * * `sourceLine` (default `false`) - stamp top-level blocks with
- *   `data-source-line`, for editor preview scroll-sync.
- * * `positions` (default `false`) - keep source offsets on the nodes.
- * * `labels` - override the engine-written strings (admonition names, the
- *   endnotes heading, backlink text) for a page that is not in English. These
- *   are TEXT and are escaped where they land, unlike `symbols`.
- * * `smartTypography` - `"glyph"` (default) resolves `...` to an ellipsis,
- *   `"source"` keeps the author's run.
- * * `lowercaseHeadingIds` (default `false`) and `asciiHeadingIds`
- *   (`"off"` (default), `"fold"`, `"strict"`) - the slug policy, for a host
- *   whose anchors have to match another generator's.
- *
- * An unrecognized key is ignored: the object is configuration, and a caller
- * who mistypes one deserves the render to still work. A wrong TYPE on a key
- * that is recognized does throw, because that changes behavior silently.
- *
- * Turning sections off changes nothing else. Ids, collision dedup, `</#id>`
- * crossrefs, implicit `[Heading][]` references and heading numbering all
- * resolve against the slug rather than the element carrying it, and the
- * endnotes `<section role="doc-endnotes">` is a separate construct that is
- * still emitted.
- */
-export function toHtmlWithOptions(source: string, options?: object | null): string;
 
 /**
  * Render with the core profile and a **symbols map**: `{ rocket: "🚀" }` (a
@@ -146,9 +318,12 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
     readonly extensions: () => [number, number];
+    readonly parseLocator: (a: number, b: number) => [number, number, number];
+    readonly sanitizeSvg: (a: number, b: number, c: number) => [number, number, number];
     readonly toHtml: (a: number, b: number) => [number, number];
     readonly toHtmlFull: (a: number, b: number, c: number) => [number, number, number, number];
     readonly toHtmlWithOptions: (a: number, b: number, c: number) => [number, number, number, number];
+    readonly toHtmlWithRenderers: (a: number, b: number, c: number) => [number, number, number];
     readonly toHtmlWithSymbols: (a: number, b: number, c: number) => [number, number, number, number];
     readonly version: () => [number, number];
     readonly __wbindgen_malloc: (a: number, b: number) => number;

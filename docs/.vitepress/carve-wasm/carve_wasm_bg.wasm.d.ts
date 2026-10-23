@@ -2,9 +2,12 @@
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
 export const extensions: () => [number, number];
+export const parseLocator: (a: number, b: number) => [number, number, number];
+export const sanitizeSvg: (a: number, b: number, c: number) => [number, number, number];
 export const toHtml: (a: number, b: number) => [number, number];
 export const toHtmlFull: (a: number, b: number, c: number) => [number, number, number, number];
 export const toHtmlWithOptions: (a: number, b: number, c: number) => [number, number, number, number];
+export const toHtmlWithRenderers: (a: number, b: number, c: number) => [number, number, number];
 export const toHtmlWithSymbols: (a: number, b: number, c: number) => [number, number, number, number];
 export const version: () => [number, number];
 export const __wbindgen_malloc: (a: number, b: number) => number;
