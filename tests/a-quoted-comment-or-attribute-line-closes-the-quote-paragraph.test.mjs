@@ -33,3 +33,11 @@ for (const [name, first, second] of [
 test('control: a dash line under a plain paragraph is paragraph text, not an item', () => {
   assert.match(render('para', '- %% c', ':::\nafter *b*'), /<p>para\n-\n<code>\ncode<\/code><\/p>/)
 })
+
+for (const head of ['{x', '{.c} x', 'p']) {
+  test(`a quoted ${head} paragraph keeps the lazy list marker`, () => {
+    const html = renderDoc(parse(`> ${head}\n- z\n  :: t\n  : zq\n`))
+    assert.match(html, /<blockquote><p>[^<]*\n- z\n:: t\n: zq<\/p><\/blockquote>/)
+    assert.doesNotMatch(html, /<li>/)
+  })
+}

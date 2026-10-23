@@ -26,6 +26,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { indentCols, dedentMeasured, parse } from '../scripts/spec/layout.mjs'
+import { renderDoc } from '../scripts/spec/html.mjs'
 
 /** Every string of spaces and tabs up to `maxLen`, followed by `tail`. */
 function* runs(maxLen, tail) {
@@ -115,3 +116,15 @@ test('a tab ladder off the stop nests the way a walk says it does', () => {
   }
   assert.equal(levels, depth, `the ladder nested ${levels} deep, expected ${depth}`)
 })
+
+for (const source of [
+  '- x\n  \t:: t\n    : zq\n',
+  '- x\n  \t:: t\n\t: zq\n',
+  '- x\n  - y\n  \t:: t\n     : zq\n',
+]) {
+  test(`the description stays in the term at its item-relative column: ${JSON.stringify(source)}`, () => {
+    const html = renderDoc(parse(source))
+    assert.match(html, /<dt>t\n: zq<\/dt>/)
+    assert.doesNotMatch(html, /<dd>/)
+  })
+}

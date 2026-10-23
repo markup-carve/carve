@@ -32,3 +32,12 @@ test('a follower at the item opener column attaches to the innermost item', () =
 test('a first-block quote at document column takes its flush follower', () => {
   assert.match(html('> +\nflush'), /<blockquote><p>flush<\/p><\/blockquote>$/)
 })
+
+test('a quoted plus and its list follower read the same inside and outside an item', () => {
+  const nested = renderDoc(parse('- > - > a\n  >   +\n  >   - s\n'))
+  const top = renderDoc(parse('> - > a\n>   +\n>   - s\n'))
+  for (const html of [nested, top]) {
+    assert.match(html, /<blockquote><p>a\n\+\n- s<\/p><\/blockquote>/)
+    assert.doesNotMatch(html, /<li>s<\/li>/)
+  }
+})
