@@ -90,7 +90,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          VERDICT="$(node tools/dependency-map.mjs \
+          VERDICT="$(node tools/dependency-map.mjs --remote \
             --out "$RUNNER_TEMP/Dependency-Map.md" \
             --changed-vs wiki/Dependency-Map.md | tail -n 1)"
           echo "verdict=$VERDICT" >> "$GITHUB_OUTPUT"

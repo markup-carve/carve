@@ -12,6 +12,8 @@
  *   node tools/dependency-map.mjs --json          # data without rendering
  *   node tools/dependency-map.mjs --out FILE      # write a file
  *   node tools/dependency-map.mjs --org NAME      # default: markup-carve
+ *   node tools/dependency-map.mjs --mirror-dir DIR --stats
+ *   node tools/dependency-map.mjs --remote        # REST fallback for CI
  *   node tools/dependency-map.mjs --out F --changed-vs G
  *                                      # prints substantive or cosmetic change
  *
@@ -19,7 +21,7 @@
  */
 
 import { execFile } from 'node:child_process'
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
@@ -39,9 +41,71 @@ const value = (name, fallback) => {
 
 const ORG = value('org', 'markup-carve')
 const CONCURRENCY = 6
+const REMOTE = flag('remote')
+const MIRROR_DIR = value('mirror-dir', process.env.DEPMAP_MIRROR_DIR ?? '/media/mark/data/work/git/_org-mirror')
+const stats = { mirrorsFetched: 0, restCalls: 0, graphqlCalls: 0 }
+const mirrors = new Map()
+const repoMetadata = new Map()
+const shell = async (command, argv, options = {}) => (await run(command, argv, { maxBuffer: 64 * 1024 * 1024, ...options })).stdout
+const git = (repo, argv) => shell('git', ['--git-dir', mirrors.get(repo), ...argv])
+
+async function discoverLocal() {
+  const query = `query($org: String!) { organization(login: $org) { repositories(first: 100, privacy: PUBLIC) { pageInfo { hasNextPage } nodes { name isArchived isFork defaultBranchRef { name } pullRequests(first: 100, states: OPEN) { pageInfo { hasNextPage } nodes { number headRefOid baseRefName } } } } } }`
+  stats.graphqlCalls++
+  const result = JSON.parse(await shell('gh', ['api', 'graphql', '-f', `query=${query}`, '-F', `org=${ORG}`]))
+  const list = result.data?.organization?.repositories
+  if (!list || list.pageInfo.hasNextPage || list.nodes.some((repo) => repo.pullRequests.pageInfo.hasNextPage)) {
+    throw new Error('GraphQL repository or pull request list exceeds one page')
+  }
+  return list.nodes.filter((repo) => !repo.isArchived && !repo.isFork && repo.defaultBranchRef).map((repo) => ({
+    name: repo.name, default_branch: repo.defaultBranchRef.name, pulls: repo.pullRequests.nodes.map((pull) => ({ number: pull.number, head: { sha: pull.headRefOid }, base: { ref: pull.baseRefName } })),
+  }))
+}
+
+async function fetchMirror(repo) {
+  mkdirSync(MIRROR_DIR, { recursive: true })
+  const path = resolve(MIRROR_DIR, `${ORG}-${repo.name}.git`)
+  if (!existsSync(path)) await shell('git', ['clone', '--bare', '--filter=blob:none', `git@github.com:${ORG}/${repo.name}.git`, path])
+  mirrors.set(repo.name, path)
+  await git(repo.name, ['fetch', '--quiet', 'origin', '+refs/heads/*:refs/heads/*', '+refs/tags/*:refs/tags/*', '+refs/pull/*/head:refs/pull/*/head'])
+  stats.mirrorsFetched++
+}
+
+async function localFile(repo, path, ref) {
+  try { return await git(repo, ['show', `${ref}:${path}`]) } catch { return null }
+}
+
+async function localTree(repo, ref) {
+  const output = await git(repo, ['ls-tree', '-rz', ref])
+  return output.split('\0').filter(Boolean).map((line) => {
+    const [meta, path] = line.split('\t')
+    const [mode, type, sha] = meta.split(' ')
+    return { mode, type, sha, path }
+  })
+}
+
+async function localChangedPaths(repo, base, head) {
+  const output = await git(repo, ['diff', '--name-status', '-z', `${base}...${head}`])
+  const fields = output.split('\0').filter(Boolean)
+  const paths = []
+  for (let i = 0; i < fields.length;) {
+    const status = fields[i++]
+    const old = fields[i++]
+    const path = status.startsWith('R') || status.startsWith('C') ? fields[i++] : old
+    if (!status.startsWith('D')) paths.push({ filename: path, status })
+  }
+  return paths
+}
+
+function semverOrder(a, b) {
+  const [ap, bp] = [a, b].map(semverParts)
+  for (let i = 0; i < 3; i++) if (ap[i] !== bp[i]) return bp[i] - ap[i]
+  return a.localeCompare(b, 'en', { numeric: true })
+}
 
 /** `gh api` as JSON, with 404 as a value rather than a throw. */
 async function api(path, { raw = false } = {}) {
+  stats.restCalls++
   try {
     const { stdout } = await run('gh', ['api', path, ...(raw ? ['--header', 'Accept: application/vnd.github.raw'] : [])], {
       maxBuffer: 64 * 1024 * 1024,
@@ -84,9 +148,9 @@ const MANIFESTS = new Map([
   ['Gemfile', 'ruby'],
 ])
 
-/** One request per repo: the whole tree, so only manifests that exist are read. */
+/** List tracked paths once, then read only the inputs present in the tree. */
 async function repoManifestPaths(repo, branch) {
-  const tree = await api(`repos/${ORG}/${repo}/git/trees/${branch}?recursive=1`)
+  const tree = REMOTE ? await api(`repos/${ORG}/${repo}/git/trees/${branch}?recursive=1`) : { tree: await localTree(repo, branch) }
   if (!tree?.tree) return { manifests: [], gitlinks: new Map(), vendorPins: [], hasDeclaration: false }
   const wanted = []
   // A gitlink carries the submodule commit; `.gitmodules` only names its URL.
@@ -169,8 +233,8 @@ const vendorCandidate = (path) => VENDOR_CANDIDATE.test(path) && !VENDOR_EXCLUDE
  * of it, whatever its manifests say, and here that dependency has a resolvable
  * commit rather than a guess.
  *
- * Only the first bytes are read. A range request over raw content turns a 1.4MB
- * bundle into 300 bytes, so this is cheap enough to run over every candidate.
+ * Only the first bytes are parsed. Remote mode uses a range request; local
+ * mode reads the blob through git and slices the header.
  */
 const VENDOR_HEADER = /^\s*(?:(?:\/\/|#|\/\*|\*|--|<!--)\s*)?(?:Bundled|Generated|Vendored|Copied)\s+from\s+markup-carve\/([a-z0-9][a-z0-9.-]*)/im
 
@@ -319,19 +383,20 @@ function ciInstalls(text, self, known) {
 }
 
 async function readFile(repo, path, branch) {
-  return api(`repos/${ORG}/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`, { raw: true })
+  return REMOTE ? api(`repos/${ORG}/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`, { raw: true }) : localFile(repo, path, branch)
 }
 
 /*
- * The first bytes of a file, without downloading it.
+ * The first bytes of a file.
  *
- * The contents API returns the whole blob, and a vendored bundle is routinely
+ * The remote contents API returns the whole blob, and a vendored bundle is routinely
  * over a megabyte - fetching fifty of them to read three comment lines would
  * turn a cheap report into a slow one. Raw content honours a range request, so
  * this is 300 bytes per candidate. A server that ignores the range still
  * answers correctly, just wastefully, and the slice bounds it either way.
  */
 async function readHead(repo, path, branch, bytes = 512) {
+  if (!REMOTE) return (await localFile(repo, path, branch))?.slice(0, bytes) ?? null
   const url = `https://raw.githubusercontent.com/${ORG}/${repo}/${branch}/${path}`
   try {
     const response = await fetch(url, { headers: { Range: `bytes=0-${bytes - 1}` } })
@@ -588,16 +653,16 @@ const targetCache = new Map()
 async function targetState(repo) {
   if (targetCache.has(repo)) return targetCache.get(repo)
   const promise = (async () => {
-    const meta = await api(`repos/${ORG}/${repo}`)
+    const meta = REMOTE ? await api(`repos/${ORG}/${repo}`) : repoMetadata.get(repo)
     if (!meta) return null
-    const [tags, release] = await Promise.all([
+    const [tags, release] = REMOTE ? await Promise.all([
       api(`repos/${ORG}/${repo}/tags?per_page=100`),
       api(`repos/${ORG}/${repo}/releases/latest`),
-    ])
+    ]) : [await localTags(repo), null]
     const bySha = new Map()
     for (const tag of tags ?? []) bySha.set(tag.commit.sha, tag.name)
     const latestTag = tags?.[0]?.name ?? null
-    const latestRelease = release?.tag_name ?? null
+    const latestRelease = REMOTE ? release?.tag_name ?? null : latestTag
     // HOW FAR THIS REPO ITSELF HAS MOVED PAST ITS OWN LATEST TAG, which is a
     // different question from any edge verdict: an edge says whether a PIN
     // names a release, this says whether there is anything here to release at
@@ -621,9 +686,20 @@ async function targetState(repo) {
 
 /** How far apart two refs are, as GitHub counts it. */
 async function distance(repo, base, head) {
+  if (!REMOTE) {
+    try {
+      const counts = (await git(repo, ['rev-list', '--left-right', '--count', `${base}...${head}`])).trim().split(/\s+/).map(Number)
+      return { ahead: counts[1], behind: counts[0], status: counts[0] && counts[1] ? 'diverged' : counts[1] ? 'ahead' : counts[0] ? 'behind' : 'identical' }
+    } catch { return null }
+  }
   const compare = await api(`repos/${ORG}/${repo}/compare/${base}...${head}`)
   if (!compare) return null
   return { ahead: compare.ahead_by, behind: compare.behind_by, status: compare.status }
+}
+
+async function localTags(repo) {
+  const names = (await git(repo, ['tag', '--list'])).trim().split('\n').filter((name) => /^v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(name)).sort(semverOrder)
+  return Promise.all(names.map(async (name) => ({ name, commit: { sha: (await git(repo, ['rev-list', '-n', '1', name])).trim() } })))
 }
 
 const semverParts = (name) => name.replace(/^v/, '').split(/[-+]/)[0].split('.').map(Number)
@@ -669,10 +745,10 @@ async function resolveEdge(edge) {
     if (!/^[0-9a-f]{7,40}$/i.test(edge.ref)) {
       const latest = state.latestRelease ?? state.latestTag
       const names = state.tags.map((tag) => tag.name)
-      // The tag list is one page of 100; ask for an older tag by name before calling it untagged.
+      // Remote tags are limited to one page; ask for an older tag before calling it untagged.
       for (const name of [edge.ref, `v${edge.ref.replace(/^v/, '')}`, edge.ref.replace(/^v/, '')]) {
         if (names.includes(name)) break
-        if (await api(`repos/${ORG}/${edge.target}/git/ref/tags/${encodeURIComponent(name)}`)) {
+        if (REMOTE && await api(`repos/${ORG}/${edge.target}/git/ref/tags/${encodeURIComponent(name)}`)) {
           names.push(name)
           break
         }
@@ -1371,7 +1447,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states, source }
 
 // ---------------------------------------------------------------------------
 
-export { VENDOR_CANDIDATE, vendorCandidate, parseDeclarations, changedEdges, VENDOR_NOTE, VENDOR_SCRIPT, vendorNotePins, vendorScriptPins, vendorVerdict, classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
+export { localTree, localFile, localTags, localChangedPaths, distance, mirrors, VENDOR_CANDIDATE, vendorCandidate, parseDeclarations, changedEdges, VENDOR_NOTE, VENDOR_SCRIPT, vendorNotePins, vendorScriptPins, vendorVerdict, classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
 
 /*
  * What this run was generated FROM, for staleSourceBanner above.
@@ -1398,9 +1474,13 @@ async function sourceProvenance() {
 }
 
 async function main() {
-  const repos = await api(`orgs/${ORG}/repos?per_page=100&type=public`)
+  const repos = REMOTE ? await api(`orgs/${ORG}/repos?per_page=100&type=public`) : await discoverLocal()
   const live = (repos ?? []).filter((repo) => !repo.archived && !repo.fork)
   const liveNames = new Set(live.map((repo) => repo.name))
+  if (!REMOTE) {
+    for (const repo of live) repoMetadata.set(repo.name, repo)
+    await mapLimit(live, CONCURRENCY, fetchMirror)
+  }
 
   const perRepo = await mapLimit(live, CONCURRENCY, async (repo) => {
     const { manifests, gitlinks, workflows, vendored, vendorPins, hasDeclaration } = await repoManifestPaths(repo.name, repo.default_branch)
@@ -1486,18 +1566,17 @@ async function main() {
     const declaration = hasDeclaration ? await readFile(repo.name, '.carve-deps.json', repo.default_branch) : null
     if (declaration) found.push(...parseDeclarations(declaration, repo.name, liveNames))
 
-    // GitHub's PR file list identifies changed inputs; read those inputs at
-    // the PR head and compare their edges with the same file on main.
-    const pulls = []
-    for (let page = 1; ; page++) {
+    // Changed paths identify pending inputs; compare the PR head with its base.
+    const pulls = REMOTE ? [] : repo.pulls
+    for (let page = 1; REMOTE; page++) {
       const batch = await api(`repos/${ORG}/${repo.name}/pulls?state=open&per_page=100&page=${page}`)
       if (!batch?.length) break
       pulls.push(...batch)
       if (batch.length < 100) break
     }
     for (const pull of pulls ?? []) {
-      for (let page = 1; ; page++) {
-        const files = await api(`repos/${ORG}/${repo.name}/pulls/${pull.number}/files?per_page=100&page=${page}`)
+      for (let page = 1; REMOTE || page === 1; page++) {
+        const files = REMOTE ? await api(`repos/${ORG}/${repo.name}/pulls/${pull.number}/files?per_page=100&page=${page}`) : await localChangedPaths(repo.name, pull.base.ref, `refs/pull/${pull.number}/head`)
         if (!files?.length) break
         for (const file of files) {
           if (file.status === 'removed') continue
@@ -1526,7 +1605,7 @@ async function main() {
             }
             return edges
           }
-          const [next, previous] = await Promise.all([readEdges(pull.head.sha), readEdges(repo.default_branch)])
+          const [next, previous] = await Promise.all([readEdges(REMOTE ? pull.head.sha : `refs/pull/${pull.number}/head`), readEdges(REMOTE ? repo.default_branch : pull.base.ref)])
           for (const edge of changedEdges(next, previous)) found.push({ ...edge, pending: true, pr: `${repo.name}#${pull.number}` })
         }
         if (files.length < 100) break
@@ -1583,11 +1662,13 @@ async function main() {
   const resolved = await mapLimit(kept, CONCURRENCY, resolveEdge)
   const skipped = live.filter((repo) => !resolved.some((edge) => edge.repo === repo.name)).map((repo) => repo.name)
 
+  const printStats = () => { if (flag('stats')) console.error(JSON.stringify(stats)) }
   if (flag('json')) {
     const text = `${JSON.stringify({ org: ORG, edges: resolved, skipped }, null, 2)}\n`
     const out = value('out', null)
     if (out) writeFileSync(out, text)
     else process.stdout.write(text)
+    printStats()
     return
   }
 
@@ -1625,6 +1706,7 @@ async function main() {
   const against = value('changed-vs', null)
   if (out) writeFileSync(out, markdown)
   else process.stdout.write(markdown)
+  printStats()
   if (against && out) {
     const before = existsSync(against) ? readFileSync(against, 'utf8') : null
     process.stdout.write(isSubstantiveChange(before, markdown) ? 'substantive\n' : 'cosmetic\n')
