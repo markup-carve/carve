@@ -1,13 +1,13 @@
-# Writer column after a refused first-block marker
+# Quote depth carried from a host marker
 
 ## Root cause
 
-An indented list opener followed by a refused first-block `+` leaves its next block in the outer item. At the outer item's content column, the block attaches to the nested item. The writer invariant requires a spelling that preserves the outer item's block, but the current writer rules do not select a column among valid spellings.
+The model's lone-plus scan recognizes a quote opened directly on a list marker, but it leaves the live quote depth at zero and misses quotes opened after nested list markers. A following line with fewer quote prefixes then raises that depth only to its visible prefix count. The scan treats a `+` after one prefix as missing the inner quote and refuses it, even when the marker line opened two quotes. The same quote run at document level keeps its inner depth and attaches.
 
 ## Change
 
-Specify that the writer moves the block from the outer item's content column to the nearest column that parses it in that item. For the ruled example, this is document column 3. Keep the block on the following line without adding a separator. Add a focused test for quote and fence followers.
+Walk the marker chain on a host line to find its quote opener, then carry that opener's depth and source column into the scan's live quote path. A line with fewer explicit prefixes can then retain the already open inner quote through lazy continuation. Use that path when deciding whether a quoted `+` with a deeper quoted follower attaches.
 
 ## Scope
 
-The rule selects a column by parsed ownership and distance from the usual content column. It applies to any block kind and any indentation where the same ownership conflict occurs, rather than naming the two corpus rows.
+This tracks quote depth from any list marker that opens a quote chain. The decision follows container state and prefix depth, so it applies across marker spellings and nesting depths rather than matching the reported lines.

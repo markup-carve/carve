@@ -2894,11 +2894,22 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
       liveQuoteItem = false
     }
     if (QUOTE.test(rest)) { hostedQuoteColumn = quoted.measured.col; hostedMarkerQuote = false; hostedMarkerDepth = 0 }
-    if (marker && quoteLeaf(marker.text).depth > 0) {
-      hostedQuoteColumn = marker.indent + marker.markerWidth
-      hostedMarkerQuote = true
-      hostedMarkerDepth = quoteLeaf(marker.text).depth
-      hostedMarkerSourceColumn = indentCols(line).col + marker.indent + marker.markerWidth
+    let host = marker
+    let hostColumn = marker?.indent ?? 0
+    for (let depth = 0; host && depth < MAX_NESTING_DEPTH; depth++) {
+      hostColumn += host.markerWidth
+      const nested = indentCols(host.text)
+      hostColumn += nested.col
+      const hostedQuote = quoteLeaf(host.text)
+      if (hostedQuote.depth > 0) {
+        hostedQuoteColumn = hostColumn
+        hostedMarkerQuote = true
+        hostedMarkerDepth = hostedQuote.depth
+        hostedMarkerSourceColumn = hostColumn
+        liveQuoteDepth = hostedMarkerDepth
+        break
+      }
+      host = matchMarkerAt(nested)
     }
     const bodyLead = quoted.depth === 0 && !marker ? /^(?::|\[\^[^\]]+\]:) +(?=> )/.exec(rest) : null
     if (bodyLead) {
