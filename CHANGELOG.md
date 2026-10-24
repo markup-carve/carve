@@ -17,10 +17,10 @@ The spec now settles several container, table, and writer edge cases. The playgr
 ### Fixes
 
 - Refused `+` markers stay in the paragraph or list item that owns them, and writers use the nearest column that preserves their text (#3549, #3563, #3570, #3572, #3575).
-- Quoted continuation markers attach at the correct quote depth, while nested wrapped attributes stay with their enclosing block (#3578, #3592, #3593).
+- Quoted continuation markers attach at the correct quote depth, and a wrapped attribute in a definition body or a quote no longer keeps the next line inside that container (#3578, #3592, #3593).
 - Definition separators to the left of an item's column remain in its body, definition marker lines follow the list marker comment rule, and item-relative tabs and quoted lazy lines retain their intended owners (#3543, #3545, #3548, #3551, #3559, #3569).
 - A quote after a trailing slash closes before punctuation or whitespace (#3555).
-- Padded lone table span markers keep their literal text, and spans, alignment defaults, and header scope follow physical table columns across renderers (#3576, #3586, #3587, #3589, #3590).
+- A table cell holding only `<` or `^` reads as a span marker however it is padded, and spans, alignment defaults, and header scope follow physical table columns across renderers (#3576, #3586, #3587, #3589, #3590).
 
 ### Improvements
 
