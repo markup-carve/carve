@@ -102,38 +102,6 @@
       }
     },
     {
-      "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-14.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            3,
-            2
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-18.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            3,
-            4
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/620-generated-container-documents-23.crv",
       "reason": "The measured engines disagree on `unused-footnote-definition` and `duplicate-footnote-definition` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",

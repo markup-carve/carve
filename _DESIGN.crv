@@ -2,11 +2,11 @@
 
 ## Root cause
 
-The scheduled AST workflow measures reviewed engine revisions from `resources/engine-pins.json`. Its JavaScript reference build also needs the matching dependency in `package.json`. Those revisions precede merged AST fixes in carve-js, carve-php, and carve-rs, so the workflow measures old behavior.
+The scheduled AST workflow measures reviewed engine revisions from `resources/engine-pins.json`. Its JavaScript reference build also needs the matching dependency in `package.json`. Those revisions precede merged AST fixes in carve-js, carve-php, and carve-rs, so the workflow measures old behavior. The new revisions also make two lint drift declarations stale: the engines now agree on those rows.
 
 ## Change
 
-Advance the three reviewed engine pins to their current main commits with `scripts/set-engine-pin.mjs`. Update the npm lockfile for the JavaScript reference dependency. Keep the Ruby pin and the conformance oracle unchanged. Run the AST workflow at these revisions, then file engine-specific bugs with reproductions for any remaining divergence.
+Align the repository's reviewed engine state with current main: advance the three engine pins with `scripts/set-engine-pin.mjs`, update the JavaScript npm lockfile, and remove drift declarations where the new builds agree. Keep the Ruby pin and the conformance oracle unchanged. Run the AST workflow at these revisions, then file engine-specific bugs with reproductions for any remaining divergence.
 
 ## Scope
 
