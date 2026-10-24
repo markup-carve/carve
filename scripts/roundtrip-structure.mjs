@@ -20,6 +20,12 @@
  * carrier comparison. This moves JS/md strict from 1689 to 1688.
  * The RS 4d0df469 pin reads corpus 652-2's quoted `+` as text (carve-rs#3106),
  * which Markdown roundtrip escapes the same way. RS/md strict 2015 to 2014.
+ * At JS d2709c00 (carve-js#3502, recorded in carve#3489), corpus 626,
+ * 626-2, 626-3 and 630-9 write a literal `+` that Markdown must escape.
+ * Import keeps escaped_text, moving JS/md strict 1724 to 1720.
+ * At Rust 7db0926a (carve#3489), corpus 658 remains semantically equal
+ * after HTML import, but text becomes escaped_text in the strict tree.
+ * This moves RS/html strict 2349 to 2348.
  */
 import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'
