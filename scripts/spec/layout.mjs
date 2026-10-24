@@ -2907,6 +2907,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
     }
   }
   const openSiblingList = (index, col, depth) => {
+    let sawPlainLine = false
     for (let row = index - 1; row >= 0; row--) {
       const leaf = quoteLeaf(sourceLines[row])
       if (leaf.depth !== depth) {
@@ -2917,10 +2918,19 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
         return hosted?.depth === depth && hosted.measured.col === col && !!matchMarkerAt(hosted.measured)
       }
       const measured = depth === 0 ? indentCols(sourceLines[row]) : leaf.measured
-      if (measured.rest === '') continue
+      if (measured.rest === '') {
+        if (sawPlainLine) return false
+        continue
+      }
       if (measured.col > col) continue
       if (matchMarkerAt(measured)) return measured.col === col
       if (CONT_MARKER.test(measured.rest)) continue
+      // A plain line at this column can be a lazy continuation of the item.
+      // Keep looking for its marker, but a blank between them ends that claim.
+      if (measured.col === col && foldablePlainLine(measured.rest)) {
+        sawPlainLine = true
+        continue
+      }
       return false
     }
     return false
