@@ -20,8 +20,8 @@
         "total": 3029
       },
       "md": {
-        "identical": 2220,
-        "strict": 1657,
+        "identical": 2221,
+        "strict": 1656,
         "total": 3029
       }
     },
@@ -33,7 +33,7 @@
       },
       "md": {
         "identical": 2318,
-        "strict": 2013,
+        "strict": 2019,
         "total": 3029
       }
     }

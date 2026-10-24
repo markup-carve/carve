@@ -23,3 +23,5 @@
 #
 # Format: <a>|<b>/<slug><two or more spaces><reason naming owner/repo#N>
 # Engines are js, php, rust, written in that order.
+js|rust/590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open-3  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
+php|rust/590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open-3  Byte layout differs while HTML, idempotence and spec cross-read agree; no canonical layout is ruled (markup-carve/carve#3489).
