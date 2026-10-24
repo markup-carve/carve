@@ -1,13 +1,13 @@
-# Quote depth carried from a host marker
+# Keep a published stylesheet pin aligned with its documented recipe
 
 ## Root cause
 
-The model's lone-plus scan recognizes a quote opened directly on a list marker, but it leaves the live quote depth at zero and misses quotes opened after nested list markers. A following line with fewer quote prefixes then raises that depth only to its visible prefix count. The scan treats a `+` after one prefix as missing the inner quote and refuses it, even when the marker line opened two quotes. The same quote run at document level keeps its inner depth and attaches.
+The site documents the `.scroll` recipe from carve-css 0.1.8, but the manifest accepts 0.1.7 and the lockfile installs that older release. A clean install can serve the recipe without its CSS.
 
 ## Change
 
-Walk the marker chain on a host line to find its quote opener, then carry that opener's depth and source column into the scan's live quote path. A line with fewer explicit prefixes can then retain the already open inner quote through lazy continuation. Use that path when deciding whether a quoted `+` with a deeper quoted follower attaches.
+Set the manifest's carve-css floor to the release that supplies the documented recipe and regenerate the lockfile. Verify the installed package version and build the docs with that dependency.
 
 ## Scope
 
-This tracks quote depth from any list marker that opens a quote chain. The decision follows container state and prefix depth, so it applies across marker spellings and nesting depths rather than matching the reported lines.
+The manifest and lockfile together define the site's installed dependency. Keeping both at a release that implements the documented behavior addresses any page using the recipe, rather than one example page.
