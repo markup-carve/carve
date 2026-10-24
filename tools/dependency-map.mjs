@@ -42,7 +42,7 @@ const value = (name, fallback) => {
 const ORG = value('org', 'markup-carve')
 const CONCURRENCY = 6
 const REMOTE = flag('remote')
-const MIRROR_DIR = value('mirror-dir', process.env.DEPMAP_MIRROR_DIR ?? '/media/mark/data/work/git/_org-mirror')
+const MIRROR_DIR = value('mirror-dir', process.env.DEPMAP_MIRROR_DIR ?? '/media/mark/data/work/git/_org-mirror') // host-path-guard: intentional
 const stats = { mirrorsFetched: 0, restCalls: 0, graphqlCalls: 0 }
 const mirrors = new Map()
 const repoMetadata = new Map()

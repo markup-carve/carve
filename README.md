@@ -183,7 +183,7 @@ Contributor setup, testing, and maintenance notes are in the [development guide]
 
 ## Dependency declarations
 
-The [dependency map](tools/dependency-map.mjs) reads manifests, open pull requests, and vendored-copy headers. By default it fetches bare SSH mirrors under `/media/mark/data/work/git/_org-mirror` (override with `--mirror-dir` or `DEPMAP_MIRROR_DIR`) and uses one GraphQL request for the repository and open PR list. `--stats` prints mirror, REST, and GraphQL counts. CI uses `--remote` to read through REST. Local mode treats the newest semantic version tag as the latest release because Git tags do not indicate whether a GitHub release was published.
+The [dependency map](tools/dependency-map.mjs) reads manifests, open pull requests, and vendored-copy headers. By default it fetches bare SSH mirrors under the default mirror directory (override with `--mirror-dir` or `DEPMAP_MIRROR_DIR`) and uses one GraphQL request for the repository and open PR list. `--stats` prints mirror, REST, and GraphQL counts. CI uses `--remote` to read through REST. Local mode treats the newest semantic version tag as the latest release because Git tags do not indicate whether a GitHub release was published.
 
 If a repository depends on another `markup-carve` repository without a detectable pin, put `.carve-deps.json` at its root:
 
