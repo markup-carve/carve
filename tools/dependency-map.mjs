@@ -77,6 +77,7 @@ const MANIFESTS = new Map([
   ['composer.json', 'composer'],
   ['Cargo.toml', 'cargo'],
   ['pyproject.toml', 'python'],
+  ['requirements.txt', 'pythonreq'],
   ['.gitmodules', 'submodule'],
   ['extension.toml', 'zed'],
   ['Cargo.lock', 'cargolock'],
@@ -86,7 +87,7 @@ const MANIFESTS = new Map([
 /** One request per repo: the whole tree, so only manifests that exist are read. */
 async function repoManifestPaths(repo, branch) {
   const tree = await api(`repos/${ORG}/${repo}/git/trees/${branch}?recursive=1`)
-  if (!tree?.tree) return { manifests: [], gitlinks: new Map(), vendorPins: [] }
+  if (!tree?.tree) return { manifests: [], gitlinks: new Map(), vendorPins: [], hasDeclaration: false }
   const wanted = []
   // A gitlink carries the submodule commit; `.gitmodules` only names its URL.
   const gitlinks = new Map()
@@ -99,7 +100,7 @@ async function repoManifestPaths(repo, branch) {
     // CI checkouts can reveal dependencies absent from manifests.
     if (/^\.github\/workflows\/[^/]+\.ya?ml$/.test(entry.path)) workflows.push(entry.path)
     // Check candidate artifacts for a provenance header below.
-    if (VENDOR_CANDIDATE.test(entry.path)) vendored.push(entry.path)
+    if (vendorCandidate(entry.path)) vendored.push(entry.path)
     if (!/(^|\/)node_modules\//.test(entry.path) && (VENDOR_NOTE.test(entry.path) || VENDOR_SCRIPT.test(entry.path))) {
       vendorPins.push(entry.path)
     }
@@ -114,7 +115,7 @@ async function repoManifestPaths(repo, branch) {
       wanted.push({ path: entry.path, kind: 'ruby' })
     }
   }
-  return { manifests: wanted, gitlinks, workflows, vendored, vendorPins }
+  return { manifests: wanted, gitlinks, workflows, vendored, vendorPins, hasDeclaration: tree.tree.some((entry) => entry.path === '.carve-deps.json') }
 }
 
 /*
@@ -149,7 +150,10 @@ async function repoManifestPaths(repo, branch) {
  * "every .json" would spend a request per fixture in the org.
  */
 // UPSTREAM.md: a byte-for-byte copy cannot carry a header, so its directory's note does.
-const VENDOR_CANDIDATE = /\.(iife\.js|bundle\.js|min\.js|umd\.js|wasm|css)$|\/(server|engine|carve)\.js$|(^|\/)UPSTREAM\.md$/
+const VENDOR_CANDIDATE = /\.(js|mjs|cjs|jsx|tsx|wasm|css|py|rb|lua|php|go|ts|sh)$|(^|\/)UPSTREAM\.md$/
+const VENDOR_EXCLUDED = /(^|\/)(node_modules|vendor|vendors|\.vendor|venv|\.venv|site-packages|test|tests|fixtures|testdata|__fixtures__)(\/|$)/i
+const VENDOR_TEST_FILE = /(?:^|\/)(?:test_[^/]+\.(?:py|rb)|[^/]+(?:[._-]test|[._-]spec)\.(?:js|mjs|cjs|jsx|tsx|py|rb|lua|php|go|ts|sh))$/i
+const vendorCandidate = (path) => VENDOR_CANDIDATE.test(path) && !VENDOR_EXCLUDED.test(path) && !VENDOR_TEST_FILE.test(path)
 
 /*
  * THE PIN THAT LIVES IN THE ARTIFACT.
@@ -168,7 +172,7 @@ const VENDOR_CANDIDATE = /\.(iife\.js|bundle\.js|min\.js|umd\.js|wasm|css)$|\/(s
  * Only the first bytes are read. A range request over raw content turns a 1.4MB
  * bundle into 300 bytes, so this is cheap enough to run over every candidate.
  */
-const VENDOR_HEADER = /(?:Bundled|Generated|Vendored|Copied)\s+from\s+markup-carve\/([a-z0-9][a-z0-9.-]*)/i
+const VENDOR_HEADER = /^\s*(?:(?:\/\/|#|\/\*|\*|--|<!--)\s*)?(?:Bundled|Generated|Vendored|Copied)\s+from\s+markup-carve\/([a-z0-9][a-z0-9.-]*)/im
 
 /*
  * THE COMMIT IS NOT ALWAYS ON THE SAME LINE as the repo it names, and requiring
@@ -183,13 +187,35 @@ const VENDOR_HEADER = /(?:Bundled|Generated|Vendored|Copied)\s+from\s+markup-car
  * searched instead, which is the unit the writer was working in.
  */
 const VENDOR_COMMIT = /\bcommit\s+([0-9a-f]{7,40})\b/i
+const VENDOR_COMMIT_FIELD = /\b[A-Z_]*(?:SOURCE|VENDOR|UPSTREAM)_COMMIT\s*=\s*['"]([0-9a-f]{7,40})\b/i
+const VENDOR_TAG = /\b(?:tag|version)\s+(v?\d+\.\d+\.\d+(?:-[\w.-]+)?)\b/i
 
 function vendorProvenance(head, self, known) {
   const match = VENDOR_HEADER.exec(head)
   if (!match) return null
   const target = match[1].replace(/\.git$/, '')
   if (target === self || !known.has(target)) return null
-  return { target, ref: VENDOR_COMMIT.exec(head)?.[1] ?? null }
+  const inlineTag = /^(?:\s+|@)(v?\d+\.\d+\.\d+(?:-[\w.-]+)?)/i.exec(head.slice(match.index + match[0].length))?.[1]
+  return { target, ref: VENDOR_COMMIT.exec(head)?.[1] ?? VENDOR_COMMIT_FIELD.exec(head)?.[1] ?? VENDOR_TAG.exec(head)?.[1] ?? inlineTag ?? null }
+}
+
+const DECLARATION_KINDS = new Set(['runtime-cdn', 'build-download', 'docs', 'vendored', 'other'])
+function parseDeclarations(text, self, known, path = '.carve-deps.json') {
+  const document = JSON.parse(text)
+  if (!document || !Array.isArray(document.needs)) throw new Error(`${self}/${path}: needs must be an array`)
+  return document.needs.map((item) => {
+    if (!item || typeof item !== 'object') throw new Error(`${self}/${path}: invalid dependency declaration`)
+    const match = /^markup-carve\/([a-z0-9][a-z0-9.-]*)$/.exec(item.repo ?? '')
+    if (!match || !known.has(match[1]) || match[1] === self || !DECLARATION_KINDS.has(item.kind) || !String(item.reason ?? '').trim()) {
+      throw new Error(`${self}/${path}: invalid dependency declaration`)
+    }
+    return { kind: 'declared', target: match[1], ref: null, name: match[1], spec: item.kind, field: item.kind, path, repo: self, declaredReason: item.reason }
+  })
+}
+
+function changedEdges(next, base) {
+  const old = new Set(base.map((edge) => `${edge.target}|${edge.kind}|${edge.ref ?? edge.spec}`))
+  return next.filter((edge) => !old.has(`${edge.target}|${edge.kind}|${edge.ref ?? edge.spec}`))
 }
 
 // A copy pinned only in prose or in the script that fetches it: no header carries it.
@@ -378,6 +404,8 @@ const PACKAGE_TO_REPO = new Map([
   ['markup-carve/carve-php-media-embed', 'carve-php-media-embed'],
   ['carve-lang', 'carve-rs'], // crates.io: the Rust engine
   ['mkdocs-carve', 'mkdocs-carve'],
+  ['pygments-carve', 'pygments-carve'],
+  ['zensical-carve', 'zensical-carve'],
 ])
 
 /**
@@ -405,7 +433,7 @@ const EDGE_FIELDS = {
 function parseManifest(kind, path, text, gitlinks) {
   const edges = []
   const push = (name, spec, field) => {
-    const ecosystem = kind === 'python' ? 'python' : kind === 'ruby' ? 'ruby' : kind
+    const ecosystem = kind === 'python' || kind === 'pythonreq' ? 'python' : kind === 'ruby' ? 'ruby' : kind
     const found = targetFor(ecosystem, name, spec)
     if (found?.target) edges.push({ ...found, name, spec: String(spec ?? ''), field, path })
   }
@@ -460,6 +488,15 @@ function parseManifest(kind, path, text, gitlinks) {
       const [, name, constraint] = match
       if (!name.includes('carve')) continue
       push(name, constraint.trim() || '*', 'dependencies')
+    }
+    return edges
+  }
+
+  if (kind === 'pythonreq') {
+    for (const line of text.split('\n')) {
+      const match = /^\s*([A-Za-z0-9._-]+)\s*([<>=!~].*)?$/.exec(line.split('#', 1)[0])
+      if (!match || !match[1].includes('carve')) continue
+      push(match[1], match[2]?.trim() || '*', 'requirements')
     }
     return edges
   }
@@ -627,7 +664,7 @@ async function resolveEdge(edge) {
   // rather than dropping.
   if (edge.kind === 'vendor') {
     if (!edge.ref) {
-      return { ...edge, verdict: 'unpinned', note: `vendored in ${edge.path}, header names no commit` }
+      return { ...edge, verdict: 'unpinned-vendor', note: `vendored in ${edge.path}, header names no commit` }
     }
     if (!/^[0-9a-f]{7,40}$/i.test(edge.ref)) {
       const latest = state.latestRelease ?? state.latestTag
@@ -662,6 +699,9 @@ async function resolveEdge(edge) {
   // down. The reason carries the evidence a pin would otherwise have carried.
   if (edge.kind === 'vendor-declared') {
     return { ...edge, verdict: 'undeclared', note: `declared by hand: ${edge.declaredReason}` }
+  }
+  if (edge.kind === 'declared') {
+    return { ...edge, verdict: 'undeclared', note: `.carve-deps.json (${edge.field}): ${edge.declaredReason}` }
   }
 
   // A workflow checkout pins nothing by construction - it takes whatever the
@@ -761,6 +801,7 @@ const VERDICTS = {
   range: { label: '🟦 range', rank: 1 },
   unreleased: { label: '🔴 not a release', rank: 4 },
   unpinned: { label: '🟠 unpinned', rank: 3 },
+  'unpinned-vendor': { label: '🟠 unpinned-vendor', rank: 3 },
   local: { label: '⬚ local', rank: 1 },
   unknown: { label: '❔ unknown', rank: 1 },
 }
@@ -771,6 +812,7 @@ const MERMAID_CLASS = {
   range: 'range',
   unreleased: 'bad',
   unpinned: 'loose',
+  'unpinned-vendor': 'loose',
   local: 'range',
   unknown: 'range',
 }
@@ -826,7 +868,7 @@ const notARelease = (repo) => NEVER_RELEASED.has(repo) || repo.endsWith('-demo')
 
 /** A label Mermaid can hold: no node syntax, no edge syntax, not too long. */
 function edgeLabel(edge) {
-  const raw = String(edge.resolved ?? edge.ref ?? edge.spec ?? '?')
+  const raw = edge.pending ? `pending #${edge.pr.split('#')[1]}` : String(edge.resolved ?? edge.ref ?? edge.spec ?? '?')
   const safe = raw.replace(/["'`|<>{}[\]()]/g, '').replace(/\s+/g, ' ').trim()
   return safe.length > 16 ? `${safe.slice(0, 15)}…` : safe || '?'
 }
@@ -873,7 +915,7 @@ function renderSpine(edges) {
   const seen = new Set()
   for (const edge of spine) {
     const key = `${edge.target}->${edge.repo}`
-    if (seen.has(key)) continue
+    if (seen.has(key) && !edge.pending) continue
     seen.add(key)
     lines.push(`  ${nodeId(edge.target)} -->|"${edgeLabel(edge)}"| ${nodeId(edge.repo)}`)
     paint(painted, nodeId(edge.repo), edge.verdict)
@@ -1024,7 +1066,9 @@ function renderReleaseOrder(edges, states, allRepos) {
     const state = states.get(repo)
     const version = state?.latestRelease ?? state?.latestTag ?? 'UNRELEASED'
     const lag = state?.behindTag ? `+${state.behindTag}` : ''
-    return `${repo.padEnd(24)} ${version.padEnd(10)} ${lag}`.trimEnd()
+    const pending = edges.filter((edge) => edge.repo === repo && edge.pending).map((edge) => `${edge.target} (${edge.pr} pending)`)
+    const declared = edges.filter((edge) => edge.repo === repo && edge.kind === 'declared').map((edge) => `${edge.target} (.carve-deps.json)`)
+    return `${repo.padEnd(24)} ${version.padEnd(10)} ${lag}${[...pending, ...declared].length ? `  <- ${[...pending, ...declared].join(', ')}` : ''}`.trimEnd()
   }
   // WHAT A REPO IS COUPLED TO, for a repo that is already IN a stage.
   //
@@ -1110,7 +1154,10 @@ function renderReleaseOrder(edges, states, allRepos) {
   if (excluded.length) {
     lines.push('')
     lines.push('NOT A RELEASE ARTIFACT  listed so an omission cannot pass for a broken query')
-    lines.push(`  ${excluded.join(', ')}`)
+    lines.push(`  ${excluded.map((repo) => {
+      const pending = edges.filter((edge) => edge.repo === repo && edge.pending).map((edge) => `${edge.target} (${edge.pr} pending)`)
+      return pending.length ? `${repo} <- ${pending.join(', ')}` : repo
+    }).join(', ')}`)
   }
   lines.push('```')
   return lines.join('\n')
@@ -1263,6 +1310,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states, source }
   out.push('| 🟡 older release | A real release, but not the newest one. Often deliberate. |')
   out.push('| 🟦 range | A registry range. Floats to whatever resolves at install time. |')
   out.push('| 🟠 unpinned | A branch name, or no ref at all. Whatever that branch says today. |')
+  out.push('| 🟠 unpinned-vendor | A vendored header names a branch or no commit. |')
   out.push('| 🔴 not a release | A commit that was never tagged. The build ships something no release names. |')
   out.push('| ⬚ local | A path dependency. Pins nothing, and is fine inside one checkout. |')
   out.push(
@@ -1302,7 +1350,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states, source }
     const declared = edge.spec.length > 46 ? `${edge.spec.slice(0, 43)}…` : edge.spec
     out.push(
       `| \`${edge.repo}\` | \`${edge.target}\` | \`${declared || edge.ref || '-'}\` | ` +
-        `${edge.resolved ? `\`${edge.resolved}\`` : '-'} | ${VERDICTS[edge.verdict].label} | ${edge.note} |`,
+        `${edge.resolved ? `\`${edge.resolved}\`` : '-'} | ${VERDICTS[edge.verdict].label}${edge.pending ? ` (pending ${edge.pr})` : ''} | ${edge.note} |`,
     )
   }
   out.push('')
@@ -1323,7 +1371,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states, source }
 
 // ---------------------------------------------------------------------------
 
-export { VENDOR_CANDIDATE, VENDOR_NOTE, VENDOR_SCRIPT, vendorNotePins, vendorScriptPins, vendorVerdict, classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
+export { VENDOR_CANDIDATE, vendorCandidate, parseDeclarations, changedEdges, VENDOR_NOTE, VENDOR_SCRIPT, vendorNotePins, vendorScriptPins, vendorVerdict, classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
 
 /*
  * What this run was generated FROM, for staleSourceBanner above.
@@ -1355,7 +1403,7 @@ async function main() {
   const liveNames = new Set(live.map((repo) => repo.name))
 
   const perRepo = await mapLimit(live, CONCURRENCY, async (repo) => {
-    const { manifests, gitlinks, workflows, vendored, vendorPins } = await repoManifestPaths(repo.name, repo.default_branch)
+    const { manifests, gitlinks, workflows, vendored, vendorPins, hasDeclaration } = await repoManifestPaths(repo.name, repo.default_branch)
     const found = []
     for (const manifest of manifests) {
       const text = await readFile(repo.name, manifest.path, repo.default_branch)
@@ -1369,12 +1417,12 @@ async function main() {
     // VENDORED BUILDS BEFORE CI, because a committed artifact with a commit in
     // its header is a HARDER statement than a workflow checkout: the build
     // contains that version rather than being tested against it.
-    for (const path of vendored ?? []) {
+    const vendorEdges = await mapLimit(vendored ?? [], CONCURRENCY, async (path) => {
       const head = await readHead(repo.name, path, repo.default_branch)
-      if (!head) continue
+      if (!head) return null
       const found_ = vendorProvenance(head, repo.name, liveNames)
-      if (!found_) continue
-      found.push({
+      if (!found_) return null
+      return {
         kind: 'vendor',
         ref: found_.ref,
         target: found_.target,
@@ -1383,8 +1431,9 @@ async function main() {
         field: 'vendored',
         path,
         repo: repo.name,
-      })
-    }
+      }
+    })
+    found.push(...vendorEdges.filter(Boolean))
 
     for (const path of vendorPins ?? []) {
       const text = await readFile(repo.name, path, repo.default_branch)
@@ -1434,6 +1483,55 @@ async function main() {
         })
       }
     }
+    const declaration = hasDeclaration ? await readFile(repo.name, '.carve-deps.json', repo.default_branch) : null
+    if (declaration) found.push(...parseDeclarations(declaration, repo.name, liveNames))
+
+    // GitHub's PR file list identifies changed inputs; read those inputs at
+    // the PR head and compare their edges with the same file on main.
+    const pulls = []
+    for (let page = 1; ; page++) {
+      const batch = await api(`repos/${ORG}/${repo.name}/pulls?state=open&per_page=100&page=${page}`)
+      if (!batch?.length) break
+      pulls.push(...batch)
+      if (batch.length < 100) break
+    }
+    for (const pull of pulls ?? []) {
+      for (let page = 1; ; page++) {
+        const files = await api(`repos/${ORG}/${repo.name}/pulls/${pull.number}/files?per_page=100&page=${page}`)
+        if (!files?.length) break
+        for (const file of files) {
+          if (file.status === 'removed') continue
+          const path = file.filename
+          const base = path.split('/').at(-1)
+          const kind = /^Formula\/[^/]+\.rb$/.test(path) ? 'brew' :
+            (MANIFESTS.get(base) ?? (base.endsWith('.gemspec') || base.endsWith('.rockspec') ? 'ruby' : null))
+          const isDeclaration = path === '.carve-deps.json'
+          const isVendor = vendorCandidate(path)
+          if (!kind && !isDeclaration && !isVendor) continue
+          const readEdges = async (ref) => {
+            const edges = []
+            if (kind || isDeclaration) {
+              const contents = await readFile(repo.name, path, ref)
+              if (contents) {
+                if (isDeclaration) edges.push(...parseDeclarations(contents, repo.name, liveNames))
+                else edges.push(...parseManifest(kind, path, contents, gitlinks).filter((edge) => edge.target !== repo.name)
+                  .map((edge) => ({ ...edge, repo: repo.name })))
+              }
+            }
+            if (isVendor) {
+              const head = await readHead(repo.name, path, ref)
+              const source = head && vendorProvenance(head, repo.name, liveNames)
+              if (source) edges.push({ kind: 'vendor', ref: source.ref, target: source.target, name: source.target,
+                spec: source.ref ? `${source.target}@${source.ref}` : source.target, field: 'vendored', path, repo: repo.name })
+            }
+            return edges
+          }
+          const [next, previous] = await Promise.all([readEdges(pull.head.sha), readEdges(repo.default_branch)])
+          for (const edge of changedEdges(next, previous)) found.push({ ...edge, pending: true, pr: `${repo.name}#${pull.number}` })
+        }
+        if (files.length < 100) break
+      }
+    }
     return found
   })
 
@@ -1444,7 +1542,7 @@ async function main() {
   const byPin = new Map()
   for (const edge of perRepo.flat()) {
     // `v0.1.18` in a script and `0.1.18` in a note are one pin.
-    const key = `${edge.repo}|${edge.target}|${String(edge.ref ?? edge.spec).replace(/^v(?=\d)/, '')}`
+    const key = `${edge.repo}|${edge.target}|${String(edge.ref ?? edge.spec).replace(/^v(?=\d)/, '')}|${edge.pr ?? ''}`
     const seen = byPin.get(key)
     if (seen) seen.paths.push(edge.path)
     else byPin.set(key, { ...edge, paths: [edge.path] })

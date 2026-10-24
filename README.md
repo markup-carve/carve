@@ -180,3 +180,17 @@ expected output. Current differences are recorded in the
 ## Development
 
 Contributor setup, testing, and maintenance notes are in the [development guide](docs/development.md).
+
+## Dependency declarations
+
+The [dependency map](tools/dependency-map.mjs) reads manifests, open pull requests, and vendored-copy headers. If a repository depends on another `markup-carve` repository without a detectable pin, put `.carve-deps.json` at its root:
+
+```json
+{
+  "needs": [
+    { "repo": "markup-carve/carve-js", "kind": "runtime-cdn", "reason": "The site loads its browser bundle" }
+  ]
+}
+```
+
+`kind` must be `runtime-cdn`, `build-download`, `docs`, `vendored`, or `other`. Give each entry a reason. Declared dependencies affect the release order and appear as `undeclared` edges because the file does not pin a version.

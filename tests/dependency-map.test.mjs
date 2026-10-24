@@ -20,7 +20,58 @@ import * as nodePath from 'node:path'
 import { parseDependencyLedger, auditDependencyLedger } from '../scripts/lib/drift-ledger.mjs'
 import { test } from 'node:test'
 
-import { VENDOR_CANDIDATE, VENDOR_NOTE, VENDOR_SCRIPT, vendorNotePins, vendorScriptPins, vendorVerdict, classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange } from '../tools/dependency-map.mjs'
+import { VENDOR_CANDIDATE, vendorCandidate, parseDeclarations, changedEdges, VENDOR_NOTE, VENDOR_SCRIPT, vendorNotePins, vendorScriptPins, vendorVerdict, classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange } from '../tools/dependency-map.mjs'
+
+test('text source headers are candidates outside package vendors and fixtures', () => {
+  for (const suffix of ['py', 'rb', 'lua', 'php', 'go', 'ts', 'sh', 'css']) assert.ok(vendorCandidate(`lib/lexer.${suffix}`))
+  for (const path of ['node_modules/a/lexer.py', 'vendor/a/lexer.py', 'tests/fixtures/lexer.py', 'src/lexer.test.ts', 'src/lexer_test.go']) assert.ok(!vendorCandidate(path))
+})
+
+test('declarations have validated targets and reasons', () => {
+  const known = new Set(['carve-pdf', 'pygments-carve'])
+  const edge = parseDeclarations('{"needs":[{"repo":"markup-carve/pygments-carve","kind":"vendored","reason":"copied lexer"}]}', 'carve-pdf', known)[0]
+  assert.equal(edge.target, 'pygments-carve')
+  assert.equal(edge.kind, 'declared')
+  assert.throws(() => parseDeclarations('{"needs":[{"repo":"markup-carve/pygments-carve","kind":"vendored"}]}', 'carve-pdf', known))
+})
+
+test('a PR contributes only a new or changed pin', () => {
+  const base = [{ target: 'pygments-carve', kind: 'registry', ref: '>=0.1.2' }]
+  const next = [{ target: 'pygments-carve', kind: 'registry', ref: '>=0.1.3' }]
+  assert.deepEqual(changedEdges(next, base), next)
+  assert.deepEqual(changedEdges(base, base), [])
+})
+
+test('a pending Pygments manifest edge reaches the release order and graph', () => {
+  const parsed = parseManifest('python', 'pyproject.toml', '[project]\ndependencies = ["pygments-carve>=0.1.3,<0.2.0"]')
+  assert.equal(parsed[0].target, 'pygments-carve')
+  const edge = { ...parsed[0], repo: 'zensical-carve', pending: true, pr: 'zensical-carve#36', verdict: 'range' }
+  assert.ok(renderMermaid([edge]).includes('pending #36'))
+  assert.ok(renderConsumers([edge]).includes('pending #36'))
+  assert.ok(renderSpine([{ ...edge, repo: 'carve-js', target: 'carve' }]).includes('pending #36'))
+  const layers = releaseLayers([edge], ['pygments-carve', 'zensical-carve'])
+  assert.ok(layers.layer.get('zensical-carve') > layers.layer.get('pygments-carve'))
+  const order = renderReleaseOrder([edge], new Map(), ['pygments-carve', 'zensical-carve'])
+  assert.ok(order.includes('pygments-carve (zensical-carve#36 pending)'))
+})
+
+test('a demo requirements file supplies its plugin dependency', () => {
+  const edges = parseManifest('pythonreq', 'requirements.txt', '# pinned build\ncarve-lang==0.1.10\nzensical-carve==0.1.4\n')
+  assert.deepEqual(edges.map((edge) => edge.target), ['carve-py', 'zensical-carve'])
+  const pending = { repo: 'zensical-carve-demo', target: 'pygments-carve', pending: true, pr: 'zensical-carve-demo#8', field: 'requirements', verdict: 'range' }
+  const order = renderReleaseOrder([pending], new Map(), ['zensical-carve-demo', 'pygments-carve'])
+  assert.ok(order.includes('pygments-carve (zensical-carve-demo#8 pending)'))
+})
+
+test('a branch-only Python vendor header is still a dependency', () => {
+  const source = vendorProvenance('Vendored from markup-carve/pygments-carve main', 'carve-pdf', new Set(['pygments-carve']))
+  assert.deepEqual(source, { target: 'pygments-carve', ref: null })
+  const pinned = vendorProvenance('Vendored from markup-carve/pygments-carve tag v0.1.3', 'carve-pdf', new Set(['pygments-carve']))
+  assert.equal(pinned.ref, 'v0.1.3')
+  const generated = vendorProvenance("// Generated from markup-carve/carve resources/spec/rules.json\nexport const RULE_SOURCE_COMMIT = 'a610f775af20e92fd08bf988416b91721fd2954c';", 'carve-mcp', new Set(['carve']))
+  assert.equal(generated.ref, 'a610f775af20e92fd08bf988416b91721fd2954c')
+  assert.equal(vendorProvenance('preview_rev="$(sed -n \'s|^// Bundled from markup-carve/carve-js commit \\([0-9a-f]\\{40\\}\\)$|\\1|p\'"', 'intellij-carve', new Set(['carve-js'])), null)
+})
 
 const cases = [
   ['github: shorthand', '@markup-carve/carve', 'github:markup-carve/carve-js#3ba8ba32', 'carve-js', '3ba8ba32'],
