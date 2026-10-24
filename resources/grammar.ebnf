@@ -324,6 +324,9 @@
         its continuation lines may sit at any column: `- a` / `  {.c` / `}` /
         `para` reads like the one-line `{.c}`, so the attribute reaches no
         block and `para` is outside the item (markup-carve/carve#3421).
+        Its continuation lines may sit at any column within the quote prefix
+        of the container that opened it. A line that drops a `>` can only lazily
+        continue an open paragraph and never closes the attribute.
 
         A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES -- NORMATIVE [CARVE-P0-015].
         A lazy fold closes no container. A later line returning to the
@@ -3705,6 +3708,9 @@ quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' 
    block interrupted by a blank line is not a block_attributes (both
    grammar treats it as literal text). Merge + reach semantics
    (including float-across-blank-lines BETWEEN separate blocks): PART 9 §15. *)
+(* Continuation lines may sit at any column within the quote prefix of the
+   container that opened the block attribute. A line that drops a `>` can only
+   lazily continue an open paragraph and never closes the attribute. *)
 block_attributes = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}', newline ;
 (* THE PADDING ADMITS A LINE BREAK TOO, not only the separator: `{` + newline
    + `.a}`, `{.a` + newline + `}` and `{.a` + newline + `.b}` are all block

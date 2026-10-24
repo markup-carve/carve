@@ -79,3 +79,72 @@ para
 </ul>
 <p>para</p>
 ```
+
+```
+:: t
+: - a
+    {.c
+}
+para
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>para</p>
+```
+
+```
+:: t
+: d
+
+  - a
+    {.c
+}
+para
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>para</p>
+```
+
+```
+> - a
+>   {.c
+> }
+para
+.
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+</blockquote>
+<p>para</p>
+```
+
+```
+> - a
+>   {.c
+}
+para
+.
+<blockquote>
+  <ul>
+    <li>a
+{.c
+}
+para</li>
+  </ul>
+</blockquote>
+```

@@ -64130,6 +64130,107 @@ para
 
 :::::::
 
+A nested item in a definition body leaves the following paragraph at document level
+
+::::::: compare
+
+`````carve
+:: t
+: - a
+    {.c
+}
+para
+`````
+
+`````html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>para</p>
+`````
+
+:::::::
+
+A nested item after a blank line in a definition body does the same
+
+::::::: compare
+
+`````carve
+:: t
+: d
+
+  - a
+    {.c
+}
+para
+`````
+
+`````html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>para</p>
+`````
+
+:::::::
+
+A quoted nested item keeps its prefix on the closer
+
+::::::: compare
+
+`````carve
+> - a
+>   {.c
+> }
+para
+`````
+
+`````html
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+</blockquote>
+<p>para</p>
+`````
+
+:::::::
+
+A closer that drops the quote prefix stays literal text
+
+::::::: compare
+
+`````carve
+> - a
+>   {.c
+}
+para
+`````
+
+`````html
+<blockquote>
+  <ul>
+    <li>a
+{.c
+}
+para</li>
+  </ul>
+</blockquote>
+`````
+
+:::::::
+
 ## A quote follower below stacked quote openers in an item is read at its raw column
 
 Below `- > > +` the first-block `+` takes a follower at column 0 or at the opener line's own column (CARVE-P9-067). A `>` at column 0 is no prefix of the quotes at columns 2 and 4, so it opens a quote that attaches and nests inside the innermost quote. A `>` at column 2 is at an intervening column: the `+` is refused and the line folds into its text (carve#3421).

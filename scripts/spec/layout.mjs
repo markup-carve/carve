@@ -1677,11 +1677,7 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   // paragraph anywhere in the stack". So the peel below cannot borrow this
   // return, and `:: t` / `:  >` / `tail` must leave the definition.
   if (last < 0) return !quoted
-  for (let k = last; k >= 0 && bodyLines[k].trim() !== ''; k--) {
-    if (bodyLines[k][0] !== '{') continue
-    const al = tryAttrLine(bodyLines, k)
-    if (al && al.next === last + 1) return false
-  }
+  if (trailingWrappedAttr(bodyLines, last)) return false
 
   /*
    * A QUOTE'S OWN BODY ANSWERS, AND THE PEEL HAPPENS HERE -- PART 1 S4
@@ -1787,16 +1783,24 @@ function bodyEndsWrappedAttr(bodyLines, depth = 0) {
   // Without this the predicate rescans the whole trailing paragraph for every
   // lazy line, which is quadratic on a long plain quote (carve#1956).
   if (!bodyLines[last].trimEnd().endsWith('}')) return false
-  for (let k = last; k >= 0 && bodyLines[k].trim() !== ''; k--) {
-    if (bodyLines[k][0] !== '{') continue
-    const al = tryAttrLine(bodyLines, k)
-    return !!(al && al.next === last + 1 && al.next > k + 1)
-  }
+  if (trailingWrappedAttr(bodyLines, last, true)) return true
   if (!QUOTE.test(bodyLines[last]) || depth >= MAX_NESTING_DEPTH) return false
   let first = last
   while (first > 0 && QUOTE.test(bodyLines[first - 1])) first--
   const inner = bodyLines.slice(first, last + 1).map((l) => QUOTE.exec(l)[1] ?? '')
   return bodyEndsWrappedAttr(inner, depth + 1)
+}
+
+function trailingWrappedAttr(lines, last, wrappedOnly = false) {
+  for (let k = last; k >= 0 && lines[k].trim() !== ''; k--) {
+    const opener = indentCols(lines[k])
+    if (!opener.rest.startsWith('{')) continue
+    const window = lines.slice(k, last + 1).map((line) =>
+      dedentMeasured(indentCols(line), line, opener.col).text)
+    const attr = tryAttrLine(window, 0)
+    if (attr?.next === window.length && (!wrappedOnly || window.length > 1)) return true
+  }
+  return false
 }
 
 // Whether the body's line `last` CLOSES a fence opened earlier in the body.

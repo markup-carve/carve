@@ -240,6 +240,9 @@
         its continuation lines may sit at any column: `- a` / `  {.c` / `}` /
         `para` reads like the one-line `{.c}`, so the attribute reaches no
         block and `para` is outside the item (markup-carve/carve#3421).
+        Its continuation lines may sit at any column within the quote prefix
+        of the container that opened it. A line that drops a `>` can only lazily
+        continue an open paragraph and never closes the attribute.
 
         A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES -- NORMATIVE [CARVE-P0-015].
         A lazy fold closes no container. A later line returning to the
