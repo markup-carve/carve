@@ -201,7 +201,7 @@ ranges; `|=` header cells still work in the body.
 `<v` overrides both axes for that cell; `?v` moves only the vertical one, so the
 Total figure keeps the column's right alignment.
 
-An alignment run needs content after its terminating space. A
+An alignment run beginning with `<` needs content after its terminating space. A
 standalone `| < |` cell is the colspan merge, `| ^ |` the rowspan merge.
 `|<|`, `| <|` and `|< |` also merge. The four lone `^` forms behave the
 same way. To make a merged
