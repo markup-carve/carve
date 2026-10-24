@@ -1,13 +1,13 @@
-# AST conformance engine pins
+# Writer column after a refused first-block marker
 
 ## Root cause
 
-The scheduled AST workflow measures reviewed engine revisions from `resources/engine-pins.json`. Its JavaScript reference build also needs the matching dependency in `package.json`. Those revisions precede merged AST fixes in carve-js, carve-php, and carve-rs, so the workflow measures old behavior. The new revisions also make two lint drift declarations stale: the engines now agree on those rows.
+An indented list opener followed by a refused first-block `+` leaves its next block in the outer item. At the outer item's content column, the block attaches to the nested item. The writer invariant requires a spelling that preserves the outer item's block, but the current writer rules do not select a column among valid spellings.
 
 ## Change
 
-Align the repository's reviewed engine state with current main: advance the three engine pins with `scripts/set-engine-pin.mjs`, update the JavaScript npm lockfile, and remove drift declarations where the new builds agree. Keep the Ruby pin and the conformance oracle unchanged. Run the AST workflow at these revisions, then file engine-specific bugs with reproductions for any remaining divergence.
+Specify that the writer moves the block from the outer item's content column to the nearest column that parses it in that item. For the ruled example, this is document column 3. Keep the block on the following line without adding a separator. Add a focused test for quote and fence followers.
 
 ## Scope
 
-The pins select complete engine builds used across the corpus and all AST shards. They do not special-case any listed shape, document, or expected tree.
+The rule selects a column by parsed ownership and distance from the usual content column. It applies to any block kind and any indentation where the same ownership conflict occurs, rather than naming the two corpus rows.

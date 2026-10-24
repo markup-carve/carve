@@ -8975,6 +8975,14 @@ EOF = (* end of file *) ;
       prose or swapping a construct for a synonym are not available here: each
       of them changes the document, which is the thing §1 forbids.
 
+      For a block below a refused first-block `+` on an indented list opener,
+      choose the column nearest the enclosing item's content column that
+      preserves the block in its intended enclosing item. Keep it on the next
+      line without adding a blank line. The choice depends on ownership, not
+      on the kind of block. In `- foo` followed by `  1. +`, a quote belonging
+      to the outer item starts at column 3 (`   > b`): column 2 attaches it to
+      `1.`, while column 4 is farther from the content column than needed.
+
    1b. A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES -- NORMATIVE [CARVE-P11-003]. CARVE-P11-002 settles
       what a producer owes where §1's invariant CAN hold. This settles what it
       owes where the invariant cannot hold at all.
