@@ -4992,6 +4992,9 @@ EOF = (* end of file *) ;
          order CARVE-P11-031 reads for the Markdown delimiter; each head cell
          keeps its own marker. So `|=> a |` over `|=< b |` over `| 1 |`
          left-aligns the body cell. Corpus 09-tables-3 pins effect 2.
+         Among native `|=` markers, only the head-row run (T9) sets column
+         defaults. A later `|=` cell after a body row is a row header whose
+         marker stays local, even when that later row has only header cells.
          A colspan marker has no alignment run: a header cell spanning several
          columns sets a default only for its ORIGIN column. A delimiter colon
          in a covered column remains that column's default; the origin's marker
@@ -12911,7 +12914,8 @@ EOF = (* end of file *) ;
       column while the run contributes `top`, `middle` or `bottom` as the
       cell-level `valign`. A lone `?`, a reversed vertical-plus-`?` pair and
       every other `?` run are ordinary visible content. A native `|=` run
-      supplies a default only for its starting physical column. A marker on
+      supplies a default only from a head row (T9), and only for its starting
+      physical column. A marker on
       a GFM-promoted head-row cell overrides the delimiter default only in
       that same column. Its colspan does not copy the default into covered
       columns. A plain `|` run supplies only that cell, including when

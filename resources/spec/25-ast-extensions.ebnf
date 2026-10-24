@@ -164,7 +164,8 @@
       column while the run contributes `top`, `middle` or `bottom` as the
       cell-level `valign`. A lone `?`, a reversed vertical-plus-`?` pair and
       every other `?` run are ordinary visible content. A native `|=` run
-      supplies a default only for its starting physical column. A marker on
+      supplies a default only from a head row (T9), and only for its starting
+      physical column. A marker on
       a GFM-promoted head-row cell overrides the delimiter default only in
       that same column. Its colspan does not copy the default into covered
       columns. A plain `|` run supplies only that cell, including when

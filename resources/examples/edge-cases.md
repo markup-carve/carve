@@ -24885,8 +24885,8 @@ markers remain more specific than these defaults.
 
 The horizontal marker comes first and the optional vertical marker follows it.
 Rendered CSS likewise writes
-`text-align` before `vertical-align`. A header-cell run supplies column defaults;
-a body-cell run overrides only that cell.
+`text-align` before `vertical-align`. A head-row header-cell run supplies column
+defaults; a later row-header run or a body-cell run overrides only that cell.
 
 ::: compare
 
@@ -64663,6 +64663,54 @@ An explicit header row keeps column defaults in table attributes.
   </thead>
   <tbody>
     <tr><td style="text-align: right;">a</td><td style="text-align: left;">b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+A later row of header cells keeps its alignment local after body data.
+
+::: compare
+
+```carve
+|=>^ A|<|=~ B|
+|a|b|c|
+|=<v D|<|= End|
+|d|e|f|
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col" colspan="2" style="text-align: right; vertical-align: top;">A</th><th scope="col" style="text-align: center;">B</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="text-align: right; vertical-align: top;">a</td><td>b</td><td style="text-align: center;">c</td></tr>
+    <tr><th scope="row" colspan="2" style="text-align: left; vertical-align: bottom;">D</th><th scope="row" style="text-align: center;">End</th></tr>
+    <tr><td style="text-align: right; vertical-align: top;">d</td><td>e</td><td style="text-align: center;">f</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+An all-header row after body data stays in `tbody` without a `thead`, and its alignments stay local.
+
+::: compare
+
+```carve
+|a|b|
+|=> X|=~ Y|
+|c|d|
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><th scope="row" style="text-align: right;">X</th><th scope="row" style="text-align: center;">Y</th></tr>
+    <tr><td>c</td><td>d</td></tr>
   </tbody>
 </table>
 ```

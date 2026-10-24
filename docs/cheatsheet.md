@@ -185,7 +185,7 @@ horizontal marker may stand alone; a vertical marker always needs a horizontal
 partner. Where that partner should stay whatever the column already says, `?`
 stands in for it: `?^`, `?~` and `?v` set the vertical axis only and leave the
 horizontal one to the column. The run is glued to the pipe and terminated by a
-space. It is atomic, so a run that is rejected takes the `=` with it. On `|=` it sets a default for its starting column; on a plain `|` it overrides that cell. A `<` span cell beside it carries no default into the covered column. Promoting a plain row with `header-rows` does not turn its markers into column defaults.
+space. It is atomic, so a run that is rejected takes the `=` with it. On a head-row `|=` it sets a default for its starting column; on a later row-header `|=` or a plain `|` it overrides that cell. A `<` span cell beside it carries no default into the covered column. Promoting a plain row with `header-rows` does not turn its markers into column defaults.
 Table attributes can set headerless defaults:
 `{aligns="right,center" valigns="top," widths="30,70"}`. Use
 `{header-rows=N footer-rows=N}` before a pipe table for explicit `thead`/`tfoot`
