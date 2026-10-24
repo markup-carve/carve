@@ -24,4 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-659-table-spans-keep-alignment-defaults-in-physical-columns-14  carve#3585: the pinned JS reader treats `|< |` as an empty aligned cell; the ruled reading is a colspan.
