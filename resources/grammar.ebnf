@@ -4875,8 +4875,9 @@ EOF = (* end of file *) ;
          (colspan) is a span marker; ANY other content disqualifies it --
          `{.x} <` is an ordinary cell with literal text `{.x} <` (no
          attributed span marker exists). Leading or trailing U+0020 padding
-         does not disqualify the marker. `| <|` and `| < |` are spans; `|< |`
-         is instead a terminated left-alignment run on an empty cell (T11).
+         does not disqualify the marker. `|<|`, `| <|`, `|< |` and `| < |`
+         are spans, as are all four corresponding `^` forms. A lone span
+         glyph takes precedence over an alignment run on an empty cell.
          Any consumed marker run disqualifies a span. Thus `|= <|` and
          `|= ^|` are header cells holding literal `<` and `^`, while
          `|?^ <|` is a vertically aligned cell holding literal `<`.
@@ -12926,7 +12927,8 @@ EOF = (* end of file *) ;
 
       `table_cell` carries optional `valign` beside `align`, with the same
       inheritance rule. A whitespace-delimited cell containing only `^` or `<`
-      remains a rowspan/colspan marker; gluing is what distinguishes alignment.
+      remains a rowspan/colspan marker in every space-padding form. The lone
+      glyph takes precedence over an empty alignment run.
 
    21. U+0000 IS REPLACED ON INGEST -- NORMATIVE [CARVE-P12-041]. A reader
       replaces every U+0000 with U+FFFD REPLACEMENT CHARACTER in every string

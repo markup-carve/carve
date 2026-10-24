@@ -23,8 +23,8 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P6-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/10-includes.ebnf#L61) | 6 | FILE INCLUSION SEMANTICS |
 | [`CARVE-P9-070`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L52) | 9 | SOCIAL LINK RESOLUTION |
 | [`CARVE-P9-071`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L301) | 9 | THE MEDIA TYPE AND THE FILE EXTENSION |
-| [`CARVE-P9-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L481) | 9 | TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID |
-| [`CARVE-P9-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L513) | 9 | HOSTS MAY OFFER A DOCUMENT-WIDE SMART TYPOGRAPHY SWITCH |
+| [`CARVE-P9-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L482) | 9 | TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID |
+| [`CARVE-P9-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L514) | 9 | HOSTS MAY OFFER A DOCUMENT-WIDE SMART TYPOGRAPHY SWITCH |
 | [`CARVE-P9-074`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L606) | 9 | A MARKDOWN LABEL THAT IS BOTH A CHECKBOX AND A DEFINED REFERENCE IS THE CHECKBOX |
 | [`CARVE-P9-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L31) | 9 | AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE |
 | [`CARVE-P9-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L46) | 9 | CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES |
