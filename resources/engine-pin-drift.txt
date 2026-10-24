@@ -24,3 +24,6 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-7  carve-js#3534: nested wrapped attribute in a definition body retains the following paragraph
+653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-8  carve-js#3534: nested wrapped attribute after a blank in a definition body retains the following paragraph
+653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-9  carve-js#3534: nested wrapped attribute in a quote retains the following paragraph
