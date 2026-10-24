@@ -10,6 +10,24 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+## [0.1.12] - 2026-10-24
+
+The spec now settles several container, table, and writer edge cases. The playground also gains native formatting and an updated demo.
+
+### Fixes
+
+- Refused `+` markers stay in the paragraph or list item that owns them, and writers use the nearest column that preserves their text (#3549, #3563, #3570, #3572, #3575).
+- Quoted continuation markers attach at the correct quote depth, while nested wrapped attributes stay with their enclosing block (#3578, #3592, #3593).
+- Definition separators to the left of an item's column remain in its body, definition marker lines follow the list marker comment rule, and item-relative tabs and quoted lazy lines retain their intended owners (#3543, #3545, #3548, #3551, #3559, #3569).
+- A quote after a trailing slash closes before punctuation or whitespace (#3555).
+- Padded lone table span markers keep their literal text, and spans, alignment defaults, and header scope follow physical table columns across renderers (#3576, #3586, #3587, #3589, #3590).
+
+### Improvements
+
+- Markdown export reports structural losses for content its target cannot represent (#3553, #3574).
+- The playground offers a Format action and updated examples, with the current native formatter and span diagnostics (#3557, #3558, #3565, #3566, #3573).
+- CSV and TSV fences follow carve-grammars 0.1.19 scoping, and the documented scroll recipe follows carve-css 0.1.8 (#3560, #3580).
+
 ## [0.1.11] - 2026-10-23
 
 ### Fixes
@@ -811,6 +829,7 @@ references and external fragment links need manual review. See the
   inside the cell** (carve#2113), the §1b case the engines diverged on while
   the fixture reported them conformant.
 
+[0.1.12]: https://github.com/markup-carve/carve/compare/0.1.11...0.1.12
 [0.1.11]: https://github.com/markup-carve/carve/compare/0.1.10...0.1.11
 [0.1.10]: https://github.com/markup-carve/carve/compare/0.1.9...0.1.10
 [0.1.9]: https://github.com/markup-carve/carve/compare/0.1.8...0.1.9
