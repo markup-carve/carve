@@ -1260,7 +1260,7 @@ function readMarkerRun(seg) {
 // classify one raw cell segment
 function parseCell(seg) {
   const cell = { header: false, kindMarker: false, align: null, valign: null, attrs: null, content: '' }
-  const run = readMarkerRun(seg)
+  const run = ['<', '^'].includes(padTrim(seg)) ? null : readMarkerRun(seg)
   // `\=` needs no case of its own: it is not `=`, so it opens no run and the
   // inline pass unescapes it into a literal `=` data cell.
   let s = seg

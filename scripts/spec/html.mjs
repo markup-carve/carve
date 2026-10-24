@@ -1110,6 +1110,8 @@ function renderTable(node, depth, ctx) {
   // carve#1463). The attribute block is what makes the cell ordinary
   // content, so the `<` is the literal character and the attributes stay on
   // the cell that carries them.
+  // The cell reader resolves a padded lone `<` or `^` before an empty
+  // alignment run. Keep that reading when walking spans.
   const bareMarker = (cell) => !cell.literal && !cell.kindMarker &&
     (cell.content === '<' || cell.content === '^') &&
     (cell.align === null || cell.align === cell.delimiterAlign) && cell.valign === null && cell.attrs == null

@@ -149,3 +149,131 @@ Table spans keep alignment defaults in physical columns
   </tbody>
 </table>
 ```
+
+```
+|a|<|
+.
+<table>
+  <tbody>
+    <tr><td colspan="2">a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|a| <|
+.
+<table>
+  <tbody>
+    <tr><td colspan="2">a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|a|< |
+.
+<table>
+  <tbody>
+    <tr><td colspan="2">a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|a| < |
+.
+<table>
+  <tbody>
+    <tr><td colspan="2">a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|a|b|
+|^|^|
+.
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td rowspan="2">b</td></tr>
+    <tr></tr>
+  </tbody>
+</table>
+```
+
+```
+|a|b|
+|^| ^|
+.
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td rowspan="2">b</td></tr>
+    <tr></tr>
+  </tbody>
+</table>
+```
+
+```
+|a|b|
+|^|^ |
+.
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td rowspan="2">b</td></tr>
+    <tr></tr>
+  </tbody>
+</table>
+```
+
+```
+|a|b|
+|^| ^ |
+.
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td rowspan="2">b</td></tr>
+    <tr></tr>
+  </tbody>
+</table>
+```
+
+```
+|= <|
+.
+<table>
+  <thead>
+    <tr><th scope="col">&lt;</th></tr>
+  </thead>
+</table>
+```
+
+```
+|~ |
+.
+<table>
+  <tbody>
+    <tr><td style="text-align: center;"></td></tr>
+  </tbody>
+</table>
+```
+
+```
+|> |
+.
+<table>
+  <tbody>
+    <tr><td style="text-align: right;"></td></tr>
+  </tbody>
+</table>
+```
+
+```
+|~{.x} |
+.
+<table>
+  <tbody>
+    <tr><td class="x" style="text-align: center;"></td></tr>
+  </tbody>
+</table>
+```

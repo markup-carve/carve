@@ -866,10 +866,10 @@ Mnemonics: `<` left, `>` right, `~` center.
 The `Age` column is right-aligned, `City` centered, `Name` left (default).
 The ragged source whitespace above is irrelevant; only the markers matter.
 
-**Disambiguation.** A `<`, `>`, or `~` *immediately* after `|` or `|=` (no
-space) is an alignment marker. A lone `<` or `^` that is a cell's
-whitespace-delimited *content* (`| < |`, `| ^ |`) is a colspan / rowspan
-marker (see below) and is unchanged. Exactly one optional marker character is
+**Disambiguation.** A lone `<` or `^` is a colspan / rowspan marker in
+every space-padding form, including `|< |` and `|^ |`. An alignment run
+beginning with `<` needs content after its terminating space. Other alignment
+markers retain their empty-cell readings. Exactly one optional marker character is
 recognized; a repeated character (`|=<<`) is content. An escaped pipe (`\|`)
 never opens a cell and so never carries a marker.
 After a kind or alignment run has been consumed, the lone glyph is literal

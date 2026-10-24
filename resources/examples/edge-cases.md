@@ -64474,8 +64474,8 @@ PART 9 §24 C5 strips a container's indent by columns and, on a list-marker line
 
 ## Table spans keep alignment defaults in physical columns
 
-A whole-cell `<` remains a colspan with a leading space. A glued `<` followed
-by a space starts an alignment run instead.
+A lone `<` or `^` spans in every space-padding form. Alignment with `<`
+requires content after its terminating space.
 
 ::: compare
 
@@ -64492,6 +64492,7 @@ by a space starts an alignment run instead.
 ```
 
 :::
+
 
 The `=` kind marker makes a header cell, so a following literal `<` or `^`
 is its content rather than a bare span marker.
@@ -64711,6 +64712,206 @@ An all-header row after body data stays in `tbody` without a `thead`, and its al
     <tr><td>a</td><td>b</td></tr>
     <tr><th scope="row" style="text-align: right;">X</th><th scope="row" style="text-align: center;">Y</th></tr>
     <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|a|<|
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td colspan="2">a</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|a| <|
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td colspan="2">a</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|a|< |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td colspan="2">a</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|a| < |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td colspan="2">a</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|a|b|
+|^|^|
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td rowspan="2">b</td></tr>
+    <tr></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|a|b|
+|^| ^|
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td rowspan="2">b</td></tr>
+    <tr></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|a|b|
+|^|^ |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td rowspan="2">b</td></tr>
+    <tr></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|a|b|
+|^| ^ |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td rowspan="2">b</td></tr>
+    <tr></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|= <|
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">&lt;</th></tr>
+  </thead>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|~ |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td style="text-align: center;"></td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|> |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td style="text-align: right;"></td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|~{.x} |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td class="x" style="text-align: center;"></td></tr>
   </tbody>
 </table>
 ```

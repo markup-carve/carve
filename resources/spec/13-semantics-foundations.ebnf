@@ -263,8 +263,9 @@
          (colspan) is a span marker; ANY other content disqualifies it --
          `{.x} <` is an ordinary cell with literal text `{.x} <` (no
          attributed span marker exists). Leading or trailing U+0020 padding
-         does not disqualify the marker. `| <|` and `| < |` are spans; `|< |`
-         is instead a terminated left-alignment run on an empty cell (T11).
+         does not disqualify the marker. `|<|`, `| <|`, `|< |` and `| < |`
+         are spans, as are all four corresponding `^` forms. A lone span
+         glyph takes precedence over an alignment run on an empty cell.
          Any consumed marker run disqualifies a span. Thus `|= <|` and
          `|= ^|` are header cells holding literal `<` and `^`, while
          `|?^ <|` is a vertically aligned cell holding literal `<`.

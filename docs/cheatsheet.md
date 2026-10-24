@@ -201,9 +201,10 @@ ranges; `|=` header cells still work in the body.
 `<v` overrides both axes for that cell; `?v` moves only the vertical one, so the
 Total figure keeps the column's right alignment.
 
-Glued is what makes it alignment; the terminating space ends the run. A
+An alignment run needs content after its terminating space. A
 standalone `| < |` cell is the colspan merge, `| ^ |` the rowspan merge.
-`| <|` also merges; `|< |` is an empty left-aligned cell. To make a merged
+`|<|`, `| <|` and `|< |` also merge. The four lone `^` forms behave the
+same way. To make a merged
 header without `=`, add a GFM delimiter row or use
 `{header-rows=1 aligns="right,right,center"}` for explicit per-column defaults.
 
