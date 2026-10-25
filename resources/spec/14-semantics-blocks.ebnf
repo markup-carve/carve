@@ -307,7 +307,7 @@
       a malformed one are PART 2's (STRICT, under `admonition_open`). To
       attribute a div or admonition, use a PRECEDING block-attribute line,
       which floats onto the block (§15): `{.x #id}` then `::: note` yields
-      `<aside class="admonition note x" id="id">`.
+      `<aside class="admonition note x" id="id" aria-label="Note">`.
 
       FENCE LENGTH, NESTING, DIRECTION AND AN UNCLOSED OPENER are stated once,
       in PART 2 at `colon_fence_close` and under `admonition`, for admonitions
@@ -502,9 +502,8 @@
       PART 2 and the renderer; matches djot, see `jgm/djot` official
       `headings.test`). Every heading emits a `<section id="{id}">`
       wrapper around itself and the following content up to the next
-      same-or-shallower heading. The slug-derivation rule (ASCII
-      transliteration etc., see syntax.md §4.1) computes
-      the id; the id lives on the `<section>` element, NOT on the
+      same-or-shallower heading. CARVE-P2-004 computes the heading id; this
+      clause places it on the `<section>` element, NOT on the
       `<h*>` element.
       Algorithm (one stateful pass over top-level blocks):
         let openSections : Stack of (level, sectionElement) = []
@@ -640,7 +639,7 @@
           only for the id/class forms (`{.123}`, `{#1}`), not `{2=v}`.
           A non-identifier character (`{.a!b}`) remains invalid.
           ONE invalid name makes the WHOLE block not an attribute block, even
-          when mixed with valid attributes (`{.ok .1}`), so the run stays
+          when mixed with valid attributes (`{.ok .a!b}`), so the run stays
           literal. No other leading character is newly accepted.
           A digit/`-`/`_` AFTER the first character is valid (`{.a1}`).
       BOOLEAN ATTRIBUTES -- NORMATIVE [CARVE-P9-022]. A bare identifier
