@@ -14,46 +14,18 @@ same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
 adapter coverage, rough CLI timing, and the extension hook surface each
 implementation exposes.
 
-## Core fixture counts (2026-10-07 CEST)
+## Core fixture counts (2026-10-25 CET)
 
-The count-only run covers 2,228 core documents and their 161 target sidecars.
-The run scores 2,389 fixtures per engine. It checks expected output on
+The count-only run covers 3,056 core documents and their 193 target sidecars.
+The run scores 3,249 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: `549-an-ordered-list-carries-its-authored-delimiter`, `19-smart-typography-dashes-and-quotes-10`, `19-smart-typography-dashes-and-quotes-11`, `550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run`, `551-a-link-destination-is-opaque-to-the-bracket-scan`, `552-a-braced-comment-does-not-decide-a-quote`, `19-smart-typography-dashes-and-quotes-12`, `19-smart-typography-dashes-and-quotes-13`, `19-smart-typography-dashes-and-quotes-14`, `19-smart-typography-dashes-and-quotes-15`, `19-smart-typography-dashes-and-quotes-16`, `19-smart-typography-dashes-and-quotes-17`, `19-smart-typography-dashes-and-quotes-18`, `19-smart-typography-dashes-and-quotes-19`, `19-smart-typography-dashes-and-quotes-20`, `19-smart-typography-dashes-and-quotes-21`, `19-smart-typography-dashes-and-quotes-22`, `19-smart-typography-dashes-and-quotes-23`, `19-smart-typography-dashes-and-quotes-24`, `19-smart-typography-dashes-and-quotes-25`, `19-smart-typography-dashes-and-quotes-26`, `19-smart-typography-dashes-and-quotes-27`, `19-smart-typography-dashes-and-quotes-28`, `19-smart-typography-dashes-and-quotes-29`, `19-smart-typography-dashes-and-quotes-30`, `19-smart-typography-dashes-and-quotes-31`, `19-smart-typography-dashes-and-quotes-32`, `553-a-below-column-line-continues-a-paragraph-only-where-one-is-open`, `06-task-lists-3`, `06-task-lists-4`, `06-task-lists-5`, `06-task-lists-6`, `471-braced-emphasis-can-nest-its-own-kind-9`, `471-braced-emphasis-can-nest-its-own-kind-10`, `471-braced-emphasis-can-nest-its-own-kind-11`, `471-braced-emphasis-can-nest-its-own-kind-12`, `471-braced-emphasis-can-nest-its-own-kind-13`, `554-a-caption-scope-resets-at-a-structural-only-line`, `321-delimited-comments-9`, `321-delimited-comments-10`, `321-delimited-comments-11`, `321-delimited-comments-12`, `555-an-unterminated-raw-fence-keeps-literal-payload-termination`, `556-a-closed-block-leaves-no-frame-for-the-line-below`, `557-a-line-retained-after-a-comment-opens-a-paragraph`, `558-a-container-boundary-is-read-at-the-container-s-own-column`, `559-a-tab-inside-a-line-is-content-in-a-label-and-after-a-definition-marker`, `560-a-description-keeps-a-block-at-its-body-column-whatever-leads-the-item`, `561-a-line-block-payload-span-pairs-past-the-content-column`, `562-a-quoted-item-that-ends-on-a-block-past-its-column-holds-no-paragraph`, `563-a-paragraph-in-a-held-container-does-not-loosen-the-item`, `564-a-line-final-run-of-spaces-and-tabs-is-dropped-before-the-line-is-read`, `565-a-tab-is-content-in-a-heading-key-and-in-a-cross-reference-id`, `566-an-opener-past-a-hosted-container-s-column-opens-there`, `567-a-description-marker-followed-by-a-no-break-space-has-content`, `568-a-closed-fence-in-a-quoted-sub-item-after-a-lazy-line-leaves-no-paragraph`, `569-a-quoted-term-takes-a-lazy-line`, `570-an-at-column-comment-retains-nothing`, `571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim`, `572-an-opener-past-a-hosted-container-s-column-interrupts-its-open-paragraph`, `573-a-footnote-reference-in-link-text-keeps-its-id-on-the-sup`, `574-a-head-row-alignment-marker-sets-the-whole-column`, `575-a-line-block-takes-a-lazy-line-whatever-its-last-payload-line`, `576-an-at-sign-before-a-space-and-a-doubled-delimiter-inside-bold-italic-are-text`, `577-a-titled-footnotes-marker-names-the-endnotes-section`, `578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note`, `579-a-span-never-covers-another-cell`, `580-a-quote-or-a-term-at-a-marker-line-note-s-body-column-opens-in-the-note`, `581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in`, `582-a-footnote-definition-past-a-box-s-column-is-hoisted`, `583-a-comment-between-a-heading-and-a-colon-fence-leaves-the-fence-an-opener`, `584-a-fence-past-the-column-after-an-attribute-line-opens-on-its-authored-base`, `585-a-comment-in-a-marker-line-note-changes-nothing`, `586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note`, `587-a-link-definition-or-an-attribute-line-past-a-box-s-column-opens-on-its-authored-base`, `64-table-rowspan-with-multi-line-content-2`, `64-table-rowspan-with-multi-line-content-3`, `588-a-block-quote-and-a-footnote-body-take-the-first-block-form`, `589-an-explicitly-delimited-row-of-blank-cells-is-a-table`, `590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open`, `591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base`, `592-a-fence-closer-below-the-authored-base-is-measured-as-its-payload`, `108-security-hardening-12`, `09-tables-9`, `09-tables-10`, `19-smart-typography-dashes-and-quotes-33`, `19-smart-typography-dashes-and-quotes-34`, `41-line-blocks-11`, `41-line-blocks-12`, `311-a-footnote-in-reference-link-text-nests-the-anchors-too-4`, `593-a-table-row-ends-a-description-body-and-a-lone-plus-folds-into-a-term`, `594-a-continuation-on-a-span-marker-joins-the-cell-the-marker-resolves-into`, `595-a-bare-closer-does-not-reach-inside-a-cross-reference`, `596-an-autolink-or-a-cross-reference-is-atomic-to-brackets-and-braces`, `597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural`, `598-editorial-markup-closes-outside-a-cross-reference-or-a-bracket-run`, `599-an-autolink-is-opaque-to-the-bracket-scan`, `600-a-delimiter-that-is-part-of-a-larger-character-is-text`, `601-the-combined-bold-italic-token-does-not-open-or-close-inside-a-word`, `602-the-combined-bold-italic-token-does-not-open-after-an-underscore-or-a-slash`, `603-the-combined-bold-italic-token-does-not-open-inside-an-open-bare-italic-or-bold`, `604-an-unclosed-fence-under-an-open-paragraph-in-a-container-opens-nothing`, `605-an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter`, `606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer`, `607-a-quoted-comment-or-attribute-line-closes-the-quote-s-paragraph`, `608-an-unclosed-fence-under-a-multi-line-quote-paragraph-in-a-container-opens-nothing`, `609-an-escaped-cross-reference-spelling-stays-literal`, `610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph`, `611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence`, `612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence`, `613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line`, `615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase`, `616-a-line-is-read-in-the-container-whose-column-it-reaches`, `05-lists-29`, `05-lists-30`, `617-csv-and-tsv-table-bodies`, `618-captions-in-list-items-do-not-create-a-paragraph-gap`, `619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight`, `620-generated-container-documents` (23 generated container readings), `621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item` (four readings), `622-a-caption-after-a-continuation-marker-fence-stays-with-the-fence`, `623-a-lazily-folded-fence-opener-line-does-not-keep-a-list-tight`, `291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-5`, `291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-6`, `624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column` (six readings), `625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open` (eleven readings), `626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth` (eight readings), `291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-7`, `627-a-refused-marker-leaves-an-open-fence-s-blank-payload` (seven readings), `628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div` (four readings), `629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one` (eight readings), `630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener` (eighteen readings), `631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox`, `632-a-continuation-marker-uses-its-container-column`, `633-a-first-block-marker-on-an-indented-opener-reads-two-columns`, `634-a-refused-continuation-plus-remains-text` (four readings), `635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text`, `636-a-tab-indented-nested-list-starts-at-its-marker`, `637-definition-body-note-and-fence-owner-boundaries`, `638-nested-plus-below-fence-and-description`, `639-a-folded-fence-run-leaves-a-later-paragraph-loose`, `640-a-folded-child-fence-keeps-the-below-column-line-in-its-paragraph`, `641-an-unclosed-fence-run-with-no-closer-in-its-item-does-not-hide-a-blank-line`, `642-a-lazy-colon-shaped-line-in-a-quote-paragraph-keeps-no-indentation`, `643-a-first-block-marker-does-not-pull-a-column-zero-list-into-a-note-or-description`, `644-a-separate-plus-after-content-attaches-a-list-to-a-note-or-description`, `645-a-comment-line-leaves-a-description-s-list-item-open-for-a-fence`, `646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote` (thirteen readings), `647-a-quote-opened-on-its-own-line-in-an-item-takes-the-first-block-form`, `648-a-quote-opened-on-an-item-s-marker-line-attaches-a-quote-at-its-own-depth`, `649-a-first-block-plus-refuses-a-follower-at-an-intervening-column`, `650-a-wrapped-attribute-line-interrupts-like-a-one-line-attribute-line` (two readings), `651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column` (three readings), `652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host` (three readings), `653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct` (six readings), `654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column` (two readings), `655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero` (three readings), `656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth` (three readings), `657-a-description-separator-left-of-its-item-s-column-folds-into-the-definition-body` (four readings), `658-a-definition-marker-line-keeps-a-straddling-tab-s-residual-columns`, `19-smart-typography-dashes-and-quotes-35`, `659-table-spans-keep-alignment-defaults-in-physical-columns` (eleven readings).
+Corpus added since this run: none.
 
-Sidecars added since this run: `509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-3.fmt`, `509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-7.fmt`.
+Sidecars added since this run: none.
 
-The first three names, five rows, and the rewritten
-`31-ordered-list-start-and-delimiter-2` pin CARVE-P10-014, which no engine has
-shipped yet, so they are outside this run's denominators and its `mismatch=0`.
-`resources/engine-pin-drift.txt` carries the same six slugs for the pinned
-reader.
-
-Category `550` is outside them for the ordinary reason. Its four rows are the
-example source's deliberate multi-pair `::: compare` block, added after this run
-on a host with no carve-rs checkout to retake the three-engine sweep with
-(markup-carve/carve#2833). No engine lags the rule they pin.
-
-Category `551` is outside them for the same reason: its six rows pin link
-destination opacity and were added after this run (markup-carve/carve#2859). No
-engine lags the rule. All three render the six documents as pinned, which is what
-`check-expected` reports beside them, and the shapes they do not cover are the
-ones the executable spec itself still reads the old way (markup-carve/carve#2860).
-
-Category `589` is outside them because it was added after this run. It pins
-an explicitly delimited row of blank cells as a table row
-(markup-carve/carve#2879), which carve-js ships as of `43dd6096` and carve-php
-and carve-rs do not yet. The same ruling changed four expectations inside
-this run's denominators after it was taken, `113-a-pipe-pair-with-no-cell-is-not-a-table`
-and three rows of `453-a-row-whose-every-cell-is-blank-is-not-a-table`, so this
-run's `mismatch=0` no longer holds for them. The other four rows of category
-`453` are controls every engine still reproduces.
-
-The fixture trees match spec commit `2c3d174b`. The runner reported tracked
-changes in the spec worktree; the engine worktrees were clean at the commits
-below. These are checkout identities, separate from binary build provenance.
-Rebuild each engine before reproducing the run. Engine spec submodules were not
+The fixture trees match spec commit `180dd2d13`. The runner reported clean
+spec and engine worktrees at the commits below. Engine spec submodules were not
 initialized because these runs read this repository's corpus directly.
 
 Earlier measurements remain in the
@@ -63,15 +35,15 @@ including the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>2228 / 2228</strong>
+    <strong>3056 / 3056</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>2228 / 2228</strong>
+    <strong>3056 / 3056</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>2228 / 2228</strong>
+    <strong>3056 / 3056</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -82,9 +54,9 @@ including the
 
 | Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `2530cad55` | `2228 / 2228` | `2389 / 2389` | `0` | `0` |
-| JS | `c8d619190` | `2228 / 2228` | `2389 / 2389` | `0` | `0` |
-| PHP | `b193a1265` | `2228 / 2228` | `2389 / 2389` | `0` | `0` |
+| Rust | `a5bdaee14` | `3056 / 3056` | `3249 / 3249` | `0` | `0` |
+| JS | `67d3ea249` | `3056 / 3056` | `3249 / 3249` | `0` | `0` |
+| PHP | `8d5f7c58c` | `3056 / 3056` | `3249 / 3249` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
@@ -137,16 +109,14 @@ than rely on the ceilings agreeing, because §25 says they will not.
 
 ## Optional Tier-2 Profile
 
-Optional corpus added since this run: `66-smart-typography-quotes-off-html`,
-`66-smart-typography-quotes-off-markdown`, `66-smart-typography-quotes-off-plain`,
-`66-smart-typography-quotes-off-ansi`.
+Optional corpus added since this run: none.
 
-The optional profile was measured on 2026-10-07 CEST with the same engine commits as
+The optional profile was measured on 2026-10-25 CET with the same engine commits as
 the core snapshot. It enables a shared adapter per feature where each
 implementation exposes one. Unsupported feature/implementation combinations are
 reported as skipped, not failures.
 
-The run covered 32 features across 65 cases. Every row below is from that run; `skipped`
+The run covered 33 features across 69 cases. Every row below is from that run; `skipped`
 means this tool could not switch the feature on for that engine, not that the
 engine lacks it.
 
@@ -177,6 +147,7 @@ engine lacks it.
 | `smart-quotes-locale-de` | pass | pass | pass |
 | `smart-typography-default` | pass | pass | pass |
 | `smart-typography-off` | pass | pass | pass |
+| `smart-typography-quotes-off` | pass | pass | pass |
 | `social-link-resolvers` | pass | pass | pass |
 | `social-link-templates` | pass | pass | pass |
 | `source-line-after-generated-id` | pass | pass | pass |
@@ -191,13 +162,13 @@ example for host callbacks. Build both with
 
 | Implementation | Optional pass | Skipped | Mismatches | Errors |
 |----------------|---------------|---------|------------|--------|
-| Rust | `65 / 65` | `0` | `0` | `0` |
-| JS | `65 / 65` | `0` | `0` | `0` |
-| PHP | `65 / 65` | `0` | `0` | `0` |
+| Rust | `69 / 69` | `0` | `0` | `0` |
+| JS | `69 / 69` | `0` | `0` | `0` |
+| PHP | `69 / 69` | `0` | `0` | `0` |
 
 Optional cross-implementation diffs: `0`
 
-All 65 optional cases reached all three engines.
+All 69 optional cases reached all three engines.
 A skip is visible in the count and does not count as a pass.
 
 ## CLI timing
@@ -239,7 +210,7 @@ the corpus population. It makes no timing assertions.
 
 It renders every document on the default target plus each target that document
 carries an expected-output file for. Those sidecars count toward `pass=N/M`,
-which is why the current core run scores 2,389 fixtures for 2,228 documents.
+which is why the current core run scores 3,249 fixtures for 3,056 documents.
 
 Use this mode to refresh scored-fixture counts. Use `compare:impls` to render
 every document on every target and compare unscored output between engines.
@@ -512,12 +483,12 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=2228 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=2389/2389 mismatch=0 error=0 skipped=0 runs=2389
+profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3056 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=3249/3249 mismatch=0 error=0 skipped=0 runs=3249
   mismatching documents: 0
-js: pass=2389/2389 mismatch=0 error=0 skipped=0 runs=2389
+js: pass=3249/3249 mismatch=0 error=0 skipped=0 runs=3249
   mismatching documents: 0
-php: pass=2389/2389 mismatch=0 error=0 skipped=0 runs=2389
+php: pass=3249/3249 mismatch=0 error=0 skipped=0 runs=3249
   mismatching documents: 0
 cross_impl_diffs=0
 
@@ -534,27 +505,28 @@ Optional run summary (CLI timings and per-case coverage lines omitted):
 
 ```text
 Implementation summary
-profile=optional/opt-in corpus=optional selected_corpus=none corpus_pairs=65 shard=0/1 targets=html,markdown,plain,ansi
+profile=optional/opt-in corpus=optional selected_corpus=none corpus_pairs=69 shard=0/1 targets=html,markdown,plain,ansi
 target_note=optional corpus renders each case on the target its manifest entry pins (html unless stated); --targets filters that set
-rust: pass=65/65 mismatch=0 error=0 skipped=0 runs=65
+rust: pass=69/69 mismatch=0 error=0 skipped=0 runs=69
   mismatching documents: 0
-js: pass=65/65 mismatch=0 error=0 skipped=0 runs=65
+js: pass=69/69 mismatch=0 error=0 skipped=0 runs=69
   mismatching documents: 0
-php: pass=65/65 mismatch=0 error=0 skipped=0 runs=65
+php: pass=69/69 mismatch=0 error=0 skipped=0 runs=69
   mismatching documents: 0
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=57 diffs=0 errors=0 fixtures=yes
-markdown: compared=3 diffs=0 errors=0 fixtures=yes
-plain: compared=3 diffs=0 errors=0 fixtures=yes
-ansi: compared=2 diffs=0 errors=0 fixtures=yes
+html: compared=58 diffs=0 errors=0 fixtures=yes
+markdown: compared=4 diffs=0 errors=0 fixtures=yes
+plain: compared=4 diffs=0 errors=0 fixtures=yes
+ansi: compared=3 diffs=0 errors=0 fixtures=yes
+target_agreement_note=every optional case has an expected-output fixture on the target it pins; the counts here also assert that the implementations agree with each other.
 ```
 
 The resolver case runs through host callbacks in carve-js and carve-php, and
 through a library example binary in carve-rs. The optional corpus also covers
-the eight diagram presets, both diagram aliases, and display math. These cases
-compare hydration wrappers without invoking graphics libraries.
+the eight diagram presets, both diagram aliases, and display math. The
+count-only and optional full runs both scored all 69 cases without errors.
 
 The runner registers extensions and renderer options through each engine's API.
 A missing adapter belongs in this repository; a missing capability belongs in
