@@ -10781,21 +10781,12 @@ EOF = (* end of file *) ;
       This clause decides only where the named text goes on the targets below.
       Unnamed construct/target pairs remain open, not allowed by omission.
 
-      T1 A FENCE'S TITLE AND LABEL RENDER THE WAY A DIV'S ALREADY DO. A fenced
-         div surfaces both tokens on every target, which is the
-         caption rule `docs/graceful-degradation.md` makes normative for an
-         unconsumed label: `::: note "T" [L]` emits `**T**` then `**L**` in
-         Markdown, a standalone line each in plain text, and a bold
-         standalone line each on the terminal, the title always before the
-         label. A code fence carries the SAME two tokens in the SAME two
-         slots of its info string, so it renders them the same way, above the
-         block:
-
-             ```php "src/Auth.php" [Composer]   ->  src/Auth.php
-             composer require x                     (blank)
-             ```                                    Composer
-                                                    (blank)
-                                                    composer require x
+      T1 A FENCE'S TITLE AND LABEL SURVIVE EACH TARGET. Plain text places
+         each token on a standalone line above the code block, title before
+         label. The terminal makes those lines bold. Markdown keeps the title
+         and label after the language in the fence info string
+         (CARVE-P11-067). A fenced div places its title and unconsumed label
+         above the block on all three targets.
 
       T2 A TABLE CAPTION SURVIVES THE MARKDOWN TARGET as body text AFTER the
          table, separated by one blank line. The position is what this target
