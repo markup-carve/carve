@@ -87,6 +87,7 @@ test('the render-loss enum holds the render-time codes and neither channel code'
       'table-header-cell-demoted',
       'markdown-container-flattened',
       'markdown-caption-flattened',
+      'fence-title-dropped',
       'markdown-attributes-dropped',
       'raw-html-escaped',
     ],
@@ -97,7 +98,7 @@ test('--allow-loss names the offered render-loss codes and neither channel code'
   const offered = [...grammar.matchAll(/`--allow-loss ([a-z-]+)`/g)].map((match) => match[1])
   assert.deepEqual(
     [...new Set(offered)].sort(),
-    ['carrier-attribute-dropped', 'editorial-comment-flattened', 'list-delimiter-changed', 'list-style-dropped', 'markdown-attributes-dropped', 'markdown-caption-flattened', 'markdown-container-flattened', 'raw-format-dropped', 'raw-html-escaped', 'ruby-flattened', 'table-header-cell-demoted', 'table-header-row-demoted', 'table-header-row-hoisted', 'table-span-flattened'],
+    ['carrier-attribute-dropped', 'editorial-comment-flattened', 'fence-title-dropped', 'list-delimiter-changed', 'list-style-dropped', 'markdown-attributes-dropped', 'markdown-caption-flattened', 'markdown-container-flattened', 'raw-format-dropped', 'raw-html-escaped', 'ruby-flattened', 'table-header-cell-demoted', 'table-header-row-demoted', 'table-header-row-hoisted', 'table-span-flattened'],
   )
 })
 
