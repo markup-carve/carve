@@ -5170,7 +5170,6 @@
       "type": "object",
       "required": [
         "name",
-        "version",
         "required"
       ],
       "properties": {
@@ -5179,7 +5178,8 @@
           "pattern": "^[A-Za-z][A-Za-z0-9-]*(?:\\.[A-Za-z0-9-]+)+$"
         },
         "version": {
-          "type": "string"
+          "type": "string",
+          "description": "The extension's version, as its nodes carry it. Absent means the extension does not version its payload; no placeholder is declared (CARVE-P12-024)."
         },
         "required": {
           "type": "boolean"
