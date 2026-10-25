@@ -50,14 +50,12 @@ test('literal raw payload vectors preserve EOF bytes through AST interchange', a
   const { parse, renderHtml, toAstJson, fromAstJson } = await import('@markup-carve/carve')
   const vectors = JSON.parse(readFileSync(new URL('./fixtures/raw-payload-termination.json', import.meta.url), 'utf8'))
   for (const { id, raw, codeContent, rawPassthrough } of vectors) {
-    const pinnedRaw = { ...raw, content: raw.value }
-    delete pinnedRaw.value
     assert.ok('value' in raw && !('content' in raw), `${id}: the 2.0 fixture must use value`)
-    const doc = { type: 'document', srcByteLength: 0, children: [pinnedRaw] }
-    const back = fromAstJson(toAstJson(doc))
-    assert.deepEqual(toAstJson(back).children, [pinnedRaw], id)
-    const code = { ...doc, children: [{ type: 'code_block', lang: 'html', content: codeContent }] }
-    assert.equal(renderHtml(back, SAFE), renderHtml(code), id)
+    const doc = { type: 'document', astVersion: '2.0', srcByteLength: 0, children: [raw] }
+    const back = fromAstJson(doc)
+    assert.deepEqual(toAstJson(back).children, [raw], id)
+    const code = { ...doc, children: [{ type: 'code_block', lang: 'html', value: codeContent }] }
+    assert.equal(renderHtml(back, SAFE), renderHtml(fromAstJson(code)), id)
     assert.equal(renderHtml(back), rawPassthrough, id)
   }
   for (const format of ['html', 'latex', 'markdown']) {

@@ -3,13 +3,13 @@
   "engines": {
     "js": {
       "html": {
-        "identical": 2522,
-        "strict": 2378,
+        "identical": 2530,
+        "strict": 2377,
         "total": 3056
       },
       "md": {
-        "identical": 2273,
-        "strict": 1724,
+        "identical": 2282,
+        "strict": 1725,
         "total": 3056
       }
     },

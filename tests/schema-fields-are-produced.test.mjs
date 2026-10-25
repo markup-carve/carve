@@ -79,75 +79,20 @@ const OPT_IN_ONLY = {
   'ruby.*': 'Interchange or optional extension field with no default-profile Carve source spelling (CARVE-P12-073).',
   'ruby_pair.*': 'Interchange or optional extension field with no default-profile Carve source spelling (CARVE-P12-073).',
   'small_caps.*': 'Interchange or optional extension field with no default-profile Carve source spelling (CARVE-P12-073).',
-  'table_foot.*': 'Interchange or optional extension field with no default-profile Carve source spelling (CARVE-P12-073).',
+  'caption.short': 'Navigation text is editorial, and the Carve writer omits it (CARVE-P12-033).',
+  'cell_paragraph.blockImage': 'Block image promotion applies to paragraph, not a source-spelled pipe cell (CARVE-P12-043, CARVE-P12-049).',
+  'xref.form': 'Display form is an interchange request with no Carve source spelling (CARVE-P12-074).',
+  'document.extensions': 'Qualified extensions require an opt-in declaration absent from the core corpus (CARVE-P12-055).',
+  'inline_extension.fallback': 'Inline extensions have no default-profile Carve source spelling (CARVE-P12-055).',
+  'inline_extension.payload': 'Inline extensions have no default-profile Carve source spelling (CARVE-P12-055).',
+  'inline_extension.props': 'Inline extensions have no default-profile Carve source spelling (CARVE-P12-055).',
+  'inline_extension.resourceIds': 'Inline extensions have no default-profile Carve source spelling (CARVE-P12-055).',
+  'inline_extension.slots': 'Inline extensions have no default-profile Carve source spelling (CARVE-P12-055).',
+  'inline_extension.version': 'Inline extensions have no default-profile Carve source spelling (CARVE-P12-055).',
+  'mention.label': 'Carve source spells a mention as `@name` only; a visible label comes from an importer or an editor (CARVE-P12-074).',
+
 }
 
-/** Fields owed by the pinned 1.2 serializer before the 2.0 engine rollout. */
-const AHEAD_OF_PIN = {
-  'abbreviation.key': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'abbreviation.namespace': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'abbreviation_def.key': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'abbreviation_def.namespace': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'admonition.groupLabel': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'caption.*': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'cell_paragraph.*': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'code_block.groupLabel': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'code_block.syntax': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'code_block.title': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'code_block.value': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'comment.value': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'critic_comment.value': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'critic_substitution.*': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'definition_list.children': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'definition_list.spacing': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'directive.groupLabel': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'div.groupLabel': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'document.astVersion': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'document.extensions': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'document.stages': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'figure.children': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'footnote.key': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'footnote.namespace': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'footnote_ref.key': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'footnote_ref.namespace': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'frontmatter.value': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'image.key': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'image.namespace': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'image.tooltip': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'inline_extension.children': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'inline_extension.fallback': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'inline_extension.payload': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'inline_extension.props': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'inline_extension.resourceIds': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'inline_extension.slots': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'inline_extension.version': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'inline_footnote.children': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'link.key': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'link.namespace': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'link.tooltip': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'link_reference_definition.key': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'link_reference_definition.namespace': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'list.children': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'list.marker': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'list.spacing': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'list_item.task': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'literal_inline.value': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'math.value': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'mention.kind': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'mention.label': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'mention.target': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'raw_block.value': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'raw_inline.value': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'smart_punctuation.source': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'table.children': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'table_body.*': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'table_cell.sourceContent': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'table_column.*': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'table_head.*': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'table_row.children': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'taskState.*': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-  'xref.*': 'The pinned carve-js serializer still emits the 1.2 AST shape for this 2.0 field (carve#3262, carve#3598).',
-}
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
 const ENGINE_ROLLOUT_PENDING = {
@@ -264,7 +209,7 @@ test('every schema field is produced by a corpus document, or named as opt-in', 
   )
 
   const orphaned = orphanedPromises().filter(
-    (key) => !(key in OPT_IN_ONLY) && !(key in ENGINE_ROLLOUT_PENDING) && !(key in AHEAD_OF_PIN),
+    (key) => !(key in OPT_IN_ONLY) && !(key in ENGINE_ROLLOUT_PENDING),
   )
 
   assert.deepEqual(
@@ -292,12 +237,6 @@ test('every opt-in exemption is still needed', () => {
     `OPT_IN_ONLY names promise(s) the corpus now keeps: ${stale.join(', ')}. ` +
       'Remove the entry - the exemption is hiding a field that is covered.',
   )
-})
-
-test('every AST 2.0 ahead-of-pin field is still owed', () => {
-  const orphans = new Set(orphanedPromises())
-  const stale = Object.keys(AHEAD_OF_PIN).filter((key) => !orphans.has(key)).sort()
-  assert.deepEqual(stale, [], `AHEAD_OF_PIN names field(s) the pinned engine now produces: ${stale.join(', ')}`)
 })
 
 test('every pending engine-rollout exemption is still needed', () => {

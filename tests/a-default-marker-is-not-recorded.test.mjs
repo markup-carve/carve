@@ -1,9 +1,4 @@
-/*
- * The pinned serializer still uses 1.2 `delim` and `bulletChar`. The 2.0
- * schema groups marker choice in one discriminated object. These controls
- * keep the old encoder's default-omission behavior visible during rollout
- * and check that non-default source markers survive (carve#2828, carve#3598).
- */
+
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -21,7 +16,6 @@ const list = (src) => {
   return node
 }
 
-const AHEAD_OF_PIN = 'The pinned list serializer still emits the 1.2 marker fields (carve#3598).'
 
 test('the 2.0 schema puts marker choice in one discriminated object', () => {
   const marker = schema.$defs.list.properties.marker
@@ -33,26 +27,17 @@ test('the 2.0 schema puts marker choice in one discriminated object', () => {
 
 test('a parse omits `delim` on the default `.` marker', () => {
   const node = list('1. Note text.\n')
-  if (AHEAD_OF_PIN) {
-    assert.ok(!('delim' in node) && !('marker' in node), 'the pinned marker shape caught up; delete AHEAD_OF_PIN')
-  } else assert.equal(node.marker.delimiter, undefined)
+  assert.equal(node.marker.delimiter, undefined)
 })
 
 test('a parse omits `bulletChar` on the default `-` marker', () => {
   const node = list('- item\n')
-  if (AHEAD_OF_PIN) {
-    assert.ok(!('bulletChar' in node) && !('marker' in node), 'the pinned marker shape caught up; delete AHEAD_OF_PIN')
-  } else assert.equal(node.marker.char, '-')
+  assert.equal(node.marker.char, '-')
 })
 
 test('a non-default marker is still recorded, which is what separates this from deleting the fields', () => {
-  if (AHEAD_OF_PIN) {
-    assert.equal(list('1) Note text.\n').delim, ')')
-    assert.equal(list('* item\n').bulletChar, '*')
-  } else {
-    assert.equal(list('1) Note text.\n').marker.delimiter, ')')
-    assert.equal(list('* item\n').marker.char, '*')
-  }
+  assert.equal(list('1) Note text.\n').marker.delimiter, ')')
+  assert.equal(list('* item\n').marker.char, '*')
 })
 
 test('omitting the default loses nothing, which is what makes it safe', () => {

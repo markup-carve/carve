@@ -226,11 +226,11 @@ export function checkCommentContent(doc, expected) {
   if (expected === undefined) return []
   const actual = valueSignature(doc)
     .filter((node) => node.type === 'comment')
-    .map((node) => node.fields.find((field) => field.startsWith('content=')))
-  const wanted = expected.map((content) => `content=${JSON.stringify(content)}`)
+    .map((node) => node.fields.find((field) => field.startsWith('value=')))
+  const wanted = expected.map((value) => `value=${JSON.stringify(value)}`)
   return JSON.stringify(actual) === JSON.stringify(wanted)
     ? []
-    : [`comment.content: expected ${JSON.stringify(wanted)}, received ${JSON.stringify(actual)}`]
+    : [`comment.value: expected ${JSON.stringify(wanted)}, received ${JSON.stringify(actual)}`]
 }
 
 /** Check literal code payloads independently of agreement between engines. */
@@ -238,11 +238,11 @@ export function checkCodeContent(doc, expected) {
   if (expected === undefined) return []
   const actual = valueSignature(doc)
     .filter((node) => node.type === 'code_block')
-    .map((node) => node.fields.find((field) => field.startsWith('content=')))
-  const wanted = expected.map((content) => `content=${JSON.stringify(content)}`)
+    .map((node) => node.fields.find((field) => field.startsWith('value=')))
+  const wanted = expected.map((value) => `value=${JSON.stringify(value)}`)
   return JSON.stringify(actual) === JSON.stringify(wanted)
     ? []
-    : [`code_block.content: expected ${JSON.stringify(wanted)}, received ${JSON.stringify(actual)}`]
+    : [`code_block.value: expected ${JSON.stringify(wanted)}, received ${JSON.stringify(actual)}`]
 }
 
 /** Check literal raw payloads independently of agreement between engines. */
@@ -250,9 +250,9 @@ export function checkRawContent(doc, expected) {
   if (expected === undefined) return []
   const actual = valueSignature(doc)
     .filter((node) => node.type === 'raw_block')
-    .map((node) => node.fields.find((field) => field.startsWith('content=')))
-  const wanted = expected.map((content) => `content=${JSON.stringify(content)}`)
+    .map((node) => node.fields.find((field) => field.startsWith('value=')))
+  const wanted = expected.map((value) => `value=${JSON.stringify(value)}`)
   return JSON.stringify(actual) === JSON.stringify(wanted)
     ? []
-    : [`raw_block.content: expected ${JSON.stringify(wanted)}, received ${JSON.stringify(actual)}`]
+    : [`raw_block.value: expected ${JSON.stringify(wanted)}, received ${JSON.stringify(actual)}`]
 }

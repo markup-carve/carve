@@ -688,37 +688,15 @@ test('the corpus is non-trivial', () => {
  */
 const SCHEMA_ROLLOUT_PENDING = new Map([])
 
-const AHEAD_OF_PIN = {
-  astVersion: 'The pinned carve-js serializer still emits 1.2 bare trees without required astVersion 2.0.',
-  byteOffsets: 'The pinned carve-js serializer still counts Unicode codepoints instead of UTF-8 bytes (carve#3598).',
-  tableColumns: 'The pinned carve-js serializer omits generated table columns and resolved defaults (carve#3262).',
-  renamedTypes: 'The pinned carve-js serializer still emits heading_ref and substitution.',
-  newTypes: {
-    caption: 'The pinned serializer still emits inline caption arrays.',
-    cell_paragraph: 'The pinned serializer still emits inline table cell children.',
-    critic_substitution: 'The pinned serializer still emits substitution.',
-    ruby_pair: 'The pinned serializer still emits untyped ruby pair records.',
-    table_body: 'The pinned serializer still emits flat table rows.',
-    table_column: 'The pinned serializer still emits untyped column records.',
-    table_foot: 'The pinned serializer still emits row-group counts.',
-    table_head: 'The pinned serializer still emits row-group counts.',
-    xref: 'The pinned serializer still emits heading_ref.',
-  },
-}
 
 test('2.0 source offsets count UTF-8 bytes', () => {
   const node = serialize('😀\n').children[0]
-  assert.equal(node.pos.endOffset, AHEAD_OF_PIN.byteOffsets ? 1 : 4,
-    'the pinned offset unit changed; remove AHEAD_OF_PIN.byteOffsets')
+  assert.equal(node.pos.endOffset, 4)
 })
 
 test('2.0 tables publish columns through their widest row', () => {
   const table = serialize('| a |\n|---|\n| b |\n').children[0]
-  if (AHEAD_OF_PIN.tableColumns) {
-    assert.equal(table.columns, undefined, 'the pinned table serializer caught up; remove AHEAD_OF_PIN.tableColumns')
-  } else {
-    assert.equal(table.columns.length, 1)
-  }
+  assert.equal(table.columns.length, 1)
 })
 
 test('every corpus document serializes to a schema-valid AST', () => {
@@ -734,13 +712,7 @@ test('every corpus document serializes to a schema-valid AST', () => {
     if (!validate(serialize(source))) failures.push(`${name} (parse): ${firstErrors()}`)
     if (!validate(serializeResolved(source))) failures.push(`${name} (resolved): ${firstErrors()}`)
   }
-  if (AHEAD_OF_PIN.astVersion) {
-    assert.equal(failures.length, corpus.length * 2, 'the 2.0 pin debt changed; remove the declaration when the pin moves')
-    assert.ok(failures.every((failure) => failure.includes("must have required property 'astVersion'")),
-      'a pinned tree failed for a reason beyond the declared missing version')
-  } else {
-    assert.deepEqual(failures.slice(0, 8), [], `${failures.length} documents fail the schema`)
-  }
+  assert.deepEqual(failures.slice(0, 8), [], `${failures.length} documents fail the schema`)
   assert.deepEqual(
     cleared,
     [],
@@ -755,7 +727,7 @@ test('every node type the reference emits is declared in the schema', () => {
     for (const tree of bothStages(source)) for (const node of walk(tree)) seen.add(node.type)
   }
   const undeclared = [...seen].filter((t) => !declared.has(t)).sort()
-  assert.deepEqual(undeclared, AHEAD_OF_PIN.renamedTypes ? ['heading_ref', 'substitution'] : [],
+  assert.deepEqual(undeclared, [],
     `node types emitted but not in the schema: ${undeclared.join(', ')}`)
 })
 
@@ -786,6 +758,8 @@ const NOT_PRODUCIBLE = {
     'structural publishing node: sectioning is implicit in heading level, so Carve 0.1 source has no spelling; produced only by importers from a format that has explicit sections (carve#2207)',
   ruby:
     'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and HTML-import consumers (carve#2208)',
+  ruby_pair:
+    'exists only inside a `ruby`, which Carve 0.1 source cannot spell; the Carve writer flattens it (CARVE-P12-054)',
 }
 
 test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {
@@ -798,7 +772,7 @@ test('every node type the schema declares is produced by a corpus document, or n
     .sort()
   assert.deepEqual(
     missing,
-    Object.keys(AHEAD_OF_PIN.newTypes).sort(),
+    [],
     `the schema declares node type(s) no corpus document produces: ${missing.join(', ')}. ` +
       'A declared type with no producer is either dead or unimplemented, and the schema ' +
       'cannot tell those apart. Add a corpus document, or name it in NOT_PRODUCIBLE with the reason.',
@@ -1370,8 +1344,7 @@ test('the reference parser publishes all six generated-content kinds with author
     for (const body of ['', 'Body\n']) {
       const source = `::: ${kind}\n${body}:::\n`
       const document = serialize(source)
-      assert.equal(validate(document), AHEAD_OF_PIN.astVersion ? false : true, `${kind}: ${firstErrors()}`)
-      if (AHEAD_OF_PIN.astVersion) assert.equal(document.astVersion, undefined, 'pin debt must still be present')
+      assert.equal(validate(document), true, `${kind}: ${firstErrors()}`)
       assert.equal(document.children.length, 1, `${kind}: one block`)
       const directive = document.children[0]
       assert.equal(directive.type, 'directive', kind)

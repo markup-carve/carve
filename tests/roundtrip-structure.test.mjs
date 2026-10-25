@@ -5,7 +5,34 @@ import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { acceptHtmlLosses, normalize, firstDiff, record, validateBaseline, checkCounts, jsRoundtrip, finishMeasurement, baselineCounts } from '../scripts/lib/roundtrip-structure.mjs'
+import { acceptHtmlLosses, normalize, firstDiff, record, validateBaseline, checkCounts, jsRoundtrip, finishMeasurement, baselineCounts, wireContract } from '../scripts/lib/roundtrip-structure.mjs'
+
+test('structural engine lag recognizes both wire contracts', () => {
+  assert.equal(wireContract({ type: 'document', astVersion: '1.2' }), '1.2')
+  assert.equal(wireContract({ type: 'document', children: [{ type: 'heading_ref', target: 'h' }] }), '1.2')
+  assert.equal(wireContract({ type: 'document', astVersion: '2.0' }), '2.0')
+  assert.equal(wireContract({ type: 'document', children: [{ type: 'xref', key: 'h', namespace: 'heading' }] }), '2.0')
+  assert.equal(wireContract({ type: 'document', children: [{ type: 'link_reference_definition', key: 'h', namespace: 'link' }] }), '2.0')
+  assert.equal(wireContract({ type: 'document', children: [{ type: 'text', value: 'a' }] }), '1.2')
+  assert.throws(() => wireContract({ children: [{ type: 'xref' }, { type: 'heading_ref' }] }), /mixed/)
+})
+
+test('HTML loss normalization reads contract 2.0 reference keys', () => {
+  const tree = { type: 'document', children: [
+    { type: 'link_reference_definition', key: 'unused', namespace: 'link', href: '/u' },
+    { type: 'paragraph', children: [{ type: 'link', key: 'missing', namespace: 'link', rawRef: '[missing][]', children: [{ type: 'text', value: 'missing' }] }] },
+  ] }
+  assert.deepEqual(acceptHtmlLosses(tree).children, [
+    { type: 'paragraph', children: [{ type: 'text', value: '[' }, { type: 'text', value: 'missing' }, { type: 'text', value: '][]' }] },
+  ])
+})
+
+test('normalization keeps contract 2.0 list kind and start', () => {
+  assert.deepEqual(normalize({ type: 'list', marker: { kind: 'ordered', delimiter: ')', start: 2 }, spacing: 'loose' }),
+    { type: 'list', marker: { kind: 'ordered', start: 2 } })
+  assert.equal(firstDiff(normalize({ type: 'list', marker: { kind: 'bullet', char: '-' } }),
+    normalize({ type: 'list', marker: { kind: 'ordered' } })).kind, 'value list.marker.kind')
+})
 
 test('normalization matches the PHP measurement, including non-text strings', () => {
   const tree = { type: 'document', pos: {}, srcByteLength: 99, attrs: { order: ['x'] }, children: [
@@ -168,10 +195,12 @@ test('new support requests a baseline and skipped engines still fail', () => {
   assert.throws(() => baselineCounts([{ ...row, status: 'skipped' }]), /cannot write baseline/)
 })
 
-function withBatchDriver(t, body) {
+function withBatchDriver(t, body, usePinnedLag = false) {
   const dir = mkdtempSync(join(tmpdir(), 'carve-test-roundtrip-'))
   t.after(() => rmSync(dir, { recursive: true, force: true }))
   const driver = join(dir, 'driver')
+  const lagFile = join(dir, 'no-pinned-engine-lag.txt')
+  writeFileSync(lagFile, '')
   writeFileSync(driver, `#!${process.execPath}
 const { readFileSync } = require('node:fs')
 const { basename } = require('node:path')
@@ -179,9 +208,29 @@ const request = JSON.parse(readFileSync(0, 'utf8'))
 ${body}
 `, { mode: 0o755 })
   return args => spawnSync(process.execPath, [fileURLToPath(new URL('../scripts/roundtrip-structure.mjs', import.meta.url)), '--engine', 'rs', '--workers', '2', '--json', ...args], {
-    encoding: 'utf8', env: { ...process.env, CARVE_RS_ROUNDTRIP_DRIVER: driver },
+    encoding: 'utf8', env: { ...process.env, CARVE_RS_ROUNDTRIP_DRIVER: driver,
+      ...(!usePinnedLag ? { CARVE_ROUNDTRIP_LAG_FILE: lagFile } : {}) },
   })
 }
+
+test('declared Rust lag skips 1.2 comparison and fails when output reaches 2.0', t => {
+  for (const [version, status] of [['1.2', 0], ['2.0', 2]]) {
+    const run = withBatchDriver(t, `for (const file of request.files) for (const target of request.targets)
+      console.log(JSON.stringify({ file: basename(file), target,
+        before: { type: 'document', astVersion: '${version}', children: [] },
+        after: { type: 'document', astVersion: '${version}', children: [] } }))`, true)
+    const output = run(['--check'])
+    assert.equal(output.status, status, output.stderr)
+    if (version === '1.2') {
+      const report = JSON.parse(output.stdout)
+      assert.ok(report.results.every(row => row.status === 'declared-lag' && row.total === report.total))
+    } else assert.match(output.stderr, /delete its structural engine lag declaration/)
+  }
+})
+
+test('a declared engine lag cannot overwrite the measured baseline', () => {
+  assert.throws(() => baselineCounts([{ engine: 'rs', target: 'html', status: 'declared-lag' }]), /cannot write baseline/)
+})
 
 test('batch CLI reports all-error targets as unsupported and fails their existing baseline', t => {
   const run = withBatchDriver(t, `for (const file of request.files) for (const target of request.targets)
@@ -275,10 +324,10 @@ test('Rust driver emits one compact object per document and target', { skip: !pr
 
 const text = value => ({ type: 'text', value })
 const doc = children => ({ type: 'document', children })
-const definition = label => ({ type: 'link_reference_definition', label, href: '/url' })
+const definition = key => ({ type: 'link_reference_definition', key, namespace: 'link', href: '/url' })
 
 test('HTML losses drop unused link definitions and keep used definitions and resolved references', () => {
-  const link = { type: 'link', ref: ' used ', rawRef: '[t][ used ]', href: '/url', children: [text('t')] }
+  const link = { type: 'link', key: ' used ', namespace: 'link', rawRef: '[t][ used ]', href: '/url', children: [text('t')] }
   const tree = doc([definition('unused'), definition('used'), { type: 'paragraph', children: [link] }])
   assert.deepEqual(acceptHtmlLosses(tree), doc([definition('used'), { type: 'paragraph', children: [link] }]))
 })
@@ -286,15 +335,15 @@ test('HTML losses drop unused link definitions and keep used definitions and res
 test('HTML unresolved references preserve children and raw label whitespace', () => {
   const children = [{ type: 'emphasis', children: [text('t')] }]
   const tree = doc([definition('a b'), { type: 'paragraph', children: [
-    { type: 'link', ref: 'a\tb', rawRef: '[t][a\tb]', href: '', children },
+    { type: 'link', key: 'a\tb', namespace: 'link', rawRef: '[t][a\tb]', children },
   ] }])
   assert.deepEqual(acceptHtmlLosses(tree), doc([{ type: 'paragraph', children: [text('['), ...children, text('][a\tb]')] }]))
 })
 
 test('HTML unresolved images, collapsed references and shortcuts preserve their spelling', () => {
   const tree = doc([{ type: 'paragraph', children: [
-    { type: 'image', ref: 't', rawRef: '![t][]', children: [text('t')] },
-    { type: 'link', ref: 'u', rawRef: '[u]', children: [text('u')] },
+    { type: 'image', key: 't', namespace: 'link', rawRef: '![t][]', children: [text('t')] },
+    { type: 'link', key: 'u', namespace: 'link', rawRef: '[u]', children: [text('u')] },
   ] }])
   assert.deepEqual(acceptHtmlLosses(tree), doc([{ type: 'paragraph', children: [text('!['), text('t'), text('][]'), text('['), text('u'), text(']')] }]))
 })

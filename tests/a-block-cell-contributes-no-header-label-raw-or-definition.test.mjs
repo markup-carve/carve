@@ -38,45 +38,55 @@ const paragraph = (value) => ({ type: 'paragraph', children: [text(value)] })
 
 const cell = (content) => ({
   type: 'document',
+  astVersion: '2.0',
   srcByteLength: 0,
-  children: [{ type: 'table', rows: [{ type: 'table_row', cells: [{ type: 'table_cell', header: false, ...content }] }] }],
+  children: [{ type: 'table', columns: [{ type: 'table_column' }], children: [
+    { type: 'table_body', children: [{ type: 'table_row', children: [{
+      type: 'table_cell', header: false,
+      sourceContent: content.blocks ? 'blocks' : 'inline',
+      children: content.blocks ?? [{ type: 'cell_paragraph', children: content.children ?? [] }],
+    }] }] },
+  ] }],
 })
 
 /* The three targets the clause binds. HTML keeps the blocks AS blocks, so it is
  * not a flatten and not this file's subject. */
 const TARGETS = { markdown: renderMarkdown, plain: renderPlainText, ansi: renderAnsi }
 
-const write = (target, content) => TARGETS[target](fromAstJson(JSON.parse(JSON.stringify(cell(content)))))
+const write = (target, content) => {
+  try { return TARGETS[target](fromAstJson(JSON.parse(JSON.stringify(cell(content))))) }
+  catch (error) { throw new Error(`${target}: ${JSON.stringify(content)}: ${error.message}`, { cause: error }) }
+}
 
 const CASES = {
   'code header and label': {
-    blocks: [{ type: 'code_block', content: 'x = 1\n', lang: 'php', header: 'src/Auth.php', label: 'NPM' }],
+    blocks: [{ type: 'code_block', value: 'x = 1\n', syntax: 'php', title: [text('src/Auth.php')], groupLabel: 'NPM' }],
     inlines: [text('x = 1')],
   },
   'raw block': {
-    blocks: [{ type: 'raw_block', format: 'html', content: '<b>x</b>\n' }],
+    blocks: [{ type: 'raw_block', format: 'html', value: '<b>x</b>\n' }],
     inlines: [],
   },
   'abbreviation definition': {
-    blocks: [{ type: 'abbreviation_def', abbr: 'NPM', expansion: 'Node Package Manager' }],
+    blocks: [{ type: 'abbreviation_def', key: 'NPM', namespace: 'abbr', expansion: 'Node Package Manager' }],
     inlines: [],
   },
   // The one case where "contributes NOTHING" meets "separated by one space
   // where BOTH SIDES contribute a token": a definition between two paragraphs
   // must leave one space, not two and not three.
   'abbreviation definition between two paragraphs': {
-    blocks: [paragraph('one'), { type: 'abbreviation_def', abbr: 'NPM', expansion: 'Node Package Manager' }, paragraph('two')],
+    blocks: [paragraph('one'), { type: 'abbreviation_def', key: 'NPM', namespace: 'abbr', expansion: 'Node Package Manager' }, paragraph('two')],
     inlines: [text('one two')],
   },
   // The three shapes carve#2401 reported as reading three ways. Each is a
   // payload or an inline the flatten must leave alone: the newline is the only
   // character it touches.
   'code indented continuation line': {
-    blocks: [{ type: 'code_block', content: 'a\n  b\n' }],
+    blocks: [{ type: 'code_block', value: 'a\n  b\n' }],
     inlines: [text('a   b')],
   },
   'code trailing backslash pair': {
-    blocks: [{ type: 'code_block', content: 'a\\\\\nb\n' }],
+    blocks: [{ type: 'code_block', value: 'a\\\\\nb\n' }],
     inlines: [text('a\\\\ b')],
   },
   'image in a block cell': {
@@ -141,7 +151,7 @@ test("a payload's terminating newline reaches the Carve target, which §27 does 
   // §27 rules Markdown, plain and ANSI, and since carve#2389 it reads a
   // trailing newline as contributing nothing. The Carve target still writes the
   // space, where the code-span delimiters make it visible.
-  const payload = (content) => renderCarve(fromAstJson(JSON.parse(JSON.stringify(cell({ blocks: [{ type: 'code_block', content }] })))))
+  const payload = (value) => renderCarve(fromAstJson(JSON.parse(JSON.stringify(cell({ blocks: [{ type: 'code_block', value }] })))))
   assert.equal(payload('x = 1\n'), '| `x = 1 ` |\n')
   assert.equal(payload('x = 1'), '| `x = 1` |\n')
   assert.equal(payload('x = 1\ny = 2\n'), '| `x = 1 y = 2 ` |\n')

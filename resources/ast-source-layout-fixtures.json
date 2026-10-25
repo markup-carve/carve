@@ -9,15 +9,7 @@
         {"path": "/children/0/children/0", "startByte": 0, "endByte": 5}
       ]}
   },
-    {"name": "loose list excludes separator blank from item ranges", "id": "loose-list-item-ranges", "aheadOfPin": {"reason": "The pinned carve-js still serializes list items under 1.2 `items` (carve#3262, carve#3598).", "pinnedNodes": [
-        {"path":"/children/0","startByte":0,"endByte":8},
-        {"path":"/children/0/items/0","startByte":0,"endByte":3},
-        {"path":"/children/0/items/0/children/0","startByte":2,"endByte":3},
-        {"path":"/children/0/items/0/children/0/children/0","startByte":2,"endByte":3},
-        {"path":"/children/0/items/1","startByte":5,"endByte":8},
-        {"path":"/children/0/items/1/children/0","startByte":7,"endByte":8},
-        {"path":"/children/0/items/1/children/0/children/0","startByte":7,"endByte":8}
-      ]},
+    {"name": "loose list excludes separator blank from item ranges", "id": "loose-list-item-ranges",
      "source": "- a\n\n- b\n", "layout": {"version": 1, "encoding": "utf-8", "source": "- a\n\n- b\n", "lineEndings": "lf", "bom": false,
       "nodes": [
         {"path":"/children/0","startByte":0,"endByte":8},

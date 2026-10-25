@@ -1436,11 +1436,11 @@ test('the parse tree cannot answer for a definition list, so the corpus pass rea
 
   const wire = toAstJson(parse(source)).children[0]
   assert.deepEqual(
-    wire.items.map((item) => item.type),
+    wire.children.map((item) => item.type),
     ['definition_term', 'definition_description'],
   )
-  assert.ok(wire.items.every((item) => Number.isInteger(item.pos.endOffset)))
-  assert.equal(wire.pos.endOffset, wire.items.at(-1).pos.endOffset)
+  assert.ok(wire.children.every((item) => Number.isInteger(item.pos.endOffset)))
+  assert.equal(wire.pos.endOffset, wire.children.at(-1).pos.endOffset)
 })
 
 test('fenced quotes own their closer at every supported fence width and indent', () => {
@@ -1715,11 +1715,11 @@ test('a table cell is bounded by the pipes on BOTH sides, which is why it is abs
   // places reach past their last child, all over spaces, and naming the type
   // would report a cell's own source as nobody's.
   const source = '| a | bb  |\n|---|---|\n'
-  const cell = toAstJson(parse(source)).children[0].rows[0].cells[1]
+  const cell = toAstJson(parse(source)).children[0].children[0].children[0].children[1]
   assert.equal(cell.type, 'table_cell')
   const slice = [...source].slice(cell.pos.startOffset, cell.pos.endOffset).join('')
   assert.equal(slice, ' bb  ')
-  const child = cell.children[0]
+  const child = cell.children[0].children[0]
   assert.ok(cell.pos.startOffset < child.pos.startOffset, 'padding before the content is inside')
   assert.ok(cell.pos.endOffset > child.pos.endOffset, 'and so is the padding after it')
   assert.ok(!ENDS_AT_LAST_CHILD.has('table_cell'))
@@ -1743,7 +1743,7 @@ test('a definition description ends at its last child ON THE REFERENCE, which is
   const source = ':: t\n:  a\n\n   b  \n'
   const wire = toAstJson(parse(source))
   const list = wire.children[0]
-  const description = list.items[1]
+  const description = list.children[1]
   assert.equal(description.type, 'definition_description')
   assert.equal([...source].slice(description.pos.startOffset, description.pos.endOffset).join(''), ':  a\n\n   b')
   assert.equal([...source].slice(list.pos.startOffset, list.pos.endOffset).join(''), ':: t\n:  a\n\n   b')

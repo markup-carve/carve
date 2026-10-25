@@ -198,6 +198,7 @@ const MANIFEST = [
   // deliberately a per-entry opt-in rather than a blanket relaxation of
   // `owed`, so relaxing a third ledger stays a visible edit here.
   { repo: 'spec', path: 'resources/engine-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'scripts/engine-report.mjs', staleness: 'reproduces now; drop the line (reason was:', owner: 'npm run engine:report -- --check' },
+  { repo: 'spec', path: 'resources/roundtrip-structure-engine-lag.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'scripts/roundtrip-structure.mjs', staleness: 'emits contract 2.0; delete its structural engine lag declaration', owner: 'npm run roundtrip:structure -- --check' },
   // Declared inside a pull request for the same reason: a spec rule the
   // oracle already renders lands before the pin, on every authored document
   // that uses the construct (carve#2887).
@@ -210,15 +211,11 @@ const MANIFEST = [
   { repo: 'spec', path: 'resources/ast-position-waivers.txt', kind: 'txt', policy: 'split', prPolicy: 'split-declared', guard: 'two-way', stalenessFile: 'scripts/spec/ast-waivers.mjs', staleness: 'line.document}  ${line.type}  is declared', owner: 'tests/ast-waivers.test.mjs' },
   { repo: 'spec', path: 'resources/import-comparison-drift.json', name: 'differences', kind: 'json', policy: 'manual', guard: 'two-way', stalenessFile: 'scripts/lib/import-comparison.mjs', staleness: 'STALE comparison declaration:', owner: 'npm run import:compare' },
   { repo: 'spec', path: 'resources/ingest-comparison-drift.json', name: 'differences', kind: 'json', policy: 'manual', guard: 'two-way', stalenessFile: 'scripts/lib/import-comparison.mjs', staleness: 'STALE comparison declaration:', owner: 'npm run ast:ingest' },
-  { repo: 'spec', path: 'resources/roundtrip-export-acceptance-fixtures.json', name: 'aheadOfPin', kind: 'json-flag', flag: 'aheadOfPin', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/roundtrip-export-acceptance.test.mjs', staleness: 'is declared aheadOfPin but the pinned engine passes it: drop the flag', owner: 'tests/roundtrip-export-acceptance.test.mjs' },
-  { repo: 'spec', path: 'resources/ast-source-layout-fixtures.json', name: 'aheadOfPin', kind: 'json-flag', flag: 'aheadOfPin', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/ast-source-layout-cases.test.mjs', staleness: 'is declared aheadOfPin but the pinned engine passes it: drop the flag', owner: 'tests/ast-source-layout-cases.test.mjs' },
-  { repo: 'spec', path: 'resources/ast-cell-wraps-acceptance.json', name: 'aheadOfPin', kind: 'json-flag', flag: 'aheadOfPin', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/an-atomic-inline-carries-its-continuation-join.test.mjs', staleness: 'is declared aheadOfPin but the pinned engine passes it: drop the flag', owner: 'tests/an-atomic-inline-carries-its-continuation-join.test.mjs' },
   // A counts ratchet rather than a ledger, but it carries a per-document
   // allowlist inside it. Two-directional by construction - the whole object is
   // compared with deepEqual - so a row here cannot rot silently.
   { repo: 'spec', path: 'resources/import-roundtrip-baseline.json', name: 'htmlImportPopulation.expectedRejections', kind: 'json', policy: 'manual', guard: 'two-way', stalenessFile: 'tests/import-roundtrip-ratchets.check-helper.mjs', staleness: 'htmlImportPopulation: baseline.htmlImportPopulation,', owner: 'tests/import-roundtrip-ratchets.check-helper.mjs' },
 
-  { repo: 'spec', path: 'resources/html-import-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/html-import-contract.check.mjs', staleness: 'pinned build now reproduces it. Delete the entry', owner: 'npm run html-import:check' },
 
   // THE THIRD ENGINE-LAG ENTRY, and the only one about a PUBLISHED pin rather
   // than a committed one: carve-rb links `carve-lang` from crates.io, so
@@ -257,12 +254,6 @@ const MANIFEST = [
   { repo: 'spec', path: 'tests/examples-tier3.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', stalenessFile: 'scripts/lib/tier3-ledger.mjs', staleness: 'the pinned build reproduces this example now, so its AHEAD_OF_PIN', owner: 'tests/a-tier3-example-ahead-of-the-pin-is-declared.test.mjs' },
   { repo: 'spec', path: 'tests/every-labels-key-reaches-the-output.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'Delete the AHEAD_OF_PIN entry so the key is checked for real.', owner: 'tests/every-labels-key-reaches-the-output.test.mjs' },
   { repo: 'spec', path: 'tests/ast-schema.test.mjs', name: 'SCHEMA_ROLLOUT_PENDING', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'these documents validate now and are still listed in SCHEMA_ROLLOUT_PENDING', owner: 'tests/ast-schema.test.mjs' },
-  { repo: 'spec', path: 'tests/ast-schema.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'the 2.0 pin debt changed; remove the declaration when the pin moves', owner: 'carve#3262 and carve#3598' },
-  { repo: 'spec', path: 'tests/include-conformance.proof.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'the pinned output validates against 2.0 now; remove AHEAD_OF_PIN.contract20', owner: 'carve#3262 and carve#3598' },
-  { repo: 'spec', path: 'tests/schema-fields-are-produced.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'AHEAD_OF_PIN names field(s) the pinned engine now produces', owner: 'carve#3262 and carve#3598' },
-  { repo: 'spec', path: 'tests/citation-definition-is-a-node.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'the pinned citation definition caught up; delete AHEAD_OF_PIN', owner: 'carve#3598' },
-  { repo: 'spec', path: 'tests/a-default-marker-is-not-recorded.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'the pinned marker shape caught up; delete AHEAD_OF_PIN', owner: 'carve#3598' },
-  { repo: 'spec', path: 'tests/nbsp-sentinel-fields.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'the pinned range reader now accepts v2; delete AHEAD_OF_PIN', owner: 'carve#3598' },
   { repo: 'spec', path: 'tests/corpus-convert.test.mjs', name: 'PINNED_DRIFT', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', staleness: 'but the pinned build now matches - delete the STALE entry', owner: 'per-PR twin of resources/converter-drift.txt' },
   // Capability statements about the PINNED build and about each engine's CLI,
   // not pin lag: no rule separates one that will clear from one that never

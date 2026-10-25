@@ -122,9 +122,6 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
   assert.deepEqual(
     specRelaxed.map((e) => [e.path, e.policy, perPrPolicy(e)]).sort(),
     [
-      // A spec PR adds a cellWraps row ahead of the pin; the pin bump drops the flag.
-      ['resources/ast-cell-wraps-acceptance.json', 'owed', 'declared'],
-      ['resources/ast-source-layout-fixtures.json', 'owed', 'declared'],
       ['resources/ast-extent-findings.txt', 'owed', 'declared'],
       ['resources/ast-position-waivers.txt', 'split', 'split-declared'],
       ['resources/ast-span-divergence.txt', 'owed', 'declared'],
@@ -134,9 +131,7 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       ['tests/ast-spans.test.mjs', 'owed', 'manual'],
       ['tests/ast-values.test.mjs', 'owed', 'manual'],
       ['resources/engine-pin-drift.txt', 'owed', 'declared'],
-      ['resources/html-import-pin-drift.txt', 'owed', 'declared'],
-      // A spec PR adds a fixture row ahead of the pin by design; the pin bump drops the flag.
-      ['resources/roundtrip-export-acceptance-fixtures.json', 'owed', 'declared'],
+      ['resources/roundtrip-structure-engine-lag.txt', 'owed', 'declared'],
       ['tests/corpus-convert.test.mjs', 'owed', 'manual'],
       ['tests/optional-corpus.test.mjs', 'owed', 'manual'],
       ['tests/examples-tier3.test.mjs', 'owed', 'manual'],
@@ -154,15 +149,6 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       // documents and on one placement fixture, each naming the issue.
       ['resources/oracle-divergence.txt', 'owed', 'declared'],
       ['tests/empty-raw-list-placement.test.mjs', 'owed', 'declared'],
-      // The AST CONTRACT 2.0 window (carve#3262, carve#3598): the schema moves to
-      // 2.0 before the pinned carve-js emits it, so each test that reads the
-      // pinned output names the issue; the pin bump to a 2.0 carve-js drops them.
-      ['tests/a-default-marker-is-not-recorded.test.mjs', 'owed', 'declared'],
-      ['tests/ast-schema.test.mjs', 'owed', 'declared'],
-      ['tests/citation-definition-is-a-node.test.mjs', 'owed', 'declared'],
-      ['tests/include-conformance.proof.mjs', 'owed', 'declared'],
-      ['tests/nbsp-sentinel-fields.test.mjs', 'owed', 'declared'],
-      ['tests/schema-fields-are-produced.test.mjs', 'owed', 'declared'],
     ].sort(),
     'a spec ledger other than the engine-lag ones now reads differently per-PR',
   )

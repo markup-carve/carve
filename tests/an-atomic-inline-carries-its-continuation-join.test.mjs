@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { Ajv2020 } from 'ajv/dist/2020.js'
-import { parse, renderHtml } from '@markup-carve/carve'
+import { parse, renderHtml, toAstJson } from '@markup-carve/carve'
 
 const fixtures = JSON.parse(readFileSync(new URL('../resources/ast-cell-wraps-acceptance.json', import.meta.url), 'utf8'))
 const schema = JSON.parse(readFileSync(new URL('../resources/ast-schema.json', import.meta.url), 'utf8'))
@@ -51,19 +51,20 @@ assert.equal(fixtures.version, 2)
 for (const fixture of fixtures.rows) {
   test(`atomic inline continuation: ${fixture.id}`, () => {
     validateExpected(fixture.expected)
-    const tree = parse(fixture.source)
+    const runtime = parse(fixture.source)
+    const tree = toAstJson(runtime)
     if (Object.hasOwn(fixture, 'html')) {
-      const firstRow = renderHtml(tree).match(/<tr\b[^>]*>([\s\S]*?)<\/tr>/i)
+      const firstRow = renderHtml(runtime).match(/<tr\b[^>]*>([\s\S]*?)<\/tr>/i)
       assert.ok(firstRow, `${fixture.id}: rendered HTML has no table row`)
       assert.ok(firstRow[1].replace(/^\s+/, '').startsWith(fixture.html), `${fixture.id}: first body row does not start with ${fixture.html}`)
     }
-    const pinned = tree.astVersion !== '2.0'
-    const row = atPointer(tree, pinned ? '/children/0/rows/0' : '/children/0/children/0/children/0')
+    const row = atPointer(tree, '/children/0/children/0/children/0') ?? atPointer(tree, '/children/0/rows/0')
     assert.equal(row.continuationLines, fixture.continuationLines ?? 1)
     if (fixture.id === 'join-between-nodes-takes-a-marker') {
       assert.ok(nodes(row).every((node) => !Object.hasOwn(node, 'cellWraps')))
     }
-    const actual = atPointer(tree, pinned ? fixture.pinnedPath : fixture.path)
+    const currentPath = atPointer(tree, fixture.path)
+    const actual = currentPath
     const expected = fixture.expected
     const compare = () => assert.deepEqual(withoutFields(actual, new Set(['pos'])), withoutFields(expected, new Set(['pos'])))
     if (!Object.hasOwn(fixture, 'aheadOfPin')) return compare()

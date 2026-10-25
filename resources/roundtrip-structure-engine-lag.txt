@@ -1,0 +1,3 @@
+# Structural roundtrip compares contract 2.0 fields. Remove each row when its pinned engine emits 2.0.
+rs  markup-carve/carve#3598
+php  markup-carve/carve#3598

@@ -1,5 +1,28 @@
 import { labelKey } from '../spec/label-key.mjs'
 
+// PART 12 §3 and §7 changed these wire names in contract 2.0.
+export function wireContract(tree) {
+  if (tree?.astVersion === '2.0') return '2.0'
+  if (tree?.astVersion === '1.2') return '1.2'
+  let old = false, current = false
+  const visit = value => {
+    if (!value || typeof value !== 'object') return
+    if (Array.isArray(value)) { for (const item of value) visit(item); return }
+    if (value.type === 'heading_ref' || Object.hasOwn(value, 'bulletChar') ||
+        Object.hasOwn(value, 'ref') ||
+        (value.type === 'list' && (Object.hasOwn(value, 'ordered') || Object.hasOwn(value, 'items'))) ||
+        (value.type === 'table' && Object.hasOwn(value, 'rows')) ||
+        (value.type === 'figure' && Object.hasOwn(value, 'target')) ||
+        (['code_block', 'raw_block', 'comment'].includes(value.type) && Object.hasOwn(value, 'content'))) old = true
+    if (value.type === 'xref' ||
+        (Object.hasOwn(value, 'key') && Object.hasOwn(value, 'namespace'))) current = true
+    for (const child of Object.values(value)) if (child && typeof child === 'object') visit(child)
+  }
+  visit(tree)
+  if (old && current) throw new Error('mixed 1.2 and 2.0 wire fields')
+  return old ? '1.2' : current ? '2.0' : tree?.astVersion === undefined ? '1.2' : null
+}
+
 // CARVE-P11-028 and carve-js#2905 permit HTML to lose unused definitions and literalize unresolved references.
 export function acceptHtmlLosses(tree) {
   const out = structuredClone(tree)
@@ -10,19 +33,24 @@ export function acceptHtmlLosses(tree) {
     for (const child of node.children ?? []) walk(child, visit)
   }
   walk(out, node => {
-    if (node.type === 'link_reference_definition') definitions.add(labelKey(node.label))
+    if (node.type === 'link_reference_definition') definitions.add(labelKey(node.key ?? node.label))
   })
   const literalize = node => {
     if (!node || typeof node !== 'object') return
     if (node.children) node.children = node.children.flatMap(child => {
       literalize(child)
-      if (['link', 'image'].includes(child.type) && typeof child.ref === 'string' && !definitions.has(labelKey(child.ref))) {
+      const reference = child.key ?? child.ref
+      if (['link', 'image'].includes(child.type) &&
+          (child.namespace === 'link' || typeof child.ref === 'string')) {
+        // A 2.0 reference keeps its key even when it resolved to a heading; only an unresolved one (no href or src) is literal.
+        if (definitions.has(labelKey(reference)) || (child.type === 'link' ? child.href : child.src) !== undefined) return [child]
         return [{ type: 'text', value: child.type === 'image' ? '![' : '[' },
           ...(child.children ?? []), { type: 'text', value: child.rawRef?.match(/\][^\]]*\]$/)?.[0] ?? ']' }]
       }
       // Engines publish a resolved cross-reference's destination as href; without one it renders as its source.
-      if (child.type === 'heading_ref' && typeof child.target === 'string' && child.href === undefined) {
-        return [{ type: 'text', value: `</#${child.target}>` }]
+      if ((child.type === 'heading_ref' || child.type === 'xref' && child.namespace === 'heading') &&
+          typeof (child.target ?? child.key) === 'string' && child.href === undefined) {
+        return [{ type: 'text', value: `</#${child.target ?? child.key}>` }]
       }
       return [child]
     })
@@ -35,13 +63,13 @@ export function acceptHtmlLosses(tree) {
   const collect = node => {
     if (!node || typeof node !== 'object') return
     if (node.type === 'footnote') {
-      bodies.set(node.label, node)
+      bodies.set(node.key ?? node.label, node)
       return
     }
-    if (['link', 'image'].includes(node.type) && typeof node.ref === 'string') references.add(labelKey(node.ref))
-    if (node.type === 'footnote_ref' && !footnotes.has(node.label)) {
-      footnotes.add(node.label)
-      pending.push(node.label)
+    if (['link', 'image'].includes(node.type) && (node.namespace === 'link' || typeof node.ref === 'string')) references.add(labelKey(node.key ?? node.ref))
+    if (node.type === 'footnote_ref' && !footnotes.has(node.key ?? node.label)) {
+      footnotes.add(node.key ?? node.label)
+      pending.push(node.key ?? node.label)
     }
     for (const child of node.children ?? []) collect(child)
   }
@@ -53,15 +81,15 @@ export function acceptHtmlLosses(tree) {
   const prune = node => {
     if (!node || typeof node !== 'object') return
     if (node.children) node.children = node.children.filter(child =>
-      (child.type !== 'link_reference_definition' || references.has(labelKey(child.label))) &&
-      (child.type !== 'footnote' || footnotes.has(child.label)))
+      (child.type !== 'link_reference_definition' || references.has(labelKey(child.key ?? child.label))) &&
+      (child.type !== 'footnote' || footnotes.has(child.key ?? child.label)))
     for (const child of node.children ?? []) prune(child)
   }
   prune(out)
   return out
 }
 
-const cosmetic = new Set(['pos', 'position', 'srcByteLength', 'bulletChar', 'marker', 'delim', 'ref', 'rawRef', 'separatorWidths', 'tight', 'boldItalic', 'order', 'continuationLines', 'cellWraps'])
+const cosmetic = new Set(['pos', 'position', 'srcByteLength', 'bulletChar', 'marker', 'delim', 'ref', 'rawRef', 'separatorWidths', 'tight', 'spacing', 'boldItalic', 'order', 'continuationLines', 'cellWraps'])
 // Strict keeps what PART 10 §13 carries; rawRef stays out because §13 does not recover a reference's form.
 const strictCosmetic = new Set(['pos', 'position', 'srcByteLength', 'rawRef', 'boldItalic', 'order'])
 // PCRE's Unicode \s includes NEL but excludes JavaScript's BOM whitespace.
@@ -84,7 +112,13 @@ export function normalize(value, strict = false) {
   const dropped = strict ? strictCosmetic : cosmetic
   const out = {}
   for (const [key, item] of Object.entries(value)) {
+    if (key === 'marker' && value.type === 'list' && item && typeof item === 'object' && !strict) {
+      out.marker = { kind: item.kind, ...('start' in item ? { start: item.start } : {}) }
+      continue
+    }
     if (dropped.has(key)) continue
+    // 2.0 moved a link or image's `ref` to `key` + `namespace`; only `ref` was cosmetic, so only these are.
+    if (!strict && (key === 'key' || key === 'namespace') && (value.type === 'link' || value.type === 'image')) continue
     // carve#3100: a span placeholder renders nothing, so its `header` is not structural.
     if (key === 'header' && value.span !== undefined) continue
     if (key === 'attrs' && item && typeof item === 'object' && Object.keys(item).every(k => k === 'order')) continue
@@ -199,7 +233,7 @@ export function finishMeasurement(row) {
 export function baselineCounts(rows) {
   const engines = {}
   for (const row of rows) {
-    if (row.status === 'skipped') throw new Error(`${row.engine}/${row.target}: skipped, cannot write baseline`)
+    if (['skipped', 'declared-lag'].includes(row.status)) throw new Error(`${row.engine}/${row.target}: ${row.status}, cannot write baseline`)
     const targets = engines[row.engine] ??= {}
     targets[row.target] = row.status === 'unsupported' ? null : { identical: row.identical, strict: row.strict, total: row.total }
   }

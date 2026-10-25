@@ -29,15 +29,26 @@
  * At PHP a562b167 (carve-php#3855), Markdown export escapes the literal
  * description line in corpus 657 and 657-4. Reimport keeps escaped_text
  * instead of text, moving PHP/md strict from 1656 to 1654.
+ * At JS b991f769 (AST contract 2.0, carve#3598), an inline footnote keeps its
+ * content in `children`, which the definition check walks. In corpus 315-5 the
+ * HTML roundtrip adds a `[h]: #h` definition the source did not have; the 1.2
+ * `inline` slot hid it. JS/html strict 2378 to 2377. JS/html and JS/md
+ * identical and JS/md strict rose with the same pin.
  */
 import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { resolve, basename } from 'node:path'
 import { phpDir, rustBinary } from './lib/engine-locations.mjs'
-import { acceptHtmlLosses, normalize, firstDiff, record, validateBaseline, checkCounts, jsRoundtrip, finishMeasurement, baselineCounts } from './lib/roundtrip-structure.mjs'
+import { acceptHtmlLosses, normalize, firstDiff, record, validateBaseline, checkCounts, jsRoundtrip, finishMeasurement, baselineCounts, wireContract } from './lib/roundtrip-structure.mjs'
 const root = fileURLToPath(new URL('..', import.meta.url))
 const baselinePath = resolve(root, 'resources/roundtrip-structure-baseline.json')
+const lagPath = process.env.CARVE_ROUNDTRIP_LAG_FILE ?? resolve(root, 'resources/roundtrip-structure-engine-lag.txt')
+const declaredLag = new Map(readFileSync(lagPath, 'utf8').split('\n').filter(line => line.trim() && !line.startsWith('#')).map(line => {
+  const match = /^(rs|php)  (markup-carve\/carve#3598)$/.exec(line)
+  if (!match) throw new Error(`Invalid structural engine lag declaration: ${line}`)
+  return [match[1], match[2]]
+}))
 function options(args) {
   const result = { engines: ['js', 'php', 'rs'], targets: ['html', 'md'], workers: 16 }
   for (let i = 0; i < args.length; i++) {
@@ -111,6 +122,7 @@ async function main() {
   const report = { total: files.length, results: [], notices: [] }
   for (const engine of opt.engines) {
     let js, binary, unavailable
+    let observedContract = null
     const driver = engine === 'rs' ? process.env.CARVE_RS_ROUNDTRIP_DRIVER : undefined
     if (engine === 'js') {
       try { js = await import('@markup-carve/carve') } catch (error) { unavailable = error.message }
@@ -123,8 +135,20 @@ async function main() {
       else try { await run(binary, driver ? [] : ['--version'], driver ? JSON.stringify({ files: [], targets: [] }) : '') } catch (error) { unavailable = error.message }
     }
     const rows = Object.fromEntries(opt.targets.map(target => [target, { engine, target, status: unavailable ? 'skipped' : 'measured', ...(unavailable ? { reason: unavailable } : {}), total: 0, identical: 0, strict: 0, different: 0, errors: 0, buckets: {}, errorBuckets: {}, strictBuckets: {} }]))
+    const seen = Object.fromEntries(opt.targets.map(target => [target, 0]))
     const tick = performance.now()
     const consume = row => {
+      if (!(row.target in seen)) throw new Error(`${engine}: driver emitted unknown target ${row.target}`)
+      seen[row.target]++
+      if (engine !== 'js' && !row.error) {
+        for (const tree of [row.before, row.after]) {
+          const version = wireContract(tree)
+          if (version && observedContract && observedContract !== version) throw new Error(`${engine}: mixed wire contracts ${observedContract} and ${version}`)
+          observedContract ??= version
+          if (version === '2.0' && declaredLag.has(engine)) throw new Error(`${engine}: emits contract 2.0; delete its structural engine lag declaration (${declaredLag.get(engine)})`)
+        }
+      }
+      if (engine !== 'js' && declaredLag.has(engine)) return
       const before = row.target === 'html' ? acceptHtmlLosses(row.before) : row.before
       const after = row.target === 'html' ? acceptHtmlLosses(row.after) : row.after
       const diff = row.error ? null : firstDiff(normalize(before), normalize(after))
@@ -163,7 +187,13 @@ async function main() {
       }))
     }
     for (const row of Object.values(rows)) {
-      if (!unavailable && row.total !== files.length) throw new Error(`${engine}/${row.target}: incomplete corpus`)
+      if (!unavailable && seen[row.target] !== files.length) throw new Error(`${engine}/${row.target}: incomplete corpus (${seen[row.target]} of ${files.length})`)
+      if (!unavailable && declaredLag.has(engine)) {
+        if (observedContract !== '1.2') throw new Error(`${engine}: declared structural lag but no 1.2 output was observed; delete or investigate its declaration`)
+        row.total = seen[row.target]
+        row.status = 'declared-lag'
+        row.reason = `${declaredLag.get(engine)}: pinned engine emits contract 1.2`
+      }
       finishMeasurement(row)
       if (engine === 'rs') { row.workers = opt.workers; row.transport = driver ? 'batch' : 'cli' }
       row.seconds = +((performance.now() - tick) / 1000).toFixed(3)
@@ -171,13 +201,13 @@ async function main() {
     }
   }
   let failed = false
-  if (opt.write) for (const row of report.results) if (row.status === 'skipped') {
+  if (opt.write) for (const row of report.results) if (['skipped', 'declared-lag'].includes(row.status)) {
     failed = true
-    report.notices.push(`${row.engine}/${row.target}: skipped, cannot write baseline`)
+    report.notices.push(`${row.engine}/${row.target}: ${row.status}, cannot write baseline`)
   }
   if (opt.check) {
     const baseline = validateBaseline(JSON.parse(readFileSync(baselinePath, 'utf8')))
-    const verdict = checkCounts(report.results, baseline)
+    const verdict = checkCounts(report.results.filter(row => row.status !== 'declared-lag'), baseline)
     failed = verdict.failed
     report.notices.push(...verdict.notices)
   }

@@ -37,7 +37,7 @@ const rows = (html) => (html.match(/<tr>/g) ?? []).length
 // With ListTable on, so a `::: list-table` is compared as the table it states
 // rather than as the nested list it degrades to (CARVE-P11-059).
 const ownHtml = (c) =>
-  c.carve !== undefined ? carveToHtml(c.carve, { extensions: [listTable()] }) : renderHtml(fromAstJson(c.pinnedAst ?? c.ast))
+  c.carve !== undefined ? carveToHtml(c.carve, { extensions: [listTable()] }) : renderHtml(fromAstJson(c.ast))
 
 // Elements a GFM reader can build. A `dl` is not one (PART 11 §10p), and a
 // `section` wrapper is the HTML target's own.

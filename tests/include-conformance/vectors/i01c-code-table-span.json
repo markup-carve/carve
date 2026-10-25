@@ -28,19 +28,7 @@
         }
       },
       {
-        "type": "table_row"
-      },
-      {
-        "type": "table_cell"
-      },
-      {
-        "type": "text"
-      },
-      {
-        "type": "table_cell"
-      },
-      {
-        "type": "text"
+        "type": "table_head"
       },
       {
         "type": "table_row"
@@ -49,13 +37,49 @@
         "type": "table_cell"
       },
       {
+        "type": "cell_paragraph"
+      },
+      {
         "type": "text"
       },
       {
         "type": "table_cell"
       },
       {
+        "type": "cell_paragraph"
+      },
+      {
         "type": "text"
+      },
+      {
+        "type": "table_body"
+      },
+      {
+        "type": "table_row"
+      },
+      {
+        "type": "table_cell"
+      },
+      {
+        "type": "cell_paragraph"
+      },
+      {
+        "type": "text"
+      },
+      {
+        "type": "table_cell"
+      },
+      {
+        "type": "cell_paragraph"
+      },
+      {
+        "type": "text"
+      },
+      {
+        "type": "table_column"
+      },
+      {
+        "type": "table_column"
       }
     ],
     "warnings": [],

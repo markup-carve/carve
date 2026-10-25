@@ -63,7 +63,7 @@ const LOCATION_FIELDS = new Set(['pos', 'srcByteLength'])
  * two of the three fixtures this check ships with.
  */
 const isEmptyDelimitedComment = (node) =>
-  node?.type === 'comment' && node.block === false && node.delimited === true && node.content === ''
+  node?.type === 'comment' && node.form === 'braced' && node.value === ''
 
 const normalize = (value) => {
   if (Array.isArray(value)) {
@@ -165,7 +165,8 @@ const sourceLayoutKeys = (value, path = '') => {
   if (Array.isArray(value)) return value.flatMap((item, i) => sourceLayoutKeys(item, `${path}[${i}]`))
   if (value === null || typeof value !== 'object') return []
   return Object.entries(value).flatMap(([key, inner]) =>
-    SOURCE_LAYOUT_FIELDS.has(key) && !IMPORT_RECOVERABLE_FIELDS.has(key)
+    (SOURCE_LAYOUT_FIELDS.has(key) && !IMPORT_RECOVERABLE_FIELDS.has(key) ||
+      path.endsWith('.marker') && key === 'bare')
       ? [`${path}.${key}`]
       : sourceLayoutKeys(inner, `${path}.${key}`),
   )
@@ -202,6 +203,7 @@ test('the source-layout scan finds the field the fixture recorded', () => {
     children: [{ type: 'list', ordered: false, tight: true, items: [], bulletChar: '-' }],
   }
   assert.deepEqual(sourceLayoutKeys(recorded), ['.children[0].bulletChar'])
+  assert.deepEqual(sourceLayoutKeys({ type: 'list', marker: { kind: 'ordered', bare: true } }), ['.marker.bare'])
   assert.deepEqual(sourceLayoutKeys({ type: 'document', children: [{ type: 'list', items: [] }] }), [])
 })
 
@@ -274,7 +276,7 @@ test('the pinned build records no source-layout field on any import either', asy
  * break, a different payload, or any other field still reports.
  */
 const writerInsertedFenceBreak = (parent, recordedParent, key, parsed, recorded) =>
-  key === 'content' &&
+  key === 'value' &&
   parent?.type === 'code_block' &&
   recordedParent?.type === 'code_block' &&
   typeof parsed === 'string' &&
@@ -423,8 +425,12 @@ test('the invariant rejects the paragraph-wrapped figure tree, and accepts the r
   const published = await publishedParse()
   const source = '![a](i.png)\n^ cap\n'
   const image = { type: 'image', src: 'i.png', alt: 'a' }
-  const caption = [{ type: 'text', value: 'cap' }]
-  const figure = (target) => ({ type: 'document', children: [{ type: 'figure', target, caption }] })
+  const caption = { type: 'caption', children: [{ type: 'paragraph', children: [{ type: 'text', value: 'cap' }] }] }
+  const figure = (target) => ({
+    type: 'document', astVersion: '2.0',
+    stages: ['blockImagePromotion', 'referenceResolution', 'tableAlignment'],
+    children: [{ type: 'figure', children: [target], caption }],
+  })
 
   assert.ok(
     disagreement(normalize(published(source)), normalize(figure({ type: 'paragraph', children: [image] }))),

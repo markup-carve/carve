@@ -24,18 +24,20 @@ const inlines = (source) => {
 
 test('a resolved crossref keeps the authored id and publishes the destination', () => {
   const [, ref] = inlines('# Intro\n\nSee </#Intro>.\n')
-  assert.equal(ref.type, 'heading_ref')
-  assert.equal(ref.target, 'Intro')
+  assert.equal(ref.type, 'xref')
+  assert.equal(ref.namespace, 'heading')
+  assert.equal(ref.key, 'Intro')
   assert.equal(ref.href, '#Intro')
 })
 
 test('the authored id is the spelling written', () => {
-  // A case-only mismatch names no id under exact matching, so only `target`
+  // A case-only mismatch names no id under exact matching, so only `key`
   // carries what the author wrote. Whether `href` is present is the corpus's
   // question (15-heading-ids-2), declared ahead of this pin.
   const [, ref] = inlines('# Intro\n\nSee </#intro>.\n')
-  assert.equal(ref.type, 'heading_ref')
-  assert.equal(ref.target, 'intro')
+  assert.equal(ref.type, 'xref')
+  assert.equal(ref.namespace, 'heading')
+  assert.equal(ref.key, 'intro')
 })
 
 test('an unresolved crossref is still a node', () => {
@@ -45,7 +47,7 @@ test('an unresolved crossref is still a node', () => {
   const kids = inlines('See </#Nope>.\n')
   assert.deepEqual(
     kids.map((n) => n.type),
-    ['text', 'heading_ref', 'text'],
+    ['text', 'xref', 'text'],
   )
   assert.equal(kids[1].href, undefined)
 })
@@ -66,7 +68,7 @@ test('a crossref inside a link label stays in the tree', () => {
   assert.equal(link.type, 'link')
   assert.deepEqual(
     link.children.map((c) => c.type),
-    ['text', 'heading_ref'],
+    ['text', 'xref'],
   )
   assert.equal(link.children[1].href, '#H')
 })

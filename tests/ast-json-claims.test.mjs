@@ -108,11 +108,12 @@ test('the page has a carve-js row to check', () => {
 /*
  * §3a, the claim that was wrong in both directions.
  */
-test('a resolved reference publishes href, ref and rawRef - and the row says so', () => {
+test('a resolved reference publishes href, key, namespace and rawRef - and the row says so', () => {
   const [link] = nodesOfType(treeOf('See [getting started][] here.\n\n[getting started]: /start\n'), 'link')
   assert.ok(link, 'no link node for a collapsed reference')
   assert.equal(link.href, '/start')
-  assert.equal(link.ref, 'getting started')
+  assert.equal(link.key, 'getting started')
+  assert.equal(link.namespace, 'link')
   assert.equal(link.rawRef, '[getting started][]')
   assert.match(
     jsRow,
@@ -137,13 +138,13 @@ test('a resolved reference publishes href, ref and rawRef - and the row says so'
  * on BOTH sides of the ruling, which would have made this test pass against the
  * build it was written to catch.
  */
-test('ref carries the resolution key, not the authored label, when the label holds markup', () => {
+test('key carries the resolution key, not the authored label, when the label holds markup', () => {
   const tree = toAstJson(resolveReferences(parse('# `code()` heading\n\n[`code()` heading][]\n')))
   const [link] = nodesOfType(tree, 'link')
   assert.ok(link, 'no link node for a collapsed reference to a heading')
   assert.equal(link.href, '#code-heading')
   assert.equal(
-    link.ref,
+    link.key,
     'code() heading',
     'the pinned build publishes the authored label where §3a rules the key - the pin predates carve#962',
   )
@@ -152,11 +153,11 @@ test('ref carries the resolution key, not the authored label, when the label hol
   // The page states the ruling with this exact pair; a build that moved off it
   // must not leave the sentence standing.
   assert.ok(
-    page.includes('**`ref` is the resolution key**'),
+    page.includes('2.0 the same key is called'),
     'docs/ast-json-contract.md no longer states the §3a ruling this measures',
   )
   assert.ok(
-    page.includes('"ref": "code() heading"'),
+    page.includes('"key": "code() heading"'),
     'the §3a example on docs/ast-json-contract.md no longer publishes the key this measures',
   )
 })
@@ -165,7 +166,8 @@ test('an unresolved reference is a link node, not flattened text', () => {
   const tree = treeOf('See [missing][] here.\n')
   const [link] = nodesOfType(tree, 'link')
   assert.ok(link, 'an unresolved reference was flattened; §3a keeps it a link node')
-  assert.equal(link.ref, 'missing')
+  assert.equal(link.key, 'missing')
+  assert.equal(link.namespace, 'link')
   assert.equal(link.rawRef, '[missing][]')
 })
 
@@ -189,7 +191,8 @@ test('an abbreviation_def IS emitted at document level, carrying abbr and expans
   const tree = treeOf('*[HTML]: Hyper Text\n\nThe HTML spec.\n')
   const [def] = nodesOfType(tree, 'abbreviation_def')
   assert.ok(def, 'no abbreviation_def at document level')
-  assert.equal(def.abbr, 'HTML')
+  assert.equal(def.key, 'HTML')
+  assert.equal(def.namespace, 'abbr')
   assert.equal(def.expansion, 'Hyper Text')
   // It is a CHILD OF THE DOCUMENT, which is the half §7 states.
   assert.ok(
