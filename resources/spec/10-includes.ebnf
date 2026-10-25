@@ -71,8 +71,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
       combinable `{{ path #section @key:value }}` (`include_directive`). `path` is bare
       (stops at space / `#` / `@` / `}`) or double-quoted for spaces, and
-      is resolved RELATIVE TO THE INCLUDING FILE. Options split into two
-      disjoint kinds. SELECTION options choose WHICH content is pulled in:
+      is resolved RELATIVE TO THE INCLUDING FILE. Directive parameters have
+      three kinds: SELECTION, TRANSFORM and MODE. SELECTION chooses content:
       `#section` (semantic -- a heading's section or one block, I1a) and
       `@lines:N-M` (physical -- a 1-based inclusive line range), and
       `@region:name` (physical -- a named source region, I1b). A line range

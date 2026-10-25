@@ -71,7 +71,7 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
 (* THE MARKER RUN COMES FIRST, IN ONE ORDER, IN BOTH PRODUCTIONS. The kind
    marker `=` and then the alignment marker are glued to the opening `|` (no
    preceding whitespace); the attribute block attaches after them. A
-   whitespace-delimited lone '^'/'<' is span_cell.
+   cell containing only '^' or '<', with any space padding or none, is span_cell.
 
    AND IT ENDS AT A SPACE. `cell_padding` is the run's terminator, so a cell
    carrying any part of the run -- kind marker, alignment run, attribute
@@ -96,8 +96,8 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    A computed rowspan/colspan/alignment is authoritative, so an author copy of
    those keys is dropped.
 
-   `|{#x}=R|` is a DATA cell whose content begins with `=`, not an attributed
-   header cell. Binding attributes after the markers removes that ambiguity. *)
+   `|{#x}=R|` is a data cell whose content is `{#x}=R`; no marker run ends
+   without a space (T11). `|{#x} =R |` has id `x` and content `=R`. *)
 cell_attributes = attributes ;
 span_cell = rowspan_marker | colspan_marker ;
 
@@ -297,13 +297,10 @@ admonition = admonition_open, newline,
    ranges from parser structure; proximity alone never licenses resizing a
    nested fence.
 
-   A CLOSER IS REQUIRED when a code fence would consume the host's closer.
-   A ``` or ~~~ opener with no closer ahead opens NO span there: the
-   INNERMOST container's own closer stays structural and ends it, and the
-   lines after that closer are parsed normally. Any other colon line before it, of any width, is fence
-   content: it neither closes an ancestor nor opens a child. This is the test
-   PART 9 §10 I4 applies one level up, and the one the `%%%` rule above
-   states ("an opener with no exact closer ahead opens nothing"). In
+   A ``` or ~~~ opener with no code closer ahead opens a code block that ends
+   at the innermost container's exact-length closer. That closer stays
+   structural. Every other colon line before it is code content, and lines
+   after it parse normally. In
 
        ::: note
        ```
