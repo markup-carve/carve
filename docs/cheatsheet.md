@@ -75,7 +75,13 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 1. ordered                   (explicit number: Markdown/Djot-portable, sets the
                               start; dialects: a. A. i. I. and the ) delimiter)
 - [ ] open task              (task items: one per line)
+- [_] open alias             (keeps the authored marker)
+- [/] task in progress
+- [!] blocked task
 - [x] done task
+- [-] dropped task
+- [>] deferred task
+- [?] uncertain task
 -{.c} styled item            (attrs abutting the marker target the <li>)
 
 - step one                   (lone + at the item's marker column attaches

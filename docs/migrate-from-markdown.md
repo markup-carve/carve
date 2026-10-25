@@ -106,7 +106,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Blockquotes | `> text` | same | Carve adds captions (see below) |
 | Unordered lists | `- item` or `* item` | same | Carve bullets are `-`/`*`; a Markdown `+` bullet is not a Carve bullet |
 | Ordered lists | `1. item` | `1. item` or `. item` | Numbered markers work in both languages; `. ` asks Carve to number the list from 1. Right-aligned Markdown numbers (` 9.` above `10.`) are one list there; the importer writes them left-aligned so they stay one list |
-| Task lists | `- [ ] todo` / `- [x] done` | same | |
+| Task lists | `- [ ] todo` / `- [x] done` | Same, plus `[_]` (open alias), `[/]` (progress), `[!]` (blocked), `[-]` (dropped), `[>]` (deferred), and `[?]` (uncertain) | |
 | Thematic break | `---` | same | Contiguous `---`, `***`, or `___` (no spaced forms) |
 | **Italic** | `*italic*` or `_italic_` | `/italic/` | **Changed** - see below |
 | **Bold** | `**bold**` or `__bold__` | `*bold*` | **Changed** - see below |

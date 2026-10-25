@@ -251,13 +251,14 @@ The marker records the CHARACTER only: `***` and `*****` are one spelling, and
 no run length is recorded, on the same reasoning that took fence length off this
 list in carve#1000.
 
-`taskState` keeps the authored character, `checked` is the box. The task marker spellings of PART 2
-render as two - `x`/`X` checked, everything else unchecked - so `checked` alone
-was all the tree carried and `carve fmt` rewrote `[-]`, `[_]`, `[>]` and `[?]`
-to `[ ]` (carve#1866). The two fields cannot disagree: `taskState` is `x` if and
-only if `checked` is true, and a payload asserting otherwise is invalid. `[X]`
-is folded to `x`, so the field admits eight characters, one fewer than the source
-grammar. The case is not a state, and nothing downstream can tell the two apart.
+`taskState` keeps the authored character; `checked` records the box. Earlier
+formatters reduced `[-]`, `[_]`, `[>]`, and `[?]` to `[ ]` because the tree
+stored only `checked` (carve#1866). The field now admits ` `, `x`, `-`, `_`,
+`/`, `!`, `>`, and `?`. `_` is an authored open alias, `/` is progress, and `!`
+is blocked. Only `x` requires `checked: true`; every other value requires
+`checked: false`. The source grammar also admits `X`, which folds to `x`, so
+the wire enum has eight characters, one fewer than the source grammar.
+
 Task state does not
 split a list: a `[ ]` item and a `[-]` item are one list, where a `-` bullet and
 a `*` bullet are two.

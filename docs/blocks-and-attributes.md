@@ -20,7 +20,7 @@ A block owns a rectangle of the document: it starts on its own line and is separ
 - Paragraph
 - Heading - `# … ###### …`
 - Block quote - `> …`, or the same block fenced as `::: >`
-- List (bullet `-` / `*`, ordered `1.` / `1)`, task `- [ ]`) and its list items
+- List (bullet `-` / `*`, ordered `1.` / `1)`, task `- [ ]` / `- [/]` / `- [!]`) and its list items
 - Code block (fenced) - ` ``` `
 - Generic div / admonition / line-block / local hard-break block - `::: …`
 - Table

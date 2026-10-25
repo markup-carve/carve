@@ -1841,7 +1841,7 @@ name is ABSENT from the imported source, which is what
 **A consumed attribute is not a dropped one.** A task item's `data-task-state`
 (PART 10 §11) is written by the renderer, so the equality test above would call
 it derived and drop it - and the state would be gone, because the box it sits
-beside renders the same for all five unchecked spellings. The importer READS it
+beside renders the same for all seven unchecked spellings. The importer READS it
 instead, the way it already reads the checkbox `<input>` rather than keeping it
 as content: both are halves of the item's state. A value outside the enumeration
 is not a state, and the item takes the box it carries.
