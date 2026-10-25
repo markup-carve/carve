@@ -26,9 +26,8 @@ The spec adds progress and blocked task states, settles import and escaping rule
 - Task lists recognize progress `[/]` and blocked `[!]`; `[_]` is now an open alias. Corpus fixtures cover parsing, HTML import and round trips (#3645).
 - Display math can take a caption and trailing attributes (#3650).
 - The playground distinguishes table roles and colors list, checkbox and continuation markers consistently (#3614, #3616).
-- Reference engine pins include JS 0.1.15, covered-column and AST conformance fixes, and cleared parser drift (#3596, #3602, #3612, #3649, #3657).
+- Reference engine pins include JS 0.1.14, covered-column and AST conformance fixes, and cleared parser drift (#3596, #3602, #3612, #3649).
 - The reference JS pin now reproduces the new task-state fixtures, so the temporary parser, HTML import and round-trip drift declarations are removed (#3653).
-- The reference model keeps list ownership after a closed nested body, including wider tilde-fenced cases (#3656).
 
 ## [0.1.12] - 2026-10-24
 
