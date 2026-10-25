@@ -1320,15 +1320,13 @@ b
 
 :::
 
-The list carries the `task-list` class, so a stylesheet can reach a task list without `:has()`. Only `[x]`/`[X]` render a checked box. `[ ]` and `[_]` both mean open; the latter keeps its authored spelling in `data-task-state`. The other markers mean in progress `[/]`, blocked `[!]`, dropped `[-]`, deferred `[>]`, and uncertain `[?]`. Each has a distinct `data-task-state` value for styling and round trips.
+The list carries the `task-list` class, so a stylesheet can reach a task list without `:has()`. Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `[>]`, `[?]`) renders an unchecked box. Every state but the open `[ ]` names itself on the item with `data-task-state`: a done item carries `x`, and the four extended states carry their own character, so a stylesheet can tell a dropped task from an open one.
 
 ::: compare
 
 ```carve
 - [-] dropped
-- [_] open alias
-- [/] in progress
-- [!] blocked
+- [_] paused
 - [>] deferred
 - [?] maybe
 ```
@@ -1336,9 +1334,7 @@ The list carries the `task-list` class, so a stylesheet can reach a task list wi
 ```html
 <ul class="task-list">
   <li data-task-state="-"><input type="checkbox" disabled aria-label="dropped"> dropped</li>
-  <li data-task-state="_"><input type="checkbox" disabled aria-label="open alias"> open alias</li>
-  <li data-task-state="/"><input type="checkbox" disabled aria-label="in progress"> in progress</li>
-  <li data-task-state="!"><input type="checkbox" disabled aria-label="blocked"> blocked</li>
+  <li data-task-state="_"><input type="checkbox" disabled aria-label="paused"> paused</li>
   <li data-task-state="&gt;"><input type="checkbox" disabled aria-label="deferred"> deferred</li>
   <li data-task-state="?"><input type="checkbox" disabled aria-label="maybe"> maybe</li>
 </ul>
