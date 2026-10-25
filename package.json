@@ -66,8 +66,8 @@
   "devDependencies": {
     "@djot/djot": "^0.3.2",
     "@markup-carve/carve": "github:markup-carve/carve-js#c62fad2a9f408d17e2388fc6e15845dc72aadbd5",
-    "@markup-carve/carve-css": "^0.1.8",
-    "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars#7bee5c2f4872c6cfe521f4e4e47af5a626b11a9c",
+    "@markup-carve/carve-css": "^0.1.9",
+    "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars#dc85319e34d83c7084dfa77c650a4fc528b00f22",
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git#0b3552413ff1de6302921c8144497931fbd0124f",
     "@mermaid-lint/cli": "^0.53.1",
     "ajv": "^8.20.0",
@@ -86,7 +86,7 @@
     "@codemirror/search": "^6.7.2",
     "@codemirror/state": "^6.7.6",
     "@codemirror/view": "^6.43.14",
-    "@markup-carve/carve-lsp": "github:markup-carve/carve-lsp#6c9239c22b5ee3b53c216dc2b9ee01a15fc2e03d",
+    "@markup-carve/carve-lsp": "^0.1.15",
     "chart.js": "^4.5.1",
     "mermaid": "^11.15.0"
   },
