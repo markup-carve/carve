@@ -13638,9 +13638,10 @@ EOF = (* end of file *) ;
       `bare`. A marker carrying fields of both kinds is invalid. `spacing`
       is `tight` or `loose`, for a list and a definition list alike.
 
-      A task `list_item` carries `task.mark`, the authored marker character,
-      and `task.status`. Space and `_` mean todo, `x` and `X` done, `-`
-      cancelled, `/` in-progress, `!` blocked, `>` partial, and `?` other.
+      A task `list_item` carries `task.mark`, the marker character, and
+      `task.status`. `X` is a case of `x`, so an authored `[X]` is written
+      with mark `x`. Space and `_` mean todo, `x` done, `-` cancelled, `/`
+      in-progress, `!` blocked, `>` partial, and `?` other.
       The pair MUST agree. `checked` and the old `taskState` field are not
       serialized; a UI derives a checked box from the mark when it needs one.
 
