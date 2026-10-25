@@ -149,3 +149,4 @@
 3541: 0.1.11 - moves the carve-php and carve-js pins and retires the AST span row the carve-php pin satisfies. Pin bump.
 3656: 0.1.13 - reverted for the release so the spec matches the spec the engines shipped against; re-lands after the tag.
 3658: 0.1.13 - completes the changelog section. Release plumbing.
+3659: 0.1.13 - holds 3656 out of the release and records the exemptions. Release plumbing.
