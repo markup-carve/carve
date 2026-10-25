@@ -245,7 +245,7 @@
          At an open list item's marker column, a `+` followed by a list item
          at that column attaches nothing: that item is a sibling and the `+`
          is ordinary text at its own column.
-         A refused `+` on its own line is never dropped. It folds into the
+         A refused separate-line `+` is never dropped. It folds into the
          item's open paragraph when that
          paragraph can continue. Otherwise, including after a blank line, a
          fence, or a closed block, it forms its own one-line paragraph.
@@ -298,8 +298,9 @@
          container, and
          that block is then parsed like any other. A container may not answer
          differently because of WHAT it is attaching, and there is no second
-         rule anywhere for a quote, a list, a fence, a caption or a definition
-         under the marker. In particular the ONE BLOCK count and the boundary
+         ATTACHMENT rule for a quote, a list, a fence, a caption or a definition
+         under the marker. L4 decides where a refused first-block marker lands.
+         In particular the ONE BLOCK count and the boundary
          set above hold in EVERY container in L4, not only in the two that had
          them spelled out.
 
