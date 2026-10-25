@@ -395,7 +395,7 @@ function isCaptionableParagraph(para) {
 // Matches `{`, a payload of quoted runs and bare characters, then `}`.
 const ATTR_PAYLOAD = /(?:[^}'"\\]|\\.|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")*/.source
 const ATTR_BLOCK = `\\{${ATTR_PAYLOAD}\\}`
-const BULLET = new RegExp(`^([ \\t]*)([-*])(${ATTR_BLOCK})?( +)(?:\\[([ xX_>?-])\\] )?(.+)$`)
+const BULLET = new RegExp(`^([ \\t]*)([-*])(${ATTR_BLOCK})?( +)(?:\\[([ xX_>/!?-])\\] )?(.+)$`)
 // The value is optional before a `.`: a bare `. ` is a decimal marker
 // counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
 // marker, so the empty alternative is guarded by a lookahead at the dot.
