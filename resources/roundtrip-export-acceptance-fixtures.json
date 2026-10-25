@@ -479,7 +479,6 @@
     },
     {
       "id": "task-states",
-      "aheadOfPin": {"fails": ["error: {\"type\":\"list_item\",\"checked\":false,\"taskState\":\"/\"}"]},
       "source": "- [ ] open\n- [x] done\n- [X] upper\n- [-] dropped\n- [_] open alias\n- [/] active\n- [!] blocked\n- [>] moved\n- [?] unsure\n",
       "carriers": {},
       "forbiddenExportAttributes": [
