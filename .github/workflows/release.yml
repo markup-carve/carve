@@ -240,25 +240,8 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v7
       - name: Un-draft the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          VER="${{ inputs.version }}"
-          id="$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
-            --jq "[.[] | select(.tag_name == \"${VER}\" and .draft)] | first | .id // empty")"
-          if [ -z "$id" ]; then
-            echo "No draft release for ${VER}; nothing to publish."
-            exit 0
-          fi
-          # `tag_name` goes with every PATCH of a release. Omit it on a DRAFT and
-          # GitHub replaces the tag with a generated `untagged-*` placeholder,
-          # because a draft's tag is a string on the object rather than a git ref.
-          # `-F` (not `-f`) for draft, so it is sent as a boolean: the string
-          # "false" is truthy and publishes either way, which is how a release
-          # here went out by accident.
-          gh api "repos/$GITHUB_REPOSITORY/releases/$id" -X PATCH \
-            -f tag_name="${VER}" -F draft=false --jq '"published \(.tag_name)"'
-          # Read it back: exit status does not tell you whether the tag survived.
-          gh api "repos/$GITHUB_REPOSITORY/releases/$id" \
-            --jq '"draft=\(.draft) tag=\(.tag_name)"'
+        run: bash scripts/publish-release-notes.sh "${{ inputs.version }}" "$GITHUB_SHA"
