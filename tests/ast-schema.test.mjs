@@ -110,7 +110,7 @@ test('figures and tables accept caption nodes with optional short content', () =
   assert.equal(validate({ type: 'document', astVersion: '2.0', children: [{ ...figure, caption: { ...caption, short: 'label' } }], srcByteLength: 1 }), false)
 })
 
-test('extension declarations require a version in both schemas', () => {
+test('an extension declaration may omit its version, in both schemas', () => {
   const declaration = { name: 'org.example.notes', version: '1', required: false }
   const document = { type: 'document', astVersion: '2.0', children: [], extensions: [declaration] }
   const envelopeSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-envelope-schema.json'), 'utf8'))
@@ -121,8 +121,11 @@ test('extension declarations require a version in both schemas', () => {
   assert.equal(validate(document), true, firstErrors())
   assert.equal(validateEnvelope(envelope), true, JSON.stringify(validateEnvelope.errors))
   const withoutVersion = { name: declaration.name, required: declaration.required }
-  assert.equal(validate({ ...document, extensions: [withoutVersion] }), false)
-  assert.equal(validateEnvelope({ ...envelope, extensions: [withoutVersion] }), false)
+  assert.equal(validate({ ...document, extensions: [withoutVersion] }), true, firstErrors())
+  assert.equal(validateEnvelope({ ...envelope, extensions: [withoutVersion] }), true, JSON.stringify(validateEnvelope.errors))
+  const numericVersion = { ...declaration, version: 1 }
+  assert.equal(validate({ ...document, extensions: [numericVersion] }), false)
+  assert.equal(validateEnvelope({ ...envelope, extensions: [numericVersion] }), false)
 })
 
 test('small caps are a structural inline wrapper with children', () => {
@@ -1656,4 +1659,13 @@ test('an unqualified inline extension name is a Carve source extension', () => {
   // A block extension has no source spelling, so an unqualified name is refused.
   const block = { type: 'block_extension', name: 'note', fallback: { type: 'paragraph', children: [text] } }
   assert.equal(validate({ type: 'document', astVersion: '2.0', children: [block] }), false)
+})
+
+test('an authored table partition carries headRows and an inferred one omits it', () => {
+  const groups = (source) => serialize(source).children[0].children.map((g) => [g.type, g.headRows])
+  // Inferred from a header row: the body has no headRows (CARVE-P12-034).
+  assert.deepEqual(groups('|= a |\n| 1 |\n'), [['table_head', undefined], ['table_body', undefined]])
+  // Declared by the source: the body says so, even when the count is zero.
+  assert.deepEqual(groups('{header-rows=1}\n| a |\n| 1 |\n'), [['table_head', undefined], ['table_body', 0]])
+  assert.deepEqual(groups('{body-rows="1"}\n| a |\n'), [['table_body', 0]])
 })

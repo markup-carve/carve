@@ -212,7 +212,10 @@
           does not by itself refuse a conforming later minor.
           The reader preserves `data` it cannot interpret and uses the
           fallback of each unknown optional extension. An unknown core field,
-          core type, or invalid fallback is refused with a typed error.
+          core type, or invalid fallback is refused with a typed error. This
+          binds every reader, format bridges included: since a minor adds no
+          core type, an unknown one means a broken tree, and degrading it to
+          text in place of refusing is not conforming.
       (c) AN EXTENSION MARKED REQUIRED AND NOT IMPLEMENTED IS REFUSED, named.
           Rendering the understood parts and reporting success is what
           CARVE-P12-068 forbids.

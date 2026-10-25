@@ -34,7 +34,9 @@
       It MAY carry `extensions`, `stages`, `resources`, `metadata`, namespaced `data`,
       `attrs`, `dir`, `lang`, `pos`, and `segments` as the schema declares.
       No other root property is allowed. An extension declaration has one
-      qualified `name`, a `version`, and a required boolean `required`.
+      qualified `name`, a required boolean `required`, and an optional
+      `version`; absent means the extension does not version its payload, and
+      a producer MUST NOT declare a placeholder version in its place.
       Unknown required extensions cause refusal under CARVE-P12-056.
       An implementation MUST NOT hang document-level content off the root;
       frontmatter and definitions belong in the positioned tree.
@@ -370,7 +372,11 @@
       and `table_foot` nodes in document order. Each group carries `children`
       of `table_row` nodes. A body may carry `headRows` and `rowHeadColumns`
       for its own intermediate header rows and leading row-header columns.
-      An absent value means zero. A table may have no head or foot, and may
+      An absent value means zero. A body whose split the source declared
+      (`header-rows`, `body-rows` and the other partition attributes) MUST
+      carry `headRows`, `0` included; a body the producer inferred omits it,
+      so a consumer can tell an authored partition from an inferred one. A
+      table may have no head or foot, and may
       have multiple bodies. Its groups cover every row exactly once by
       construction; `rowGroups` counts and a flat `rows` array are not 2.0.
       An authored empty head or foot with attributes remains an empty group,

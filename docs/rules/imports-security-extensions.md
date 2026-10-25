@@ -41,9 +41,9 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P10-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L286) | 10 | A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES |
 | [`CARVE-P10-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L125) | 10 | A PLACED ELEMENT'S OWN TAGS CARRY THE PER-IMPLEMENTATION INDENTATION |
 | [`CARVE-P12-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L240) | 12 | A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST |
-| [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L254) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
-| [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L339) | 12 | A CAPTION IS A NODE WITH BLOCK CONTENT |
-| [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L368) | 12 | TABLE ROW GROUPS ARE NODES |
+| [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L256) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L341) | 12 | A CAPTION IS A NODE WITH BLOCK CONTENT |
+| [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L370) | 12 | TABLE ROW GROUPS ARE NODES |
 | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | 12 | A FIGURE MAY HOLD BLOCK CONTENT |
 | [`CARVE-P12-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L22) | 12 | A CITATION DEFINITION IS A NODE |
 | [`CARVE-P12-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L59) | 12 | A CITATION ITEM IS A POSITIONED INLINE NODE |
@@ -52,4 +52,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P10-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L855) | 10 | EXPORT DOES NOT SELECT AN IMPORT MODE |
 | [`CARVE-P10-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L771) | 10 | AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING |
 | [`CARVE-P10-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L795) | 10 | EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK |
-| [`CARVE-P12-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L643) | 12 | FOREIGN DATA AND RESOURCES HAVE EXPLICIT LOSS RULES |
+| [`CARVE-P12-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L646) | 12 | FOREIGN DATA AND RESOURCES HAVE EXPLICIT LOSS RULES |

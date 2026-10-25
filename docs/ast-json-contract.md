@@ -241,7 +241,9 @@ required extension is refused. Extension payloads do not execute when read
 ([CARVE-P12-055](./rules/ast-interchange)).
 
 A name with a dot (`org.example.diagram`) is a registered extension: it is
-declared on the root and carries a `fallback`. A name without one is a Carve
+declared on the root and carries a `fallback`. The declaration names the
+version its nodes carry, or none for an unversioned extension; it never makes
+one up. A name without a dot is a Carve
 source extension and keeps the name the author wrote, so `:kbd[Ctrl]` becomes:
 
 ```json
@@ -640,7 +642,9 @@ one line and report lost boundaries ([`CARVE-P12-049`](./rules/ast-interchange))
 Rows belong to `table_head`, `table_body`, or `table_foot` nodes in table
 `children`. A body may carry `headRows` and `rowHeadColumns`; each group keeps
 its own attributes. Source `header-rows`, `footer-rows`, `body-rows`,
-`body-header-rows`, and `body-header-cols` still express the partition. Invalid
+`body-header-rows`, and `body-header-cols` still express the partition. A body
+whose partition the source declared always carries `headRows`, even `0`; an
+inferred body omits it, which is how a bridge tells the two apart. Invalid
 source metadata stays ordinary attributes, and a canonical writer reports
 conflicting authored values instead of changing them or reordering rows
 ([`CARVE-P12-034`](./rules/ast-interchange)).
@@ -814,7 +818,7 @@ Generated from [the checked summary table](https://github.com/markup-carve/carve
 
 | Shape | Rule | Carve | HTML | Markdown | Plain | ANSI | Diagnostic |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `caption.short` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L339) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
+| `caption.short` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L341) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
 | `figure.children[table]` | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | `table_caption` | `figure` | `unspecified` | `unspecified` | `unspecified` | `clause` |
 | `table_cell.children` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L309) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
 | `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L348) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
