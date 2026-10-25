@@ -490,10 +490,24 @@
       "expectedNodes": [
         {
           "type": "abbreviation_def",
+          "key": "HTML",
+          "namespace": "abbr",
+          "expansion": "Hyper Text"
+        }
+      ],
+      "pinnedNodes": [
+        {
+          "type": "abbreviation_def",
           "abbr": "HTML",
           "expansion": "Hyper Text"
         }
       ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      },
       "importModes": [
         "safe",
         "semantic",
@@ -2365,9 +2379,21 @@
       "expectedNodes": [
         {
           "type": "figure",
+          "children.0.type": "block_quote"
+        }
+      ],
+      "pinnedNodes": [
+        {
+          "type": "figure",
           "target.type": "block_quote"
         }
-      ]
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "table-caption",
@@ -2378,9 +2404,21 @@
       "expectedNodes": [
         {
           "type": "table",
+          "caption.children.0.children.0.value": "Fruit prices"
+        }
+      ],
+      "pinnedNodes": [
+        {
+          "type": "table",
           "caption.0.value": "Fruit prices"
         }
-      ]
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "line-block",
