@@ -69,8 +69,10 @@ branch has already caught up. For a feature near a release boundary:
 3. consult the technical snapshot if exact cross-engine status matters.
 
 The [comparison methodology](./implementation-comparison-methodology) records
-the dated evidence behind conformance claims. Its counts and commit identifiers
-are measurements, not a stable user-facing feature list.
+the dated evidence behind conformance claims. On October 25, 2026, the pinned
+engines each passed 3,249 scored core fixtures from 3,056 documents and
+69 optional cases. These count-only runs checked expected output on scored
+targets; they did not compare unscored targets.
 
 ## Performance
 
