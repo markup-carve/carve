@@ -233,12 +233,23 @@ mixed figure children, or a short navigation caption
 
 ## Extensions and foreign data
 
-`block_extension` and `inline_extension` use the same fields: a qualified
-`name`, optional `version`, typed `props`, walked `children`, named `slots`,
-a required typed `fallback`, and a `payload` list of alternatives. An unknown
-optional extension renders through its fallback and reports the loss. An
-unknown required extension is refused. Extension payloads do not execute
-when read ([CARVE-P12-055](./rules/ast-interchange)).
+`block_extension` and `inline_extension` use the same fields: a `name`,
+optional `version`, typed `props`, walked `children`, named `slots`, a typed
+`fallback`, and a `payload` list of alternatives. An unknown optional
+extension renders through its fallback and reports the loss. An unknown
+required extension is refused. Extension payloads do not execute when read
+([CARVE-P12-055](./rules/ast-interchange)).
+
+A name with a dot (`org.example.diagram`) is a registered extension: it is
+declared on the root and carries a `fallback`. A name without one is a Carve
+source extension and keeps the name the author wrote, so `:kbd[Ctrl]` becomes:
+
+```json
+{ "type": "inline_extension", "name": "kbd", "children": [{ "type": "text", "value": "Ctrl" }] }
+```
+
+It needs no declaration, and its `children` are its fallback. A
+`block_extension` has no source spelling, so its name is always qualified.
 
 Foreign constructs with a core equivalent map to core nodes. A construct
 without one may use declared `data` or an extension. If a writer cannot
@@ -636,8 +647,9 @@ conflicting authored values instead of changing them or reordering rows
 
 ## Extensions and the envelope
 
-`block_extension` and `inline_extension` carry a qualified `name`, optional
-`version`, typed `props`, walked `children`, named `slots`, a required typed
+`block_extension` and `inline_extension` carry a `name` (qualified and
+declared, or the authored name of a source `:name[...]` extension), optional
+`version`, typed `props`, walked `children`, named `slots`, a typed
 `fallback`, and `payload` alternatives. An unknown optional name renders through
 the fallback and reports the loss ([`CARVE-P12-055`](./rules/ast-interchange)).
 

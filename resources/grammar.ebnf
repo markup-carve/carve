@@ -13126,11 +13126,22 @@ EOF = (* end of file *) ;
 
    33. EXTENSION NODES DECLARE A CORE FALLBACK -- NORMATIVE
       [CARVE-P12-055]. `block_extension` and `inline_extension` use the same
-      shape: a globally qualified `name`, optional `version`, typed `props`,
-      walked `children`, optional named `slots`, a required typed `fallback`,
-      and a `payload` list of format and value alternatives. The fallback
-      matches the node's block or inline role and validates recursively as
-      core content. `org.example.diagram` is qualified; `diagram` is not.
+      shape: a `name`, optional `version`, typed `props`, walked `children`,
+      optional named `slots`, a typed `fallback`, and a `payload` list of
+      format and value alternatives. The fallback matches the node's block or
+      inline role and validates recursively as core content.
+
+      A QUALIFIED NAME CONTAINS A DOT: `org.example.diagram` is qualified;
+      `diagram` and `my-note` are not. A qualified name names a registered
+      extension: it MUST be declared in the root `extensions` list, and its
+      node MUST carry `fallback`.
+
+      AN UNQUALIFIED NAME IS A CARVE SOURCE EXTENSION. An inline extension
+      written in Carve source as `:name[content]{attrs}` keeps its authored
+      name unchanged (`:kbd[Ctrl]` gives `"name": "kbd"`); no prefix or
+      encoding is applied, and it needs no root declaration. Its `children`
+      are its fallback, so it MAY omit `fallback`. A `block_extension` has no
+      source spelling and always carries a qualified name and a `fallback`.
 
       An unknown optional extension is rendered through its fallback and
       reported as a loss. An unknown required extension is refused under
@@ -13208,8 +13219,9 @@ EOF = (* end of file *) ;
           `paragraph.blockImage` is interpreted with the root `stages` list.
         - Every typed node may carry `attrs`, namespaced `data`, `pos`,
           discontinuous `segments`, `metadata`, `dir`, and `lang`. Extensions
-          have one qualified `name`, walked `children`, named `slots`, and a
-          required typed `fallback`. The core tree stays closed.
+          have one `name` (qualified and declared, or the unqualified source
+          name of a `:name[...]` extension), walked `children`, named `slots`,
+          and a typed `fallback`. The core tree stays closed.
         - Source offsets and annotation anchors use UTF-8 bytes. Session node
           identity and overlapping ranges remain separate sidecars.
 

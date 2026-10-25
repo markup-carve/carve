@@ -792,7 +792,7 @@
         },
         "name": {
           "type": "string",
-          "pattern": "^[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+$",
+          "pattern": "^[A-Za-z][A-Za-z0-9-]*(?:\\.[A-Za-z0-9-]+)+$",
           "description": "Globally qualified, so two extensions cannot collide: `org.example.diagram`, not `diagram`."
         },
         "version": {
@@ -3121,8 +3121,7 @@
       "type": "object",
       "required": [
         "type",
-        "name",
-        "fallback"
+        "name"
       ],
       "properties": {
         "type": {
@@ -3130,8 +3129,17 @@
         },
         "name": {
           "type": "string",
-          "pattern": "^[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+$",
-          "description": "Globally qualified extension identifier (CARVE-P12-055)."
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z][A-Za-z0-9-]*(?:\\.[A-Za-z0-9-]+)+$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+              "type": "string"
+            }
+          ],
+          "description": "A qualified (dotted) name of a registered extension, declared on the root, or the unqualified authored name of a Carve source extension `:name[...]` (CARVE-P12-055)."
         },
         "version": {
           "type": "string",
@@ -3218,7 +3226,30 @@
           "description": "Identifiers of media-bag resources used by this extension (CARVE-P12-073)."
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "pattern": "\\.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "properties": {
+              "fallback": true
+            },
+            "required": [
+              "fallback"
+            ]
+          }
+        }
+      ]
     },
     "inline_footnote": {
       "type": "object",
@@ -5095,7 +5126,7 @@
     "namespacedData": {
       "type": "object",
       "propertyNames": {
-        "pattern": "^[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+$"
+        "pattern": "^[A-Za-z][A-Za-z0-9-]*(?:\\.[A-Za-z0-9-]+)+$"
       },
       "additionalProperties": {
         "$ref": "#/$defs/metadataValue"
@@ -5145,7 +5176,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "pattern": "^[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+$"
+          "pattern": "^[A-Za-z][A-Za-z0-9-]*(?:\\.[A-Za-z0-9-]+)+$"
         },
         "version": {
           "type": "string"
