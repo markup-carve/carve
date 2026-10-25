@@ -6244,7 +6244,7 @@ EOF = (* end of file *) ;
          At an open list item's marker column, a `+` followed by a list item
          at that column attaches nothing: that item is a sibling and the `+`
          is ordinary text at its own column.
-         A refused `+` on its own line is never dropped. It folds into the
+         A refused separate-line `+` is never dropped. It folds into the
          item's open paragraph when that
          paragraph can continue. Otherwise, including after a blank line, a
          fence, or a closed block, it forms its own one-line paragraph.
@@ -6297,8 +6297,9 @@ EOF = (* end of file *) ;
          container, and
          that block is then parsed like any other. A container may not answer
          differently because of WHAT it is attaching, and there is no second
-         rule anywhere for a quote, a list, a fence, a caption or a definition
-         under the marker. In particular the ONE BLOCK count and the boundary
+         ATTACHMENT rule for a quote, a list, a fence, a caption or a definition
+         under the marker. L4 decides where a refused first-block marker lands.
+         In particular the ONE BLOCK count and the boundary
          set above hold in EVERY container in L4, not only in the two that had
          them spelled out.
 
@@ -7324,9 +7325,6 @@ EOF = (* end of file *) ;
           ceiling below requires.
         A returned document MUST NOT lack text the author typed.
 
-        A conformance run needs to know which arm the canonical writer takes
-        past the cap, and the answer is "refuse".
-
         THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP -- NORMATIVE
         [CARVE-P9-078]. Over-cap flattening owes it no spellable tree: the
         flattened opener is literal paragraph text carrying the ladder's own
@@ -7929,8 +7927,8 @@ EOF = (* end of file *) ;
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string.
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so a
-      self-reference (`# A </#a>`) and a mutual cycle (`# A </#b>` +
-      `# B </#a>`) each resolve once (corpus "Cyclic cross-reference resolves
+      self-reference (`# A </#A>`) and a mutual cycle (`# A </#B>` +
+      `# B </#A>`) each resolve once (corpus "Cyclic cross-reference resolves
       to one level"). Cloning keeps the heading's markup:
       `# *Setup*` yields `<a href="#…"><strong>Setup</strong></a>`. A footnote
       reference is not cloned: `# Head[^1]` yields `Head`. A `</#id>`
@@ -8045,8 +8043,8 @@ EOF = (* end of file *) ;
    PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)
    ============================================================================
 
-   These conventions define the exact bytes the corpus pins. On any
-   disagreement the corpus wins.
+   These conventions define the bytes the corpus pins. A corpus pair that
+   disagrees with them is corrected under the preamble's NORMATIVITY rule.
 
    1. ATTRIBUTE ORDER. An element's attributes are written in FIVE RANKS, in
       this order:
@@ -9386,9 +9384,9 @@ EOF = (* end of file *) ;
       conservative form, arrived at because every block needed it rather than
       because one did.
 
-      IT DOES NOT LOOSEN §2 ANYWHERE. A unit that fails is escaped in full, by
-      §2's THE UNIT IS THE OPENER: `\#\# H` and not `\## H`. What narrows is
-      the reach of the fallback, not the strength of the escape it applies.
+      IT DOES NOT LOOSEN §2 ANYWHERE. A failing opener occurrence is escaped
+      in full: `\#\# H` and not `\## H`. Other occurrences, even in the same
+      run or block, remain subject to §2's test (CARVE-P11-007).
 
    3. ESCAPING DEPENDS ON CONTEXT. A character may be literal in one position
       and an opener in another. A static character table cannot decide §2;
@@ -10460,10 +10458,9 @@ EOF = (* end of file *) ;
 
    8h. A PIPE IN A TABLE CELL IS ESCAPED -- NORMATIVE [CARVE-P11-054]. Inside
       a pipe-table cell every `|` the writer emits as content is written
-      `\|`: in text, in a code span's content, and in a link destination or
-      title. GFM splits the row on every unescaped `|` before it reads any
-      inline, a code span included, and reads `\|` back as `|` in all of
-      those places. A `|` already written escaped is not escaped twice.
+      `\|` in text, a code span's content, or a title. In a link destination
+      it is `%7C` under CARVE-P11-069. GFM splits the row on unescaped pipes
+      before reading inlines; a pipe already escaped is not escaped twice.
 
         cell text "a|b"            ->  | a\|b |
         cell code "a|b"            ->  | `a\|b` |
@@ -11650,9 +11647,9 @@ EOF = (* end of file *) ;
       heading the target does not write as a heading (one flattened into a
       table cell) is not a target, and a fragment naming no heading is CARVE-P11-049's.
 
-      NO ANCHOR CAN DANGLE. The target writes no anchor at all, and the
-      reader derives each slug from text the target wrote, so every link to a
-      heading resolves in a GFM reader (carve#352). A heading whose text
+      NO ANCHOR DANGLES FOR AN IMAGE-FREE HEADING. The target writes no anchor,
+      and the reader derives its slug from the heading text. G1's image case
+      can yield a different slug in a GFM reader. A heading whose text
       removes to nothing has the empty slug, and a link to it is written `#`,
       or `#-1` and so on for a repeat.
 
