@@ -1844,7 +1844,9 @@ it derived and drop it - and the state would be gone, because the box it sits
 beside renders the same for all seven unchecked spellings. The importer READS it
 instead, the way it already reads the checkbox `<input>` rather than keeping it
 as content: both are halves of the item's state. A value outside the enumeration
-is not a state, and the item takes the box it carries.
+is not a state, and the item takes the box it carries. The seven unchecked
+spellings are `[ ]`, `[_]` (open alias), `[-]`, `[/]` (progress), `[!]`
+(blocked), `[>]`, and `[?]`.
 
 The done state is read the same way. A renderer writes `data-task-state="x"` on
 every done item, `[x]` and `[X]` alike, so `data-task-state="x"` beside a checked
