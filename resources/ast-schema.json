@@ -5198,7 +5198,6 @@
           "enum": [
             " ",
             "x",
-            "X",
             "_",
             "-",
             "/",
@@ -5206,7 +5205,7 @@
             ">",
             "?"
           ],
-          "description": "Authored task-box character (CARVE-P12-070)."
+          "description": "Task-box character, with `X` written as `x` (CARVE-P12-070)."
         },
         "status": {
           "enum": [
@@ -5246,10 +5245,7 @@
           "if": {
             "properties": {
               "mark": {
-                "enum": [
-                  "x",
-                  "X"
-                ]
+                "const": "x"
               }
             }
           },

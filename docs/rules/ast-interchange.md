@@ -76,6 +76,6 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L221) | 12 | AN INGEST REFUSAL IS A TYPED ERROR NAMING WHAT AND WHERE |
 | [`CARVE-P12-069`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L483) | 12 | A CONTINUATION LINE IS A MARKER IN THE JOINED CELL |
 | [`CARVE-P12-070`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L599) | 12 | DISCRIMINATED LIST AND TASK FIELDS |
-| [`CARVE-P12-071`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L612) | 12 | THE NODE SLOT TABLE DEFINES TRAVERSAL |
-| [`CARVE-P12-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L635) | 12 | CANONICAL AST EQUALITY COVERS SOURCE FACTS |
-| [`CARVE-P12-074`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L673) | 12 | METADATA, DIRECTION, AND CROSS REFERENCES |
+| [`CARVE-P12-071`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L613) | 12 | THE NODE SLOT TABLE DEFINES TRAVERSAL |
+| [`CARVE-P12-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L636) | 12 | CANONICAL AST EQUALITY COVERS SOURCE FACTS |
+| [`CARVE-P12-074`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L674) | 12 | METADATA, DIRECTION, AND CROSS REFERENCES |

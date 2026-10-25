@@ -693,7 +693,7 @@ const SCHEMA_ROLLOUT_PENDING = new Map([])
 
 test('task marks require their 2.0 status', () => {
   const pairs = [
-    [' ', 'todo'], ['_', 'todo'], ['x', 'done'], ['X', 'done'],
+    [' ', 'todo'], ['_', 'todo'], ['x', 'done'],
     ['-', 'cancelled'], ['/', 'in-progress'], ['!', 'blocked'],
     ['>', 'partial'], ['?', 'other'],
   ]
@@ -707,6 +707,7 @@ test('task marks require their 2.0 status', () => {
     assert.equal(validate(tree(mark, status)), true, `${mark}: ${firstErrors()}`)
     assert.equal(validate(tree(mark, 'other' === status ? 'todo' : 'other')), false, mark)
   }
+  assert.equal(validate(tree('X', 'done')), false, 'X is written as x')
 })
 
 test('2.0 source offsets count UTF-8 bytes', () => {
