@@ -8,8 +8,8 @@
         "total": 3060
       },
       "md": {
-        "identical": 2278,
-        "strict": 1729,
+        "identical": 2281,
+        "strict": 1730,
         "total": 3060
       }
     },
@@ -20,20 +20,20 @@
         "total": 3060
       },
       "md": {
-        "identical": 2231,
-        "strict": 1662,
+        "identical": 2234,
+        "strict": 1664,
         "total": 3060
       }
     },
     "rs": {
       "html": {
-        "identical": 2514,
-        "strict": 2372,
+        "identical": 2515,
+        "strict": 2373,
         "total": 3060
       },
       "md": {
-        "identical": 2328,
-        "strict": 2028,
+        "identical": 2331,
+        "strict": 2031,
         "total": 3060
       }
     }
