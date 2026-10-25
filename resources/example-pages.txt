@@ -773,6 +773,8 @@ index: examples/edge-cases/index.md
   a-flush-left-line-needs-an-open-paragraph-to-fold-into
   two-dashes-are-not-a-thematic-break
   a-caption-attaches-across-one-blank-line
+  a-display-math-span-with-trailing-attributes-takes-a-caption
+  a-styled-display-math-span-takes-a-caption-across-one-blank-line
   two-blank-lines-detach-a-caption
   adjacent-block-openers-in-an-attached-run-stay-separate
   a-caret-line-does-not-end-a-paragraph-it-cannot-caption
