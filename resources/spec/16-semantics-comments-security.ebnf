@@ -725,9 +725,6 @@
           ceiling below requires.
         A returned document MUST NOT lack text the author typed.
 
-        A conformance run needs to know which arm the canonical writer takes
-        past the cap, and the answer is "refuse".
-
         THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP -- NORMATIVE
         [CARVE-P9-078]. Over-cap flattening owes it no spellable tree: the
         flattened opener is literal paragraph text carrying the ladder's own

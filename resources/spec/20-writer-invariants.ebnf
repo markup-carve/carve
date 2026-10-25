@@ -456,9 +456,9 @@
       conservative form, arrived at because every block needed it rather than
       because one did.
 
-      IT DOES NOT LOOSEN §2 ANYWHERE. A unit that fails is escaped in full, by
-      §2's THE UNIT IS THE OPENER: `\#\# H` and not `\## H`. What narrows is
-      the reach of the fallback, not the strength of the escape it applies.
+      IT DOES NOT LOOSEN §2 ANYWHERE. A failing opener occurrence is escaped
+      in full: `\#\# H` and not `\## H`. Other occurrences, even in the same
+      run or block, remain subject to §2's test (CARVE-P11-007).
 
    3. ESCAPING DEPENDS ON CONTEXT. A character may be literal in one position
       and an opener in another. A static character table cannot decide §2;

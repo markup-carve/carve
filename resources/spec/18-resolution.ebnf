@@ -227,8 +227,8 @@
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string.
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so a
-      self-reference (`# A </#a>`) and a mutual cycle (`# A </#b>` +
-      `# B </#a>`) each resolve once (corpus "Cyclic cross-reference resolves
+      self-reference (`# A </#A>`) and a mutual cycle (`# A </#B>` +
+      `# B </#A>`) each resolve once (corpus "Cyclic cross-reference resolves
       to one level"). Cloning keeps the heading's markup:
       `# *Setup*` yields `<a href="#…"><strong>Setup</strong></a>`. A footnote
       reference is not cloned: `# Head[^1]` yields `Head`. A `</#id>`
