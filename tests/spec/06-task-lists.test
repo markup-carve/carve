@@ -12,17 +12,13 @@ Task lists
 
 ```
 - [-] dropped
-- [_] open alias
-- [/] in progress
-- [!] blocked
+- [_] paused
 - [>] deferred
 - [?] maybe
 .
 <ul class="task-list">
   <li data-task-state="-"><input type="checkbox" disabled aria-label="dropped"> dropped</li>
-  <li data-task-state="_"><input type="checkbox" disabled aria-label="open alias"> open alias</li>
-  <li data-task-state="/"><input type="checkbox" disabled aria-label="in progress"> in progress</li>
-  <li data-task-state="!"><input type="checkbox" disabled aria-label="blocked"> blocked</li>
+  <li data-task-state="_"><input type="checkbox" disabled aria-label="paused"> paused</li>
   <li data-task-state="&gt;"><input type="checkbox" disabled aria-label="deferred"> deferred</li>
   <li data-task-state="?"><input type="checkbox" disabled aria-label="maybe"> maybe</li>
 </ul>
