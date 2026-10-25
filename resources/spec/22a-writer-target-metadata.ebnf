@@ -303,8 +303,9 @@
       block's attribute marker stands directly above its fence marker, as a
       definition list's does above its first term marker. A fence marker
       not directly above a fenced code block is a damaged set. Without the
-      mode nothing is reported: the info string holds both tokens, so this
-      target writes them (CARVE-P2-024).
+      mode, a title with a language stays in the info string and reports
+      nothing. A title without a language reports `fence-title-dropped`
+      (CARVE-P2-024); the label stays in the info string.
 
       A LIST'S NUMBERING STYLE TAKES A LIST-STYLE MARKER. This target writes
       an alphabetic or roman ordered list as a decimal list (CARVE-P2-024), so

@@ -2178,6 +2178,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `markdown-container-flattened`, each block whose authored attributes have
    no Markdown representation as `markdown-attributes-dropped`, and each figure
    or table caption written as ordinary text as `markdown-caption-flattened`.
+   A code fence title dropped because the fence has no language reports
+   `fence-title-dropped` with message
+   `Dropped a code fence title without a language in Markdown`.
    A source-to-Markdown checked entry point also reports an unattached block
    attribute run with `markdown-attributes-dropped`, since parsing discards it
    before the renderer receives a tree. An AST-only renderer has no such run.
@@ -2279,6 +2282,7 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--allow-loss table-header-cell-demoted`,
    `--allow-loss markdown-container-flattened`,
    `--allow-loss markdown-caption-flattened`,
+   `--allow-loss fence-title-dropped`,
    `--allow-loss markdown-attributes-dropped` and
    `--allow-loss raw-html-escaped`. The list is closed:
    `destination-denied` is not waivable, because a blanked destination is a
@@ -10786,17 +10790,11 @@ EOF = (* end of file *) ;
       directly above a code block in plain text reads as the FIRST LINE OF THE
       CODE.
 
-      TWO MORE LOSSES OF THE SAME TOKENS ARE RECORDED HERE AND LEFT OPEN. Each
-      breaks the floor exactly as this clause's three tokens did; what is
-      missing is a decided rendering, not a rule. Neither is settled by this
-      clause and neither is thereby permitted:
+      A fence with no language loses its title on default Markdown output
+      and reports `fence-title-dropped` (CARVE-P2-024). With a language, the
+      title stays in the info string. Carrier mode preserves either form.
 
-        - A fence title on a fence with NO LANGUAGE is dropped by the
-          MARKDOWN writer too: ```"src/app.js" emits a bare ``` and the
-          title is gone. The Markdown target keeps the title only when a
-          language precedes it.
-
-        - A code-group label never reaches the HTML target at all:
+      A code-group label remains an unsettled HTML case:
           ```js [Node] gives `<pre><code class="language-js">`. Core
           assigns the label no meaning and a group extension consumes it, so
           on HTML with no such extension the token has nowhere to go. Where
@@ -11524,8 +11522,9 @@ EOF = (* end of file *) ;
       block's attribute marker stands directly above its fence marker, as a
       definition list's does above its first term marker. A fence marker
       not directly above a fenced code block is a damaged set. Without the
-      mode nothing is reported: the info string holds both tokens, so this
-      target writes them (CARVE-P2-024).
+      mode, a title with a language stays in the info string and reports
+      nothing. A title without a language reports `fence-title-dropped`
+      (CARVE-P2-024); the label stays in the info string.
 
       A LIST'S NUMBERING STYLE TAKES A LIST-STYLE MARKER. This target writes
       an alphabetic or roman ordered list as a decimal list (CARVE-P2-024), so

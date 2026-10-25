@@ -619,6 +619,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `markdown-container-flattened`, each block whose authored attributes have
    no Markdown representation as `markdown-attributes-dropped`, and each figure
    or table caption written as ordinary text as `markdown-caption-flattened`.
+   A code fence title dropped because the fence has no language reports
+   `fence-title-dropped` with message
+   `Dropped a code fence title without a language in Markdown`.
    A source-to-Markdown checked entry point also reports an unattached block
    attribute run with `markdown-attributes-dropped`, since parsing discards it
    before the renderer receives a tree. An AST-only renderer has no such run.
@@ -720,6 +723,7 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--allow-loss table-header-cell-demoted`,
    `--allow-loss markdown-container-flattened`,
    `--allow-loss markdown-caption-flattened`,
+   `--allow-loss fence-title-dropped`,
    `--allow-loss markdown-attributes-dropped` and
    `--allow-loss raw-html-escaped`. The list is closed:
    `destination-denied` is not waivable, because a blanked destination is a

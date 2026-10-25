@@ -460,17 +460,11 @@
       directly above a code block in plain text reads as the FIRST LINE OF THE
       CODE.
 
-      TWO MORE LOSSES OF THE SAME TOKENS ARE RECORDED HERE AND LEFT OPEN. Each
-      breaks the floor exactly as this clause's three tokens did; what is
-      missing is a decided rendering, not a rule. Neither is settled by this
-      clause and neither is thereby permitted:
+      A fence with no language loses its title on default Markdown output
+      and reports `fence-title-dropped` (CARVE-P2-024). With a language, the
+      title stays in the info string. Carrier mode preserves either form.
 
-        - A fence title on a fence with NO LANGUAGE is dropped by the
-          MARKDOWN writer too: ```"src/app.js" emits a bare ``` and the
-          title is gone. The Markdown target keeps the title only when a
-          language precedes it.
-
-        - A code-group label never reaches the HTML target at all:
+      A code-group label remains an unsettled HTML case:
           ```js [Node] gives `<pre><code class="language-js">`. Core
           assigns the label no meaning and a group extension consumes it, so
           on HTML with no such extension the token has nowhere to go. Where
