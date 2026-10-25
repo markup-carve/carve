@@ -47,7 +47,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
-import { parse, citations } from '@markup-carve/carve'
+import { parse, citations, toAstJson } from '@markup-carve/carve'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -163,7 +163,6 @@ test('§18: the schema declares exactly the fields the clause names', () => {
  * conformance assertion now that the pin has one.
  */
 const SOURCE = readFileSync(resolve(root, 'tests/corpus-optional/05-citations-numbered.crv'), 'utf8')
-const AHEAD_OF_PIN = 'The pinned citation_definition omits the 2.0 namespace field (carve#3598).'
 
 test('the pinned reference build emits the node', () => {
   // `parse` is the stage that matters: it is what `toAstJson` serializes, and
@@ -173,6 +172,7 @@ test('the pinned reference build emits the node', () => {
   // rather than in the hook, and markup-carve/carve-js#1122 is where it did.
   const tree = parse(SOURCE, { extensions: [citations()] })
   const defs = tree.children.filter((node) => node.type === 'citation_definition')
+  const wireDefs = toAstJson(tree).children.filter((node) => node.type === 'citation_definition')
   assert.equal(defs.length, 3, 'the document has three bibliography lines, so it has three nodes')
 
   // The keys, in source order, and the metadata each line carries.
@@ -193,9 +193,8 @@ test('the pinned reference build emits the node', () => {
   // ALL THREE, not just the first. A pin that kept `smith` valid while emitting
   // a malformed `entry` for one of the others would still satisfy the key and
   // year assertions above, and this is the only layer that would have caught it.
-  for (const node of defs) {
-    assert.equal(validate(doc(node)), AHEAD_OF_PIN ? false : true, `the pinned build's ${node.key} node failed the schema: ${errors()}`)
-    if (AHEAD_OF_PIN) assert.equal(node.namespace, undefined, 'the pinned citation definition caught up; delete AHEAD_OF_PIN')
+  for (const node of wireDefs) {
+    assert.equal(validate(doc(node)), true, `the pinned build's ${node.key} node failed the schema: ${errors()}`)
   }
 
   // The definition renders nothing where it sits, so no paragraph is left

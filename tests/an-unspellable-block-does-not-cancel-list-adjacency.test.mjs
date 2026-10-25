@@ -51,10 +51,9 @@ const PIN_LAG = ''
 
 const list = (text) => ({
   type: 'list',
-  ordered: false,
-  tight: true,
-  bulletChar: '-',
-  items: [{ type: 'list_item', children: [{ type: 'paragraph', children: [{ type: 'text', value: text }] }] }],
+  marker: { kind: 'bullet', char: '-' },
+  spacing: 'tight',
+  children: [{ type: 'list_item', children: [{ type: 'paragraph', children: [{ type: 'text', value: text }] }] }],
 })
 
 // Two sibling lists with one block between them. Hand-built, with no `pos`
@@ -62,6 +61,7 @@ const list = (text) => ({
 // produced.
 const payload = (between) => ({
   type: 'document',
+  astVersion: '2.0',
   srcByteLength: 0,
   children: [list('a'), ...(between === null ? [] : [between]), list('b')],
 })

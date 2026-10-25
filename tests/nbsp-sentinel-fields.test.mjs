@@ -35,20 +35,12 @@ test('the pinned engine identifies its whitespace contract', () => {
   assert.deepEqual(types, ['text', 'non_breaking_space', 'text'])
 })
 
-const AHEAD_OF_PIN = 'The pinned range reader implements sidecar v1 and codepoint offsets (carve#3598).'
-
 test('updated engines pass the shared annotation projection fixture', () => {
   const fixture = JSON.parse(readFileSync(new URL('./fixtures/annotation-projection.json', import.meta.url), 'utf8'))
   assert.equal([...fixture.projection].length, 11)
-  const pinned = fixture.pinned
-  if (AHEAD_OF_PIN) {
-    assert.throws(() => engine.readAnnotationRanges({ version: 2, ranges: [{ id: 'r', kind: 'org.example.test', ...fixture.valid[0] }] }, fixture.document),
-      'the pinned range reader now accepts v2; delete AHEAD_OF_PIN')
-  }
-  const cases = AHEAD_OF_PIN ? pinned : fixture
   for (const [key, accepted] of [['valid', true], ['invalid', false]]) {
-    for (const range of cases[key]) {
-      const read = () => engine.readAnnotationRanges({ version: AHEAD_OF_PIN ? 1 : 2, ranges: [{ id: 'r', kind: AHEAD_OF_PIN ? 'test' : 'org.example.test', ...range }] }, cases.document)
+    for (const range of fixture[key]) {
+      const read = () => engine.readAnnotationRanges({ version: 2, ranges: [{ id: 'r', kind: 'org.example.test', ...range }] }, fixture.document)
       if (accepted) assert.doesNotThrow(read)
       else assert.throws(read)
     }

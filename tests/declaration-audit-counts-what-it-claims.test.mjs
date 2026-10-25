@@ -448,12 +448,8 @@ test('reference build gate accepts only an ancestral spec gitlink update', (t) =
 })
 
 test('JSON fixture flags count across groups as an owed list', () => {
-  const entry = MANIFEST.find(row => row.path === 'resources/roundtrip-export-acceptance-fixtures.json')
-  assert.ok(entry)
-  assert.equal(entry.policy, 'owed')
+  const entry = { kind: 'json-flag', flag: 'aheadOfPin', policy: 'owed', prPolicy: 'declared', guard: 'two-way' }
   assert.equal(__internals.perPrPolicy(entry), 'declared')
-  assert.equal(entry.guard, 'two-way')
-  assert.equal(entry.owner, 'tests/roundtrip-export-acceptance.test.mjs')
   const flagged = {
     exportImport: [{ id: 'star-bullet', aheadOfPin: true }, { id: 'obj', aheadOfPin: { fails: ['x'] } }, { id: 'unflagged' }],
     nested: { importNegative: [{ id: 'invalid-tight-value', aheadOfPin: true }] },

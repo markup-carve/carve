@@ -8,12 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases before 0.1.6 are archived in
 [CHANGELOG-0.1.md](./CHANGELOG-0.1.md).
 
-## [Unreleased]
-
-### Changes
-
-- [behavior] Define the AST JSON interchange contract 2.0, including its versioned root, node shapes, and extension fallback rules (carve#3262, carve#3598).
-
 ## [0.1.12] - 2026-10-24
 
 The spec now settles several container, table, and writer edge cases. The playground also gains native formatting and an updated demo.

@@ -36,6 +36,8 @@ test('the reviewed comment transition bank has sixteen cases and four public AST
 function outline(node) {
   return {
     type: node.type,
+    ...(node.astVersion !== undefined ? { astVersion: node.astVersion } : {}),
+    ...(node.stages !== undefined ? { stages: node.stages } : {}),
     ...(node.content !== undefined ? { content: node.content } : {}),
     ...(node.value !== undefined ? { value: node.value } : {}),
     ...(node.block !== undefined ? { block: node.block } : {}),
@@ -45,12 +47,12 @@ function outline(node) {
   }
 }
 
-for (const { source, checker, publicAst, pinnedPublicAst } of fixtures) {
+for (const { source, checker, publicAst } of fixtures) {
   test(`comment transition structure: ${JSON.stringify(source)}`, () => {
     assert.deepEqual(plain(parse(source)), checker)
     if (publicAst) {
       const serialized = toAstJson(engineParse(source))
-      assert.deepEqual(outline(serialized), serialized.astVersion === '2.0' ? publicAst : pinnedPublicAst)
+      assert.deepEqual(outline(serialized), outline(publicAst))
     }
   })
 }

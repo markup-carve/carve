@@ -339,6 +339,15 @@ export function checkStopsAtChildren(doc, codepoints, findings) {
         children.push(value)
       }
     }
+    // Contract 2.0 carries a figure caption in a single `caption` field.
+    // The caption wrapper has no pos; its placed descendants still set the
+    // figure's end under PART 12 §4.
+    if (node.type === 'figure' && node.caption) {
+      const ends = [...walkNodes(node.caption)]
+        .map(([child]) => child.pos?.endOffset)
+        .filter(Number.isInteger)
+      if (ends.length) children.push({ type: 'caption', pos: { endOffset: Math.max(...ends) } })
+    }
     if (children.length === 0) {
       // A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS
       // THERE. "Ends at its last placed child" is silent when there is none,

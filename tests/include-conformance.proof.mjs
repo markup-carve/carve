@@ -28,12 +28,6 @@ const VECTOR_DIR = path.join(HERE, 'include-conformance', 'vectors')
 const astSchema = JSON.parse(readFileSync(path.join(HERE, '..', 'resources', 'ast-schema.json'), 'utf8'))
 const validateAst = new Ajv2020({ allErrors: true, strict: true }).compile(astSchema)
 
-// The schema is 2.0 and the pinned carve-js still serializes 1.2 (carve#3262, carve#3598).
-// Two-way: while declared, the pinned output must FAIL 2.0, so the entry cannot outlive the pin.
-const AHEAD_OF_PIN = {
-  contract20: 'The pinned carve-js emits 1.2 trees, which cannot validate against the 2.0 schema until the pin moves.',
-}
-
 const files = readdirSync(VECTOR_DIR)
   .filter((f) => f.endsWith('.json'))
   .sort()
@@ -63,11 +57,7 @@ for (const file of files) {
     if (vector.checkPositions) {
       assert.deepEqual(result.positions, vector.expected.positions, `${vector.name}: positions mismatch`)
       const valid = validateAst({ ...result.astJson, astVersion: carve.AST_CONTRACT_VERSION })
-      if (AHEAD_OF_PIN.contract20) {
-        assert.ok(!valid, `${vector.name}: the pinned output validates against 2.0 now; remove AHEAD_OF_PIN.contract20`)
-      } else {
-        assert.ok(valid, `${vector.name}: expanded AST fails schema: ${JSON.stringify(validateAst.errors)}`)
-      }
+      assert.ok(valid, `${vector.name}: expanded AST fails schema: ${JSON.stringify(validateAst.errors)}`)
     }
 
     // I7: no forbidden substring (a raw resolver error, an absolute path) may

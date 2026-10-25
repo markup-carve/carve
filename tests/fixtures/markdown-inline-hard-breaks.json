@@ -33,25 +33,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 4
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -83,21 +65,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 4
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -140,28 +108,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 4
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -201,29 +148,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": "tail"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 4
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -263,29 +188,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": " "
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 4
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -324,28 +227,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "soft_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 4
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -397,37 +279,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "paragraph",
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -475,33 +327,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "paragraph",
-                  "children": [
-                    {
-                      "type": "hard_break"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -561,40 +387,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "paragraph",
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
-                    },
-                    {
-                      "type": "hard_break"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -650,41 +443,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "paragraph",
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
-                    },
-                    {
-                      "type": "text",
-                      "value": "tail"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -740,41 +499,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "paragraph",
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
-                    },
-                    {
-                      "type": "text",
-                      "value": " "
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -829,40 +554,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "paragraph",
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
-                    },
-                    {
-                      "type": "soft_break"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -931,49 +623,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "list",
-                  "ordered": false,
-                  "tight": true,
-                  "items": [
-                    {
-                      "type": "list_item",
-                      "children": [
-                        {
-                          "type": "paragraph",
-                          "children": [
-                            {
-                              "type": "text",
-                              "value": "seed"
-                            },
-                            {
-                              "type": "hard_break"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1038,45 +688,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "list",
-                  "ordered": false,
-                  "tight": true,
-                  "items": [
-                    {
-                      "type": "list_item",
-                      "children": [
-                        {
-                          "type": "paragraph",
-                          "children": [
-                            {
-                              "type": "hard_break"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1155,52 +767,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "list",
-                  "ordered": false,
-                  "tight": true,
-                  "items": [
-                    {
-                      "type": "list_item",
-                      "children": [
-                        {
-                          "type": "paragraph",
-                          "children": [
-                            {
-                              "type": "text",
-                              "value": "seed"
-                            },
-                            {
-                              "type": "hard_break"
-                            },
-                            {
-                              "type": "hard_break"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1273,53 +840,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "list",
-                  "ordered": false,
-                  "tight": true,
-                  "items": [
-                    {
-                      "type": "list_item",
-                      "children": [
-                        {
-                          "type": "paragraph",
-                          "children": [
-                            {
-                              "type": "text",
-                              "value": "seed"
-                            },
-                            {
-                              "type": "hard_break"
-                            },
-                            {
-                              "type": "text",
-                              "value": "tail"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1392,53 +913,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "list",
-                  "ordered": false,
-                  "tight": true,
-                  "items": [
-                    {
-                      "type": "list_item",
-                      "children": [
-                        {
-                          "type": "paragraph",
-                          "children": [
-                            {
-                              "type": "text",
-                              "value": "seed"
-                            },
-                            {
-                              "type": "hard_break"
-                            },
-                            {
-                              "type": "text",
-                              "value": " "
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1510,52 +985,7 @@
         "li",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "list",
-                  "ordered": false,
-                  "tight": true,
-                  "items": [
-                    {
-                      "type": "list_item",
-                      "children": [
-                        {
-                          "type": "paragraph",
-                          "children": [
-                            {
-                              "type": "text",
-                              "value": "seed"
-                            },
-                            {
-                              "type": "hard_break"
-                            },
-                            {
-                              "type": "soft_break"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1597,30 +1027,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "block_quote",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1658,26 +1065,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "block_quote",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1727,33 +1115,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "block_quote",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1799,34 +1161,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "block_quote",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": "tail"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1872,34 +1207,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "block_quote",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": " "
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -1944,33 +1252,7 @@
         "p",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "block_quote",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "soft_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2012,30 +1294,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "strong",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2073,26 +1332,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "strong",
-              "children": [
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2142,33 +1382,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "strong",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2214,34 +1428,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "strong",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": "tail"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2287,34 +1474,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "strong",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": " "
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2359,33 +1519,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "strong",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "soft_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2427,30 +1561,7 @@
         "em",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "emphasis",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2488,26 +1599,7 @@
         "em",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "emphasis",
-              "children": [
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2557,33 +1649,7 @@
         "em",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "emphasis",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2629,34 +1695,7 @@
         "em",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "emphasis",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": "tail"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2702,34 +1741,7 @@
         "em",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "emphasis",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": " "
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2774,33 +1786,7 @@
         "em",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "emphasis",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "soft_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2842,30 +1828,7 @@
         "sup",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "superscript",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2903,26 +1866,7 @@
         "sup",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "superscript",
-              "children": [
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -2972,33 +1916,7 @@
         "sup",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "superscript",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3044,34 +1962,7 @@
         "sup",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "superscript",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": "tail"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3117,34 +2008,7 @@
         "sup",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "superscript",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": " "
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3189,33 +2053,7 @@
         "sup",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "superscript",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "soft_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3258,31 +2096,7 @@
         "a",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "https://example.test",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 28
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3321,27 +2135,7 @@
         "a",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "https://example.test",
-              "children": [
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 28
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3392,34 +2186,7 @@
         "a",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "https://example.test",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "hard_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 28
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3466,35 +2233,7 @@
         "a",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "https://example.test",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": "tail"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 28
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3541,35 +2280,7 @@
         "a",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "https://example.test",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": " "
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 28
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3615,34 +2326,7 @@
         "a",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "https://example.test",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "seed"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "soft_break"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 28
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3679,26 +2363,7 @@
         "h1",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3731,22 +2396,7 @@
         "h1",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3790,29 +2440,7 @@
         "h1",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3853,30 +2481,7 @@
         "h1",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": "tail"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3917,30 +2522,7 @@
         "h1",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": " "
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -3980,29 +2562,7 @@
         "h1",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "soft_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4068,36 +2628,7 @@
         "td",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "table",
-          "rows": [
-            {
-              "type": "table_row",
-              "cells": [
-                {
-                  "type": "table_cell",
-                  "header": false,
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4159,32 +2690,7 @@
         "td",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "table",
-          "rows": [
-            {
-              "type": "table_row",
-              "cells": [
-                {
-                  "type": "table_cell",
-                  "header": false,
-                  "children": [
-                    {
-                      "type": "hard_break"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4260,39 +2766,7 @@
         "td",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "table",
-          "rows": [
-            {
-              "type": "table_row",
-              "cells": [
-                {
-                  "type": "table_cell",
-                  "header": false,
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
-                    },
-                    {
-                      "type": "hard_break"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4362,40 +2836,7 @@
         "td",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "table",
-          "rows": [
-            {
-              "type": "table_row",
-              "cells": [
-                {
-                  "type": "table_cell",
-                  "header": false,
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
-                    },
-                    {
-                      "type": "text",
-                      "value": "tail"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4465,40 +2906,7 @@
         "td",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "table",
-          "rows": [
-            {
-              "type": "table_row",
-              "cells": [
-                {
-                  "type": "table_cell",
-                  "header": false,
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
-                    },
-                    {
-                      "type": "text",
-                      "value": " "
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4567,39 +2975,7 @@
         "td",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "table",
-          "rows": [
-            {
-              "type": "table_row",
-              "cells": [
-                {
-                  "type": "table_cell",
-                  "header": false,
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
-                    },
-                    {
-                      "type": "soft_break"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4648,37 +3024,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "note",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 24
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4723,33 +3069,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "note",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 24
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4806,40 +3126,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "note",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 24
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4892,41 +3179,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "note",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": "tail"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 24
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -4979,41 +3232,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "note",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": " "
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 24
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -5065,40 +3284,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "note",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "soft_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 24
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -5147,37 +3333,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "details",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 27
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -5222,33 +3378,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "details",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 27
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -5305,40 +3435,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "details",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "hard_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 27
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -5391,41 +3488,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "details",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": "tail"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 27
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -5478,41 +3541,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "details",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": " "
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 27
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -5564,40 +3593,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "admonition",
-          "kind": "details",
-          "children": [
-            {
-              "type": "paragraph",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "body"
-                }
-              ]
-            }
-          ],
-          "title": [
-            {
-              "type": "text",
-              "value": "seed"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "soft_break"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 27
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -5633,30 +3629,7 @@
       ]
     },
     "markdown": "# a b\n",
-    "ancestors": [],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "a "
-            },
-            {
-              "type": "soft_break"
-            },
-            {
-              "type": "text",
-              "value": " b"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    "ancestors": []
   },
   {
     "rule": "CARVE-P11-065",
@@ -5692,30 +3665,7 @@
       ]
     },
     "markdown": "# a b\n",
-    "ancestors": [],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "a\t"
-            },
-            {
-              "type": "soft_break"
-            },
-            {
-              "type": "text",
-              "value": "\tb"
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 6
-    }
+    "ancestors": []
   },
   {
     "rule": "CARVE-P11-065",
@@ -5777,51 +3727,7 @@
         "h1",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "A"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": "B"
-            }
-          ],
-          "attrs": {
-            "id": "target",
-            "order": [
-              "#id"
-            ]
-          }
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "#target",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "heading"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 37
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -5889,56 +3795,7 @@
         "strong",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "strong",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "A"
-                },
-                {
-                  "type": "hard_break"
-                },
-                {
-                  "type": "text",
-                  "value": "B"
-                }
-              ]
-            }
-          ],
-          "attrs": {
-            "id": "target",
-            "order": [
-              "#id"
-            ]
-          }
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "#target",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "heading"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 37
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -6000,51 +3857,7 @@
         "h1",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "A"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": " B"
-            }
-          ],
-          "attrs": {
-            "id": "target",
-            "order": [
-              "#id"
-            ]
-          }
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "#target",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "heading"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 37
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -6113,54 +3926,7 @@
         "h1",
         "br"
       ]
-    ],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "A"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "hard_break"
-            },
-            {
-              "type": "text",
-              "value": "B"
-            }
-          ],
-          "attrs": {
-            "id": "target",
-            "order": [
-              "#id"
-            ]
-          }
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "#target",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "heading"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 37
-    }
+    ]
   },
   {
     "rule": "CARVE-P11-065",
@@ -6217,50 +3983,6 @@
       ]
     },
     "markdown": "# A B\n\n[heading](#a-b)\n",
-    "ancestors": [],
-    "pinnedAst": {
-      "type": "document",
-      "children": [
-        {
-          "type": "heading",
-          "level": 1,
-          "children": [
-            {
-              "type": "text",
-              "value": "A"
-            },
-            {
-              "type": "soft_break"
-            },
-            {
-              "type": "text",
-              "value": "B"
-            }
-          ],
-          "attrs": {
-            "id": "target",
-            "order": [
-              "#id"
-            ]
-          }
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "link",
-              "href": "#target",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "heading"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 37
-    }
+    "ancestors": []
   }
 ]

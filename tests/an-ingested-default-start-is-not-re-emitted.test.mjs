@@ -44,15 +44,14 @@ const PIN_LAG = ''
 // anything a parser produced.
 const payloadWithStart = (start) => ({
   type: 'document',
+  astVersion: '2.0',
   srcByteLength: 0,
   children: [
     {
       type: 'list',
-      ordered: true,
-      tight: true,
-      delim: '.',
-      start,
-      items: [
+      marker: { kind: 'ordered', start },
+      spacing: 'tight',
+      children: [
         {
           type: 'list_item',
           children: [{ type: 'paragraph', children: [{ type: 'text', value: 'a' }] }],
@@ -84,8 +83,8 @@ test('a parsed ordered list never carries `start: 1` (the producer half)', () =>
   // the parser instead of the encoder cannot pass unnoticed.
   const list = toAstJson(parse('1. a\n')).children[0]
   assert.equal(list.type, 'list')
-  assert.equal(list.ordered, true)
-  assert.ok(!('start' in list), 'the parser invented a `start` the schema calls absent')
+  assert.equal(list.marker.kind, 'ordered')
+  assert.ok(!('start' in list.marker), 'the parser invented a `start` the schema calls absent')
 })
 
 test('an ingested `start: 1` is not re-emitted (PART 12 §22)', () => {
@@ -94,13 +93,13 @@ test('an ingested `start: 1` is not re-emitted (PART 12 §22)', () => {
     // Fails in the other direction too: when the engine stops re-emitting the
     // field, this assertion goes red and the declaration must go out.
     assert.ok(
-      'start' in list && list.start === 1,
+      'start' in list.marker && list.marker.start === 1,
       `pin lag is declared and the engine no longer has it - delete PIN_LAG: ${PIN_LAG}`,
     )
     return
   }
   assert.ok(
-    !('start' in list),
+    !('start' in list.marker),
     'the encoder re-emitted a `start` the schema says is written only when it is not 1',
   )
 })
@@ -110,7 +109,7 @@ test('a non-default `start` survives the round trip unchanged', () => {
   // deletes the field outright breaks here rather than shipping.
   for (const start of [0, 2, 7]) {
     const list = roundTripped(start)
-    assert.equal(list.start, start, `an ingested start of ${start} must survive`)
+    assert.equal(list.marker.start, start, `an ingested start of ${start} must survive`)
   }
 })
 

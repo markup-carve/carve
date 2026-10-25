@@ -18,7 +18,7 @@ const breakPaths = (html) => {
 }
 for (const item of cases) {
   assert.equal(item.ast.astVersion, '2.0')
-  item.markdown = engine.renderMarkdown(engine.fromAstJson(item.pinnedAst ?? item.ast))
+  item.markdown = engine.renderMarkdown(engine.fromAstJson(item.ast))
   assert.deepEqual(breakPaths(cmarkGfmToHtml(item.markdown)), item.ancestors, `${item.template}: ${item.name}`)
 }
 writeFileSync(path, JSON.stringify(cases, null, 2) + '\n')

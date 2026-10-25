@@ -248,9 +248,9 @@ test('a value disagreement is attributed to the engine that stands alone', () =>
 })
 
 test('comment payload fixtures reject agreement on a dedented value', () => {
-  const doc = { type: 'document', children: [{ type: 'comment', content: 'a' }] }
+  const doc = { type: 'document', children: [{ type: 'comment', value: 'a' }] }
   assert.equal(checkCommentContent(doc, ['  a']).length, 1)
-  doc.children[0].content = '  a'
+  doc.children[0].value = '  a'
   assert.deepEqual(checkCommentContent(doc, ['  a']), [])
   assert.equal(checkCommentContent({ type: 'document', children: [] }, ['  a']).length, 1)
   assert.deepEqual(checkCommentContent(doc, undefined), [])
@@ -266,9 +266,9 @@ test('every comment payload fixture names an existing corpus document', () => {
 
 
 test('code payload fixtures reject a missing final break even when engines agree', () => {
-  const doc = { type: 'document', children: [{ type: 'code_block', content: 'a' }] }
+  const doc = { type: 'document', children: [{ type: 'code_block', value: 'a' }] }
   assert.equal(checkCodeContent(doc, ['a\n']).length, 1)
-  doc.children[0].content = 'a\n'
+  doc.children[0].value = 'a\n'
   assert.deepEqual(checkCodeContent(doc, ['a\n']), [])
   assert.equal(checkCodeContent({ type: 'document', children: [] }, ['a\n']).length, 1)
   assert.deepEqual(checkCodeContent(doc, undefined), [])
@@ -354,14 +354,14 @@ test('shared EOF samples pin payload values through JSON', async () => {
   for (const sample of samples) {
     const content = parse(sample.source).blocks[0].text
     assert.equal(content, sample.content, sample.name)
-    const tree = JSON.parse(JSON.stringify({ type: 'document', children: [{ type: 'code_block', content }] }))
+    const tree = JSON.parse(JSON.stringify({ type: 'document', children: [{ type: 'code_block', value: content }] }))
     assert.deepEqual(checkCodeContent(tree, [sample.content]), [], sample.name)
   }
 })
 
 
 test('raw content checks reject absent, wrong and extra payloads', () => {
-  const raw = content => ({ type: 'raw_block', format: 'html', content })
+  const raw = value => ({ type: 'raw_block', format: 'html', value })
   const doc = children => ({ type: 'document', children })
   assert.deepEqual(checkRawContent(doc([raw('x\n')]), ['x\n']), [])
   assert.equal(checkRawContent(doc([]), ['x\n']).length, 1)
@@ -394,8 +394,6 @@ test('shared raw AST vectors keep literal fallback and matching-output adaptatio
   for (const vector of vectors) {
     assert.equal(vector.raw.value, vector.codeContent, vector.id)
     assert.equal(rawPassthrough(vector.raw.value), vector.rawPassthrough, vector.id)
-    const pinnedRaw = { ...vector.raw, content: vector.raw.value }
-    delete pinnedRaw.value
-    assert.deepEqual(checkRawContent({ type: 'document', children: [pinnedRaw] }, [vector.codeContent]), [], vector.id)
+    assert.deepEqual(checkRawContent({ type: 'document', children: [vector.raw] }, [vector.codeContent]), [], vector.id)
   }
 })
