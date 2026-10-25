@@ -1676,7 +1676,13 @@
             ]
           }
         ],
-        "srcByteLength": 19
+        "srcByteLength": 19,
+        "astVersion": "2.0",
+        "stages": [
+          "blockImagePromotion",
+          "referenceResolution",
+          "tableAlignment"
+        ]
       },
       "html": "<p><a href=\"/u\"><strong>a <strong>b</strong> c</strong></a></p>"
     },
@@ -1715,7 +1721,13 @@
             ]
           }
         ],
-        "srcByteLength": 15
+        "srcByteLength": 15,
+        "astVersion": "2.0",
+        "stages": [
+          "blockImagePromotion",
+          "referenceResolution",
+          "tableAlignment"
+        ]
       },
       "html": "<section>\n  <h1><strong>a <strong>b</strong> c</strong></h1>\n</section>"
     },
@@ -1758,7 +1770,13 @@
             ]
           }
         ],
-        "srcByteLength": 15
+        "srcByteLength": 15,
+        "astVersion": "2.0",
+        "stages": [
+          "blockImagePromotion",
+          "referenceResolution",
+          "tableAlignment"
+        ]
       },
       "html": "<blockquote><p><strong>a <strong>b</strong> c</strong></p></blockquote>"
     },
@@ -1770,9 +1788,12 @@
         "children": [
           {
             "type": "list",
-            "ordered": false,
-            "tight": true,
-            "items": [
+            "marker": {
+              "kind": "bullet",
+              "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
               {
                 "type": "list_item",
                 "children": [
@@ -1805,11 +1826,16 @@
                   }
                 ]
               }
-            ],
-            "bulletChar": "-"
+            ]
           }
         ],
-        "srcByteLength": 15
+        "srcByteLength": 15,
+        "astVersion": "2.0",
+        "stages": [
+          "blockImagePromotion",
+          "referenceResolution",
+          "tableAlignment"
+        ]
       },
       "html": "<ul>\n  <li><strong>a <strong>b</strong> c</strong></li>\n</ul>"
     },
@@ -1821,44 +1847,66 @@
         "children": [
           {
             "type": "table",
-            "rows": [
+            "children": [
               {
-                "type": "table_row",
-                "cells": [
+                "type": "table_body",
+                "children": [
                   {
-                    "type": "table_cell",
-                    "header": false,
+                    "type": "table_row",
                     "children": [
                       {
-                        "type": "strong",
+                        "type": "table_cell",
+                        "header": false,
                         "children": [
                           {
-                            "type": "text",
-                            "value": "a "
-                          },
-                          {
-                            "type": "strong",
+                            "type": "cell_paragraph",
                             "children": [
                               {
-                                "type": "text",
-                                "value": "b"
+                                "type": "strong",
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "a "
+                                  },
+                                  {
+                                    "type": "strong",
+                                    "children": [
+                                      {
+                                        "type": "text",
+                                        "value": "b"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "text",
+                                    "value": " c"
+                                  }
+                                ]
                               }
                             ]
-                          },
-                          {
-                            "type": "text",
-                            "value": " c"
                           }
-                        ]
+                        ],
+                        "sourceContent": "inline"
                       }
                     ]
                   }
                 ]
               }
+            ],
+            "columns": [
+              {
+                "type": "table_column"
+              }
             ]
           }
         ],
-        "srcByteLength": 17
+        "srcByteLength": 17,
+        "astVersion": "2.0",
+        "stages": [
+          "blockImagePromotion",
+          "referenceResolution",
+          "tableAlignment"
+        ]
       },
       "html": "<table>\n  <tbody>\n    <tr><td><strong>a <strong>b</strong> c</strong></td></tr>\n  </tbody>\n</table>"
     },
@@ -1873,13 +1921,13 @@
             "children": [
               {
                 "type": "footnote_ref",
-                "label": "n"
+                "key": "n",
+                "namespace": "footnote"
               }
             ]
           },
           {
             "type": "footnote",
-            "label": "n",
             "children": [
               {
                 "type": "paragraph",
@@ -1908,10 +1956,18 @@
                   }
                 ]
               }
-            ]
+            ],
+            "key": "n",
+            "namespace": "footnote"
           }
         ],
-        "srcByteLength": 25
+        "srcByteLength": 25,
+        "astVersion": "2.0",
+        "stages": [
+          "blockImagePromotion",
+          "referenceResolution",
+          "tableAlignment"
+        ]
       },
       "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p><strong>a <strong>b</strong> c</strong><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
     },
@@ -1937,7 +1993,13 @@
             ]
           }
         ],
-        "srcByteLength": 11
+        "srcByteLength": 11,
+        "astVersion": "2.0",
+        "stages": [
+          "blockImagePromotion",
+          "referenceResolution",
+          "tableAlignment"
+        ]
       },
       "html": "<section>\n  <h1><sup>{^x^}</sup></h1>\n</section>",
       "remainingInlineDepth": 1
@@ -1968,7 +2030,13 @@
             ]
           }
         ],
-        "srcByteLength": 11
+        "srcByteLength": 11,
+        "astVersion": "2.0",
+        "stages": [
+          "blockImagePromotion",
+          "referenceResolution",
+          "tableAlignment"
+        ]
       },
       "html": "<blockquote><p><sup>{^x^}</sup></p></blockquote>",
       "remainingInlineDepth": 1
@@ -1981,9 +2049,12 @@
         "children": [
           {
             "type": "list",
-            "ordered": false,
-            "tight": true,
-            "items": [
+            "marker": {
+              "kind": "bullet",
+              "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
               {
                 "type": "list_item",
                 "children": [
@@ -2003,11 +2074,16 @@
                   }
                 ]
               }
-            ],
-            "bulletChar": "-"
+            ]
           }
         ],
-        "srcByteLength": 11
+        "srcByteLength": 11,
+        "astVersion": "2.0",
+        "stages": [
+          "blockImagePromotion",
+          "referenceResolution",
+          "tableAlignment"
+        ]
       },
       "html": "<ul>\n  <li><sup>{^x^}</sup></li>\n</ul>",
       "remainingInlineDepth": 1
@@ -2020,31 +2096,53 @@
         "children": [
           {
             "type": "table",
-            "rows": [
+            "children": [
               {
-                "type": "table_row",
-                "cells": [
+                "type": "table_body",
+                "children": [
                   {
-                    "type": "table_cell",
-                    "header": false,
+                    "type": "table_row",
                     "children": [
                       {
-                        "type": "superscript",
+                        "type": "table_cell",
+                        "header": false,
                         "children": [
                           {
-                            "type": "text",
-                            "value": "{^x^}"
+                            "type": "cell_paragraph",
+                            "children": [
+                              {
+                                "type": "superscript",
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "{^x^}"
+                                  }
+                                ]
+                              }
+                            ]
                           }
-                        ]
+                        ],
+                        "sourceContent": "inline"
                       }
                     ]
                   }
                 ]
               }
+            ],
+            "columns": [
+              {
+                "type": "table_column"
+              }
             ]
           }
         ],
-        "srcByteLength": 13
+        "srcByteLength": 13,
+        "astVersion": "2.0",
+        "stages": [
+          "blockImagePromotion",
+          "referenceResolution",
+          "tableAlignment"
+        ]
       },
       "html": "<table>\n  <tbody>\n    <tr><td><sup>{^x^}</sup></td></tr>\n  </tbody>\n</table>",
       "remainingInlineDepth": 1

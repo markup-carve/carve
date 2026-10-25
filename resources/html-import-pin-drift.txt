@@ -1,3 +1,41 @@
 # HTML import fixtures the pinned reference engine does not reproduce.
 # Format: <fixture><two spaces><reason>. Remove entries when the pin catches up.
 # html-import:check rejects both undeclared mismatches and stale entries.
+adjacent-definition-lists  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+attribute-value-line-break  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+attribute-value-pipe  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+authored-role  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+caption-attributes  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+cell-text-align-columns  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+cell-text-align-declarations  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+cell-text-align-overrides  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+cell-text-align-unmapped  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+code-language-hints  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+comment-beside-dropped-element  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+container-label-keeps-the-fence  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+definition-description-without-term  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+derived-accessible-name  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+derived-endnotes-section  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+diagnostic-order  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+empty-definition-description  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+empty-definition-description-not-last  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+empty-list  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+endnotes-section-not-last  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+figure-caption  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+figure-target-attributes  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+list-table-for-block-cells  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+marker-shaped-cell  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+math-block-and-mathml  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+mathml-fallback-image  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+ordered-delimiter-is-consumed  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+semantic-span-carve-outs  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+table-caption-attributes  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+table-caption-index  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+table-cell-hard-break  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+table-cell-multi-line-comment  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+table-degraded  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+task-list-class-and-done-state-are-consumed  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+task-state-is-consumed  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+traversal-shaped-index  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+unsupported-element-keeps-its-blocks  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).
+whitespace-only-block  The pinned carve-js serializes the imported tree as contract 1.2; the fixture is 2.0 (markup-carve/carve#3598).

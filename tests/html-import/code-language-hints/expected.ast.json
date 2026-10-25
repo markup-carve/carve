@@ -3,33 +3,33 @@
   "children": [
     {
       "type": "code_block",
-      "content": "x()",
-      "lang": "js",
       "attrs": {
         "classes": [
           "language-js"
         ]
-      }
+      },
+      "value": "x()",
+      "syntax": "js"
     },
     {
       "type": "code_block",
-      "content": "print(0)",
-      "lang": "python",
       "attrs": {
         "classes": [
           "lang-python"
         ]
-      }
+      },
+      "value": "print(0)",
+      "syntax": "python"
     },
     {
       "type": "code_block",
-      "content": "key: value",
-      "lang": "yaml",
       "attrs": {
         "keyValues": {
           "data-lang": "yaml"
         }
-      }
+      },
+      "value": "key: value",
+      "syntax": "yaml"
     },
     {
       "type": "admonition",
@@ -37,11 +37,11 @@
       "children": [
         {
           "type": "code_block",
-          "content": "print(1)",
-          "lang": "python",
           "attrs": {
             "id": "sample"
-          }
+          },
+          "value": "print(1)",
+          "syntax": "python"
         }
       ],
       "attrs": {
@@ -57,8 +57,8 @@
       "children": [
         {
           "type": "code_block",
-          "content": "x^2",
-          "lang": "latex"
+          "value": "x^2",
+          "syntax": "latex"
         }
       ],
       "attrs": {
@@ -80,8 +80,8 @@
           "children": [
             {
               "type": "code_block",
-              "content": "print(2)",
-              "lang": "python3"
+              "value": "print(2)",
+              "syntax": "python3"
             }
           ]
         }
@@ -94,13 +94,19 @@
     },
     {
       "type": "code_block",
-      "content": "print(3)",
-      "lang": "python",
       "attrs": {
         "keyValues": {
           "data-lang": "js"
         }
-      }
+      },
+      "value": "print(3)",
+      "syntax": "python"
     }
+  ],
+  "astVersion": "2.0",
+  "stages": [
+    "blockImagePromotion",
+    "referenceResolution",
+    "tableAlignment"
   ]
 }
