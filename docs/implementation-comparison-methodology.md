@@ -16,8 +16,8 @@ implementation exposes.
 
 ## Core fixture counts (2026-10-25 CET)
 
-The count-only run covers 3,056 core documents and their 193 target sidecars.
-The run scores 3,249 fixtures per engine. It checks expected output on
+The count-only run covers 3,058 core documents and their 193 target sidecars.
+The run scores 3,251 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
 Corpus added since this run: `660-an-empty-link-destination-takes-spaces`, `661-a-tab-cannot-pad-an-empty-link-destination`, `662-a-tab-after-a-comment-marker-stays-in-its-text`, `663-a-titled-admonition-skips-an-authored-heading-id`.
@@ -35,15 +35,15 @@ including the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>3056 / 3056</strong>
+    <strong>3058 / 3058</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3056 / 3056</strong>
+    <strong>3058 / 3058</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3056 / 3056</strong>
+    <strong>3058 / 3058</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -54,9 +54,9 @@ including the
 
 | Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `a5bdaee14` | `3056 / 3056` | `3249 / 3249` | `0` | `0` |
-| JS | `67d3ea249` | `3056 / 3056` | `3249 / 3249` | `0` | `0` |
-| PHP | `8d5f7c58c` | `3056 / 3056` | `3249 / 3249` | `0` | `0` |
+| Rust | `a5bdaee14` | `3058 / 3058` | `3251 / 3251` | `0` | `0` |
+| JS | `67d3ea249` | `3058 / 3058` | `3251 / 3251` | `0` | `0` |
+| PHP | `8d5f7c58c` | `3058 / 3058` | `3251 / 3251` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
@@ -210,7 +210,7 @@ the corpus population. It makes no timing assertions.
 
 It renders every document on the default target plus each target that document
 carries an expected-output file for. Those sidecars count toward `pass=N/M`,
-which is why the current core run scores 3,249 fixtures for 3,056 documents.
+which is why the current core run scores 3,251 fixtures for 3,058 documents.
 
 Use this mode to refresh scored-fixture counts. Use `compare:impls` to render
 every document on every target and compare unscored output between engines.
@@ -483,12 +483,12 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3056 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=3249/3249 mismatch=0 error=0 skipped=0 runs=3249
+profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3058 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=3251/3251 mismatch=0 error=0 skipped=0 runs=3251
   mismatching documents: 0
-js: pass=3249/3249 mismatch=0 error=0 skipped=0 runs=3249
+js: pass=3251/3251 mismatch=0 error=0 skipped=0 runs=3251
   mismatching documents: 0
-php: pass=3249/3249 mismatch=0 error=0 skipped=0 runs=3249
+php: pass=3251/3251 mismatch=0 error=0 skipped=0 runs=3251
   mismatching documents: 0
 cross_impl_diffs=0
 

@@ -4664,6 +4664,8 @@ EOF = (* end of file *) ;
       display-math paragraphs have no separate production; this clause defines
       their caption attachment. The host enumeration is closed: other
       paragraphs are not captionable.
+      Trailing attributes on the sole display-math span stay on that span and
+      do not prevent the paragraph from taking a following caption.
 
    4b. WHAT A CAPTION MAKES OF ITS HOST -- EXPLANATORY. The `figure` node is
       the GENERIC captioned wrapper, not the semantic notion "figure". A

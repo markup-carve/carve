@@ -346,7 +346,6 @@ function takeLabelSlot(s) {
 // the RESOLVED tree and is settled in exactly one later place: the promotion
 // phase in html.mjs. Do not read this function as that answer - an unresolved
 // reference image is captionable-SHAPED and is not a block image.
-const CAPTIONABLE_MATH = /^\$\$`.*`(.*)$/
 function isCaptionableParagraph(para) {
   // The whole paragraph, not its first line. An image's ALT is `brContent*`,
   // which admits a line boundary like any other inline content, so
@@ -366,8 +365,11 @@ function isCaptionableParagraph(para) {
   // tail patterns admit a newline inside `[...]` and `(...)` because they
   // never had to exclude one.
   const line = para.map(trimLineEnd).join('\n')
-  const math = CAPTIONABLE_MATH.exec(line)
-  if (math && (math[1] === '' || parseAttrBlock(math[1]) !== null)) return 'math'
+  if (line.startsWith('$$`')) {
+    const close = line.indexOf('`', 3)
+    const tail = close < 0 ? null : line.slice(close + 1)
+    if (tail === '' || (tail !== null && parseAttrBlock(tail) !== null)) return 'math'
+  }
   if (!line.startsWith('![')) return null
   const altEnd = bracketRunEnd(line, 1, 'alt')
   if (altEnd === -1) return null
