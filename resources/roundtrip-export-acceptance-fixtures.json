@@ -479,7 +479,7 @@
     },
     {
       "id": "task-states",
-      "source": "- [ ] open\n- [x] done\n- [X] upper\n- [-] dropped\n- [_] open alias\n- [/] active\n- [!] blocked\n- [>] moved\n- [?] unsure\n",
+      "source": "- [ ] open\n- [x] done\n- [X] upper\n- [-] dropped\n- [_] held\n- [>] moved\n- [?] unsure\n",
       "carriers": {},
       "forbiddenExportAttributes": [
         "data-marker"
@@ -509,16 +509,6 @@
           "type": "list_item",
           "checked": false,
           "taskState": "_"
-        },
-        {
-          "type": "list_item",
-          "checked": false,
-          "taskState": "/"
-        },
-        {
-          "type": "list_item",
-          "checked": false,
-          "taskState": "!"
         },
         {
           "type": "list_item",
