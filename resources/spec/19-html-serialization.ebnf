@@ -2,8 +2,8 @@
    PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)
    ============================================================================
 
-   These conventions define the exact bytes the corpus pins. On any
-   disagreement the corpus wins.
+   These conventions define the bytes the corpus pins. A corpus pair that
+   disagrees with them is corrected under the preamble's NORMATIVITY rule.
 
    1. ATTRIBUTE ORDER. An element's attributes are written in FIVE RANKS, in
       this order:

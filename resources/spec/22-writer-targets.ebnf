@@ -132,10 +132,9 @@
 
    8h. A PIPE IN A TABLE CELL IS ESCAPED -- NORMATIVE [CARVE-P11-054]. Inside
       a pipe-table cell every `|` the writer emits as content is written
-      `\|`: in text, in a code span's content, and in a link destination or
-      title. GFM splits the row on every unescaped `|` before it reads any
-      inline, a code span included, and reads `\|` back as `|` in all of
-      those places. A `|` already written escaped is not escaped twice.
+      `\|` in text, a code span's content, or a title. In a link destination
+      it is `%7C` under CARVE-P11-069. GFM splits the row on unescaped pipes
+      before reading inlines; a pipe already escaped is not escaped twice.
 
         cell text "a|b"            ->  | a\|b |
         cell code "a|b"            ->  | `a\|b` |
