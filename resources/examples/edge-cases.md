@@ -65018,3 +65018,31 @@ An all-header row after body data stays in `tbody` without a `thead`, and its al
 ```
 
 :::
+
+## An empty link destination takes spaces
+
+::: compare
+
+```carve
+[t](  )
+```
+
+```html
+<p><a href="">t</a></p>
+```
+
+:::
+
+## A tab cannot pad an empty link destination
+
+::: compare
+
+```carve
+[t](	)
+```
+
+```html
+<p>[t](	)</p>
+```
+
+:::
