@@ -65021,7 +65021,7 @@ An all-header row after body data stays in `tbody` without a `thead`, and its al
 
 ## A titled admonition skips an authored heading id
 
-::: compare
+:::: compare
 
 ```carve
 {#adm-1}
@@ -65042,4 +65042,4 @@ body
 </section>
 ```
 
-:::
+::::
