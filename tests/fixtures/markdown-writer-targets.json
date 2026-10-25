@@ -9,7 +9,7 @@
     "name": "fragment-link-destination-is-encoded",
     "rule": "CARVE-P11-049",
     "carve": "[y](#a(b)) and [w](#)\n",
-    "markdown": "[y](#a%28b%29) and [w](#)\n"
+    "markdown": "[y](#a\\(b\\)) and [w](#)\n"
   },
   {
     "name": "destination-brackets-are-literal",
