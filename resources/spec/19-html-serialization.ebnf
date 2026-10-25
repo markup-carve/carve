@@ -284,7 +284,7 @@
       bibliographic `[@key]` citation, which is the Citations extension's.
 
    11. A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES -- NORMATIVE [CARVE-P10-009].
-      PART 2 admits seven task states and the rendered checkbox has two
+      PART 2 admits nine task marker spellings and the rendered checkbox has two
       positions. So that the authored state reaches the output, the item
       carries `data-task-state` holding the authored character:
 
@@ -294,8 +294,9 @@
       A DONE ITEM NAMES ITS STATE TOO. `[x]` and `[X]` are one state, so both
       carry `data-task-state="x"`, always the lowercase `x`, and one selector
       (`li[data-task-state="x"]`) reaches a done item's text without `:has()`.
-      AN OPEN ITEM STAYS BARE: `[ ]` carries no attribute. The AST does not
-      change: `checked` records the done state and `taskState` stays absent
+      AN OPEN SPACE ITEM STAYS BARE: `[ ]` carries no attribute. `[_]` is the
+      same open state but retains `data-task-state="_"` to preserve spelling.
+      The AST does not change: `checked` records the done state and `taskState` stays absent
       for `[ ]`, `[x]` and `[X]` (PART 12), so the renderer writes `x` from
       `checked`.
 

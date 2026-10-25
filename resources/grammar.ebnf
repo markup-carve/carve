@@ -1296,13 +1296,15 @@ first_block_content = continuation_marker, block ;
 
 (* Task lists are unordered lists with special markers *)
 task_marker = '[', task_state, ']', space ;
-(* `x`/`X` render a CHECKED checkbox; every other state (` `, `-`, `_`,
-   `>`, `?`) renders an UNCHECKED checkbox. Matches djot-php. *)
-task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
-(* THE STATE IS RECORDED, NOT ONLY THE BOX. `[-]`, `[_]`, `[>]` and `[?]`
+(* `x`/`X` render a CHECKED checkbox; every other state (` `, `_`,
+   `-`, `/`, `!`, `>`, `?`) renders an UNCHECKED checkbox. `_` is an
+   alternative spelling for the open state ` `. *)
+task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
+(* THE STATE IS RECORDED, NOT ONLY THE BOX. `[-]`, `[/]`, `[!]`, `[>]` and `[?]`
    are distinguishable states an author chose between, so PART 12 records the
    character in `list_item.taskState` and CARVE-P11-041 writes it back.
-   `checked` drives the rendering above; the state is the author's spelling,
+   `[_]` is an open-state alias whose spelling is retained. `checked` drives
+   the rendering above; the state is the author's spelling,
    as `bulletChar` is for `-` vs `*`.
 
    TASK STATE IS NOT A SAME-LIST AXIS. PART 9 §11's criteria are unchanged: a `[ ]`
@@ -8331,7 +8333,7 @@ EOF = (* end of file *) ;
       bibliographic `[@key]` citation, which is the Citations extension's.
 
    11. A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES -- NORMATIVE [CARVE-P10-009].
-      PART 2 admits seven task states and the rendered checkbox has two
+      PART 2 admits nine task marker spellings and the rendered checkbox has two
       positions. So that the authored state reaches the output, the item
       carries `data-task-state` holding the authored character:
 
@@ -8341,8 +8343,9 @@ EOF = (* end of file *) ;
       A DONE ITEM NAMES ITS STATE TOO. `[x]` and `[X]` are one state, so both
       carry `data-task-state="x"`, always the lowercase `x`, and one selector
       (`li[data-task-state="x"]`) reaches a done item's text without `:has()`.
-      AN OPEN ITEM STAYS BARE: `[ ]` carries no attribute. The AST does not
-      change: `checked` records the done state and `taskState` stays absent
+      AN OPEN SPACE ITEM STAYS BARE: `[ ]` carries no attribute. `[_]` is the
+      same open state but retains `data-task-state="_"` to preserve spelling.
+      The AST does not change: `checked` records the done state and `taskState` stays absent
       for `[ ]`, `[x]` and `[X]` (PART 12), so the renderer writes `x` from
       `checked`.
 
@@ -9769,7 +9772,7 @@ EOF = (* end of file *) ;
       next time a cell-level marker is added.
 
    6g. A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE -- NORMATIVE [CARVE-P11-041].
-      PART 2 admits seven task states while rendering collapses
+      PART 2 admits nine task marker spellings while rendering collapses
       them to two. The AST records the authored character (PART 12,
       `list_item.taskState`) and the writer emits it.
 
@@ -9781,13 +9784,15 @@ EOF = (* end of file *) ;
       by hand or by a converter carries.
 
       `X` IS A CASE, NOT A STATE. `[X]` is written `[x]`.
-      The field admits six characters rather than seven for that reason: the
+      The field admits eight characters rather than nine for that reason: the
       two spell one state, nothing downstream can tell them apart, and §1 is
       satisfied because the AST they parse to is the same one.
 
-      THE RENDERING IS UNCHANGED. Every state but `x`/`X` still renders an
-      unchecked box (PART 2 `task_state`), so no HTML moves with this clause.
-      What moves is only what survives a format cycle.
+      `[_]` SPELLS THE OPEN STATE. A writer retains `_` when it appears in
+      `taskState`; absent `taskState` still writes `[ ]` for an open item.
+
+      Every state but `x`/`X` renders an unchecked box (PART 2 `task_state`).
+      The authored character also survives a format cycle.
 
    6h. A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE -- NORMATIVE
       [CARVE-P11-066]. A header row has two spellings, `|= cell |` and a plain
