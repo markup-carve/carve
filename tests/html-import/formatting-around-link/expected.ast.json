@@ -393,5 +393,11 @@
         }
       ]
     }
+  ],
+  "astVersion": "2.0",
+  "stages": [
+    "blockImagePromotion",
+    "referenceResolution",
+    "tableAlignment"
   ]
 }
