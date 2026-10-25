@@ -177,11 +177,57 @@ jobs:
             exit 1
           fi
 
+  pre-tag:
+    name: Pre-tag drift, declarations, and fleet pins
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
+      - id: pins
+        run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        with:
+          repository: markup-carve/carve-js
+          ref: ${{ steps.pins.outputs.js }}
+          path: engines/carve-js
+          fetch-depth: 0
+      - uses: actions/checkout@v7
+        with:
+          repository: markup-carve/carve-php
+          ref: ${{ steps.pins.outputs.php }}
+          path: engines/carve-php
+          fetch-depth: 0
+      - uses: actions/checkout@v7
+        with:
+          repository: markup-carve/carve-rs
+          ref: ${{ steps.pins.outputs.rs }}
+          path: engines/carve-rs
+          fetch-depth: 0
+      - name: Check the dispatched commit before tagging
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
+          CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
+          CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
+        run: |
+          [ "$(git rev-parse HEAD)" = "$GITHUB_SHA" ] || {
+            echo "::error::main moved after dispatch; rerun the release workflow."
+            exit 1
+          }
+          echo '/engines/' >> .git/info/exclude
+          bash scripts/pre-tag-check.sh "${{ inputs.version }}"
+
   tag:
     name: Create the tag
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [guard, release-notes]
+    needs: [guard, release-notes, pre-tag]
     # THE APPROVAL GATE, and the ONLY job that declares an environment. `needs:`
     # makes this unreachable until both gate jobs pass, and the environment holds
     # it until a required reviewer approves, so whoever approves is looking at a
@@ -240,25 +286,8 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v7
       - name: Un-draft the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          VER="${{ inputs.version }}"
-          id="$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
-            --jq "[.[] | select(.tag_name == \"${VER}\" and .draft)] | first | .id // empty")"
-          if [ -z "$id" ]; then
-            echo "No draft release for ${VER}; nothing to publish."
-            exit 0
-          fi
-          # `tag_name` goes with every PATCH of a release. Omit it on a DRAFT and
-          # GitHub replaces the tag with a generated `untagged-*` placeholder,
-          # because a draft's tag is a string on the object rather than a git ref.
-          # `-F` (not `-f`) for draft, so it is sent as a boolean: the string
-          # "false" is truthy and publishes either way, which is how a release
-          # here went out by accident.
-          gh api "repos/$GITHUB_REPOSITORY/releases/$id" -X PATCH \
-            -f tag_name="${VER}" -F draft=false --jq '"published \(.tag_name)"'
-          # Read it back: exit status does not tell you whether the tag survived.
-          gh api "repos/$GITHUB_REPOSITORY/releases/$id" \
-            --jq '"draft=\(.draft) tag=\(.tag_name)"'
+        run: bash scripts/publish-release-notes.sh "${{ inputs.version }}" "$GITHUB_SHA"

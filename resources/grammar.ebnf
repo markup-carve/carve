@@ -720,7 +720,7 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    canonical) and it is a PADDING SLOT, not a marker separator (PART 7). Both
    roles take `space`: the slot sits after the `---`, and A TAB IS SYNTAX ONLY
    IN THE LEADING RUN (PART 7). So `---<TAB>yaml` is not a typed opener; it is
-   a thematic break followed by ordinary lines. Reading it as frontmatter
+   paragraph text followed by ordinary lines. Reading it as frontmatter
    diverges from this production.
    POSITION DECIDES WHICH CLAUSE GOVERNS: the slot BEFORE the format token
    differs from trailing whitespace with no token. PART 2 drops that trailing
@@ -1630,7 +1630,7 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
 (* THE MARKER RUN COMES FIRST, IN ONE ORDER, IN BOTH PRODUCTIONS. The kind
    marker `=` and then the alignment marker are glued to the opening `|` (no
    preceding whitespace); the attribute block attaches after them. A
-   whitespace-delimited lone '^'/'<' is span_cell.
+   cell containing only '^' or '<', with any space padding or none, is span_cell.
 
    AND IT ENDS AT A SPACE. `cell_padding` is the run's terminator, so a cell
    carrying any part of the run -- kind marker, alignment run, attribute
@@ -1655,8 +1655,8 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    A computed rowspan/colspan/alignment is authoritative, so an author copy of
    those keys is dropped.
 
-   `|{#x}=R|` is a DATA cell whose content begins with `=`, not an attributed
-   header cell. Binding attributes after the markers removes that ambiguity. *)
+   `|{#x}=R|` is a data cell whose content is `{#x}=R`; no marker run ends
+   without a space (T11). `|{#x} =R |` has id `x` and content `=R`. *)
 cell_attributes = attributes ;
 span_cell = rowspan_marker | colspan_marker ;
 
@@ -1856,13 +1856,10 @@ admonition = admonition_open, newline,
    ranges from parser structure; proximity alone never licenses resizing a
    nested fence.
 
-   A CLOSER IS REQUIRED when a code fence would consume the host's closer.
-   A ``` or ~~~ opener with no closer ahead opens NO span there: the
-   INNERMOST container's own closer stays structural and ends it, and the
-   lines after that closer are parsed normally. Any other colon line before it, of any width, is fence
-   content: it neither closes an ancestor nor opens a child. This is the test
-   PART 9 §10 I4 applies one level up, and the one the `%%%` rule above
-   states ("an opener with no exact closer ahead opens nothing"). In
+   A ``` or ~~~ opener with no code closer ahead opens a code block that ends
+   at the innermost container's exact-length closer. That closer stays
+   structural. Every other colon line before it is code content, and lines
+   after it parse normally. In
 
        ::: note
        ```
@@ -3837,8 +3834,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
       combinable `{{ path #section @key:value }}` (`include_directive`). `path` is bare
       (stops at space / `#` / `@` / `}`) or double-quoted for spaces, and
-      is resolved RELATIVE TO THE INCLUDING FILE. Options split into two
-      disjoint kinds. SELECTION options choose WHICH content is pulled in:
+      is resolved RELATIVE TO THE INCLUDING FILE. Directive parameters have
+      three kinds: SELECTION, TRANSFORM and MODE. SELECTION chooses content:
       `#section` (semantic -- a heading's section or one block, I1a) and
       `@lines:N-M` (physical -- a 1-based inclusive line range), and
       `@region:name` (physical -- a named source region, I1b). A line range
@@ -5548,7 +5545,7 @@ EOF = (* end of file *) ;
       a malformed one are PART 2's (STRICT, under `admonition_open`). To
       attribute a div or admonition, use a PRECEDING block-attribute line,
       which floats onto the block (§15): `{.x #id}` then `::: note` yields
-      `<aside class="admonition note x" id="id">`.
+      `<aside class="admonition note x" id="id" aria-label="Note">`.
 
       FENCE LENGTH, NESTING, DIRECTION AND AN UNCLOSED OPENER are stated once,
       in PART 2 at `colon_fence_close` and under `admonition`, for admonitions
@@ -5743,9 +5740,8 @@ EOF = (* end of file *) ;
       PART 2 and the renderer; matches djot, see `jgm/djot` official
       `headings.test`). Every heading emits a `<section id="{id}">`
       wrapper around itself and the following content up to the next
-      same-or-shallower heading. The slug-derivation rule (ASCII
-      transliteration etc., see syntax.md §4.1) computes
-      the id; the id lives on the `<section>` element, NOT on the
+      same-or-shallower heading. CARVE-P2-004 computes the heading id; this
+      clause places it on the `<section>` element, NOT on the
       `<h*>` element.
       Algorithm (one stateful pass over top-level blocks):
         let openSections : Stack of (level, sectionElement) = []
@@ -5881,7 +5877,7 @@ EOF = (* end of file *) ;
           only for the id/class forms (`{.123}`, `{#1}`), not `{2=v}`.
           A non-identifier character (`{.a!b}`) remains invalid.
           ONE invalid name makes the WHOLE block not an attribute block, even
-          when mixed with valid attributes (`{.ok .1}`), so the run stays
+          when mixed with valid attributes (`{.ok .a!b}`), so the run stays
           literal. No other leading character is newly accepted.
           A digit/`-`/`_` AFTER the first character is valid (`{.a1}`).
       BOOLEAN ATTRIBUTES -- NORMATIVE [CARVE-P9-022]. A bare identifier
@@ -6331,8 +6327,6 @@ EOF = (* end of file *) ;
            line after the quote still ends it. An attached block that is
            ITSELF a quote NESTS, like every other kind: `> a` / `+` / `> q`
            is a quote holding a paragraph and an inner quote. The marker
-           attaching nothing there, and the line continuing the outer quote
-           instead, was the kind test named in L3.
          - FOOTNOTE DEFINITION body: `+` at the definition's marker column
            attaches the following
            block at that column to the note, the alternative to indenting it to
@@ -9566,21 +9560,15 @@ EOF = (* end of file *) ;
       CHARACTER, NOT THE RUN LENGTH: `***` and `*****` are ONE spelling here
       and both come back as `***`. The break's run length is not recorded.
 
-      EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A `---` line at byte 0 of the
-      EMITTED document is the frontmatter opener, not a break. Spelling this
-      clause's form there can manufacture a block the document does not have,
-      and everything down to whatever closes it is swallowed with it: a
-      document of `***`, a blank line and `---` renders two breaks, and written
-      by the literal reading of this clause it renders NOTHING -- with any
-      paragraph standing between them lost too. Where that would happen the
-      writer spells the break `***` instead, and that deviation is CARVE-P11-002's --
-      §1's invariant outranks a per-construct rule. It is CONFORMANT and not a
-      divergence from this section.
+      EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A break with marker `-`, or
+      no marker, would be written `---`. At byte 0 of an emitted document,
+      with a later `---` line that would close frontmatter, the writer spells
+      that first break `***` instead (CARVE-P11-002). Two marker-less breaks
+      are an example: writing both as `---` would create frontmatter.
 
       THE CONDITION IS THE WHOLE EMITTED DOCUMENT, NOT ITS FIRST LINE. An
       opener needs a closer, so three hyphens at byte 0 open nothing unless a
-      later line closes them -- `***` alone, and `***` above a paragraph, are
-      both written `---` with no exception at all. What an implementation owes
+      later line closes them. A lone `---` is written `---`. What an implementation owes
       is CARVE-P11-002's test: read the emitted bytes with its own parser.
 
       WHICH break moves is not pinned, because more than one departure
@@ -10781,21 +10769,12 @@ EOF = (* end of file *) ;
       This clause decides only where the named text goes on the targets below.
       Unnamed construct/target pairs remain open, not allowed by omission.
 
-      T1 A FENCE'S TITLE AND LABEL RENDER THE WAY A DIV'S ALREADY DO. A fenced
-         div surfaces both tokens on every target, which is the
-         caption rule `docs/graceful-degradation.md` makes normative for an
-         unconsumed label: `::: note "T" [L]` emits `**T**` then `**L**` in
-         Markdown, a standalone line each in plain text, and a bold
-         standalone line each on the terminal, the title always before the
-         label. A code fence carries the SAME two tokens in the SAME two
-         slots of its info string, so it renders them the same way, above the
-         block:
-
-             ```php "src/Auth.php" [Composer]   ->  src/Auth.php
-             composer require x                     (blank)
-             ```                                    Composer
-                                                    (blank)
-                                                    composer require x
+      T1 A FENCE'S TITLE AND LABEL SURVIVE EACH TARGET. Plain text places
+         each token on a standalone line above the code block, title before
+         label. The terminal makes those lines bold. Markdown keeps the title
+         and label after the language in the fence info string
+         (CARVE-P11-067). A fenced div places its title and unconsumed label
+         above the block on all three targets.
 
       T2 A TABLE CAPTION SURVIVES THE MARKDOWN TARGET as body text AFTER the
          table, separated by one blank line. The position is what this target
@@ -10916,8 +10895,8 @@ EOF = (* end of file *) ;
       of PART 2 `colon_fence_close` unchanged), and the group caption as a `^ ` line after
       the closer, its `#` placeholder written back as authored.
 
-      THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. §5's
-      unconditional set escapes a leading caret in TEXT; the group caption is
+      THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. Under §2 a leading
+      caret in paragraph text is escaped when bare it would start a caption. The group caption is
       NOT text in that position -- it is the caption the closer hosts -- so
       the writer MUST NOT emit it as `\^ `, which would re-parse as a
       paragraph and break §1's `parse(fmt(x)) == parse(x)`. The other
@@ -12932,8 +12911,8 @@ EOF = (* end of file *) ;
       reports the old glued form and `fmt --migrate` inserts the space.
 
       `table_cell` carries optional `valign` beside `align`, with the same
-      inheritance rule. A whitespace-delimited cell containing only `^` or `<`
-      remains a rowspan/colspan marker in every space-padding form. The lone
+      inheritance rule. A cell containing only `^` or `<`, with any space
+      padding or none, remains a rowspan/colspan marker. The lone
       glyph takes precedence over an empty alignment run.
 
    21. U+0000 IS REPLACED ON INGEST -- NORMATIVE [CARVE-P12-041]. A reader
