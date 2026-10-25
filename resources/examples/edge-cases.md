@@ -65018,17 +65018,3 @@ An all-header row after body data stays in `tbody` without a `thead`, and its al
 ```
 
 :::
-
-## A literal backslash before a letter stays bare
-
-::: compare
-
-```carve
-C:\path\to
-```
-
-```html
-<p>C:\path\to</p>
-```
-
-:::

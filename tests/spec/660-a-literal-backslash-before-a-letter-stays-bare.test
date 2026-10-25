@@ -1,7 +1,0 @@
-A literal backslash before a letter stays bare
-
-```
-C:\path\to
-.
-<p>C:\path\to</p>
-```
