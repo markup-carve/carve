@@ -425,8 +425,6 @@ const INVENTORY = [
   { base: '620-generated-container-documents-23', crv: [], html: [] },
   { base: '635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-3', crv: ['trailing-WS'], html: [] }, // the refused `+  ` keeps its trailing spaces
   { base: '635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-4', crv: ['trailing-WS'], html: [] }, // the refused `+  ` keeps its trailing spaces
-  { base: '666-a-line-at-the-marker-column-leaves-a-closed-nested-body', crv: ['trailing-WS'], html: [] },
-  { base: '666-a-line-at-the-marker-column-leaves-a-closed-nested-body-2', crv: ['trailing-WS'], html: [] },
 ]
 
 function scan(text) {

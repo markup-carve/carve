@@ -6184,16 +6184,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // An authored block the block reader has already ended holds nothing
       // open for the line below (a description ending on a code block).
       if (!deepestIsDescendant && authoredContainer && authoredBlockLimit !== null && i >= authoredBlockLimit) return false
-      if (!deepestIsDescendant) {
-        // The authored extent can include a lazy-looking line after a closed
-        // nested block. At a below-column line, ask the body's last block
-        // whether it still has a paragraph to fold into.
-        const tail = indentCols(itemLines.at(-1) ?? '').rest
-        if (authoredContainer && ind(i)?.col < contentCol &&
-            (PURE_FENCE.test(tail) || !opensParagraph(tail, true)) &&
-            bodyLeavesNoParagraphAt(itemLines, itemLines.length - 1)) return false
-        return true
-      }
+      if (!deepestIsDescendant) return true
       const d = descendantQ1At(descendantQ1.col)
       return d === null ? true : d.open
     }
