@@ -24,6 +24,10 @@ import layoutTransitions from '../../resources/spec/layout-transitions.json' wit
 
 export { TIER1 }
 
+export function commentLineContent(line) {
+  return line.replace(/^[ \t]*%%/, '').replace(/^ /, '').replace(/[ \t]+$/, '')
+}
+
 export class Refuse extends Error {
   constructor(reason) {
     super(reason)
