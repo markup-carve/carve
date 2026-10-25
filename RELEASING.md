@@ -136,10 +136,9 @@ CI green:
    (cd ../carve-rs  && git pull --ff-only && cargo build --release)
    (cd ../carve-php && git pull --ff-only && composer install)
    ```
-4. **Run the pre-tag check** (fails on a stale version field, an un-cut
-   changelog, a section that leaves merges uncited, a dirty tree, a missing tag,
-   an uninitialized spec submodule, a drift entry the pinned build now
-   reproduces, or three engines that do not pin the same spec commit):
+4. **Run the pre-tag check locally** before submitting the cut PR. It checks
+   the version, changelog, installed reference build, engine drift, declaration
+   audit, and fleet spec pins. Run it again on `main` after the PR merges:
 
    ```sh
    bash scripts/pre-tag-check.sh X.Y.Z
@@ -147,9 +146,16 @@ CI green:
    bash ../carve/scripts/pre-tag-check.sh X.Y.Z
    ```
 
-5. Land steps 1-3 via a PR to `main` and merge it.
-6. **Publish the prepared draft GitHub Release.** Publishing creates the tag at
-   the current `main`; the tag then drives the registry publish.
+5. Land steps 1-3 via a PR to `main` and merge it. Prepare a draft GitHub
+   Release with notes, the intended tag, and a target that resolves to that
+   commit.
+6. **Dispatch `.github/workflows/release.yml` from `main` with the version.**
+   Its manifest, changelog, draft, and pre-tag jobs must pass before the release
+   environment asks for approval. The pre-tag job installs the pinned reference
+   build, checks out the three engines, and runs the same script, including the
+   declaration audit and fleet spec-pin check. Approve the green run. It creates
+   the tag and then publishes the prepared draft. Do not publish the draft from
+   the GitHub release page, since that bypasses the pre-tag gate.
 
 ## Editing a draft release: `-f` sends strings, and a string is not `false`
 
@@ -209,11 +215,10 @@ names every merge that moved shipped source and is cited nowhere:
   ahead of the publish step.
 - **carve-php**: a tag-push Release Gate. The Packagist webhook cannot be held
   back, so it reports rather than blocks.
-- **carve**: nothing publishes on a tag here, so the gate runs in
-  `pre-tag-check.sh`, which is what stands between a draft release and the
-  publish button. `.github/workflows/release-gate.yml` runs it again on the tag
-  itself: that one cannot hold a release back, but it goes red while the tag is
-  still young enough to move. Run it yourself any time with
+- **carve**: the dispatched release workflow runs `pre-tag-check.sh` before
+  approval and tag creation. `.github/workflows/release-gate.yml` runs the
+  changelog completeness check again on the tag; that later check reports a
+  failure but cannot hold the release back. Run it yourself any time with
   `npm run changelog:check`, and `.github/workflows/changelog-drift.yml` runs
   the same bare invocation daily against `main`, filing one tracking issue while
   the pending section is behind. That run stays green on a finding, since the
