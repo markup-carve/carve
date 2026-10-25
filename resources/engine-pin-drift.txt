@@ -24,4 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-661-a-tab-cannot-pad-an-empty-link-destination  The pinned JS parser still accepts a tab as empty destination padding (carve#3621).
