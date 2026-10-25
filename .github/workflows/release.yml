@@ -189,19 +189,24 @@ jobs:
       - uses: ./.github/actions/npm-ci
         with:
           node-version: 24
+      - id: pins
+        run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-js
+          ref: ${{ steps.pins.outputs.js }}
           path: engines/carve-js
           fetch-depth: 0
       - uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-php
+          ref: ${{ steps.pins.outputs.php }}
           path: engines/carve-php
           fetch-depth: 0
       - uses: actions/checkout@v7
         with:
           repository: markup-carve/carve-rs
+          ref: ${{ steps.pins.outputs.rs }}
           path: engines/carve-rs
           fetch-depth: 0
       - name: Check the dispatched commit before tagging
