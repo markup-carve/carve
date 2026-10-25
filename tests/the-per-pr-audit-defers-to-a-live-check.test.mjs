@@ -159,6 +159,7 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       ['tests/a-default-marker-is-not-recorded.test.mjs', 'owed', 'declared'],
       ['tests/ast-schema.test.mjs', 'owed', 'declared'],
       ['tests/citation-definition-is-a-node.test.mjs', 'owed', 'declared'],
+      ['tests/include-conformance.proof.mjs', 'owed', 'declared'],
       ['tests/nbsp-sentinel-fields.test.mjs', 'owed', 'declared'],
       ['tests/schema-fields-are-produced.test.mjs', 'owed', 'declared'],
     ].sort(),
