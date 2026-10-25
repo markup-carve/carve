@@ -27,8 +27,8 @@
       "canonical": "[]()"
     },
     {
-      "id": "empty-link-ascii-padding",
-      "source": "[t]( \t)",
+      "id": "empty-link-space-padding",
+      "source": "[t](  )",
       "kind": "link",
       "href": "",
       "children": [
@@ -36,6 +36,11 @@
       ],
       "html": "<p><a href=\"\">t</a></p>",
       "canonical": "[t]()"
+    },
+    {
+      "id": "tab-is-not-empty-destination-padding",
+      "source": "[t](\t)",
+      "html": "<p>[t](\t)</p>"
     },
     {
       "id": "empty-link-title",
