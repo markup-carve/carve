@@ -27,7 +27,7 @@
         "type": "object",
         "required": ["code", "target", "nodeType", "message"],
         "properties": {
-          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "list-style-dropped", "list-delimiter-changed", "table-span-flattened", "table-header-row-demoted", "table-header-row-hoisted", "table-header-cell-demoted", "markdown-container-flattened", "markdown-caption-flattened", "markdown-attributes-dropped", "raw-html-escaped"] },
+          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "list-style-dropped", "list-delimiter-changed", "table-span-flattened", "table-header-row-demoted", "table-header-row-hoisted", "table-header-cell-demoted", "markdown-container-flattened", "markdown-caption-flattened", "fence-title-dropped", "markdown-attributes-dropped", "raw-html-escaped"] },
           "attribute": { "type": "string" },
           "style": { "enum": ["lower-alpha", "upper-alpha", "lower-roman", "upper-roman"] },
           "delim": { "enum": [".", ")"] },
@@ -57,6 +57,16 @@
               "code": { "const": "markdown-caption-flattened" },
               "target": { "const": "markdown" },
               "nodeType": { "const": "block" },
+              "format": false,
+              "attribute": false
+            }
+          },
+          {
+            "properties": {
+              "code": { "const": "fence-title-dropped" },
+              "target": { "const": "markdown" },
+              "nodeType": { "const": "block" },
+              "message": { "const": "Dropped a code fence title without a language in Markdown" },
               "format": false,
               "attribute": false
             }
