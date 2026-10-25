@@ -479,7 +479,7 @@ quote_block_open = colon_fence:open, space, ">" ;
    a comment line just like one in the first column. Like every block, it
    interrupts an open paragraph (the lines before and after become separate
    paragraphs) and renders nothing. *)
-comment_line = [whitespace], "%%", {character}, newline ;
+comment_line = [whitespace], "%%", [space], {character}, newline ;
 
 (* A `%%%` fence line is a DELIMITER plus an INSIGNIFICANT TAIL: only the
    leading run of `%` is structural, so `%%% TODO` opens and `%%% end` closes.

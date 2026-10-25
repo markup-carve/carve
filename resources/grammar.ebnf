@@ -2038,7 +2038,7 @@ quote_block_open = colon_fence:open, space, ">" ;
    a comment line just like one in the first column. Like every block, it
    interrupts an open paragraph (the lines before and after become separate
    paragraphs) and renders nothing. *)
-comment_line = [whitespace], "%%", {character}, newline ;
+comment_line = [whitespace], "%%", [space], {character}, newline ;
 
 (* A `%%%` fence line is a DELIMITER plus an INSIGNIFICANT TAIL: only the
    leading run of `%` is structural, so `%%% TODO` opens and `%%% end` closes.
@@ -2310,7 +2310,7 @@ raw_content = (* any content until closing fence *) ;
    run sits before a SOFT BREAK; and so do a heading, a list item, a block
    quote line, a definition term or description, a footnote body line, a table
    caption, a line-block line and a `%%` COMMENT LINE's text -- where exactly
-   ONE space or tab after the marker is the separator and is consumed, so
+   ONE space after the marker is the separator and is consumed, so
    `%%<SP><SP>x<SP>` has the text `<SP>x`.
 
    THE RUN IS `whitespace` -- `' ' | '\t'` -- the same two-character terminal

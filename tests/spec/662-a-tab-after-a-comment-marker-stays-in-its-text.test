@@ -1,0 +1,10 @@
+A tab after a comment marker stays in its text
+
+```
+a
+%%	x
+b
+.
+<p>a</p>
+<p>b</p>
+```
