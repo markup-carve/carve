@@ -749,7 +749,7 @@
       "source": "{~a {*x ~>y~}",
       "children": [
         {
-          "type": "substitution",
+          "type": "critic_substitution",
           "old": [
             {
               "type": "text",
@@ -771,7 +771,7 @@
       "source": "{~old {~x~} ~>new~}",
       "children": [
         {
-          "type": "substitution",
+          "type": "critic_substitution",
           "old": [
             {
               "type": "text",
@@ -813,7 +813,7 @@
               "value": "a "
             },
             {
-              "type": "substitution",
+              "type": "critic_substitution",
               "old": [
                 {
                   "type": "text",
@@ -1424,7 +1424,7 @@
             {
               "type": "raw_inline",
               "format": "html",
-              "content": "{*x*}"
+              "value": "{*x*}"
             },
             {
               "type": "text",
@@ -1448,7 +1448,7 @@
             },
             {
               "type": "literal_inline",
-              "content": "{*x*}"
+              "value": "{*x*}"
             },
             {
               "type": "text",
@@ -1473,7 +1473,7 @@
             {
               "type": "math",
               "display": false,
-              "content": "{*x*}"
+              "value": "{*x*}"
             },
             {
               "type": "text",

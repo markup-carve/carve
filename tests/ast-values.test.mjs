@@ -392,8 +392,10 @@ test('shared raw AST vectors keep literal fallback and matching-output adaptatio
   const { rawPassthrough } = await import('../scripts/spec/html.mjs')
   const vectors = JSON.parse(readFileSync(resolve(root, 'tests/fixtures/raw-payload-termination.json'), 'utf8'))
   for (const vector of vectors) {
-    assert.equal(vector.raw.content, vector.codeContent, vector.id)
-    assert.equal(rawPassthrough(vector.raw.content), vector.rawPassthrough, vector.id)
-    assert.deepEqual(checkRawContent({ type: 'document', children: [vector.raw] }, [vector.codeContent]), [], vector.id)
+    assert.equal(vector.raw.value, vector.codeContent, vector.id)
+    assert.equal(rawPassthrough(vector.raw.value), vector.rawPassthrough, vector.id)
+    const pinnedRaw = { ...vector.raw, content: vector.raw.value }
+    delete pinnedRaw.value
+    assert.deepEqual(checkRawContent({ type: 'document', children: [pinnedRaw] }, [vector.codeContent]), [], vector.id)
   }
 })

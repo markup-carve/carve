@@ -28,10 +28,10 @@
       readers need not check
       ([carve#2207](https://github.com/markup-carve/carve/issues/2207)).
 
-      A CAPTION IS NOT A NODE, and the profile vocabulary no longer says it is.
-      `figure`, `figure_group` and `table` each carry their caption as an
-      inline array, so there is nothing a profile could deny separately from
-      its host. Listing it gave implementations a name that named nothing.
+      A `caption` IS A BLOCK NODE. `figure`, `figure_group` and `table`
+      carry an optional `caption` node with block `children` and optional
+      inline `short` content. Its common node fields are permitted. An absent
+      caption means the host has no visible caption.
 
    31. A CITATION ITEM CARRIES ITS OWN MODE -- NORMATIVE [CARVE-P12-053].
       A `citation` MAY carry `mode`, its citation mode. Absent means
@@ -60,15 +60,15 @@
       [carve#2251](https://github.com/markup-carve/carve/issues/2251)).
    32. RUBY ANNOTATIONS SURVIVE INTERCHANGE -- NORMATIVE [CARVE-P12-054]. A
       `ruby` inline node carries `pairs`, a non-empty ordered array. Each pair
-      is a closed object with exactly `base` and `annotation`: `base` is a
+      is a typed `ruby_pair` node with `base` and `annotation`: `base` is a
       non-empty array of inline nodes and `annotation` is an array of inline
-      nodes which MAY be empty. The ruby node MAY also carry `attrs` and `pos`
-      under the ordinary inline-node rules. It has NO parallel `children`
+      nodes which MAY be empty. The ruby node and each pair MAY carry common
+      node fields, including `attrs` and `pos`. The ruby node has NO parallel
+      `children`
       field; the two arrays are what preserve the association.
 
-      PAIRS ARE STRUCTURE, NOT NODES. They carry no `type`, `attrs` or `pos`.
-      Their order is reading order, and every traversal walks `base` before
-      `annotation` in pair order. Sanitization, URL policy, profile enforcement,
+      Pairs have `type: "ruby_pair"`; their order is reading order, and every
+      traversal walks `base` before `annotation` in pair order. Sanitization, URL policy, profile enforcement,
       resolution, cloning, equality, patching and rendering MUST reach both
       arrays. One `ruby` counts as one inline nesting level. AST ingest still
       measures depth in each implementation's own unit under CARVE-P12-028(c).
@@ -95,32 +95,21 @@
       attributes. A later source spelling MUST map to this node rather than
       introduce a second representation.
 
-   33. A BLOCK EXTENSION DECLARES A CORE FALLBACK -- NORMATIVE
-      [CARVE-P12-055]. A `block_extension` carries a globally qualified
-      `name`, a REQUIRED `fallback` block, and MAY carry `version` and
-      `payload`. It is interchange-only (CARVE-P12-066).
+   33. EXTENSION NODES DECLARE A CORE FALLBACK -- NORMATIVE
+      [CARVE-P12-055]. `block_extension` and `inline_extension` use the same
+      shape: a globally qualified `name`, optional `version`, typed `props`,
+      walked `children`, optional named `slots`, a required typed `fallback`,
+      and a `payload` list of format and value alternatives. The fallback
+      matches the node's block or inline role and validates recursively as
+      core content. `org.example.diagram` is qualified; `diagram` is not.
 
-      IT IS THE TWIN `inline_extension` NEVER HAD: Carve-content payloads can
-      use a div or admonition; non-Carve payloads need this declared home (CARVE-P12-030).
-      THE FALLBACK IS REQUIRED, AND THAT IS THE WHOLE
-      DESIGN: it carries meaning for readers that do not implement the extension.
-      The fallback matrix row `block_extension[unknown name]` applies to them.
+      An unknown optional extension is rendered through its fallback and
+      reported as a loss. An unknown required extension is refused under
+      CARVE-P12-056. A reader MUST NOT execute active content in `payload`,
+      `props`, or `data` merely because it parsed the tree. Payloads and
+      fallbacks are bounded by CARVE-P12-073.
+      The fallback matrix row `block_extension[unknown name]` records target behavior.
 
-      THE PAYLOAD IS NOT CARVE CONTENT. `format` names how `value` is
-      encoded so a reader can tell whether it can parse it at all. No core
-      target renders it, CARVE-P12-028's ingest bound covers its nesting like any other,
-      and the security rules of CARVE-P9-054 cover it like any other content a
-      renderer did not produce.
-
-      A NAME IS QUALIFIED so two extensions cannot collide. `diagram` is not a
-      name; `org.example.diagram` is.
-
-      A READER THAT DOES NOT KNOW THE NAME RENDERS THE FALLBACK AND REPORTS
-      THE LOSS. It does not refuse the tree: an unknown extension is not an
-      unknown field, and the node states its own degradation. Where the envelope
-      marks the extension `required`, refusal happens at that boundary (CARVE-P12-056),
-      before reading the tree
-      ([carve#2200](https://github.com/markup-carve/carve/issues/2200)).
    34. A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE -- NORMATIVE
       [CARVE-P12-056]. At a STORAGE OR PROCESS boundary a Carve AST is carried
       inside an envelope validating against
@@ -140,7 +129,7 @@
       `major.minor` and it does not track the Carve version: the language is
       versioned for authors and this is versioned for readers of a tree. A
       MAJOR bump removes, renames or reinterprets a field or a meaning; a MINOR
-      bump adds a field or a node type. The current contract is 1.2. A leading
+      bump adds only the forms permitted below. The current contract is 2.0. A leading
       zero is refused so the 0.x reading of a major never applies here.
 
       WHAT 1.2 ADDS, all optional on read, nothing removed, renamed or
@@ -155,28 +144,63 @@
           the CARVE-P12-068 error: `block` is true exactly when `form` is
           `"block"`, and `delimited` is true exactly when `form` is `"braced"`.
 
-      A MINOR SAYS WHAT UPGRADING COSTS, NOT WHAT AN OLD READER TOLERATES. It
-      tells a reader's author that moving up means handling new fields and
-      nothing else, and it tells a producer that every reader of the same minor
-      or higher reads its trees. IT DOES NOT SAY A LOWER READER COPES, which
-      (b) below spells out.
+      WHAT 2.0 CHANGES, compared with 1.2:
+        - Bare trees require `astVersion: "2.0"`; `srcByteLength` becomes optional.
+          The root gains `extensions`, `stages`, `resources`, `metadata`, `data`, `attrs`,
+          `pos`, `segments`, `dir`, and `lang` (CARVE-P12-024).
+        - The `resolved`, `checked`, `comment.block`, and `comment.delimited`
+          fields are removed. Absent `href` or `src` on a reference use means
+          unresolved; a task item carries `task.mark` and `task.status`.
+          `comment.form` alone names its spelling (CARVE-P12-006, CARVE-P12-070).
+        - Primary node lists formerly named `items`, `rows`, `cells`, `blocks`,
+          `inline`, or `content` become `children`. Tables group rows under
+          `table_head`, `table_body`, and `table_foot`. Cell `children` are
+          always blocks, with `cell_paragraph` for inline source cells.
+        - Literal `content` and `critic_comment.text` become `value`;
+          `smart_punctuation.value` becomes `source`. `rubyPair` becomes
+          `ruby_pair`, and `table_column` becomes a typed node.
+        - `figure.target` becomes block `children`; visible captions become
+          `caption` nodes with block `children` and optional inline `short`.
+          Table and figure captions remain separate when nested.
+        - Reference uses and definitions use `key` and `namespace` in place
+          of `ref`, reference `label`, `abbr`, and heading `target`.
+          `heading_ref` becomes `xref`, with `form` and optional `href`.
+          Grouping `label` becomes `groupLabel`; math `label` becomes
+          `numberPrefix`; mention `user` becomes `target` with `kind` and `label`.
+        - `list.ordered`, `tight`, `start`, `olType`, `delim`, `bareMarker`,
+          and `bulletChar` become a discriminated `marker` and `spacing`.
+          `definition_list.loose` becomes `spacing`.
+        - `code_block.lang`, `header`, and `content` become `syntax`, inline
+          `title`, and `value`. Link and image `title` becomes `tooltip`;
+          image `alt` becomes optional and gains `decorative`. The critic
+          `substitution` node becomes `critic_substitution`.
+        - `rowGroups` is removed in favor of row-group nodes. Table columns
+          carry authored alignment separately from `resolvedAlign`.
+          `paragraph.blockImage` is interpreted with the root `stages` list.
+        - Every typed node may carry `attrs`, namespaced `data`, `pos`,
+          discontinuous `segments`, `metadata`, `dir`, and `lang`. Extensions
+          have one qualified `name`, walked `children`, named `slots`, and a
+          required typed `fallback`. The core tree stays closed.
+        - Source offsets and annotation anchors use UTF-8 bytes. Session node
+          identity and overlapping ranges remain separate sidecars.
+
+      A MINOR ADDS ONLY optional declared extensions, extension nodes with a
+      valid fallback, or namespaced `data`. A new core field or core node type
+      requires a major version. This restriction keeps the core schema closed.
 
       WHAT A READER DOES:
 
       (a) A HIGHER MAJOR IS REFUSED, with a typed error naming the version it
           got and the version it implements. Not a schema failure: the payload
           may be perfectly well-formed under a contract this build predates.
-      (b) A HIGHER MINOR IS REFUSED TOO, with the same typed error naming both
-          versions. A minor adds a FIELD, and THE SCHEMA STAYS CLOSED below --
-          `CARVE-P12-030` rejects any property the schema does not name -- so a
-          1.0 reader handed a 1.1 tree fails on the field itself, as a schema
-          error that names no version. Accepting the envelope and then refusing
-          its payload is the worse of the two failures, not the gentler one.
-          THE READER ACCEPTS ITS OWN VERSION OR LOWER. Weakening the ingest
-          instead is the answer CARVE-P12-030 already ruled cannot be right
-          ([carve#2199](https://github.com/markup-carve/carve/issues/2199)),
-          and this clause's own reason for existing is that the reader need not
-          be weakened to evolve.
+      (b) A HIGHER MINOR IS ACCEPTED when every addition is optional declared
+          extension data or an extension node with a valid core fallback.
+          A reader checks the version before applying the 2.0 schema's
+          `astVersion` constant; that constant identifies a 2.0 producer and
+          does not by itself refuse a conforming later minor.
+          The reader preserves `data` it cannot interpret and uses the
+          fallback of each unknown optional extension. An unknown core field,
+          core type, or invalid fallback is refused with a typed error.
       (c) AN EXTENSION MARKED REQUIRED AND NOT IMPLEMENTED IS REFUSED, named.
           Rendering the understood parts and reporting success is what
           CARVE-P12-068 forbids.
@@ -188,13 +212,11 @@
       implements - rather than echoing what it read. Re-emitting an ingested
       `astVersion` would republish a claim the producer cannot keep.
 
-      A BARE TREE MAY CARRY ITS VERSION ON THE ROOT. `carve --json` writes
+      A BARE TREE MUST CARRY ITS VERSION ON THE ROOT. `carve --json` writes
       `astVersion` on the root of the tree it prints, so a reader of bare trees
       can detect the contract version. A reader applies (a) and (b) to it and
-      accepts its absence: a bare tree without one is read against the
-      reader's own contract, and a closed schema then reports any mismatch as
-      an unnamed property rather than as a version. An in-memory handoff need
-      not carry it.
+      refuses absence under CARVE-P12-031. An in-memory handoff uses the same
+      versioned tree.
 
       THE SCHEMA STAYS CLOSED. `additionalProperties: false` holds on the
       envelope and on every node inside it. Versioning solves evolution without
@@ -281,7 +303,7 @@
 
    37. A CITATION IS ONLY EVER AN ITEM OF A GROUP -- NORMATIVE [CARVE-P12-059].
       The inline dispatch does NOT name `citation`. The type stays declared,
-      and `citation_group.items` references it directly, so nothing about a
+      and `citation_group.children` references it directly, so nothing about a
       group's payload moves.
 
       A CITATION IS NOT AN INDEPENDENT INLINE. PART 7 makes the bracket the
@@ -306,8 +328,12 @@
       producer MUST NOT derive either from the other.
 
       The sidecar validates against `resources/ast-node-identity-schema.json`.
-      Its `version` is 1, and each entry of `nodes` binds an `id` to a `path`.
+      Its `version` is 2, and each entry of `nodes` binds an `id` to a `path`.
       Both are unique within a sidecar.
+
+      An entry MAY also carry `editorKey` or `collaborationId`, opaque values
+      supplied by those hosts. Neither is `attrs.id`; a content hash may be
+      used as a cache key but MUST NOT stand in for session node identity.
 
         {"version":1,"session":"s-7f3","nodes":[{"id":"n4","path":"/children/3"}]}
 
@@ -327,7 +353,7 @@
       match ids across two sidecars whose `session` values differ.
 
       NO SPAN IS RESTATED. A node's offsets are `pos` on the node the path
-      addresses, in codepoints per PART 12 §4; a second copy could disagree.
+      addresses, in UTF-8 bytes per PART 12 §4; a second copy could disagree.
 
    39. A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN -- NORMATIVE
       [CARVE-P12-061]. A reader that meets a `table_cell` carrying `colspan` or
@@ -356,66 +382,49 @@
       marker to orphan, and a tree that carries markers keeps them.
 
    40. AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE
-      [CARVE-P12-062]. A producer MAY return annotation ranges beside an AST,
-      as a sidecar under CARVE-P12-067: the inline tree nests and a range need
-      not.
+      [CARVE-P12-062]. A producer MAY return overlapping ranges beside an
+      AST, under CARVE-P12-067. They do not become tree nodes. The sidecar
+      validates against `resources/ast-annotation-range-schema.json`, version
+      2. Its `ranges` carry `id`, `kind`, `start`, `end`, typed `payload` for
+      core kinds, and optional opaque `data` for qualified extension kinds.
 
-      The sidecar validates against
-      `resources/ast-annotation-range-schema.json`. Its `version` is 1, and each
-      entry of `ranges` carries an `id`, a `kind`, a `start` and an `end`, and
-      MAY carry `data`, the holder's payload, which core never reads. An
-      anchor is a `path` and an `offset` in codepoints per PART 12 §4 from the start of
-      that node's annotation text, defined below. An offset is a boundary from
-      zero through the annotation text's codepoint length, inclusive. Readers
-      MUST reject an out-of-range offset or a path that is not a node.
+      Each anchor has an RFC 6901 `path` to a node. An inline anchor has an
+      `offset` in UTF-8 bytes of that node's annotation-text projection. A
+      block-boundary anchor has `boundary` set to `before` or `after` instead.
+      It may sit before a paragraph or after a table row, so a tracked change
+      over paragraph marks need not invent inline text. A reader MUST refuse
+      Readers MUST reject an out-of-range offset or a path that is not a node.
+      In particular, refuse an invalid path, an offset beyond the projection, or a range whose
+      start follows its end in document order.
 
       ANNOTATION TEXT IS A DETERMINISTIC PROJECTION, not rendered output or a
-      source slice. A node contributes its first string field in this order:
-      `value`, `content`, `text`, `alt`; absent means the empty string. A
-      soft_break or hard_break contributes one U+000A instead, and a
-      non_breaking_space contributes one U+00A0. No other scalar field,
-      attribute, resolved label, URL or opaque extension payload contributes.
+      source slice. A node contributes its literal `value` when that value is
+      a string, or its image `alt` if no literal value exists. A soft or hard
+      break contributes U+000A; a nonbreaking space contributes U+00A0.
+      Other scalar fields, attributes, URLs, and opaque payloads contribute
+      nothing. Child nodes are traversed in the slot order of CARVE-P12-071,
+      with arrays in their order and no inserted separators. Offsets count
+      UTF-8 bytes in the resulting projection. Thus an emoji uses four bytes,
+      while a block-boundary anchor uses no text offset.
 
-      Append child-node projections in the following field order, independent
-      of JSON object member order:
+      Core `kind` values are `comment`, `revision`, `bookmark`, `index_range`,
+      and `mark`. A comment payload carries author, date, ordered replies,
+      and resolved state. A revision payload carries an action of insert,
+      delete, move, or format, plus author and date; a move may carry `moveId`
+      linking its two ranges. Bookmark and mark payloads carry a name; an
+      index range carries a term. A foreign kind is globally qualified and
+      its payload remains opaque in `data`.
 
-        target, title, children, items, rows, cells, blocks, inline, content,
-        prefix, locator, suffix, old, new, pairs, base, annotation, caption,
-        shortCaption, fallback
-
-      Only node-bearing positions named by node-roles.json are traversed.
-      Arrays retain their order; ruby pair records additionally traverse base then annotation.
-      A scalar content field is counted once, never traversed again. No implicit
-      separator is inserted between child nodes or blocks. Each node's interval
-      starts before its own contribution and ends after its descendants; global
-      offsets in the root projection determine whether start follows end.
-      Thus a paragraph containing text, an image, a break and math counts the
-      text, the image's alt, one newline, and the math source, in that order.
-      Emoji count by Unicode codepoints, not UTF-16 units or grapheme clusters.
-
-        {"version":1,"ranges":[{"id":"c-12","kind":"comment",
-        "start":{"path":"/children/3","offset":4},
-        "end":{"path":"/children/4","offset":9}}]}
-
-      RANGES OVERLAP FREELY. Two ranges may cross, and either may cross a node
-      boundary; nothing re-brackets the tree to make one nest, which is the
-      capability the sidecar exists for. `start` never follows `end` in
-      document order, and a range whose anchors are equal is the empty point a
-      cursor is.
-
-      `kind` IS AN OPEN VOCABULARY, matched by equality, and core defines no
-      member of it: a closed list would name kinds no clause renders. One core
-      did not define is globally qualified as an extension name is in
-      CARVE-P12-055.
-
-      AN ANCHOR THE EDIT INVALIDATED IS ABSENT, not tombstoned, exactly as CARVE-P12-060
-      rules an id: the producer re-emits the whole sidecar against the new tree
-      and drops a range it can no longer place, and a consumer MUST NOT carry a
-      path across an edit.
-
-      `id` is the holder's, not `attrs.id` and not a CARVE-P12-060 node id, and a holder
-      keeps it across a canonical write, which the anchors do not survive
-      ([carve#2232](https://github.com/markup-carve/carve/issues/2232)).
+      RANGES OVERLAP FREELY. Two ranges may cross node boundaries or each
+      other. On an edit, a producer rebinds anchors to the surviving content,
+      including across splits. An insertion at a boundary stays outside the
+      range unless the host explicitly expands that boundary. On deletion,
+      surviving endpoints contract to the deletion boundary; a range whose
+      entire covered content is deleted is omitted. AN ANCHOR THE EDIT
+      INVALIDATED IS ABSENT, not tombstoned. The sidecar is re-emitted against
+      the new tree and drops a range it cannot place; a consumer MUST NOT
+      carry a path across an edit. Range ids are scoped to the sidecar and
+      are neither `attrs.id` nor node ids.
 
    41. PROVENANCE IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-063]. A
       producer MAY return provenance beside an AST, as a sidecar under
@@ -439,13 +448,13 @@
       every node that came from it. A root input has no `parent`, and CARVE-P6-001
       already refuses a cycle.
 
-      A BYTE RANGE IS NOT AN OFFSET. The two bytes count the input they name
-      (CARVE-P12-067); PART 12 §4's codepoint rule governs `pos`. When `pos.file` is present, every `pos` coordinate is measured in
-      that named input file; otherwise it is measured in the top-level input.
-      There is no implicit assembled-document coordinate space. Byte ranges
-      and pos can address the same input but use different units. Containment
-      comparisons apply only to positions naming the same input. A producer
-      converting pos to bytes MUST use that input's text, never the parent's.
+      A PROVENANCE RANGE IS NOT A NODE OFFSET. Both use UTF-8 byte units, but
+      provenance records where a node came from and `pos` records its place in
+      the parsed tree. The ranges may differ after import or reassembly. When
+      `pos.file` is present, every `pos` coordinate is measured in that named
+      input file; otherwise it is measured in the top-level input. There is no
+      implicit assembled-document coordinate space. Containment comparisons
+      apply only to positions naming the same input.
 
       THIS IS WHERE A FILESYSTEM PATH MAY APPEAR. `pos.file` stays the inline
       minimum per PART 12 §4, and a `uri` a caller did not ask for is one it never
@@ -467,9 +476,9 @@
         | *bold | x |
         + text* | y |
 
-        table_row{ continuationLines: 1, cells: [
-          table_cell[ strong[ "bold", cell_wrap{line:1}, "text" ] ],
-          table_cell[ "x", cell_wrap{line:1}, "y" ] ] }
+        table_row{ continuationLines: 1, children: [
+          table_cell[ cell_paragraph[ strong[ "bold", cell_wrap{line:1}, "text" ] ] ],
+          table_cell[ cell_paragraph[ "x", cell_wrap{line:1}, "y" ] ] ] }
 
       `table_row.continuationLines` counts the row's `+` lines, and is absent
       when there are none; it keeps a line whose cells are all empty, which
@@ -488,11 +497,11 @@
         | ^ | c |
         + more | d |
 
-        table_row{ cells: [ table_cell{ rowspan: 2,
-          children: [ "a", cell_wrap{line:1, row:1}, "more" ] }, ... ] }
-        table_row{ continuationLines: 1, cells: [
+        table_row{ children: [ table_cell{ rowspan: 2,
+          children: [ cell_paragraph[ "a", cell_wrap{line:1, row:1}, "more" ] ] }, ... ] }
+        table_row{ continuationLines: 1, children: [
           table_cell{ span: "rowspan" },
-          table_cell[ "c", cell_wrap{line:1}, "d" ] ] }
+          table_cell[ cell_paragraph[ "c", cell_wrap{line:1}, "d" ] ] ] }
 
       UNDER A COLSPAN the fragment on a `<` joins the cell the `<` widens (T6),
       so one cell can take two parts from one `+` line. Each marker then adds
@@ -509,8 +518,10 @@
       AN ATOMIC INLINE NODE CARRIES THE JOIN AS AN OFFSET. When a join crosses
       a `code`, `raw_inline`, or `math` payload, the node carries an optional
       `cellWraps` array. Each entry is an object `{ offset, line, row?, col? }`:
-      `offset` is the codepoint offset (PART 12 §4) of the single joining
-      space in `value` for `code`, or `content` for `raw_inline` and `math`,
+      A producer converting a position to bytes MUST use that input's text,
+      never the parent's.
+      `offset` is the UTF-8 byte offset (PART 12 §4) of the single joining
+      space in `value` for `code`, `raw_inline`, or `math`,
       and `line`, `row` and `col` mean exactly what they mean on a `cell_wrap`.
       Offsets are ascending and each names a space inside the payload,
       except where code-span padding stripping removed the joining space:
@@ -526,8 +537,8 @@
         | `a | z |
         + b` | w |
 
-        table_cell[ code{ value: "a | z b",
-                          cellWraps: [{offset:5, line:1}] } ]
+        table_cell[ cell_paragraph[ code{ value: "a | z b",
+                          cellWraps: [{offset:5, line:1}] } ] ]
 
       A cell with nothing on a `+` line has no entry for it, so `line` says
       where the remainder goes:
@@ -536,12 +547,12 @@
         + |
         + b` |
 
-        table_row{ continuationLines: 2, cells: [
-          table_cell[ code{ value: "a b",
-                            cellWraps: [{offset:1, line:2}] } ] ] }
+        table_row{ continuationLines: 2, children: [
+          table_cell[ cell_paragraph[ code{ value: "a b",
+                            cellWraps: [{offset:1, line:2}] } ] ] ] }
 
-      A MARKER IS NOT A SECOND TREE. The cell's `children` stay the one parsed
-      inline tree; literal per-line child lists are refused because the parts
+      A MARKER IS NOT A SECOND TREE. The cell's `children` remain a block list
+      with the joined inline tree in a `cell_paragraph`; literal per-line child lists are refused because the parts
       are joined BEFORE inline parsing (CARVE-P2-019 item 2), so a span that
       crosses the line could not be split. Every renderer and writer other
       than the Carve writer outputs `cell_wrap` as one space, the joining
@@ -569,5 +580,92 @@
       a `cellWraps` entry whose offset is not ascending, does not name a space
       inside the payload and is not a padding-boundary entry, or sits on a node outside a `table_cell` is invalid in the sense of CARVE-P12-030
       ([carve#3094](https://github.com/markup-carve/carve/issues/3094)).
+
+   43. DISCRIMINATED LIST AND TASK FIELDS -- NORMATIVE [CARVE-P12-070].
+      A `list` carries one `marker` object. A bullet marker has
+      `kind: "bullet"` and `char` (`-` or `*`). An ordered marker has
+      `kind: "ordered"` and may carry `style`, `delimiter`, `start`, or
+      `bare`. A marker carrying fields of both kinds is invalid. `spacing`
+      is `tight` or `loose`, for a list and a definition list alike.
+
+      A task `list_item` carries `task.mark`, the authored marker character,
+      and `task.status`. Space means todo, `x` done, `-` cancelled, `_` and
+      `>` partial, and `?` other. The pair MUST agree. `checked` and the old
+      `taskState` field are not serialized; a UI derives a checked box from
+      the mark when it needs one.
+
+   44. THE NODE SLOT TABLE DEFINES TRAVERSAL -- NORMATIVE [CARVE-P12-071].
+      `children` is the primary content slot on document, containers, lists,
+      list items, table groups, rows, cells, captions, figures, citations
+      groups, inline containers, and extension nodes. Literal payload is
+      `value` on text, escaped text, code, code blocks, math, raw nodes,
+      literal inline, comments, frontmatter, and critic comments.
+
+      Secondary node slots are `caption` on tables and figures, `short` on
+      captions, `prefix`, `locator`, and `suffix` on citations, `old` and
+      `new` on critic substitutions, `pairs` on ruby and `base` and
+      `annotation` on each ruby pair, `title` on visible code-block titles,
+      `fallback` on extension nodes, and each named entry of extension
+      `slots`, whose role is `node-sequence-map`: each named entry is a node
+      sequence. Walkers visit these in the order stated here, after primary
+      `children` where both exist. `columns` on a table are typed
+      `table_column` nodes, but are metadata rather than rendered children.
+      The `metadata` field and extension `props` have a `metadata-tree` role:
+      walkers recurse through their arrays and objects and visit embedded
+      block nodes. A typed block node found there uses its ordinary roles.
+      A walker MUST NOT treat a string-valued `value`, `source`, URL, or
+      opaque `data` or extension `payload` as a child node. `cell_wrap` is admitted only in a
+      `cell_paragraph` inside a `table_cell` (CARVE-P12-049).
+
+   45. CANONICAL AST EQUALITY COVERS SOURCE FACTS -- NORMATIVE [CARVE-P12-072].
+      For the PART 12 §6 round-trip gate, compare node type, authored fields,
+      ordered child slots, attributes, metadata, and opaque `data` after
+      normalization. Adjacent text coalescing happens in the parsed tree
+      before serialization (CARVE-P12-002 and CARVE-P12-003), and Unicode
+      normalization follows the source grammar. Positions, `segments`,
+      session node ids, range anchors, and resolution results such as
+      numbering, resolved links, and table alignment are excluded from this
+      equality gate. Each has its own conformance check. A serializer MUST
+      preserve source facts and `data`; it cannot call a lost field equal.
+
+   46. FOREIGN DATA AND RESOURCES HAVE EXPLICIT LOSS RULES -- NORMATIVE
+      [CARVE-P12-073]. A foreign construct with an equivalent core node is
+      mapped semantically. One without a core equivalent MAY be carried in
+      declared namespaced `data` or an extension with a valid fallback. If
+      neither representation preserves it, or a writer cannot carry it to
+      its target, the writer reports the lost JSON path and construct. It
+      MUST NOT claim editable round-trip fidelity for an arbitrary foreign
+      format. Named styles, headers, footers, and section properties use a
+      declared extension namespace with a defined fallback and loss report
+      until a major version assigns them core fields.
+
+      `document.resources` is a media-bag manifest. Each resource has a
+      stable document-local `id`, `mediaType`, and `digest` of the form
+      `sha256:` followed by 64 lowercase hexadecimal digits. It may carry
+      a location hint `href` and measured byte `size`. `image.resourceId`
+      and extension `resourceIds` refer to entries by id; missing ids or
+      duplicate ids are refused. The consumer checks the digest against
+      bytes it loads and does not treat a path alone as resource identity.
+
+      A reader MUST bound decoded extension payloads to 8 MiB per node,
+      metadata nesting to 64 levels, resource references to 4096 per tree,
+      and fallback nesting to 32 extension nodes. It refuses an excess with
+      the typed path error of CARVE-P12-068. Parsing payload or `data` never
+      authorizes running scripts, macros, network requests, or executable
+      notebook cells. A host enables active content only through a separate
+      explicit capability outside the AST contract.
+
+   47. METADATA, DIRECTION, AND CROSS REFERENCES -- NORMATIVE
+      [CARVE-P12-074]. `metadata` values may be scalars, nested arrays and
+      objects, or block lists. Nodes may carry `dir` (`ltr`, `rtl`, or `auto`)
+      and `lang`; each inherits from its nearest ancestor when absent.
+      `heading.level` is any positive integer. A renderer may clamp its
+      target heading level without changing the tree. `directive.tocTarget`
+      chooses headings, figures, tables, or listings. A `mention` carries
+      `kind`, `target`, and visible `label`. `xref.form` requests number,
+      page, title, or full display, and the resolver uses `namespace` and
+      `key` to find its target. A duplicate authored `attrs.id` resolves to
+      the first occurrence in document order and emits a diagnostic for
+      each later occurrence (CARVE-P12-047).
 
    ============================================================================ *)

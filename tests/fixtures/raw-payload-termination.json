@@ -4,7 +4,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": ""
+      "value": ""
     },
     "codeContent": "",
     "rawPassthrough": ""
@@ -14,7 +14,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": "\n"
+      "value": "\n"
     },
     "codeContent": "\n",
     "rawPassthrough": "\n"
@@ -24,7 +24,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": "\n\n"
+      "value": "\n\n"
     },
     "codeContent": "\n\n",
     "rawPassthrough": "\n\n"
@@ -34,7 +34,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": "\n\n\n"
+      "value": "\n\n\n"
     },
     "codeContent": "\n\n\n",
     "rawPassthrough": "\n\n\n"
@@ -44,7 +44,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": "x"
+      "value": "x"
     },
     "codeContent": "x",
     "rawPassthrough": "x"
@@ -54,7 +54,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": "x\n"
+      "value": "x\n"
     },
     "codeContent": "x\n",
     "rawPassthrough": "x"
@@ -64,7 +64,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": "x\n\n"
+      "value": "x\n\n"
     },
     "codeContent": "x\n\n",
     "rawPassthrough": "x\n"
@@ -74,7 +74,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": "x\n\n\n"
+      "value": "x\n\n\n"
     },
     "codeContent": "x\n\n\n",
     "rawPassthrough": "x\n\n"
@@ -84,7 +84,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": " \t"
+      "value": " \t"
     },
     "codeContent": " \t",
     "rawPassthrough": " \t"
@@ -94,7 +94,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": " \t\n"
+      "value": " \t\n"
     },
     "codeContent": " \t\n",
     "rawPassthrough": " \t"
@@ -104,7 +104,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": " "
+      "value": " "
     },
     "codeContent": " ",
     "rawPassthrough": " "
@@ -114,7 +114,7 @@
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": " \n"
+      "value": " \n"
     },
     "codeContent": " \n",
     "rawPassthrough": " "

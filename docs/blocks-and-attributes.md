@@ -516,12 +516,10 @@ It is a sound shortcut in one direction only, on lists: two or more items always
 re-parse loose, so the extra read can be skipped there.
 :::
 
-On a **definition list** the answer is unconditional: `carve fmt` writes the key
-on every definition list that carries it. `definition_list.loose` is published
-only where the looseness was spelled, so a body written without the key can never
-read back with it - the re-parse test says "emit" every time. A description that
-already holds two blocks is no exception: the key is redundant in the render
-there and not in the tree, and the tree is what the round trip is about.
+On a **definition list**, `carve fmt` writes `{loose}` when
+`definition_list.spacing` is `loose` and the source would otherwise parse as
+`tight`. A description with two blocks may already spell that spacing without
+the key. The writer chooses the spelling that returns the same tree.
 
 ## The one outlier: list items
 

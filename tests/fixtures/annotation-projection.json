@@ -5,21 +5,31 @@
     "children": [
       {
         "type": "figure",
-        "caption": [
-          {
-            "type": "text",
-            "value": "cap"
-          }
-        ],
-        "target": {
-          "type": "image",
-          "src": "x",
-          "alt": "A😀"
+        "caption": {
+          "type": "caption",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "cap"
+                }
+              ]
+            }
+          ],
+          "short": [
+            {
+              "type": "text",
+              "value": "s"
+            }
+          ]
         },
-        "shortCaption": [
+        "children": [
           {
-            "type": "text",
-            "value": "s"
+            "type": "image",
+            "src": "x",
+            "alt": "A😀"
           }
         ]
       },
@@ -34,11 +44,17 @@
           },
           {
             "type": "math",
-            "content": "x^2",
-            "display": false
+            "display": false,
+            "value": "x^2"
           }
         ]
       }
+    ],
+    "astVersion": "2.0",
+    "stages": [
+      "blockImagePromotion",
+      "referenceResolution",
+      "tableAlignment"
     ]
   },
   "projection": "A😀caps \nx^2",
@@ -50,16 +66,16 @@
       },
       "end": {
         "path": "",
-        "offset": 11
+        "offset": 15
       }
     },
     {
       "start": {
-        "path": "/children/0/target",
-        "offset": 2
+        "path": "/children/0/children/0",
+        "offset": 5
       },
       "end": {
-        "path": "/children/0/caption/0",
+        "path": "/children/0/caption/children/0",
         "offset": 0
       }
     }
@@ -72,16 +88,16 @@
       },
       "end": {
         "path": "",
-        "offset": 12
+        "offset": 16
       }
     },
     {
       "start": {
-        "path": "/children/0/caption/0",
+        "path": "/children/0/caption/children/0",
         "offset": 1
       },
       "end": {
-        "path": "/children/0/target",
+        "path": "/children/0/children/0",
         "offset": 1
       }
     },
@@ -95,5 +111,104 @@
         "offset": 2
       }
     }
-  ]
+  ],
+  "pinned": {
+    "document": {
+      "type": "document",
+      "srcByteLength": 0,
+      "children": [
+        {
+          "type": "figure",
+          "caption": [
+            {
+              "type": "text",
+              "value": "cap"
+            }
+          ],
+          "target": {
+            "type": "image",
+            "src": "x",
+            "alt": "A😀"
+          },
+          "shortCaption": [
+            {
+              "type": "text",
+              "value": "s"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "non_breaking_space"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "math",
+              "content": "x^2",
+              "display": false
+            }
+          ]
+        }
+      ]
+    },
+    "projection": "A😀caps \nx^2",
+    "valid": [
+      {
+        "start": {
+          "path": "",
+          "offset": 0
+        },
+        "end": {
+          "path": "",
+          "offset": 11
+        }
+      },
+      {
+        "start": {
+          "path": "/children/0/target",
+          "offset": 2
+        },
+        "end": {
+          "path": "/children/0/caption/0",
+          "offset": 0
+        }
+      }
+    ],
+    "invalid": [
+      {
+        "start": {
+          "path": "",
+          "offset": 0
+        },
+        "end": {
+          "path": "",
+          "offset": 12
+        }
+      },
+      {
+        "start": {
+          "path": "/children/0/caption/0",
+          "offset": 1
+        },
+        "end": {
+          "path": "/children/0/target",
+          "offset": 1
+        }
+      },
+      {
+        "start": {
+          "path": "/children/1/children/0",
+          "offset": 0
+        },
+        "end": {
+          "path": "/children/1/children/0",
+          "offset": 2
+        }
+      }
+    ]
+  }
 }

@@ -45,9 +45,12 @@ function outline(node) {
   }
 }
 
-for (const { source, checker, publicAst } of fixtures) {
+for (const { source, checker, publicAst, pinnedPublicAst } of fixtures) {
   test(`comment transition structure: ${JSON.stringify(source)}`, () => {
     assert.deepEqual(plain(parse(source)), checker)
-    if (publicAst) assert.deepEqual(outline(toAstJson(engineParse(source))), publicAst)
+    if (publicAst) {
+      const serialized = toAstJson(engineParse(source))
+      assert.deepEqual(outline(serialized), serialized.astVersion === '2.0' ? publicAst : pinnedPublicAst)
+    }
   })
 }

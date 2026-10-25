@@ -46,13 +46,14 @@ include traces to its root by walking the chain. It is recorded once per input
 instead of copied onto every node that came from it, and a root input has no
 `parent`. An include cycle is already refused when the document is assembled.
 
-## Bytes, not offsets
+## Source byte ranges
 
 `startByte` and `endByte` count bytes of the input they name, start-inclusive and
-end-exclusive. They are deliberately not called offsets: `pos` on the node counts
-codepoints. With `pos.file`, those coordinates address the named input file;
+end-exclusive. `pos.startOffset` and `pos.endOffset` also count UTF-8 bytes,
+but the provenance range records where a node came from, which may differ from
+its position in the assembled tree. With `pos.file`, those coordinates address the named input file;
 without it, they address the top-level input. There is no implicit assembled
-coordinate space. Converting to bytes requires the text of that same input.
+coordinate space.
 Parent/child containment checks compare only positions from the same input.
 
 ## Authored or generated

@@ -3,31 +3,334 @@
   "$id": "https://markup-carve.github.io/carve/ast-annotation-range-schema.json",
   "title": "Carve AST annotation-range sidecar",
   "type": "object",
-  "required": ["version", "ranges"],
+  "required": [
+    "version",
+    "ranges"
+  ],
   "properties": {
-    "version": { "const": 1 },
-    "ranges": { "type": "array", "items": { "$ref": "#/$defs/annotationRange" } }
+    "version": {
+      "const": 2
+    },
+    "ranges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/annotationRange"
+      }
+    }
   },
   "additionalProperties": false,
   "$defs": {
     "anchor": {
       "type": "object",
-      "required": ["path", "offset"],
+      "required": [
+        "path"
+      ],
       "properties": {
-        "path": { "type": "string", "pattern": "^(?:|(?:/(?:[^~/]|~[01])*)+)$", "description": "PART 12 §40: RFC 6901 pointer into the accompanying canonical AST, as in §38. The binding for THIS tree only." },
-        "offset": { "type": "integer", "minimum": 0, "description": "PART 12 §40: codepoints per §4, counted in the node's deterministic annotation-text projection defined by section 40, from zero through its length. Not source offsets or UTF-16 units." }
+        "path": {
+          "type": "string",
+          "pattern": "^(?:|(?:/(?:[^~/]|~[01])*)+)$",
+          "description": "PART 12 §40: RFC 6901 pointer into the accompanying canonical AST, as in §38. The binding for THIS tree only."
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "PART 12 §40: UTF-8 byte offset within the node annotation-text projection, from zero through its byte length."
+        },
+        "boundary": {
+          "enum": [
+            "before",
+            "after"
+          ],
+          "description": "PART 12 §40: anchor at a block boundary before or after the path node."
+        }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "offset"
+          ],
+          "properties": {
+            "offset": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "required": [
+            "boundary"
+          ],
+          "properties": {
+            "boundary": {
+              "enum": [
+                "before",
+                "after"
+              ]
+            }
+          }
+        }
+      ]
     },
     "annotationRange": {
       "type": "object",
-      "required": ["id", "kind", "start", "end"],
+      "required": [
+        "id",
+        "kind",
+        "start",
+        "end"
+      ],
       "properties": {
-        "id": { "type": "string", "minLength": 1, "description": "PART 12 §40: the holder's own id for the annotation, unique within a sidecar. Not attrs.id and not a §38 node id." },
-        "kind": { "type": "string", "minLength": 1, "description": "PART 12 §40: what the range annotates, an open vocabulary matched by equality. A kind core does not define is qualified as in §34." },
-        "start": { "$ref": "#/$defs/anchor" },
-        "end": { "$ref": "#/$defs/anchor" },
-        "data": { "type": "object", "description": "PART 12 §40: the holder's payload, opaque to core. Nothing in Carve reads it." }
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PART 12 §40: the holder's own id for the annotation, unique within a sidecar. Not attrs.id and not a §38 node id."
+        },
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:comment|revision|bookmark|index_range|mark|[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+)$",
+          "description": "PART 12 §40: typed core range kind or globally qualified extension kind."
+        },
+        "start": {
+          "$ref": "#/$defs/anchor"
+        },
+        "end": {
+          "$ref": "#/$defs/anchor"
+        },
+        "data": {
+          "type": "object",
+          "description": "PART 12 §40: the holder's payload, opaque to core. Nothing in Carve reads it."
+        },
+        "payload": {
+          "type": "object",
+          "description": "PART 12 §40: typed payload for each core range kind; extension kinds use data."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "comment"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/commentPayload"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "revision"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/revisionPayload"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "bookmark"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/bookmarkPayload"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "index_range"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/indexPayload"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "mark"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/markPayload"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "commentPayload": {
+      "type": "object",
+      "required": [
+        "author",
+        "date",
+        "resolved",
+        "replies"
+      ],
+      "properties": {
+        "author": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PART 12 §40: comment author."
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PART 12 §40: comment timestamp."
+        },
+        "resolved": {
+          "type": "boolean",
+          "description": "PART 12 §40: whether the thread is resolved."
+        },
+        "replies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "author",
+              "date",
+              "text"
+            ],
+            "properties": {
+              "author": {
+                "type": "string",
+                "minLength": 1
+              },
+              "date": {
+                "type": "string",
+                "minLength": 1
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "description": "PART 12 §40: ordered comment replies."
+        }
+      },
+      "additionalProperties": false
+    },
+    "revisionPayload": {
+      "type": "object",
+      "required": [
+        "action",
+        "author",
+        "date"
+      ],
+      "properties": {
+        "action": {
+          "enum": [
+            "insert",
+            "delete",
+            "move",
+            "format"
+          ],
+          "description": "PART 12 §40: revision action."
+        },
+        "author": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PART 12 §40: revision author."
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PART 12 §40: revision timestamp."
+        },
+        "moveId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PART 12 §40: identifier pairing move source and destination."
+        }
+      },
+      "additionalProperties": false
+    },
+    "bookmarkPayload": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PART 12 §40: bookmarkPayload name."
+        }
+      },
+      "additionalProperties": false
+    },
+    "indexPayload": {
+      "type": "object",
+      "required": [
+        "term"
+      ],
+      "properties": {
+        "term": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PART 12 §40: indexPayload term."
+        }
+      },
+      "additionalProperties": false
+    },
+    "markPayload": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PART 12 §40: markPayload name."
+        }
       },
       "additionalProperties": false
     }

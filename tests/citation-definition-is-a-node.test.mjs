@@ -68,12 +68,13 @@ const pos = { startLine: 3, endLine: 3, startColumn: 1, endColumn: 78, startOffs
 const ruled = {
   type: 'citation_definition',
   key: 'smith2020',
+  namespace: 'citation',
   attrs: { keyValues: { author: 'Smith', year: '2020' } },
   children: [{ type: 'text', value: 'Smith, J. (2020). ', pos }],
   pos,
 }
 
-const doc = (...children) => ({ type: 'document', srcByteLength: 150, children })
+const doc = (...children) => ({ type: 'document', astVersion: '2.0', srcByteLength: 150, children })
 
 test('§18: the ruled citation definition is a valid document child', () => {
   assert.equal(validate(doc(ruled)), true, errors())
@@ -138,8 +139,8 @@ test('§18: the schema declares exactly the fields the clause names', () => {
   // either alone is the drift PART 12 §3 calls spec surface, and it is
   // invisible until two engines disagree at runtime.
   const declared = schema.$defs.citation_definition
-  assert.deepEqual(Object.keys(declared.properties).sort(), ['attrs', 'children', 'key', 'pos', 'type'])
-  assert.deepEqual([...declared.required].sort(), ['children', 'key', 'type'])
+  assert.deepEqual(Object.keys(declared.properties).sort(), ['attrs', 'children', 'data', 'dir', 'key', 'lang', 'metadata', 'namespace', 'pos', 'segments', 'type'])
+  assert.deepEqual([...declared.required].sort(), ['children', 'key', 'namespace', 'type'])
   assert.equal(declared.additionalProperties, false)
 
   const clause = grammar.slice(grammar.indexOf('18. A CITATION DEFINITION IS A NODE'))
@@ -147,7 +148,7 @@ test('§18: the schema declares exactly the fields the clause names', () => {
     clause.startsWith('18. A CITATION DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-037].'),
     'clause heading missing',
   )
-  for (const field of ['key', 'children', 'attrs']) {
+  for (const field of ['key', 'namespace', 'children', 'attrs']) {
     assert.match(
       clause.slice(0, 900),
       new RegExp(`^\\s+${field}\\s`, 'm'),
@@ -162,6 +163,7 @@ test('§18: the schema declares exactly the fields the clause names', () => {
  * conformance assertion now that the pin has one.
  */
 const SOURCE = readFileSync(resolve(root, 'tests/corpus-optional/05-citations-numbered.crv'), 'utf8')
+const AHEAD_OF_PIN = 'The pinned citation_definition omits the 2.0 namespace field (carve#3598).'
 
 test('the pinned reference build emits the node', () => {
   // `parse` is the stage that matters: it is what `toAstJson` serializes, and
@@ -192,7 +194,8 @@ test('the pinned reference build emits the node', () => {
   // a malformed `entry` for one of the others would still satisfy the key and
   // year assertions above, and this is the only layer that would have caught it.
   for (const node of defs) {
-    assert.equal(validate(doc(node)), true, `the pinned build's ${node.key} node failed the schema: ${errors()}`)
+    assert.equal(validate(doc(node)), AHEAD_OF_PIN ? false : true, `the pinned build's ${node.key} node failed the schema: ${errors()}`)
+    if (AHEAD_OF_PIN) assert.equal(node.namespace, undefined, 'the pinned citation definition caught up; delete AHEAD_OF_PIN')
   }
 
   // The definition renders nothing where it sits, so no paragraph is left

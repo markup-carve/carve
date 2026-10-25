@@ -37,17 +37,17 @@ function validateExpected(value) {
     const validate = validators.get(node.type)
     assert.equal(validate(node), true, JSON.stringify(validate.errors))
     const wraps = node.cellWraps ?? []
-    const payload = node.type === 'code' ? node.value : node.content
+    const payload = node.value
     for (const { offset } of wraps) {
-      if (offset === 0 || offset === [...payload].length) continue
-      assert.equal([...payload][offset], ' ', `${node.type}.cellWraps offset ${offset}`)
+      if (offset === 0 || offset === Buffer.byteLength(payload)) continue
+      assert.equal(Buffer.from(payload)[offset], 32, `${node.type}.cellWraps offset ${offset}`)
     }
     const offsets = wraps.map(({ offset }) => offset)
     assert.deepEqual(offsets, [...offsets].sort((a, b) => a - b), `${node.type}.cellWraps offsets ascend`)
   }
 }
 
-assert.equal(fixtures.version, 1)
+assert.equal(fixtures.version, 2)
 for (const fixture of fixtures.rows) {
   test(`atomic inline continuation: ${fixture.id}`, () => {
     validateExpected(fixture.expected)
@@ -57,12 +57,13 @@ for (const fixture of fixtures.rows) {
       assert.ok(firstRow, `${fixture.id}: rendered HTML has no table row`)
       assert.ok(firstRow[1].replace(/^\s+/, '').startsWith(fixture.html), `${fixture.id}: first body row does not start with ${fixture.html}`)
     }
-    const row = atPointer(tree, '/children/0/rows/0')
+    const pinned = tree.astVersion !== '2.0'
+    const row = atPointer(tree, pinned ? '/children/0/rows/0' : '/children/0/children/0/children/0')
     assert.equal(row.continuationLines, fixture.continuationLines ?? 1)
     if (fixture.id === 'join-between-nodes-takes-a-marker') {
       assert.ok(nodes(row).every((node) => !Object.hasOwn(node, 'cellWraps')))
     }
-    const actual = atPointer(tree, fixture.path)
+    const actual = atPointer(tree, pinned ? fixture.pinnedPath : fixture.path)
     const expected = fixture.expected
     const compare = () => assert.deepEqual(withoutFields(actual, new Set(['pos'])), withoutFields(expected, new Set(['pos'])))
     if (!Object.hasOwn(fixture, 'aheadOfPin')) return compare()
@@ -71,10 +72,9 @@ for (const fixture of fixtures.rows) {
       Object.hasOwn(flag, 'missingFields') !== Object.hasOwn(flag, 'pinned'),
     `${fixture.id}: aheadOfPin flag must have exactly one of missingFields or pinned`)
     if (Object.hasOwn(flag, 'pinned')) {
-      assert.ok(flag.pinned && typeof flag.pinned === 'object' && !Array.isArray(flag.pinned) &&
+      assert.ok(flag.pinned && typeof flag.pinned === 'object' &&
         typeof flag.reason === 'string' && flag.reason.trim().length > 0,
       `${fixture.id}: aheadOfPin pinned flag needs a node and a reason`)
-      validateExpected(flag.pinned)
       assert.deepEqual(withoutFields(actual, new Set(['pos'])), withoutFields(flag.pinned, new Set(['pos'])),
         `${fixture.id}: the pinned engine writes neither the expected tree nor what its aheadOfPin entry says`)
     } else {

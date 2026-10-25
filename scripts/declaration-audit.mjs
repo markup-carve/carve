@@ -256,6 +256,12 @@ const MANIFEST = [
   { repo: 'spec', path: 'tests/examples-tier3.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', stalenessFile: 'scripts/lib/tier3-ledger.mjs', staleness: 'the pinned build reproduces this example now, so its AHEAD_OF_PIN', owner: 'tests/a-tier3-example-ahead-of-the-pin-is-declared.test.mjs' },
   { repo: 'spec', path: 'tests/every-labels-key-reaches-the-output.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'Delete the AHEAD_OF_PIN entry so the key is checked for real.', owner: 'tests/every-labels-key-reaches-the-output.test.mjs' },
   { repo: 'spec', path: 'tests/ast-schema.test.mjs', name: 'SCHEMA_ROLLOUT_PENDING', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'these documents validate now and are still listed in SCHEMA_ROLLOUT_PENDING', owner: 'tests/ast-schema.test.mjs' },
+  { repo: 'spec', path: 'tests/ast-schema.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'the 2.0 pin debt changed; remove the declaration when the pin moves', owner: 'carve#3262 and carve#3598' },
+  { repo: 'spec', path: 'tests/include-conformance.proof.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'the pinned output validates against 2.0 now; remove AHEAD_OF_PIN.contract20', owner: 'carve#3262 and carve#3598' },
+  { repo: 'spec', path: 'tests/schema-fields-are-produced.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'AHEAD_OF_PIN names field(s) the pinned engine now produces', owner: 'carve#3262 and carve#3598' },
+  { repo: 'spec', path: 'tests/citation-definition-is-a-node.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'the pinned citation definition caught up; delete AHEAD_OF_PIN', owner: 'carve#3598' },
+  { repo: 'spec', path: 'tests/a-default-marker-is-not-recorded.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'the pinned marker shape caught up; delete AHEAD_OF_PIN', owner: 'carve#3598' },
+  { repo: 'spec', path: 'tests/nbsp-sentinel-fields.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'the pinned range reader now accepts v2; delete AHEAD_OF_PIN', owner: 'carve#3598' },
   { repo: 'spec', path: 'tests/corpus-convert.test.mjs', name: 'PINNED_DRIFT', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', staleness: 'but the pinned build now matches - delete the STALE entry', owner: 'per-PR twin of resources/converter-drift.txt' },
   // Capability statements about the PINNED build and about each engine's CLI,
   // not pin lag: no rule separates one that will clear from one that never
@@ -765,6 +771,11 @@ function undeclaredLedgerRows(rows) {
   return faults
 }
 
+function undeclaredJsRows(rows) {
+  return rows.filter((row) => !/^\s*(?:['"][^'"]+['"]|[A-Za-z][A-Za-z0-9]*):\s*(?:['"]\S+|\{)/.test(row))
+    .map((row) => `${row}   <- expected a named entry with a reason`)
+}
+
 /* ------------------------------------------------- the one escape hatch --- */
 
 // Overridable so a test can hand the audit a file of its own rather than
@@ -1139,7 +1150,9 @@ for (const entry of MANIFEST) {
     detail = policy === 'split-declared'
       ? undeclaredWaiverRows(judgedRows)
       : entry.kind === 'json-flag' ? []
-        : entry.rows === 'extent' ? undeclaredExtentRows(judgedRows) : undeclaredLedgerRows(judgedRows)
+        : entry.kind === 'js-string' ? judgedRows.filter((row) => row.trim().length < 12)
+          : entry.rows === 'extent' ? undeclaredExtentRows(judgedRows)
+          : entry.kind === 'js' ? undeclaredJsRows(judgedRows) : undeclaredLedgerRows(judgedRows)
     owed = detail.length
     permitted = judgedRows.length - owed
   }

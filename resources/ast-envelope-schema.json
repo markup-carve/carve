@@ -12,7 +12,7 @@
     "astVersion": {
       "type": "string",
       "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)$",
-      "description": "The INTERCHANGE CONTRACT version, `major.minor`. It is NOT the Carve language version and does not track it: the language is versioned for authors, this is versioned for readers of a tree. A major bump removes, renames or reinterprets a field; a minor bump adds a field or a node type. A reader accepts its own version or lower and refuses a higher major OR minor, because the node schema is closed and a minor adds a field. Current: 1.2."
+      "description": "The INTERCHANGE CONTRACT version, `major.minor`. It is NOT the Carve language version and does not track it: the language is versioned for authors, this is versioned for readers of a tree. A major bump removes, renames or reinterprets a field; a minor bump adds a field or a node type. A 2.0 reader refuses a higher major. A higher minor adds only declared optional extensions, extension nodes with valid fallback, or namespaced data; a reader accepts it when it can process those additions. Current: 2.0."
     },
     "vocabulary": {
       "type": "string",
@@ -24,20 +24,20 @@
       "items": {
         "type": "object",
         "required": [
-          "id"
+          "name",
+          "version",
+          "required"
         ],
         "properties": {
-          "id": {
+          "name": {
             "type": "string",
-            "description": "Globally qualified identifier, so two extensions cannot collide."
+            "pattern": "^[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+$"
           },
           "version": {
-            "type": "string",
-            "description": "The extension's own version, opaque to this schema."
+            "type": "string"
           },
           "required": {
-            "type": "boolean",
-            "description": "Whether the document's MEANING depends on it. Absent means true. An extension a reader may ignore without misreading the document sets it false - a reader that drops a required one has rendered a different document and said nothing."
+            "type": "boolean"
           }
         },
         "additionalProperties": false

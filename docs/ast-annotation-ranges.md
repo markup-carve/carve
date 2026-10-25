@@ -18,14 +18,14 @@ and PART 12 §40 governs it. The
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "ranges": [
     {
       "id": "comment-12",
       "kind": "comment",
       "start": { "path": "/children/3", "offset": 4 },
-      "end": { "path": "/children/4", "offset": 9 },
-      "data": {}
+      "end": { "path": "/children/4", "offset": 12 },
+      "payload": { "author": "Ada", "date": "2026-10-25", "resolved": false, "replies": [] }
     }
   ]
 }
@@ -34,16 +34,16 @@ and PART 12 §40 governs it. The
 ## An anchor is a pointer and an offset
 
 `path` is an RFC 6901 pointer into the accompanying canonical AST, the same
-addressing [node identity](./ast-node-identity.md) uses. `offset` counts codepoints in the addressed node's annotation text, from zero
-through its length. PART 12 §40 defines that projection independently of JSON
-member order. It counts the first string among `value`, `content`, `text`, and
-`alt`, then child projections in the specified field order. Breaks contribute a
+addressing [node identity](./ast-node-identity.md) uses. `offset` counts UTF-8 bytes in the addressed node's annotation text, from zero
+through its byte length. PART 12 §40 defines that projection independently of JSON
+member order. It counts a literal string `value`, or an image `alt` when no
+literal value exists, then child projections in the specified field order. Breaks contribute a
 newline and `non_breaking_space` contributes U+00A0. Attributes, URLs and opaque extension
 payloads contribute nothing; no separators are invented between blocks.
 
 For a paragraph containing `A😀`, an image with alt text `cat`, a hard break,
-and math `x^2`, the projection is `A😀cat\nx^2`, with nine codepoints. Its end
-offset is 9, regardless of the emoji's two UTF-16 code units. Readers reject
+and math `x^2`, the projection is `A😀cat\nx^2`, with 12 UTF-8 bytes. Its end
+offset is 12. Readers reject
 larger offsets and paths that do not address nodes.
 
 `start` and `end` may address different nodes, which is how a range crosses a
@@ -53,12 +53,11 @@ are equal is an empty point, which is what a cursor is.
 
 ## Kinds are the host's, not Carve's
 
-`kind` is an open vocabulary matched by string equality, and core defines no
-member of it. A closed list would name kinds no clause in the language renders,
-which is a promise nothing keeps. A kind core did not define is globally
-qualified the way an extension name is, so two hosts cannot collide on one word.
+Core defines `comment`, `revision`, `bookmark`, `index_range`, and `mark` with
+typed `payload` objects. Other kinds use a globally qualified name and may
+carry opaque `data`.
 
-`data` is the holder's payload. Nothing in Carve reads it.
+`data` is the holder's extension payload. Core does not interpret it.
 
 ## An anchor lives for one tree
 
@@ -83,4 +82,4 @@ differing only in sidecar content are the same document under PART 12 §6. An AS
 decoder does not accept a sidecar as an AST, and a range reader rejects a version
 it does not implement.
 
-Raw-node and comment strings contribute their literal `content`. Smart punctuation contributes its source `value`, not its rendered glyph. The projection defines AST offsets, rather than rendered-text offsets.
+Raw-node and comment strings contribute their literal `value`. Smart punctuation's `source` is spelling, so it contributes no text. The projection defines AST offsets, rather than rendered-text offsets.

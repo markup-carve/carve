@@ -153,6 +153,15 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       // documents and on one placement fixture, each naming the issue.
       ['resources/oracle-divergence.txt', 'owed', 'declared'],
       ['tests/empty-raw-list-placement.test.mjs', 'owed', 'declared'],
+      // The AST CONTRACT 2.0 window (carve#3262, carve#3598): the schema moves to
+      // 2.0 before the pinned carve-js emits it, so each test that reads the
+      // pinned output names the issue; the pin bump to a 2.0 carve-js drops them.
+      ['tests/a-default-marker-is-not-recorded.test.mjs', 'owed', 'declared'],
+      ['tests/ast-schema.test.mjs', 'owed', 'declared'],
+      ['tests/citation-definition-is-a-node.test.mjs', 'owed', 'declared'],
+      ['tests/include-conformance.proof.mjs', 'owed', 'declared'],
+      ['tests/nbsp-sentinel-fields.test.mjs', 'owed', 'declared'],
+      ['tests/schema-fields-are-produced.test.mjs', 'owed', 'declared'],
     ].sort(),
     'a spec ledger other than the engine-lag ones now reads differently per-PR',
   )

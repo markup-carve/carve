@@ -1,27 +1,8 @@
 /*
- * A conforming parse omits `delim` and `bulletChar` when the author wrote the
- * default (carve#2828).
- *
- * `resources/ast-schema.json` has said "absent means the default" for both
- * fields since they were added, which describes a CONSUMER reading a tree. It
- * left the PRODUCER free to record `.` and `-` anyway, and all three engines
- * did, so one document had two legal spellings and nothing said which a parse
- * owes. `taskState` already answers the same question the other way, in so many
- * words: it is written only on an item whose state is not the default.
- *
- * WHAT THE RULE IS FOR. Not `carve diff` or `carve merge` - both parse their
- * inputs with one parser from source, have no AST-JSON entry point, and so
- * cannot be handed the two spellings at once. The reader at risk is EXTERNAL: a
- * consumer comparing AST JSON across engines, or against a tree stored by an
- * earlier version.
- *
- * THE NON-DEFAULT CONTROLS BELOW ARE THE POINT. "Omit the default" and "drop
- * the field" are one line apart in an encoder and only one of them is the
- * ruling, so `1) x` keeping `")"` and `* x` keeping `"*"` are asserted beside
- * the omission rather than trusted.
- *
- * THE ASSERTIONS ARE LIVE. The pin sits past carve-js#2644, which omits both
- * defaults, and the declared lag that stood in for them is gone.
+ * The pinned serializer still uses 1.2 `delim` and `bulletChar`. The 2.0
+ * schema groups marker choice in one discriminated object. These controls
+ * keep the old encoder's default-omission behavior visible during rollout
+ * and check that non-default source markers survive (carve#2828, carve#3598).
  */
 
 import { test } from 'node:test'
@@ -40,31 +21,38 @@ const list = (src) => {
   return node
 }
 
-test('the schema says outright that a parse omits a default marker', () => {
-  // The clause rests on these two sentences. A reword that drops the producer
-  // half puts this file back to measuring a rule nobody states.
-  for (const field of ['delim', 'bulletChar']) {
-    assert.match(
-      schema.$defs.list.properties[field].description,
-      /CONFORMING PARSE OMITS THIS FIELD/,
-      `${field} no longer states what a parse owes`,
-    )
-  }
+const AHEAD_OF_PIN = 'The pinned list serializer still emits the 1.2 marker fields (carve#3598).'
+
+test('the 2.0 schema puts marker choice in one discriminated object', () => {
+  const marker = schema.$defs.list.properties.marker
+  assert.equal(marker.$ref, '#/$defs/listMarker')
+  assert.deepEqual(schema.$defs.listMarker.oneOf.map((branch) => branch.properties.kind.const), ['bullet', 'ordered'])
+  assert.ok(!('delim' in schema.$defs.list.properties))
+  assert.ok(!('bulletChar' in schema.$defs.list.properties))
 })
 
 test('a parse omits `delim` on the default `.` marker', () => {
   const node = list('1. Note text.\n')
-  assert.ok(!('delim' in node), 'the parse recorded the default ordered delimiter')
+  if (AHEAD_OF_PIN) {
+    assert.ok(!('delim' in node) && !('marker' in node), 'the pinned marker shape caught up; delete AHEAD_OF_PIN')
+  } else assert.equal(node.marker.delimiter, undefined)
 })
 
 test('a parse omits `bulletChar` on the default `-` marker', () => {
   const node = list('- item\n')
-  assert.ok(!('bulletChar' in node), 'the parse recorded the default bullet character')
+  if (AHEAD_OF_PIN) {
+    assert.ok(!('bulletChar' in node) && !('marker' in node), 'the pinned marker shape caught up; delete AHEAD_OF_PIN')
+  } else assert.equal(node.marker.char, '-')
 })
 
 test('a non-default marker is still recorded, which is what separates this from deleting the fields', () => {
-  assert.equal(list('1) Note text.\n').delim, ')')
-  assert.equal(list('* item\n').bulletChar, '*')
+  if (AHEAD_OF_PIN) {
+    assert.equal(list('1) Note text.\n').delim, ')')
+    assert.equal(list('* item\n').bulletChar, '*')
+  } else {
+    assert.equal(list('1) Note text.\n').marker.delimiter, ')')
+    assert.equal(list('* item\n').marker.char, '*')
+  }
 })
 
 test('omitting the default loses nothing, which is what makes it safe', () => {

@@ -1,8 +1,8 @@
 /*
  * The interchange envelope (PART 12 §32).
  *
- * The tree is strict-closed with no version, which is the right posture and
- * leaves a reader unable to say WHICH failure it hit: a corrupt tree, an
+ * The tree is strict-closed and versioned. An envelope lets a reader name
+ * WHICH failure it hit: a corrupt tree, an
  * unknown vocabulary and a missing extension all arrive as one validation
  * error, where §12 asks for "an error of its own, naming what was wrong".
  * These tests hold the envelope to the three things that makes possible -
@@ -21,36 +21,45 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const ajv = new Ajv2020({ allErrors: true, strict: true })
 ajv.addSchema(JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'), 'utf8')))
 const envelope = JSON.parse(readFileSync(resolve(root, 'resources/ast-envelope-schema.json'), 'utf8'))
+const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
 const validate = ajv.compile(envelope)
 
-const doc = { type: 'document', children: [], srcByteLength: 0 }
+const doc = { type: 'document', astVersion: '2.0', children: [], srcByteLength: 0 }
 
 test('a minimal envelope is the version and the tree', () => {
-  assert.equal(validate({ astVersion: '1.0', document: doc }), true)
+  assert.equal(validate({ astVersion: '2.0', document: doc }), true)
 })
 
 test('vocabulary and extensions are optional and closed', () => {
   assert.equal(
     validate({
-      astVersion: '1.0',
+      astVersion: '2.0',
       vocabulary: 'https://markup-carve.org/ast/core',
-      extensions: [{ id: 'https://markup-carve.org/ext/citations', version: '1', required: false }],
+      extensions: [{ name: 'org.markup-carve.citations', version: '1', required: false }],
       document: doc,
     }),
     true,
   )
-  assert.equal(validate({ astVersion: '1.0', extensions: [{ id: 'x', nope: 1 }], document: doc }), false)
+  assert.equal(validate({ astVersion: '2.0', extensions: [{ id: 'x', nope: 1 }], document: doc }), false)
+  assert.equal(validate({ astVersion: '2.0', extensions: [{ name: 'org.example.notes', version: '1' }], document: doc }), false)
+})
+
+test('an undeclared required extension is a reader refusal', () => {
+  const required = { name: 'org.example.unknown', version: '1', required: true }
+  const payload = { astVersion: '2.0', extensions: [required], document: doc }
+  assert.equal(validate(payload), true, 'the wire declaration is well formed')
+  assert.match(grammar, /unknown required extension[^.]*refus/i)
 })
 
 test('neither required field may be inferred', () => {
   // §12(a)'s reasoning: supplying a default turns a truncated payload into a
   // valid-looking one, and the version is the whole point of the wrapper.
   assert.equal(validate({ document: doc }), false)
-  assert.equal(validate({ astVersion: '1.0' }), false)
+  assert.equal(validate({ astVersion: '2.0' }), false)
 })
 
 test('astVersion is major.minor with no leading zero', () => {
-  for (const ok of ['1.0', '1.4', '2.0', '10.11']) {
+  for (const ok of ['2.0', '2.1', '10.11']) {
     assert.equal(validate({ astVersion: ok, document: doc }), true, ok)
   }
   // A leading zero is refused so the 0.x reading of a major never applies here.
@@ -60,9 +69,9 @@ test('astVersion is major.minor with no leading zero', () => {
 })
 
 test('the envelope is closed, and so is the tree inside it', () => {
-  assert.equal(validate({ astVersion: '1.0', document: doc, extra: 1 }), false)
-  assert.equal(validate({ astVersion: '1.0', document: { ...doc, type: 'doc' } }), false)
-  assert.equal(validate({ astVersion: '1.0', document: { ...doc, extra: 1 } }), false)
+  assert.equal(validate({ astVersion: '2.0', document: doc, extra: 1 }), false)
+  assert.equal(validate({ astVersion: '2.0', document: { ...doc, type: 'doc' } }), false)
+  assert.equal(validate({ astVersion: '2.0', document: { ...doc, extra: 1 } }), false)
 })
 
 test('a bare tree is not an envelope', () => {

@@ -61,64 +61,47 @@
       from profiles.md (CARVE-P12-001). A document is
       `{"type":"document","children":[...]}`.
 
-      The root's own fields are fixed by CARVE-P12-024: `type`, `children` and
-      `srcByteLength`, plus an optional `astVersion` on a bare tree, and
-      nothing else.
+      The root's fields are fixed by CARVE-P12-024. A bare tree always
+      declares `astVersion: "2.0"`; `srcByteLength`, when measured, counts
+      source bytes. Extension declarations, resolution stages, metadata,
+      namespaced data, and the common node fields have named root slots.
 
-        {"type":"document","children":[...],"srcByteLength":42}
+      `srcByteLength` counts BYTES of the source, and is not a position
+      measured under PART 12 §4. It answers how much source was read.
 
-      `srcByteLength` counts BYTES of the source, and is the one field here that
-      is not codepoints (PART 12 §4) -- it answers "how much source was this",
-      not "where in it".
+        {"type":"document","astVersion":"2.0","children":[...]}
 
    3. FIELD NAMES ARE SPEC SURFACE, exactly as kind names are. The normative
-      set per node type is the published interchange interface. Notably:
-        link       `href`, `children`, and `ref` when the author wrote a
-                   reference link
-        image      `src`, `alt`, `title`
-        code       `value`, literal Unicode content
-        text       `value`, literal Unicode content
-        escaped_text
-                   `value`, the character of an `escaped_char` (PART 3)
-                   without its backslash; never merged into `text` (CARVE-P12-002)
-        heading   `level`, `children`
-        list       `ordered`, `tight`, `start`, `items`, and the AUTHOR-CHOICE
-                   fields `bulletChar`, `delim` and `bareMarker` (PART 11 §6)
-                   when the author's spelling is not the default. `bareMarker`
-                   is `true` for an ordered list written with the BARE dot form
-                   (`. item`), which carries no number; absent means the author
-                   numbered it. Without it the bare form has nowhere to live on
-                   the wire and decodes as `1. item`, losing authored form that
-                   every other marker flavor keeps
-        strong     `children`, and `boldItalic` when the author wrote the
-                   combined `/*…*/` form rather than nesting `*` around `/`
-        thematic_break
-                   `marker` when the author wrote `*` or `_` rather than the
-                   default `-` (PART 11 §6). It carries the CHARACTER only:
-                   `***` and `*****` are one spelling, and the run's LENGTH is
-                   recorded nowhere. Absent means `---`, so every
-                   tree written before this field, and every tree a converter
-                   assembles, decodes to the spelling Carve teaches
-        table      `rows`, and the AUTHOR-CHOICE field `separatorWidths` when
-                   the author wrote a separator row (CARVE-P11-066). It is an
-                   array of positive integers, one per separator cell, each the count of
-                   `-` characters that cell spelled, alignment colons excluded:
-                   `|:-----|---:|` records `[5, 3]`. Absent means the author
-                   wrote NO separator row and spelled the header with `|=`
-                   cells instead, which is a different source form for the same
-                   rows and alignments. Without the field both forms decode to
-                   the `|=` one. IT HOLDS AT LEAST ONE ENTRY, because the cell
-                   count is the entry count (CARVE-P11-066) and no separator row
-                   has zero cells: an empty array is a presence claim no writer
-                   can spell. THE FIELD HAS NO UPPER BOUND, though: a parse
-                   records what the author typed, and the 1000 bound in
-                   CARVE-P10-016 is the HTML carrier's alone. Interchange may retain the
-                   field on a table without an all-header first row; the source
-                   writer cannot spell that combination without promoting cells
-                   and reports the field loss under CARVE-P11-046 and CARVE-P11-066
-      An implementation MUST NOT invent a synonym, and MUST NOT expose an
+      fields per node type are those in `resources/ast-schema.json`. Primary
+      content uses `children`; literal payload uses `value`. Named secondary
+      content slots include `caption`, `short`, `prefix`, `locator`, `suffix`,
+      `old`, `new`, `pairs`, `fallback`, `title`, and `slots`. The schema types
+      each of these slots so a walker can distinguish nodes from strings.
+
+      A `list` carries a discriminated `marker` and `spacing`, plus `children`
+      of `list_item` nodes. A `table` carries row-group `children`, and each
+      row carries cell `children`. A `figure` carries block `children` and a
+      caption node. Authored spelling distinctions such as thematic-break
+      `marker`, list marker character, and table `separatorWidths` remain
+      available to a canonical writer. An implementation MUST NOT invent a
+      synonym, and MUST NOT expose an
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.
+
+      `table.separatorWidths` records the authored separator row's dash-run
+      lengths, one positive integer per separator cell, excluding alignment
+      colons. An absent field means header cells were spelled with `|=`
+      instead. The source writer cannot spell separator widths on a table
+      without an all-header first row without promoting cells; it reports
+      that field loss under CARVE-P11-046 and CARVE-P11-066. The field records
+      authored spelling, even where a renderer needs none of it.
+
+      Every typed node MAY carry `attrs`, namespaced `data`, `pos`, `segments`,
+      `metadata`, `dir`, and `lang`, subject to its schema definition. The
+      qualified data namespace is declared in `document.extensions`.
+
+      A `children`-only walk reaches the primary content, while the normative
+      secondary-slot table in CARVE-P12-071 completes a traversal.
 
       GENERATED NONBREAKING SPACES ARE NODES -- NORMATIVE [CARVE-P12-004].
       A `non_breaking_space` inline node represents one escaped space (`\ `)
@@ -146,15 +129,15 @@
       parser or writer markers MUST be collision-free and MUST NOT be published.
 
       CODE BLOCK CONTENT IS LITERAL PAYLOAD TEXT -- NORMATIVE [CARVE-P12-064].
-      `code_block.content` MUST retain every payload character, including the
+      `code_block.value` MUST retain every payload character, including the
       final line break when present. Container prefixes and fence delimiters
       are not payload. Source line endings use the language's LF normalization.
-      A closed source fence with no payload lines has content ""; one blank
+      A closed source fence with no payload lines has value ""; one blank
       line has "\n"; a line containing `a` has "a\n"; that line followed by
       a blank line has "a\n\n". The break before the closing fence belongs
       to the last payload line. A fence ending at EOF without a closer retains
       whether the last payload line had a break; it MUST NOT invent one.
-      An unclosed fence with no payload lines also has content "".
+      An unclosed fence with no payload lines also has value "".
 
       An imported or programmatically built code block MAY have content "a"
       without a final break. It is distinct from "a\n". JSON encoding and
@@ -172,7 +155,7 @@
       MUST NOT alter the node's content.
       A canonical Carve writer needs a break before a closing fence when
       nonempty content has none. It inserts that break and reports
-      `field-unspellable` for `code_block.content` on the CARVE-P11-046 channel.
+      `field-unspellable` for `code_block.value` on the CARVE-P11-046 channel.
       Empty content needs no inserted payload line and reports nothing.
       This report belongs to an API exposing conversion diagnostics
       (CARVE-P11-046).
@@ -181,68 +164,58 @@
       no diagnostic code for the later canonical writer's inserted break.
 
       RAW BLOCK CONTENT IS LITERAL PAYLOAD TEXT -- NORMATIVE [CARVE-P12-065].
-      `raw_block.content` contains the literal payload, including its authored
-      final LF, under the same line-ending rules as `code_block.content`.
+      `raw_block.value` contains the literal payload, including its authored
+      final LF, under the same line-ending rules as `code_block.value`.
       An unterminated payload line contributes no final LF. An empty final
       marker line at EOF contributes no character. PART 2's outer output
       trimming does not change this interchange value. There is no separate
       payload-termination field.
 
       Every conversion of a raw block to a code block, including the safe
-      escape in CARVE-P10-013 and profile `to_text`, uses `content` directly.
+      escape in CARVE-P10-013 and profile `to_text`, uses `value` directly.
       A matching raw target omits one final LF from content containing any
       non-LF character, retaining the existing output convention; content
       consisting only of LFs retains
       all of them. This rendering convention does not alter the stored payload.
       Native formatting that adds a final payload LF MUST report
-      `field-unspellable` for `raw_block.content` on CARVE-P11-046's
+      `field-unspellable` for `raw_block.value` on CARVE-P11-046's
       conversion channel. This is separate from the render-loss report.
 
-   3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005]. It records what the
-      AUTHOR WROTE. Resolution results are ADDED ALONGSIDE the authored
-      construct (PART 12 §5); a producer MUST NOT fold them into the tree in its
-      place. For `[getting started][]` where nothing defines the label:
+   3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005].
+      It records the authored reference key and spelling before resolution.
+      A resolution result is added alongside the authored construct. For
+      this reason a producer MUST NOT fold a resolution result into the tree
+      in place of the authored construct.
+      `[getting started][]` with no matching definition, the link carries
+      `key: "getting started"`, `namespace: "link"`, and `rawRef`, but no
+      `href`. A consumer MUST NOT turn it into a plain text node.
 
-        {"type":"link","href":"","ref":"getting started",
+      A RESOLVED REFERENCE KEEPS ITS DESTINATION -- NORMATIVE [CARVE-P12-006].
+      A matching definition supplies `href` to a link or `src` to an image.
+      If the definition's destination is explicitly empty, the result is the
+      empty string; absence of the field means unresolved. A direct link may
+      also carry an explicit empty destination and has no reference `key`.
+      The old `resolved` boolean is not serialized. `rawRef` preserves the
+      authored reference spelling, including collapsed empty brackets.
+
+      For `[getting started][]` without a definition, the wire keeps the
+      unresolved use as a link rather than reverting it to source text:
+
+        {"type":"link","key":"getting started","namespace":"link",
          "rawRef":"[getting started][]"}
 
-      `ref` is present because the author wrote a reference link (PART 12 §3), `href`
-      is empty because no definition or heading resolved it, and `rawRef`
-      carries the source. A tree publishing `{"type":"link","href":"#Getting-Started"}`
-      for that source has serialized a later stage.
+      With `[getting started]: /start`, the same node also has `href: "/start"`.
+      If the definition's destination is empty, it has `href: ""`. This
+      distinction survives JSON round trips without the old `resolved` flag.
+      The collapsed form's key is the label used for resolution, while
+      `rawRef` keeps the empty brackets. When inline markup appears inside
+      the label, the key still records the resolved string rather than the
+      author's markup ([carve#962](https://github.com/markup-carve/carve/issues/962)).
 
-      A RESOLVED REFERENCE KEEPS ITS DESTINATION -- NORMATIVE [CARVE-P12-006]. Where the
-      document defines the label, the same source publishes:
-
-        {"type":"link","href":"/start","ref":"getting started",
-         "rawRef":"[getting started][]"}
-
-      `href` is empty only where nothing resolved the reference; `ref` and
-      `rawRef` survive either way.
-
-      A REFERENCE THAT RESOLVES TO AN EMPTY DEFINITION SAYS SO. Where the
-      matching definition's destination is empty (`[label]:`, CARVE-P3-024),
-      the use carries `href: ""` (`src: ""` on an image) and `resolved: true`:
-
-        {"type":"link","href":"","ref":"r","rawRef":"[t][r]","resolved":true}
-
-      `resolved` appears on no other node. An empty `href` on a reference use
-      WITHOUT it is unresolved, exactly as in contract 1.1, so a reader that
-      predates the field reads every tree it accepts correctly. An inline link
-      with `href: ""` and no `ref`/`rawRef` is an explicit empty destination.
-      These three states survive whole-document JSON encode/decode and
-      rendering.
-
-      THE COLLAPSED FORM'S `ref` IS THE DERIVED LABEL. For `[getting started][]`
-      `ref` carries `"getting started"`, the label the reference resolves by;
-      `rawRef` holds the empty brackets. A published `ref: ""`, and a `ref`
-      dropped once resolved, are both non-conforming.
-
-      AN UNRESOLVED REFERENCE IS STILL A LINK NODE. Where nothing defines
-      `[a]`, `see [a][] here` publishes `text`, `link`, `text`, the link
-      carrying `ref` and an empty `href`, NOT one text node holding
-      `see [a][] here`. It is never reverted to literal source, so the
-      vocabulary has no `raw_text` type for one.
+      A link target MAY declare `targetKind`: `url`, `wiki`, `doc`, or `xref`.
+      A non-URL target need not pretend to be an unresolved URL. Rendering
+      or conversion uses the target kind and reports a loss if it cannot
+      preserve the meaning.
 
       A NESTED LINK AND AN AUTOLINK STAY NODES -- NORMATIVE [CARVE-P12-007].
       "Links never nest" binds the renderer, not the encoder. A link or an
@@ -271,29 +244,17 @@
       applies it at that engine's presentation targets, and its canonical
       source writer preserves destinations.
 
-      A CROSSREF REMAINS A HEADING-REFERENCE NODE AFTER RESOLUTION -- NORMATIVE [CARVE-P12-010]. `</#id>` is
-      serialized as a `heading_ref` whose `target` is the raw id the author
-      typed between `</#` and `>`; where it resolves, the destination is
-      published BESIDE it as `href`.
+      A CROSSREF REMAINS AN XREF NODE AFTER RESOLUTION -- NORMATIVE
+      [CARVE-P12-010]. `</#id>` produces `xref` with `key: "id"`,
+      `namespace: "heading"`, and `form` identifying number, page, title,
+      or full display. Where resolved, `href` is added. An unresolved xref
+      omits `href` but keeps its key. `xref` also carries references to
+      figures, tables, equations, and footnotes imported from other formats;
+      the namespace tells a reader which target space to resolve.
 
-        See </#Intro>.
-
-      with `# Intro` above it publishes
-
-        {"type":"heading_ref","target":"Intro","href":"#Intro"}
-
-      and with no such heading
-
-        {"type":"heading_ref","target":"Nope"}
-
-      `target` is kept whether or not it resolves: a `</#intro>` beside
-      `# Intro` names no id (PART 9R R4) and publishes `target` alone. A tree
-      publishing the crossref as a `link` has serialized a later stage, and a
-      writer cannot spell it back as `</#Intro>`.
-
-      THE DISPLAY TEXT IS NOT SERIALIZED. A resolved crossref renders the
-      target heading's text, and that text is not copied into the node; a
-      consumer reads it from the heading.
+      A renderer derives display content from the resolved target according
+      to `form`. It MUST NOT replace an authored xref with a plain link during
+      serialization.
 
    4. POSITIONS ARE REQUIRED. Every node EXCEPT the document root carries
       `pos`:
@@ -301,8 +262,8 @@
         {"startLine":1,"endLine":1,"startColumn":2,"endColumn":5,
          "startOffset":1,"endOffset":4}
 
-      Lines are 1-based. Columns are 1-based and offsets 0-based, both counted
-      in UNICODE CODEPOINTS. `endColumn` and `endOffset` are exclusive.
+      Lines and columns are 1-based. Columns count Unicode codepoints.
+      Offsets are zero-based UTF-8 bytes. `endColumn` and `endOffset` are exclusive.
       `pos.file`, when present, is the canonical id of the included input the
       coordinates are measured in (CARVE-P6-001); absent means the top-level
       input. The root is exempt because it spans the whole source.
@@ -464,9 +425,9 @@
    Unlisted diagnostic targets and unspecified action cells add no ruling.
 
 | Shape | Rule | Carve | HTML | Markdown | Plain | ANSI | Diagnostic |
-| figure.shortCaption,table.shortCaption | CARVE-P12-033 | omit_field | ignore_field | unspecified | ignore_field | ignore_field | clause |
-| figure.target[table] | CARVE-P12-036 | table_caption | figure | unspecified | unspecified | unspecified | clause |
-| table_cell.blocks | CARVE-P12-049 | unspecified | cell_blocks | flatten_blocks | flatten_blocks | flatten_blocks | field-unspellable (Carve,Markdown,Plain,ANSI) |
+| caption.short | CARVE-P12-033 | omit_field | ignore_field | unspecified | ignore_field | ignore_field | clause |
+| figure.children[table] | CARVE-P12-036 | table_caption | figure | unspecified | unspecified | unspecified | clause |
+| table_cell.children | CARVE-P12-049 | unspecified | cell_blocks | flatten_blocks | flatten_blocks | flatten_blocks | field-unspellable (Carve,Markdown,Plain,ANSI) |
 | small_caps | CARVE-P12-050 | unwrap | smallcaps_span | smallcaps_span | unwrap | unwrap | structure-unspellable (Carve) |
 | section | CARVE-P12-052 | unwrap | section | unwrap | unwrap | unwrap | structure-unspellable (Carve) |
 | ruby | CARVE-P12-054 | parenthesized_pairs | ruby | ruby | parenthesized_pairs | parenthesized_pairs | ruby-flattened (Carve,Plain,ANSI) |

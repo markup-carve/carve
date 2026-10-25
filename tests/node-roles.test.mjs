@@ -52,21 +52,25 @@ test('every node-holding field the schema declares has a role', () => {
   // The mirror direction. Without it the table could describe a subset and
   // still pass - which is the failure mode a per-engine generator already has.
   const missing = []
+  const typed = (value) => {
+    if (!value || typeof value !== 'object') return false
+    if (typeof value.$ref === 'string') {
+      const target = schema.$defs[value.$ref.replace('#/$defs/', '')]
+      return typeof target?.properties?.type?.const === 'string' || Array.isArray(target?.properties?.type?.enum)
+    }
+    return ['oneOf', 'anyOf'].some((key) => Array.isArray(value[key]) && value[key].some(typed))
+  }
   for (const def of Object.values(schema.$defs)) {
     const owner = def.properties?.type?.const
     if (!owner || !def.properties) continue
     for (const [field, value] of Object.entries(def.properties)) {
-      if (field === 'type' || field === 'attrs' || field === 'pos') continue
-      const holdsNode =
-        typeof value.$ref === 'string' ||
-        Array.isArray(value.oneOf) ||
-        (value.type === 'array' &&
-          (typeof value.items?.$ref === 'string' ||
-            Array.isArray(value.items?.anyOf) ||
-            Array.isArray(value.items?.oneOf) ||
-            // No field is an array of node arrays since §36 made a line a
-            // range, so one added later fails here rather than going unroled.
-            typeof value.items?.items?.$ref === 'string'))
+      if (field === 'type' || field === 'attrs' || field === 'pos' || field === 'data' || field === 'payload') continue
+      if (field === 'metadata' || (field === 'props' && ['block_extension', 'inline_extension'].includes(owner))) {
+        if (table.roles[owner]?.[field]?.role !== 'metadata-tree') missing.push(`${owner}.${field}`)
+        continue
+      }
+      const map = value.type === 'object' && value.additionalProperties?.type === 'array' ? value.additionalProperties : null
+      const holdsNode = typed(value) || (value.type === 'array' && typed(value.items)) || (map !== null && typed(map.items))
       if (!holdsNode) continue
       // `attrs`/`pos` are the only shared `$ref`s, and they are skipped above.
       if (table.roles[owner]?.[field] === undefined) missing.push(`${owner}.${field}`)
@@ -75,12 +79,12 @@ test('every node-holding field the schema declares has a role', () => {
   assert.deepEqual(missing, [], `node positions with no role: ${missing.join(', ')}`)
 })
 
-test('a role is one of the three the contract names', () => {
-  const roles = new Set(['node-sequence', 'single-node', 'record-sequence'])
+test('a role is one of the five the contract names', () => {
+  const roles = new Set(['node-sequence', 'node-sequence-map', 'single-node', 'record-sequence', 'metadata-tree'])
   for (const [owner, fields] of Object.entries(table.roles)) {
     for (const [field, spec] of Object.entries(fields)) {
       assert.ok(roles.has(spec.role), `${owner}.${field} has role "${spec.role}"`)
-      if (spec.role === 'record-sequence') assert.equal(spec.admits, undefined)
+      if (spec.role === 'record-sequence' || spec.role === 'metadata-tree') assert.equal(spec.admits, undefined)
       else assert.ok(Array.isArray(spec.admits) && spec.admits.length > 0, `${owner}.${field}`)
     }
   }

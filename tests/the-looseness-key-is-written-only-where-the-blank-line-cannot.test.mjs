@@ -165,12 +165,9 @@ test('both writer-half documents keep a .fmt sidecar, and neither carries the ke
 })
 
 /*
- * THE DEFINITION LIST IS UNCONDITIONAL, and it is a different answer reached by
- * the same test rather than a carve-out. `definition_list.loose` is published
- * only where the looseness was SPELLED (PART 12 §8), so a body written without
- * the key can never read back with the field set - including the one shape that
- * looks like it should be exempt, a description already holding two blocks,
- * where the key is redundant in the RENDER and not in the tree.
+ * The pinned layout oracle still publishes 1.2 `definition_list.loose` only
+ * for a spelled key. Its writer control remains here during the 2.0 rollout;
+ * the 2.0 interchange tree uses `definition_list.spacing`.
  */
 test('a definition list always needs the key, two-block description included', () => {
   const twoBlocks = ':: T\n:  D\n\n   E\n'

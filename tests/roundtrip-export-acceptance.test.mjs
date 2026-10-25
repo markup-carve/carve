@@ -25,8 +25,20 @@ function assertProjection(tree, expected) {
     remaining.splice(index, 1)
   }
 }
+function projectionMatches(tree, expected) {
+  try { assertProjection(tree, expected); return true } catch { return false }
+}
+function expectedNodes(tree, fixture, checkDebt = true) {
+  if (!fixture.pinnedNodes || tree.astVersion === '2.0') return fixture.expectedNodes
+  if (checkDebt) check.ok(projectionMatches(tree, fixture.expectedNodes), 'pinned AST uses 1.2 projection')
+  return fixture.pinnedNodes
+}
+function fieldRules(tree, fixture, name) {
+  const pinnedName = `pinned${name[0].toUpperCase()}${name.slice(1)}`
+  return tree.astVersion === '2.0' ? fixture[name] ?? [] : fixture[pinnedName] ?? fixture[name] ?? []
+}
 function assertImportProjection(tree, fixture) {
-  try { assertProjection(tree, fixture.expectedNodes); return false } catch (error) {
+  try { assertProjection(tree, expectedNodes(tree, fixture)); return false } catch (error) {
     if (!fixture.fallbackNodes) throw error
     assertProjection(tree, fixture.fallbackNodes)
     return true
@@ -101,7 +113,8 @@ const aheadOfPin = (fixture, body) => () => {
 
 for (const fixture of fixtures.exportImport) {
   test(`shared roundtrip export: ${fixture.id}`, aheadOfPin(fixture, () => {
-    assertProjection(parse(fixture.source), fixture.expectedNodes)
+    const parsed = parse(fixture.source)
+    assertProjection(parsed, expectedNodes(parsed, fixture))
     const ordinary = carveToHtml(fixture.source)
     check.equal(carveToHtml(fixture.source, { roundtrip: false }), ordinary, 'ordinary html ignores roundtrip: false')
     check.ok(!htmlAttributes(ordinary).some((attr) => isReserved(attr.name)), 'ordinary html has no reserved attributes')
@@ -134,7 +147,7 @@ for (const fixture of fixtures.exportImport) {
       assertNoReservedAttrs(legacy.value)
       const declined = assertImportProjection(imported.value, fixture)
       assertNoReservedAttrs(imported.value)
-      for (const absent of fixture.expectedAbsentFields ?? []) check.ok(nodes(imported.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined), `${absent.type}.${absent.field} absent in ${mode}`)
+      for (const absent of fieldRules(imported.value, fixture, 'expectedAbsentFields')) check.ok(nodes(imported.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined), `${absent.type}.${absent.field} absent in ${mode}`)
       const source = htmlToCarve(exported, { mode }).value
       for (const fragment of fixture.returnedSourceFragments ?? []) check.ok(source.includes(fragment), fragment)
       check.equal(normalizedHtml(carveToHtml(source)), normalizedHtml(declined ? fixture.fallbackHtml : ordinary), mode)
@@ -144,7 +157,7 @@ for (const fixture of fixtures.exportImport) {
 for (const fixture of fixtures.importNegative) {
   for (const mode of fixture.importModes) test(`shared carrier rejection: ${fixture.id}/${mode}`, aheadOfPin(fixture, () => {
     const result = htmlToAst(fixture.html, { mode })
-    assertProjection(result.value, fixture.expectedNodes)
+    assertProjection(result.value, expectedNodes(result.value, fixture))
     if (fixture.requiresDiagnostic) {
       const controlCount = fixture.diagnosticControlHtml ? htmlToAst(fixture.diagnosticControlHtml, { mode }).report.diagnostics.length : 0
       check.ok(result.report.diagnostics.length > controlCount, fixture.id)
@@ -155,8 +168,8 @@ for (const fixture of fixtures.importNegative) {
     for (const fragment of fixture.forbiddenAstSubstrings ?? []) check.ok(!JSON.stringify(result.value).includes(fragment), fragment)
     for (const fragment of fixture.forbiddenRenderedSubstrings ?? []) check.ok(!carveToHtml(htmlToCarve(fixture.html, { mode }).value).includes(fragment), fragment)
     for (const type of fixture.forbiddenTypes) check.ok(!nodes(result.value).some((node) => node.type === type), type)
-    for (const absent of fixture.expectedAbsentFields ?? []) check.ok(nodes(result.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined), `${absent.type}.${absent.field} absent in ${mode}`)
-    for (const forbidden of fixture.forbiddenFieldValues ?? []) check.ok(nodes(result.value).filter((node) => node.type === forbidden.type).every((node) => field(node, forbidden.field) !== forbidden.value), `${forbidden.type}.${forbidden.field} excludes ${JSON.stringify(forbidden.value)} in ${mode}`)
+    for (const absent of fieldRules(result.value, fixture, 'expectedAbsentFields')) check.ok(nodes(result.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined), `${absent.type}.${absent.field} absent in ${mode}`)
+    for (const forbidden of fieldRules(result.value, fixture, 'forbiddenFieldValues')) check.ok(nodes(result.value).filter((node) => node.type === forbidden.type).every((node) => field(node, forbidden.field) !== forbidden.value), `${forbidden.type}.${forbidden.field} excludes ${JSON.stringify(forbidden.value)} in ${mode}`)
   }))
 }
 test('export cannot enable a denied destination', () => {
@@ -193,13 +206,15 @@ test('task hooks remain ordinary output without preservation export', () => {
 
 // A row that declares a loss says its return is degraded, so its HTML cannot
 // equal the source's; every other row must come back rendering the same.
-function assertMarkdownReturn(fixture, returned) {
-  assertProjection(parse(returned), fixture.expectedNodes)
+function assertMarkdownReturn(fixture, returned, checkDebt = true) {
+  const parsed = parse(returned)
+  assertProjection(parsed, expectedNodes(parsed, fixture, checkDebt))
   if ((fixture.lossCodes ?? []).length) return
   assert.equal(carveToHtml(returned).trim(), carveToHtml(fixture.source).trim())
 }
 for (const fixture of fixtures.markdownExportImport) test(`shared Markdown export: ${fixture.id}`, aheadOfPin(fixture, () => {
-  assertProjection(parse(fixture.source), fixture.expectedNodes)
+  const parsed = parse(fixture.source)
+  assertProjection(parsed, expectedNodes(parsed, fixture))
   const ordinary = carveToMarkdown(fixture.source)
   check.equal(carveToMarkdown(fixture.source, { roundtrip: false }), ordinary, 'ordinary markdown ignores roundtrip: false')
   check.ok(!ordinary.includes('<!-- carve:'), 'ordinary markdown has no carrier markers')
@@ -222,7 +237,7 @@ for (const fixture of fixtures.markdownImportNegative) test(`shared Markdown imp
   if (fixture.expectedDiagnostic) check.ok(imported.report.diagnostics.some((row) => row.code === fixture.expectedDiagnostic.code), fixture.expectedDiagnostic.code)
   const actualTypes = new Set(nodes(tree).map((node) => node.type))
   for (const type of fixture.forbiddenTypes ?? []) check.ok(!actualTypes.has(type), type)
-  assertProjection(tree, fixture.expectedNodes ?? [])
+  assertProjection(tree, expectedNodes(tree, fixture) ?? [])
   for (const forbidden of fixture.forbiddenNodes ?? []) check.throws(() => assertProjection(tree, [forbidden]), { code: 'ERR_ASSERTION' }, JSON.stringify(forbidden))
   for (const [code, count] of Object.entries(fixture.expectedDiagnostics ?? {})) {
     const rows = imported.report.diagnostics.filter((row) => row.code === code)
@@ -235,8 +250,8 @@ test('a Markdown row without a declared loss still fails when its HTML moves', (
   const lossless = fixtures.markdownExportImport.filter((row) => !(row.lossCodes ?? []).length && !row.defaultExportOnly)
   assert.ok(lossless.length > 0, 'no lossless Markdown row is left to compare')
   for (const fixture of lossless) {
-    assertMarkdownReturn(fixture, fixture.source)
-    assert.throws(() => assertMarkdownReturn(fixture, `${fixture.source}\nmoved\n`), { code: 'ERR_ASSERTION' }, fixture.id)
+    assertMarkdownReturn(fixture, fixture.source, false)
+    assert.throws(() => assertMarkdownReturn(fixture, `${fixture.source}\nmoved\n`, false), { code: 'ERR_ASSERTION' }, fixture.id)
   }
 })
 

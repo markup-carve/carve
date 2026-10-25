@@ -32,7 +32,7 @@ test('an existing rule cannot be assigned another clause\'s fallback row', () =>
 
 test('a schema field rename invalidates the table until its reference is updated', () => {
   const changed = { ...contracts, schema: structuredClone(contracts.schema) }
-  delete changed.schema.$defs.table_cell.properties.blocks
+  delete changed.schema.$defs.table_cell.properties.children
   assert.throws(() => validateMatrix(parseFallbackMatrix(source), changed), /unknown fallback field/)
 })
 

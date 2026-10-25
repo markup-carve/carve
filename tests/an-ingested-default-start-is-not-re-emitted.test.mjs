@@ -1,8 +1,8 @@
 /*
  * PART 12 §22: an ingested value the schema calls absent is normalized away.
  *
- * `resources/ast-schema.json` describes a list's `start` as "First number of an
- * ordered list, when it is not 1". That pins the PRODUCER, and all three
+ * `resources/ast-schema.json` describes an ordered `marker.start` as the first
+ * number, written only when it is not 1. That pins the PRODUCER, and all three
  * engines comply: a parsed tree never carries the value. It says nothing on its
  * own about a CONSUMER handed the field anyway - which an editor, a patch tool
  * or a hand-built payload can do - and the three engines took three different
@@ -69,8 +69,8 @@ test('the schema still describes `start` as written only when it is not 1', () =
   // The clause rests on this sentence. If the schema is ever reworded, §22 is
   // resting on nothing and this test is measuring a rule that moved.
   assert.match(
-    schema.$defs.list.properties.start.description,
-    /when it is not 1/,
+    schema.$defs.listMarker.oneOf[1].properties.start.description,
+    /when it is not 1|non-default/i,
     'PART 12 §22 quotes this description; rewording it silently unmoors the clause',
   )
 })

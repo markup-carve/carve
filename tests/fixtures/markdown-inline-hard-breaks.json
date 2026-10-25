@@ -19,7 +19,13 @@
           ]
         }
       ],
-      "srcByteLength": 4
+      "srcByteLength": 4,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "seed<br>\n",
     "ancestors": [
@@ -27,7 +33,25 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 4
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -45,7 +69,13 @@
           ]
         }
       ],
-      "srcByteLength": 4
+      "srcByteLength": 4,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "<br><!---->\n",
     "ancestors": [
@@ -53,7 +83,21 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 4
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -78,7 +122,13 @@
           ]
         }
       ],
-      "srcByteLength": 4
+      "srcByteLength": 4,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "seed\\\n<br>\n",
     "ancestors": [
@@ -90,7 +140,28 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 4
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -116,7 +187,13 @@
           ]
         }
       ],
-      "srcByteLength": 4
+      "srcByteLength": 4,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "seed\\\ntail\n",
     "ancestors": [
@@ -124,7 +201,29 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": "tail"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 4
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -150,7 +249,13 @@
           ]
         }
       ],
-      "srcByteLength": 4
+      "srcByteLength": 4,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "seed<br>\n",
     "ancestors": [
@@ -158,7 +263,29 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": " "
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 4
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -183,7 +310,13 @@
           ]
         }
       ],
-      "srcByteLength": 4
+      "srcByteLength": 4,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "seed<br>\n",
     "ancestors": [
@@ -191,7 +324,28 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "soft_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 4
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -202,6 +356,53 @@
       "children": [
         {
           "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "seed"
+                    },
+                    {
+                      "type": "hard_break"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "markdown": "- seed<br>\n",
+    "ancestors": [
+      [
+        "ul",
+        "li",
+        "br"
+      ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
           "ordered": false,
           "tight": true,
           "items": [
@@ -226,15 +427,7 @@
         }
       ],
       "srcByteLength": 6
-    },
-    "markdown": "- seed<br>\n",
-    "ancestors": [
-      [
-        "ul",
-        "li",
-        "br"
-      ]
-    ]
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -245,6 +438,49 @@
       "children": [
         {
           "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "hard_break"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "markdown": "- <br><!---->\n",
+    "ancestors": [
+      [
+        "ul",
+        "li",
+        "br"
+      ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
           "ordered": false,
           "tight": true,
           "items": [
@@ -265,15 +501,7 @@
         }
       ],
       "srcByteLength": 6
-    },
-    "markdown": "- <br><!---->\n",
-    "ancestors": [
-      [
-        "ul",
-        "li",
-        "br"
-      ]
-    ]
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -284,9 +512,12 @@
       "children": [
         {
           "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
             {
               "type": "list_item",
               "children": [
@@ -310,7 +541,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "- seed\\\n  <br>\n",
     "ancestors": [
@@ -324,13 +561,97 @@
         "li",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "ordered": false,
+          "tight": true,
+          "items": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "seed"
+                    },
+                    {
+                      "type": "hard_break"
+                    },
+                    {
+                      "type": "hard_break"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
     "template": "- seed",
     "name": "interior",
     "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "seed"
+                    },
+                    {
+                      "type": "hard_break"
+                    },
+                    {
+                      "type": "text",
+                      "value": "tail"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "markdown": "- seed\\\n  tail\n",
+    "ancestors": [
+      [
+        "ul",
+        "li",
+        "br"
+      ]
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -363,21 +684,64 @@
         }
       ],
       "srcByteLength": 6
-    },
-    "markdown": "- seed\\\n  tail\n",
-    "ancestors": [
-      [
-        "ul",
-        "li",
-        "br"
-      ]
-    ]
+    }
   },
   {
     "rule": "CARVE-P11-065",
     "template": "- seed",
     "name": "trailing-space",
     "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "seed"
+                    },
+                    {
+                      "type": "hard_break"
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "markdown": "- seed<br>\n",
+    "ancestors": [
+      [
+        "ul",
+        "li",
+        "br"
+      ]
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -410,6 +774,53 @@
         }
       ],
       "srcByteLength": 6
+    }
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- seed",
+    "name": "trailing-soft-break",
+    "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "seed"
+                    },
+                    {
+                      "type": "hard_break"
+                    },
+                    {
+                      "type": "soft_break"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "- seed<br>\n",
     "ancestors": [
@@ -418,13 +829,8 @@
         "li",
         "br"
       ]
-    ]
-  },
-  {
-    "rule": "CARVE-P11-065",
-    "template": "- seed",
-    "name": "trailing-soft-break",
-    "ast": {
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -456,15 +862,7 @@
         }
       ],
       "srcByteLength": 6
-    },
-    "markdown": "- seed<br>\n",
-    "ancestors": [
-      [
-        "ul",
-        "li",
-        "br"
-      ]
-    ]
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -475,17 +873,23 @@
       "children": [
         {
           "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
             {
               "type": "list_item",
               "children": [
                 {
                   "type": "list",
-                  "ordered": false,
-                  "tight": true,
-                  "items": [
+                  "marker": {
+                    "kind": "bullet",
+                    "char": "-"
+                  },
+                  "spacing": "tight",
+                  "children": [
                     {
                       "type": "list_item",
                       "children": [
@@ -510,7 +914,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "- - seed<br>\n",
     "ancestors": [
@@ -521,66 +931,8 @@
         "li",
         "br"
       ]
-    ]
-  },
-  {
-    "rule": "CARVE-P11-065",
-    "template": "- - seed",
-    "name": "only",
-    "ast": {
-      "type": "document",
-      "children": [
-        {
-          "type": "list",
-          "ordered": false,
-          "tight": true,
-          "items": [
-            {
-              "type": "list_item",
-              "children": [
-                {
-                  "type": "list",
-                  "ordered": false,
-                  "tight": true,
-                  "items": [
-                    {
-                      "type": "list_item",
-                      "children": [
-                        {
-                          "type": "paragraph",
-                          "children": [
-                            {
-                              "type": "hard_break"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    },
-    "markdown": "- - <br><!---->\n",
-    "ancestors": [
-      [
-        "ul",
-        "li",
-        "ul",
-        "li",
-        "br"
-      ]
-    ]
-  },
-  {
-    "rule": "CARVE-P11-065",
-    "template": "- - seed",
-    "name": "repeated",
-    "ast": {
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -608,7 +960,107 @@
                             },
                             {
                               "type": "hard_break"
-                            },
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- - seed",
+    "name": "only",
+    "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "list",
+                  "marker": {
+                    "kind": "bullet",
+                    "char": "-"
+                  },
+                  "spacing": "tight",
+                  "children": [
+                    {
+                      "type": "list_item",
+                      "children": [
+                        {
+                          "type": "paragraph",
+                          "children": [
+                            {
+                              "type": "hard_break"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "markdown": "- - <br><!---->\n",
+    "ancestors": [
+      [
+        "ul",
+        "li",
+        "ul",
+        "li",
+        "br"
+      ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "ordered": false,
+          "tight": true,
+          "items": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "list",
+                  "ordered": false,
+                  "tight": true,
+                  "items": [
+                    {
+                      "type": "list_item",
+                      "children": [
+                        {
+                          "type": "paragraph",
+                          "children": [
                             {
                               "type": "hard_break"
                             }
@@ -624,6 +1076,68 @@
         }
       ],
       "srcByteLength": 8
+    }
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- - seed",
+    "name": "repeated",
+    "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "list",
+                  "marker": {
+                    "kind": "bullet",
+                    "char": "-"
+                  },
+                  "spacing": "tight",
+                  "children": [
+                    {
+                      "type": "list_item",
+                      "children": [
+                        {
+                          "type": "paragraph",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "seed"
+                            },
+                            {
+                              "type": "hard_break"
+                            },
+                            {
+                              "type": "hard_break"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "- - seed\\\n    <br>\n",
     "ancestors": [
@@ -641,13 +1155,126 @@
         "li",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "ordered": false,
+          "tight": true,
+          "items": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "list",
+                  "ordered": false,
+                  "tight": true,
+                  "items": [
+                    {
+                      "type": "list_item",
+                      "children": [
+                        {
+                          "type": "paragraph",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "seed"
+                            },
+                            {
+                              "type": "hard_break"
+                            },
+                            {
+                              "type": "hard_break"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
     "template": "- - seed",
     "name": "interior",
     "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "list",
+                  "marker": {
+                    "kind": "bullet",
+                    "char": "-"
+                  },
+                  "spacing": "tight",
+                  "children": [
+                    {
+                      "type": "list_item",
+                      "children": [
+                        {
+                          "type": "paragraph",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "seed"
+                            },
+                            {
+                              "type": "hard_break"
+                            },
+                            {
+                              "type": "text",
+                              "value": "tail"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "markdown": "- - seed\\\n    tail\n",
+    "ancestors": [
+      [
+        "ul",
+        "li",
+        "ul",
+        "li",
+        "br"
+      ]
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -692,8 +1319,71 @@
         }
       ],
       "srcByteLength": 8
+    }
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- - seed",
+    "name": "trailing-space",
+    "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "list",
+                  "marker": {
+                    "kind": "bullet",
+                    "char": "-"
+                  },
+                  "spacing": "tight",
+                  "children": [
+                    {
+                      "type": "list_item",
+                      "children": [
+                        {
+                          "type": "paragraph",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "seed"
+                            },
+                            {
+                              "type": "hard_break"
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
-    "markdown": "- - seed\\\n    tail\n",
+    "markdown": "- - seed<br>\n",
     "ancestors": [
       [
         "ul",
@@ -702,13 +1392,8 @@
         "li",
         "br"
       ]
-    ]
-  },
-  {
-    "rule": "CARVE-P11-065",
-    "template": "- - seed",
-    "name": "trailing-space",
-    "ast": {
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -753,6 +1438,68 @@
         }
       ],
       "srcByteLength": 8
+    }
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- - seed",
+    "name": "trailing-soft-break",
+    "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "list",
+                  "marker": {
+                    "kind": "bullet",
+                    "char": "-"
+                  },
+                  "spacing": "tight",
+                  "children": [
+                    {
+                      "type": "list_item",
+                      "children": [
+                        {
+                          "type": "paragraph",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "seed"
+                            },
+                            {
+                              "type": "hard_break"
+                            },
+                            {
+                              "type": "soft_break"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "- - seed<br>\n",
     "ancestors": [
@@ -763,13 +1510,8 @@
         "li",
         "br"
       ]
-    ]
-  },
-  {
-    "rule": "CARVE-P11-065",
-    "template": "- - seed",
-    "name": "trailing-soft-break",
-    "ast": {
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -813,17 +1555,7 @@
         }
       ],
       "srcByteLength": 8
-    },
-    "markdown": "- - seed<br>\n",
-    "ancestors": [
-      [
-        "ul",
-        "li",
-        "ul",
-        "li",
-        "br"
-      ]
-    ]
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -850,7 +1582,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "> seed<br>\n",
     "ancestors": [
@@ -859,7 +1597,30 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "block_quote",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -882,7 +1643,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "> <br><!---->\n",
     "ancestors": [
@@ -891,7 +1658,26 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "block_quote",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -921,7 +1707,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "> seed\\\n> <br>\n",
     "ancestors": [
@@ -935,7 +1727,33 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "block_quote",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -966,7 +1784,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "> seed\\\n> tail\n",
     "ancestors": [
@@ -975,7 +1799,34 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "block_quote",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": "tail"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1006,7 +1857,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "> seed<br>\n",
     "ancestors": [
@@ -1015,7 +1872,34 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "block_quote",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": " "
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1045,7 +1929,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "> seed<br>\n",
     "ancestors": [
@@ -1054,7 +1944,33 @@
         "p",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "block_quote",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "soft_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1081,7 +1997,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed<br>**\n",
     "ancestors": [
@@ -1090,7 +2012,30 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1113,7 +2058,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**<br><!---->**\n",
     "ancestors": [
@@ -1122,7 +2073,26 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1152,7 +2122,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed\\\n<br>**\n",
     "ancestors": [
@@ -1166,7 +2142,33 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1197,7 +2199,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed\\\ntail**\n",
     "ancestors": [
@@ -1206,7 +2214,34 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": "tail"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1237,7 +2272,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed<br>**\n",
     "ancestors": [
@@ -1246,7 +2287,34 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": " "
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1276,7 +2344,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed<br>**\n",
     "ancestors": [
@@ -1285,7 +2359,33 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "soft_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1312,7 +2412,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "*seed<br>*\n",
     "ancestors": [
@@ -1321,7 +2427,30 @@
         "em",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1344,7 +2473,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "*<br><!---->*\n",
     "ancestors": [
@@ -1353,7 +2488,26 @@
         "em",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1383,7 +2537,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "*seed\\\n<br>*\n",
     "ancestors": [
@@ -1397,7 +2557,33 @@
         "em",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1428,7 +2614,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "*seed\\\ntail*\n",
     "ancestors": [
@@ -1437,7 +2629,34 @@
         "em",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": "tail"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1468,7 +2687,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "*seed<br>*\n",
     "ancestors": [
@@ -1477,7 +2702,34 @@
         "em",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": " "
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1507,7 +2759,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "*seed<br>*\n",
     "ancestors": [
@@ -1516,7 +2774,33 @@
         "em",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "soft_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1543,7 +2827,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "<sup>seed<br></sup>\n",
     "ancestors": [
@@ -1552,7 +2842,30 @@
         "sup",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "superscript",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1575,7 +2888,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "<sup><br><!----></sup>\n",
     "ancestors": [
@@ -1584,7 +2903,26 @@
         "sup",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "superscript",
+              "children": [
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1614,7 +2952,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "<sup>seed\\\n<br></sup>\n",
     "ancestors": [
@@ -1628,7 +2972,33 @@
         "sup",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "superscript",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1659,7 +3029,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "<sup>seed\\\ntail</sup>\n",
     "ancestors": [
@@ -1668,7 +3044,34 @@
         "sup",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "superscript",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": "tail"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1699,7 +3102,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "<sup>seed<br> </sup>\n",
     "ancestors": [
@@ -1708,7 +3117,34 @@
         "sup",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "superscript",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": " "
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1738,7 +3174,13 @@
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "<sup>seed<br>\n</sup>\n",
     "ancestors": [
@@ -1747,7 +3189,33 @@
         "sup",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "superscript",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "soft_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1775,7 +3243,13 @@
           ]
         }
       ],
-      "srcByteLength": 28
+      "srcByteLength": 28,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "[seed<br>](https://example.test)\n",
     "ancestors": [
@@ -1784,7 +3258,31 @@
         "a",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "https://example.test",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 28
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1808,7 +3306,13 @@
           ]
         }
       ],
-      "srcByteLength": 28
+      "srcByteLength": 28,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "[<br><!---->](https://example.test)\n",
     "ancestors": [
@@ -1817,7 +3321,27 @@
         "a",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "https://example.test",
+              "children": [
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 28
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1848,7 +3372,13 @@
           ]
         }
       ],
-      "srcByteLength": 28
+      "srcByteLength": 28,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "[seed\\\n<br>](https://example.test)\n",
     "ancestors": [
@@ -1862,7 +3392,34 @@
         "a",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "https://example.test",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "hard_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 28
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1894,7 +3451,13 @@
           ]
         }
       ],
-      "srcByteLength": 28
+      "srcByteLength": 28,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "[seed\\\ntail](https://example.test)\n",
     "ancestors": [
@@ -1903,7 +3466,35 @@
         "a",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "https://example.test",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": "tail"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 28
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1935,7 +3526,13 @@
           ]
         }
       ],
-      "srcByteLength": 28
+      "srcByteLength": 28,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "[seed<br> ](https://example.test)\n",
     "ancestors": [
@@ -1944,7 +3541,35 @@
         "a",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "https://example.test",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": " "
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 28
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -1975,7 +3600,13 @@
           ]
         }
       ],
-      "srcByteLength": 28
+      "srcByteLength": 28,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "[seed<br>\n](https://example.test)\n",
     "ancestors": [
@@ -1984,7 +3615,34 @@
         "a",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "https://example.test",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "seed"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "soft_break"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 28
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2007,7 +3665,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# seed<br>\n",
     "ancestors": [
@@ -2015,7 +3679,26 @@
         "h1",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2034,7 +3717,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# <br>\n",
     "ancestors": [
@@ -2042,7 +3731,22 @@
         "h1",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2068,7 +3772,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# seed<br><br>\n",
     "ancestors": [
@@ -2080,7 +3790,29 @@
         "h1",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2107,7 +3839,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# seed<br>tail\n",
     "ancestors": [
@@ -2115,7 +3853,30 @@
         "h1",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": "tail"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2142,7 +3903,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# seed<br>\n",
     "ancestors": [
@@ -2150,7 +3917,30 @@
         "h1",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": " "
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2176,7 +3966,13 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# seed<br>\n",
     "ancestors": [
@@ -2184,7 +3980,29 @@
         "h1",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "soft_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2195,29 +4013,51 @@
       "children": [
         {
           "type": "table",
-          "rows": [
+          "children": [
             {
-              "type": "table_row",
-              "cells": [
+              "type": "table_body",
+              "children": [
                 {
-                  "type": "table_cell",
-                  "header": false,
+                  "type": "table_row",
                   "children": [
                     {
-                      "type": "text",
-                      "value": "seed"
-                    },
-                    {
-                      "type": "hard_break"
+                      "type": "table_cell",
+                      "header": false,
+                      "children": [
+                        {
+                          "type": "cell_paragraph",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "seed"
+                            },
+                            {
+                              "type": "hard_break"
+                            }
+                          ]
+                        }
+                      ],
+                      "sourceContent": "inline"
                     }
                   ]
                 }
               ]
             }
+          ],
+          "columns": [
+            {
+              "type": "table_column"
+            }
           ]
         }
       ],
-      "srcByteLength": 8
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "|  |\n| --- |\n| seed<br> |\n",
     "ancestors": [
@@ -2228,53 +4068,8 @@
         "td",
         "br"
       ]
-    ]
-  },
-  {
-    "rule": "CARVE-P11-065",
-    "template": "| seed |",
-    "name": "only",
-    "ast": {
-      "type": "document",
-      "children": [
-        {
-          "type": "table",
-          "rows": [
-            {
-              "type": "table_row",
-              "cells": [
-                {
-                  "type": "table_cell",
-                  "header": false,
-                  "children": [
-                    {
-                      "type": "hard_break"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "srcByteLength": 8
-    },
-    "markdown": "|  |\n| --- |\n| <br> |\n",
-    "ancestors": [
-      [
-        "table",
-        "tbody",
-        "tr",
-        "td",
-        "br"
-      ]
-    ]
-  },
-  {
-    "rule": "CARVE-P11-065",
-    "template": "| seed |",
-    "name": "repeated",
-    "ast": {
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -2293,7 +4088,91 @@
                     },
                     {
                       "type": "hard_break"
-                    },
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "| seed |",
+    "name": "only",
+    "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "table",
+          "children": [
+            {
+              "type": "table_body",
+              "children": [
+                {
+                  "type": "table_row",
+                  "children": [
+                    {
+                      "type": "table_cell",
+                      "header": false,
+                      "children": [
+                        {
+                          "type": "cell_paragraph",
+                          "children": [
+                            {
+                              "type": "hard_break"
+                            }
+                          ]
+                        }
+                      ],
+                      "sourceContent": "inline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "type": "table_column"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "markdown": "|  |\n| --- |\n| <br> |\n",
+    "ancestors": [
+      [
+        "table",
+        "tbody",
+        "tr",
+        "td",
+        "br"
+      ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "table",
+          "rows": [
+            {
+              "type": "table_row",
+              "cells": [
+                {
+                  "type": "table_cell",
+                  "header": false,
+                  "children": [
                     {
                       "type": "hard_break"
                     }
@@ -2305,6 +4184,65 @@
         }
       ],
       "srcByteLength": 8
+    }
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "| seed |",
+    "name": "repeated",
+    "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "table",
+          "children": [
+            {
+              "type": "table_body",
+              "children": [
+                {
+                  "type": "table_row",
+                  "children": [
+                    {
+                      "type": "table_cell",
+                      "header": false,
+                      "children": [
+                        {
+                          "type": "cell_paragraph",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "seed"
+                            },
+                            {
+                              "type": "hard_break"
+                            },
+                            {
+                              "type": "hard_break"
+                            }
+                          ]
+                        }
+                      ],
+                      "sourceContent": "inline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "type": "table_column"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "|  |\n| --- |\n| seed<br><br> |\n",
     "ancestors": [
@@ -2322,13 +4260,110 @@
         "td",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "table",
+          "rows": [
+            {
+              "type": "table_row",
+              "cells": [
+                {
+                  "type": "table_cell",
+                  "header": false,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "seed"
+                    },
+                    {
+                      "type": "hard_break"
+                    },
+                    {
+                      "type": "hard_break"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8
+    }
   },
   {
     "rule": "CARVE-P11-065",
     "template": "| seed |",
     "name": "interior",
     "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "table",
+          "children": [
+            {
+              "type": "table_body",
+              "children": [
+                {
+                  "type": "table_row",
+                  "children": [
+                    {
+                      "type": "table_cell",
+                      "header": false,
+                      "children": [
+                        {
+                          "type": "cell_paragraph",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "seed"
+                            },
+                            {
+                              "type": "hard_break"
+                            },
+                            {
+                              "type": "text",
+                              "value": "tail"
+                            }
+                          ]
+                        }
+                      ],
+                      "sourceContent": "inline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "type": "table_column"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "markdown": "|  |\n| --- |\n| seed<br>tail |\n",
+    "ancestors": [
+      [
+        "table",
+        "tbody",
+        "tr",
+        "td",
+        "br"
+      ]
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -2360,8 +4395,68 @@
         }
       ],
       "srcByteLength": 8
+    }
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "| seed |",
+    "name": "trailing-space",
+    "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "table",
+          "children": [
+            {
+              "type": "table_body",
+              "children": [
+                {
+                  "type": "table_row",
+                  "children": [
+                    {
+                      "type": "table_cell",
+                      "header": false,
+                      "children": [
+                        {
+                          "type": "cell_paragraph",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "seed"
+                            },
+                            {
+                              "type": "hard_break"
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            }
+                          ]
+                        }
+                      ],
+                      "sourceContent": "inline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "type": "table_column"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
-    "markdown": "|  |\n| --- |\n| seed<br>tail |\n",
+    "markdown": "|  |\n| --- |\n| seed<br> |\n",
     "ancestors": [
       [
         "table",
@@ -2370,13 +4465,8 @@
         "td",
         "br"
       ]
-    ]
-  },
-  {
-    "rule": "CARVE-P11-065",
-    "template": "| seed |",
-    "name": "trailing-space",
-    "ast": {
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -2408,6 +4498,65 @@
         }
       ],
       "srcByteLength": 8
+    }
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "| seed |",
+    "name": "trailing-soft-break",
+    "ast": {
+      "type": "document",
+      "children": [
+        {
+          "type": "table",
+          "children": [
+            {
+              "type": "table_body",
+              "children": [
+                {
+                  "type": "table_row",
+                  "children": [
+                    {
+                      "type": "table_cell",
+                      "header": false,
+                      "children": [
+                        {
+                          "type": "cell_paragraph",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "seed"
+                            },
+                            {
+                              "type": "hard_break"
+                            },
+                            {
+                              "type": "soft_break"
+                            }
+                          ]
+                        }
+                      ],
+                      "sourceContent": "inline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "type": "table_column"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 8,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "|  |\n| --- |\n| seed<br> |\n",
     "ancestors": [
@@ -2418,13 +4567,8 @@
         "td",
         "br"
       ]
-    ]
-  },
-  {
-    "rule": "CARVE-P11-065",
-    "template": "| seed |",
-    "name": "trailing-soft-break",
-    "ast": {
+    ],
+    "pinnedAst": {
       "type": "document",
       "children": [
         {
@@ -2455,17 +4599,7 @@
         }
       ],
       "srcByteLength": 8
-    },
-    "markdown": "|  |\n| --- |\n| seed<br> |\n",
-    "ancestors": [
-      [
-        "table",
-        "tbody",
-        "tr",
-        "td",
-        "br"
-      ]
-    ]
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2499,7 +4633,13 @@
           ]
         }
       ],
-      "srcByteLength": 24
+      "srcByteLength": 24,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed<br>**\n\nbody\n",
     "ancestors": [
@@ -2508,7 +4648,37 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "note",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 24
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2538,7 +4708,13 @@
           ]
         }
       ],
-      "srcByteLength": 24
+      "srcByteLength": 24,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**<br><!---->**\n\nbody\n",
     "ancestors": [
@@ -2547,7 +4723,33 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "note",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 24
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2584,7 +4786,13 @@
           ]
         }
       ],
-      "srcByteLength": 24
+      "srcByteLength": 24,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed\\\n<br>**\n\nbody\n",
     "ancestors": [
@@ -2598,7 +4806,40 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "note",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 24
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2636,7 +4877,13 @@
           ]
         }
       ],
-      "srcByteLength": 24
+      "srcByteLength": 24,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed\\\ntail**\n\nbody\n",
     "ancestors": [
@@ -2645,7 +4892,41 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "note",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": "tail"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 24
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2683,7 +4964,13 @@
           ]
         }
       ],
-      "srcByteLength": 24
+      "srcByteLength": 24,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed<br>**\n\nbody\n",
     "ancestors": [
@@ -2692,7 +4979,41 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "note",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": " "
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 24
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2729,7 +5050,13 @@
           ]
         }
       ],
-      "srcByteLength": 24
+      "srcByteLength": 24,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed<br>**\n\nbody\n",
     "ancestors": [
@@ -2738,7 +5065,40 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "note",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "soft_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 24
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2772,7 +5132,13 @@
           ]
         }
       ],
-      "srcByteLength": 27
+      "srcByteLength": 27,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed<br>**\n\nbody\n",
     "ancestors": [
@@ -2781,7 +5147,37 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "details",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 27
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2811,7 +5207,13 @@
           ]
         }
       ],
-      "srcByteLength": 27
+      "srcByteLength": 27,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**<br><!---->**\n\nbody\n",
     "ancestors": [
@@ -2820,7 +5222,33 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "details",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 27
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2857,7 +5285,13 @@
           ]
         }
       ],
-      "srcByteLength": 27
+      "srcByteLength": 27,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed\\\n<br>**\n\nbody\n",
     "ancestors": [
@@ -2871,7 +5305,40 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "details",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "hard_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 27
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2909,7 +5376,13 @@
           ]
         }
       ],
-      "srcByteLength": 27
+      "srcByteLength": 27,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed\\\ntail**\n\nbody\n",
     "ancestors": [
@@ -2918,7 +5391,41 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "details",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": "tail"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 27
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -2956,7 +5463,13 @@
           ]
         }
       ],
-      "srcByteLength": 27
+      "srcByteLength": 27,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed<br>**\n\nbody\n",
     "ancestors": [
@@ -2965,7 +5478,41 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "details",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": " "
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 27
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -3002,7 +5549,13 @@
           ]
         }
       ],
-      "srcByteLength": 27
+      "srcByteLength": 27,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "**seed<br>**\n\nbody\n",
     "ancestors": [
@@ -3011,7 +5564,40 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "details",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "body"
+                }
+              ]
+            }
+          ],
+          "title": [
+            {
+              "type": "text",
+              "value": "seed"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "soft_break"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 27
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -3038,10 +5624,39 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# a b\n",
-    "ancestors": []
+    "ancestors": [],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "soft_break"
+            },
+            {
+              "type": "text",
+              "value": " b"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -3068,10 +5683,39 @@
           ]
         }
       ],
-      "srcByteLength": 6
+      "srcByteLength": 6,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# a b\n",
-    "ancestors": []
+    "ancestors": [],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "a\t"
+            },
+            {
+              "type": "soft_break"
+            },
+            {
+              "type": "text",
+              "value": "\tb"
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 6
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -3119,7 +5763,13 @@
           ]
         }
       ],
-      "srcByteLength": 37
+      "srcByteLength": 37,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# A<br>B\n\n[heading](#ab)\n",
     "ancestors": [
@@ -3127,7 +5777,51 @@
         "h1",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "A"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": "B"
+            }
+          ],
+          "attrs": {
+            "id": "target",
+            "order": [
+              "#id"
+            ]
+          }
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "#target",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "heading"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 37
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -3180,7 +5874,13 @@
           ]
         }
       ],
-      "srcByteLength": 37
+      "srcByteLength": 37,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# **A<br>B**\n\n[heading](#ab)\n",
     "ancestors": [
@@ -3189,7 +5889,56 @@
         "strong",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "A"
+                },
+                {
+                  "type": "hard_break"
+                },
+                {
+                  "type": "text",
+                  "value": "B"
+                }
+              ]
+            }
+          ],
+          "attrs": {
+            "id": "target",
+            "order": [
+              "#id"
+            ]
+          }
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "#target",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "heading"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 37
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -3237,7 +5986,13 @@
           ]
         }
       ],
-      "srcByteLength": 37
+      "srcByteLength": 37,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# A<br> B\n\n[heading](#a-b)\n",
     "ancestors": [
@@ -3245,7 +6000,51 @@
         "h1",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "A"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": " B"
+            }
+          ],
+          "attrs": {
+            "id": "target",
+            "order": [
+              "#id"
+            ]
+          }
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "#target",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "heading"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 37
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -3296,7 +6095,13 @@
           ]
         }
       ],
-      "srcByteLength": 37
+      "srcByteLength": 37,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# A<br><br>B\n\n[heading](#ab)\n",
     "ancestors": [
@@ -3308,7 +6113,54 @@
         "h1",
         "br"
       ]
-    ]
+    ],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "A"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "hard_break"
+            },
+            {
+              "type": "text",
+              "value": "B"
+            }
+          ],
+          "attrs": {
+            "id": "target",
+            "order": [
+              "#id"
+            ]
+          }
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "#target",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "heading"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 37
+    }
   },
   {
     "rule": "CARVE-P11-065",
@@ -3356,9 +6208,59 @@
           ]
         }
       ],
-      "srcByteLength": 37
+      "srcByteLength": 37,
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
     },
     "markdown": "# A B\n\n[heading](#a-b)\n",
-    "ancestors": []
+    "ancestors": [],
+    "pinnedAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "heading",
+          "level": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "A"
+            },
+            {
+              "type": "soft_break"
+            },
+            {
+              "type": "text",
+              "value": "B"
+            }
+          ],
+          "attrs": {
+            "id": "target",
+            "order": [
+              "#id"
+            ]
+          }
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "href": "#target",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "heading"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "srcByteLength": 37
+    }
   }
 ]

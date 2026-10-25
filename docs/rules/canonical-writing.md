@@ -9,7 +9,7 @@ description: "Canonical Carve source, Markdown and plain-text targets, round tri
 
 Canonical Carve source, Markdown and plain-text targets, round trips, and escaping.
 
-This view contains 76 of 347 active rules. Every rule remains mandatory where applicable.
+This view contains 76 of 352 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -20,7 +20,6 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L68) | 11 | A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES |
 | [`CARVE-P11-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L138) | 11 | A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING |
 | [`CARVE-P11-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L233) | 11 | WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT |
-| [`CARVE-P11-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L283) | 11 | THE CONVERSION-DIAGNOSTICS CHANNEL |
 | [`CARVE-P11-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L333) | 11 | THE ESCAPING RULE |
 | [`CARVE-P11-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L378) | 11 | ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT |
 | [`CARVE-P11-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L399) | 11 | THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER |
@@ -31,25 +30,17 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L98) | 11 | A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING |
 | [`CARVE-P11-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L118) | 11 | A TABLE CELL'S CONTENT IS PADDED |
 | [`CARVE-P11-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L225) | 11 | PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING |
-| [`CARVE-P11-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L318) | 11 | NO WHITESPACE-ONLY LINE |
-| [`CARVE-P11-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L379) | 11 | THE SAME LINE DECIDES WHAT AN IMPORT KEEPS |
-| [`CARVE-P11-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L412) | 11 | AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO |
-| [`CARVE-P11-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L435) | 11 | A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL `{empty}` |
-| [`CARVE-P11-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L462) | 11 | A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE RE-DERIVES IT |
-| [`CARVE-P11-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L516) | 11 | A LINE WHOSE LAST NODE IS A COMMENT IS EXEMPT |
-| [`CARVE-P11-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L702) | 11 | THE MARKDOWN TARGET'S ESCAPING |
-| [`CARVE-P11-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L758) | 11 | THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE |
-| [`CARVE-P11-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L793) | 11 | M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP |
-| [`CARVE-P11-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L803) | 11 | M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING |
+| [`CARVE-P11-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L317) | 11 | NO WHITESPACE-ONLY LINE |
+| [`CARVE-P11-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L378) | 11 | THE SAME LINE DECIDES WHAT AN IMPORT KEEPS |
+| [`CARVE-P11-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L411) | 11 | AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO |
+| [`CARVE-P11-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L434) | 11 | A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL `{empty}` |
+| [`CARVE-P11-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L461) | 11 | A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE RE-DERIVES IT |
+| [`CARVE-P11-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L515) | 11 | A LINE WHOSE LAST NODE IS A COMMENT IS EXEMPT |
+| [`CARVE-P11-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L701) | 11 | THE MARKDOWN TARGET'S ESCAPING |
+| [`CARVE-P11-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L757) | 11 | THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE |
+| [`CARVE-P11-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L792) | 11 | M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP |
 | [`CARVE-P11-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L2) | 11 | THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO |
-| [`CARVE-P11-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L29) | 11 | THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK |
-| [`CARVE-P11-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L78) | 11 | A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES |
-| [`CARVE-P11-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L91) | 11 | AN AMPERSAND THAT WOULD READ AS A CHARACTER REFERENCE IS ESCAPED |
-| [`CARVE-P11-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L103) | 11 | A `!` BEFORE A LINK IS ESCAPED |
-| [`CARVE-P11-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L112) | 11 | A PARAGRAPH LINE MUST NOT BECOME A THEMATIC BREAK OR A SETEXT UNDERLINE |
-| [`CARVE-P11-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L133) | 11 | A PIPE IN A TABLE CELL IS ESCAPED |
 | [`CARVE-P11-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L244) | 11 | THE MARKDOWN TARGET'S HARD BREAK |
-| [`CARVE-P11-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L261) | 11 | A HARD BREAK IN A TABLE CELL IS `<br>` |
 | [`CARVE-P11-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L323) | 11 | A LIST ITEM'S CONTINUATION LINES ARE ALIGNED |
 | [`CARVE-P11-028`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L335) | 11 | AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS |
 | [`CARVE-P11-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L371) | 11 | A TABLE ROW KEEPS ITS OWN CELL COUNT |
@@ -59,9 +50,25 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L490) | 11 | A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET |
 | [`CARVE-P11-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L554) | 11 | A COMPOSITE FIGURE SURVIVES EVERY TARGET |
 | [`CARVE-P11-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L598) | 11 | THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH |
-| [`CARVE-P11-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L613) | 11 | A LIST ITEM'S CONTINUATION BLOCKS SIT AT ITS CONTENT COLUMN |
-| [`CARVE-P11-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L633) | 11 | A REGION MARKER KEEPS ITS LINE |
+| [`CARVE-P11-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L654) | 11 | A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES |
+| [`CARVE-P11-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L673) | 11 | AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL |
+| [`CARVE-P11-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/22a-writer-target-metadata.ebnf#L386) | 11 | THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG |
+| [`CARVE-P11-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L246) | 11 | A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT |
+| [`CARVE-P11-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L581) | 11 | AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}` |
+| [`CARVE-P11-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L248) | 11 | A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE |
+| [`CARVE-P11-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L604) | 11 | A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE |
+| [`CARVE-P11-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L694) | 11 | THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST |
+| [`CARVE-P11-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L802) | 11 | M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING |
+| [`CARVE-P11-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L29) | 11 | THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK |
+| [`CARVE-P11-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L283) | 11 | THE CONVERSION-DIAGNOSTICS CHANNEL |
 | [`CARVE-P11-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L718) | 11 | THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS |
+| [`CARVE-P11-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L261) | 11 | A HARD BREAK IN A TABLE CELL IS `<br>` |
+| [`CARVE-P11-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/22a-writer-target-metadata.ebnf#L444) | 11 | THE MARKDOWN TARGET KEEPS A FRAGMENT LINK |
+| [`CARVE-P11-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L78) | 11 | A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES |
+| [`CARVE-P11-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L91) | 11 | AN AMPERSAND THAT WOULD READ AS A CHARACTER REFERENCE IS ESCAPED |
+| [`CARVE-P11-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L103) | 11 | A `!` BEFORE A LINK IS ESCAPED |
+| [`CARVE-P11-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L112) | 11 | A PARAGRAPH LINE MUST NOT BECOME A THEMATIC BREAK OR A SETEXT UNDERLINE |
+| [`CARVE-P11-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L133) | 11 | A PIPE IN A TABLE CELL IS ESCAPED |
 | [`CARVE-P11-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L740) | 11 | A PARAGRAPH LINE CARRIES NO EDGE WHITESPACE |
 | [`CARVE-P11-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L755) | 11 | A TABLE WITHOUT A HEADER ROW GETS AN EMPTY ONE |
 | [`CARVE-P11-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L802) | 11 | ADJACENT LISTS OF ONE KIND ALTERNATE THEIR MARKER |
@@ -73,21 +80,14 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/22a-writer-target-metadata.ebnf#L34) | 11 | AN OPT-IN MODE CARRIES AN ELEMENT-LESS CONTAINER IN A COMMENT |
 | [`CARVE-P11-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L194) | 11 | INLINE CODE PRESERVES ITS PAYLOAD |
 | [`CARVE-P11-065`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L300) | 11 | A HARD BREAK AT AN INLINE BOUNDARY SURVIVES |
-| [`CARVE-P11-066`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L269) | 11 | A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE |
+| [`CARVE-P11-066`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L268) | 11 | A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE |
 | [`CARVE-P11-067`](https://github.com/markup-carve/carve/blob/main/resources/spec/22a-writer-target-metadata.ebnf#L194) | 11 | THE CARRIER MODE ALSO CARRIES AN ATTRIBUTE LINE, A DEFINITION LIST AND A CAPTION |
 | [`CARVE-P11-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/22a-writer-target-metadata.ebnf#L352) | 11 | THE CARRIER MODE CARRIES AN INLINE CONSTRUCT'S ATTRIBUTES, A SPAN AND A CROSS-REFERENCE IN INLINE MARKERS |
 | [`CARVE-P11-069`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L215) | 11 | THE MARKDOWN TARGET KEEPS AN AUTOLINK'S ANGLE SPELLING |
 | [`CARVE-P11-070`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L150) | 11 | EMPTY DESTINATIONS HAVE A CANONICAL SPELLING |
 | [`CARVE-P11-071`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L175) | 11 | OPTIONAL TABLE ALIGNMENT |
-| [`CARVE-P11-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L654) | 11 | A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES |
-| [`CARVE-P11-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L673) | 11 | AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL |
-| [`CARVE-P11-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/22a-writer-target-metadata.ebnf#L386) | 11 | THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG |
-| [`CARVE-P11-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/22a-writer-target-metadata.ebnf#L444) | 11 | THE MARKDOWN TARGET KEEPS A FRAGMENT LINK |
-| [`CARVE-P11-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L246) | 11 | A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT |
-| [`CARVE-P11-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L582) | 11 | AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}` |
-| [`CARVE-P11-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L248) | 11 | A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE |
-| [`CARVE-P11-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L605) | 11 | A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE |
-| [`CARVE-P11-074`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L616) | 11 | A FENCE A DEDENT ENDED IN A NESTED CHILD IS WRITTEN CLOSED |
-| [`CARVE-P11-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L694) | 11 | THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST |
-| [`CARVE-P12-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L276) | 12 | `fmt` WRITES THE SOURCE SPELLING, NOT `blockImage` |
-| [`CARVE-P10-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L879) | 10 | ONE OPTION SWITCHES EVERY TARGET'S CARRIERS |
+| [`CARVE-P11-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L613) | 11 | A LIST ITEM'S CONTINUATION BLOCKS SIT AT ITS CONTENT COLUMN |
+| [`CARVE-P11-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L632) | 11 | A REGION MARKER KEEPS ITS LINE |
+| [`CARVE-P11-074`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L615) | 11 | A FENCE A DEDENT ENDED IN A NESTED CHILD IS WRITTEN CLOSED |
+| [`CARVE-P12-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L217) | 12 | `fmt` WRITES THE SOURCE SPELLING, NOT `blockImage` |
+| [`CARVE-P10-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L878) | 10 | ONE OPTION SWITCHES EVERY TARGET'S CARRIERS |

@@ -20,9 +20,9 @@ and PART 12 §38 governs it.
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "session": "s-7f3",
-  "nodes": [{ "id": "n4", "path": "/children/3" }]
+  "nodes": [{ "id": "n4", "path": "/children/3", "editorKey": "paragraph-4", "collaborationId": "session-node-4" }]
 }
 ```
 
@@ -57,7 +57,7 @@ their strings look like.
 ## What the sidecar does not carry
 
 No spans. A node's offsets are the `pos` field on the node its path addresses,
-counted in codepoints (PART 12 §4). A second copy in the sidecar could disagree
+counted in UTF-8 bytes (PART 12 §4). A second copy in the sidecar could disagree
 with the first.
 
 No filesystem paths. `pos.file` remains the inline minimum, per PART 12 §13.
