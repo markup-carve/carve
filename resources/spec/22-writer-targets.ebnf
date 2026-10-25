@@ -132,10 +132,9 @@
 
    8h. A PIPE IN A TABLE CELL IS ESCAPED -- NORMATIVE [CARVE-P11-054]. Inside
       a pipe-table cell every `|` the writer emits as content is written
-      `\|`: in text, in a code span's content, and in a link destination or
-      title. GFM splits the row on every unescaped `|` before it reads any
-      inline, a code span included, and reads `\|` back as `|` in all of
-      those places. A `|` already written escaped is not escaped twice.
+      `\|` in text, a code span's content, or a title. In a link destination
+      it is `%7C` under CARVE-P11-075. GFM splits the row on unescaped pipes
+      before reading inlines; a pipe already escaped is not escaped twice.
 
         cell text "a|b"            ->  | a\|b |
         cell code "a|b"            ->  | `a\|b` |
@@ -228,10 +227,8 @@
         `href` is `mailto:` followed by the body, and the emitted destination
         equals `href`.
 
-      For both comparisons, the target's destination step strips controls,
-      blanks denied schemes, writes `(` as `\(` and `)` as `\)`,
-      percent-encodes spaces, `<`, `>` and `|`, and neutralizes character
-      references. It leaves other non-ASCII characters unchanged. A changed destination or an ineligible body uses
+      For both comparisons, apply the destination encoding (§8l). A changed
+      destination or an ineligible body uses
       the ordinary explicit link spelling. An authored `[text](destination)`
       stays explicit even when its text equals its destination. CARVE-P12-007's
       nested-link render rule still flattens the inner link. Attributes follow
@@ -240,6 +237,30 @@
         <https://example.com>     -> <https://example.com>
         <user@example.com>       -> <user@example.com>
         <https://e.com/a(b)>      -> [https://e.com/a(b)](https://e.com/a\(b\))
+
+   8l. THE MARKDOWN TARGET ENCODES LINK AND IMAGE DESTINATIONS -- NORMATIVE
+      [CARVE-P11-075]. Apply these steps in order to every destination written
+      by the ordinary link, image, or autolink path, including one in a table
+      cell. A heading fragment rewritten to a GFM slug (§11) is exempt:
+
+      1. Strip destination controls, then probe the resulting value for a
+         denied scheme (PART 9 §25). A denied destination becomes empty.
+      2. Escape `(` as `\(` and `)` as `\)`; percent-encode spaces, `<`,
+         `>` and `|` as `%20`, `%3C`, `%3E` and `%7C`. When the destination
+         contains `|`, also encode its backslashes as `%5C`. Other non-ASCII
+         content characters remain as written.
+      3. Escape an `&` that opens a character reference as `&amp;`. For this
+         destination test, a reference has `#` and 1-8 decimal digits, `#x`
+         or `#X` and 1-8 hex digits, or an ASCII letter followed by 0-31
+         ASCII alphanumeric characters, then `;`. This prevents a reader from
+         decoding a destination different from the one the scheme probe read.
+
+      A nonempty authored destination that becomes empty writes `<>`; an
+      authored empty destination uses the same spelling (CARVE-P11-070).
+      In a table cell the `%7C` spelling keeps the cell boundary intact.
+
+        [x](a|b)               -> [x](a%7Cb)
+        [x](a(b))              -> [x](a\(b\))
 
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces, except
@@ -431,21 +452,12 @@
       This clause decides only where the named text goes on the targets below.
       Unnamed construct/target pairs remain open, not allowed by omission.
 
-      T1 A FENCE'S TITLE AND LABEL RENDER THE WAY A DIV'S ALREADY DO. A fenced
-         div surfaces both tokens on every target, which is the
-         caption rule `docs/graceful-degradation.md` makes normative for an
-         unconsumed label: `::: note "T" [L]` emits `**T**` then `**L**` in
-         Markdown, a standalone line each in plain text, and a bold
-         standalone line each on the terminal, the title always before the
-         label. A code fence carries the SAME two tokens in the SAME two
-         slots of its info string, so it renders them the same way, above the
-         block:
-
-             ```php "src/Auth.php" [Composer]   ->  src/Auth.php
-             composer require x                     (blank)
-             ```                                    Composer
-                                                    (blank)
-                                                    composer require x
+      T1 A FENCE'S TITLE AND LABEL SURVIVE EACH TARGET. Plain text places
+         each token on a standalone line above the code block, title before
+         label. The terminal makes those lines bold. Markdown keeps the title
+         and label after the language in the fence info string
+         (CARVE-P11-067). A fenced div places its title and unconsumed label
+         above the block on all three targets.
 
       T2 A TABLE CAPTION SURVIVES THE MARKDOWN TARGET as body text AFTER the
          table, separated by one blank line. The position is what this target
@@ -470,17 +482,11 @@
       directly above a code block in plain text reads as the FIRST LINE OF THE
       CODE.
 
-      TWO MORE LOSSES OF THE SAME TOKENS ARE RECORDED HERE AND LEFT OPEN. Each
-      breaks the floor exactly as this clause's three tokens did; what is
-      missing is a decided rendering, not a rule. Neither is settled by this
-      clause and neither is thereby permitted:
+      A fence with no language loses its title on default Markdown output
+      and reports `fence-title-dropped` (CARVE-P2-024). With a language, the
+      title stays in the info string. Carrier mode preserves either form.
 
-        - A fence title on a fence with NO LANGUAGE is dropped by the
-          MARKDOWN writer too: ```"src/app.js" emits a bare ``` and the
-          title is gone. The Markdown target keeps the title only when a
-          language precedes it.
-
-        - A code-group label never reaches the HTML target at all:
+      A code-group label remains an unsettled HTML case:
           ```js [Node] gives `<pre><code class="language-js">`. Core
           assigns the label no meaning and a group extension consumes it, so
           on HTML with no such extension the token has nowhere to go. Where
@@ -566,8 +572,8 @@
       of PART 2 `colon_fence_close` unchanged), and the group caption as a `^ ` line after
       the closer, its `#` placeholder written back as authored.
 
-      THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. §5's
-      unconditional set escapes a leading caret in TEXT; the group caption is
+      THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. Under §2 a leading
+      caret in paragraph text is escaped when bare it would start a caption. The group caption is
       NOT text in that position -- it is the caption the closer hosts -- so
       the writer MUST NOT emit it as `\^ `, which would re-parse as a
       paragraph and break §1's `parse(fmt(x)) == parse(x)`. The other

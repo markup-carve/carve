@@ -25,21 +25,15 @@
       CHARACTER, NOT THE RUN LENGTH: `***` and `*****` are ONE spelling here
       and both come back as `***`. The break's run length is not recorded.
 
-      EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A `---` line at byte 0 of the
-      EMITTED document is the frontmatter opener, not a break. Spelling this
-      clause's form there can manufacture a block the document does not have,
-      and everything down to whatever closes it is swallowed with it: a
-      document of `***`, a blank line and `---` renders two breaks, and written
-      by the literal reading of this clause it renders NOTHING -- with any
-      paragraph standing between them lost too. Where that would happen the
-      writer spells the break `***` instead, and that deviation is CARVE-P11-002's --
-      §1's invariant outranks a per-construct rule. It is CONFORMANT and not a
-      divergence from this section.
+      EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A break with marker `-`, or
+      no marker, would be written `---`. At byte 0 of an emitted document,
+      with a later `---` line that would close frontmatter, the writer spells
+      that first break `***` instead (CARVE-P11-002). Two marker-less breaks
+      are an example: writing both as `---` would create frontmatter.
 
       THE CONDITION IS THE WHOLE EMITTED DOCUMENT, NOT ITS FIRST LINE. An
       opener needs a closer, so three hyphens at byte 0 open nothing unless a
-      later line closes them -- `***` alone, and `***` above a paragraph, are
-      both written `---` with no exception at all. What an implementation owes
+      later line closes them. A lone `---` is written `---`. What an implementation owes
       is CARVE-P11-002's test: read the emitted bytes with its own parser.
 
       WHICH break moves is not pinned, because more than one departure
@@ -246,7 +240,7 @@
       next time a cell-level marker is added.
 
    6g. A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE -- NORMATIVE [CARVE-P11-041].
-      PART 2 admits seven task states while rendering collapses
+      PART 2 admits nine task marker spellings while rendering collapses
       them to two. The AST records the authored character (PART 12,
       `list_item.task.mark`) and the writer emits it.
 
@@ -257,13 +251,15 @@
       task box; a box carries both mark and status.
 
       `X` IS A CASE, NOT A STATE. `[X]` is written `[x]`.
-      The field admits six characters rather than seven for that reason: the
+      The field admits eight characters rather than nine for that reason: the
       two spell one state, nothing downstream can tell them apart, and §1 is
       satisfied because the AST they parse to is the same one.
 
-      THE RENDERING IS UNCHANGED. Every state but `x`/`X` still renders an
-      unchecked box (PART 2 `task_state`), so no HTML moves with this clause.
-      What moves is only what survives a format cycle.
+      `[_]` SPELLS THE OPEN STATE. A writer retains `_` when it appears in
+      `taskState`; absent `taskState` still writes `[ ]` for an open item.
+
+      Every state but `x`/`X` renders an unchecked box (PART 2 `task_state`).
+      The authored character also survives a format cycle.
 
    6h. A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE -- NORMATIVE
       [CARVE-P11-066]. A header row has two spellings, `|= cell |` and a plain

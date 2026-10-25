@@ -1,0 +1,8 @@
+{
+  "rules": ["CARVE-P2-025", "CARVE-P7-001"],
+  "cases": [
+    { "source": "%% x", "content": "x" },
+    { "source": "%%  x ", "content": " x" },
+    { "source": "%%\tx", "content": "\tx" }
+  ]
+}

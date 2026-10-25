@@ -65018,3 +65018,234 @@ An all-header row after body data stays in `tbody` without a `thead`, and its al
 ```
 
 :::
+
+## An empty link destination takes spaces
+
+::: compare
+
+```carve
+[t](  )
+```
+
+```html
+<p><a href="">t</a></p>
+```
+
+:::
+
+## A tab cannot pad an empty link destination
+
+::: compare
+
+```carve
+[t](	)
+```
+
+```html
+<p>[t](	)</p>
+```
+
+:::
+
+## A tab after a comment marker stays in its text
+
+::: compare
+
+```carve
+a
+%%	x
+b
+```
+
+```html
+<p>a</p>
+<p>b</p>
+```
+
+:::
+
+## A titled admonition skips an authored heading id
+
+:::: compare
+
+```carve
+{#adm-1}
+# H
+
+::: warning "Careful"
+body
+:::
+```
+
+```html
+<section id="adm-1">
+  <h1>H</h1>
+  <aside class="admonition warning" aria-labelledby="adm-1-2">
+    <p class="admonition-title" id="adm-1-2">Careful</p>
+    <p>body</p>
+  </aside>
+</section>
+```
+
+::::
+
+## A display-math span with trailing attributes takes a caption
+
+::: compare
+
+```carve
+$$`E=mc^2`{#eq-1}
+^ cap
+```
+
+```html
+<figure>
+  <p><span class="math display" id="eq-1" role="math">\[E=mc^2\]</span></p>
+  <figcaption>cap</figcaption>
+</figure>
+```
+
+:::
+
+## A styled display-math span takes a caption across one blank line
+
+::: compare
+
+```carve
+$$`x+y`{.boxed data-k=v}
+
+^ Equation #: Sum
+```
+
+```html
+<figure>
+  <p><span class="math display boxed" data-k="v" role="math">\[x+y\]</span></p>
+  <figcaption>Equation 1: Sum</figcaption>
+</figure>
+```
+
+:::
+
+## A line at the marker column leaves a closed nested body
+
+After the definition body and its code fence end, the line at the item's
+marker column belongs outside the list (PART 0 O2).
+
+::: compare
+
+````carve
+  - :: term
+    : definition
+  
+      ```
+      code
+      ```
+  after
+````
+
+```html
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>definition</p>
+        <pre><code>code
+</code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>after</p>
+```
+
+````carve
+    - :: term
+      : definition
+    
+        ~~~
+        code
+        ~~~
+    after
+````
+
+```html
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>definition</p>
+        <pre><code>code
+</code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>after</p>
+```
+
+:::
+
+## Empty heading slugs use the ordinary duplicate suffix
+
+An empty heading slug starts at `s`; another empty slug receives the next
+available duplicate suffix.
+
+::: compare
+
+```carve
+# ( )
+
+# ( )
+```
+
+```html
+<section id="s">
+  <h1>( )</h1>
+</section>
+<section id="s-2">
+  <h1>( )</h1>
+</section>
+```
+
+:::
+
+## Escaped space in inline text
+
+A backslash before a space creates a no-break space.
+
+::: compare
+
+```carve
+a\ b
+```
+
+```html
+<p>a&nbsp;b</p>
+```
+
+:::
+
+## Lazy text stays in an unclosed quoted admonition
+
+The quote keeps an open paragraph across a flush-left lazy line.
+
+::: compare
+
+```carve
+> ::: note
+> a
+b
+```
+
+```html
+<blockquote>
+  <aside class="admonition note" aria-label="Note">
+    <p>a
+b</p>
+  </aside>
+</blockquote>
+```
+
+:::

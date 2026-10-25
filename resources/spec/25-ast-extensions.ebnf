@@ -144,8 +144,8 @@
       reports the old glued form and `fmt --migrate` inserts the space.
 
       `table_cell` carries optional `valign` beside `align`, with the same
-      inheritance rule. A whitespace-delimited cell containing only `^` or `<`
-      remains a rowspan/colspan marker in every space-padding form. The lone
+      inheritance rule. A cell containing only `^` or `<`, with any space
+      padding or none, remains a rowspan/colspan marker. The lone
       glyph takes precedence over an empty alignment run.
 
    21. U+0000 IS REPLACED ON INGEST -- NORMATIVE [CARVE-P12-041]. A reader

@@ -265,7 +265,8 @@
         content_column -> sublist (PART 9 §24 C3); otherwise a new paragraph.
         An indentation frame reads a recognized opener at or past its content
         column, on its authored base (CARVE-P0-004). The document and a quote
-        need the exact column. When the residue is a container opener (a
+        need the exact column for openers other than list markers
+        (PART 9 §24 C4). When the residue is a container opener (a
         quote marker; a list marker at an admissible column; a `+`
         continuation marker at an open container's marker column or directly
         after a quote prefix, or first after the last opener on its line,
@@ -297,7 +298,8 @@
         over-indented text establishes no base.
 
         THE DOCUMENT AND A BLOCK QUOTE DO NOT REBASE. There an opener is
-        recognized at the content column exactly, and an over-indented one
+        recognized at the content column exactly, except that list markers
+        may open at any column (PART 9 §24 C4). An over-indented non-list opener
         is text: `   # H` is a paragraph at the document level and after
         `> `. The frame that answers is the owner O2 selected.
 

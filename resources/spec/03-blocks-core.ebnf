@@ -90,7 +90,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        NFC-normalized before slugging (CARVE-P9-058), so a precomposed `é` and a
        decomposed `e` + U+0301 give the SAME id;
      - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
-       id but an invalid CSS selector); an empty result becomes a generated `s-N`;
+       id but an invalid CSS selector); an empty result becomes `s`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
    An explicit {#id} is used verbatim (case preserved). Implementations MAY
    offer OPT-IN, orthogonal lowercasing and ASCII-folding transforms; neither
@@ -503,7 +503,10 @@ indent = whitespace, {whitespace} ;
    the opener line's own column. At an open list item's marker column, a following
    same-column list item is a sibling, so the `+` is ordinary text and the
    refused-marker lint reports it. *)
-continuation_marker = '+', {whitespace}, newline ;
+continuation_marker = '+', newline ;
+(* CARVE-P7-001 item 5 removes a line-final space/tab run before this
+   production is matched, so that source spelling remains a marker. A
+   vertical tab or form feed is not a marker separator. *)
 continuation_marker_block = continuation_marker, block ;
 (* First-block form (Carve addition; see PART 9 §17 L4): a lone `+` as the
    sole content right after a container's last opener (`- +`, `1. +`, `: +`,
@@ -519,14 +522,16 @@ first_block_content = continuation_marker, block ;
 
 (* Task lists are unordered lists with special markers *)
 task_marker = '[', task_state, ']', space ;
-(* `x`/`X` render a CHECKED checkbox; every other state (` `, `-`, `_`,
-   `>`, `?`) renders an UNCHECKED checkbox. Matches djot-php. *)
-task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
-(* THE STATE IS RECORDED, NOT ONLY THE BOX. `[-]`, `[_]`, `[>]` and `[?]`
+(* `x`/`X` render a CHECKED checkbox; every other state (` `, `_`,
+   `-`, `/`, `!`, `>`, `?`) renders an UNCHECKED checkbox. `_` is an
+   alternative spelling for the open state ` `. *)
+task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
+(* THE STATE IS RECORDED, NOT ONLY THE BOX. `[-]`, `[_]`, `[/]`, `[!]`, `[>]` and `[?]`
    are distinguishable states an author chose between, so PART 12 records the
    character in `list_item.task.mark` and CARVE-P11-041 writes it back.
    `task.status` drives the rendering above; the mark is the author's spelling,
-   as `list.marker.char` is for `-` vs `*`.
+   as `list.marker.char` is for `-` vs `*`. `[_]` remains todo.
+
 
    TASK STATE IS NOT A SAME-LIST AXIS. PART 9 §11's criteria are unchanged: a `[ ]`
    item and a `[-]` item are the SAME list, where a `-` bullet and a `*`

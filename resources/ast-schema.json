@@ -5198,12 +5198,15 @@
           "enum": [
             " ",
             "x",
-            "-",
+            "X",
             "_",
+            "-",
+            "/",
+            "!",
             ">",
             "?"
           ],
-          "description": "Authored task-box character after canonical case normalization (CARVE-P12-070)."
+          "description": "Authored task-box character (CARVE-P12-070)."
         },
         "status": {
           "enum": [
@@ -5211,7 +5214,9 @@
             "done",
             "cancelled",
             "partial",
-            "other"
+            "other",
+            "in-progress",
+            "blocked"
           ],
           "description": "Semantic task status derived consistently from mark (CARVE-P12-070)."
         }
@@ -5222,23 +5227,10 @@
           "if": {
             "properties": {
               "mark": {
-                "const": "x"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "status": {
-                "const": "done"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "mark": {
-                "const": " "
+                "enum": [
+                  " ",
+                  "_"
+                ]
               }
             }
           },
@@ -5254,7 +5246,28 @@
           "if": {
             "properties": {
               "mark": {
-                "const": "-"
+                "enum": [
+                  "x",
+                  "X"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "done"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mark": {
+                "enum": [
+                  "-"
+                ]
               }
             }
           },
@@ -5271,7 +5284,42 @@
             "properties": {
               "mark": {
                 "enum": [
-                  "_",
+                  "/"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "in-progress"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mark": {
+                "enum": [
+                  "!"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "blocked"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mark": {
+                "enum": [
                   ">"
                 ]
               }
@@ -5289,7 +5337,9 @@
           "if": {
             "properties": {
               "mark": {
-                "const": "?"
+                "enum": [
+                  "?"
+                ]
               }
             }
           },

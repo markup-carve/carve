@@ -197,6 +197,8 @@ const MANIFEST = [
   // two-verdicts note at the top of this file (carve#1811). `prPolicy` is
   // deliberately a per-entry opt-in rather than a blanket relaxation of
   // `owed`, so relaxing a third ledger stays a visible edit here.
+  { repo: 'spec', path: 'resources/roundtrip-export-acceptance-fixtures.json', name: 'aheadOfPin', kind: 'json-flag', flag: 'aheadOfPin', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/roundtrip-export-acceptance.test.mjs', staleness: 'is declared aheadOfPin but the pinned engine passes it: drop the flag', owner: 'tests/roundtrip-export-acceptance.test.mjs' },
+  { repo: 'spec', path: 'resources/html-import-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/html-import-contract.check.mjs', staleness: 'is declared as pin lag', owner: 'npm run html-import:check' },
   { repo: 'spec', path: 'resources/engine-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'scripts/engine-report.mjs', staleness: 'reproduces now; drop the line (reason was:', owner: 'npm run engine:report -- --check' },
   { repo: 'spec', path: 'resources/roundtrip-structure-engine-lag.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'scripts/roundtrip-structure.mjs', staleness: 'emits contract 2.0; delete its structural engine lag declaration', owner: 'npm run roundtrip:structure -- --check' },
   // Declared inside a pull request for the same reason: a spec rule the
@@ -253,7 +255,7 @@ const MANIFEST = [
   // Tier-3 twin of the Tier-2 AHEAD_OF_PIN above: read by hand inside a PR, owed before a tag.
   { repo: 'spec', path: 'tests/examples-tier3.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', stalenessFile: 'scripts/lib/tier3-ledger.mjs', staleness: 'the pinned build reproduces this example now, so its AHEAD_OF_PIN', owner: 'tests/a-tier3-example-ahead-of-the-pin-is-declared.test.mjs' },
   { repo: 'spec', path: 'tests/every-labels-key-reaches-the-output.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'Delete the AHEAD_OF_PIN entry so the key is checked for real.', owner: 'tests/every-labels-key-reaches-the-output.test.mjs' },
-  { repo: 'spec', path: 'tests/ast-schema.test.mjs', name: 'SCHEMA_ROLLOUT_PENDING', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'these documents validate now and are still listed in SCHEMA_ROLLOUT_PENDING', owner: 'tests/ast-schema.test.mjs' },
+  { repo: 'spec', path: 'tests/ast-schema.test.mjs', name: 'SCHEMA_ROLLOUT_PENDING', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', staleness: 'these documents validate now and are still listed in SCHEMA_ROLLOUT_PENDING', owner: 'tests/ast-schema.test.mjs' },
   { repo: 'spec', path: 'tests/corpus-convert.test.mjs', name: 'PINNED_DRIFT', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', staleness: 'but the pinned build now matches - delete the STALE entry', owner: 'per-PR twin of resources/converter-drift.txt' },
   // Capability statements about the PINNED build and about each engine's CLI,
   // not pin lag: no rule separates one that will clear from one that never

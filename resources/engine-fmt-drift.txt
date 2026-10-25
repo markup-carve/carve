@@ -20,3 +20,5 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+06-task-lists-2  carve#3645: the pinned build predates carve-js#3588, so the oracle reads its task marker output as a different document
+661-a-tab-cannot-pad-an-empty-link-destination  the pinned build predates carve-js#3583 (tabs kept as content in empty destinations)

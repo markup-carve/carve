@@ -349,7 +349,8 @@
         content_column -> sublist (PART 9 §24 C3); otherwise a new paragraph.
         An indentation frame reads a recognized opener at or past its content
         column, on its authored base (CARVE-P0-004). The document and a quote
-        need the exact column. When the residue is a container opener (a
+        need the exact column for openers other than list markers
+        (PART 9 §24 C4). When the residue is a container opener (a
         quote marker; a list marker at an admissible column; a `+`
         continuation marker at an open container's marker column or directly
         after a quote prefix, or first after the last opener on its line,
@@ -381,7 +382,8 @@
         over-indented text establishes no base.
 
         THE DOCUMENT AND A BLOCK QUOTE DO NOT REBASE. There an opener is
-        recognized at the content column exactly, and an over-indented one
+        recognized at the content column exactly, except that list markers
+        may open at any column (PART 9 §24 C4). An over-indented non-list opener
         is text: `   # H` is a paragraph at the document level and after
         `> `. The frame that answers is the owner O2 selected.
 
@@ -720,7 +722,7 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    canonical) and it is a PADDING SLOT, not a marker separator (PART 7). Both
    roles take `space`: the slot sits after the `---`, and A TAB IS SYNTAX ONLY
    IN THE LEADING RUN (PART 7). So `---<TAB>yaml` is not a typed opener; it is
-   a thematic break followed by ordinary lines. Reading it as frontmatter
+   paragraph text followed by ordinary lines. Reading it as frontmatter
    diverges from this production.
    POSITION DECIDES WHICH CLAUSE GOVERNS: the slot BEFORE the format token
    differs from trailing whitespace with no token. PART 2 drops that trailing
@@ -867,7 +869,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        NFC-normalized before slugging (CARVE-P9-058), so a precomposed `é` and a
        decomposed `e` + U+0301 give the SAME id;
      - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
-       id but an invalid CSS selector); an empty result becomes a generated `s-N`;
+       id but an invalid CSS selector); an empty result becomes `s`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
    An explicit {#id} is used verbatim (case preserved). Implementations MAY
    offer OPT-IN, orthogonal lowercasing and ASCII-folding transforms; neither
@@ -1280,7 +1282,10 @@ indent = whitespace, {whitespace} ;
    the opener line's own column. At an open list item's marker column, a following
    same-column list item is a sibling, so the `+` is ordinary text and the
    refused-marker lint reports it. *)
-continuation_marker = '+', {whitespace}, newline ;
+continuation_marker = '+', newline ;
+(* CARVE-P7-001 item 5 removes a line-final space/tab run before this
+   production is matched, so that source spelling remains a marker. A
+   vertical tab or form feed is not a marker separator. *)
 continuation_marker_block = continuation_marker, block ;
 (* First-block form (Carve addition; see PART 9 §17 L4): a lone `+` as the
    sole content right after a container's last opener (`- +`, `1. +`, `: +`,
@@ -1296,14 +1301,16 @@ first_block_content = continuation_marker, block ;
 
 (* Task lists are unordered lists with special markers *)
 task_marker = '[', task_state, ']', space ;
-(* `x`/`X` render a CHECKED checkbox; every other state (` `, `-`, `_`,
-   `>`, `?`) renders an UNCHECKED checkbox. Matches djot-php. *)
-task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
-(* THE STATE IS RECORDED, NOT ONLY THE BOX. `[-]`, `[_]`, `[>]` and `[?]`
+(* `x`/`X` render a CHECKED checkbox; every other state (` `, `_`,
+   `-`, `/`, `!`, `>`, `?`) renders an UNCHECKED checkbox. `_` is an
+   alternative spelling for the open state ` `. *)
+task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
+(* THE STATE IS RECORDED, NOT ONLY THE BOX. `[-]`, `[_]`, `[/]`, `[!]`, `[>]` and `[?]`
    are distinguishable states an author chose between, so PART 12 records the
    character in `list_item.task.mark` and CARVE-P11-041 writes it back.
    `task.status` drives the rendering above; the mark is the author's spelling,
-   as `list.marker.char` is for `-` vs `*`.
+   as `list.marker.char` is for `-` vs `*`. `[_]` remains todo.
+
 
    TASK STATE IS NOT A SAME-LIST AXIS. PART 9 §11's criteria are unchanged: a `[ ]`
    item and a `[-]` item are the SAME list, where a `-` bullet and a `*`
@@ -1630,7 +1637,7 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
 (* THE MARKER RUN COMES FIRST, IN ONE ORDER, IN BOTH PRODUCTIONS. The kind
    marker `=` and then the alignment marker are glued to the opening `|` (no
    preceding whitespace); the attribute block attaches after them. A
-   whitespace-delimited lone '^'/'<' is span_cell.
+   cell containing only '^' or '<', with any space padding or none, is span_cell.
 
    AND IT ENDS AT A SPACE. `cell_padding` is the run's terminator, so a cell
    carrying any part of the run -- kind marker, alignment run, attribute
@@ -1648,15 +1655,13 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    attribute syntax (PART 9 §15); otherwise the '{' is literal content. A cell
    carrying attributes is never a bare span_cell -- its content is literal even
    if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
-   block is what makes the cell ordinary content, so reading it back out as
-   text would leave this sentence with nothing to act on; `|{.x} < |` is
-   `<td class="x">&lt;</td>`, never `<td>{.x} &lt;</td>`. The only stated route
-   from a brace run to literal text is an INVALID payload, two sentences up.
+   `|{.x} < |` is `<td class="x">&lt;</td>`; `| {.x} < |` has ordinary
+   text `{.x} <` because the space precedes the brace.
    A computed rowspan/colspan/alignment is authoritative, so an author copy of
    those keys is dropped.
 
-   `|{#x}=R|` is a DATA cell whose content begins with `=`, not an attributed
-   header cell. Binding attributes after the markers removes that ambiguity. *)
+   `|{#x}=R|` is a data cell whose content is `{#x}=R`; no marker run ends
+   without a space (T11). `|{#x} =R |` has id `x` and content `=R`. *)
 cell_attributes = attributes ;
 span_cell = rowspan_marker | colspan_marker ;
 
@@ -1817,8 +1822,9 @@ admonition = admonition_open, newline,
    host is the ENCLOSING CONTAINER where there is one and the DOCUMENT
    otherwise, so "closes at end of input" is the top-level case rather than
    the whole rule: a `::: note` opened inside a block quote and never closed
-   ends WITH THE QUOTE, and a flush-left line below is a sibling paragraph
-   outside both. This is djot's behavior. An unclosed opener SHOULD be
+   ends WITH THE QUOTE. A flush-left line below that cannot continue an open
+   paragraph lazily, for example after a blank line, is a sibling paragraph
+   outside both. An unclosed opener SHOULD be
    diagnosed by lint and by the language server; it is not an error for the
    parser. Note this is NOT the `%%%` comment-block rule (CARVE-P9-060), where an
    opener with no exact closer ahead opens nothing: a comment block is
@@ -1856,13 +1862,10 @@ admonition = admonition_open, newline,
    ranges from parser structure; proximity alone never licenses resizing a
    nested fence.
 
-   A CLOSER IS REQUIRED when a code fence would consume the host's closer.
-   A ``` or ~~~ opener with no closer ahead opens NO span there: the
-   INNERMOST container's own closer stays structural and ends it, and the
-   lines after that closer are parsed normally. Any other colon line before it, of any width, is fence
-   content: it neither closes an ancestor nor opens a child. This is the test
-   PART 9 §10 I4 applies one level up, and the one the `%%%` rule above
-   states ("an opener with no exact closer ahead opens nothing"). In
+   A ``` or ~~~ opener with no code closer ahead opens a code block that ends
+   at the innermost container's exact-length closer. That closer stays
+   structural. Every other colon line before it is code content, and lines
+   after it parse normally. In
 
        ::: note
        ```
@@ -2041,7 +2044,7 @@ quote_block_open = colon_fence:open, space, ">" ;
    a comment line just like one in the first column. Like every block, it
    interrupts an open paragraph (the lines before and after become separate
    paragraphs) and renders nothing. *)
-comment_line = [whitespace], "%%", {character}, newline ;
+comment_line = [whitespace], "%%", [space], {character}, newline ;
 
 (* A `%%%` fence line is a DELIMITER plus an INSIGNIFICANT TAIL: only the
    leading run of `%` is structural, so `%%% TODO` opens and `%%% end` closes.
@@ -2181,6 +2184,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `markdown-container-flattened`, each block whose authored attributes have
    no Markdown representation as `markdown-attributes-dropped`, and each figure
    or table caption written as ordinary text as `markdown-caption-flattened`.
+   A code fence title dropped because the fence has no language reports
+   `fence-title-dropped` with message
+   `Dropped a code fence title without a language in Markdown`.
    A source-to-Markdown checked entry point also reports an unattached block
    attribute run with `markdown-attributes-dropped`, since parsing discards it
    before the renderer receives a tree. An AST-only renderer has no such run.
@@ -2282,6 +2288,7 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--allow-loss table-header-cell-demoted`,
    `--allow-loss markdown-container-flattened`,
    `--allow-loss markdown-caption-flattened`,
+   `--allow-loss fence-title-dropped`,
    `--allow-loss markdown-attributes-dropped` and
    `--allow-loss raw-html-escaped`. The list is closed:
    `destination-denied` is not waivable, because a blanked destination is a
@@ -2309,7 +2316,7 @@ raw_content = (* any content until closing fence *) ;
    run sits before a SOFT BREAK; and so do a heading, a list item, a block
    quote line, a definition term or description, a footnote body line, a table
    caption, a line-block line and a `%%` COMMENT LINE's text -- where exactly
-   ONE space or tab after the marker is the separator and is consumed, so
+   ONE space after the marker is the separator and is consumed, so
    `%%<SP><SP>x<SP>` has the text `<SP>x`.
 
    THE RUN IS `whitespace` -- `' ' | '\t'` -- the same two-character terminal
@@ -2354,6 +2361,7 @@ inline_content = {inline_element | text_run | literal_special}+ ;
 literal_special = special_char ;
 
 inline_element = escaped_char
+               | escaped_space
                | raw_inline
                | literal_inline
                | code_span
@@ -2401,6 +2409,7 @@ special_char = '/' | '*' | '_' | '~' | '^' | '`' | '[' | ']'
 
 (* --- Escaped Characters --- *)
 escaped_char = '\', ascii_punctuation ;
+escaped_space = '\', space ;
 ascii_punctuation = '!' | '"' | '#' | '$' | '%' | '&' | "'" | '(' | ')'
                   | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';'
                   | '<' | '=' | '>' | '?' | '@' | '[' | '\' | ']'
@@ -2616,20 +2625,20 @@ link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' -
            | space, ("'", {escaped_char | literal_backslash | (character - "'" - '\')}, "'") ;
 
 (* AN EMPTY DESTINATION IS EXPLICIT -- NORMATIVE [CARVE-P3-024]. This branch
-   consumes no newline. Zero or more ASCII spaces or tabs may precede the
+   consumes no newline. Zero or more ASCII spaces may precede the
    closer, but only exactly one ASCII space followed by a quoted run opens a
    title: `[t]( "T")` has href "" and title T; `[t]("T")` has the
-   nonempty destination `"T"` and no title. Multiple spaces or a tab before
+   nonempty destination `"T"` and no title. Multiple spaces before
    a quote do not open a title. A nonempty destination keeps its existing
    one-space title separator and accepts no trailing padding. Unicode
-   whitespace cannot fill the empty destination's padding slot.
+   whitespace and tabs cannot fill the empty destination's padding slot.
 
    Empty children, an empty destination, and title presence are independent.
    An empty link or image stays a node without synthetic text or comments.
    An authored empty destination emits href="" or src="" in HTML and never
    produces `destination-denied`. A refused nonempty destination still reports
    that diagnostic even if its rendered attribute is empty. *)
-empty_destination = link_title, {whitespace} | {whitespace} ;
+empty_destination = link_title, {space} | {space} ;
 
 reference_label = (character - ']' - '@' - newline), {character - ']' - newline} ;
 (* A LABEL SPANS NO LINE BREAK, like `footnote_label`. A collapsed
@@ -3828,8 +3837,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    PROCESSOR-LEVEL directive, NOT part of the core parser. Its normative
    semantics are below and mirrored, with worked examples, in
    docs/includes.md. A conformant CORE never recognizes the directive
-   (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL -- it
-   parses the bytes under ordinary inline rules, so a bare-path directive
+   (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL: its
+   source is parsed as ordinary inline content, as if no include feature
+   existed. A bare-path directive
    with no active inline markers emits verbatim (corpus "Include directive
    with no resolver renders literal"). The rules a conforming PROCESSOR that
    DOES expand includes MUST follow:
@@ -3837,8 +3847,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
       combinable `{{ path #section @key:value }}` (`include_directive`). `path` is bare
       (stops at space / `#` / `@` / `}`) or double-quoted for spaces, and
-      is resolved RELATIVE TO THE INCLUDING FILE. Options split into two
-      disjoint kinds. SELECTION options choose WHICH content is pulled in:
+      is resolved RELATIVE TO THE INCLUDING FILE. Directive parameters have
+      three kinds: SELECTION, TRANSFORM and MODE. SELECTION chooses content:
       `#section` (semantic -- a heading's section or one block, I1a) and
       `@lines:N-M` (physical -- a 1-based inclusive line range), and
       `@region:name` (physical -- a named source region, I1b). A line range
@@ -3989,7 +3999,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       resolver with the contract: given (path, section?, options?,
       includingFileContext) it returns resolved Carve source text OR an
       error. If NO resolver is configured the directive is left LITERAL
-      (the processor emits the verbatim `{{ … }}`). This mirrors the
+      (CARVE-P6-001). This mirrors the
       bibliography loader precedent (host resolves, parser stays pure;
       docs/extensions.md §6.1) and preserves browser / WASM parity.
       OPT-IN: no resolver is configured by default, and a host MUST leave
@@ -4119,7 +4129,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       content in INLINE position (I2), cycle, depth-exceeded,
       size-exceeded, call-bound-exceeded, and a directive reached AFTER
       byte-budget or call-bound exhaustion EACH emit a Warning and leave
-      the directive LITERAL (visible and debuggable). The last two are
+      the directive LITERAL (CARVE-P6-001, visible and debuggable). The last two are
       never passed to the resolver at all (I6). Inclusion NEVER silently
       drops a directive. See PART 9 §25 (File inclusion) for the security
       model: parser stays pure, resolver is host-supplied and MUST enforce
@@ -4489,9 +4499,11 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    hardest, because there an implementation had to invent something. A
    definition term, a bullet item and an ordered item take `space` -- one,
    exactly, not a class. A heading and a caption spell `space+`, a RUN of
-   the same terminal. The CONTINUATION MARKER takes none:
-   `continuation_marker = '+', newline`, so any character between the
-   `+` and the line end is content and the line is not a marker. The
+   the same terminal. The CONTINUATION MARKER takes no separator: after
+   CARVE-P7-001 item 5 drops the line-final run,
+   `continuation_marker = '+', newline` requires the `+`
+   to be last. A vertical tab or form feed after it is content, so the
+   line is not a marker. The
    block-attribute line takes `attr_pad` and `attr_separator`, built from
    `space`, and `continuation`, whose indentation is `whitespace`. A VERTICAL
    TAB or a FORM FEED in any of
@@ -4522,7 +4534,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
      inline text                            `escaped_char`: `\` + any
                                             `ascii_punctuation` yields that
                                             character; `\` + newline is a
-                                            `hard_break`
+                                            `hard_break`; `\` + space is a
+                                            `non_breaking_space` (CARVE-P12-004)
      image alt text                         `escaped_char`, decoded into the
                                             scalar value
      link and image title, quoted           `escaped_char`; a `\` before any
@@ -4663,6 +4676,8 @@ EOF = (* end of file *) ;
       display-math paragraphs have no separate production; this clause defines
       their caption attachment. The host enumeration is closed: other
       paragraphs are not captionable.
+      Trailing attributes on the sole display-math span stay on that span and
+      do not prevent the paragraph from taking a following caption.
 
    4b. WHAT A CAPTION MAKES OF ITS HOST -- EXPLANATORY. The `figure` node is
       the GENERIC captioned wrapper, not the semantic notion "figure". A
@@ -4879,8 +4894,9 @@ EOF = (* end of file *) ;
          HEADER cell; `\=` yields a data cell whose text starts with `=`.
       T4 SPAN MARKERS. A cell whose WHOLE content is `^` (rowspan) or `<`
          (colspan) is a span marker; ANY other content disqualifies it --
-         `{.x} <` is an ordinary cell with literal text `{.x} <` (no
-         attributed span marker exists). Leading or trailing U+0020 padding
+         `| {.x} < |` is an ordinary cell with literal text `{.x} <`, while
+         `|{.x} < |` is an attributed cell holding a literal `<` (T10).
+         Neither is a span. Leading or trailing U+0020 padding
          does not disqualify the marker. `|<|`, `| <|`, `|< |` and `| < |`
          are spans, as are all four corresponding `^` forms. A lone span
          glyph takes precedence over an alignment run on an empty cell.
@@ -5063,7 +5079,7 @@ EOF = (* end of file *) ;
 
          The block is GLUED: to the marker run where the cell has one, to
          the opening `|` where it has none. A space anywhere in front of it
-         makes it ordinary content (T4's `{.x} <` is unchanged), and the
+         makes it ordinary content (T4's `| {.x} < |` is unchanged), and the
          validity rule is T8's.
 
          The canonical writer uses this order. The `|{#x}< content |` spelling
@@ -5548,7 +5564,7 @@ EOF = (* end of file *) ;
       a malformed one are PART 2's (STRICT, under `admonition_open`). To
       attribute a div or admonition, use a PRECEDING block-attribute line,
       which floats onto the block (§15): `{.x #id}` then `::: note` yields
-      `<aside class="admonition note x" id="id">`.
+      `<aside class="admonition note x" id="id" aria-label="Note">`.
 
       FENCE LENGTH, NESTING, DIRECTION AND AN UNCLOSED OPENER are stated once,
       in PART 2 at `colon_fence_close` and under `admonition`, for admonitions
@@ -5668,11 +5684,11 @@ EOF = (* end of file *) ;
         WORD, drawn from the `labels` map (§16a) rather than fixed English:
             <aside class="admonition note" aria-label="Note">
 
-        The minted id is `adm-{n}`, n counting Tier-1 titled blocks in document
-        order from 1, allocated through the SAME slug registry as heading ids
-        so it can never collide with one this document generates. (An id the
-        author writes by hand does not register -- the pre-existing property of
-        §13's registry, not a new hole here.)
+        The minted id starts at `adm-{n}`, n counting Tier-1 titled blocks in
+        document order from 1. Reserve explicit and automatic heading ids
+        first, then add a duplicate suffix (`adm-1-2`, `adm-1-3`, ...) until
+        the minted id is unused. Titled nameable directives use this same
+        sequence (CARVE-P9-072).
 
         THE AUTHOR'S OWN NAME WINS, MATCHED CASE-INSENSITIVELY. When the
         attribute line carries either `aria-label` or `aria-labelledby` under
@@ -5743,9 +5759,8 @@ EOF = (* end of file *) ;
       PART 2 and the renderer; matches djot, see `jgm/djot` official
       `headings.test`). Every heading emits a `<section id="{id}">`
       wrapper around itself and the following content up to the next
-      same-or-shallower heading. The slug-derivation rule (ASCII
-      transliteration etc., see syntax.md §4.1) computes
-      the id; the id lives on the `<section>` element, NOT on the
+      same-or-shallower heading. CARVE-P2-004 computes the heading id; this
+      clause places it on the `<section>` element, NOT on the
       `<h*>` element.
       Algorithm (one stateful pass over top-level blocks):
         let openSections : Stack of (level, sectionElement) = []
@@ -5881,7 +5896,7 @@ EOF = (* end of file *) ;
           only for the id/class forms (`{.123}`, `{#1}`), not `{2=v}`.
           A non-identifier character (`{.a!b}`) remains invalid.
           ONE invalid name makes the WHOLE block not an attribute block, even
-          when mixed with valid attributes (`{.ok .1}`), so the run stays
+          when mixed with valid attributes (`{.ok .a!b}`), so the run stays
           literal. No other leading character is newly accepted.
           A digit/`-`/`_` AFTER the first character is valid (`{.a1}`).
       BOOLEAN ATTRIBUTES -- NORMATIVE [CARVE-P9-022]. A bare identifier
@@ -6248,7 +6263,7 @@ EOF = (* end of file *) ;
          At an open list item's marker column, a `+` followed by a list item
          at that column attaches nothing: that item is a sibling and the `+`
          is ordinary text at its own column.
-         A refused `+` on its own line is never dropped. It folds into the
+         A refused separate-line `+` is never dropped. It folds into the
          item's open paragraph when that
          paragraph can continue. Otherwise, including after a blank line, a
          fence, or a closed block, it forms its own one-line paragraph.
@@ -6301,8 +6316,9 @@ EOF = (* end of file *) ;
          container, and
          that block is then parsed like any other. A container may not answer
          differently because of WHAT it is attaching, and there is no second
-         rule anywhere for a quote, a list, a fence, a caption or a definition
-         under the marker. In particular the ONE BLOCK count and the boundary
+         ATTACHMENT rule for a quote, a list, a fence, a caption or a definition
+         under the marker. L4 decides where a refused first-block marker lands.
+         In particular the ONE BLOCK count and the boundary
          set above hold in EVERY container in L4, not only in the two that had
          them spelled out.
 
@@ -6331,8 +6347,6 @@ EOF = (* end of file *) ;
            line after the quote still ends it. An attached block that is
            ITSELF a quote NESTS, like every other kind: `> a` / `+` / `> q`
            is a quote holding a paragraph and an inner quote. The marker
-           attaching nothing there, and the line continuing the outer quote
-           instead, was the kind test named in L3.
          - FOOTNOTE DEFINITION body: `+` at the definition's marker column
            attaches the following
            block at that column to the note, the alternative to indenting it to
@@ -7331,9 +7345,6 @@ EOF = (* end of file *) ;
           ceiling below requires.
         A returned document MUST NOT lack text the author typed.
 
-        A conformance run needs to know which arm the canonical writer takes
-        past the cap, and the answer is "refuse".
-
         THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP -- NORMATIVE
         [CARVE-P9-078]. Over-cap flattening owes it no spellable tree: the
         flattened opener is literal paragraph text carrying the ladder's own
@@ -7548,17 +7559,10 @@ EOF = (* end of file *) ;
          TARGETS also requires stripping DEL and C1 controls, including CSI
          (U+009B) and OSC (U+009D).
 
-      T5 WHAT THIS SECTION DOES NOT SETTLE, stated so its silence is not
-         read as agreement:
-         - DEL (U+007F) AND THE C1 CONTROLS are outside this section, which
-           is about C0. DEL, CSI (U+009B), OSC (U+009D) and U+0080 are
-           stripped on Markdown, plain text and ANSI alike, so §25's
-           NON-HTML TARGETS requirement is met on those three.
-           WHAT IS STILL OPEN is the CANONICAL WRITER: every one of those
-           characters passes through on the `carve` target, and §25 says
-           "non-HTML targets" without saying whether the canonical writer is
-           one. §26 already answers the same question for bidi overrides: the
-           `carve` target is a source serializer and preserves them.
+      T5 DEL (U+007F) AND THE C1 CONTROLS: Markdown, plain text and ANSI
+         strip them (PART 9 §25 I2). The canonical `carve` writer is a source
+         serializer (PART 9 §26, CARVE-P9-054) and preserves them, like other
+         authored content characters.
 *)
 
 
@@ -7808,7 +7812,8 @@ EOF = (* end of file *) ;
       representation for a non-link mention or tag cannot make that node
       disappear inside the resolved outer link. If the normalized plain text is
       empty, no index entry is created and no collapsed label resolves through
-      the generated `s-N` slug; the heading itself still receives it as
+      the generated `s` slug (or its duplicate suffix); the heading itself
+      still receives it as
       CARVE-P2-004 says.
       THE STRIP IS SCOPED TO THE HEADING INDEX. The linkDefs matching
       above is unchanged and keys on the label AS WRITTEN: `[*bold*]: /x`
@@ -7936,8 +7941,8 @@ EOF = (* end of file *) ;
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string.
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so a
-      self-reference (`# A </#a>`) and a mutual cycle (`# A </#b>` +
-      `# B </#a>`) each resolve once (corpus "Cyclic cross-reference resolves
+      self-reference (`# A </#A>`) and a mutual cycle (`# A </#B>` +
+      `# B </#A>`) each resolve once (corpus "Cyclic cross-reference resolves
       to one level"). Cloning keeps the heading's markup:
       `# *Setup*` yields `<a href="#…"><strong>Setup</strong></a>`. A footnote
       reference is not cloned: `# Head[^1]` yields `Head`. A `</#id>`
@@ -8052,8 +8057,8 @@ EOF = (* end of file *) ;
    PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)
    ============================================================================
 
-   These conventions define the exact bytes the corpus pins. On any
-   disagreement the corpus wins.
+   These conventions define the bytes the corpus pins. A corpus pair that
+   disagrees with them is corrected under the preamble's NORMATIVITY rule.
 
    1. ATTRIBUTE ORDER. An element's attributes are written in FIVE RANKS, in
       this order:
@@ -8334,7 +8339,7 @@ EOF = (* end of file *) ;
       bibliographic `[@key]` citation, which is the Citations extension's.
 
    11. A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES -- NORMATIVE [CARVE-P10-009].
-      PART 2 admits seven task states and the rendered checkbox has two
+      PART 2 admits nine task marker spellings and the rendered checkbox has two
       positions. So that the authored state reaches the output, the item
       carries `data-task-state` holding the authored character:
 
@@ -8344,9 +8349,11 @@ EOF = (* end of file *) ;
       A DONE ITEM NAMES ITS STATE TOO. `[x]` and `[X]` are one state, so both
       carry `data-task-state="x"`, always the lowercase `x`, and one selector
       (`li[data-task-state="x"]`) reaches a done item's text without `:has()`.
-      AN OPEN ITEM STAYS BARE: `[ ]` carries no attribute. The AST records
+      AN OPEN SPACE ITEM STAYS BARE: `[ ]` carries no attribute. `[_]`
+      retains `data-task-state="_"` to preserve its spelling. The AST records
       `list_item.task.mark` and `task.status` (PART 12); the renderer writes
-      `x` from a done status and omits the carrier for an open item.
+      `x` from a done status and omits the carrier for a space mark.
+
 
       THE LIST CARRIES `task-list`. A task list's `<ul>` carries the
       mandatory base class `task-list` (§1): it leads when the author wrote no
@@ -9392,9 +9399,9 @@ EOF = (* end of file *) ;
       conservative form, arrived at because every block needed it rather than
       because one did.
 
-      IT DOES NOT LOOSEN §2 ANYWHERE. A unit that fails is escaped in full, by
-      §2's THE UNIT IS THE OPENER: `\#\# H` and not `\## H`. What narrows is
-      the reach of the fallback, not the strength of the escape it applies.
+      IT DOES NOT LOOSEN §2 ANYWHERE. A failing opener occurrence is escaped
+      in full: `\#\# H` and not `\## H`. Other occurrences, even in the same
+      run or block, remain subject to §2's test (CARVE-P11-007).
 
    3. ESCAPING DEPENDS ON CONTEXT. A character may be literal in one position
       and an opener in another. A static character table cannot decide §2;
@@ -9402,7 +9409,7 @@ EOF = (* end of file *) ;
 
    4. A PERMITTED STRATEGY. A writer may compare minimal and conservative
       spellings, then narrow escapes per occurrence. The minimal form escapes
-      §5's unconditional set; the conservative form also escapes its candidate
+      §5's always escaped set; the conservative form also escapes its candidate
       set. Compare by re-parsing complete emitted documents, not isolated lines:
       a line alone lacks the document's reference and footnote definitions.
       Compare the emitted spellings with each other, not with the source tree.
@@ -9412,31 +9419,21 @@ EOF = (* end of file *) ;
 
    5. THE TWO SETS.
 
-      UNCONDITIONAL -- always escaped in a text node, never re-derivable:
-        the backslash itself; the backtick (opens a code span in any
-        position); and `"` / `'`. A BARE quote re-derives as smart
+      ALWAYS ESCAPED in a text node: the backtick (opens a code span in any
+        position) and `"` / `'`. A BARE quote re-derives as smart
         punctuation (PART 9 §8), so a quote that reached the writer as TEXT
         is one the author escaped, and it stays escaped. A quote carried by a
         `smart_punctuation` node is NOT text: the writer emits that node's
         source run BARE, which is what makes `fmt` reproduce the author's
         spelling.
 
-        The CARET is also unconditional, for a different reason: it opens
-        nothing on its own, but a LEADING caret decides whether the block
-        above it takes a caption. Escaped, an image followed by a caret line
-        stays a paragraph; bare, the two lines are a figure. The tree records
-        no field for the escape (CARVE-P11-010). Escaping the caret in BOTH
-        forms keeps the two renders identical on that point, at the cost of
-        one escape on a character that is rare in prose.
+        A backslash is escaped before ASCII punctuation or a newline. Elsewhere
+        it is bare. A caret is escaped where it starts a caption line and is
+        bare elsewhere (CARVE-P11-010).
 
         SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT -- NORMATIVE [CARVE-P11-010].
-        §4's optional strategy uses these sets for its trial forms. A caret
-        named here is escaped in both forms, so their comparison never weighs
-        the mark; it is not a license to emit an escape §2 does not ask for.
-        §2 pins the output, and CARVE-P11-034 restates the reach in those terms -- "§5's
-        unconditional set escapes a LEADING caret in TEXT". So "always escaped
-        in a text node" is the set's membership rule, and §2 is the test the
-        emitted byte answers to.
+        §4's optional strategy uses these sets for its trial forms. §2 pins
+        the output, including a leading caret that would start a caption.
 
         THE MARK IS THE PROMOTION, NOT A FIELD, which is why the LEADING case
         needs no exception to §2. `resources/ast-schema.json` declares no
@@ -9528,7 +9525,7 @@ EOF = (* end of file *) ;
         `> + - . ) : | % !`  block openers at column 0, plus the inline forms
                              `%%`, `::` and the symbol shortcode `:name:` (the
                              inline-footnote `^[` is covered by the
-                             unconditional caret above)
+                             leading-caret rule above)
         `$`                  math
 
       A character in neither set is never escaped.
@@ -9566,21 +9563,15 @@ EOF = (* end of file *) ;
       CHARACTER, NOT THE RUN LENGTH: `***` and `*****` are ONE spelling here
       and both come back as `***`. The break's run length is not recorded.
 
-      EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A `---` line at byte 0 of the
-      EMITTED document is the frontmatter opener, not a break. Spelling this
-      clause's form there can manufacture a block the document does not have,
-      and everything down to whatever closes it is swallowed with it: a
-      document of `***`, a blank line and `---` renders two breaks, and written
-      by the literal reading of this clause it renders NOTHING -- with any
-      paragraph standing between them lost too. Where that would happen the
-      writer spells the break `***` instead, and that deviation is CARVE-P11-002's --
-      §1's invariant outranks a per-construct rule. It is CONFORMANT and not a
-      divergence from this section.
+      EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A break with marker `-`, or
+      no marker, would be written `---`. At byte 0 of an emitted document,
+      with a later `---` line that would close frontmatter, the writer spells
+      that first break `***` instead (CARVE-P11-002). Two marker-less breaks
+      are an example: writing both as `---` would create frontmatter.
 
       THE CONDITION IS THE WHOLE EMITTED DOCUMENT, NOT ITS FIRST LINE. An
       opener needs a closer, so three hyphens at byte 0 open nothing unless a
-      later line closes them -- `***` alone, and `***` above a paragraph, are
-      both written `---` with no exception at all. What an implementation owes
+      later line closes them. A lone `---` is written `---`. What an implementation owes
       is CARVE-P11-002's test: read the emitted bytes with its own parser.
 
       WHICH break moves is not pinned, because more than one departure
@@ -9787,7 +9778,7 @@ EOF = (* end of file *) ;
       next time a cell-level marker is added.
 
    6g. A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE -- NORMATIVE [CARVE-P11-041].
-      PART 2 admits seven task states while rendering collapses
+      PART 2 admits nine task marker spellings while rendering collapses
       them to two. The AST records the authored character (PART 12,
       `list_item.task.mark`) and the writer emits it.
 
@@ -9798,13 +9789,15 @@ EOF = (* end of file *) ;
       task box; a box carries both mark and status.
 
       `X` IS A CASE, NOT A STATE. `[X]` is written `[x]`.
-      The field admits six characters rather than seven for that reason: the
+      The field admits eight characters rather than nine for that reason: the
       two spell one state, nothing downstream can tell them apart, and §1 is
       satisfied because the AST they parse to is the same one.
 
-      THE RENDERING IS UNCHANGED. Every state but `x`/`X` still renders an
-      unchecked box (PART 2 `task_state`), so no HTML moves with this clause.
-      What moves is only what survives a format cycle.
+      `[_]` SPELLS THE OPEN STATE. A writer retains `_` when it appears in
+      `taskState`; absent `taskState` still writes `[ ]` for an open item.
+
+      Every state but `x`/`X` renders an unchecked box (PART 2 `task_state`).
+      The authored character also survives a format cycle.
 
    6h. A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE -- NORMATIVE
       [CARVE-P11-066]. A header row has two spellings, `|= cell |` and a plain
@@ -10481,10 +10474,9 @@ EOF = (* end of file *) ;
 
    8h. A PIPE IN A TABLE CELL IS ESCAPED -- NORMATIVE [CARVE-P11-054]. Inside
       a pipe-table cell every `|` the writer emits as content is written
-      `\|`: in text, in a code span's content, and in a link destination or
-      title. GFM splits the row on every unescaped `|` before it reads any
-      inline, a code span included, and reads `\|` back as `|` in all of
-      those places. A `|` already written escaped is not escaped twice.
+      `\|` in text, a code span's content, or a title. In a link destination
+      it is `%7C` under CARVE-P11-075. GFM splits the row on unescaped pipes
+      before reading inlines; a pipe already escaped is not escaped twice.
 
         cell text "a|b"            ->  | a\|b |
         cell code "a|b"            ->  | `a\|b` |
@@ -10577,10 +10569,8 @@ EOF = (* end of file *) ;
         `href` is `mailto:` followed by the body, and the emitted destination
         equals `href`.
 
-      For both comparisons, the target's destination step strips controls,
-      blanks denied schemes, writes `(` as `\(` and `)` as `\)`,
-      percent-encodes spaces, `<`, `>` and `|`, and neutralizes character
-      references. It leaves other non-ASCII characters unchanged. A changed destination or an ineligible body uses
+      For both comparisons, apply the destination encoding (§8l). A changed
+      destination or an ineligible body uses
       the ordinary explicit link spelling. An authored `[text](destination)`
       stays explicit even when its text equals its destination. CARVE-P12-007's
       nested-link render rule still flattens the inner link. Attributes follow
@@ -10589,6 +10579,30 @@ EOF = (* end of file *) ;
         <https://example.com>     -> <https://example.com>
         <user@example.com>       -> <user@example.com>
         <https://e.com/a(b)>      -> [https://e.com/a(b)](https://e.com/a\(b\))
+
+   8l. THE MARKDOWN TARGET ENCODES LINK AND IMAGE DESTINATIONS -- NORMATIVE
+      [CARVE-P11-075]. Apply these steps in order to every destination written
+      by the ordinary link, image, or autolink path, including one in a table
+      cell. A heading fragment rewritten to a GFM slug (§11) is exempt:
+
+      1. Strip destination controls, then probe the resulting value for a
+         denied scheme (PART 9 §25). A denied destination becomes empty.
+      2. Escape `(` as `\(` and `)` as `\)`; percent-encode spaces, `<`,
+         `>` and `|` as `%20`, `%3C`, `%3E` and `%7C`. When the destination
+         contains `|`, also encode its backslashes as `%5C`. Other non-ASCII
+         content characters remain as written.
+      3. Escape an `&` that opens a character reference as `&amp;`. For this
+         destination test, a reference has `#` and 1-8 decimal digits, `#x`
+         or `#X` and 1-8 hex digits, or an ASCII letter followed by 0-31
+         ASCII alphanumeric characters, then `;`. This prevents a reader from
+         decoding a destination different from the one the scheme probe read.
+
+      A nonempty authored destination that becomes empty writes `<>`; an
+      authored empty destination uses the same spelling (CARVE-P11-070).
+      In a table cell the `%7C` spelling keeps the cell boundary intact.
+
+        [x](a|b)               -> [x](a%7Cb)
+        [x](a(b))              -> [x](a\(b\))
 
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces, except
@@ -10780,21 +10794,12 @@ EOF = (* end of file *) ;
       This clause decides only where the named text goes on the targets below.
       Unnamed construct/target pairs remain open, not allowed by omission.
 
-      T1 A FENCE'S TITLE AND LABEL RENDER THE WAY A DIV'S ALREADY DO. A fenced
-         div surfaces both tokens on every target, which is the
-         caption rule `docs/graceful-degradation.md` makes normative for an
-         unconsumed label: `::: note "T" [L]` emits `**T**` then `**L**` in
-         Markdown, a standalone line each in plain text, and a bold
-         standalone line each on the terminal, the title always before the
-         label. A code fence carries the SAME two tokens in the SAME two
-         slots of its info string, so it renders them the same way, above the
-         block:
-
-             ```php "src/Auth.php" [Composer]   ->  src/Auth.php
-             composer require x                     (blank)
-             ```                                    Composer
-                                                    (blank)
-                                                    composer require x
+      T1 A FENCE'S TITLE AND LABEL SURVIVE EACH TARGET. Plain text places
+         each token on a standalone line above the code block, title before
+         label. The terminal makes those lines bold. Markdown keeps the title
+         and label after the language in the fence info string
+         (CARVE-P11-067). A fenced div places its title and unconsumed label
+         above the block on all three targets.
 
       T2 A TABLE CAPTION SURVIVES THE MARKDOWN TARGET as body text AFTER the
          table, separated by one blank line. The position is what this target
@@ -10819,17 +10824,11 @@ EOF = (* end of file *) ;
       directly above a code block in plain text reads as the FIRST LINE OF THE
       CODE.
 
-      TWO MORE LOSSES OF THE SAME TOKENS ARE RECORDED HERE AND LEFT OPEN. Each
-      breaks the floor exactly as this clause's three tokens did; what is
-      missing is a decided rendering, not a rule. Neither is settled by this
-      clause and neither is thereby permitted:
+      A fence with no language loses its title on default Markdown output
+      and reports `fence-title-dropped` (CARVE-P2-024). With a language, the
+      title stays in the info string. Carrier mode preserves either form.
 
-        - A fence title on a fence with NO LANGUAGE is dropped by the
-          MARKDOWN writer too: ```"src/app.js" emits a bare ``` and the
-          title is gone. The Markdown target keeps the title only when a
-          language precedes it.
-
-        - A code-group label never reaches the HTML target at all:
+      A code-group label remains an unsettled HTML case:
           ```js [Node] gives `<pre><code class="language-js">`. Core
           assigns the label no meaning and a group extension consumes it, so
           on HTML with no such extension the token has nowhere to go. Where
@@ -10915,8 +10914,8 @@ EOF = (* end of file *) ;
       of PART 2 `colon_fence_close` unchanged), and the group caption as a `^ ` line after
       the closer, its `#` placeholder written back as authored.
 
-      THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. §5's
-      unconditional set escapes a leading caret in TEXT; the group caption is
+      THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. Under §2 a leading
+      caret in paragraph text is escaped when bare it would start a caption. The group caption is
       NOT text in that position -- it is the caption the closer hosts -- so
       the writer MUST NOT emit it as `\^ `, which would re-parse as a
       paragraph and break §1's `parse(fmt(x)) == parse(x)`. The other
@@ -11557,8 +11556,9 @@ EOF = (* end of file *) ;
       block's attribute marker stands directly above its fence marker, as a
       definition list's does above its first term marker. A fence marker
       not directly above a fenced code block is a damaged set. Without the
-      mode nothing is reported: the info string holds both tokens, so this
-      target writes them (CARVE-P2-024).
+      mode, a title with a language stays in the info string and reports
+      nothing. A title without a language reports `fence-title-dropped`
+      (CARVE-P2-024); the label stays in the info string.
 
       A LIST'S NUMBERING STYLE TAKES A LIST-STYLE MARKER. This target writes
       an alphabetic or roman ordered list as a decimal list (CARVE-P2-024), so
@@ -11680,9 +11680,9 @@ EOF = (* end of file *) ;
       heading the target does not write as a heading (one flattened into a
       table cell) is not a target, and a fragment naming no heading is CARVE-P11-049's.
 
-      NO ANCHOR CAN DANGLE. The target writes no anchor at all, and the
-      reader derives each slug from text the target wrote, so every link to a
-      heading resolves in a GFM reader (carve#352). A heading whose text
+      NO ANCHOR DANGLES FOR AN IMAGE-FREE HEADING. The target writes no anchor,
+      and the reader derives its slug from the heading text. G1's image case
+      can yield a different slug in a GFM reader. A heading whose text
       removes to nothing has the empty slug, and a link to it is written `#`,
       or `#-1` and so on for a repeat.
 
@@ -11714,7 +11714,7 @@ EOF = (* end of file *) ;
 
       THE DESTINATION IS WRITTEN LIKE ANY OTHER. A fragment that names a
       heading is the heading's GFM slug (§11); any other fragment is the
-      authored destination under the ordinary destination encoding, `#`
+      authored destination under the destination encoding (CARVE-P11-075), `#`
       alone included.
 
       THE LABEL IS WRITTEN LIKE ANY OTHER LINK LABEL. `[[1]](#n1)` is emitted
@@ -12799,8 +12799,8 @@ EOF = (* end of file *) ;
       reports the old glued form and `fmt --migrate` inserts the space.
 
       `table_cell` carries optional `valign` beside `align`, with the same
-      inheritance rule. A whitespace-delimited cell containing only `^` or `<`
-      remains a rowspan/colspan marker in every space-padding form. The lone
+      inheritance rule. A cell containing only `^` or `<`, with any space
+      padding or none, remains a rowspan/colspan marker. The lone
       glyph takes precedence over an empty alignment run.
 
    21. U+0000 IS REPLACED ON INGEST -- NORMATIVE [CARVE-P12-041]. A reader
@@ -13639,10 +13639,10 @@ EOF = (* end of file *) ;
       is `tight` or `loose`, for a list and a definition list alike.
 
       A task `list_item` carries `task.mark`, the authored marker character,
-      and `task.status`. Space means todo, `x` done, `-` cancelled, `_` and
-      `>` partial, and `?` other. The pair MUST agree. `checked` and the old
-      `taskState` field are not serialized; a UI derives a checked box from
-      the mark when it needs one.
+      and `task.status`. Space and `_` mean todo, `x` and `X` done, `-`
+      cancelled, `/` in-progress, `!` blocked, `>` partial, and `?` other.
+      The pair MUST agree. `checked` and the old `taskState` field are not
+      serialized; a UI derives a checked box from the mark when it needs one.
 
    44. THE NODE SLOT TABLE DEFINES TRAVERSAL -- NORMATIVE [CARVE-P12-071].
       `children` is the primary content slot on document, containers, lists,

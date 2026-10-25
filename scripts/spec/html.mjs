@@ -111,6 +111,45 @@ export function renderDoc(doc) {
   return renderDocPass(doc, false)
 }
 
+function reserveHeadingIds(blocks) {
+  const headings = []
+  const visited = new WeakSet()
+  const visit = (value) => {
+    if (!value || typeof value !== 'object' || visited.has(value)) return
+    visited.add(value)
+    if (value instanceof Map) {
+      for (const child of value.values()) visit(child)
+      return
+    }
+    if (value.t === 'heading') headings.push(value)
+    for (const child of Object.values(value)) visit(child)
+  }
+  visit(blocks)
+
+  const authoredId = (heading) => {
+    let id = null
+    for (const list of heading.battrs ?? []) {
+      for (const attr of list) if (attr[0] === 'id') id = attr[1]
+    }
+    return id
+  }
+  const used = new Set(headings.map(authoredId).filter((id) => id !== null))
+  const byHeading = new WeakMap()
+  const slug = makeSlugger()
+  for (const heading of headings) {
+    const authored = authoredId(heading)
+    if (authored !== null) {
+      byHeading.set(heading, authored)
+      continue
+    }
+    let id
+    do { id = slug(slugText(heading.text)) } while (used.has(id))
+    used.add(id)
+    byHeading.set(heading, id)
+  }
+  return { byHeading, used }
+}
+
 function renderDocPass(doc, footnoteProbe) {
   // A placed title takes an adm id before its authored children. Check whether
   // a note actually resolves first, so a fallback div consumes no id. Only
@@ -119,8 +158,16 @@ function renderDocPass(doc, footnoteProbe) {
     b.t === 'footnotes-placement' && b.title !== null)
     ? renderDocPass(doc, true).hasResolvedNotes
     : null
+  const reserved = reserveHeadingIds(doc)
   const ctx = {
-    slug: makeSlugger(),
+    headingIdByBlock: reserved.byHeading,
+    mintAdmId() {
+      const base = `adm-${++this.admCount}`
+      let id = base
+      for (let suffix = 2; reserved.used.has(id); suffix++) id = `${base}-${suffix}`
+      reserved.used.add(id)
+      return id
+    },
     admCount: 0,
     linkDefs: doc.linkDefs,
     abbrDefs: doc.abbrDefs,
@@ -177,7 +224,7 @@ function renderDocPass(doc, footnoteProbe) {
         }
         hAttrs = renderTextBlockAttrs(rest, `h${b.level}`)
       }
-      if (id === null) id = ctx.slug(slugText(b.text))
+      if (id === null) id = ctx.headingIdByBlock.get(b)
       ctx.headingIds.set(id, { id, html })
       noteHeadingRef(ctx, derivedText(b.text), id)
       out.push(`${indent()}<section id="${escapeAttr(id)}">`)
@@ -454,7 +501,7 @@ function renderBlock(b, depth, ctx) {
       let ariaStr = ''
       if (tag === 'aside' && !hasAuthoredName(b.battrs)) {
         if (b.title !== null) {
-          titleId = ctx.slug(`adm-${++ctx.admCount}`)
+          titleId = ctx.mintAdmId()
           ariaStr = ` aria-labelledby="${escapeAttr(titleId)}"`
         } else {
           const word = LABELS[`admonition${b.type[0].toUpperCase()}${b.type.slice(1)}`]
@@ -678,7 +725,7 @@ function renderBlock(b, depth, ctx) {
         for (const a of list) if (a[0] === 'id') authored = a[1]
       }
       const attrStr = renderTextBlockAttrs(b.battrs, `h${b.level}`)
-      const id = authored ?? ctx.slug(slugText(b.text))
+      const id = authored ?? ctx.headingIdByBlock.get(b)
       ctx.headingIds.set(id, { id, html })
       noteHeadingRef(ctx, derivedText(b.text), id)
       const idAttr = authored === null ? ` id="${escapeAttr(id)}"` : ''
@@ -691,7 +738,7 @@ function renderBlock(b, depth, ctx) {
       // visible to the footnote scan, including an inline note in that title.
       const places = firstPlaced && (ctx.footnoteProbe || ctx.hasResolvedNotes !== false)
       const titleId = places && !ctx.footnoteProbe && b.title !== null
-        ? ctx.slug(`adm-${++ctx.admCount}`)
+        ? ctx.mintAdmId()
         : null
       if (places && !ctx.footnoteProbe) ctx.placedFootnotesTitleId = titleId
       const heading = footnotesHeading(b, places ? depth : depth + 1, titleId)

@@ -13,6 +13,7 @@ inline_content = {inline_element | text_run | literal_special}+ ;
 literal_special = special_char ;
 
 inline_element = escaped_char
+               | escaped_space
                | raw_inline
                | literal_inline
                | code_span
@@ -60,6 +61,7 @@ special_char = '/' | '*' | '_' | '~' | '^' | '`' | '[' | ']'
 
 (* --- Escaped Characters --- *)
 escaped_char = '\', ascii_punctuation ;
+escaped_space = '\', space ;
 ascii_punctuation = '!' | '"' | '#' | '$' | '%' | '&' | "'" | '(' | ')'
                   | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';'
                   | '<' | '=' | '>' | '?' | '@' | '[' | '\' | ']'
@@ -275,20 +277,20 @@ link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' -
            | space, ("'", {escaped_char | literal_backslash | (character - "'" - '\')}, "'") ;
 
 (* AN EMPTY DESTINATION IS EXPLICIT -- NORMATIVE [CARVE-P3-024]. This branch
-   consumes no newline. Zero or more ASCII spaces or tabs may precede the
+   consumes no newline. Zero or more ASCII spaces may precede the
    closer, but only exactly one ASCII space followed by a quoted run opens a
    title: `[t]( "T")` has href "" and title T; `[t]("T")` has the
-   nonempty destination `"T"` and no title. Multiple spaces or a tab before
+   nonempty destination `"T"` and no title. Multiple spaces before
    a quote do not open a title. A nonempty destination keeps its existing
    one-space title separator and accepts no trailing padding. Unicode
-   whitespace cannot fill the empty destination's padding slot.
+   whitespace and tabs cannot fill the empty destination's padding slot.
 
    Empty children, an empty destination, and title presence are independent.
    An empty link or image stays a node without synthetic text or comments.
    An authored empty destination emits href="" or src="" in HTML and never
    produces `destination-denied`. A refused nonempty destination still reports
    that diagnostic even if its rendered attribute is empty. *)
-empty_destination = link_title, {whitespace} | {whitespace} ;
+empty_destination = link_title, {space} | {space} ;
 
 reference_label = (character - ']' - '@' - newline), {character - ']' - newline} ;
 (* A LABEL SPANS NO LINE BREAK, like `footnote_label`. A collapsed

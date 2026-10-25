@@ -79,6 +79,8 @@ Ordered:
   - run the tests
 . ship it
 
+%% Task states: [ ] and [_] open, [/] progress, [!] blocked, [x]/[X] done,
+%% [-] dropped, [>] deferred, [?] uncertain. Only done is checked.
 Tasks:
 
 - [x] write the grammar

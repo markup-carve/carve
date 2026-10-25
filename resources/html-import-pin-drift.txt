@@ -1,3 +1,4 @@
 # HTML import fixtures the pinned reference engine does not reproduce.
 # Format: <fixture><two spaces><reason>. Remove entries when the pin catches up.
 # html-import:check rejects both undeclared mismatches and stale entries.
+task-state-is-consumed  carve#3645 and carve#3598: the pinned importer treats progress and blocked task attributes as ordinary attributes

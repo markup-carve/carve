@@ -604,10 +604,10 @@
       is `tight` or `loose`, for a list and a definition list alike.
 
       A task `list_item` carries `task.mark`, the authored marker character,
-      and `task.status`. Space means todo, `x` done, `-` cancelled, `_` and
-      `>` partial, and `?` other. The pair MUST agree. `checked` and the old
-      `taskState` field are not serialized; a UI derives a checked box from
-      the mark when it needs one.
+      and `task.status`. Space and `_` mean todo, `x` and `X` done, `-`
+      cancelled, `/` in-progress, `!` blocked, `>` partial, and `?` other.
+      The pair MUST agree. `checked` and the old `taskState` field are not
+      serialized; a UI derives a checked box from the mark when it needs one.
 
    44. THE NODE SLOT TABLE DEFINES TRAVERSAL -- NORMATIVE [CARVE-P12-071].
       `children` is the primary content slot on document, containers, lists,

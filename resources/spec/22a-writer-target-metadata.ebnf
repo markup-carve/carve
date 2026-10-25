@@ -303,8 +303,9 @@
       block's attribute marker stands directly above its fence marker, as a
       definition list's does above its first term marker. A fence marker
       not directly above a fenced code block is a damaged set. Without the
-      mode nothing is reported: the info string holds both tokens, so this
-      target writes them (CARVE-P2-024).
+      mode, a title with a language stays in the info string and reports
+      nothing. A title without a language reports `fence-title-dropped`
+      (CARVE-P2-024); the label stays in the info string.
 
       A LIST'S NUMBERING STYLE TAKES A LIST-STYLE MARKER. This target writes
       an alphabetic or roman ordered list as a decimal list (CARVE-P2-024), so
@@ -426,9 +427,9 @@
       heading the target does not write as a heading (one flattened into a
       table cell) is not a target, and a fragment naming no heading is CARVE-P11-049's.
 
-      NO ANCHOR CAN DANGLE. The target writes no anchor at all, and the
-      reader derives each slug from text the target wrote, so every link to a
-      heading resolves in a GFM reader (carve#352). A heading whose text
+      NO ANCHOR DANGLES FOR AN IMAGE-FREE HEADING. The target writes no anchor,
+      and the reader derives its slug from the heading text. G1's image case
+      can yield a different slug in a GFM reader. A heading whose text
       removes to nothing has the empty slug, and a link to it is written `#`,
       or `#-1` and so on for a repeat.
 
@@ -460,7 +461,7 @@
 
       THE DESTINATION IS WRITTEN LIKE ANY OTHER. A fragment that names a
       heading is the heading's GFM slug (§11); any other fragment is the
-      authored destination under the ordinary destination encoding, `#`
+      authored destination under the destination encoding (CARVE-P11-075), `#`
       alone included.
 
       THE LABEL IS WRITTEN LIKE ANY OTHER LINK LABEL. `[[1]](#n1)` is emitted

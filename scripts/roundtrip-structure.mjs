@@ -34,6 +34,9 @@
  * HTML roundtrip adds a `[h]: #h` definition the source did not have; the 1.2
  * `inline` slot hid it. JS/html strict 2378 to 2377. JS/html and JS/md
  * identical and JS/md strict rose with the same pin.
+ * Merging main into next-ast2 adds 11 corpus documents (3067). Against main
+ * at the 1.2 pin, JS/html strict stays one lower (2385, corpus 315-5 above) and
+ * JS/md strict is one lower (1733); identical counts are higher on 2.0.
  */
 import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'

@@ -1,0 +1,49 @@
+A line at the marker column leaves a closed nested body
+
+````
+  - :: term
+    : definition
+  
+      ```
+      code
+      ```
+  after
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>definition</p>
+        <pre><code>code
+</code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>after</p>
+````
+
+```
+    - :: term
+      : definition
+    
+        ~~~
+        code
+        ~~~
+    after
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>definition</p>
+        <pre><code>code
+</code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>after</p>
+```

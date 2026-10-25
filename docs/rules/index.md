@@ -14,10 +14,10 @@ Carve has one normative language contract. These views filter that contract by i
 | [Parsing](./parsing) | 122 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
 | [Resolution and rendering](./resolution-rendering) | 52 | Document-wide resolution, core semantic behavior, and HTML serialization. |
 | [AST interchange](./ast-interchange) | 64 | The core serialized tree shape, source positions, and cross-implementation AST guarantees. |
-| [Canonical writing](./canonical-writing) | 76 | Canonical Carve source, Markdown and plain-text targets, round trips, and escaping. |
+| [Canonical writing](./canonical-writing) | 77 | Canonical Carve source, Markdown and plain-text targets, round trips, and escaping. |
 | [Imports, security, and extensions](./imports-security-extensions) | 38 | Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces. |
 
-Together the views cover all 352 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
+Together the views cover all 353 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
 
 ## Retired rule IDs
 
@@ -25,7 +25,7 @@ Retired IDs are never reused. Their replacement points to the document that now 
 
 | Rule | Last title | Replacement |
 |---|---|---|
-| `CARVE-P9-028` | THE ENGINE'S OWN WORDS ARE A RENDER OPTION | [`CARVE-P9-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L169) |
+| `CARVE-P9-028` | THE ENGINE'S OWN WORDS ARE A RENDER OPTION | [`CARVE-P9-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L162) |
 | `CARVE-PRE-001` | THE EXECUTABLE ARTIFACTS DECIDE NOTHING | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-PRE-002` | A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-PRE-003` | A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |

@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases before 0.1.6 are archived in
 [CHANGELOG-0.1.md](./CHANGELOG-0.1.md).
 
+## [Unreleased]
+
+## [0.1.13] - 2026-10-25
+
+The spec adds progress and blocked task states, settles import and escaping rules, and improves marker colors in the playground.
+
+### Fixes
+
+- Heading IDs are reserved before admonition IDs, and lazy attribute text stays in its nested description paragraph (#3630, #3611).
+- One space after `%%` is the comment separator and is consumed. Only spaces can pad an empty link destination; a tab cannot. Escaped Markdown destination parentheses follow the specified rule (#3627, #3626, #3606).
+- Fence metadata placement, no-language fence title loss, and canonical backslash and caret escaping are specified precisely (#3625, #3644, #3624).
+- Governing clauses and reviewed examples use the settled wording (#3643, #3642).
+- Display math with trailing attributes still takes a following caption (#3650).
+- The executable spec model ends a list item at a marker-column line after a blank that follows a closed nested body, as the layout rules require (#3656).
+
+### Improvements
+
+- Task lists recognize progress `[/]` and blocked `[!]`; `[_]` is now an open alias. Corpus fixtures cover parsing, HTML import and round trips (#3645).
+- The playground distinguishes table roles and colors list, checkbox and continuation markers consistently (#3614, #3616).
+- The reference engine pin moves to JS 0.1.15, with covered-column and AST conformance fixes and cleared parser drift (#3596, #3602, #3612, #3649, #3657).
+- The reference JS pin now reproduces the new task-state fixtures, so the temporary parser, HTML import and round-trip drift declarations are removed (#3653).
+
 ## [0.1.12] - 2026-10-24
 
 The spec now settles several container, table, and writer edge cases. The playground also gains native formatting and an updated demo.

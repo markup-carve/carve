@@ -1,0 +1,7 @@
+A tab cannot pad an empty link destination
+
+```
+[t](	)
+.
+<p>[t](	)</p>
+```

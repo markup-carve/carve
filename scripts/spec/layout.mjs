@@ -24,6 +24,10 @@ import layoutTransitions from '../../resources/spec/layout-transitions.json' wit
 
 export { TIER1 }
 
+export function commentLineContent(line) {
+  return line.replace(/^[ \t]*%%/, '').replace(/^ /, '').replace(/[ \t]+$/, '')
+}
+
 export class Refuse extends Error {
   constructor(reason) {
     super(reason)
@@ -342,7 +346,6 @@ function takeLabelSlot(s) {
 // the RESOLVED tree and is settled in exactly one later place: the promotion
 // phase in html.mjs. Do not read this function as that answer - an unresolved
 // reference image is captionable-SHAPED and is not a block image.
-const CAPTIONABLE_MATH = /^\$\$`.*`$/
 function isCaptionableParagraph(para) {
   // The whole paragraph, not its first line. An image's ALT is `brContent*`,
   // which admits a line boundary like any other inline content, so
@@ -362,7 +365,11 @@ function isCaptionableParagraph(para) {
   // tail patterns admit a newline inside `[...]` and `(...)` because they
   // never had to exclude one.
   const line = para.map(trimLineEnd).join('\n')
-  if (CAPTIONABLE_MATH.test(line)) return 'math'
+  if (line.startsWith('$$`')) {
+    const close = line.indexOf('`', 3)
+    const tail = close < 0 ? null : line.slice(close + 1)
+    if (tail === '' || (tail !== null && parseAttrBlock(tail) !== null)) return 'math'
+  }
   if (!line.startsWith('![')) return null
   const altEnd = bracketRunEnd(line, 1, 'alt')
   if (altEnd === -1) return null
@@ -388,7 +395,7 @@ function isCaptionableParagraph(para) {
 // Matches `{`, a payload of quoted runs and bare characters, then `}`.
 const ATTR_PAYLOAD = /(?:[^}'"\\]|\\.|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")*/.source
 const ATTR_BLOCK = `\\{${ATTR_PAYLOAD}\\}`
-const BULLET = new RegExp(`^([ \\t]*)([-*])(${ATTR_BLOCK})?( +)(?:\\[([ xX_>?-])\\] )?(.+)$`)
+const BULLET = new RegExp(`^([ \\t]*)([-*])(${ATTR_BLOCK})?( +)(?:\\[([ xX_>/!?-])\\] )?(.+)$`)
 // The value is optional before a `.`: a bare `. ` is a decimal marker
 // counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
 // marker, so the empty alternative is guarded by a lookahead at the dot.
@@ -6177,7 +6184,16 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // An authored block the block reader has already ended holds nothing
       // open for the line below (a description ending on a code block).
       if (!deepestIsDescendant && authoredContainer && authoredBlockLimit !== null && i >= authoredBlockLimit) return false
-      if (!deepestIsDescendant) return true
+      if (!deepestIsDescendant) {
+        // The authored extent can include a lazy-looking line after a closed
+        // nested block. At a below-column line, ask the body's last block
+        // whether it still has a paragraph to fold into.
+        const tail = indentCols(itemLines.at(-1) ?? '').rest
+        if (authoredContainer && ind(i)?.col < contentCol &&
+            (PURE_FENCE.test(tail) || !opensParagraph(tail, true)) &&
+            bodyLeavesNoParagraphAt(itemLines, itemLines.length - 1)) return false
+        return true
+      }
       const d = descendantQ1At(descendantQ1.col)
       return d === null ? true : d.open
     }

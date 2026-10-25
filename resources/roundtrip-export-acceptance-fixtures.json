@@ -483,7 +483,7 @@
     },
     {
       "id": "task-states",
-      "source": "- [ ] open\n- [x] done\n- [X] upper\n- [-] dropped\n- [_] held\n- [>] moved\n- [?] unsure\n",
+      "source": "- [ ] open\n- [x] done\n- [X] upper\n- [-] dropped\n- [_] open alias\n- [/] active\n- [!] blocked\n- [>] moved\n- [?] unsure\n",
       "carriers": {},
       "forbiddenExportAttributes": [
         "data-marker"
@@ -521,7 +521,21 @@
           "type": "list_item",
           "task": {
             "mark": "_",
-            "status": "partial"
+            "status": "todo"
+          }
+        },
+        {
+          "type": "list_item",
+          "task": {
+            "mark": "/",
+            "status": "in-progress"
+          }
+        },
+        {
+          "type": "list_item",
+          "task": {
+            "mark": "!",
+            "status": "blocked"
           }
         },
         {
@@ -544,7 +558,13 @@
         "semantic",
         "roundtrip"
       ],
-      "carrierHosts": []
+      "carrierHosts": [],
+      "aheadOfPin": {
+        "reason": "carve#3645 and carve#3598: the pinned parser retains the old task mapping",
+        "fails": [
+          "error: {\"type\":\"list_item\",\"task\":{\"mark\":\"_\",\"status\":\"todo\"}}"
+        ]
+      }
     },
     {
       "id": "generated-heading-id",

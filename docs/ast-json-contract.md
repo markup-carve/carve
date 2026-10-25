@@ -164,6 +164,7 @@ or cross reference ([CARVE-P12-005](./rules/ast-interchange),
 [CARVE-P12-006](./rules/ast-interchange),
 [CARVE-P12-047](./rules/ast-interchange)).
 
+
 ```json
 { "type": "link", "key": "start", "namespace": "link", "rawRef": "[Start][]" }
 ```
@@ -199,8 +200,8 @@ mixed. A definition list also uses `children` and `spacing`.
 }
 ```
 
-A task item has `task.mark` and `task.status`. Space is todo, `x` done,
-`-` cancelled, `_` and `>` partial, and `?` other. The pair must agree.
+A task item has `task.mark` and `task.status`. Space and `_` are todo, `x` and `X` done, `-` cancelled,
+`/` in-progress, `!` blocked, `>` partial, and `?` other. The pair must agree.
 The 1.2 `checked` and `taskState` fields are removed
 ([CARVE-P12-070](./rules/ast-interchange)).
 

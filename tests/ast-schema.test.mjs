@@ -689,8 +689,27 @@ test('the corpus is non-trivial', () => {
  * that starts validating again has to leave this list in the commit that bumps
  * the pin, or the list becomes a blanket excuse with no expiry.
  */
-const SCHEMA_ROLLOUT_PENDING = new Map([])
+const SCHEMA_ROLLOUT_PENDING = new Map([
+  ['06-task-lists-2.crv', 'carve#3645 and carve#3598: the pinned parser still maps [_] to partial'],
+])
 
+test('task marks require their 2.0 status', () => {
+  const pairs = [
+    [' ', 'todo'], ['_', 'todo'], ['x', 'done'], ['X', 'done'],
+    ['-', 'cancelled'], ['/', 'in-progress'], ['!', 'blocked'],
+    ['>', 'partial'], ['?', 'other'],
+  ]
+  const tree = (mark, status) => ({
+    type: 'document', astVersion: '2.0', children: [{
+      type: 'list', marker: { kind: 'bullet', char: '-' }, spacing: 'tight',
+      children: [{ type: 'list_item', children: [], task: { mark, status } }],
+    }],
+  })
+  for (const [mark, status] of pairs) {
+    assert.equal(validate(tree(mark, status)), true, `${mark}: ${firstErrors()}`)
+    assert.equal(validate(tree(mark, 'other' === status ? 'todo' : 'other')), false, mark)
+  }
+})
 
 test('2.0 source offsets count UTF-8 bytes', () => {
   const node = serialize('😀\n').children[0]

@@ -38,7 +38,13 @@ LISTS
   . ordered item               auto-numbered (canonical)
   3. ordered item              explicit start number
   - [ ] open task
+  - [_] open alias
+  - [/] task in progress
+  - [!] blocked task
   - [x] done task
+  - [-] dropped task
+  - [>] deferred task
+  - [?] uncertain task
   - item
   +                            continuation marker: attaches the next
   > note                       block at its column to the item

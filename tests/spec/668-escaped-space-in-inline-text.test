@@ -1,0 +1,7 @@
+Escaped space in inline text
+
+```
+a\ b
+.
+<p>a&nbsp;b</p>
+```
