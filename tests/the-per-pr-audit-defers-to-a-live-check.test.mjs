@@ -124,6 +124,7 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
     [
       // A spec PR adds a cellWraps row ahead of the pin; the pin bump drops the flag.
       ['resources/ast-cell-wraps-acceptance.json', 'owed', 'declared'],
+      ['resources/ast-source-layout-fixtures.json', 'owed', 'declared'],
       ['resources/ast-extent-findings.txt', 'owed', 'declared'],
       ['resources/ast-position-waivers.txt', 'split', 'split-declared'],
       ['resources/ast-span-divergence.txt', 'owed', 'declared'],
