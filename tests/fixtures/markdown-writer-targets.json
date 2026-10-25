@@ -1036,7 +1036,7 @@
     "name": "autolink-encoded-destination-fallback",
     "rule": "CARVE-P11-069",
     "carve": "<https://example.com/a(b)>\n",
-    "markdown": "[https://example.com/a(b)](https://example.com/a%28b%29)\n"
+    "markdown": "[https://example.com/a(b)](https://example.com/a\\(b\\))\n"
   },
   {
     "name": "explicit-equal-label-stays-explicit",
