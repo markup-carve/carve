@@ -349,7 +349,8 @@
         content_column -> sublist (PART 9 §24 C3); otherwise a new paragraph.
         An indentation frame reads a recognized opener at or past its content
         column, on its authored base (CARVE-P0-004). The document and a quote
-        need the exact column. When the residue is a container opener (a
+        need the exact column for openers other than list markers
+        (PART 9 §24 C4). When the residue is a container opener (a
         quote marker; a list marker at an admissible column; a `+`
         continuation marker at an open container's marker column or directly
         after a quote prefix, or first after the last opener on its line,
@@ -381,7 +382,8 @@
         over-indented text establishes no base.
 
         THE DOCUMENT AND A BLOCK QUOTE DO NOT REBASE. There an opener is
-        recognized at the content column exactly, and an over-indented one
+        recognized at the content column exactly, except that list markers
+        may open at any column (PART 9 §24 C4). An over-indented non-list opener
         is text: `   # H` is a paragraph at the document level and after
         `> `. The frame that answers is the owner O2 selected.
 
@@ -867,7 +869,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        NFC-normalized before slugging (CARVE-P9-058), so a precomposed `é` and a
        decomposed `e` + U+0301 give the SAME id;
      - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
-       id but an invalid CSS selector); an empty result becomes a generated `s-N`;
+       id but an invalid CSS selector); an empty result becomes `s`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
    An explicit {#id} is used verbatim (case preserved). Implementations MAY
    offer OPT-IN, orthogonal lowercasing and ASCII-folding transforms; neither
@@ -1280,7 +1282,10 @@ indent = whitespace, {whitespace} ;
    the opener line's own column. At an open list item's marker column, a following
    same-column list item is a sibling, so the `+` is ordinary text and the
    refused-marker lint reports it. *)
-continuation_marker = '+', {whitespace}, newline ;
+continuation_marker = '+', newline ;
+(* CARVE-P7-001 item 5 removes a line-final space/tab run before this
+   production is matched, so that source spelling remains a marker. A
+   vertical tab or form feed is not a marker separator. *)
 continuation_marker_block = continuation_marker, block ;
 (* First-block form (Carve addition; see PART 9 §17 L4): a lone `+` as the
    sole content right after a container's last opener (`- +`, `1. +`, `: +`,
@@ -1650,10 +1655,8 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    attribute syntax (PART 9 §15); otherwise the '{' is literal content. A cell
    carrying attributes is never a bare span_cell -- its content is literal even
    if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
-   block is what makes the cell ordinary content, so reading it back out as
-   text would leave this sentence with nothing to act on; `|{.x} < |` is
-   `<td class="x">&lt;</td>`, never `<td>{.x} &lt;</td>`. The only stated route
-   from a brace run to literal text is an INVALID payload, two sentences up.
+   `|{.x} < |` is `<td class="x">&lt;</td>`; `| {.x} < |` has ordinary
+   text `{.x} <` because the space precedes the brace.
    A computed rowspan/colspan/alignment is authoritative, so an author copy of
    those keys is dropped.
 
@@ -1819,8 +1822,9 @@ admonition = admonition_open, newline,
    host is the ENCLOSING CONTAINER where there is one and the DOCUMENT
    otherwise, so "closes at end of input" is the top-level case rather than
    the whole rule: a `::: note` opened inside a block quote and never closed
-   ends WITH THE QUOTE, and a flush-left line below is a sibling paragraph
-   outside both. This is djot's behavior. An unclosed opener SHOULD be
+   ends WITH THE QUOTE. A flush-left line below that cannot continue an open
+   paragraph lazily, for example after a blank line, is a sibling paragraph
+   outside both. An unclosed opener SHOULD be
    diagnosed by lint and by the language server; it is not an error for the
    parser. Note this is NOT the `%%%` comment-block rule (CARVE-P9-060), where an
    opener with no exact closer ahead opens nothing: a comment block is
@@ -2357,6 +2361,7 @@ inline_content = {inline_element | text_run | literal_special}+ ;
 literal_special = special_char ;
 
 inline_element = escaped_char
+               | escaped_space
                | raw_inline
                | literal_inline
                | code_span
@@ -2404,6 +2409,7 @@ special_char = '/' | '*' | '_' | '~' | '^' | '`' | '[' | ']'
 
 (* --- Escaped Characters --- *)
 escaped_char = '\', ascii_punctuation ;
+escaped_space = '\', space ;
 ascii_punctuation = '!' | '"' | '#' | '$' | '%' | '&' | "'" | '(' | ')'
                   | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';'
                   | '<' | '=' | '>' | '?' | '@' | '[' | '\' | ']'
@@ -3831,8 +3837,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    PROCESSOR-LEVEL directive, NOT part of the core parser. Its normative
    semantics are below and mirrored, with worked examples, in
    docs/includes.md. A conformant CORE never recognizes the directive
-   (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL -- it
-   parses the bytes under ordinary inline rules, so a bare-path directive
+   (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL: its
+   source is parsed as ordinary inline content, as if no include feature
+   existed. A bare-path directive
    with no active inline markers emits verbatim (corpus "Include directive
    with no resolver renders literal"). The rules a conforming PROCESSOR that
    DOES expand includes MUST follow:
@@ -3992,7 +3999,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       resolver with the contract: given (path, section?, options?,
       includingFileContext) it returns resolved Carve source text OR an
       error. If NO resolver is configured the directive is left LITERAL
-      (the processor emits the verbatim `{{ … }}`). This mirrors the
+      (CARVE-P6-001). This mirrors the
       bibliography loader precedent (host resolves, parser stays pure;
       docs/extensions.md §6.1) and preserves browser / WASM parity.
       OPT-IN: no resolver is configured by default, and a host MUST leave
@@ -4122,7 +4129,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       content in INLINE position (I2), cycle, depth-exceeded,
       size-exceeded, call-bound-exceeded, and a directive reached AFTER
       byte-budget or call-bound exhaustion EACH emit a Warning and leave
-      the directive LITERAL (visible and debuggable). The last two are
+      the directive LITERAL (CARVE-P6-001, visible and debuggable). The last two are
       never passed to the resolver at all (I6). Inclusion NEVER silently
       drops a directive. See PART 9 §25 (File inclusion) for the security
       model: parser stays pure, resolver is host-supplied and MUST enforce
@@ -4492,9 +4499,11 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    hardest, because there an implementation had to invent something. A
    definition term, a bullet item and an ordered item take `space` -- one,
    exactly, not a class. A heading and a caption spell `space+`, a RUN of
-   the same terminal. The CONTINUATION MARKER takes none:
-   `continuation_marker = '+', newline`, so any character between the
-   `+` and the line end is content and the line is not a marker. The
+   the same terminal. The CONTINUATION MARKER takes no separator: after
+   CARVE-P7-001 item 5 drops the line-final run,
+   `continuation_marker = '+', newline` requires the `+`
+   to be last. A vertical tab or form feed after it is content, so the
+   line is not a marker. The
    block-attribute line takes `attr_pad` and `attr_separator`, built from
    `space`, and `continuation`, whose indentation is `whitespace`. A VERTICAL
    TAB or a FORM FEED in any of
@@ -4525,7 +4534,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
      inline text                            `escaped_char`: `\` + any
                                             `ascii_punctuation` yields that
                                             character; `\` + newline is a
-                                            `hard_break`
+                                            `hard_break`; `\` + space is a
+                                            `non_breaking_space` (CARVE-P12-004)
      image alt text                         `escaped_char`, decoded into the
                                             scalar value
      link and image title, quoted           `escaped_char`; a `\` before any
@@ -4884,8 +4894,9 @@ EOF = (* end of file *) ;
          HEADER cell; `\=` yields a data cell whose text starts with `=`.
       T4 SPAN MARKERS. A cell whose WHOLE content is `^` (rowspan) or `<`
          (colspan) is a span marker; ANY other content disqualifies it --
-         `{.x} <` is an ordinary cell with literal text `{.x} <` (no
-         attributed span marker exists). Leading or trailing U+0020 padding
+         `| {.x} < |` is an ordinary cell with literal text `{.x} <`, while
+         `|{.x} < |` is an attributed cell holding a literal `<` (T10).
+         Neither is a span. Leading or trailing U+0020 padding
          does not disqualify the marker. `|<|`, `| <|`, `|< |` and `| < |`
          are spans, as are all four corresponding `^` forms. A lone span
          glyph takes precedence over an alignment run on an empty cell.
@@ -5068,7 +5079,7 @@ EOF = (* end of file *) ;
 
          The block is GLUED: to the marker run where the cell has one, to
          the opening `|` where it has none. A space anywhere in front of it
-         makes it ordinary content (T4's `{.x} <` is unchanged), and the
+         makes it ordinary content (T4's `| {.x} < |` is unchanged), and the
          validity rule is T8's.
 
          The canonical writer uses this order. The `|{#x}< content |` spelling
@@ -7547,17 +7558,10 @@ EOF = (* end of file *) ;
          TARGETS also requires stripping DEL and C1 controls, including CSI
          (U+009B) and OSC (U+009D).
 
-      T5 WHAT THIS SECTION DOES NOT SETTLE, stated so its silence is not
-         read as agreement:
-         - DEL (U+007F) AND THE C1 CONTROLS are outside this section, which
-           is about C0. DEL, CSI (U+009B), OSC (U+009D) and U+0080 are
-           stripped on Markdown, plain text and ANSI alike, so §25's
-           NON-HTML TARGETS requirement is met on those three.
-           WHAT IS STILL OPEN is the CANONICAL WRITER: every one of those
-           characters passes through on the `carve` target, and §25 says
-           "non-HTML targets" without saying whether the canonical writer is
-           one. §26 already answers the same question for bidi overrides: the
-           `carve` target is a source serializer and preserves them.
+      T5 DEL (U+007F) AND THE C1 CONTROLS: Markdown, plain text and ANSI
+         strip them (PART 9 §25 I2). The canonical `carve` writer is a source
+         serializer (PART 9 §26, CARVE-P9-054) and preserves them, like other
+         authored content characters.
 *)
 
 
@@ -7807,7 +7811,8 @@ EOF = (* end of file *) ;
       representation for a non-link mention or tag cannot make that node
       disappear inside the resolved outer link. If the normalized plain text is
       empty, no index entry is created and no collapsed label resolves through
-      the generated `s-N` slug; the heading itself still receives it as
+      the generated `s` slug (or its duplicate suffix); the heading itself
+      still receives it as
       CARVE-P2-004 says.
       THE STRIP IS SCOPED TO THE HEADING INDEX. The linkDefs matching
       above is unchanged and keys on the label AS WRITTEN: `[*bold*]: /x`
@@ -10470,7 +10475,7 @@ EOF = (* end of file *) ;
    8h. A PIPE IN A TABLE CELL IS ESCAPED -- NORMATIVE [CARVE-P11-054]. Inside
       a pipe-table cell every `|` the writer emits as content is written
       `\|` in text, a code span's content, or a title. In a link destination
-      it is `%7C` under CARVE-P11-069. GFM splits the row on unescaped pipes
+      it is `%7C` under CARVE-P11-075. GFM splits the row on unescaped pipes
       before reading inlines; a pipe already escaped is not escaped twice.
 
         cell text "a|b"            ->  | a\|b |
@@ -10564,10 +10569,8 @@ EOF = (* end of file *) ;
         `href` is `mailto:` followed by the body, and the emitted destination
         equals `href`.
 
-      For both comparisons, the target's destination step strips controls,
-      blanks denied schemes, writes `(` as `\(` and `)` as `\)`,
-      percent-encodes spaces, `<`, `>` and `|`, and neutralizes character
-      references. It leaves other non-ASCII characters unchanged. A changed destination or an ineligible body uses
+      For both comparisons, apply the destination encoding (§8l). A changed
+      destination or an ineligible body uses
       the ordinary explicit link spelling. An authored `[text](destination)`
       stays explicit even when its text equals its destination. CARVE-P12-007's
       nested-link render rule still flattens the inner link. Attributes follow
@@ -10576,6 +10579,30 @@ EOF = (* end of file *) ;
         <https://example.com>     -> <https://example.com>
         <user@example.com>       -> <user@example.com>
         <https://e.com/a(b)>      -> [https://e.com/a(b)](https://e.com/a\(b\))
+
+   8l. THE MARKDOWN TARGET ENCODES LINK AND IMAGE DESTINATIONS -- NORMATIVE
+      [CARVE-P11-075]. Apply these steps in order to every destination written
+      by the ordinary link, image, or autolink path, including one in a table
+      cell. A heading fragment rewritten to a GFM slug (§11) is exempt:
+
+      1. Strip destination controls, then probe the resulting value for a
+         denied scheme (PART 9 §25). A denied destination becomes empty.
+      2. Escape `(` as `\(` and `)` as `\)`; percent-encode spaces, `<`,
+         `>` and `|` as `%20`, `%3C`, `%3E` and `%7C`. When the destination
+         contains `|`, also encode its backslashes as `%5C`. Other non-ASCII
+         content characters remain as written.
+      3. Escape an `&` that opens a character reference as `&amp;`. For this
+         destination test, a reference has `#` and 1-8 decimal digits, `#x`
+         or `#X` and 1-8 hex digits, or an ASCII letter followed by 0-31
+         ASCII alphanumeric characters, then `;`. This prevents a reader from
+         decoding a destination different from the one the scheme probe read.
+
+      A nonempty authored destination that becomes empty writes `<>`; an
+      authored empty destination uses the same spelling (CARVE-P11-070).
+      In a table cell the `%7C` spelling keeps the cell boundary intact.
+
+        [x](a|b)               -> [x](a%7Cb)
+        [x](a(b))              -> [x](a\(b\))
 
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces, except
@@ -11687,7 +11714,7 @@ EOF = (* end of file *) ;
 
       THE DESTINATION IS WRITTEN LIKE ANY OTHER. A fragment that names a
       heading is the heading's GFM slug (§11); any other fragment is the
-      authored destination under the ordinary destination encoding, `#`
+      authored destination under the destination encoding (CARVE-P11-075), `#`
       alone included.
 
       THE LABEL IS WRITTEN LIKE ANY OTHER LINK LABEL. `[[1]](#n1)` is emitted

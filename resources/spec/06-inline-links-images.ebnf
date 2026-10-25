@@ -13,6 +13,7 @@ inline_content = {inline_element | text_run | literal_special}+ ;
 literal_special = special_char ;
 
 inline_element = escaped_char
+               | escaped_space
                | raw_inline
                | literal_inline
                | code_span
@@ -60,6 +61,7 @@ special_char = '/' | '*' | '_' | '~' | '^' | '`' | '[' | ']'
 
 (* --- Escaped Characters --- *)
 escaped_char = '\', ascii_punctuation ;
+escaped_space = '\', space ;
 ascii_punctuation = '!' | '"' | '#' | '$' | '%' | '&' | "'" | '(' | ')'
                   | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';'
                   | '<' | '=' | '>' | '?' | '@' | '[' | '\' | ']'

@@ -133,7 +133,7 @@
    8h. A PIPE IN A TABLE CELL IS ESCAPED -- NORMATIVE [CARVE-P11-054]. Inside
       a pipe-table cell every `|` the writer emits as content is written
       `\|` in text, a code span's content, or a title. In a link destination
-      it is `%7C` under CARVE-P11-069. GFM splits the row on unescaped pipes
+      it is `%7C` under CARVE-P11-075. GFM splits the row on unescaped pipes
       before reading inlines; a pipe already escaped is not escaped twice.
 
         cell text "a|b"            ->  | a\|b |
@@ -227,10 +227,8 @@
         `href` is `mailto:` followed by the body, and the emitted destination
         equals `href`.
 
-      For both comparisons, the target's destination step strips controls,
-      blanks denied schemes, writes `(` as `\(` and `)` as `\)`,
-      percent-encodes spaces, `<`, `>` and `|`, and neutralizes character
-      references. It leaves other non-ASCII characters unchanged. A changed destination or an ineligible body uses
+      For both comparisons, apply the destination encoding (§8l). A changed
+      destination or an ineligible body uses
       the ordinary explicit link spelling. An authored `[text](destination)`
       stays explicit even when its text equals its destination. CARVE-P12-007's
       nested-link render rule still flattens the inner link. Attributes follow
@@ -239,6 +237,30 @@
         <https://example.com>     -> <https://example.com>
         <user@example.com>       -> <user@example.com>
         <https://e.com/a(b)>      -> [https://e.com/a(b)](https://e.com/a\(b\))
+
+   8l. THE MARKDOWN TARGET ENCODES LINK AND IMAGE DESTINATIONS -- NORMATIVE
+      [CARVE-P11-075]. Apply these steps in order to every destination written
+      by the ordinary link, image, or autolink path, including one in a table
+      cell. A heading fragment rewritten to a GFM slug (§11) is exempt:
+
+      1. Strip destination controls, then probe the resulting value for a
+         denied scheme (PART 9 §25). A denied destination becomes empty.
+      2. Escape `(` as `\(` and `)` as `\)`; percent-encode spaces, `<`,
+         `>` and `|` as `%20`, `%3C`, `%3E` and `%7C`. When the destination
+         contains `|`, also encode its backslashes as `%5C`. Other non-ASCII
+         content characters remain as written.
+      3. Escape an `&` that opens a character reference as `&amp;`. For this
+         destination test, a reference has `#` and 1-8 decimal digits, `#x`
+         or `#X` and 1-8 hex digits, or an ASCII letter followed by 0-31
+         ASCII alphanumeric characters, then `;`. This prevents a reader from
+         decoding a destination different from the one the scheme probe read.
+
+      A nonempty authored destination that becomes empty writes `<>`; an
+      authored empty destination uses the same spelling (CARVE-P11-070).
+      In a table cell the `%7C` spelling keeps the cell boundary intact.
+
+        [x](a|b)               -> [x](a%7Cb)
+        [x](a(b))              -> [x](a\(b\))
 
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces, except

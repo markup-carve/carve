@@ -1505,6 +1505,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-075",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET ENCODES LINK AND IMAGE DESTINATIONS",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-070",
       "part": "11",
       "title": "EMPTY DESTINATIONS HAVE A CANONICAL SPELLING",

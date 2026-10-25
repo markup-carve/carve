@@ -65186,3 +65186,66 @@ marker column belongs outside the list (PART 0 O2).
 ```
 
 :::
+
+## Empty heading slugs use the ordinary duplicate suffix
+
+An empty heading slug starts at `s`; another empty slug receives the next
+available duplicate suffix.
+
+::: compare
+
+```carve
+# ( )
+
+# ( )
+```
+
+```html
+<section id="s">
+  <h1>( )</h1>
+</section>
+<section id="s-2">
+  <h1>( )</h1>
+</section>
+```
+
+:::
+
+## Escaped space in inline text
+
+A backslash before a space creates a no-break space.
+
+::: compare
+
+```carve
+a\ b
+```
+
+```html
+<p>a&nbsp;b</p>
+```
+
+:::
+
+## Lazy text stays in an unclosed quoted admonition
+
+The quote keeps an open paragraph across a flush-left lazy line.
+
+::: compare
+
+```carve
+> ::: note
+> a
+b
+```
+
+```html
+<blockquote>
+  <aside class="admonition note" aria-label="Note">
+    <p>a
+b</p>
+  </aside>
+</blockquote>
+```
+
+:::

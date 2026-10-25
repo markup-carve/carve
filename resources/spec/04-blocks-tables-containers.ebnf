@@ -89,10 +89,8 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    attribute syntax (PART 9 §15); otherwise the '{' is literal content. A cell
    carrying attributes is never a bare span_cell -- its content is literal even
    if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
-   block is what makes the cell ordinary content, so reading it back out as
-   text would leave this sentence with nothing to act on; `|{.x} < |` is
-   `<td class="x">&lt;</td>`, never `<td>{.x} &lt;</td>`. The only stated route
-   from a brace run to literal text is an INVALID payload, two sentences up.
+   `|{.x} < |` is `<td class="x">&lt;</td>`; `| {.x} < |` has ordinary
+   text `{.x} <` because the space precedes the brace.
    A computed rowspan/colspan/alignment is authoritative, so an author copy of
    those keys is dropped.
 
@@ -258,8 +256,9 @@ admonition = admonition_open, newline,
    host is the ENCLOSING CONTAINER where there is one and the DOCUMENT
    otherwise, so "closes at end of input" is the top-level case rather than
    the whole rule: a `::: note` opened inside a block quote and never closed
-   ends WITH THE QUOTE, and a flush-left line below is a sibling paragraph
-   outside both. This is djot's behavior. An unclosed opener SHOULD be
+   ends WITH THE QUOTE. A flush-left line below that cannot continue an open
+   paragraph lazily, for example after a blank line, is a sibling paragraph
+   outside both. An unclosed opener SHOULD be
    diagnosed by lint and by the language server; it is not an error for the
    parser. Note this is NOT the `%%%` comment-block rule (CARVE-P9-060), where an
    opener with no exact closer ahead opens nothing: a comment block is

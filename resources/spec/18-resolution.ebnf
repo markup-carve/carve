@@ -99,7 +99,8 @@
       representation for a non-link mention or tag cannot make that node
       disappear inside the resolved outer link. If the normalized plain text is
       empty, no index entry is created and no collapsed label resolves through
-      the generated `s-N` slug; the heading itself still receives it as
+      the generated `s` slug (or its duplicate suffix); the heading itself
+      still receives it as
       CARVE-P2-004 says.
       THE STRIP IS SCOPED TO THE HEADING INDEX. The linkDefs matching
       above is unchanged and keys on the label AS WRITTEN: `[*bold*]: /x`

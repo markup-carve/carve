@@ -461,7 +461,7 @@
 
       THE DESTINATION IS WRITTEN LIKE ANY OTHER. A fragment that names a
       heading is the heading's GFM slug (§11); any other fragment is the
-      authored destination under the ordinary destination encoding, `#`
+      authored destination under the destination encoding (CARVE-P11-075), `#`
       alone included.
 
       THE LABEL IS WRITTEN LIKE ANY OTHER LINK LABEL. `[[1]](#n1)` is emitted

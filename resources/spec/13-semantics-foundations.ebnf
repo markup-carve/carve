@@ -263,8 +263,9 @@
          HEADER cell; `\=` yields a data cell whose text starts with `=`.
       T4 SPAN MARKERS. A cell whose WHOLE content is `^` (rowspan) or `<`
          (colspan) is a span marker; ANY other content disqualifies it --
-         `{.x} <` is an ordinary cell with literal text `{.x} <` (no
-         attributed span marker exists). Leading or trailing U+0020 padding
+         `| {.x} < |` is an ordinary cell with literal text `{.x} <`, while
+         `|{.x} < |` is an attributed cell holding a literal `<` (T10).
+         Neither is a span. Leading or trailing U+0020 padding
          does not disqualify the marker. `|<|`, `| <|`, `|< |` and `| < |`
          are spans, as are all four corresponding `^` forms. A lone span
          glyph takes precedence over an alignment run on an empty cell.
@@ -447,7 +448,7 @@
 
          The block is GLUED: to the marker run where the cell has one, to
          the opening `|` where it has none. A space anywhere in front of it
-         makes it ordinary content (T4's `{.x} <` is unchanged), and the
+         makes it ordinary content (T4's `| {.x} < |` is unchanged), and the
          validity rule is T8's.
 
          The canonical writer uses this order. The `|{#x}< content |` spelling

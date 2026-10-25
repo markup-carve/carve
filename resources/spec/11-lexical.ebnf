@@ -163,9 +163,11 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    hardest, because there an implementation had to invent something. A
    definition term, a bullet item and an ordered item take `space` -- one,
    exactly, not a class. A heading and a caption spell `space+`, a RUN of
-   the same terminal. The CONTINUATION MARKER takes none:
-   `continuation_marker = '+', newline`, so any character between the
-   `+` and the line end is content and the line is not a marker. The
+   the same terminal. The CONTINUATION MARKER takes no separator: after
+   CARVE-P7-001 item 5 drops the line-final run,
+   `continuation_marker = '+', newline` requires the `+`
+   to be last. A vertical tab or form feed after it is content, so the
+   line is not a marker. The
    block-attribute line takes `attr_pad` and `attr_separator`, built from
    `space`, and `continuation`, whose indentation is `whitespace`. A VERTICAL
    TAB or a FORM FEED in any of
@@ -196,7 +198,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
      inline text                            `escaped_char`: `\` + any
                                             `ascii_punctuation` yields that
                                             character; `\` + newline is a
-                                            `hard_break`
+                                            `hard_break`; `\` + space is a
+                                            `non_breaking_space` (CARVE-P12-004)
      image alt text                         `escaped_char`, decoded into the
                                             scalar value
      link and image title, quoted           `escaped_char`; a `\` before any

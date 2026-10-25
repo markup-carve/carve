@@ -151,17 +151,10 @@
          TARGETS also requires stripping DEL and C1 controls, including CSI
          (U+009B) and OSC (U+009D).
 
-      T5 WHAT THIS SECTION DOES NOT SETTLE, stated so its silence is not
-         read as agreement:
-         - DEL (U+007F) AND THE C1 CONTROLS are outside this section, which
-           is about C0. DEL, CSI (U+009B), OSC (U+009D) and U+0080 are
-           stripped on Markdown, plain text and ANSI alike, so §25's
-           NON-HTML TARGETS requirement is met on those three.
-           WHAT IS STILL OPEN is the CANONICAL WRITER: every one of those
-           characters passes through on the `carve` target, and §25 says
-           "non-HTML targets" without saying whether the canonical writer is
-           one. §26 already answers the same question for bidi overrides: the
-           `carve` target is a source serializer and preserves them.
+      T5 DEL (U+007F) AND THE C1 CONTROLS: Markdown, plain text and ANSI
+         strip them (PART 9 §25 I2). The canonical `carve` writer is a source
+         serializer (PART 9 §26, CARVE-P9-054) and preserves them, like other
+         authored content characters.
 *)
 
 

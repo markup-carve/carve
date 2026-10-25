@@ -62,8 +62,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    PROCESSOR-LEVEL directive, NOT part of the core parser. Its normative
    semantics are below and mirrored, with worked examples, in
    docs/includes.md. A conformant CORE never recognizes the directive
-   (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL -- it
-   parses the bytes under ordinary inline rules, so a bare-path directive
+   (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL: its
+   source is parsed as ordinary inline content, as if no include feature
+   existed. A bare-path directive
    with no active inline markers emits verbatim (corpus "Include directive
    with no resolver renders literal"). The rules a conforming PROCESSOR that
    DOES expand includes MUST follow:
@@ -223,7 +224,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       resolver with the contract: given (path, section?, options?,
       includingFileContext) it returns resolved Carve source text OR an
       error. If NO resolver is configured the directive is left LITERAL
-      (the processor emits the verbatim `{{ … }}`). This mirrors the
+      (CARVE-P6-001). This mirrors the
       bibliography loader precedent (host resolves, parser stays pure;
       docs/extensions.md §6.1) and preserves browser / WASM parity.
       OPT-IN: no resolver is configured by default, and a host MUST leave
@@ -353,7 +354,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       content in INLINE position (I2), cycle, depth-exceeded,
       size-exceeded, call-bound-exceeded, and a directive reached AFTER
       byte-budget or call-bound exhaustion EACH emit a Warning and leave
-      the directive LITERAL (visible and debuggable). The last two are
+      the directive LITERAL (CARVE-P6-001, visible and debuggable). The last two are
       never passed to the resolver at all (I6). Inclusion NEVER silently
       drops a directive. See PART 9 §25 (File inclusion) for the security
       model: parser stays pure, resolver is host-supplied and MUST enforce
