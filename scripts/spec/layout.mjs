@@ -1677,6 +1677,19 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   // paragraph anywhere in the stack". So the peel below cannot borrow this
   // return, and `:: t` / `:  >` / `tail` must leave the definition.
   if (last < 0) return !quoted
+  // An attribute-shaped line without its nested quote marker, or short of an
+  // item's content column, is a lazy continuation of that host's paragraph.
+  // Its braces do not close the paragraph when the description asks whether
+  // the next line can still fold into the same host.
+  const tail = indentCols(bodyLines[last])
+  if (tail.col > 0 && tryAttrLine([tail.rest], 0) !== null) {
+    if (quoted) return true
+    for (let k = last - 1; k >= 0 && bodyLines[k].trim() !== ''; k--) {
+      if (QUOTE.test(bodyLines[k])) return true
+      const marker = matchMarkerAt(indentCols(bodyLines[k]))
+      if (marker) return tail.col < marker.indent + marker.markerWidth
+    }
+  }
   if (trailingWrappedAttr(bodyLines, last)) return false
 
   /*

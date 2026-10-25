@@ -27,6 +27,10 @@ import {
 import { carveCompletion, carveDiagnostics, carveHover, carveLanguageTheme, carveTooltips } from '../editor/carve-language'
 import { endTableAt, formatTable, isBlankRow, isTableRow, nextCell, previousCell } from '../editor/carve-tables'
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { sourceForShiki, editorTokenRanges, insertMarkerOverride } from '../../shiki-editor-source.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { standaloneContinuationOffsets } from '../../semantic-continuations.js'
 
 const props = defineProps<{
   modelValue: string
@@ -79,8 +83,8 @@ function styleString(s: string | Record<string, string> | undefined): string {
     .join(';')
 }
 
-function diffMarkerRanges(text: string, doc: EditorState['doc']): Array<{ from: number; to: number; mark: Decoration }> {
-  if (!/\bdiff\b/i.test(text)) return []
+function diffMarkerRanges(text: string, doc: EditorState['doc'], ast: unknown): Array<{ from: number; to: number; mark: Decoration }> {
+  if (!/\bdiff\b/i.test(text) || !ast) return []
   const ranges: Array<{ from: number; to: number; mark: Decoration }> = []
   const visit = (value: unknown): void => {
     if (value === null || typeof value !== 'object') return
@@ -117,7 +121,7 @@ function diffMarkerRanges(text: string, doc: EditorState['doc']): Array<{ from: 
     }
   }
   try {
-    visit(parse(text, { positions: true }))
+    visit(ast)
   } catch {
     return []
   }
@@ -141,7 +145,7 @@ async function highlight(): Promise<void> {
   if (seq !== highlightSeq || !view.value || view.value.state.doc.toString() !== text) return
   let lines
   try {
-    lines = hl.codeToTokens(text, {
+    lines = hl.codeToTokens(sourceForShiki(text), {
       lang: 'carve',
       themes: { light: 'github-light', dark: 'github-dark' },
     }).tokens
@@ -149,18 +153,41 @@ async function highlight(): Promise<void> {
     return
   }
   const ranges: Array<{ from: number; to: number; mark: Decoration }> = []
-  for (const line of lines) {
-    for (const t of line) {
-      if (!t.content.length) continue
-      const style = styleString(t.htmlStyle)
-      if (style) ranges.push({ from: t.offset, to: t.offset + t.content.length, mark: markFor(style) })
+  for (const { from, to, token } of editorTokenRanges(text, lines)) {
+    const style = styleString(token.htmlStyle)
+    if (style) ranges.push({ from, to, mark: markFor(style) })
+  }
+  let ast: unknown = null
+  if (/^[ \t]*\+[ \t]*$/m.test(text) || /\bdiff\b/i.test(text)) {
+    try {
+      ast = parse(text, { positions: true })
+    } catch {
+      // Keep the Shiki tokens when the parser cannot classify a partial edit.
     }
   }
-  const diffRanges = diffMarkerRanges(text, v.state.doc)
+  const continuations = ast ? standaloneContinuationOffsets(text, ast) : []
+  if (continuations.length) {
+    let style = ''
+    try {
+      const marker = hl.codeToTokens('- +', {
+        lang: 'carve',
+        themes: { light: 'github-light', dark: 'github-dark' },
+      }).tokens[0].find((token: { content: string }) => token.content === '+')
+      style = styleString(marker?.htmlStyle)
+    } catch {
+      // A failed extra highlight must not discard the document's tokens.
+    }
+    if (style) {
+      for (const at of continuations) {
+        insertMarkerOverride(ranges, at, markFor(style))
+      }
+    }
+  }
+  const diffRanges = diffMarkerRanges(text, v.state.doc, ast)
   if (diffRanges.length) {
     ranges.push(...diffRanges)
-    ranges.sort((a, b) => a.from - b.from || b.to - a.to)
   }
+  ranges.sort((a, b) => a.from - b.from || b.to - a.to)
   const builder = new RangeSetBuilder<Decoration>()
   for (const range of ranges) builder.add(range.from, range.to, range.mark)
   view.value.dispatch({ effects: setTokens.of(builder.finish()) })

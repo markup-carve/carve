@@ -229,9 +229,9 @@
         equals `href`.
 
       For both comparisons, the target's destination step strips controls,
-      blanks denied schemes, percent-encodes spaces, `(`, `)`, `<`, `>` and
-      `|`, and neutralizes character references. It leaves other non-ASCII
-      characters unchanged. A changed destination or an ineligible body uses
+      blanks denied schemes, writes `(` as `\(` and `)` as `\)`,
+      percent-encodes spaces, `<`, `>` and `|`, and neutralizes character
+      references. It leaves other non-ASCII characters unchanged. A changed destination or an ineligible body uses
       the ordinary explicit link spelling. An authored `[text](destination)`
       stays explicit even when its text equals its destination. CARVE-P12-007's
       nested-link render rule still flattens the inner link. Attributes follow
@@ -239,7 +239,7 @@
 
         <https://example.com>     -> <https://example.com>
         <user@example.com>       -> <user@example.com>
-        <https://e.com/a(b)>      -> [https://e.com/a(b)](https://e.com/a%28b%29)
+        <https://e.com/a(b)>      -> [https://e.com/a(b)](https://e.com/a\(b\))
 
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces, except
