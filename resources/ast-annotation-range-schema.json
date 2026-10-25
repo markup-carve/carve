@@ -88,7 +88,7 @@
         },
         "kind": {
           "type": "string",
-          "pattern": "^(?:comment|revision|bookmark|index_range|mark|[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+)$",
+          "pattern": "^(?:comment|revision|bookmark|index_range|mark|[A-Za-z][A-Za-z0-9-]*(?:\\.[A-Za-z0-9-]+)+)$",
           "description": "PART 12 §40: typed core range kind or globally qualified extension kind."
         },
         "start": {

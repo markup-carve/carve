@@ -1663,3 +1663,24 @@ test('raw payload stores literal termination and rejects obsolete metadata', () 
     assert.equal(validate(document({ ...raw, contentTerminated: value })), false)
   }
 })
+
+test('an unqualified inline extension name is a Carve source extension', () => {
+  const doc = (ext, extensions) => ({
+    type: 'document', astVersion: '2.0', ...(extensions ? { extensions } : {}),
+    children: [{ type: 'paragraph', children: [ext] }],
+  })
+  const text = { type: 'text', value: 'Ctrl' }
+  // `:kbd[Ctrl]` and `:my_note[x]` keep their authored names and need no fallback or declaration.
+  assert.equal(validate(doc({ type: 'inline_extension', name: 'kbd', children: [text] })), true, firstErrors())
+  assert.equal(validate(doc({ type: 'inline_extension', name: 'my_note', children: [text] })), true, firstErrors())
+  assert.equal(validate(doc({ type: 'inline_extension', name: 'my-note', children: [text] })), true, firstErrors())
+  // A dotted name is a registered extension: it must carry a fallback.
+  const declared = [{ name: 'org.example.kbd', version: '1', required: false }]
+  assert.equal(validate(doc({ type: 'inline_extension', name: 'org.example.kbd', children: [text] }, declared)), false)
+  assert.equal(validate(doc({ type: 'inline_extension', name: 'org.example.kbd', children: [text], fallback: text }, declared)), true, firstErrors())
+  // Encoded or malformed names are neither form.
+  assert.equal(validate(doc({ type: 'inline_extension', name: 'k bd', children: [text] })), false)
+  // A block extension has no source spelling, so an unqualified name is refused.
+  const block = { type: 'block_extension', name: 'note', fallback: { type: 'paragraph', children: [text] } }
+  assert.equal(validate({ type: 'document', astVersion: '2.0', children: [block] }), false)
+})

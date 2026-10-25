@@ -52,4 +52,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P10-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L855) | 10 | EXPORT DOES NOT SELECT AN IMPORT MODE |
 | [`CARVE-P10-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L771) | 10 | AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING |
 | [`CARVE-P10-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L795) | 10 | EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK |
-| [`CARVE-P12-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L631) | 12 | FOREIGN DATA AND RESOURCES HAVE EXPLICIT LOSS RULES |
+| [`CARVE-P12-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L643) | 12 | FOREIGN DATA AND RESOURCES HAVE EXPLICIT LOSS RULES |
