@@ -21,7 +21,6 @@ The spec adds progress and blocked task states, settles import and escaping rule
 - Fence metadata placement, no-language fence title loss, and canonical backslash and caret escaping are specified precisely (#3625, #3644, #3624).
 - Governing clauses and reviewed examples use the settled wording (#3643, #3642).
 - Display math with trailing attributes still takes a following caption (#3650).
-- The executable spec model ends a list item at a marker-column line after a blank that follows a closed nested body, as the layout rules require (#3656).
 
 ### Improvements
 
