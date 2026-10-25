@@ -9394,7 +9394,7 @@ EOF = (* end of file *) ;
 
    4. A PERMITTED STRATEGY. A writer may compare minimal and conservative
       spellings, then narrow escapes per occurrence. The minimal form escapes
-      §5's unconditional set; the conservative form also escapes its candidate
+      §5's always escaped set; the conservative form also escapes its candidate
       set. Compare by re-parsing complete emitted documents, not isolated lines:
       a line alone lacks the document's reference and footnote definitions.
       Compare the emitted spellings with each other, not with the source tree.
@@ -9404,31 +9404,21 @@ EOF = (* end of file *) ;
 
    5. THE TWO SETS.
 
-      UNCONDITIONAL -- always escaped in a text node, never re-derivable:
-        the backslash itself; the backtick (opens a code span in any
-        position); and `"` / `'`. A BARE quote re-derives as smart
+      ALWAYS ESCAPED in a text node: the backtick (opens a code span in any
+        position) and `"` / `'`. A BARE quote re-derives as smart
         punctuation (PART 9 §8), so a quote that reached the writer as TEXT
         is one the author escaped, and it stays escaped. A quote carried by a
         `smart_punctuation` node is NOT text: the writer emits that node's
         source run BARE, which is what makes `fmt` reproduce the author's
         spelling.
 
-        The CARET is also unconditional, for a different reason: it opens
-        nothing on its own, but a LEADING caret decides whether the block
-        above it takes a caption. Escaped, an image followed by a caret line
-        stays a paragraph; bare, the two lines are a figure. The tree records
-        no field for the escape (CARVE-P11-010). Escaping the caret in BOTH
-        forms keeps the two renders identical on that point, at the cost of
-        one escape on a character that is rare in prose.
+        A backslash is escaped before ASCII punctuation or a newline. Elsewhere
+        it is bare. A caret is escaped where it starts a caption line and is
+        bare elsewhere (CARVE-P11-010).
 
         SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT -- NORMATIVE [CARVE-P11-010].
-        §4's optional strategy uses these sets for its trial forms. A caret
-        named here is escaped in both forms, so their comparison never weighs
-        the mark; it is not a license to emit an escape §2 does not ask for.
-        §2 pins the output, and CARVE-P11-034 restates the reach in those terms -- "§5's
-        unconditional set escapes a LEADING caret in TEXT". So "always escaped
-        in a text node" is the set's membership rule, and §2 is the test the
-        emitted byte answers to.
+        §4's optional strategy uses these sets for its trial forms. §2 pins
+        the output, including a leading caret that would start a caption.
 
         THE MARK IS THE PROMOTION, NOT A FIELD, which is why the LEADING case
         needs no exception to §2. `resources/ast-schema.json` declares no
@@ -9520,7 +9510,7 @@ EOF = (* end of file *) ;
         `> + - . ) : | % !`  block openers at column 0, plus the inline forms
                              `%%`, `::` and the symbol shortcode `:name:` (the
                              inline-footnote `^[` is covered by the
-                             unconditional caret above)
+                             leading-caret rule above)
         `$`                  math
 
       A character in neither set is never escaped.
