@@ -177,11 +177,52 @@ jobs:
             exit 1
           fi
 
+  pre-tag:
+    name: Pre-tag drift, declarations, and fleet pins
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
+      - uses: actions/checkout@v7
+        with:
+          repository: markup-carve/carve-js
+          path: engines/carve-js
+          fetch-depth: 0
+      - uses: actions/checkout@v7
+        with:
+          repository: markup-carve/carve-php
+          path: engines/carve-php
+          fetch-depth: 0
+      - uses: actions/checkout@v7
+        with:
+          repository: markup-carve/carve-rs
+          path: engines/carve-rs
+          fetch-depth: 0
+      - name: Check the dispatched commit before tagging
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
+          CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
+          CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
+        run: |
+          [ "$(git rev-parse HEAD)" = "$GITHUB_SHA" ] || {
+            echo "::error::main moved after dispatch; rerun the release workflow."
+            exit 1
+          }
+          echo '/engines/' >> .git/info/exclude
+          bash scripts/pre-tag-check.sh "${{ inputs.version }}"
+
   tag:
     name: Create the tag
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [guard, release-notes]
+    needs: [guard, release-notes, pre-tag]
     # THE APPROVAL GATE, and the ONLY job that declares an environment. `needs:`
     # makes this unreachable until both gate jobs pass, and the environment holds
     # it until a required reviewer approves, so whoever approves is looking at a
