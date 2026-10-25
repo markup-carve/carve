@@ -1,1 +1,1 @@
-{"type":"document","children":[{"type":"thematic_break"},{"type":"list","ordered":true,"tight":false,"items":[{"type":"list_item","children":[{"type":"paragraph","children":[{"type":"text","value":"Note text."}]}]}]}]}
+{"type":"document","children":[{"type":"thematic_break"},{"type":"list","marker":{"kind":"ordered"},"spacing":"loose","children":[{"type":"list_item","children":[{"type":"paragraph","children":[{"type":"text","value":"Note text."}]}]}]}],"astVersion":"2.0","stages":["blockImagePromotion","referenceResolution","tableAlignment"]}
