@@ -151,9 +151,6 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       ['resources/oracle-divergence.txt', 'owed', 'declared'],
       // A spec PR adds a fixture row ahead of the pin by design; the pin bump drops the flag.
       ['resources/roundtrip-export-acceptance-fixtures.json', 'owed', 'declared'],
-      // The TASK MARKER window (carve#3645, carve#3598): the pinned carve-js predates
-      // its task parser, so a corpus document waits in SCHEMA_ROLLOUT_PENDING until the pin moves.
-      ['tests/ast-schema.test.mjs', 'owed', 'manual'],
       ['tests/empty-raw-list-placement.test.mjs', 'owed', 'declared'],
     ].sort(),
     'a spec ledger other than the engine-lag ones now reads differently per-PR',

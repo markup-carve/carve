@@ -689,9 +689,7 @@ test('the corpus is non-trivial', () => {
  * that starts validating again has to leave this list in the commit that bumps
  * the pin, or the list becomes a blanket excuse with no expiry.
  */
-const SCHEMA_ROLLOUT_PENDING = new Map([
-  ['06-task-lists-2.crv', 'carve#3645 and carve#3598: the pinned parser still maps [_] to partial'],
-])
+const SCHEMA_ROLLOUT_PENDING = new Map([])
 
 test('task marks require their 2.0 status', () => {
   const pairs = [

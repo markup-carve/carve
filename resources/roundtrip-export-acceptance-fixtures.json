@@ -558,13 +558,7 @@
         "semantic",
         "roundtrip"
       ],
-      "carrierHosts": [],
-      "aheadOfPin": {
-        "reason": "carve#3645 and carve#3598: the pinned parser retains the old task mapping",
-        "fails": [
-          "error: {\"type\":\"list_item\",\"task\":{\"mark\":\"_\",\"status\":\"todo\"}}"
-        ]
-      }
+      "carrierHosts": []
     },
     {
       "id": "generated-heading-id",

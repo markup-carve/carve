@@ -37,6 +37,7 @@
  * Merging main into next-ast2 adds 11 corpus documents (3067). Against main
  * at the 1.2 pin, JS/html strict stays one lower (2385, corpus 315-5 above) and
  * JS/md strict is one lower (1733); identical counts are higher on 2.0.
+ * Pinning the synced carve-js raises JS/md to 2293 identical and 1734 strict.
  */
 import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'

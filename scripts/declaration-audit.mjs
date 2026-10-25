@@ -255,7 +255,7 @@ const MANIFEST = [
   // Tier-3 twin of the Tier-2 AHEAD_OF_PIN above: read by hand inside a PR, owed before a tag.
   { repo: 'spec', path: 'tests/examples-tier3.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', stalenessFile: 'scripts/lib/tier3-ledger.mjs', staleness: 'the pinned build reproduces this example now, so its AHEAD_OF_PIN', owner: 'tests/a-tier3-example-ahead-of-the-pin-is-declared.test.mjs' },
   { repo: 'spec', path: 'tests/every-labels-key-reaches-the-output.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'Delete the AHEAD_OF_PIN entry so the key is checked for real.', owner: 'tests/every-labels-key-reaches-the-output.test.mjs' },
-  { repo: 'spec', path: 'tests/ast-schema.test.mjs', name: 'SCHEMA_ROLLOUT_PENDING', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', staleness: 'these documents validate now and are still listed in SCHEMA_ROLLOUT_PENDING', owner: 'tests/ast-schema.test.mjs' },
+  { repo: 'spec', path: 'tests/ast-schema.test.mjs', name: 'SCHEMA_ROLLOUT_PENDING', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'these documents validate now and are still listed in SCHEMA_ROLLOUT_PENDING', owner: 'tests/ast-schema.test.mjs' },
   { repo: 'spec', path: 'tests/corpus-convert.test.mjs', name: 'PINNED_DRIFT', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', staleness: 'but the pinned build now matches - delete the STALE entry', owner: 'per-PR twin of resources/converter-drift.txt' },
   // Capability statements about the PINNED build and about each engine's CLI,
   // not pin lag: no rule separates one that will clear from one that never
