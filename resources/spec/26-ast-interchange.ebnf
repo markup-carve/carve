@@ -335,7 +335,7 @@
       supplied by those hosts. Neither is `attrs.id`; a content hash may be
       used as a cache key but MUST NOT stand in for session node identity.
 
-        {"version":1,"session":"s-7f3","nodes":[{"id":"n4","path":"/children/3"}]}
+        {"version":2,"session":"s-7f3","nodes":[{"id":"n4","path":"/children/3"}]}
 
       THE PATH IS THE BINDING, NOT THE IDENTITY. A pointer moves when a sibling
       is inserted before it, so it holds only for the tree the sidecar came
