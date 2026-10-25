@@ -1,3 +1,5 @@
 - [-] dropped
 - [x] done
--{data-task-state=/} [ ] odd
+- [/] active
+- [!] blocked
+-{data-task-state=%} [ ] odd

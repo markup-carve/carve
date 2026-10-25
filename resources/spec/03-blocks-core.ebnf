@@ -519,13 +519,15 @@ first_block_content = continuation_marker, block ;
 
 (* Task lists are unordered lists with special markers *)
 task_marker = '[', task_state, ']', space ;
-(* `x`/`X` render a CHECKED checkbox; every other state (` `, `-`, `_`,
-   `>`, `?`) renders an UNCHECKED checkbox. Matches djot-php. *)
-task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
-(* THE STATE IS RECORDED, NOT ONLY THE BOX. `[-]`, `[_]`, `[>]` and `[?]`
+(* `x`/`X` render a CHECKED checkbox; every other state (` `, `_`,
+   `-`, `/`, `!`, `>`, `?`) renders an UNCHECKED checkbox. `_` is an
+   alternative spelling for the open state ` `. *)
+task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
+(* THE STATE IS RECORDED, NOT ONLY THE BOX. `[-]`, `[/]`, `[!]`, `[>]` and `[?]`
    are distinguishable states an author chose between, so PART 12 records the
    character in `list_item.taskState` and CARVE-P11-041 writes it back.
-   `checked` drives the rendering above; the state is the author's spelling,
+   `[_]` is an open-state alias whose spelling is retained. `checked` drives
+   the rendering above; the state is the author's spelling,
    as `bulletChar` is for `-` vs `*`.
 
    TASK STATE IS NOT A SAME-LIST AXIS. PART 9 §11's criteria are unchanged: a `[ ]`

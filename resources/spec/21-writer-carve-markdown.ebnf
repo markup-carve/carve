@@ -240,7 +240,7 @@
       next time a cell-level marker is added.
 
    6g. A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE -- NORMATIVE [CARVE-P11-041].
-      PART 2 admits seven task states while rendering collapses
+      PART 2 admits nine task marker spellings while rendering collapses
       them to two. The AST records the authored character (PART 12,
       `list_item.taskState`) and the writer emits it.
 
@@ -252,13 +252,15 @@
       by hand or by a converter carries.
 
       `X` IS A CASE, NOT A STATE. `[X]` is written `[x]`.
-      The field admits six characters rather than seven for that reason: the
+      The field admits eight characters rather than nine for that reason: the
       two spell one state, nothing downstream can tell them apart, and §1 is
       satisfied because the AST they parse to is the same one.
 
-      THE RENDERING IS UNCHANGED. Every state but `x`/`X` still renders an
-      unchecked box (PART 2 `task_state`), so no HTML moves with this clause.
-      What moves is only what survives a format cycle.
+      `[_]` SPELLS THE OPEN STATE. A writer retains `_` when it appears in
+      `taskState`; absent `taskState` still writes `[ ]` for an open item.
+
+      Every state but `x`/`X` renders an unchecked box (PART 2 `task_state`).
+      The authored character also survives a format cycle.
 
    6h. A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE -- NORMATIVE
       [CARVE-P11-066]. A header row has two spellings, `|= cell |` and a plain

@@ -49,6 +49,6 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L69) | 12 | A CITATION ITEM IS A POSITIONED INLINE NODE |
 | [`CARVE-P12-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L91) | 12 | A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA |
 | [`CARVE-P10-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L166) | 10 | AN ESCAPED RAW BLOCK IS WRITTEN AS CODE |
-| [`CARVE-P10-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L856) | 10 | EXPORT DOES NOT SELECT AN IMPORT MODE |
-| [`CARVE-P10-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L772) | 10 | AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING |
-| [`CARVE-P10-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L796) | 10 | EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK |
+| [`CARVE-P10-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L857) | 10 | EXPORT DOES NOT SELECT AN IMPORT MODE |
+| [`CARVE-P10-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L773) | 10 | AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING |
+| [`CARVE-P10-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L797) | 10 | EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK |
