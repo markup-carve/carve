@@ -557,8 +557,8 @@
       of PART 2 `colon_fence_close` unchanged), and the group caption as a `^ ` line after
       the closer, its `#` placeholder written back as authored.
 
-      THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. §5's
-      unconditional set escapes a leading caret in TEXT; the group caption is
+      THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. Under §2 a leading
+      caret in paragraph text is escaped when bare it would start a caption. The group caption is
       NOT text in that position -- it is the caption the closer hosts -- so
       the writer MUST NOT emit it as `\^ `, which would re-parse as a
       paragraph and break §1's `parse(fmt(x)) == parse(x)`. The other

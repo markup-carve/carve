@@ -624,6 +624,7 @@ jobs:
             ["markup-carve/intellij-carve"]="Gradle + IDE SDK build does not fit this workflow toolchains"
             ["markup-carve/carve-proofs"]="Rocq proof build does not fit this workflow toolchains"
             ["markup-carve/carve-conformance"]="Rocq proof build does not fit this workflow toolchains"
+            ["markup-carve/carve-ast2-lab"]="Experimental AST 2.0 lab measures a fixed spec pin, not spec main"
           )
 
           # The matrix, read from this file rather than restated.
