@@ -10,10 +10,8 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "bullet",
-            "char": "*"
-          }
+          "marker.char": "*",
+          "marker.kind": "bullet"
         }
       ],
       "importModes": [
@@ -51,10 +49,8 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered",
-            "delimiter": ")"
-          }
+          "marker.kind": "ordered",
+          "marker.delimiter": ")"
         }
       ],
       "importModes": [
@@ -565,10 +561,7 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "bullet",
-            "char": "*"
-          }
+          "marker.char": "*"
         },
         {
           "type": "thematic_break",
@@ -1039,10 +1032,7 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "bullet",
-            "char": "-"
-          },
+          "marker.kind": "bullet",
           "spacing": "tight"
         }
       ],
@@ -1196,10 +1186,7 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "bullet",
-            "char": "-"
-          },
+          "marker.kind": "bullet",
           "spacing": "tight"
         }
       ],
@@ -1534,10 +1521,7 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "bullet",
-            "char": "-"
-          }
+          "marker.kind": "bullet"
         }
       ],
       "forbiddenTypes": [],
@@ -1783,10 +1767,7 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "bullet",
-            "char": "-"
-          }
+          "marker.kind": "bullet"
         }
       ],
       "forbiddenTypes": [],
@@ -1975,10 +1956,6 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "bullet",
-            "char": "-"
-          },
           "spacing": "tight"
         }
       ],
@@ -2714,10 +2691,8 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered",
-            "style": "a"
-          }
+          "marker.kind": "ordered",
+          "marker.style": "a"
         }
       ],
       "forbiddenLossCodes": [
@@ -2746,11 +2721,9 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered",
-            "style": "i",
-            "start": 4
-          }
+          "marker.kind": "ordered",
+          "marker.style": "i",
+          "marker.start": 4
         }
       ],
       "forbiddenLossCodes": [
@@ -2780,11 +2753,9 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered",
-            "style": "a",
-            "start": 9
-          }
+          "marker.kind": "ordered",
+          "marker.style": "a",
+          "marker.start": 9
         }
       ],
       "forbiddenLossCodes": [
@@ -2814,10 +2785,8 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered",
-            "style": "i"
-          }
+          "marker.kind": "ordered",
+          "marker.style": "i"
         }
       ],
       "forbiddenLossCodes": [
@@ -2846,10 +2815,8 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered",
-            "style": "i"
-          }
+          "marker.kind": "ordered",
+          "marker.style": "i"
         }
       ],
       "forbiddenLossCodes": [
@@ -2878,13 +2845,11 @@
       "expectedNodes": [
         {
           "type": "list",
+          "marker.kind": "ordered",
+          "marker.style": "a",
           "attrs.classes": [
             "steps"
-          ],
-          "marker": {
-            "kind": "ordered",
-            "style": "a"
-          }
+          ]
         }
       ],
       "forbiddenLossCodes": [
@@ -2917,16 +2882,12 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered",
-            "style": "a"
-          }
+          "marker.kind": "ordered",
+          "marker.style": "a"
         },
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered"
-          }
+          "marker.kind": "ordered"
         }
       ],
       "lossCodes": [
@@ -2960,9 +2921,7 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered"
-          }
+          "marker.kind": "ordered"
         }
       ],
       "forbiddenLossCodes": [
@@ -3278,9 +3237,7 @@
       "expectedNodes": [
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered"
-          }
+          "marker.kind": "ordered"
         }
       ],
       "forbiddenNodes": [
@@ -3317,10 +3274,8 @@
         },
         {
           "type": "list",
-          "marker": {
-            "kind": "ordered",
-            "style": "a"
-          }
+          "marker.kind": "ordered",
+          "marker.style": "a"
         }
       ],
       "forbiddenNodes": [
