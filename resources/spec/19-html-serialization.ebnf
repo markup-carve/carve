@@ -294,10 +294,9 @@
       A DONE ITEM NAMES ITS STATE TOO. `[x]` and `[X]` are one state, so both
       carry `data-task-state="x"`, always the lowercase `x`, and one selector
       (`li[data-task-state="x"]`) reaches a done item's text without `:has()`.
-      AN OPEN ITEM STAYS BARE: `[ ]` carries no attribute. The AST does not
-      change: `checked` records the done state and `taskState` stays absent
-      for `[ ]`, `[x]` and `[X]` (PART 12), so the renderer writes `x` from
-      `checked`.
+      AN OPEN ITEM STAYS BARE: `[ ]` carries no attribute. The AST records
+      `list_item.task.mark` and `task.status` (PART 12); the renderer writes
+      `x` from a done status and omits the carrier for an open item.
 
       THE LIST CARRIES `task-list`. A task list's `<ul>` carries the
       mandatory base class `task-list` (§1): it leads when the author wrote no
@@ -401,7 +400,7 @@
       what the HTML column lists.
 
         DISTINCTION            HTML CARRIER                     MARKDOWN CARRIER
-        `list.bulletChar`      `data-marker` on `<ul>`: the     none
+        `list.marker.char`     `data-marker` on `<ul>`: the     none
                                authored bullet, written only
                                where it is not `-`
         `thematic_break.       `data-char` on `<hr>`: the       none
@@ -454,17 +453,17 @@
                                PRESENCE is the distinction: a
                                table with no separator row
                                writes no attribute
-        `code_block.label`     `data-carve-label` on `<pre>`:   the fence marker
+        `code_block.groupLabel` `data-carve-label` on `<pre>`:  the fence marker
                                the text between the fence       (CARVE-P11-067),
                                label's brackets; a block with   which also holds
                                no label writes no attribute     the title
-        `list.tight`, where    `data-carve-tight` on `<ul>` or  none
+        `list.spacing`, where  `data-carve-tight` on `<ul>` or  none
         an item's paragraph    `<ol>`, presence
         keeps its `<p>`
         (CARVE-P9-081)
         a resolved             `data-carve-xref` on `<a>`,      the
-        `heading_ref`          presence; the `href` fragment    cross-reference
-                               is its `target`                  marker
+        `xref`                 presence; the `href` fragment    cross-reference
+                               is its `key`                     marker
                                                                 (CARVE-P11-068)
         a link's, an image's   none                             the attribute
         or a span's                                             marker, or the

@@ -26,6 +26,7 @@ has a document root containing a paragraph and inline children:
 ```json
 {
   "type": "document",
+  "astVersion": "2.0",
   "children": [
     {
       "type": "paragraph",
@@ -44,7 +45,7 @@ has a document root containing a paragraph and inline children:
 ```
 
 Nodes may also include source positions. Those fields are omitted above so the
-structure is easy to see. The root's `srcByteLength` is required and counts the
+structure is easy to see. The root's `srcByteLength`, when measured, counts the
 UTF-8 bytes in the parsed source.
 
 ## Fields you will use most
@@ -57,8 +58,8 @@ UTF-8 bytes in the parsed source.
 | `attrs` | Authored or resolved attributes associated with the node |
 | `pos` | Optional source range for nodes produced by parsing Carve source |
 
-The document root has `type`, `children`, and `srcByteLength`, and a bare tree
-from `carve --json` also carries `astVersion`.
+The document root requires `type`, `children`, and `astVersion: "2.0"`.
+It can declare extensions, resolution stages, metadata, and resources.
 Consumers should dispatch on `type`, then read only fields valid for that type.
 Validate untrusted JSON before traversing it.
 
@@ -76,6 +77,10 @@ function visit(node) {
 }
 ```
 
+This follows primary content only. For captions, citation parts, ruby pairs,
+extension slots, and block nodes inside metadata, use the published
+[node roles table](https://markup-carve.github.io/carve/node-roles.json).
+
 Do not assume that every object has `children`: text and other leaf nodes carry
 a value instead. Likewise, do not infer a node’s meaning from its HTML output;
 different tree shapes can sometimes render the same bytes.
@@ -86,17 +91,17 @@ Authored identifiers, classes, and key/value attributes appear in `attrs`.
 Resolved information may also appear there when consumers need it without
 replaying the whole document, for example a heading’s final identifier.
 
-The schema closes every node type. An unknown property makes the payload
-invalid; reject it with a typed validation error rather than silently dropping
-or passing it through.
+The schema closes every core node type. An unknown core property makes the
+payload invalid. Declared namespaced `data` and optional extension nodes have
+defined fallback behavior; preserve them when processing the tree.
 
 ## Links and references
 
 Links keep their resolved destination in `href`; images use `src`. A reference
-form also retains its lookup key in `ref` and its authored spelling in `rawRef`
-so formatters and editor tools can preserve intent. An undefined reference is
-still a link or image node with `ref` and `rawRef`, but has no resolved `href`
-or `src`.
+form also retains its lookup `key`, `namespace`, and authored spelling in
+`rawRef` so formatters and editor tools can preserve intent. An undefined
+reference is still a link or image node, but has no `href` or `src`. An empty
+string is an explicit or resolved empty destination.
 
 If your application only needs the destination, use `href` or `src`.
 If it writes Carve back, use the canonical writer rather than reconstructing
@@ -108,7 +113,8 @@ Parsed nodes may carry `pos` with line, column, and offset boundaries. Imported
 or programmatically created nodes may have no source position, because they did
 not originate in Carve source.
 
-For exact coordinate rules, byte offsets, source slices, and editor-facing
+Offsets count UTF-8 bytes; columns count Unicode codepoints. For exact
+coordinate rules, source slices, and editor-facing
 layout metadata, see [Source locations in JSON](./ast-source-layout).
 
 ## Editing safely

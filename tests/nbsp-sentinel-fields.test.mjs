@@ -5,7 +5,7 @@ import { Ajv2020 } from 'ajv/dist/2020.js'
 
 const schema = JSON.parse(readFileSync(new URL('../resources/ast-schema.json', import.meta.url), 'utf8'))
 const validate = new Ajv2020({ strict: false }).compile(schema)
-const document = children => ({ type: 'document', srcByteLength: 0, children: [{ type: 'paragraph', children }] })
+const document = children => ({ type: 'document', astVersion: '2.0', srcByteLength: 0, children: [{ type: 'paragraph', children }] })
 
 test('generated spaces are distinct from literal Unicode on the wire', () => {
   const ast = document([{ type: 'text', value: 'a\ue000' }, { type: 'non_breaking_space' }, { type: 'text', value: '\u00a0b' }])
@@ -21,7 +21,7 @@ test('a generated space is a closed inline leaf', () => {
 })
 
 test('text and verbatim fields document literal Unicode', () => {
-  for (const [type, field] of [['text', 'value'], ['code', 'value'], ['code_block', 'content'], ['literal_inline', 'content']]) {
+  for (const [type, field] of [['text', 'value'], ['code', 'value'], ['code_block', 'value'], ['literal_inline', 'value']]) {
     assert.match(schema.$defs[type].properties[field].description, /literal|Literal/)
     assert.doesNotMatch(schema.$defs[type].properties[field].description, /May contain U\+E000/)
   }
@@ -35,12 +35,20 @@ test('the pinned engine identifies its whitespace contract', () => {
   assert.deepEqual(types, ['text', 'non_breaking_space', 'text'])
 })
 
+const AHEAD_OF_PIN = 'The pinned range reader implements sidecar v1 and codepoint offsets (carve#3598).'
+
 test('updated engines pass the shared annotation projection fixture', () => {
   const fixture = JSON.parse(readFileSync(new URL('./fixtures/annotation-projection.json', import.meta.url), 'utf8'))
   assert.equal([...fixture.projection].length, 11)
+  const pinned = fixture.pinned
+  if (AHEAD_OF_PIN) {
+    assert.throws(() => engine.readAnnotationRanges({ version: 2, ranges: [{ id: 'r', kind: 'org.example.test', ...fixture.valid[0] }] }, fixture.document),
+      'the pinned range reader now accepts v2; delete AHEAD_OF_PIN')
+  }
+  const cases = AHEAD_OF_PIN ? pinned : fixture
   for (const [key, accepted] of [['valid', true], ['invalid', false]]) {
-    for (const range of fixture[key]) {
-      const read = () => engine.readAnnotationRanges({ version: 1, ranges: [{ id: 'r', kind: 'test', ...range }] }, fixture.document)
+    for (const range of cases[key]) {
+      const read = () => engine.readAnnotationRanges({ version: AHEAD_OF_PIN ? 1 : 2, ranges: [{ id: 'r', kind: AHEAD_OF_PIN ? 'test' : 'org.example.test', ...range }] }, cases.document)
       if (accepted) assert.doesNotThrow(read)
       else assert.throws(read)
     }

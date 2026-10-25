@@ -41,21 +41,9 @@
       "scope": "parsing"
     },
     {
-      "id": "CARVE-P0-023",
-      "part": "0",
-      "title": "ILL-FORMED INPUT IS REPLACED BEFORE THE FIRST LINE IS READ",
-      "scope": "parsing"
-    },
-    {
       "id": "CARVE-P0-003",
       "part": "0",
       "title": "EVERY FRAME CARRIES OWNERSHIP AND PARAGRAPH STATE SEPARATELY",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P0-024",
-      "part": "0",
-      "title": "BLOCK STRUCTURE IS ONE ORDERED PROCEDURE",
       "scope": "parsing"
     },
     {
@@ -167,6 +155,18 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P0-023",
+      "part": "0",
+      "title": "ILL-FORMED INPUT IS REPLACED BEFORE THE FIRST LINE IS READ",
+      "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P0-024",
+      "part": "0",
+      "title": "BLOCK STRUCTURE IS ONE ORDERED PROCEDURE",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P2-001",
       "part": "2",
       "title": "A HEADING MARKER STARTS AT ITS CONTAINER'S CONTENT COLUMN",
@@ -197,24 +197,6 @@
       "scope": "parsing"
     },
     {
-      "id": "CARVE-P2-029",
-      "part": "2",
-      "title": "AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE",
-      "scope": "imports-security-extensions"
-    },
-    {
-      "id": "CARVE-P2-030",
-      "part": "2",
-      "title": "A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING",
-      "scope": "imports-security-extensions"
-    },
-    {
-      "id": "CARVE-P2-031",
-      "part": "2",
-      "title": "MARKDOWN MIGRATION FRAGMENTS",
-      "scope": "imports-security-extensions"
-    },
-    {
       "id": "CARVE-P2-006",
       "part": "2",
       "title": "COLUMN-EXACT DELIMITERS",
@@ -236,24 +218,6 @@
       "id": "CARVE-P2-009",
       "part": "2",
       "title": "MARKER REQUIRES CONTENT",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P2-026",
-      "part": "2",
-      "title": "THE DESCRIPTION MARKER",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P2-027",
-      "part": "2",
-      "title": "WHICH CHARACTERS THE CONTENT TEST IGNORES",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P2-028",
-      "part": "2",
-      "title": "A TERM HAS NO CONTENT COLUMN",
       "scope": "parsing"
     },
     {
@@ -351,6 +315,42 @@
       "part": "2",
       "title": "NO TRAILING WHITESPACE",
       "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P2-026",
+      "part": "2",
+      "title": "THE DESCRIPTION MARKER",
+      "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P2-027",
+      "part": "2",
+      "title": "WHICH CHARACTERS THE CONTENT TEST IGNORES",
+      "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P2-028",
+      "part": "2",
+      "title": "A TERM HAS NO CONTENT COLUMN",
+      "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P2-029",
+      "part": "2",
+      "title": "AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE",
+      "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P2-030",
+      "part": "2",
+      "title": "A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING",
+      "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P2-031",
+      "part": "2",
+      "title": "MARKDOWN MIGRATION FRAGMENTS",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P3-001",
@@ -575,24 +575,6 @@
       "scope": "parsing"
     },
     {
-      "id": "CARVE-P9-069",
-      "part": "9",
-      "title": "THE ROW ABOVE IS A LINE, NOT A `<tr>`",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P9-070",
-      "part": "9",
-      "title": "SOCIAL LINK RESOLUTION",
-      "scope": "imports-security-extensions"
-    },
-    {
-      "id": "CARVE-P9-071",
-      "part": "9",
-      "title": "THE MEDIA TYPE AND THE FILE EXTENSION",
-      "scope": "imports-security-extensions"
-    },
-    {
       "id": "CARVE-P9-003",
       "part": "9",
       "title": "A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN",
@@ -689,12 +671,6 @@
       "scope": "resolution-rendering"
     },
     {
-      "id": "CARVE-P9-072",
-      "part": "9",
-      "title": "A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES",
-      "scope": "resolution-rendering"
-    },
-    {
       "id": "CARVE-P9-019",
       "part": "9",
       "title": "HEADING SECTION WRAPPING",
@@ -705,12 +681,6 @@
       "part": "9",
       "title": "INLINE SPAN VS LINK DISAMBIGUATION",
       "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P9-074",
-      "part": "9",
-      "title": "A MARKDOWN LABEL THAT IS BOTH A CHECKBOX AND A DEFINED REFERENCE IS THE CHECKBOX",
-      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-021",
@@ -755,18 +725,6 @@
       "scope": "resolution-rendering"
     },
     {
-      "id": "CARVE-P9-075",
-      "part": "9",
-      "title": "A TOP-LEVEL `::: footnotes` THAT PLACES THE ENDNOTES SECTION",
-      "scope": "resolution-rendering"
-    },
-    {
-      "id": "CARVE-P9-073",
-      "part": "9",
-      "title": "DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL",
-      "scope": "resolution-rendering"
-    },
-    {
       "id": "CARVE-P9-029",
       "part": "9",
       "title": "L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER",
@@ -795,24 +753,6 @@
       "part": "9",
       "title": "THE MARKER IS ONE OPERATION IN EVERY CONTAINER",
       "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P9-067",
-      "part": "9",
-      "title": "EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM",
-      "scope": "resolution-rendering"
-    },
-    {
-      "id": "CARVE-P9-068",
-      "part": "9",
-      "title": "A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT",
-      "scope": "resolution-rendering"
-    },
-    {
-      "id": "CARVE-P9-078",
-      "part": "9",
-      "title": "THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP",
-      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-034",
@@ -1013,6 +953,66 @@
       "scope": "imports-security-extensions"
     },
     {
+      "id": "CARVE-P9-067",
+      "part": "9",
+      "title": "EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P9-068",
+      "part": "9",
+      "title": "A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P9-069",
+      "part": "9",
+      "title": "THE ROW ABOVE IS A LINE, NOT A `<tr>`",
+      "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P9-070",
+      "part": "9",
+      "title": "SOCIAL LINK RESOLUTION",
+      "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P9-071",
+      "part": "9",
+      "title": "THE MEDIA TYPE AND THE FILE EXTENSION",
+      "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P9-072",
+      "part": "9",
+      "title": "A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P9-073",
+      "part": "9",
+      "title": "DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P9-074",
+      "part": "9",
+      "title": "A MARKDOWN LABEL THAT IS BOTH A CHECKBOX AND A DEFINED REFERENCE IS THE CHECKBOX",
+      "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P9-075",
+      "part": "9",
+      "title": "A TOP-LEVEL `::: footnotes` THAT PLACES THE ENDNOTES SECTION",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P9-078",
+      "part": "9",
+      "title": "THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP",
+      "scope": "resolution-rendering"
+    },
+    {
       "id": "CARVE-P9R-001",
       "part": "9R",
       "title": "THE EXPLICIT FORM DOES NOT REACH THE INDEX",
@@ -1163,12 +1163,6 @@
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-046",
-      "part": "11",
-      "title": "THE CONVERSION-DIAGNOSTICS CHANNEL",
-      "scope": "canonical-writing"
-    },
-    {
       "id": "CARVE-P11-006",
       "part": "11",
       "title": "THE ESCAPING RULE",
@@ -1283,63 +1277,15 @@
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-044",
-      "part": "11",
-      "title": "M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING",
-      "scope": "canonical-writing"
-    },
-    {
       "id": "CARVE-P11-025",
       "part": "11",
       "title": "THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO",
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-045",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-050",
-      "part": "11",
-      "title": "A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-051",
-      "part": "11",
-      "title": "AN AMPERSAND THAT WOULD READ AS A CHARACTER REFERENCE IS ESCAPED",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-052",
-      "part": "11",
-      "title": "A `!` BEFORE A LINK IS ESCAPED",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-053",
-      "part": "11",
-      "title": "A PARAGRAPH LINE MUST NOT BECOME A THEMATIC BREAK OR A SETEXT UNDERLINE",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-054",
-      "part": "11",
-      "title": "A PIPE IN A TABLE CELL IS ESCAPED",
-      "scope": "canonical-writing"
-    },
-    {
       "id": "CARVE-P11-026",
       "part": "11",
       "title": "THE MARKDOWN TARGET'S HARD BREAK",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-048",
-      "part": "11",
-      "title": "A HARD BREAK IN A TABLE CELL IS `<br>`",
       "scope": "canonical-writing"
     },
     {
@@ -1397,21 +1343,117 @@
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-072",
+      "id": "CARVE-P11-036",
       "part": "11",
-      "title": "A LIST ITEM'S CONTINUATION BLOCKS SIT AT ITS CONTENT COLUMN",
+      "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-073",
+      "id": "CARVE-P11-037",
       "part": "11",
-      "title": "A REGION MARKER KEEPS ITS LINE",
+      "title": "AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-038",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-039",
+      "part": "11",
+      "title": "A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-040",
+      "part": "11",
+      "title": "AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}`",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-041",
+      "part": "11",
+      "title": "A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-042",
+      "part": "11",
+      "title": "A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-043",
+      "part": "11",
+      "title": "THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-044",
+      "part": "11",
+      "title": "M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-045",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-046",
+      "part": "11",
+      "title": "THE CONVERSION-DIAGNOSTICS CHANNEL",
       "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-047",
       "part": "11",
       "title": "THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-048",
+      "part": "11",
+      "title": "A HARD BREAK IN A TABLE CELL IS `<br>`",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-049",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET KEEPS A FRAGMENT LINK",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-050",
+      "part": "11",
+      "title": "A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-051",
+      "part": "11",
+      "title": "AN AMPERSAND THAT WOULD READ AS A CHARACTER REFERENCE IS ESCAPED",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-052",
+      "part": "11",
+      "title": "A `!` BEFORE A LINK IS ESCAPED",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-053",
+      "part": "11",
+      "title": "A PARAGRAPH LINE MUST NOT BECOME A THEMATIC BREAK OR A SETEXT UNDERLINE",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-054",
+      "part": "11",
+      "title": "A PIPE IN A TABLE CELL IS ESCAPED",
       "scope": "canonical-writing"
     },
     {
@@ -1517,63 +1559,21 @@
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-036",
+      "id": "CARVE-P11-072",
       "part": "11",
-      "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",
+      "title": "A LIST ITEM'S CONTINUATION BLOCKS SIT AT ITS CONTENT COLUMN",
       "scope": "canonical-writing"
     },
     {
-      "id": "CARVE-P11-037",
+      "id": "CARVE-P11-073",
       "part": "11",
-      "title": "AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-038",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-049",
-      "part": "11",
-      "title": "THE MARKDOWN TARGET KEEPS A FRAGMENT LINK",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-039",
-      "part": "11",
-      "title": "A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-040",
-      "part": "11",
-      "title": "AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}`",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-041",
-      "part": "11",
-      "title": "A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-042",
-      "part": "11",
-      "title": "A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE",
+      "title": "A REGION MARKER KEEPS ITS LINE",
       "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-074",
       "part": "11",
       "title": "A FENCE A DEDENT ENDED IN A NESTED CHILD IS WRITTEN CLOSED",
-      "scope": "canonical-writing"
-    },
-    {
-      "id": "CARVE-P11-043",
-      "part": "11",
-      "title": "THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST",
       "scope": "canonical-writing"
     },
     {
@@ -1633,7 +1633,7 @@
     {
       "id": "CARVE-P12-010",
       "part": "12",
-      "title": "A CROSSREF REMAINS A HEADING-REFERENCE NODE AFTER RESOLUTION",
+      "title": "A CROSSREF REMAINS AN XREF NODE AFTER RESOLUTION",
       "scope": "ast-interchange"
     },
     {
@@ -1717,7 +1717,7 @@
     {
       "id": "CARVE-P12-024",
       "part": "12",
-      "title": "THE DOCUMENT ROOT CARRIES THREE FIELDS AND AN OPTIONAL VERSION",
+      "title": "THE DOCUMENT ROOT DECLARES ITS CONTRACT AND EXTENSIONS",
       "scope": "ast-interchange"
     },
     {
@@ -1771,13 +1771,13 @@
     {
       "id": "CARVE-P12-033",
       "part": "12",
-      "title": "A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION",
+      "title": "A CAPTION IS A NODE WITH BLOCK CONTENT",
       "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P12-034",
       "part": "12",
-      "title": "A TABLE MAY CARRY AN OPTIONAL ROW GROUPING",
+      "title": "TABLE ROW GROUPS ARE NODES",
       "scope": "imports-security-extensions"
     },
     {
@@ -1789,7 +1789,7 @@
     {
       "id": "CARVE-P12-036",
       "part": "12",
-      "title": "A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT",
+      "title": "A FIGURE MAY HOLD BLOCK CONTENT",
       "scope": "imports-security-extensions"
     },
     {
@@ -1807,7 +1807,7 @@
     {
       "id": "CARVE-P12-039",
       "part": "12",
-      "title": "A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA",
+      "title": "TABLE COLUMNS CARRY AUTHORED AND RESOLVED ALIGNMENT",
       "scope": "imports-security-extensions"
     },
     {
@@ -1855,7 +1855,7 @@
     {
       "id": "CARVE-P12-047",
       "part": "12",
-      "title": "A REFERENCE NODE CARRIES ITS TARGET",
+      "title": "A REFERENCE NODE CARRIES A KEY AND NAMESPACE",
       "scope": "ast-interchange"
     },
     {
@@ -1867,7 +1867,7 @@
     {
       "id": "CARVE-P12-049",
       "part": "12",
-      "title": "A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE",
+      "title": "A TABLE CELL ALWAYS CARRIES BLOCK CHILDREN",
       "scope": "ast-interchange"
     },
     {
@@ -1879,7 +1879,7 @@
     {
       "id": "CARVE-P12-051",
       "part": "12",
-      "title": "A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER",
+      "title": "A DISPLAY EQUATION MAY CARRY A PREFIX AND NUMBER",
       "scope": "ast-interchange"
     },
     {
@@ -1903,7 +1903,7 @@
     {
       "id": "CARVE-P12-055",
       "part": "12",
-      "title": "A BLOCK EXTENSION DECLARES A CORE FALLBACK",
+      "title": "EXTENSION NODES DECLARE A CORE FALLBACK",
       "scope": "ast-interchange"
     },
     {
@@ -2109,6 +2109,36 @@
       "part": "9",
       "title": "A CELL SLOT IS COUNTED, NOT WEIGHED",
       "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P12-070",
+      "part": "12",
+      "title": "DISCRIMINATED LIST AND TASK FIELDS",
+      "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-071",
+      "part": "12",
+      "title": "THE NODE SLOT TABLE DEFINES TRAVERSAL",
+      "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-072",
+      "part": "12",
+      "title": "CANONICAL AST EQUALITY COVERS SOURCE FACTS",
+      "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-073",
+      "part": "12",
+      "title": "FOREIGN DATA AND RESOURCES HAVE EXPLICIT LOSS RULES",
+      "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P12-074",
+      "part": "12",
+      "title": "METADATA, DIRECTION, AND CROSS REFERENCES",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

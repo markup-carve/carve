@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://markup-carve.github.io/carve/ast-schema.json",
-  "title": "Carve AST exchange format",
-  "description": "The JSON encoding of a parsed Carve document, normative in PART 12 of the grammar (resources/grammar.ebnf). One shape, so a consumer written against one implementation reads another's output: field names and node-type identifiers are spec surface, and an implementation whose internals differ maps on the way out rather than exporting them.\n\nVersion 0.1. Generated JSON is validated against this file over the whole spec corpus by tests/ast-schema.test.mjs.",
+  "title": "Carve AST 2.0 draft",
+  "description": "The JSON encoding of a Carve 2.0 document, normative in PART 12 of the grammar (resources/grammar.ebnf). Node types and fields are interchange surface; implementations with different internal trees map them on output. A bare tree carries astVersion 2.0. Unknown core fields are refused, while declared extension data has a namespaced home (CARVE-P12-030, CARVE-P12-056).",
   "$ref": "#/$defs/document",
   "$defs": {
     "abbreviation": {
@@ -10,24 +10,49 @@
       "title": "abbreviation (inline)",
       "required": [
         "type",
-        "abbr",
-        "expansion"
+        "key",
+        "namespace"
       ],
       "properties": {
         "type": {
           "const": "abbreviation"
-        },
-        "abbr": {
-          "type": "string"
-        },
-        "expansion": {
-          "type": "string"
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "namespace": {
+          "const": "abbr"
+        },
+        "expansion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -38,16 +63,13 @@
       "description": "The `[label]: /url \"title\" {attrs}` definition line. Renders nothing in HTML itself; it feeds every link or image that resolves the label (PART 9R R1). Hoisted to the document like the footnote definition (PART 12 section 7; an abbreviation definition inside a container is not a definition at all, so nothing is hoisted), so a definition authored inside a container is a child of the document and its `pos` still says where it was written.",
       "required": [
         "type",
-        "label",
-        "href"
+        "key",
+        "href",
+        "namespace"
       ],
       "properties": {
         "type": {
           "const": "link_reference_definition"
-        },
-        "label": {
-          "type": "string",
-          "description": "The reference label as the author wrote it, before whitespace normalization. Matching is case-sensitive (PART 9R R1)."
         },
         "href": {
           "type": "string",
@@ -63,6 +85,35 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string",
+          "description": "The reference label as the author wrote it, before whitespace normalization. Matching is case-sensitive (PART 9R R1)."
+        },
+        "namespace": {
+          "const": "link"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -73,15 +124,13 @@
       "description": "The `*[ABBR]: expansion` definition line. Renders nothing itself; it feeds the inline `abbreviation`.",
       "required": [
         "type",
-        "abbr",
-        "expansion"
+        "key",
+        "expansion",
+        "namespace"
       ],
       "properties": {
         "type": {
           "const": "abbreviation_def"
-        },
-        "abbr": {
-          "type": "string"
         },
         "expansion": {
           "type": "string"
@@ -91,6 +140,34 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "namespace": {
+          "const": "abbr"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -129,10 +206,6 @@
             "$ref": "#/$defs/inlineNode"
           }
         },
-        "label": {
-          "type": "string",
-          "description": "Opener `[label]` grouping id (`::: tab [First]`). Inert in core."
-        },
         "children": {
           "type": "array",
           "items": {
@@ -144,6 +217,32 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "groupLabel": {
+          "type": "string",
+          "description": "Opener `[label]` grouping id (`::: tab [First]`). Inert in core."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -202,6 +301,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -209,7 +330,7 @@
     "blockNode": {
       "type": "object",
       "title": "Any block node a `children` array may hold",
-      "description": "Dispatches on `type`. An unlisted type is rejected: PART 9 section 8 makes the identifiers spec surface, and they are `snake_case` always.\n\nA container-internal type is NOT listed here. `table_row`, `table_cell`, `list_item`, `definition_term` and `definition_description` exist only inside the container that owns them - `table.rows`, `table_row.cells`, `list.items` and `definition_list.items` name them directly - so a `children` array holding one is a tree no parser can produce. Listing them here made that payload valid, which left PART 12 section 12(d) unable to refuse it (carve#2189).",
+      "description": "Dispatches on `type`. An unlisted type is rejected: PART 9 section 8 makes the identifiers spec surface, and they are `snake_case` always.\n\nA container-internal type is NOT listed here. `table_row`, `table_cell`, `list_item`, `definition_term` and `definition_description` exist only inside the container that owns them - their parent containers name them directly - so a `children` array holding one is a tree no parser can produce. Listing them here made that payload valid, which left PART 12 section 12(d) unable to refuse it (carve#2189).",
       "required": [
         "type"
       ],
@@ -632,14 +753,34 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
     },
     "block_extension": {
       "type": "object",
-      "title": "block_extension (block)",
-      "description": "A block construct an extension owns, carried with a core FALLBACK so a reader that does not implement the extension still has something real to render, write and report. The twin of `inline_extension`, which had no block equivalent, so a Tier-3 block whose payload is not Carve content had to smuggle it through `attrs.keyValues` as strings or lose it (carve#2200). Carve 0.1 source spells no block extension, so a parser produces none.",
       "required": [
         "type",
         "name",
@@ -651,43 +792,96 @@
         },
         "name": {
           "type": "string",
-          "minLength": 1,
+          "pattern": "^[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+$",
           "description": "Globally qualified, so two extensions cannot collide: `org.example.diagram`, not `diagram`."
         },
         "version": {
           "type": "string",
           "description": "The extension's own version, opaque here. Absent means the extension does not version its payload."
         },
+        "props": {
+          "$ref": "#/$defs/metadataValue",
+          "description": "Typed extension properties, subject to ingest limits (CARVE-P12-055)."
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          },
+          "description": "Primary authored content of the extension (CARVE-P12-055)."
+        },
+        "slots": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/blockNode"
+            }
+          },
+          "description": "Named authored content slots (CARVE-P12-055)."
+        },
         "fallback": {
           "$ref": "#/$defs/blockNode",
           "description": "REQUIRED. The core block a reader that does not implement this extension renders, writes and counts instead. It is not a placeholder: it is what the document MEANS to such a reader, so the renderer, the canonical writer and the loss report all have a defined answer rather than three separate special cases."
         },
         "payload": {
-          "type": "object",
-          "required": [
-            "format"
-          ],
-          "properties": {
-            "format": {
-              "type": "string",
-              "minLength": 1,
-              "description": "A media type naming how `value` is encoded, so a reader can tell whether it can parse it at all."
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "format",
+              "value"
+            ],
+            "properties": {
+              "format": {
+                "type": "string"
+              },
+              "value": {
+                "$ref": "#/$defs/metadataValue"
+              }
             },
-            "value": {
-              "description": "The extension's own data. Opaque to this schema and to every core renderer."
-            }
+            "additionalProperties": false
           },
-          "additionalProperties": false,
           "description": "The extension's data, which is NOT Carve content and is never rendered by a core target. Subject to the ingest bound of §9 like any other nesting, and to §25's trust rules like any other content a renderer did not produce."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        },
+        "resourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Identifiers of media-bag resources used by this extension (CARVE-P12-073)."
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "description": "A block construct an extension owns, carried with a core FALLBACK so a reader that does not implement the extension still has something real to render, write and report. The twin of `inline_extension`, which had no block equivalent, so a Tier-3 block whose payload is not Carve content had to smuggle it through `attrs.keyValues` as strings or lose it (carve#2200). Carve 0.1 source spells no block extension, so a parser produces none."
     },
     "caption_number": {
       "type": "object",
@@ -708,6 +902,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -741,6 +957,31 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -752,7 +993,8 @@
       "required": [
         "type",
         "key",
-        "suppressAuthor"
+        "suppressAuthor",
+        "namespace"
       ],
       "properties": {
         "type": {
@@ -807,6 +1049,34 @@
         "pos": {
           "$ref": "#/$defs/pos",
           "description": "The complete citation item, from its optional prefix through its optional suffix. Present on a parsed citation; omitted where PART 12 section 4 exempts the node, as on one an importer or an editing API synthesized (carve#2192)."
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "namespace": {
+          "const": "citation"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -818,7 +1088,8 @@
       "required": [
         "type",
         "key",
-        "children"
+        "children",
+        "namespace"
       ],
       "properties": {
         "type": {
@@ -841,6 +1112,31 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "namespace": {
+          "const": "citation"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -855,7 +1151,7 @@
         ],
         "properties": {
           "mode": {},
-          "items": {
+          "children": {
             "type": "array",
             "contains": {
               "not": {
@@ -873,18 +1169,12 @@
       },
       "required": [
         "type",
-        "items",
+        "children",
         "raw"
       ],
       "properties": {
         "type": {
           "const": "citation_group"
-        },
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/citation"
-          }
         },
         "raw": {
           "type": "string",
@@ -899,6 +1189,34 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/citation"
+          }
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -923,22 +1241,59 @@
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": ["offset", "line"],
+            "required": [
+              "offset",
+              "line"
+            ],
             "properties": {
-              "offset": { "type": "integer", "minimum": 0 },
-              "line": { "type": "integer", "minimum": 1 },
-              "row": { "type": "integer", "minimum": 1 },
-              "col": { "type": "integer", "minimum": 1 }
+              "offset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "row": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "col": {
+                "type": "integer",
+                "minimum": 1
+              }
             },
             "additionalProperties": false
           },
-          "description": "CARVE-P12-069 continuation joins as { offset, line, row?, col? }: the codepoint offset of each joining space in the code value payload."
+          "description": "CARVE-P12-069 continuation joins as { offset, line, row?, col? }: the UTF-8 byte offset of each joining space in the code value payload."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -948,32 +1303,56 @@
       "title": "code_block (block)",
       "required": [
         "type",
-        "content"
+        "value"
       ],
       "properties": {
         "type": {
           "const": "code_block"
-        },
-        "content": {
-          "type": "string",
-          "description": "Literal Unicode content. U+E000 and all other private-use characters are preserved unchanged. Generated nonbreaking spaces use non_breaking_space nodes; no character is an AST sentinel. Literal payload text, including its final LF when present (PART 12 section 3). Empty content, a blank line, and nonempty content with or without a final LF are distinct. Renderers do not append a payload newline."
-        },
-        "lang": {
-          "type": "string"
-        },
-        "header": {
-          "type": "string",
-          "description": "Quoted title from the info string (```php \"src/Auth.php\")."
-        },
-        "label": {
-          "type": "string",
-          "description": "Bracketed grouping label from the info string (```php [NPM]). Structured metadata, not part of the language class."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Literal Unicode content. U+E000 and all other private-use characters are preserved unchanged. Generated nonbreaking spaces use non_breaking_space nodes; no character is an AST sentinel. Literal payload text, including its final LF when present (PART 12 section 3). Empty content, a blank line, and nonempty content with or without a final LF are distinct. Renderers do not append a payload newline."
+        },
+        "syntax": {
+          "type": "string"
+        },
+        "title": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "lang": {
+          "type": "string"
+        },
+        "groupLabel": {
+          "type": "string",
+          "description": "Bracketed grouping label from the info string (```php [NPM]). Structured metadata, not part of the language class."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -984,33 +1363,51 @@
       "description": "An author comment. Renders nothing, and is serialized because a writer has to reproduce it.",
       "required": [
         "type",
-        "block",
-        "content"
+        "value",
+        "form"
       ],
       "properties": {
         "type": {
           "const": "comment"
         },
-        "block": {
-          "type": "boolean",
-          "description": "True for the fenced `%%%` block form, false for an inline `%%` or `{% … %}` comment."
-        },
-        "delimited": {
-          "type": "boolean",
-          "description": "True for the braced `{% … %}` inline form (PART 9 §21a). Absent means the trailing `%%` form. An author-choice field: the two spell different documents, since `%%` runs to the end of its inline run and the braced form ends at its closer, so a writer has to reproduce the one that was written."
-        },
         "form": {
-          "enum": ["block", "line", "braced"],
-          "description": "Which comment spelling produced the node: `block` for the fenced `%%%` form, `line` for the trailing `%%` form, `braced` for `{% … %}` (PART 9 §21a). Added in contract 1.2 beside `block` and `delimited`, which stay: a writer emits all three, and a reader refuses a node where `form` disagrees with them (`block` is true exactly when `form` is `block`; `delimited` is true exactly when `form` is `braced`)."
-        },
-        "content": {
-          "type": "string"
+          "enum": [
+            "block",
+            "line",
+            "braced"
+          ],
+          "description": "Authored comment form: block, line, or braced (CARVE-P12-027)."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1021,20 +1418,42 @@
       "description": "Its own type rather than a `comment`, so a profile that accepts editorial marks but not side commentary can say so.",
       "required": [
         "type",
-        "text"
+        "value"
       ],
       "properties": {
         "type": {
           "const": "critic_comment"
-        },
-        "text": {
-          "type": "string"
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1062,6 +1481,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1069,16 +1510,42 @@
     "definition_list": {
       "type": "object",
       "title": "definition_list (block)",
-      "description": "Its items are the `<dt>` / `<dd>` sequence, in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. The grouping is not published because it is not a shared fact - two engines that published it grouped the same document differently while rendering the same list - and because a plain object can carry no `pos`, which left a term the only content in a serialized document an editor could not navigate to (PART 12 §4).",
+      "description": "Its children are the `<dt>` / `<dd>` sequence in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. Each term and description is a positioned node (CARVE-P12-031).",
       "required": [
         "type",
-        "items"
+        "children",
+        "spacing"
       ],
       "properties": {
         "type": {
           "const": "definition_list"
         },
-        "items": {
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "children": {
           "type": "array",
           "items": {
             "anyOf": [
@@ -1091,15 +1558,15 @@
             ]
           }
         },
-        "loose": {
-          "const": true,
-          "description": "The looseness was SPELLED, with PART 9 §17 L7's consumed `loose` boolean, so every description renders its children as blocks. Absent means each description derives its own wrapper from its block count, which is what every other definition list does. Only the spelled fact is published, because only it is underivable: a `<dl>` has no blank-line spelling for a one-block description at any entry count, so a serialized tree could not otherwise say which of the two spellings it came from (carve#1624)."
+        "spacing": {
+          "enum": [
+            "tight",
+            "loose"
+          ],
+          "description": "Whether the definition list is tight or loose (CARVE-P12-027)."
         },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1127,6 +1594,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1153,6 +1642,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1174,15 +1685,37 @@
             "$ref": "#/$defs/blockNode"
           }
         },
-        "label": {
-          "type": "string",
-          "description": "Opener `[label]` grouping id. Inert in core."
-        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "groupLabel": {
+          "type": "string",
+          "description": "Opener `[label]` grouping id. Inert in core."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1209,7 +1742,7 @@
             "references",
             "toc"
           ],
-          "description": "Which generated content is placed here. A kind outside this list is an `admonition`, not a directive."
+          "description": "Generated-content directive kind. A tocTarget selects headings, figures, tables, or listings for toc (CARVE-P12-057)."
         },
         "title": {
           "type": "array",
@@ -1225,15 +1758,45 @@
           },
           "description": "Blocks written inside the opener. Always published, using [] when empty; a directive's content is usually generated rather than authored."
         },
-        "label": {
-          "type": "string",
-          "description": "Opener `[label]` grouping id. Inert in core."
-        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "groupLabel": {
+          "type": "string",
+          "description": "Opener `[label]` grouping id. Inert in core."
+        },
+        "tocTarget": {
+          "enum": [
+            "headings",
+            "figures",
+            "tables",
+            "listings"
+          ]
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1241,11 +1804,11 @@
     "document": {
       "type": "object",
       "title": "document (root)",
-      "description": "The root carries three required fields (PART 12 section 7), plus an optional `astVersion` on a bare tree (CARVE-P12-056). Frontmatter and definitions - footnote AND abbreviation alike (PART 12 section 7) - are block nodes in `children`, not root fields, because a root field cannot carry the `pos` section 4 requires of everything else - and both are source an editor navigates to.\n\nThe root is the one node with no `pos`: it spans the whole source by definition.",
+      "description": "The root carries type, children, and required astVersion 2.0. srcByteLength is optional; absence means source length was not measured (CARVE-P12-024, CARVE-P12-056). Definitions and frontmatter remain block children. The root may declare extensions, resolution stages, metadata, and namespaced data.",
       "required": [
         "type",
         "children",
-        "srcByteLength"
+        "astVersion"
       ],
       "properties": {
         "type": {
@@ -1257,15 +1820,70 @@
             "$ref": "#/$defs/blockNode"
           }
         },
+        "astVersion": {
+          "const": "2.0",
+          "description": "Required contract version on every bare tree (CARVE-P12-024, CARVE-P12-056)."
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData",
+          "description": "Namespaced opaque foreign data; an unsupported writer reports loss when it cannot preserve this data (CARVE-P12-030)."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/extensionDeclaration"
+          },
+          "description": "Qualified extension declarations used by this tree. Each declares whether an unknown reader may use fallback or must refuse (CARVE-P12-056)."
+        },
+        "stages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "blockImagePromotion",
+              "referenceResolution",
+              "tableAlignment"
+            ]
+          },
+          "description": "Resolution stages already applied. If blockImagePromotion is present, absent paragraph.blockImage means the paragraph was not promoted (CARVE-P12-043)."
+        },
         "srcByteLength": {
           "type": "integer",
           "minimum": 0,
-          "description": "BYTE length of the source - the one field here counted in bytes rather than codepoints. It answers 'how much source was this', not 'where in it'."
+          "description": "Source length in UTF-8 bytes when measured; absent means unmeasured (CARVE-P12-024)."
         },
-        "astVersion": {
-          "type": "string",
-          "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)$",
-          "description": "The interchange contract version this bare tree was written under, `major.minor` (CARVE-P12-056). `carve --json` writes it; a reader accepts its absence and refuses a higher major or minor than it implements. Current: 1.2."
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        },
+        "resources": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "$ref": "#/$defs/resource"
+          },
+          "description": "Media-bag manifest for stable resource references. References resolve by id and verify mediaType and digest (CARVE-P12-073)."
         }
       },
       "additionalProperties": false
@@ -1292,6 +1910,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1317,6 +1957,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1326,51 +1988,58 @@
       "title": "figure (block)",
       "required": [
         "type",
-        "target",
-        "caption"
+        "children"
       ],
       "properties": {
         "type": {
           "const": "figure"
-        },
-        "target": {
-          "description": "The captioned block: an image, block quote, table, code block or paragraph. What a captioned host is called and counted as comes from the caption's label, never from the host (PART 9 §4b); for a quote the HTML Standard also requires the attribution outside the `blockquote`.",
-          "oneOf": [
-            {
-              "$ref": "#/$defs/image"
-            },
-            {
-              "$ref": "#/$defs/block_quote"
-            },
-            {
-              "$ref": "#/$defs/table"
-            },
-            {
-              "$ref": "#/$defs/code_block"
-            },
-            {
-              "$ref": "#/$defs/paragraph"
-            }
-          ]
-        },
-        "caption": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "shortCaption": {
-          "type": "array",
-          "description": "Optional abbreviated navigation caption imported from or destined for a structured publishing format. Carve 0.1 source has no spelling for this field; ordinary renderers ignore it.",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "caption": {
+          "$ref": "#/$defs/caption"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          }
+        },
+        "kind": {
+          "enum": [
+            "image",
+            "table",
+            "listing",
+            "equation",
+            "other"
+          ],
+          "description": "Optional semantic kind of the figure content (CARVE-P12-031)."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1378,7 +2047,7 @@
     "figure_group": {
       "type": "object",
       "title": "figure_group (block)",
-      "description": "A composite figure (PART 9 §4c, carve#1122): one figure-numbering unit whose direct captionable children - ordinary `figure` and `table` nodes among `children`, in source order - are its panels. There is no `panels` array: a consumer derives the panel list the way the renderer does, by type, in order, and non-panel stray content is preserved in place between them. Discriminated by `type` rather than by shape: every `figure` carries a `target`, this node deliberately does not, and probing for the missing field instead of the type string would break the day either shape grows a field. No title, no label, no `shortCaption`, no legend fields - the group's one authored metadata channel is `caption`, and the rest is carve#1118/carve#1121 design space, not claimed here.",
+      "description": "A composite figure (CARVE-P12-035) whose direct captionable children are panels in source order. The optional caption is a positioned caption node. Both figure and figure_group have block children; type distinguishes one figure from a group.",
       "required": [
         "type",
         "children"
@@ -1393,18 +2062,37 @@
             "$ref": "#/$defs/blockNode"
           }
         },
-        "caption": {
-          "type": "array",
-          "description": "The GROUP caption (the `^ ` line after the closing fence). Absent means the group is uncaptioned - no empty-array placeholder.",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "caption": {
+          "$ref": "#/$defs/caption",
+          "description": "The GROUP caption (the `^ ` line after the closing fence). Absent means the group is uncaptioned - no empty-array placeholder."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1415,16 +2103,13 @@
       "description": "A footnote DEFINITION. A child of the document even when authored inside a container (PART 9 section 16); its `pos` still records where it was written.",
       "required": [
         "type",
-        "label",
-        "children"
+        "key",
+        "children",
+        "namespace"
       ],
       "properties": {
         "type": {
           "const": "footnote"
-        },
-        "label": {
-          "type": "string",
-          "description": "The label as written, without `[^` and `]:` (PART 12 section 7)."
         },
         "children": {
           "type": "array",
@@ -1437,6 +2122,35 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string",
+          "description": "The label as written, without `[^` and `]:` (PART 12 section 7)."
+        },
+        "namespace": {
+          "const": "footnote"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1444,18 +2158,15 @@
     "footnote_ref": {
       "type": "object",
       "title": "footnote_ref (inline)",
-      "description": "A reference to a definition. Split from `inline_footnote` because a profile has to be able to deny one without the other (carve#405). The label is spelled `label`, the same name its `footnote` definition uses; an `id` property is refused on ingest like any other the schema does not name (CARVE-P12-030, carve#2193).",
+      "description": "A reference to a footnote definition. key and namespace identify the reference (CARVE-P12-005).",
       "required": [
         "type",
-        "label"
+        "key",
+        "namespace"
       ],
       "properties": {
         "type": {
           "const": "footnote_ref"
-        },
-        "label": {
-          "type": "string",
-          "description": "Reference label of `[^label]`, matched against the document's `footnote` definitions by the same string that node carries in its own `label`."
         },
         "number": {
           "type": "integer",
@@ -1466,6 +2177,35 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string",
+          "description": "Reference key of `[^label]`, matched against the document footnote definitions."
+        },
+        "namespace": {
+          "const": "footnote"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1477,7 +2217,7 @@
       "required": [
         "type",
         "format",
-        "content"
+        "value"
       ],
       "properties": {
         "type": {
@@ -1487,12 +2227,37 @@
           "type": "string",
           "description": "The info word on the opening fence, or `yaml` when it carries none."
         },
-        "content": {
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "value": {
           "type": "string",
           "description": "The text between the fences, VERBATIM. Never a parsed mapping (PART 12 section 7)."
         },
-        "pos": {
-          "$ref": "#/$defs/pos"
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1512,6 +2277,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1530,8 +2317,7 @@
         },
         "level": {
           "type": "integer",
-          "minimum": 1,
-          "maximum": 6
+          "minimum": 1
         },
         "children": {
           "type": "array",
@@ -1545,34 +2331,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "heading_ref": {
-      "type": "object",
-      "title": "heading_ref (inline)",
-      "required": [
-        "type",
-        "target"
-      ],
-      "properties": {
-        "type": {
-          "const": "heading_ref"
         },
-        "target": {
-          "type": "string",
-          "description": "Raw id between `</#` and `>`, as the author spelled it. Ids match exactly (PART 9R R4), so a case-only mismatch is unresolved and publishes no `href`."
+        "data": {
+          "$ref": "#/$defs/namespacedData"
         },
-        "href": {
-          "type": "string",
-          "description": "The resolved destination (`#` + the heading's id), present only where the crossref resolved. PART 12 §3a: the resolution is published beside the authored construct, not in place of it."
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
         },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
         },
-        "pos": {
-          "$ref": "#/$defs/pos"
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1599,6 +2379,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -1608,31 +2410,11 @@
       "title": "image (block or inline)",
       "description": "Also valid in BLOCK position: a lone image paragraph is a block-level image. This covers the DIRECT spelling `![alt](src)` and both reference spellings, `![alt][ref]` and the collapsed `![alt][]`, once they resolve - a reference that resolves to nothing has no destination and stays inside its paragraph. Read the PUBLISHED tree when checking this: an engine may promote during reference resolution rather than in its block pass, so a parse-only tree can still show the paragraph (carve#1663). Where it does, `paragraph.blockImage` carries the answer - a consumer reads that field rather than re-deriving promotion from the paragraph's contents (PART 12 section 23).",
       "required": [
-        "type",
-        "src",
-        "alt"
+        "type"
       ],
       "properties": {
         "type": {
           "const": "image"
-        },
-        "src": {
-          "type": "string",
-          "description": "Source. Carries the RESOLVED destination when the document defines the reference. An empty string with no reference fields is an explicit empty inline destination. An empty string on a reference use means unresolved, unless `resolved` is true: then the reference resolved to a definition whose destination is empty (CARVE-P12-005 and CARVE-P12-006). `ref`/`rawRef` sit alongside it and record what the author wrote."
-        },
-        "alt": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "ref": {
-          "type": "string",
-          "description": "Reference label of `![alt][ref]`, as the reference resolves by - the DERIVED label for the collapsed form `![alt][]`, where the author wrote nothing between the second brackets. Present whenever the author wrote a reference image - resolved or not - because the serialized tree is PRE-RESOLVE (PART 12 section 3a). It is not a transient between parse and resolve."
-        },
-        "resolved": {
-          "const": true,
-          "description": "Present, and true, only on a reference use whose matching definition has an EMPTY destination, so its `src` is `\"\"` and yet the reference resolved (CARVE-P12-006). Absent everywhere else: an empty `src` on a reference use without it is unresolved, exactly as in contract 1.1."
         },
         "rawRef": {
           "type": "string",
@@ -1643,9 +2425,76 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "src": {
+          "type": "string",
+          "description": "Resolved image source. Absence on a reference use means unresolved; an empty string is an explicit or resolved empty source (CARVE-P12-006)."
+        },
+        "alt": {
+          "type": "string",
+          "description": "Alternative text when known; absence means unknown (CARVE-P12-027)."
+        },
+        "decorative": {
+          "type": "boolean",
+          "description": "True when the image is intentionally decorative (CARVE-P12-027)."
+        },
+        "tooltip": {
+          "type": "string",
+          "description": "Authored image tooltip, formerly title (CARVE-P12-027)."
+        },
+        "targetKind": {
+          "enum": [
+            "url",
+            "wiki",
+            "doc",
+            "xref"
+          ],
+          "description": "Kind of image target when it is not an ordinary URL (CARVE-P12-047)."
+        },
+        "key": {
+          "type": "string",
+          "description": "Reference label of `![alt][ref]`, as the reference resolves by - the DERIVED label for the collapsed form `![alt][]`, where the author wrote nothing between the second brackets. Present whenever the author wrote a reference image - resolved or not - because the serialized tree is PRE-RESOLVE (PART 12 section 3a). It is not a transient between parse and resolve."
+        },
+        "namespace": {
+          "const": "link"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        },
+        "resourceId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identifier of this image in the document media bag, when carried as a resource (CARVE-P12-073)."
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "dependentRequired": {
+        "key": [
+          "namespace"
+        ],
+        "namespace": [
+          "key"
+        ]
+      }
     },
     "inlineNode": {
       "type": "object",
@@ -1660,7 +2509,6 @@
             "abbreviation",
             "autolink",
             "caption_number",
-            "cell_wrap",
             "citation_group",
             "code",
             "comment",
@@ -1670,7 +2518,7 @@
             "escaped_text",
             "footnote_ref",
             "hard_break",
-            "heading_ref",
+            "xref",
             "highlight",
             "image",
             "inline_extension",
@@ -1690,7 +2538,7 @@
             "strike",
             "strong",
             "subscript",
-            "substitution",
+            "critic_substitution",
             "superscript",
             "symbol",
             "tag",
@@ -1743,21 +2591,6 @@
           },
           "then": {
             "$ref": "#/$defs/caption_number"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "cell_wrap"
-              }
-            },
-            "required": [
-              "type"
-            ]
-          },
-          "then": {
-            "$ref": "#/$defs/cell_wrap"
           }
         },
         {
@@ -1899,7 +2732,7 @@
           "if": {
             "properties": {
               "type": {
-                "const": "heading_ref"
+                "const": "xref"
               }
             },
             "required": [
@@ -1907,7 +2740,7 @@
             ]
           },
           "then": {
-            "$ref": "#/$defs/heading_ref"
+            "$ref": "#/$defs/xref"
           }
         },
         {
@@ -2184,7 +3017,7 @@
           "if": {
             "properties": {
               "type": {
-                "const": "substitution"
+                "const": "critic_substitution"
               }
             },
             "required": [
@@ -2192,7 +3025,7 @@
             ]
           },
           "then": {
-            "$ref": "#/$defs/substitution"
+            "$ref": "#/$defs/critic_substitution"
           }
         },
         {
@@ -2286,30 +3119,103 @@
     },
     "inline_extension": {
       "type": "object",
-      "title": "inline_extension (inline)",
       "required": [
         "type",
         "name",
-        "content"
+        "fallback"
       ],
       "properties": {
         "type": {
           "const": "inline_extension"
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+$",
+          "description": "Globally qualified extension identifier (CARVE-P12-055)."
         },
-        "content": {
+        "version": {
+          "type": "string",
+          "description": "Extension version when its owner defines one (CARVE-P12-055)."
+        },
+        "props": {
+          "$ref": "#/$defs/metadataValue",
+          "description": "Typed extension properties, subject to ingest limits (CARVE-P12-055)."
+        },
+        "children": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/inlineNode"
-          }
+          },
+          "description": "Primary authored content of the extension (CARVE-P12-055)."
+        },
+        "slots": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/inlineNode"
+            }
+          },
+          "description": "Named authored content slots (CARVE-P12-055)."
+        },
+        "fallback": {
+          "$ref": "#/$defs/inlineNode",
+          "description": "Required core inline node used by readers without this extension (CARVE-P12-055)."
+        },
+        "payload": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "format",
+              "value"
+            ],
+            "properties": {
+              "format": {
+                "type": "string"
+              },
+              "value": {
+                "$ref": "#/$defs/metadataValue"
+              }
+            },
+            "additionalProperties": false
+          },
+          "description": "Alternative format and value payloads, bounded by CARVE-P12-073."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        },
+        "resourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Identifiers of media-bag resources used by this extension (CARVE-P12-073)."
         }
       },
       "additionalProperties": false
@@ -2320,17 +3226,11 @@
       "description": "`^[content]` - a footnote whose body is written at the point of use.",
       "required": [
         "type",
-        "inline"
+        "children"
       ],
       "properties": {
         "type": {
           "const": "inline_footnote"
-        },
-        "inline": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
         },
         "number": {
           "type": "integer"
@@ -2340,6 +3240,34 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2366,6 +3294,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2408,6 +3358,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false,
@@ -2419,33 +3391,17 @@
       "description": "`href` is the destination field name for every implementation (PART 12 section 3): a consumer must not have to know which engine produced the document.",
       "required": [
         "type",
-        "href",
         "children"
       ],
       "properties": {
         "type": {
           "const": "link"
         },
-        "href": {
-          "type": "string",
-          "description": "Destination. Carries the RESOLVED destination when the document defines the reference. An empty string with no reference fields is an explicit empty inline destination. An empty string on a reference use means unresolved, unless `resolved` is true: then the reference resolved to a definition whose destination is empty (CARVE-P12-005 and CARVE-P12-006). `ref`/`rawRef` sit alongside it and record what the author wrote."
-        },
-        "title": {
-          "type": "string"
-        },
         "children": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/inlineNode"
           }
-        },
-        "ref": {
-          "type": "string",
-          "description": "Reference label of `[text][ref]`, as the reference resolves by - the DERIVED label for the collapsed form `[label][]`, where the author wrote nothing between the second brackets. Present whenever the author wrote a reference link - resolved or not - because the serialized tree is PRE-RESOLVE (PART 12 section 3a). It is not a transient between parse and resolve."
-        },
-        "resolved": {
-          "const": true,
-          "description": "Present, and true, only on a reference use whose matching definition has an EMPTY destination, so its `href` is `\"\"` and yet the reference resolved (CARVE-P12-006). Absent everywhere else: an empty `href` on a reference use without it is unresolved, exactly as in contract 1.1."
         },
         "rawRef": {
           "type": "string",
@@ -2456,72 +3412,120 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string",
+          "description": "Resolved URL. Absence on a reference use means unresolved; an empty string is an explicit or resolved empty destination (CARVE-P12-005)."
+        },
+        "tooltip": {
+          "type": "string"
+        },
+        "targetKind": {
+          "enum": [
+            "url",
+            "wiki",
+            "doc",
+            "xref"
+          ]
+        },
+        "key": {
+          "type": "string",
+          "description": "Reference label of `[text][ref]`, as the reference resolves by - the DERIVED label for the collapsed form `[label][]`, where the author wrote nothing between the second brackets. Present whenever the author wrote a reference link - resolved or not - because the serialized tree is PRE-RESOLVE (PART 12 section 3a). It is not a transient between parse and resolve."
+        },
+        "namespace": {
+          "const": "link"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "dependentRequired": {
+        "key": [
+          "namespace"
+        ],
+        "namespace": [
+          "key"
+        ]
+      }
     },
     "list": {
       "type": "object",
       "title": "list (block)",
-      "description": "`delim` and `bulletChar` are author-choice fields: a sibling list with a different marker is a DIFFERENT list, so a writer has to reproduce the spelling.",
+      "description": "A list records its authored marker and spacing so a writer can reproduce both (CARVE-P12-027).",
       "required": [
         "type",
-        "ordered",
-        "tight",
-        "items"
+        "children",
+        "marker",
+        "spacing"
       ],
       "properties": {
         "type": {
           "const": "list"
-        },
-        "ordered": {
-          "type": "boolean"
-        },
-        "tight": {
-          "type": "boolean"
-        },
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/list_item"
-          }
-        },
-        "start": {
-          "type": "integer",
-          "description": "First number of an ordered list, when it is not 1."
-        },
-        "olType": {
-          "enum": [
-            "a",
-            "A",
-            "i",
-            "I"
-          ],
-          "description": "Ordered-list numbering style; absent means decimal."
-        },
-        "delim": {
-          "enum": [
-            ".",
-            ")"
-          ],
-          "description": "Ordered-marker delimiter AS AUTHORED (PART 11 section 6). Absent means the default `.`, and a CONFORMING PARSE OMITS THIS FIELD when the author wrote `.` rather than recording the default, the same way `taskState` is written only for a state that is not the default (carve#2828)."
-        },
-        "bareMarker": {
-          "const": true,
-          "description": "Ordered list written with the BARE dot marker (`. item`), which carries no number, AS AUTHORED (PART 11 section 6). Absent means the author numbered it. Without this the bare form decodes as `1. item`: `delim` and `bulletChar` carry marker flavor for every other form, and this was the one authored distinction with no field to hold it (carve#480)."
-        },
-        "bulletChar": {
-          "enum": [
-            "-",
-            "*"
-          ],
-          "description": "Bullet character AS AUTHORED (PART 11 section 6). Absent means the default `-`, and a CONFORMING PARSE OMITS THIS FIELD when the author wrote `-` rather than recording the default, the same way `taskState` is written only for a state that is not the default (carve#2828)."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/list_item"
+          }
+        },
+        "marker": {
+          "$ref": "#/$defs/listMarker",
+          "description": "One bullet or ordered marker record. The discriminator prevents contradictory marker fields (CARVE-P12-027)."
+        },
+        "spacing": {
+          "enum": [
+            "tight",
+            "loose"
+          ],
+          "description": "Whether the list is tight or loose (CARVE-P12-027)."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2543,80 +3547,39 @@
             "$ref": "#/$defs/blockNode"
           }
         },
-        "checked": {
-          "type": "boolean",
-          "description": "Present only on a task-list item; absent on a plain bullet."
-        },
-        "taskState": {
-          "enum": [
-            " ",
-            "x",
-            "-",
-            "_",
-            ">",
-            "?"
-          ],
-          "description": "Task marker character AS AUTHORED (PART 11 section 6g), on a task item whose state is not the default for `checked`: absent means `x` when checked is true and ` ` when it is false. `X` is folded to `x`, which is a case, not a state (carve#1866). The two branches below spell the states rather than negating `x`: an engine validator that skips a keyword it does not implement accepts everything the keyword was added to reject, so this schema stays inside the subset every engine implements."
-        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
-        }
-      },
-      "allOf": [
-        {
-          "if": {
-            "required": [
-              "taskState"
-            ],
-            "properties": {
-              "taskState": {
-                "const": "x"
-              }
-            }
-          },
-          "then": {
-            "required": [
-              "checked"
-            ],
-            "properties": {
-              "checked": {
-                "const": true
-              }
-            }
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
           }
         },
-        {
-          "if": {
-            "required": [
-              "taskState"
-            ],
-            "properties": {
-              "taskState": {
-                "enum": [
-                  " ",
-                  "-",
-                  "_",
-                  ">",
-                  "?"
-                ]
-              }
-            }
-          },
-          "then": {
-            "required": [
-              "checked"
-            ],
-            "properties": {
-              "checked": {
-                "const": false
-              }
-            }
-          }
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "task": {
+          "$ref": "#/$defs/taskState",
+          "description": "Authored task mark and normalized status; checked is derived from the mark and is not serialized."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
-      ],
+      },
       "additionalProperties": false
     },
     "literal_inline": {
@@ -2625,21 +3588,43 @@
       "description": "`` !`...` `` - verbatim content emitted by every renderer and escaped on output, unlike raw passthrough.",
       "required": [
         "type",
-        "content"
+        "value"
       ],
       "properties": {
         "type": {
           "const": "literal_inline"
-        },
-        "content": {
-          "type": "string",
-          "description": "Literal Unicode content. U+E000 and all other private-use characters are preserved unchanged. Generated nonbreaking spaces use non_breaking_space nodes; no character is an AST sentinel."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "description": "Literal Unicode content. U+E000 and all other private-use characters are preserved unchanged. Generated nonbreaking spaces use non_breaking_space nodes; no character is an AST sentinel."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2650,7 +3635,7 @@
       "required": [
         "type",
         "display",
-        "content"
+        "value"
       ],
       "properties": {
         "type": {
@@ -2659,30 +3644,36 @@
         "display": {
           "type": "boolean"
         },
-        "content": {
-          "type": "string"
-        },
         "cellWraps": {
           "type": "array",
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": ["offset", "line"],
+            "required": [
+              "offset",
+              "line"
+            ],
             "properties": {
-              "offset": { "type": "integer", "minimum": 0 },
-              "line": { "type": "integer", "minimum": 1 },
-              "row": { "type": "integer", "minimum": 1 },
-              "col": { "type": "integer", "minimum": 1 }
+              "offset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "row": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "col": {
+                "type": "integer",
+                "minimum": 1
+              }
             },
             "additionalProperties": false
           },
-          "description": "CARVE-P12-069 continuation joins as { offset, line, row?, col? }: the codepoint offset of each joining space in the math content payload."
-        },
-        "label": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
-          "description": "Authored equation-number label, such as `Equation` or `Eq.`. It selects the numbering bucket and supplies the visible prefix; `attrs.id` is the cross-reference key."
+          "description": "CARVE-P12-069 continuation joins as { offset, line, row?, col? }: the UTF-8 byte offset of each joining space in the math content payload."
         },
         "number": {
           "type": "integer",
@@ -2694,6 +3685,37 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "numberPrefix": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
+          "description": "Authored equation-number label, such as `Equation` or `Eq.`. It selects the numbering bucket and supplies the visible prefix; `attrs.id` is the cross-reference key."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "allOf": [
@@ -2708,10 +3730,10 @@
           },
           "then": {
             "required": [
-              "label"
+              "numberPrefix"
             ],
             "properties": {
-              "label": {},
+              "numberPrefix": {},
               "display": {
                 "const": true
               }
@@ -2726,20 +3748,49 @@
       "title": "mention (inline)",
       "required": [
         "type",
-        "user"
+        "target",
+        "kind"
       ],
       "properties": {
         "type": {
           "const": "mention"
-        },
-        "user": {
-          "type": "string"
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2763,14 +3814,35 @@
         },
         "blockImage": {
           "const": true,
-          "description": "Set by the BLOCK-IMAGE PROMOTION phase, and by nothing else (PART 9R R7, PART 12 section 23): this paragraph's whole content resolves to a single image, so it is a block-level image and not a paragraph. Present ONLY as `true` - a paragraph that is not a block image omits the field rather than carrying `false`.\n\nIt is a resolution result published alongside the authored construct, the same added-alongside rule that lets a resolved reference link keep `href` beside `ref` and `rawRef` (section 3a). A consumer READS it instead of re-deriving it: absent means the producer did not run the phase, not that the paragraph is ordinary, and an ingesting consumer runs promotion itself only where the field is absent.",
-          "type": "boolean"
+          "description": "True only when promoted to a block image. After the root declares blockImagePromotion, absence means not promoted (CARVE-P12-043)."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2778,7 +3850,7 @@
     "pos": {
       "type": "object",
       "title": "Source span",
-      "description": "A node's span in the source (PART 12 section 4). Lines and columns are 1-based, offsets 0-based, `endColumn` and `endOffset` exclusive, and columns and offsets are counted in UNICODE CODEPOINTS - not bytes, not UTF-16 code units.\n\nSection 4 REQUIRES this on every node except the document root. It is declared optional here because a JSON Schema can only answer 'is this shape valid', and an engine that cannot yet place a node must omit `pos` rather than invent one. Whether a producer places every node is a separate, per-node question, reported by the conformance runner (`scripts/ast-conformance.mjs`) rather than by this schema.",
+      "description": "A source span (PART 12 section 4). Lines and columns are 1-based; offsets are zero-based UTF-8 byte offsets with exclusive endOffset. Columns count Unicode codepoints. An unplaced node omits pos rather than inventing a range; segments may identify discontinuous source regions.",
       "required": [
         "startLine",
         "endLine",
@@ -2806,11 +3878,13 @@
         },
         "startOffset": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "description": "Zero-based UTF-8 byte start offset in the named source (CARVE-P12-011)."
         },
         "endOffset": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "description": "Zero-based UTF-8 byte exclusive end offset in the named source (CARVE-P12-011)."
         },
         "file": {
           "type": "string",
@@ -2825,7 +3899,7 @@
       "required": [
         "type",
         "format",
-        "content"
+        "value"
       ],
       "properties": {
         "type": {
@@ -2834,15 +3908,37 @@
         "format": {
           "type": "string"
         },
-        "content": {
-          "type": "string",
-          "description": "Literal payload text, including private-use Unicode characters, including its final LF when present, matching code_block.content. Empty and blank payloads remain distinct. Matching raw output removes one final LF unless content consists entirely of LFs; code fallbacks use the literal string."
-        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "description": "Literal payload text, including private-use Unicode characters, including its final LF when present, matching code_block.content. Empty and blank payloads remain distinct. Matching raw output removes one final LF unless content consists entirely of LFs; code fallbacks use the literal string."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2853,7 +3949,7 @@
       "required": [
         "type",
         "format",
-        "content"
+        "value"
       ],
       "properties": {
         "type": {
@@ -2862,30 +3958,67 @@
         "format": {
           "type": "string"
         },
-        "content": {
-          "type": "string"
-        },
         "cellWraps": {
           "type": "array",
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": ["offset", "line"],
+            "required": [
+              "offset",
+              "line"
+            ],
             "properties": {
-              "offset": { "type": "integer", "minimum": 0 },
-              "line": { "type": "integer", "minimum": 1 },
-              "row": { "type": "integer", "minimum": 1 },
-              "col": { "type": "integer", "minimum": 1 }
+              "offset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "row": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "col": {
+                "type": "integer",
+                "minimum": 1
+              }
             },
             "additionalProperties": false
           },
-          "description": "CARVE-P12-069 continuation joins as { offset, line, row?, col? }: the codepoint offset of each joining space in the raw_inline content payload."
+          "description": "CARVE-P12-069 continuation joins as { offset, line, row?, col? }: the UTF-8 byte offset of each joining space in the raw_inline value payload."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2919,6 +4052,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2930,7 +4085,7 @@
       "required": [
         "type",
         "kind",
-        "value"
+        "source"
       ],
       "properties": {
         "type": {
@@ -2939,10 +4094,6 @@
         "kind": {
           "type": "string",
           "description": "The resolved sort: `ellipsis`, `em_dash`, `left_double_quote`, ..."
-        },
-        "value": {
-          "type": "string",
-          "description": "The author's source run, e.g. `...`, `->`, `\"`."
         },
         "glyph": {
           "type": "string",
@@ -2953,6 +4104,32 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string",
+          "description": "The author's source run, e.g. `...`, `->`, `\"`."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2972,6 +4149,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -2998,6 +4197,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3024,6 +4245,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3052,6 +4295,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3060,6 +4325,7 @@
       "type": "object",
       "title": "ruby base/annotation pair",
       "required": [
+        "type",
         "base",
         "annotation"
       ],
@@ -3076,6 +4342,37 @@
           "items": {
             "$ref": "#/$defs/inlineNode"
           }
+        },
+        "type": {
+          "const": "ruby_pair"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3103,6 +4400,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3133,6 +4452,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3159,41 +4500,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "substitution": {
-      "type": "object",
-      "title": "substitution (inline)",
-      "required": [
-        "type",
-        "old",
-        "new"
-      ],
-      "properties": {
-        "type": {
-          "const": "substitution"
         },
-        "old": {
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
           "type": "array",
-          "description": "The deleted half, as inline content.",
           "items": {
-            "$ref": "#/$defs/inlineNode"
+            "$ref": "#/$defs/pos"
           }
         },
-        "new": {
-          "type": "array",
-          "description": "The inserted half, as inline content.",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
         },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
+        "lang": {
+          "type": "string"
         },
-        "pos": {
-          "$ref": "#/$defs/pos"
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3220,6 +4548,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3244,6 +4594,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3253,141 +4625,83 @@
       "title": "table (block)",
       "required": [
         "type",
-        "rows"
+        "children",
+        "columns"
       ],
       "properties": {
         "type": {
           "const": "table"
         },
-        "rows": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/table_row"
-          }
-        },
         "separatorWidths": {
           "type": "array",
           "minItems": 1,
-          "description": "Separator-row dash widths AS AUTHORED (PART 11 section 6h), one entry per separator cell, each the count of `-` characters that cell spelled with alignment colons excluded: `|:-----|---:|` records [5, 3]. PRESENCE records that the author wrote a separator row at all; absent means the header was spelled with `|=` cells, which is a different source form for the same rows and alignments. An author-choice field in the sense of PART 12 section 3, like `list.bulletChar` and `thematic_break.marker`: the canonical writer reproduces it. THE FIELD IS DELIBERATELY UNBOUNDED ABOVE: a parse records what the author typed, and nothing amplifies there. The 1000 bound in PART 10 section 13a is the HTML carrier's, where six characters of attribute would otherwise buy a megabyte of separator row, so do not add a `maximum` here thinking it was overlooked.",
+          "description": "Separator-row dash widths as authored (PART 11 §6h), one per separator cell, excluding alignment colons. Presence distinguishes a separator row from `|=` header cells; the canonical writer reproduces it. The HTML carrier's 1000-character bound does not apply to parsed source.",
           "items": {
             "type": "integer",
             "minimum": 1
           }
         },
         "sourceFormat": {
-          "enum": ["csv", "tsv"],
+          "enum": [
+            "csv",
+            "tsv"
+          ],
           "description": "Author chose a delimited table fence. The canonical Carve writer keeps this form; absent means a pipe table. Quoting and record separators may be normalized."
-        },
-        "caption": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "shortCaption": {
-          "type": "array",
-          "description": "Optional abbreviated navigation caption imported from or destined for a structured publishing format. Carve 0.1 source has no spelling for this field; ordinary renderers ignore it.",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
         },
         "columns": {
           "type": "array",
-          "description": "Optional positional column metadata imported from, authored through table-level aligns/valigns/widths attributes, or destined for a richer table model. Entry N describes column N; the array MAY be shorter than the widest row. A cell's explicit value wins over the corresponding column value.",
           "items": {
-            "type": "object",
-            "properties": {
-              "align": {
-                "enum": [
-                  "left",
-                  "right",
-                  "center"
-                ],
-                "description": "Horizontal alignment inherited by cells in this column when they carry no explicit alignment."
-              },
-              "valign": {
-                "enum": [
-                  "top",
-                  "middle",
-                  "bottom"
-                ],
-                "description": "Vertical alignment inherited by cells in this column when they carry no explicit vertical alignment."
-              },
-              "width": {
-                "type": "number",
-                "exclusiveMinimum": 0,
-                "maximum": 1,
-                "description": "The column's fraction of the table width, in the interval (0, 1]. Widths need not sum to 1."
-              }
-            },
-            "additionalProperties": false
-          }
-        },
-        "rowGroups": {
-          "type": "object",
-          "description": "Optional explicit head/body/foot partition of `rows`, imported from or destined for a format whose table model has one. It PARTITIONS `rows` and never repeats them: the counts consume `rows` in order, head first, then each body, then the foot, and they MUST account for every row exactly once. ListTable can author a leading head, header-led body groups, a foot, and leading row-header columns; pipe-table body-rows, body-header-rows, and body-header-cols preserve arbitrary body partitions. Absent means the implicit structure every renderer already derives.",
-          "required": [
-            "headRows",
-            "bodies",
-            "footRows"
-          ],
-          "properties": {
-            "headRows": {
-              "type": "integer",
-              "minimum": 0,
-              "description": "Rows at the start of `rows` forming the table head. Stated rather than derived, because a body's own intermediate header rows are header rows too and the leading run alone cannot say where one ends and the other begins."
-            },
-            "headAttrs": {
-              "$ref": "#/$defs/attrs"
-            },
-            "footAttrs": {
-              "$ref": "#/$defs/attrs"
-            },
-            "bodies": {
-              "type": "array",
-              "description": "The body groups, in order, each consuming the next `headRows + bodyRows` rows. An empty array is a table whose rows are all head and foot.",
-              "items": {
-                "type": "object",
-                "required": [
-                  "headRows",
-                  "bodyRows"
-                ],
-                "properties": {
-                  "headRows": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "description": "Rows at the start of this group forming its intermediate header."
-                  },
-                  "bodyRows": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "description": "Rows in this group after its intermediate header."
-                  },
-                  "rowHeadColumns": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "description": "Leading columns of this group's rows that are row headers. Absent means zero. It sits on the group rather than on the table because that is where the exchanged model puts it."
-                  },
-                  "attrs": {
-                    "$ref": "#/$defs/attrs"
-                  }
-                },
-                "additionalProperties": false
-              }
-            },
-            "footRows": {
-              "type": "integer",
-              "minimum": 0,
-              "description": "Rows at the end of `rows` forming the table foot."
-            }
+            "$ref": "#/$defs/table_column"
           },
-          "additionalProperties": false
+          "description": "One typed table_column per column through the widest row, including generated columns. Authored align is separate from resolvedAlign after header precedence (CARVE-P12-039)."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/table_head"
+              },
+              {
+                "$ref": "#/$defs/table_body"
+              },
+              {
+                "$ref": "#/$defs/table_foot"
+              }
+            ]
+          },
+          "description": "Table head, body, and foot groups in document order (CARVE-P12-061)."
+        },
+        "caption": {
+          "$ref": "#/$defs/caption"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3397,7 +4711,8 @@
       "title": "table_cell (block)",
       "required": [
         "type",
-        "header"
+        "header",
+        "children"
       ],
       "properties": {
         "type": {
@@ -3409,15 +4724,16 @@
         "children": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "blocks": {
-          "type": "array",
-          "description": "Block content, in place of the inline `children`. A cell carries one or the other, never both. Carve 0.1 source has no spelling for a block inside a cell, so a parser does not produce this field; it exists so an HTML `<td>` holding flow content, or a Pandoc `Cell` holding `[Block]`, survives a bridge instead of flattening to text. A canonical Carve writer loses it and reports `field-unspellable` for `table_cell.blocks` on the conversion-diagnostics channel of PART 11 section 1d.",
-          "items": {
-            "$ref": "#/$defs/blockNode"
-          }
+            "oneOf": [
+              {
+                "$ref": "#/$defs/cell_paragraph"
+              },
+              {
+                "$ref": "#/$defs/blockNode"
+              }
+            ]
+          },
+          "description": "Block content. An inline source cell contains a cell_paragraph with optional cell_wrap nodes (CARVE-P12-061)."
         },
         "span": {
           "enum": [
@@ -3457,47 +4773,50 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "sourceContent": {
+          "enum": [
+            "inline",
+            "blocks"
+          ],
+          "description": "Whether the source cell was inline or block content; children remain blocks in either case (CARVE-P12-049)."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false,
-      "oneOf": [
-        {
-          "required": [
-            "children"
-          ],
-          "properties": {
-            "children": true,
-            "blocks": false
-          }
-        },
-        {
-          "required": [
-            "blocks"
-          ],
-          "properties": {
-            "blocks": true,
-            "children": false
-          }
-        }
-      ],
-      "description": "A table cell. Its content is EITHER the inline `children` every source-spelled cell carries, OR the block `blocks` a format bridge needs - exactly one of the two, never both and never neither (carve#2191)."
+      "description": "A table cell with block children. A source cell with inline content has a cell_paragraph wrapper; cell_wrap is valid only in that wrapper (CARVE-P12-049). A writer that cannot spell its block boundaries reports field-unspellable on the conversion-diagnostics channel of PART 11 section 1d."
     },
     "table_row": {
       "type": "object",
       "title": "table_row (block)",
       "required": [
         "type",
-        "cells"
+        "children"
       ],
       "properties": {
         "type": {
           "const": "table_row"
-        },
-        "cells": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/table_cell"
-          }
         },
         "continuationLines": {
           "type": "integer",
@@ -3509,6 +4828,34 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/table_cell"
+          }
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3533,6 +4880,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3557,6 +4926,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3585,6 +4976,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3611,6 +5024,28 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
         }
       },
       "additionalProperties": false
@@ -3631,6 +5066,1409 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        }
+      },
+      "additionalProperties": false
+    },
+    "namespacedData": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/metadataValue"
+      }
+    },
+    "metadataValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/metadataValue"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/metadataValue"
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          }
+        }
+      ]
+    },
+    "extensionDeclaration": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "required"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)+$"
+        },
+        "version": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "taskState": {
+      "type": "object",
+      "required": [
+        "mark",
+        "status"
+      ],
+      "properties": {
+        "mark": {
+          "enum": [
+            " ",
+            "x",
+            "-",
+            "_",
+            ">",
+            "?"
+          ],
+          "description": "Authored task-box character after canonical case normalization (CARVE-P12-070)."
+        },
+        "status": {
+          "enum": [
+            "todo",
+            "done",
+            "cancelled",
+            "partial",
+            "other"
+          ],
+          "description": "Semantic task status derived consistently from mark (CARVE-P12-070)."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mark": {
+                "const": "x"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "done"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mark": {
+                "const": " "
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "todo"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mark": {
+                "const": "-"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "cancelled"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mark": {
+                "enum": [
+                  "_",
+                  ">"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "partial"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mark": {
+                "const": "?"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "other"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "listMarker": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "char"
+          ],
+          "properties": {
+            "kind": {
+              "const": "bullet",
+              "description": "Bullet marker discriminator (CARVE-P12-070)."
+            },
+            "char": {
+              "enum": [
+                "-",
+                "*"
+              ],
+              "description": "Authored bullet character, either minus or asterisk (CARVE-P12-070)."
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "ordered",
+              "description": "Ordered marker discriminator (CARVE-P12-070)."
+            },
+            "style": {
+              "enum": [
+                "1",
+                "a",
+                "A",
+                "i",
+                "I"
+              ],
+              "description": "Authored numeral or alphabetic style; absence means decimal (CARVE-P12-070)."
+            },
+            "delimiter": {
+              "enum": [
+                ".",
+                ")"
+              ],
+              "description": "Authored ordered-list delimiter; absence means period (CARVE-P12-070)."
+            },
+            "start": {
+              "type": "integer",
+              "description": "First number of an ordered list, written only when it is not 1 (CARVE-P12-027)."
+            },
+            "bare": {
+              "const": true,
+              "description": "The author wrote a bare ordered marker (CARVE-P12-070)."
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "caption": {
+      "type": "object",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "caption"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          },
+          "description": "Block caption content. A table caption within a figure remains on the table; the outer caption describes the figure."
+        },
+        "short": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          },
+          "description": "Optional inline caption for navigation or abbreviated display (CARVE-P12-033)."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        }
+      },
+      "additionalProperties": false
+    },
+    "table_head": {
+      "type": "object",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "table_head"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/table_row"
+          },
+          "description": "Rows in document order (CARVE-P12-034)."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Typed table head group (CARVE-P12-034)."
+    },
+    "table_body": {
+      "type": "object",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "table_body"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/table_row"
+          },
+          "description": "Rows in document order (CARVE-P12-034)."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "headRows": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of leading header rows within this body group (CARVE-P12-034)."
+        },
+        "rowHeadColumns": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of leading row-header columns (CARVE-P12-034)."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Typed table body group (CARVE-P12-034)."
+    },
+    "table_foot": {
+      "type": "object",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "table_foot"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/table_row"
+          },
+          "description": "Rows in document order (CARVE-P12-034)."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Typed table foot group (CARVE-P12-034)."
+    },
+    "table_column": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "table_column"
+        },
+        "align": {
+          "enum": [
+            "left",
+            "right",
+            "center"
+          ],
+          "description": "Authored horizontal alignment, kept separate from the resolved default (CARVE-P12-039)."
+        },
+        "valign": {
+          "enum": [
+            "top",
+            "middle",
+            "bottom"
+          ],
+          "description": "Authored vertical alignment (CARVE-P12-039)."
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "description": "Authored fractional width of this column (CARVE-P12-039)."
+        },
+        "resolvedAlign": {
+          "enum": [
+            "left",
+            "right",
+            "center"
+          ],
+          "description": "Effective column alignment after header precedence (CARVE-P12-039)."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "authored": {
+          "const": true,
+          "description": "True when the source or imported tree explicitly carried this column record (CARVE-P12-039)."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        }
+      },
+      "additionalProperties": false
+    },
+    "xref": {
+      "type": "object",
+      "title": "xref (inline)",
+      "required": [
+        "type",
+        "key",
+        "namespace"
+      ],
+      "properties": {
+        "type": {
+          "const": "xref"
+        },
+        "href": {
+          "type": "string",
+          "description": "The resolved destination (`#` + the heading's id), present only where the crossref resolved. PART 12 §3a: the resolution is published beside the authored construct, not in place of it."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string",
+          "description": "Raw id between `</#` and `>`, as the author spelled it. Ids match exactly (PART 9R R4), so a case-only mismatch is unresolved and publishes no `href`."
+        },
+        "namespace": {
+          "enum": [
+            "heading",
+            "figure",
+            "table",
+            "equation",
+            "footnote"
+          ]
+        },
+        "form": {
+          "enum": [
+            "number",
+            "page",
+            "title",
+            "full"
+          ],
+          "description": "Requested display form: number, page, title, or full (CARVE-P12-010)."
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        }
+      },
+      "additionalProperties": false
+    },
+    "critic_substitution": {
+      "type": "object",
+      "title": "critic_substitution (inline)",
+      "required": [
+        "type",
+        "old",
+        "new"
+      ],
+      "properties": {
+        "type": {
+          "const": "critic_substitution"
+        },
+        "old": {
+          "type": "array",
+          "description": "The deleted half, as inline content.",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "new": {
+          "type": "array",
+          "description": "The inserted half, as inline content.",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cellInlineNode": {
+      "type": "object",
+      "title": "Any inline node",
+      "description": "Dispatches on `type`.\n\n`citation` is NOT listed. It is a declared node type and `citation_group.items` references it directly, but a citation is only ever an item of a group: PART 7 makes the bracket the unit a source spells, an item's `prefix`, `locator` and `suffix` mean nothing outside one, and no clause defines what a bare citation renders to in any target. Listing it here admitted a shape every engine refuses (carve#2227).",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "abbreviation",
+            "autolink",
+            "caption_number",
+            "cell_wrap",
+            "citation_group",
+            "code",
+            "comment",
+            "critic_comment",
+            "delete",
+            "emphasis",
+            "escaped_text",
+            "footnote_ref",
+            "hard_break",
+            "xref",
+            "highlight",
+            "image",
+            "inline_extension",
+            "inline_footnote",
+            "insert",
+            "link",
+            "literal_inline",
+            "math",
+            "mention",
+            "non_breaking_space",
+            "raw_inline",
+            "ruby",
+            "small_caps",
+            "smart_punctuation",
+            "soft_break",
+            "span",
+            "strike",
+            "strong",
+            "subscript",
+            "critic_substitution",
+            "superscript",
+            "symbol",
+            "tag",
+            "text",
+            "underline"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "abbreviation"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/abbreviation"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "autolink"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/autolink"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "caption_number"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/caption_number"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "cell_wrap"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/cell_wrap"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "citation_group"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/citation_group"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "code"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/code"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "comment"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/comment"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "critic_comment"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/critic_comment"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "delete"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/delete"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "emphasis"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/emphasis"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "escaped_text"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/escaped_text"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "footnote_ref"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/footnote_ref"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "hard_break"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/hard_break"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "xref"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/xref"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "highlight"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/highlight"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "image"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/image"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "inline_extension"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/inline_extension"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "inline_footnote"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/inline_footnote"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "insert"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/insert"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "link"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/link"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "literal_inline"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/literal_inline"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "math"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/math"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "mention"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/mention"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "raw_inline"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/raw_inline"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "ruby"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/ruby"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "small_caps"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/small_caps"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "smart_punctuation"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/smart_punctuation"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "soft_break"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/soft_break"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "span"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/span"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "strike"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/strike"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "strong"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/strong"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "subscript"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/subscript"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "critic_substitution"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/critic_substitution"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "superscript"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/superscript"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "symbol"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/symbol"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "tag"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/tag"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "text"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "underline"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/underline"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "non_breaking_space"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/non_breaking_space"
+          }
+        }
+      ]
+    },
+    "cell_paragraph": {
+      "type": "object",
+      "title": "paragraph (block)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "cell_paragraph"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cellInlineNode"
+          }
+        },
+        "blockImage": {
+          "const": true,
+          "description": "True if this cell paragraph was promoted to a block image. When the root declares blockImagePromotion, absence means not promoted.",
+          "type": "boolean"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "data": {
+          "$ref": "#/$defs/namespacedData"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pos"
+          }
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadataValue"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resource": {
+      "type": "object",
+      "title": "Media-bag resource",
+      "required": [
+        "id",
+        "mediaType",
+        "digest"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable document-local resource identifier (CARVE-P12-073)."
+        },
+        "mediaType": {
+          "type": "string",
+          "pattern": "^[^/\\s]+/[^/\\s]+$",
+          "description": "MIME media type of the referenced bytes (CARVE-P12-073)."
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "SHA-256 integrity hash of the resource bytes (CARVE-P12-073)."
+        },
+        "href": {
+          "type": "string",
+          "description": "Optional location hint. The digest, not the path, identifies resource bytes (CARVE-P12-073)."
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Resource byte length when measured (CARVE-P12-073)."
         }
       },
       "additionalProperties": false

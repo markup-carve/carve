@@ -524,9 +524,9 @@ task_marker = '[', task_state, ']', space ;
 task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
 (* THE STATE IS RECORDED, NOT ONLY THE BOX. `[-]`, `[_]`, `[>]` and `[?]`
    are distinguishable states an author chose between, so PART 12 records the
-   character in `list_item.taskState` and CARVE-P11-041 writes it back.
-   `checked` drives the rendering above; the state is the author's spelling,
-   as `bulletChar` is for `-` vs `*`.
+   character in `list_item.task.mark` and CARVE-P11-041 writes it back.
+   `task.status` drives the rendering above; the mark is the author's spelling,
+   as `list.marker.char` is for `-` vs `*`.
 
    TASK STATE IS NOT A SAME-LIST AXIS. PART 9 §11's criteria are unchanged: a `[ ]`
    item and a `[-]` item are the SAME list, where a `-` bullet and a `*`

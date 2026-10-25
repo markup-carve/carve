@@ -28,7 +28,7 @@
       "properties": {
         "path": { "type": "string", "pattern": "^(?:|(?:/(?:[^~/]|~[01])*)+)$", "description": "PART 12 §41: RFC 6901 pointer into the accompanying canonical AST, as in §38. Unique within a sidecar." },
         "source": { "type": "string", "minLength": 1, "description": "PART 12 §41: the id of the sources entry this node came from." },
-        "startByte": { "type": "integer", "minimum": 0, "description": "PART 12 §41: start of the node's bytes IN THAT INPUT, as in §13 and not in the assembled document. Not an offset, which §4 counts in codepoints." },
+        "startByte": { "type": "integer", "minimum": 0, "description": "PART 12 §41: start of the node's source bytes in the named input, which may differ from its assembled `pos` range. Both use UTF-8 byte units." },
         "endByte": { "type": "integer", "minimum": 0, "description": "PART 12 §41: end of the node's bytes in that input, exclusive." },
         "origin": { "enum": ["authored", "generated"], "description": "PART 12 §41: whether a person wrote the node or the processor produced it." },
         "step": { "type": "string", "minLength": 1, "description": "PART 12 §41: opaque id of the transformation that produced the node. Core never reads it." }

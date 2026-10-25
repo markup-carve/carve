@@ -1,38 +1,28 @@
 (* ============================================================================
-   17. A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT -- NORMATIVE [CARVE-P12-036].
-      `figure.target` admits a `table`, whose own `caption` is optional.
-      The fallback matrix row `figure.target[table]` distinguishes these trees:
+   17. A FIGURE MAY HOLD BLOCK CONTENT -- NORMATIVE [CARVE-P12-036].
+      A `figure` carries block `children` and MAY carry a `caption` node. It MAY carry
+      `kind`: `image`, `table`, `listing`, `equation`, or `other`. An absent
+      kind makes no claim about its contents. An HTML importer may supply a
+      table inside a figure even though Carve source captions the table
+      directly. The nested table retains its own caption, and the figure's
+      caption describes the outer wrapper (CARVE-P12-033).
+      The fallback matrix row `figure.children[table]` records target behavior.
 
-        figure{ target: table, caption } -> <figure><table>...</table><figcaption>...</figcaption></figure>
-        table{ caption }                -> <table><caption>...</caption>...</table>
+      A canonical writer emits the content it can spell and reports any lost
+      figure wrapper, mixed contents, or caption distinction. It MUST NOT
+      silently choose one child as `target` or discard the others.
 
-      PART 9 §4's source spelling produces only the second: `^ ` after a table
-      attaches to that table. The wrapper is interchange-only (CARVE-P12-066);
-      an HTML importer reading `<figure><table>…<figcaption>` supplies it.
-
-      A CANONICAL CARVE WRITER EMITS THE TARGET AND ITS CAPTION. It re-reads
-      as `table{caption}`, changing the HTML and losing the wrapper. A bridge/API exposing conversion
-      diagnostics SHOULD report that structural loss.
-      THE TARGET'S OWN CAPTION SLOT MAY ALREADY BE FULL. In
-      `figure{ target: table{ caption }, caption }`, the target's caption wins;
-      the figure's caption is lost with its wrapper, covered by the diagnostic
-      above. The figure's caption takes the one `^ ` slot only when the target
-      has none. A writer MUST NOT emit a second `^ ` line: after a caption it
-      would become literal body prose.
-
-      A FIGURE GROUP'S TABLE PANEL IS NOT THIS WRAPPER. CARVE-P12-035 keeps a table
-      panel as a plain `table` child with its own optional caption, never a
-      `figure` targeting a table. The group
-      captions a sequence; this figure captions one table, and source spells
-      no such wrapper.
-      THE TABLE IS THE ONLY HOST IN THIS POSITION. Under PART 9 §4b, every other
-      captionable host (an image, quote, code block or display-math paragraph)
-      becomes a `figure` when a `^ ` line follows it; its wrapper round-trips
-      exactly. A table has its own caption slot.
+      A table inside a figure keeps its own caption. On a canonical write,
+      the table's caption takes the single source `^ ` slot; an outer caption
+      that cannot be spelled is reported. A writer MUST NOT emit a second
+      `^ ` line: after a caption it would become literal body prose. A figure
+      group's table panel is a plain table child, not this wrapper. Other
+      captionable hosts from Carve source retain their figure wrapper.
 
    18. A CITATION DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-037].
       `type: "citation_definition"`, carrying:
         key       the citation key as the author wrote it, without the `@`
+        namespace  `citation`, identifying the key space shared with uses
         children  the entry's inline content: what follows the `]: ` separator
                   and the optional metadata block, parsed as inline
         attrs     the leading `{author= year=}` metadata block, when the
@@ -44,8 +34,8 @@
       while `[@key]: {author= year=} entry` holds a metadata run plus one line
       of rendered text. So the entry is `children` of INLINE nodes, and the
       metadata lands in `attrs` -- the same two slots CARVE-P12-029 spends on a
-      definition line's tail, with `key` where that clause has `label`. `key`
-      rather than `label` because `citation.key` already names the same string
+      definition line's tail. Both definition types use `key` for the label,
+      because `citation.key` names the same string
       at the use site, and PART 12 §3 makes field names spec surface: one construct
       identified two ways in one document is the collision PART 12 §1 exists to stop.
 
@@ -67,7 +57,7 @@
       node satisfying this shape conforms whichever recognition policy applies.
 
    18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE [CARVE-P12-038].
-      Every item in `citation_group.items` carries `type: "citation"` and the
+      Every item in `citation_group.children` carries `type: "citation"` and the
       `pos` of PART 12 §4, spanning its optional prefix, `-` author
       suppression marker, `@key`, locator and suffix. Its existing `key`,
       `prefix`, `locator`, `locatorLabel`, `locatorValue`, `suffix`,
@@ -88,64 +78,43 @@
       still places every citation it reads
       ([carve#2192](https://github.com/markup-carve/carve/issues/2192)).
 
-   19. A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA -- NORMATIVE [CARVE-P12-039]. A
-      `table` MAY carry `columns`, an array whose entry at index N describes
-      column N. An entry MAY carry:
+   19. TABLE COLUMNS CARRY AUTHORED AND RESOLVED ALIGNMENT -- NORMATIVE
+      [CARVE-P12-039]. A `table` MUST carry `columns` describing each column up
+      to its widest row, including columns with no authored settings. An empty
+      table carries an empty array. Each entry is a typed `table_column` node with
+      optional authored `align`, `valign`, and fractional `width`, plus
+      `resolvedAlign` after header-row precedence. The `authored` marker says
+      an explicit column record existed. A generated column may omit it.
 
-        align   one of `left`, `right` or `center`
-        valign  one of `top`, `middle` or `bottom`
-        width   a number greater than zero and at most one: the column's
-                FRACTION of the table width
+      A header cell with explicit alignment supplies the resolved default for
+      the column it starts in, except when a span prevents that precedence.
+      Authored alignment remains separate so `fmt` writes the source spelling.
+      Widths need not sum to one; a sum above one is a diagnostic, not an
+      invalid exchange tree. A consumer reads `resolvedAlign` rather than
+      redoing header precedence.
 
-      Either field may be absent, meaning unset. The array MAY be empty or
-      shorter than the widest row; a missing entry means both fields are unset
-      for that column. Widths need not sum to one. A sum above one is a
-      diagnostic concern for a source spelling or format bridge, not an invalid
-      exchange tree.
+      Source `aligns`, `valigns`, and `widths` lists still describe authored
+      column settings. Each list is positional; an empty entry means unset.
+      A cell's explicit setting wins over a column setting for the same axis.
+      Authored `align` and `valign` on a cell are consumed as semantics and
+      MUST NOT also appear as literal HTML `align` or `valign` attributes.
 
-      RESOLUTION IS PER FIELD. A cell's own value wins, then the corresponding
-      column value, then unset. One explicit cell field does not suppress a
-      different field inherited from the column. This keeps the rule usable
-      when a later version adds another alignment axis.
+      SOURCE SPELLING. `aligns`, `valigns`, and `widths` are comma-separated
+      lists. Empty entries are unset; source widths are percentages greater
+      than zero and at most 100, divided by 100 in the AST. More entries than
+      physical columns is an error. Fewer is valid but lints; a total width
+      over 100 also lints. Per-field precedence is local: a cell marker wins,
+      then an in-table column marker, then a table attribute. Competing
+      column-level spellings lint and the in-table one wins.
 
-      SOURCE SPELLING. A table's preceding block-attribute line MAY carry
-      `aligns`, `valigns` and `widths`. Each value is a comma-separated
-      positional list; an empty entry means unset. Alignment names are the
-      vocabularies above. Widths are numbers greater than zero and at most 100
-      in source, and divide by 100 on the way into the fractional AST field;
-      any other width is an error. More entries than columns is
-      an error. Fewer is valid, leaves the tail unset, and produces a lint
-      diagnostic. Widths need not total 100; a total above it lints.
-
-      PRECEDENCE IS LOCALITY, PER FIELD: a cell marker wins, then an in-table
-      column marker (a native head-row marker over a GFM delimiter colon, as
-      CARVE-P9-004 T7 orders them), then the table attribute, then unset. Supplying two column-level spellings for one field lints and
-      the in-table spelling wins. Existing header markers and delimiter colons
-      keep their tree and output; attributes fill only facts they do not state.
-
-      LISTTABLE CELL SPELLING. Because a ListTable cell is a list item, its
-      marker attribute MAY carry `align=left|right|center` and/or
-      `valign=top|middle|bottom`. These values populate the corresponding
-      `table_cell` fields and override the positional column value independently.
-      They are consumed as semantics and MUST NOT also appear as literal HTML
-      `align` or `valign` attributes.
-
-      THE WRITER RETAINS THE MOST LOCAL AVAILABLE SPELLING. A headed table
-      keeps native column markers where a head cell starts in the aligned
-      column. A covered column, or a head row promoted by `header-rows` with
-      plain cell markers, cannot carry that native default: the writer uses
-      `aligns` and `valigns` for the affected physical columns. A delimiter
-      row generated to preserve a header span carries each explicit horizontal
-      head default in its origin column's colon, leaving a covered placeholder
-      unaligned unless that physical column has its own default.
-      A headerless aligned table emits `aligns`.
-      Widths emit percentages with trailing zeroes removed. Metadata a target
-      cannot spell is omitted and reported by conversion diagnostics.
-
-      HTML applies resolved horizontal and vertical alignment to each cell,
-      with `text-align` before `vertical-align`; widths emit a `colgroup` and
-      one `col` per entry. Markdown keeps only column horizontal alignment where
-      it can emit a delimiter row. Plain and ANSI ignore all three fields.
+      A ListTable cell marker may carry `align` and `valign`, each overriding
+      the column setting for its own axis. A canonical writer keeps a native
+      header marker where possible and uses table attributes for a covered
+      column or a promoted plain header row. Widths emit percentages without
+      trailing zeroes. HTML emits resolved cell alignment and a `colgroup` for
+      widths. Markdown keeps horizontal alignment where its delimiter row can
+      spell it; plain and ANSI ignore these fields. A target that cannot
+      preserve the metadata reports its loss.
 
    20. TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES -- NORMATIVE [CARVE-P12-040]. A cell
       alignment run is glued to its opening pipe, after an optional `=` kind
@@ -213,65 +182,37 @@
       have its own rule.
 
    22. AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY --
-      NORMATIVE [CARVE-P12-042]. `resources/ast-schema.json` describes a list's
-      `start` as "First number of an ordered list, when it is not 1". That
-      sentence is a statement about what a CONFORMANT TREE looks like, and an
-      encoder is the thing that has to honor it. So when an ingested tree
-      carries `start: 1`, the encoder MUST NOT re-emit it: the field is dropped,
-      and every tree the implementation publishes matches the documented shape.
+      NORMATIVE [CARVE-P12-042]. `list.marker.start` is omitted when its value
+      is 1. An encoder ingests `start: 1` on an ordered marker and drops it
+      before publishing; the default and omission have the same meaning.
+      Other start values remain, including zero and two. An encoder MUST NOT
+      re-emit an ingested `start: 1`; retaining the default would publish a
+      shape that differs from a parsed tree. The round-trip gate of PART 12 §6
+      applies to parsed trees, which already use this form.
 
-      PART 12 §6's round trip is scoped to `parse(x)`, whose tree never carries
-      `start: 1`; it does not promise JSON-to-JSON identity for an ingested
-      payload no parser produced.
+   23. A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH -- NORMATIVE
+      [CARVE-P12-043]. A paragraph promoted by PART 9R R7 carries
+      `blockImage: true`; an unpromoted one omits the field. The root
+      `stages` array declares whether `blockImagePromotion` ran. A producer
+      MUST NOT claim that stage ran unless the result on every paragraph is
+      accurate. The flag is a resolution result, not a replacement for the
+      authored paragraph or image.
 
-      THE DECIDING ASYMMETRY IS THAT NORMALIZING IS LOSSLESS. `start: 1` and no
-      `start` describe the same document, so nothing an author wrote is
-      discarded, while preserving the value makes the encoder's output depend
-      on WHERE THE TREE CAME FROM.
+      For example, a promoted paragraph remains a paragraph with an image
+      child, `blockImage: true`, and the image's authored `key` and `rawRef`.
+      The flag is set by the promotion phase, not inferred from a renderer's
+      restriction on nested anchors. Keeping the paragraph type leaves
+      existing consumers' node dispatch intact while making the resolution
+      result explicit.
 
-      The encoder accepts this payload: `start` is schema-named and in range;
-      only its default value is non-canonical.
-
-      This does not drop `start` generally: `start: 0` and `start: 2` pass
-      through unchanged.
-
-   23. A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH -- NORMATIVE [CARVE-P12-043]
-      (PART 9R R7 owns the phase; this clause owns the wire).
-
-      A paragraph the promotion phase promoted carries `blockImage: true`:
-
-        {"type":"paragraph","blockImage":true,
-         "children":[{"type":"image","src":"/u","alt":"a",
-                      "ref":"r","rawRef":"[r]"}]}
-
-      The field is set by that phase and by NOTHING ELSE. It is present only as
-      `true`; a paragraph that is not a block image omits it rather than
-      carrying `false`, which is CARVE-P12-042's absent-value rule applied here.
-
-      IT IS NOT A NON-ANCHOR FLAG. CARVE-P12-005 refuses a flag on a nested link because
-      that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back
-      into a format that describes the source. This field carries a RESOLUTION
-      fact, which CARVE-P12-005 already publishes, and it is set by the resolution phase
-      rather than by one render target's limitation.
-
-      NOT A DISTINCT NODE TYPE, deliberately. `block_image` is the honest shape
-      -- it IS a different construct -- but it breaks every consumer that
-      switches on node type and it ripples through the engines, the importers,
-      `fmt` and this schema at once. A field is additive, and a type stays
-      available later.
-
-      AN INGESTED `blockImage` VALUE IS AUTHORITATIVE -- NORMATIVE [CARVE-P12-044]. A reader that receives
-      `blockImage` USES it. It runs the promotion phase itself only for a tree
-      that LACKS the field. Recomputing it on every ingest makes the field
-      advisory and re-introduces the re-derivation this clause removes.
-
-      ABSENCE IS NOT A CLAIM. It means the producer did not run the phase --
-      every tree serialized before this clause lacks the field -- so a reader
-      MUST NOT read absence as "this paragraph is ordinary", and MUST NOT
-      reject a tree for omitting it. Requiring it was considered and refused:
-      it breaks every existing AST JSON document for no benefit, and CARVE-P12-030's
-      strict-ingest surface is about properties the schema does not NAME, not
-      about ones it names optionally.
+      AN INGESTED `blockImage` VALUE IS AUTHORITATIVE -- NORMATIVE
+      [CARVE-P12-044]. A reader uses `true` when present. If the root declares
+      `blockImagePromotion`, absence means not promoted. If it does not
+      declare that stage, a reader may run promotion. A consumer MUST NOT
+      rederive a result the producer already declared. Absence before that
+      stage ran means the producer did not compute the result. A reader MUST
+      NOT treat it as proof that the paragraph is ordinary, and MUST NOT
+      reject a tree merely for omitting the field.
 
       `fmt` WRITES THE SOURCE SPELLING, NOT `blockImage` -- NORMATIVE [CARVE-P12-045]. `fmt` writes the SOURCE SPELLING,
       so promotion is not observable in `fmt` output and a document whose
@@ -295,8 +236,8 @@
 
       `table_row`, `table_cell`, `list_item`, `definition_term` and
       `definition_description` exist only inside the container that owns them.
-      `table.rows`, `table_row.cells`, `list.items` and
-      `definition_list.items` name each of them directly, so a `children`
+      `table.children`, `table_row.children`, `list.children` and
+      `definition_list.children` name each of them directly, so an unrelated `children`
       array holding one is a tree no parser produces and no renderer has a
       case for.
 
@@ -309,27 +250,22 @@
       blocks, so a nested `list` is a child of an item and a nested
       `list_item` is not -- which is what the source already says.
 
-   25. A REFERENCE NODE CARRIES ITS TARGET -- NORMATIVE [CARVE-P12-047]. A node
-      whose whole purpose is to point at something names what it points at,
-      and the schema marks that field `required`. `link` requires `href`,
-      `image` requires `src`, `heading_ref` requires `target`, `footnote`
-      requires `label`.
+   25. A REFERENCE NODE CARRIES A KEY AND NAMESPACE -- NORMATIVE
+      [CARVE-P12-047]. A reference use or definition carries `key` and
+      `namespace` together. The namespace distinguishes link, footnote,
+      citation, abbreviation, and heading keys. A direct link or image with
+      no reference key carries neither. `attrs.id` is an authored anchor and
+      MUST NOT be used as a substitute for `key`.
 
-      `footnote_ref` requires `label` likewise. Resolution results stay
-      optional, as PART 12 §5 has them: `number` arrives when the document resolves
-      the reference and is absent when nothing does
-      ([carve#2193](https://github.com/markup-carve/carve/issues/2193)).
+      A reference use keeps the authored key even after resolution. `href`,
+      `src`, expansion, and numbering are optional resolution results. An
+      absent `href` or `src` on a reference use means unresolved; an explicit
+      empty string means an empty destination. An absent expansion or number
+      means no result was supplied. A producer MUST NOT emit `resolved`.
 
-      AND IT IS SPELLED `label`, THE NAME ITS DEFINITION USES. A `footnote`
-      carries `label` and so does a `footnote_ref`, for the identical string.
-      CARVE-P12-024 settles that name on the definition and
-      `link_reference_definition` spells it the same way, so the reference
-      follows rather than the other way round. `id` is the worse of the two
-      names here in any case, because every node ALSO carries `attrs.id`, a
-      different value entirely: an authored `{#x}` rather than a lookup key,
-      so one name would stand for two things on the same object. An `id` on a
-      `footnote_ref` is a property the schema does not name, refused under
-      CARVE-P12-030.
+      For duplicate `attrs.id` values, the first node in document order wins.
+      The producer reports a diagnostic for each later occurrence. A reader
+      MUST NOT silently choose the last occurrence.
 
    26. A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT -- NORMATIVE [CARVE-P12-048].
       A `table_cell` that the span walk of CARVE-P9-002 extended carries
@@ -341,8 +277,8 @@
       THE MARKERS STAY. A continuation cell keeps its `span`, because that is
       what the author wrote and CARVE-P12-005 records the document rather than a
       rendering of it. The counts are ADDED ALONGSIDE, the same rule that lets
-      a resolved reference keep `ref` and `rawRef` beside `href` and a resolved
-      footnote reference keep its label beside its number (PART 12 §5).
+      a resolved reference keep `key` and `rawRef` beside `href` and a resolved
+      footnote reference keep its key beside its number (PART 12 §5).
 
       A MARKER THAT FOUND NO ORIGIN CONTRIBUTES NOTHING. The walk is a total
       function: a `^` in the first row, a `<` in the first column, or a marker
@@ -357,9 +293,9 @@
         | ^ | b |
         + t | u |
 
-        table_row{ continuationLines: 1, cells: [
-          table_cell{ span: "rowspan" }[ "t" ],
-          table_cell[ "b", cell_wrap{line:1}, "u" ] ] }
+        table_row{ continuationLines: 1, children: [
+          table_cell{ span: "rowspan" }[ cell_paragraph[ "t" ] ],
+          table_cell[ cell_paragraph[ "b", cell_wrap{line:1}, "u" ] ] ] }
 
       WHY IT IS PUBLISHED AT ALL: PART 12 §5 publishes resolution results alongside
       authored constructs so consumers need not reimplement the resolution
@@ -370,53 +306,44 @@
       walk is a function of the markers, so the two cannot disagree in a tree
       any producer built. A reader is not required to re-run the walk to check.
 
-   27. A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE -- NORMATIVE
-      [CARVE-P12-049]. A `table_cell` carries EITHER `children`, the inline
-      content every source-spelled cell has, OR `blocks`, a list of block
-      nodes. Exactly one: never both, and never neither.
+   27. A TABLE CELL ALWAYS CARRIES BLOCK CHILDREN -- NORMATIVE
+      [CARVE-P12-049]. `table_cell.children` is a block list, including for
+      cells spelled with inline pipe content. Such a cell holds one
+      `cell_paragraph` whose inline `children` may contain `cell_wrap`.
+      `cell_wrap` is invalid in any other inline context. A cell imported
+      with block content may hold ordinary block nodes instead. The old
+      `table_cell.blocks` alternative is removed.
+      The fallback matrix row `table_cell.children` records target behavior.
+      An unspellable block boundary is reported as `field-unspellable` for
+      `table_cell.children` through the CARVE-P11-046 channel. The old
+      `table_cell.blocks` field is mapped to that slot before conversion.
 
-      `blocks` is interchange-only (CARVE-P12-066); format bridges use it for
-      HTML flow content or Pandoc blocks. The canonical writer loses the field and reports
-      `field-unspellable` for `table_cell.blocks` on the CARVE-P11-046 channel,
-      as it reports `shortCaption` and a `figure` wrapping a `table`.
-      The fallback matrix row `table_cell.blocks` gives the target summary.
-      HTML PUTS THE BLOCKS IN THE CELL as flow content in `<td>` or `<th>`
-      under ordinary block rules; the cell's other fields remain unchanged.
+      A tight cell renders one `cell_paragraph` without a paragraph wrapper
+      in HTML and writes its inline content as a pipe cell. Other block
+      content uses ordinary block rendering inside the cell. Markdown, plain,
+      and ANSI targets flatten block cells to ONE LINE in document order,
+      separating contributing blocks with one space. A canonical writer
+      reports lost block boundaries and unspellable structures; it does not
+      drop them without a conversion diagnostic (CARVE-P11-003).
 
-      THE THREE LINE-ORIENTED TARGETS FLATTEN. Markdown, plain and ANSI each
-      write a cell on ONE LINE, so `blocks` reaches an inline-only slot and
-      flattens under CARVE-P11-003: each block's inline content in document order,
-      separated by one space where both sides contribute a token. A list
-      contributes its items' inline content in item order and no markers; a code
-      block contributes its payload as text, a newline between two lines
-      becoming one space and a trailing newline nothing, every other character
-      kept (a backslash is never a hard break), and neither its header nor its
-      label, which are not payload. A block image, alone or as a figure's
-      target, contributes itself as an inline image. A raw block and an
-      abbreviation definition contribute NOTHING. ANSI styles the flattened
-      inlines as usual and adds no block decoration.
 
-        table_cell{ blocks: [ p "one", p "two" ] }  ->  | one two |
+        table_cell{ children: [ paragraph "one", paragraph "two" ] }
+          -> | one two |
 
-      THE FLATTEN IS REPORTED, once per flattened cell, as `field-unspellable`
-      for `table_cell.blocks` on the CARVE-P11-046 channel. It dissolves a block
-      boundary rather than dropping a wrapper, which is why it is reported where
-      a lost wrapper is not, and it is NOT a render loss.
-
-      WHY A SECOND FIELD RATHER THAN A WIDER `children`: the ordinary inline
-      case keeps its shape; a walker branches only for a block-content cell.
-
-      THE COUNTS AND THE MARKERS ARE UNAFFECTED. `span`, `colspan`, `rowspan`,
-      `align`, `valign` and `attrs` sit on the cell and say nothing about how
-      its content is spelled, so CARVE-P12-048's resolved extent applies to a block cell
-      exactly as it does to an inline one.
-
-      IT IS NOT A PLACE TO PUT A PARAGRAPH A SOURCE CELL ALREADY HOLDS. A
-      source-spelled cell publishes `children`. A producer that wrapped that
-      inline content in a `paragraph` and published `blocks` would be
-      describing the same document two ways, which CARVE-P12-002's coalescing rule
-      rejects one layer down for the same reason
+      The report is once per flattened cell: the writer dissolved a block
+      boundary. It is a conversion diagnostic, not a render loss. A
+      source-spelled pipe cell uses `cell_paragraph`, rather than an ordinary
+      paragraph, so the canonical source wrapper has only one representation
       ([carve#2191](https://github.com/markup-carve/carve/issues/2191)).
+
+      A code block contributes its literal value, neither its header nor its label, which are not payload.
+      A line block contributes its lines, a newline between two lines becoming one space and a trailing newline nothing.
+      A raw block and an abbreviation definition contribute NOTHING to a flattened cell.
+
+      Span markers and resolved extents remain on the cell, independent of
+      the content slot (CARVE-P12-048). The cell's `sourceContent` may record
+      whether the source was inline or blocks, but it does not create a
+      second content slot.
 
    28. SMALL CAPS SURVIVE INTERCHANGE -- NORMATIVE [CARVE-P12-050]. A
       `small_caps` inline node carries `children`, plus optional `attrs` and
@@ -435,32 +362,19 @@
       the CARVE-P11-046 channel.
       A source spelling can be specified separately without changing this node.
 
-   29. A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER -- NORMATIVE
-      [CARVE-P12-051]. A `math` node MAY carry `label`, a non-empty authored
-      string with no leading or trailing whitespace, used as its visible
-      numbering prefix and counter bucket. The
-      cross-reference identifier remains `attrs.id`. The label survives
-      resolution unchanged. A resolved labeled display equation also carries
-      `number`, a positive integer assigned by PART 9R R5a, unless the math sits
-      inside a `figure` whose caption carries a number placeholder and owns the
-      number. The number is added beside the label under PART 12 §5's added-alongside
-      rule; it never replaces it. "Inside" means at any depth in a figure's
-      target or a `figure_group`'s children. For nested figures and groups, the
-      nearest enclosing numbered figure or group owns the node. One numbered
-      caption suppresses direct numbering for every display-math descendant in
-      its target or children. Those equations retain `label`, but have no
-      `number` and do not register their own `attrs.id` values as numbered
-      cross-reference targets.
+   29. A DISPLAY EQUATION MAY CARRY A PREFIX AND NUMBER -- NORMATIVE
+      [CARVE-P12-051]. A `math` node MAY carry `numberPrefix`, a non-empty
+      authored string with no surrounding whitespace, used as its visible
+      numbering prefix and counter bucket. The cross-reference identifier is
+      `attrs.id`. A resolved labeled display equation MAY also carry `number`,
+      a positive integer assigned by PART 9R R5a. Only `display: true` may
+      carry a number, and a number requires `numberPrefix`.
 
-      Only a node carrying `display: true` may carry `number`. An inline math
-      node carrying `number` is invalid on ingest. A label on inline math is
-      retained for interchange but draws no number and registers no numbered
-      cross-reference target. A number without a label is invalid: it has no
-      counter bucket or visible prefix.
-
-      Both fields are interchange-only (CARVE-P12-066). A canonical source writer preserves the formula and reports one
-      `field-unspellable` entry per dropped field, `math.label` and
-      `math.number`, on the CARVE-P11-046 channel. An exporter MAY map the pair
-      to its target's equation label and numbering model.
+      A numbered enclosing figure or figure group owns the number of its math
+      descendants, so those descendants retain `numberPrefix` without their
+      own `number`. `figure.children` replaces the old single target. A
+      canonical writer reports `field-unspellable` for `math.numberPrefix`
+      or `math.number` through the CARVE-P11-046 channel rather than silently
+      dropping it. The former prefix field was `math.label`.
 
    ============================================================================ *)

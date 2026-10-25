@@ -45,6 +45,63 @@
       "children": [
         {
           "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "loose",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "head"
+                    }
+                  ]
+                },
+                {
+                  "type": "comment",
+                  "pos": {
+                    "startLine": 2,
+                    "endLine": 2,
+                    "startColumn": 2,
+                    "endColumn": 11,
+                    "startOffset": 8,
+                    "endOffset": 17
+                  },
+                  "form": "line",
+                  "value": "hidden"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "tail"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "pinnedPublicAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
           "items": [
             {
               "type": "list_item",
@@ -133,6 +190,63 @@
       "children": [
         {
           "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "loose",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "head"
+                    }
+                  ]
+                },
+                {
+                  "type": "comment",
+                  "pos": {
+                    "startLine": 2,
+                    "endLine": 2,
+                    "startColumn": 3,
+                    "endColumn": 12,
+                    "startOffset": 9,
+                    "endOffset": 18
+                  },
+                  "form": "line",
+                  "value": "hidden"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "tail"
+            }
+          ]
+        }
+      ],
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "pinnedPublicAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
           "items": [
             {
               "type": "list_item",
@@ -214,6 +328,54 @@
       "children": [
         {
           "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "loose",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "comment",
+                  "pos": {
+                    "startLine": 1,
+                    "endLine": 3,
+                    "startColumn": 3,
+                    "endColumn": 4,
+                    "startOffset": 2,
+                    "endOffset": 18
+                  },
+                  "form": "block",
+                  "value": "hidden"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "tail"
+            }
+          ]
+        }
+      ],
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "pinnedPublicAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
           "items": [
             {
               "type": "list_item",
@@ -289,6 +451,63 @@
       "unterminatedLines": {}
     },
     "publicAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "loose",
+          "children": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "head"
+                    }
+                  ]
+                },
+                {
+                  "type": "comment",
+                  "pos": {
+                    "startLine": 2,
+                    "endLine": 4,
+                    "startColumn": 3,
+                    "endColumn": 4,
+                    "startOffset": 9,
+                    "endOffset": 25
+                  },
+                  "form": "block",
+                  "value": "hidden"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "tail"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
+      ]
+    },
+    "pinnedPublicAst": {
       "type": "document",
       "children": [
         {

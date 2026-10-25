@@ -865,7 +865,7 @@
          no attributes on the item, the paragraph or the text) is the rowspan
          or colspan placeholder of that position, written as the pipe-table
          writer writes a placeholder;
-      L3 any other cell holds its blocks as `table_cell.blocks`, flattened and
+      L3 any other cell holds blocks in `table_cell.children`, flattened and
          reported as CARVE-P12-049 flattens and reports a block cell, with a
          hard break written as `<br>` (CARVE-P11-048). A cell with no blocks is empty.
 

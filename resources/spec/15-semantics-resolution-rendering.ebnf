@@ -486,8 +486,9 @@
          an ordinary attribute rendering `loose="x"`, without partial effect.
 
          EACH CONTAINER CARRIES THE KEY'S EFFECT IN ITS OWN FIELD. A list sets
-         required `list.tight` false. A loosened DEFINITION LIST sets `definition_list.loose`
-         as an authored-only field (PART 12 §8); otherwise its `<dd>` wrapping
-         is derived from description block count. PART 12 §6 round-trips both.
+         `list.spacing` to `loose`. A loosened DEFINITION LIST sets
+         `definition_list.spacing` to `loose` (PART 12 §8). A source writer
+         reproduces the key when needed for the same tree. PART 12 §6
+         round-trips both.
 
    ============================================================================ *)

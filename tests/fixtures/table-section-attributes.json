@@ -7,31 +7,42 @@
       "children": [
         {
           "type": "table",
-          "rows": [],
-          "rowGroups": {
-            "headRows": 0,
-            "footRows": 0,
-            "headAttrs": {
-              "id": "head"
-            },
-            "footAttrs": {
-              "keyValues": {
-                "data-total": "1"
+          "children": [
+            {
+              "type": "table_head",
+              "children": [],
+              "attrs": {
+                "id": "head"
               }
             },
-            "bodies": [
-              {
-                "headRows": 0,
-                "bodyRows": 0,
-                "attrs": {
-                  "classes": [
-                    "body"
-                  ]
+            {
+              "type": "table_body",
+              "children": [],
+              "headRows": 0,
+              "attrs": {
+                "classes": [
+                  "body"
+                ]
+              }
+            },
+            {
+              "type": "table_foot",
+              "children": [],
+              "attrs": {
+                "keyValues": {
+                  "data-total": "1"
                 }
               }
-            ]
-          }
+            }
+          ],
+          "columns": []
         }
+      ],
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
       ]
     },
     "html": "<table>\n  <thead id=\"head\">\n  </thead>\n  <tbody class=\"body\">\n  </tbody>\n  <tfoot data-total=\"1\">\n  </tfoot>\n</table>"
@@ -44,15 +55,26 @@
       "children": [
         {
           "type": "table",
-          "rows": [],
-          "rowGroups": {
-            "headRows": 0,
-            "footRows": 0,
-            "headAttrs": {},
-            "footAttrs": {},
-            "bodies": []
-          }
+          "children": [
+            {
+              "type": "table_head",
+              "children": [],
+              "attrs": {}
+            },
+            {
+              "type": "table_foot",
+              "children": [],
+              "attrs": {}
+            }
+          ],
+          "columns": []
         }
+      ],
+      "astVersion": "2.0",
+      "stages": [
+        "blockImagePromotion",
+        "referenceResolution",
+        "tableAlignment"
       ]
     },
     "html": "<table>\n  <thead>\n  </thead>\n  <tfoot>\n  </tfoot>\n</table>"

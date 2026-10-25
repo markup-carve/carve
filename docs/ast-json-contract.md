@@ -56,8 +56,8 @@ Representability depends on the shape and field values, not just the node type.
 For example, a paragraph containing only an image loses its wrapper under the
 writer's declared ceiling. A code block with content `"a"` survives JSON
 unchanged, but writing a closed Carve fence adds a payload newline and reports
-`field-unspellable` for `code_block.content` through a conversion-diagnostics
-API. A `shortCaption` survives interchange but is omitted from Carve 0.1 source;
+`field-unspellable` for `code_block.value` through a conversion-diagnostics
+API. A `caption.short` survives interchange but is omitted from Carve 0.1 source;
 a bridge/API exposing conversion diagnostics should report that structural
 loss under Part 12 §14. The sections
 below retain the individual fallbacks and their reporting requirements.
@@ -81,270 +81,204 @@ stable incremental API boundary, not an incremental-performance claim.
 
 ## The shape in one document
 
+Every bare tree has `type: "document"`, block `children`, and
+`astVersion: "2.0"`. `srcByteLength` is present only when source bytes were
+measured. Zero means an empty source; absence means unmeasured. The root can
+also declare `extensions`, resolution `stages`, `resources`, and common node
+fields. Other core fields are refused
+([CARVE-P12-024](./rules/ast-interchange),
+[CARVE-P12-031](./rules/ast-interchange)).
+
 ```json
 {
   "type": "document",
+  "astVersion": "2.0",
   "children": [
-    {
-      "type": "paragraph",
-      "children": [
-        { "type": "text", "value": "Hello ", "pos": { "startLine": 1, "endLine": 1, "startColumn": 1, "endColumn": 7, "startOffset": 0, "endOffset": 6 } },
-        { "type": "strong", "children": [{ "type": "text", "value": "world" }] }
-      ],
-      "pos": { "startLine": 1, "endLine": 1, "startColumn": 1, "endColumn": 15, "startOffset": 0, "endOffset": 14 }
-    }
+    { "type": "paragraph", "children": [{ "type": "text", "value": "Hello" }] }
   ],
-  "srcByteLength": 15
+  "srcByteLength": 5
 }
 ```
 
-Five rules carry most of the weight:
-
-Captioned `figure` and `table` nodes may also carry an optional
-`shortCaption` array of inline nodes. It is a structured publishing/navigation
-label (for example Pandoc's list-of-figures caption), not another visible
-caption. Carve 0.1 source has no spelling for it: parsers do not synthesize it,
-ordinary HTML/plain/ANSI renderers ignore it, and format bridges preserve it
-where their target has an equivalent field. This AST capability is independent
-of source serialization: a Carve 0.1 writer omits the field, and conversion
-APIs with diagnostics should report that loss. It is also independent
-of the proposed `^^` author syntax.
-
-A `small_caps` inline node carries `children` so format bridges can preserve
-small caps from Pandoc, DocBook, TEI, and other structured formats. Carve
-0.1 source has no spelling for the wrapper: parsers do not produce it, and the
-canonical writer writes its children and preserves its attributes on an
-ordinary attributed span. A conversion API with diagnostics should report that
-the distinction was lost. Exporters may map it to a corresponding construct.
-The node does not imply uppercasing or other text changes.
-
-A `ruby` inline node carries an ordered, non-empty `pairs` array. Each pair has
-a non-empty inline `base` and an inline `annotation`, which may be empty. This
-keeps per-character and grouped readings without guessing from string lengths.
-Carve 0.1 source has no ruby spelling. HTML and Markdown render native `<ruby>`;
-plain, ANSI and canonical Carve output use `base(annotation)`, with checked
-rendering reporting `ruby-flattened`. Outer attributes stay on `<ruby>` or on
-the attributed span used by the Carve fallback.
-
-A `math` node may carry an authored numbering `label`, such as `Equation` or
-`Eq.`. Resolution leaves the label in place and gives a labeled display equation
-a positive integer `number` from the same label bucket used by captions, unless
-a `figure` around the math has a numbered caption that owns the number.
-`attrs.id` remains the cross-reference identifier. Inline math may retain a
-label from interchange, but it never receives a number. Carve 0.1 source does
-not spell either field directly, so parsers do not synthesize them and
-source-writing conversion reports their loss.
-
-A `figure` may target a `table` ([`CARVE-P12-036`](./rules/imports-security-extensions)). That is a different document from a
-table carrying its own `caption`: the wrapper renders `<figure>` and
-`<figcaption>` around the table, while `table.caption` renders `<caption>`
-inside it. Carve 0.1 source spells only the second, so the wrapper reaches a
-tree through a format bridge - an HTML importer reading
-`<figure><table>…<figcaption>` - and a canonical Carve writer loses it, writing
-the table and its caption line. Conversion APIs with diagnostics should report
-that loss. Every other captionable host - an image, a quote, a code block, a
-display-math paragraph - becomes a `figure` from source, so its wrapper is
-written back exactly. A composite figure's table panel is not this wrapper
-either: a table inside a `::: figure` group is a plain `table` child of the
-`figure_group` ([`CARVE-P12-035`](./rules/ast-interchange)), not a `figure` targeting one.
-
-A `table` may likewise carry an optional `rowGroups` object ([`CARVE-P12-034`](./rules/imports-security-extensions)), which
-partitions its `rows` into a head, any number of body groups and a foot:
+At a storage or process boundary, this tree is required inside an envelope.
+An in-memory handoff and `carve --json` use the bare tree. The envelope’s
+`astVersion` describes the same contract, and its extension declarations use
+`name` and an explicit `required` boolean:
 
 ```json
 {
-  "type": "table",
-  "rows": ["..."],
-  "rowGroups": {
-    "headRows": 1,
-    "bodies": [{ "headRows": 1, "bodyRows": 3, "rowHeadColumns": 1 }],
-    "footRows": 1
-  }
+  "astVersion": "2.0",
+  "extensions": [
+    { "name": "org.example.notes", "version": "1", "required": false }
+  ],
+  "document": { "type": "document", "astVersion": "2.0", "children": [] }
 }
 ```
 
-It holds **counts, never rows**: the counts consume `rows` in order and have to
-account for every row exactly once, so the grouping can never contradict the
-table's content. `rows` stays the one sequence every consumer reads. Absent
-means the implicit structure renderers already derive - a leading run of header
-rows as the head, everything after it as one body, no foot. Pipe-table parsers
-synthesize explicit groups from `header-rows`, `footer-rows`, and the body
-metadata attributes:
+### Forward compatibility
 
-| Attribute | Meaning |
-| --- | --- |
-| `body-rows="2,3"` | Two bodies containing two and three data rows |
-| `body-header-rows="1,0"` | One intermediate header row in the first body |
-| `body-header-cols="1,"` | One row-header column in the first body; unset in the second |
+A reader refuses a higher major, an unknown required extension, an unknown
+core field, or an extension node with an invalid fallback. A higher minor can
+add only optional declared extensions, extension nodes with fallback, and
+namespaced `data`. It cannot add core fields or core node types
+([CARVE-P12-056](./rules/ast-interchange)).
 
-Body header lists require `body-rows` and must have one entry per body. Missing
-body header rows default to zero. Empty column entries preserve an absent
-`rowHeadColumns`; `0` preserves an explicit zero. `body-rows=""` states no
-bodies, while `body-rows=0` states one empty body. All row counts together must
-partition the table exactly. Invalid body metadata stays ordinary attributes
-and produces no explicit partition. Canonical source writers supply missing
-metadata attributes and diagnose conflicting authored values.
+## Node fields and traversal
 
-HTML renders one `tbody` per body and promotes its intermediate column headers
-and leading row-header columns. Plain and ANSI keep the flat rows. Section
-attributes remain interchange metadata and their loss is diagnosed separately.
+Primary content is in `children`. Literal payload is in `value`. Named
+secondary slots carry content with a different role: `caption`, `short`,
+`prefix`, `locator`, `suffix`, `old`, `new`, ruby `pairs`, extension `fallback`,
+and named extension `slots`. The
+[node roles table](https://markup-carve.github.io/carve/node-roles.json)
+is generated from the schema and identifies every node-bearing slot
+([CARVE-P12-071](./rules/ast-interchange)).
+Its `metadata-tree` role visits block nodes nested in `metadata` or extension
+`props`. Opaque `data` and extension `payload` are not traversed as AST nodes.
 
+Every typed node may carry `attrs`, namespaced `data`, `pos`, discontinuous
+`segments`, `metadata`, `dir`, and `lang` where its schema permits them.
+Unknown core fields are refused. The `data` keys are qualified names declared
+as extensions. A reader preserves unknown optional data without interpreting
+it ([CARVE-P12-030](./rules/ast-interchange)).
 
-A `table` may also carry an optional positional `columns` array ([`CARVE-P12-039`](./rules/imports-security-extensions)). Each
-entry describes the corresponding column and may hold `align` (`left`, `right`
-or `center`), `valign` (`top`, `middle` or `bottom`), and `width`, a numeric fraction in `(0, 1]`. The array may be
-shorter than the widest row; an omitted entry or field is unset. A cell's own
-value wins over its column's value. Carve source spells the positional metadata
-with a table's preceding `aligns`, `valigns`, and `widths` attributes; parsers
-synthesize `columns` from those lists and canonical source writers retain the
-most local available spelling. The column record keeps format bridges from
-smearing column facts onto individual cells. A `table_cell` may likewise carry
-`valign`; horizontal and vertical inheritance resolve independently.
+`pos.startOffset` and `pos.endOffset` count UTF-8 bytes. Lines and columns are
+one-based; columns count Unicode codepoints. Imported nodes without a source
+position omit `pos`. `segments` records multiple source spans when a node was
+reassembled from discontinuous regions. Session node identity and overlapping
+annotations remain separate sidecars
+([CARVE-P12-060](./rules/ast-interchange),
+[CARVE-P12-062](./rules/ast-interchange)).
 
-**A continuation row stays in the tree as markers**
-([`CARVE-P12-069`](./rules/ast-interchange)). A `+` row is joined into the row
-above before inline parsing, so a cell's `children` hold the joined content.
-Each join is a `cell_wrap` inline node carrying `line`, the continuation line
-it came from, plus `row` when it sits in a cell spanning down from an earlier
-row. `table_row.continuationLines` counts the row's `+` lines. Renderers output
-`cell_wrap` as one space; the Carve writer uses the markers to write the `+`
-lines back.
+Which nodes have no `pos` at all, and why, is set out with the span rules below.
 
-When a join crosses a `code`, `raw_inline`, or `math` node, its `cellWraps`
-array instead records each join as `{ offset, line, row? }`: the codepoint
-offset of the joining space in `value` or `content`, plus the `line` and
-`row` a `cell_wrap` would carry. For ``| `a | z |`` followed by
-``+ b` | w |``, the code node has `value: "a | z b"` and
-`cellWraps: [{ offset: 5, line: 1 }]`. The writer puts the part after each
-offset on the `+` line the entry names, and `continuationLines` still counts
-the join. When code-span padding stripping removed the joining space, the entry sits at
-the padding boundary: offset 0 after the opening backtick run, or the value's
-length before the closing run.
+## References and authored spelling
 
-**The root carries three fields** - `type`, `children`, `srcByteLength` - plus
-an optional `astVersion` on a bare tree
-([`CARVE-P12-024`](./rules/ast-interchange)). Frontmatter and definitions are **block nodes in the tree**, not
-root fields, because a root field cannot carry a position and both are source an
-editor navigates to. A footnote or link reference definition is a child of the
-**document** even when it was authored inside a container, because its scope is
-the document wherever it was written. Its `pos` still says where that was. An
-abbreviation definition is never hoisted: inside a container the line is
-paragraph text (`CARVE-P12-026`).
-
-**Field names are spec surface** (§3). `href`, `src`, `value`, `level`,
-`children`. An implementation whose internals differ maps on the way out; it does
-not export its internals, and it does not invent a synonym.
-
-Author-choice fields preserve a spelling when it differs from the default.
-`list.bulletChar` records `*` while absence means `-`; likewise,
-`list.delim` records `)` while absence means `.`,
-`thematic_break.marker` records `*` or `_` while absence means `-`, and
-`list_item.taskState` records the task marker character while absence means the
-default for the box (`x` when `checked` is true, a space when it is false), and
-`table.separatorWidths` records the dash runs of an authored separator row while
-absence means the header was spelled with `|=` cells instead. A
-writer reproduces the recorded character and uses the default when the field is
-absent, and a PARSE records nothing where the author wrote the default
-(carve#2828): one document has one spelling in the tree, so a consumer comparing
-AST JSON across engines or across versions is comparing like with like.
-The marker records the CHARACTER only: `***` and `*****` are one spelling, and
-no run length is recorded, on the same reasoning that took fence length off this
-list in carve#1000.
-
-`taskState` is the state, `checked` is the box. The seven states of PART 2
-render as two - `x`/`X` checked, everything else unchecked - so `checked` alone
-was all the tree carried and `carve fmt` rewrote `[-]`, `[_]`, `[>]` and `[?]`
-to `[ ]` (carve#1866). The two fields cannot disagree: `taskState` is `x` if and
-only if `checked` is true, and a payload asserting otherwise is invalid. `[X]`
-is folded to `x`, so the field admits six characters and not seven - the case is
-not a state, and nothing downstream can tell the two apart. Task state does not
-split a list: a `[ ]` item and a `[-]` item are one list, where a `-` bullet and
-a `*` bullet are two.
-
-**The tree is pre-resolve** ([`CARVE-P12-005`](./rules/ast-interchange)). It records what the author wrote, not what the
-document resolves to. `[getting started][]` publishes a `link` carrying `ref` and
-the `rawRef` source whether or not anything defines the label. Both stages
-validate against the schema, which is how three engines came to disagree; the tie
-goes to the stage that keeps `[x][]` alive through a format cycle and keeps
-`[a][]` distinguishable from `[a](#a)`.
-
-`href` is **not** the casualty of that. A resolved reference keeps its
-destination:
+Reference uses and definitions use `key` and `namespace`. The namespaces
+distinguish links, footnotes, citations, abbreviations, and headings. A direct
+link or image with no reference key has neither field. `rawRef` retains source
+spelling. Resolution adds `href`, `src`, expansion, or a number beside the
+authored key. On a reference use, absent `href` or `src` means unresolved;
+`""` means an explicit or resolved empty destination. `resolved` is no longer
+a field. A link may use `targetKind` to distinguish a URL, wiki page, document,
+or cross reference ([CARVE-P12-005](./rules/ast-interchange),
+[CARVE-P12-006](./rules/ast-interchange),
+[CARVE-P12-047](./rules/ast-interchange)).
 
 ```json
-{ "type": "link", "href": "/start", "ref": "getting started", "rawRef": "[getting started][]" }
+{ "type": "link", "key": "start", "namespace": "link", "rawRef": "[Start][]" }
 ```
 
-and `href` is empty only where nothing resolved the reference. The one
-exception is a definition whose destination is itself empty (`[r]:`): the use
-then carries `href: ""` and `resolved: true`, and an empty `href` without
-`resolved` still means unresolved (contract 1.2). That is §5's
-added-alongside rule - the same one that lets a resolved footnote reference keep
-its label and gain its number - not a retreat from pre-resolve: the authored
-construct is `ref` and `rawRef`, and it survives intact.
+**`ref` is the resolution key** in a 1.2 tree. In 2.0 the same key is called
+`key`. For a collapsed label with markup, the old JSON example was
+`"ref": "code() heading"`; 2.0 uses `"key": "code() heading"`.
 
-**A nested link and an autolink stay nodes** ([`CARVE-P12-007`](./rules/ast-interchange)). "Links never nest" is a
-rendering rule - an anchor may not contain another anchor - so it binds the
-renderer and not the encoder. A `link` or an `autolink` inside a link's label is
-published as the node the author wrote, and every render target unwraps it at
-the render seam, exactly as it already does for a `heading_ref`. The node
-carries **no** non-anchor flag: a consumer that renders an anchor infers it from
-context, the way it already does for the nested `heading_ref`. So a consumer
-walking a link's `children` must expect a `link` or an `autolink` there and must
-not emit a nested anchor for it. Rendered output does not move; what moves is
-what a consumer of the tree receives.
+The general `xref` node replaces `heading_ref`. It carries `key`, `namespace`,
+optional resolved `href`, and `form`: number, page, title, or full. The first
+node with a given `attrs.id` in document order wins; each later duplicate
+gets a diagnostic ([CARVE-P12-010](./rules/ast-interchange)).
 
-It works this way because a consumer should not have to resolve references
-itself. The definition does survive the trip: **[`CARVE-P12-029`](./rules/ast-interchange) gives `[label]: url` its own
-`link_reference_definition` node**, hoisted to the document, so `/start` is not
-stored only on the link. What an empty `href` would cost is the second stage -
-every consumer that wanted to render that link would first have to collect the
-definitions and match their labels, and one that skipped the step would render a
-link to nothing. §5's added-alongside rule publishes the result next to the
-authored construct instead of leaving it to be recomputed.
+The destination is the author's text, before rendering. A consumer that renders a destination owns the denylist: a serialized link can carry
+`javascript:alert(1)`, and a URL sink must refuse it. Serialization must not sanitize or resolve it a
+second time ([CARVE-P12-008](./rules/ast-interchange),
+[CARVE-P12-009](./rules/ast-interchange)).
 
-For the collapsed form `[getting started][]`, `ref` is the **derived** label
-(`getting started`) - the label the reference resolves by. `rawRef` holds the
-authored spelling, so the empty brackets are not lost.
+## Lists and tasks
 
-Where the label carries inline markup the two readings of "derived" part, and
-**`ref` is the resolution key** - the string the reference matched on, not the
-label as authored. Given
-
-```
-# `code()` heading
-
-[`code()` heading][]
-```
-
-the reference publishes:
+A `list` carries `children` of list items, a discriminated `marker`, and
+`spacing` (`tight` or `loose`). A bullet marker contains `kind: "bullet"`
+and `char`; an ordered marker contains `kind: "ordered"` and may contain
+`style`, `delimiter`, `start`, or `bare`. Fields from the two forms cannot be
+mixed. A definition list also uses `children` and `spacing`.
 
 ```json
-{ "type": "link", "href": "#code-heading", "ref": "code() heading", "rawRef": "[`code()` heading][]" }
+{
+  "type": "list",
+  "marker": { "kind": "ordered", "style": "1", "delimiter": ".", "start": 2 },
+  "spacing": "tight",
+  "children": [{ "type": "list_item", "children": [] }]
+}
 ```
 
-The authored label is recoverable from `rawRef` by stripping its brackets; the
-key is recoverable from nothing, because `href` holds the SLUG
-(`#code-heading`), a different string from the key. So `ref` carrying the key
-adds information, where carrying the authored label would only repeat `rawRef`.
-Ruled at [carve#962](https://github.com/markup-carve/carve/issues/962).
+A task item has `task.mark` and `task.status`. Space is todo, `x` done,
+`-` cancelled, `_` and `>` partial, and `?` other. The pair must agree.
+The 1.2 `checked` and `taskState` fields are removed
+([CARVE-P12-070](./rules/ast-interchange)).
 
-**Type identifiers come from the [profiles vocabulary](/profiles)** ([`CARVE-P12-001`](./rules/ast-interchange)), and
-are `snake_case` always. The AST carries a few types a profile cannot deny -
-`document`, `smart_punctuation`, `literal_inline`, `tag`, `abbreviation_def` -
-because denying them would mean nothing.
+## Tables, cells, figures, and captions
 
-**Positions are required** (PART 12 §4), on every node except the root:
+A table holds `table_head`, `table_body`, and `table_foot` in `children`.
+Each group holds rows; each row holds cells. There is no flat `rows` list
+or `rowGroups` count object. A table without explicit source grouping has a
+head from its leading all-header rows and a body for the remainder. Every
+table carries a `columns` array through its widest row, empty for an empty
+table. Its records are typed `table_column` nodes: `align` keeps authored alignment,
+while `resolvedAlign` records header precedence
+([CARVE-P12-034](./rules/ast-interchange),
+[CARVE-P12-039](./rules/imports-security-extensions)).
+
+Every `table_cell.children` is a block list. Inline source content is one
+`cell_paragraph` with inline `children`; only that wrapper may contain
+`cell_wrap`. Imported block content can use ordinary blocks. A tight cell
+renders its single `cell_paragraph` without a paragraph wrapper. Spans and
+resolved `colspan` and `rowspan` remain on the cell
+([CARVE-P12-049](./rules/ast-interchange)).
+
+A `figure` holds block `children` and an optional `kind`. A `caption` node
+holds block `children` and optional inline `short`. A table within a figure
+keeps its own caption; the outer caption describes the figure. A writer
+reports a loss when Carve source cannot express block caption content,
+mixed figure children, or a short navigation caption
+([CARVE-P12-033](./rules/ast-interchange),
+[CARVE-P12-036](./rules/imports-security-extensions)).
+
+## Extensions and foreign data
+
+`block_extension` and `inline_extension` use the same fields: a qualified
+`name`, optional `version`, typed `props`, walked `children`, named `slots`,
+a required typed `fallback`, and a `payload` list of alternatives. An unknown
+optional extension renders through its fallback and reports the loss. An
+unknown required extension is refused. Extension payloads do not execute
+when read ([CARVE-P12-055](./rules/ast-interchange)).
+
+Foreign constructs with a core equivalent map to core nodes. A construct
+without one may use declared `data` or an extension. If a writer cannot
+preserve it, it reports the loss and its JSON path. Styles, headers, footers,
+and section properties use declared extensions until a major version gives
+them core fields. The contract promises semantic interchange and preservation
+of Carve source facts; it does not promise editable round trips for every
+foreign format ([CARVE-P12-073](./rules/ast-interchange)).
+
+`document.resources` is a media-bag manifest. Each entry has a stable id,
+media type, and SHA-256 digest. `image.resourceId` and extension resource ids
+refer to those entries. A location hint alone is not resource identity.
+Readers bound payload size, metadata depth, resource references, and fallback
+recursion as PART 12 specifies.
+
+
+## Equality, validation, and sidecars
+
+Canonical AST equality includes source facts, attributes, metadata, and
+opaque `data` after normalization. Text nodes coalesce before serialization.
+Positions, session ids, range anchors, and resolution results have separate
+checks ([`CARVE-P12-002`](./rules/ast-interchange),
+[`CARVE-P12-072`](./rules/ast-interchange)).
+
+Validate the tree against the published schema. A malformed node, a 1.2
+field on a 2.0 node, a `cell_wrap` outside a cell, and an undeclared required
+extension must be refused. Node identity, annotation ranges, source layout,
+and provenance are opt-in sidecars, each with its own schema. They travel
+beside the tree, never inside it ([`CARVE-P12-067`](./rules/ast-interchange)).
+
+### Source positions and hoisted definitions
+
+**Positions are required** (PART 12 §4) for placed nodes except the root:
 
 ```json
 "pos": { "startLine": 1, "endLine": 1, "startColumn": 2, "endColumn": 5, "startOffset": 1, "endOffset": 4 }
 ```
 
-Lines and columns are 1-based, offsets 0-based, ends exclusive, and columns and
-offsets count **Unicode codepoints** - not bytes, not UTF-16 code units. A
-codepoint index always lands on a character boundary; the other two can point
-inside a UTF-8 sequence or a surrogate pair, which lets a consumer slice a
-document into invalid text.
+Lines and columns are 1-based; offsets are 0-based UTF-8 bytes. Ends are exclusive, and columns count Unicode codepoints.
+Both use exclusive ends, and the offset must land on a UTF-8 boundary.
 
 A span **begins at the markup that opens the construct** - the `>` of a block
 quote, the `#` of a heading, a list item's marker and the indentation that
@@ -511,7 +445,7 @@ A paragraph whose whole content resolves to a single image carries
 ```json
 { "type": "paragraph",
   "blockImage": true,
-  "children": [ { "type": "image", "src": "/u", "alt": "a", "ref": "r", "rawRef": "[r]" } ] }
+  "children": [ { "type": "image", "src": "/u", "alt": "a", "key": "r", "namespace": "link", "rawRef": "[r]" } ] }
 ```
 
 The block-image promotion phase (PART 9R R7) sets it and nothing else does.
@@ -620,8 +554,8 @@ are checked over the whole corpus.
 
 ## A value the schema calls absent is normalized away
 
-The schema describes a list's `start` as present only when it is not 1. When an
-ingested tree carries `start: 1`, the encoder drops it, so every published tree
+The schema describes an ordered `list.marker.start` as absent when it equals 1.
+When an ingested ordered marker carries `start: 1`, the encoder drops it, so every published tree
 has the documented shape; `start: 0` and `start: 2` pass through. Normalizing
 loses nothing, since both spellings describe the same document. See
 [`CARVE-P12-042`](./rules/ast-interchange).
@@ -659,11 +593,10 @@ An ingest refuses:
 
 - input nested deeper than its bound. It must accept anything its own parser
   produces at the nesting cap, and it derives its bound from that cap by the
-  worst per-level cost of its encoding, since a list level costs four JSON
-  levels where a block quote costs two ([`CARVE-P12-028`](./rules/ast-interchange));
+  worst per-level cost of its 2.0 encoding ([`CARVE-P12-028`](./rules/ast-interchange));
 - a property the schema does not name, at any node, named with its path. It
   does not drop or echo it ([`CARVE-P12-030`](./rules/ast-interchange));
-- a root missing `type`, `children` or `srcByteLength`, carrying anything else,
+- a root missing `type`, `children` or `astVersion`, carrying an unnamed core property,
   or typed as anything but `document`; a node whose `type` the schema does not
   name; and any payload that does not validate against the schema
   ([`CARVE-P12-031`](./rules/ast-interchange)). Node positions are read off the schema, and the check
@@ -678,49 +611,50 @@ is ignored.
 The schema's unions do part of this work. A `children` array admits only
 content blocks, so a `table_row` at the document level fails validation
 ([`CARVE-P12-046`](./rules/ast-interchange)). A reference node carries its target: `footnote_ref`
-requires `label`, and an `id` there is refused like any other unnamed property
+requires `key`, and an `id` there is refused like any other unnamed property
 ([`CARVE-P12-047`](./rules/ast-interchange)). A `citation` exists only as an item of a `citation_group`
 ([`CARVE-P12-059`](./rules/ast-interchange)).
 
-## Tables: spans, cells and counts
+## Tables: spans, cells and groups
 
 A cell that the span walk extended carries `colspan` and `rowspan` beside the
 markers that produced them; absent means 1 ([`CARVE-P12-048`](./rules/ast-interchange)). A tree from HTML
 or Pandoc carries counts and no markers, and a reader derives the covered
-positions from the counts; where markers and counts disagree, the markers win
-([`CARVE-P12-061`](./rules/ast-interchange)). A cell holds either inline `children` or block `blocks`,
-never both; Carve source spells only the first, and Markdown, plain and ANSI
-flatten `blocks` onto one line and report it ([`CARVE-P12-049`](./rules/ast-interchange)).
+positions from the counts. Where markers and counts disagree, the markers win
+([`CARVE-P12-061`](./rules/ast-interchange)). Every cell has block `children`.
+A source pipe cell uses one `cell_paragraph` with inline children; an imported
+cell may hold other blocks. Markdown, plain and ANSI flatten those blocks onto
+one line and report lost boundaries ([`CARVE-P12-049`](./rules/ast-interchange)).
+
+Rows belong to `table_head`, `table_body`, or `table_foot` nodes in table
+`children`. A body may carry `headRows` and `rowHeadColumns`; each group keeps
+its own attributes. Source `header-rows`, `footer-rows`, `body-rows`,
+`body-header-rows`, and `body-header-cols` still express the partition. Invalid
+source metadata stays ordinary attributes, and a canonical writer reports
+conflicting authored values instead of changing them or reordering rows
+([`CARVE-P12-034`](./rules/ast-interchange)).
 
 ## Extensions and the envelope
 
-A `block_extension` carries a qualified `name`, a required `fallback` block and
-an optional `payload`. A reader that does not know the name renders the
-fallback and reports the loss ([`CARVE-P12-055`](./rules/ast-interchange)).
+`block_extension` and `inline_extension` carry a qualified `name`, optional
+`version`, typed `props`, walked `children`, named `slots`, a required typed
+`fallback`, and `payload` alternatives. An unknown optional name renders through
+the fallback and reports the loss ([`CARVE-P12-055`](./rules/ast-interchange)).
 
 At a storage or process boundary, wrap the tree in an envelope:
 
 ```json
 {
-  "astVersion": "1.2",
-  "vocabulary": "https://markup-carve.org/ast/core",
-  "extensions": [{ "id": "https://markup-carve.org/ext/citations", "version": "1" }],
-  "document": { "type": "document", "children": [], "srcByteLength": 0 }
+  "astVersion": "2.0",
+  "extensions": [{ "name": "org.example.citations", "version": "1", "required": false }],
+  "document": { "type": "document", "astVersion": "2.0", "children": [] }
 }
 ```
 
-The tree inside does not change. `carve --json` writes it bare, with
-`astVersion` on the root so a reader of bare trees can check the version; a
-reader accepts a bare tree without one.
-`astVersion` is the contract's version, not the language's: a reader refuses a
-higher major or minor than it implements, and a required extension it does not
-implement, with an error naming both versions ([`CARVE-P12-056`](./rules/ast-interchange)).
-
-Contract 1.2 adds three optional fields and changes no existing reading:
-`resolved: true` on a reference use whose definition has an empty destination,
-`astVersion` on a bare tree's root, and `form` (`"block"`, `"line"` or
-`"braced"`) on `comment`. A writer emits `form` beside `block` and `delimited`,
-and a reader refuses a comment where the three disagree.
+The tree inside keeps its version. A reader refuses a higher major or an
+unknown required extension. A higher minor may add optional declared
+extensions and namespaced `data`, but no core property or core node type
+([`CARVE-P12-056`](./rules/ast-interchange)).
 
 ## Containers and line blocks
 
@@ -750,20 +684,20 @@ Without `lines`, splitting `children` on `hard_break` approximates them ([`CARVE
 
 ## Where the nodes are, as data
 
-Which fields of a node hold other nodes depends on the type carrying them:
-`content` is a node list on `inline_extension` and a string on `code_block`.
-[`node-roles.json`](https://markup-carve.github.io/carve/node-roles.json) reads
-that off the schema and is published beside it:
+Which fields hold other nodes depends on the type carrying them. `children`
+is a node list on containers, while `value` is a string on `code_block`.
+[`node-roles.json`](https://markup-carve.github.io/carve/node-roles.json) is
+generated from the schema and names primary and secondary node slots:
 
 ```json
-{ "figure": { "target": { "role": "single-node", "admits": ["block_quote", "code_block", "image", "paragraph", "table"] } },
-  "table":  { "rows": { "role": "node-sequence", "admits": ["table_row"] },
-              "columns": { "role": "record-sequence" } } }
+{ "table": { "children": { "role": "node-sequence", "admits": ["table_head", "table_body", "table_foot"] },
+             "columns": { "role": "node-sequence", "admits": ["table_column"] } } }
 ```
 
-`node-sequence` is an array of nodes, `single-node` is one node, and
-`record-sequence` is an array of plain records with no `type`. A field holding a
-scalar has no role. Copy this table rather than deriving your own.
+A `node-sequence` is an array of nodes and a `single-node` is one node.
+The `metadata-tree` role visits nodes in `metadata` or extension `props`;
+opaque `data` and extension `payload` are not traversed as AST nodes
+([`CARVE-P12-071`](./rules/ast-interchange)).
 
 ## Sidecars
 
@@ -785,22 +719,20 @@ function of its heading, since dedup depends on every heading before it
 
 ## Definition lists
 
-A definition list's `items` hold the `<dt>` / `<dd>` sequence as nodes, in
+A definition list's `children` hold the `<dt>` / `<dd>` sequence as nodes in
 document order:
 
 ```json
-{"type": "definition_list", "items": [
-  {"type": "definition_term", "children": [ ... ]},
-  {"type": "definition_term", "children": [ ... ]},
-  {"type": "definition_description", "children": [ ... ]}
-]}
+{"type": "definition_list", "children": [
+  {"type": "definition_term", "children": []},
+  {"type": "definition_term", "children": []},
+  {"type": "definition_description", "children": []}
+], "spacing": "loose"}
 ```
 
-A run of terms belongs to the descriptions that follow it, so the grouping is
-derivable and is not published. A `definition_list` may carry `loose: true`,
-meaning every description renders its children as blocks; absent, each
-description derives its wrapper from its own block count. See
-[`CARVE-P12-027`](./rules/ast-interchange).
+A run of terms belongs to the descriptions that follow it, so grouping is
+derivable and is not published. `spacing` is `tight` or `loose`, as on an
+ordinary list. See [`CARVE-P12-027`](./rules/ast-interchange).
 
 ## Composite figures
 
@@ -820,18 +752,48 @@ refuses a group with `mode` where an item lacks it ([`CARVE-P12-053`](./rules/as
 
 ## Code block payload line endings
 
-`code_block.content` is literal payload text. A closed fence containing `a`
+`code_block.value` is literal payload text. A closed fence containing `a`
 publishes `"a\n"`; an imported code element containing `a` without a final
 break publishes `"a"`, and readers keep the two apart. A canonical Carve fence
 needs a break before its closer, so writing `"a"` adds one and reports
-`field-unspellable` for `code_block.content`. `raw_block.content` follows the
-same rule. Trees stored under the earlier encoding, which omitted the last
-line's break, cannot be told apart from new ones by their strings; migrate them
-from source. See [`CARVE-P12-064`](./rules/ast-interchange) and [`CARVE-P12-065`](./rules/ast-interchange).
+`field-unspellable` for `code_block.value`. `raw_block.value` follows the same
+rule. Trees stored under the earlier encoding, which omitted the last line's
+break, cannot be told apart from new ones by their strings; migrate them from
+source. See [`CARVE-P12-064`](./rules/ast-interchange) and
+[`CARVE-P12-065`](./rules/ast-interchange).
 
 `resources/ast-code-content-fixtures.json` and
 `resources/ast-code-payload-samples.json` pin the parsed values the engines are
 checked against.
+
+## Interchange fallback matrix
+
+Generated from [the checked summary table](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf). The cited clauses prevail if the summary disagrees. These wrapper/field forms have no Carve 0.1 core source spelling. Brackets restrict a row's scope. Detailed algorithms, attribute exceptions, diagnostic targets, API conditions and reporting strength remain in the cited PART 12 clauses. The diagnostic column names known codes with the targets named by the clauses; `clause` leaves the code/channel to the cited clauses, including cross-clause channel assignments. Unlisted diagnostic targets and `unspecified` action cells add no ruling.
+
+| Shape | Rule | Carve | HTML | Markdown | Plain | ANSI | Diagnostic |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `caption.short` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L331) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
+| `figure.children[table]` | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | `table_caption` | `figure` | `unspecified` | `unspecified` | `unspecified` | `clause` |
+| `table_cell.children` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L267) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
+| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L296) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
+| `section` | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L2) | `unwrap` | `section` | `unwrap` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
+| `ruby` | [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L61) | `parenthesized_pairs` | `ruby` | `ruby` | `parenthesized_pairs` | `parenthesized_pairs` | `ruby-flattened (Carve,Plain,ANSI)` |
+| `block_extension[unknown name]` | [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L98) | `fallback` | `fallback` | `fallback` | `fallback` | `fallback` | `clause` |
+
+- `omit_field`: omit the field.
+- `ignore_field`: ignore the field; render the full caption once.
+- `unspecified`: not specified by this row.
+- `table_caption`: write the table and one caption slot (PART 12 §17).
+- `figure`: figure around table with outer figcaption.
+- `flatten_blocks`: flatten blocks into one cell line (PART 12 §27).
+- `cell_blocks`: render blocks in td/th.
+- `unwrap`: render children without this wrapper.
+- `smallcaps_span`: span class="smallcaps".
+- `section`: section element.
+- `parenthesized_pairs`: base(annotation) in pair order.
+- `ruby`: ruby with rt and generated rp.
+- `fallback`: render the declared fallback (PART 12 §33); the row applies only when the reader does not know the extension name and the envelope does not mark it required.
+<!-- END GENERATED AST FALLBACK MATRIX -->
 
 <!-- BEGIN GENERATED AST FALLBACK MATRIX -->
 ## Interchange fallback matrix
@@ -840,10 +802,10 @@ Generated from [the checked summary table](https://github.com/markup-carve/carve
 
 | Shape | Rule | Carve | HTML | Markdown | Plain | ANSI | Diagnostic |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `figure.shortCaption,table.shortCaption` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L347) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
-| `figure.target[table]` | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | `table_caption` | `figure` | `unspecified` | `unspecified` | `unspecified` | `clause` |
-| `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L373) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
-| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L421) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
+| `caption.short` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L339) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
+| `figure.children[table]` | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | `table_caption` | `figure` | `unspecified` | `unspecified` | `unspecified` | `clause` |
+| `table_cell.children` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L309) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
+| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L348) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
 | `section` | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L2) | `unwrap` | `section` | `unwrap` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
 | `ruby` | [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L61) | `parenthesized_pairs` | `ruby` | `ruby` | `parenthesized_pairs` | `parenthesized_pairs` | `ruby-flattened (Carve,Plain,ANSI)` |
 | `block_extension[unknown name]` | [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L98) | `fallback` | `fallback` | `fallback` | `fallback` | `fallback` | `clause` |

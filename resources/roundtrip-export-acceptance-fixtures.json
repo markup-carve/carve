@@ -10,8 +10,10 @@
       "expectedNodes": [
         {
           "type": "list",
-          "bulletChar": "*",
-          "ordered": false
+          "marker": {
+            "kind": "bullet",
+            "char": "*"
+          }
         }
       ],
       "importModes": [
@@ -24,7 +26,20 @@
           "attribute": "data-marker",
           "element": "ul"
         }
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "bulletChar": "*",
+          "ordered": false
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "ordered-delimiter",
@@ -36,8 +51,10 @@
       "expectedNodes": [
         {
           "type": "list",
-          "ordered": true,
-          "delim": ")"
+          "marker": {
+            "kind": "ordered",
+            "delimiter": ")"
+          }
         }
       ],
       "importModes": [
@@ -48,7 +65,20 @@
       "ordinaryAttributes": {
         "data-delim": ")"
       },
-      "carrierHosts": []
+      "carrierHosts": [],
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "ordered": true,
+          "delim": ")"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "star-break",
@@ -135,8 +165,9 @@
       "expectedNodes": [
         {
           "type": "link",
-          "ref": "r",
-          "href": "/u"
+          "href": "/u",
+          "key": "r",
+          "namespace": "link"
         }
       ],
       "importModes": [
@@ -149,7 +180,20 @@
           "attribute": "data-carve-ref",
           "element": "a"
         }
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "link",
+          "ref": "r",
+          "href": "/u"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "reference-image",
@@ -161,8 +205,9 @@
       "expectedNodes": [
         {
           "type": "image",
-          "ref": "r",
-          "src": "/a.png"
+          "src": "/a.png",
+          "key": "r",
+          "namespace": "link"
         }
       ],
       "importModes": [
@@ -175,7 +220,20 @@
           "attribute": "data-carve-ref",
           "element": "img"
         }
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "image",
+          "ref": "r",
+          "src": "/a.png"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "url-autolink",
@@ -237,7 +295,8 @@
       "expectedNodes": [
         {
           "type": "footnote_ref",
-          "label": "lbl"
+          "key": "lbl",
+          "namespace": "footnote"
         }
       ],
       "importModes": [
@@ -254,7 +313,19 @@
           "attribute": "data-carve-footnote-label",
           "element": "li"
         }
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "footnote_ref",
+          "label": "lbl"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "inline-footnote",
@@ -319,7 +390,7 @@
         {
           "type": "raw_inline",
           "format": "latex",
-          "content": "a<b"
+          "value": "a<b"
         }
       ],
       "importModes": [
@@ -345,7 +416,20 @@
       },
       "lossCodes": [
         "raw-format-dropped"
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "raw_inline",
+          "format": "latex",
+          "content": "a<b"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "raw-html-inline",
@@ -358,7 +442,7 @@
         {
           "type": "raw_inline",
           "format": "html",
-          "content": "<b>x</b>"
+          "value": "<b>x</b>"
         }
       ],
       "importModes": [
@@ -381,6 +465,19 @@
       "fallbackHtml": "<p>&lt;b&gt;x&lt;/b&gt;</p>",
       "carrierText": {
         "data-carve-raw": "<b>x</b>"
+      },
+      "pinnedNodes": [
+        {
+          "type": "raw_inline",
+          "format": "html",
+          "content": "<b>x</b>"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
       }
     },
     {
@@ -454,7 +551,10 @@
       "expectedNodes": [
         {
           "type": "list",
-          "bulletChar": "*"
+          "marker": {
+            "kind": "bullet",
+            "char": "*"
+          }
         },
         {
           "type": "thematic_break",
@@ -475,7 +575,23 @@
           "attribute": "data-char",
           "element": "hr"
         }
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "bulletChar": "*"
+        },
+        {
+          "type": "thematic_break",
+          "marker": "*"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "task-states",
@@ -485,6 +601,63 @@
         "data-marker"
       ],
       "expectedNodes": [
+        {
+          "type": "list_item",
+          "task": {
+            "mark": " ",
+            "status": "todo"
+          }
+        },
+        {
+          "type": "list_item",
+          "task": {
+            "mark": "x",
+            "status": "done"
+          }
+        },
+        {
+          "type": "list_item",
+          "task": {
+            "mark": "x",
+            "status": "done"
+          }
+        },
+        {
+          "type": "list_item",
+          "task": {
+            "mark": "-",
+            "status": "cancelled"
+          }
+        },
+        {
+          "type": "list_item",
+          "task": {
+            "mark": "_",
+            "status": "partial"
+          }
+        },
+        {
+          "type": "list_item",
+          "task": {
+            "mark": ">",
+            "status": "partial"
+          }
+        },
+        {
+          "type": "list_item",
+          "task": {
+            "mark": "?",
+            "status": "other"
+          }
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [],
+      "pinnedNodes": [
         {
           "type": "list_item",
           "checked": false,
@@ -521,12 +694,12 @@
           "taskState": "?"
         }
       ],
-      "importModes": [
-        "safe",
-        "semantic",
-        "roundtrip"
-      ],
-      "carrierHosts": []
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "generated-heading-id",
@@ -610,7 +783,7 @@
         {
           "type": "raw_inline",
           "format": "html",
-          "content": "<b>unclosed"
+          "value": "<b>unclosed"
         }
       ],
       "importModes": [
@@ -633,6 +806,19 @@
       "fallbackHtml": "<p>&lt;b&gt;unclosed</p>",
       "carrierText": {
         "data-carve-raw": "<b>unclosed"
+      },
+      "pinnedNodes": [
+        {
+          "type": "raw_inline",
+          "format": "html",
+          "content": "<b>unclosed"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
       }
     },
     {
@@ -646,7 +832,7 @@
         {
           "type": "raw_inline",
           "format": "html",
-          "content": "</span><em>x</em>"
+          "value": "</span><em>x</em>"
         }
       ],
       "importModes": [
@@ -669,6 +855,19 @@
       "fallbackHtml": "<p>&lt;/span&gt;&lt;em&gt;x&lt;/em&gt;</p>",
       "carrierText": {
         "data-carve-raw": "</span><em>x</em>"
+      },
+      "pinnedNodes": [
+        {
+          "type": "raw_inline",
+          "format": "html",
+          "content": "</span><em>x</em>"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
       }
     },
     {
@@ -684,8 +883,8 @@
       "expectedNodes": [
         {
           "type": "code_block",
-          "lang": "php",
-          "label": "Example"
+          "syntax": "php",
+          "groupLabel": "Example"
         }
       ],
       "importModes": [
@@ -698,7 +897,20 @@
           "attribute": "data-carve-label",
           "element": "pre"
         }
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "code_block",
+          "lang": "php",
+          "label": "Example"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "code-block-empty-label",
@@ -713,8 +925,8 @@
       "expectedNodes": [
         {
           "type": "code_block",
-          "lang": "php",
-          "label": ""
+          "syntax": "php",
+          "groupLabel": ""
         }
       ],
       "importModes": [
@@ -727,7 +939,20 @@
           "attribute": "data-carve-label",
           "element": "pre"
         }
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "code_block",
+          "lang": "php",
+          "label": ""
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "heading-id-slot",
@@ -800,8 +1025,11 @@
       "expectedNodes": [
         {
           "type": "list",
-          "ordered": false,
-          "tight": true
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight"
         }
       ],
       "importModes": [
@@ -814,7 +1042,20 @@
           "attribute": "data-carve-tight",
           "element": "ul"
         }
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "ordered": false,
+          "tight": true
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "generated-heading-id-in-quote",
@@ -887,13 +1128,15 @@
       "expectedNodes": [
         {
           "type": "link",
-          "ref": "r",
-          "href": "/u"
+          "href": "/u",
+          "key": "r",
+          "namespace": "link"
         },
         {
           "type": "link",
-          "ref": "r",
-          "href": "/u"
+          "href": "/u",
+          "key": "r",
+          "namespace": "link"
         }
       ],
       "importModes": [
@@ -909,7 +1152,25 @@
       ],
       "returnedSourceFragments": [
         "[r][] and [r][]"
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "link",
+          "ref": "r",
+          "href": "/u"
+        },
+        {
+          "type": "link",
+          "ref": "r",
+          "href": "/u"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "tight-list-attributed-later-paragraph",
@@ -921,8 +1182,11 @@
       "expectedNodes": [
         {
           "type": "list",
-          "ordered": false,
-          "tight": true
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight"
         }
       ],
       "importModes": [
@@ -935,7 +1199,20 @@
           "attribute": "data-carve-tight",
           "element": "ul"
         }
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "ordered": false,
+          "tight": true
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "quoted-heading-id-writes-no-slot",
@@ -976,8 +1253,9 @@
       "forbiddenExportAttributes": [],
       "expectedNodes": [
         {
-          "type": "heading_ref",
-          "target": "fig-sun"
+          "type": "xref",
+          "key": "fig-sun",
+          "namespace": "heading"
         },
         {
           "type": "caption_number"
@@ -998,7 +1276,22 @@
           "element": "span"
         }
       ],
-      "exportedHtml": "<figure id=\"fig-sun\">\n  <img src=\"sun.png\" alt=\"Sun\">\n  <figcaption>Figure <span data-carve-caption-number>1</span>: The sun</figcaption>\n</figure>\n<p>See <a href=\"#fig-sun\" data-carve-xref>Figure 1</a>.</p>"
+      "exportedHtml": "<figure id=\"fig-sun\">\n  <img src=\"sun.png\" alt=\"Sun\">\n  <figcaption>Figure <span data-carve-caption-number>1</span>: The sun</figcaption>\n</figure>\n<p>See <a href=\"#fig-sun\" data-carve-xref>Figure 1</a>.</p>",
+      "pinnedNodes": [
+        {
+          "type": "heading_ref",
+          "target": "fig-sun"
+        },
+        {
+          "type": "caption_number"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "cross-reference-unicode-heading",
@@ -1009,8 +1302,9 @@
       },
       "expectedNodes": [
         {
-          "type": "heading_ref",
-          "target": "Café"
+          "type": "xref",
+          "key": "Café",
+          "namespace": "heading"
         }
       ],
       "forbiddenExportAttributes": [],
@@ -1025,7 +1319,19 @@
           "element": "a"
         }
       ],
-      "exportedHtml": "<section id=\"Café\" data-carve-generated-id=\"1\">\n  <h1>Café</h1>\n  <p>See <a href=\"#Café\" data-carve-xref>Café</a>.</p>\n</section>"
+      "exportedHtml": "<section id=\"Café\" data-carve-generated-id=\"1\">\n  <h1>Café</h1>\n  <p>See <a href=\"#Café\" data-carve-xref>Café</a>.</p>\n</section>",
+      "pinnedNodes": [
+        {
+          "type": "heading_ref",
+          "target": "Café"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "cross-reference-assigned-id",
@@ -1036,8 +1342,9 @@
       },
       "expectedNodes": [
         {
-          "type": "heading_ref",
-          "target": "a.b"
+          "type": "xref",
+          "key": "a.b",
+          "namespace": "heading"
         }
       ],
       "forbiddenExportAttributes": [],
@@ -1052,7 +1359,19 @@
           "element": "a"
         }
       ],
-      "exportedHtml": "<section id=\"a.b\" data-carve-explicit-id=\"1\">\n  <h1>Head</h1>\n  <p>See <a href=\"#a.b\" data-carve-xref>Head</a>.</p>\n</section>"
+      "exportedHtml": "<section id=\"a.b\" data-carve-explicit-id=\"1\">\n  <h1>Head</h1>\n  <p>See <a href=\"#a.b\" data-carve-xref>Head</a>.</p>\n</section>",
+      "pinnedNodes": [
+        {
+          "type": "heading_ref",
+          "target": "a.b"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "bare-div-carrier",
@@ -1140,7 +1459,7 @@
       "forbiddenExportAttributes": [],
       "expectedNodes": [
         {
-          "type": "substitution"
+          "type": "critic_substitution"
         }
       ],
       "importModes": [
@@ -1157,7 +1476,18 @@
       "returnedSourceFragments": [
         "{~old~>new~}"
       ],
-      "exportedHtml": "<p>a <span data-carve-substitution><del>old</del><ins>new</ins></span> b</p>"
+      "exportedHtml": "<p>a <span data-carve-substitution><del>old</del><ins>new</ins></span> b</p>",
+      "pinnedNodes": [
+        {
+          "type": "substitution"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     }
   ],
   "importNegative": [
@@ -1190,7 +1520,10 @@
       "expectedNodes": [
         {
           "type": "list",
-          "ordered": false
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          }
         }
       ],
       "forbiddenTypes": [],
@@ -1201,6 +1534,25 @@
       ],
       "requiresDiagnostic": true,
       "forbiddenFieldValues": [
+        {
+          "type": "list",
+          "field": "marker.char",
+          "value": "#"
+        }
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "ordered": false
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      },
+      "pinnedForbiddenFieldValues": [
         {
           "type": "list",
           "field": "bulletChar",
@@ -1325,11 +1677,11 @@
       "expectedAbsentFields": [
         {
           "type": "link",
-          "field": "ref"
+          "field": "key"
         },
         {
           "type": "image",
-          "field": "ref"
+          "field": "key"
         }
       ],
       "forbiddenRenderedSubstrings": [
@@ -1340,6 +1692,16 @@
       ],
       "forbiddenAstSubstrings": [
         "javascript:"
+      ],
+      "pinnedExpectedAbsentFields": [
+        {
+          "type": "link",
+          "field": "ref"
+        },
+        {
+          "type": "image",
+          "field": "ref"
+        }
       ]
     },
     {
@@ -1366,12 +1728,14 @@
       "expectedNodes": [
         {
           "type": "link",
-          "ref": "r"
+          "key": "r",
+          "namespace": "link"
         },
         {
           "type": "link_reference_definition",
-          "label": "r",
-          "href": "/u"
+          "href": "/u",
+          "key": "r",
+          "namespace": "link"
         }
       ],
       "forbiddenTypes": [],
@@ -1380,7 +1744,24 @@
         "semantic",
         "roundtrip"
       ],
-      "requiresDiagnostic": false
+      "requiresDiagnostic": false,
+      "pinnedNodes": [
+        {
+          "type": "link",
+          "ref": "r"
+        },
+        {
+          "type": "link_reference_definition",
+          "label": "r",
+          "href": "/u"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "plus-is-not-a-bullet",
@@ -1388,7 +1769,10 @@
       "expectedNodes": [
         {
           "type": "list",
-          "ordered": false
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          }
         }
       ],
       "forbiddenTypes": [],
@@ -1401,11 +1785,30 @@
       "forbiddenFieldValues": [
         {
           "type": "list",
-          "field": "bulletChar",
+          "field": "marker.char",
           "value": "+"
         }
       ],
-      "diagnosticControlHtml": "<ul><li>a</li></ul>"
+      "diagnosticControlHtml": "<ul><li>a</li></ul>",
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "ordered": false
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      },
+      "pinnedForbiddenFieldValues": [
+        {
+          "type": "list",
+          "field": "bulletChar",
+          "value": "+"
+        }
+      ]
     },
     {
       "id": "invalid-code-label",
@@ -1413,7 +1816,7 @@
       "expectedNodes": [
         {
           "type": "code_block",
-          "lang": "php"
+          "syntax": "php"
         }
       ],
       "forbiddenTypes": [],
@@ -1426,10 +1829,28 @@
       "expectedAbsentFields": [
         {
           "type": "code_block",
-          "field": "label"
+          "field": "groupLabel"
         }
       ],
-      "diagnosticControlHtml": "<pre data-carve-label=\"Example\"><code class=\"language-php\">echo 1;\n</code></pre>"
+      "diagnosticControlHtml": "<pre data-carve-label=\"Example\"><code class=\"language-php\">echo 1;\n</code></pre>",
+      "pinnedNodes": [
+        {
+          "type": "code_block",
+          "lang": "php"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      },
+      "pinnedExpectedAbsentFields": [
+        {
+          "type": "code_block",
+          "field": "label"
+        }
+      ]
     },
     {
       "id": "invalid-reference-label",
@@ -1452,10 +1873,16 @@
       "expectedAbsentFields": [
         {
           "type": "link",
-          "field": "ref"
+          "field": "key"
         }
       ],
-      "diagnosticControlHtml": "<p><a href=\"/u\" data-carve-ref=\"r\">t</a></p>"
+      "diagnosticControlHtml": "<p><a href=\"/u\" data-carve-ref=\"r\">t</a></p>",
+      "pinnedExpectedAbsentFields": [
+        {
+          "type": "link",
+          "field": "ref"
+        }
+      ]
     },
     {
       "id": "invalid-id-slot",
@@ -1501,10 +1928,16 @@
       "expectedAbsentFields": [
         {
           "type": "link",
-          "field": "ref"
+          "field": "key"
         }
       ],
-      "diagnosticControlHtml": "<p><a href=\"https://e.com\">https://e.com</a></p>"
+      "diagnosticControlHtml": "<p><a href=\"https://e.com\">https://e.com</a></p>",
+      "pinnedExpectedAbsentFields": [
+        {
+          "type": "link",
+          "field": "ref"
+        }
+      ]
     },
     {
       "id": "retired-source-name-consumed",
@@ -1528,7 +1961,11 @@
       "expectedNodes": [
         {
           "type": "list",
-          "tight": true
+          "marker": {
+            "kind": "bullet",
+            "char": "-"
+          },
+          "spacing": "tight"
         }
       ],
       "forbiddenTypes": [],
@@ -1537,7 +1974,19 @@
         "semantic",
         "roundtrip"
       ],
-      "requiresDiagnostic": false
+      "requiresDiagnostic": false,
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "tight": true
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "contradictory-footnote-pair",
@@ -1545,7 +1994,8 @@
       "expectedNodes": [
         {
           "type": "footnote_ref",
-          "label": "1"
+          "key": "1",
+          "namespace": "footnote"
         }
       ],
       "forbiddenTypes": [
@@ -1564,11 +2014,30 @@
       "forbiddenFieldValues": [
         {
           "type": "footnote_ref",
-          "field": "label",
+          "field": "key",
           "value": "named"
         }
       ],
-      "diagnosticControlHtml": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\"><p>body</p></li></ol></section>"
+      "diagnosticControlHtml": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\"><p>body</p></li></ol></section>",
+      "pinnedNodes": [
+        {
+          "type": "footnote_ref",
+          "label": "1"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      },
+      "pinnedForbiddenFieldValues": [
+        {
+          "type": "footnote_ref",
+          "field": "label",
+          "value": "named"
+        }
+      ]
     },
     {
       "id": "contradictory-explicit-generated-id",
@@ -2120,11 +2589,24 @@
       ],
       "expectedNodes": [
         {
+          "type": "xref",
+          "key": "Rise",
+          "namespace": "heading"
+        }
+      ],
+      "inlineMarkers": true,
+      "pinnedNodes": [
+        {
           "type": "heading_ref",
           "target": "Rise"
         }
       ],
-      "inlineMarkers": true
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "cross-reference-marker-unicode",
@@ -2134,11 +2616,24 @@
       ],
       "expectedNodes": [
         {
+          "type": "xref",
+          "key": "Café",
+          "namespace": "heading"
+        }
+      ],
+      "inlineMarkers": true,
+      "pinnedNodes": [
+        {
           "type": "heading_ref",
           "target": "Café"
         }
       ],
-      "inlineMarkers": true
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "code-fence-title-and-label",
@@ -2149,10 +2644,28 @@
       "expectedNodes": [
         {
           "type": "code_block",
+          "groupLabel": "Example",
+          "title": [
+            {
+              "type": "text",
+              "value": "app.js"
+            }
+          ]
+        }
+      ],
+      "pinnedNodes": [
+        {
+          "type": "code_block",
           "header": "app.js",
           "label": "Example"
         }
-      ]
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "list-style-marker-alpha",
@@ -2163,13 +2676,28 @@
       "expectedNodes": [
         {
           "type": "list",
-          "ordered": true,
-          "olType": "a"
+          "marker": {
+            "kind": "ordered",
+            "style": "a"
+          }
         }
       ],
       "forbiddenLossCodes": [
         "list-style-dropped"
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "ordered": true,
+          "olType": "a"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "list-style-marker-roman",
@@ -2180,14 +2708,30 @@
       "expectedNodes": [
         {
           "type": "list",
+          "marker": {
+            "kind": "ordered",
+            "style": "i",
+            "start": 4
+          }
+        }
+      ],
+      "forbiddenLossCodes": [
+        "list-style-dropped"
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
           "ordered": true,
           "olType": "i",
           "start": 4
         }
       ],
-      "forbiddenLossCodes": [
-        "list-style-dropped"
-      ]
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "list-style-marker-ambiguous-alpha",
@@ -2198,14 +2742,30 @@
       "expectedNodes": [
         {
           "type": "list",
+          "marker": {
+            "kind": "ordered",
+            "style": "a",
+            "start": 9
+          }
+        }
+      ],
+      "forbiddenLossCodes": [
+        "list-style-dropped"
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
           "ordered": true,
           "olType": "a",
           "start": 9
         }
       ],
-      "forbiddenLossCodes": [
-        "list-style-dropped"
-      ]
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "list-style-marker-ambiguous-roman",
@@ -2216,13 +2776,28 @@
       "expectedNodes": [
         {
           "type": "list",
-          "ordered": true,
-          "olType": "i"
+          "marker": {
+            "kind": "ordered",
+            "style": "i"
+          }
         }
       ],
       "forbiddenLossCodes": [
         "list-style-dropped"
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "ordered": true,
+          "olType": "i"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "list-style-marker-ambiguous-single-item",
@@ -2233,13 +2808,28 @@
       "expectedNodes": [
         {
           "type": "list",
-          "ordered": true,
-          "olType": "i"
+          "marker": {
+            "kind": "ordered",
+            "style": "i"
+          }
         }
       ],
       "forbiddenLossCodes": [
         "list-style-dropped"
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "ordered": true,
+          "olType": "i"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "list-style-marker-under-attribute-line",
@@ -2250,6 +2840,21 @@
       "expectedNodes": [
         {
           "type": "list",
+          "attrs.classes": [
+            "steps"
+          ],
+          "marker": {
+            "kind": "ordered",
+            "style": "a"
+          }
+        }
+      ],
+      "forbiddenLossCodes": [
+        "list-style-dropped"
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
           "ordered": true,
           "olType": "a",
           "attrs.classes": [
@@ -2257,9 +2862,12 @@
           ]
         }
       ],
-      "forbiddenLossCodes": [
-        "list-style-dropped"
-      ]
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "list-delimiter-changed-between-adjacent-lists",
@@ -2271,6 +2879,27 @@
       "expectedNodes": [
         {
           "type": "list",
+          "marker": {
+            "kind": "ordered",
+            "style": "a"
+          }
+        },
+        {
+          "type": "list",
+          "marker": {
+            "kind": "ordered"
+          }
+        }
+      ],
+      "lossCodes": [
+        "list-delimiter-changed"
+      ],
+      "forbiddenLossCodes": [
+        "list-style-dropped"
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
           "ordered": true,
           "olType": "a"
         },
@@ -2279,12 +2908,12 @@
           "ordered": true
         }
       ],
-      "lossCodes": [
-        "list-delimiter-changed"
-      ],
-      "forbiddenLossCodes": [
-        "list-style-dropped"
-      ]
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "list-delimiter-kept-when-lists-are-apart",
@@ -2293,12 +2922,26 @@
       "expectedNodes": [
         {
           "type": "list",
-          "ordered": true
+          "marker": {
+            "kind": "ordered"
+          }
         }
       ],
       "forbiddenLossCodes": [
         "list-delimiter-changed"
-      ]
+      ],
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "ordered": true
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "bare-div",
@@ -2334,13 +2977,31 @@
       "expectedNodes": [
         {
           "type": "link",
+          "key": "r",
+          "namespace": "link"
+        },
+        {
+          "type": "link_reference_definition",
+          "key": "r",
+          "namespace": "link"
+        }
+      ],
+      "pinnedNodes": [
+        {
+          "type": "link",
           "ref": "r"
         },
         {
           "type": "link_reference_definition",
           "label": "r"
         }
-      ]
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "reference-link-collapsed",
@@ -2352,13 +3013,31 @@
       "expectedNodes": [
         {
           "type": "link",
+          "key": "r",
+          "namespace": "link"
+        },
+        {
+          "type": "link_reference_definition",
+          "key": "r",
+          "namespace": "link"
+        }
+      ],
+      "pinnedNodes": [
+        {
+          "type": "link",
           "ref": "r"
         },
         {
           "type": "link_reference_definition",
           "label": "r"
         }
-      ]
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "reference-definition-unused",
@@ -2369,9 +3048,22 @@
       "expectedNodes": [
         {
           "type": "link_reference_definition",
+          "key": "r",
+          "namespace": "link"
+        }
+      ],
+      "pinnedNodes": [
+        {
+          "type": "link_reference_definition",
           "label": "r"
         }
-      ]
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "reference-link-inline-outside-roundtrip",
@@ -2388,9 +3080,22 @@
       "expectedNodes": [
         {
           "type": "link",
+          "key": "r",
+          "namespace": "link"
+        }
+      ],
+      "pinnedNodes": [
+        {
+          "type": "link",
           "ref": "r"
         }
-      ]
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "markdown-abbreviation-definition",
@@ -2535,7 +3240,9 @@
       "expectedNodes": [
         {
           "type": "list",
-          "ordered": true
+          "marker": {
+            "kind": "ordered"
+          }
         }
       ],
       "forbiddenNodes": [
@@ -2546,6 +3253,18 @@
       ],
       "expectedDiagnostics": {
         "carrier-markers-damaged": 1
+      },
+      "pinnedNodes": [
+        {
+          "type": "list",
+          "ordered": true
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
       }
     },
     {
@@ -2560,8 +3279,10 @@
         },
         {
           "type": "list",
-          "ordered": true,
-          "olType": "a"
+          "marker": {
+            "kind": "ordered",
+            "style": "a"
+          }
         }
       ],
       "forbiddenNodes": [
@@ -2574,6 +3295,25 @@
       ],
       "expectedDiagnostics": {
         "carrier-markers-damaged": 0
+      },
+      "pinnedNodes": [
+        {
+          "type": "paragraph",
+          "attrs.classes": [
+            "steps"
+          ]
+        },
+        {
+          "type": "list",
+          "ordered": true,
+          "olType": "a"
+        }
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "pinned AST uses 1.2 projection"
+        ],
+        "reason": "The pinned serializer still emits 1.2 field names and node types (carve#3262, carve#3598)."
       }
     }
   ]

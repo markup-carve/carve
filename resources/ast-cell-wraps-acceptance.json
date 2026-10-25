@@ -1,79 +1,303 @@
 {
-  "version": 1,
+  "version": 2,
   "rows": [
     {
       "id": "code-span-crosses-a-join",
       "source": "| `a | z |\n+ b` | w |\n",
-      "path": "/children/0/rows/0/cells/0/children/0",
-      "expected": { "type": "code", "value": "a | z b", "cellWraps": [{ "offset": 5, "line": 1 }] }
+      "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+      "expected": {
+        "type": "code",
+        "value": "a | z b",
+        "cellWraps": [
+          {
+            "offset": 5,
+            "line": 1
+          }
+        ]
+      },
+      "pinnedPath": "/children/0/rows/0/cells/0/children/0"
     },
     {
       "id": "raw-inline-crosses-a-join",
       "source": "| `<b | z |\n+ c>`{=html} | w |\n",
-      "path": "/children/0/rows/0/cells/0/children/0",
-      "expected": { "type": "raw_inline", "format": "html", "content": "<b | z c>", "cellWraps": [{ "offset": 6, "line": 1 }] }
+      "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+      "expected": {
+        "type": "raw_inline",
+        "format": "html",
+        "cellWraps": [
+          {
+            "offset": 6,
+            "line": 1
+          }
+        ],
+        "value": "<b | z c>"
+      },
+      "pinnedPath": "/children/0/rows/0/cells/0/children/0",
+      "aheadOfPin": {
+        "pinned": {
+          "type": "raw_inline",
+          "format": "html",
+          "content": "<b | z c>",
+          "cellWraps": [
+            {
+              "offset": 6,
+              "line": 1
+            }
+          ]
+        },
+        "reason": "The pinned serializer still emits the 1.2 table-cell or literal value shape (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "inline-math-crosses-a-join",
       "source": "| $`a | z |\n+ b` | w |\n",
-      "path": "/children/0/rows/0/cells/0/children/0",
-      "expected": { "type": "math", "display": false, "content": "a | z b", "cellWraps": [{ "offset": 5, "line": 1 }] }
+      "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+      "expected": {
+        "type": "math",
+        "display": false,
+        "cellWraps": [
+          {
+            "offset": 5,
+            "line": 1
+          }
+        ],
+        "value": "a | z b"
+      },
+      "pinnedPath": "/children/0/rows/0/cells/0/children/0",
+      "aheadOfPin": {
+        "pinned": {
+          "type": "math",
+          "display": false,
+          "content": "a | z b",
+          "cellWraps": [
+            {
+              "offset": 5,
+              "line": 1
+            }
+          ]
+        },
+        "reason": "The pinned serializer still emits the 1.2 table-cell or literal value shape (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "code-span-skips-an-empty-plus-line",
       "source": "| `a |\n+ |\n+ b` |\n",
-      "path": "/children/0/rows/0/cells/0/children/0",
+      "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
       "continuationLines": 2,
-      "expected": { "type": "code", "value": "a b", "cellWraps": [{ "offset": 1, "line": 2 }] }
+      "expected": {
+        "type": "code",
+        "value": "a b",
+        "cellWraps": [
+          {
+            "offset": 1,
+            "line": 2
+          }
+        ]
+      },
+      "pinnedPath": "/children/0/rows/0/cells/0/children/0"
     },
     {
       "id": "code-span-join-after-the-opener-stripped-as-padding",
       "source": "| ` |\n+ b ` |\n",
-      "path": "/children/0/rows/0/cells/0/children/0",
-      "expected": { "type": "code", "value": "b", "cellWraps": [{ "offset": 0, "line": 1 }] }
+      "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+      "expected": {
+        "type": "code",
+        "value": "b",
+        "cellWraps": [
+          {
+            "offset": 0,
+            "line": 1
+          }
+        ]
+      },
+      "pinnedPath": "/children/0/rows/0/cells/0/children/0"
     },
     {
       "id": "code-span-join-before-the-closer-stripped-as-padding",
       "source": "| ` a |\n+ ` |\n",
-      "path": "/children/0/rows/0/cells/0/children/0",
-      "expected": { "type": "code", "value": "a", "cellWraps": [{ "offset": 1, "line": 1 }] }
+      "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+      "expected": {
+        "type": "code",
+        "value": "a",
+        "cellWraps": [
+          {
+            "offset": 1,
+            "line": 1
+          }
+        ]
+      },
+      "pinnedPath": "/children/0/rows/0/cells/0/children/0"
     },
     {
       "id": "code-span-interior-join-beside-padding-names-its-space",
       "source": "| ` a |\n+ b ` |\n",
-      "path": "/children/0/rows/0/cells/0/children/0",
-      "expected": { "type": "code", "value": "a b", "cellWraps": [{ "offset": 1, "line": 1 }] }
+      "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+      "expected": {
+        "type": "code",
+        "value": "a b",
+        "cellWraps": [
+          {
+            "offset": 1,
+            "line": 1
+          }
+        ]
+      },
+      "pinnedPath": "/children/0/rows/0/cells/0/children/0"
     },
     {
       "id": "join-between-nodes-takes-a-marker",
       "source": "| `x`{=html} a | z |\n+ b | w |\n",
-      "path": "/children/0/rows/0/cells/0/children",
+      "path": "/children/0/children/0/children/0/children/0/children/0/children",
       "expected": [
-        { "type": "raw_inline", "format": "html", "content": "x" },
-        { "type": "text", "value": " a" },
-        { "type": "cell_wrap", "line": 1 },
-        { "type": "text", "value": "b" }
-      ]
+        {
+          "type": "raw_inline",
+          "format": "html",
+          "value": "x"
+        },
+        {
+          "type": "text",
+          "value": " a"
+        },
+        {
+          "type": "cell_wrap",
+          "line": 1
+        },
+        {
+          "type": "text",
+          "value": "b"
+        }
+      ],
+      "pinnedPath": "/children/0/rows/0/cells/0/children",
+      "aheadOfPin": {
+        "pinned": [
+          {
+            "type": "raw_inline",
+            "format": "html",
+            "content": "x"
+          },
+          {
+            "type": "text",
+            "value": " a"
+          },
+          {
+            "type": "cell_wrap",
+            "line": 1
+          },
+          {
+            "type": "text",
+            "value": "b"
+          }
+        ],
+        "reason": "The pinned serializer still emits the 1.2 table-cell or literal value shape (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "blocked-marker-keeps-span-and-its-joined-text",
       "source": "| ^ | b |\n+ t | u |\n",
-      "path": "/children/0/rows/0/cells/0",
-      "expected": { "type": "table_cell", "header": false, "span": "rowspan", "children": [{ "type": "text", "value": "t" }] }
+      "path": "/children/0/children/0/children/0/children/0",
+      "expected": {
+        "type": "table_cell",
+        "header": false,
+        "span": "rowspan",
+        "children": [
+          {
+            "type": "cell_paragraph",
+            "children": [
+              {
+                "type": "text",
+                "value": "t"
+              }
+            ]
+          }
+        ]
+      },
+      "pinnedPath": "/children/0/rows/0/cells/0",
+      "aheadOfPin": {
+        "pinned": {
+          "type": "table_cell",
+          "header": false,
+          "span": "rowspan",
+          "children": [
+            {
+              "type": "text",
+              "value": "t"
+            }
+          ]
+        },
+        "reason": "The pinned serializer still emits the 1.2 table-cell or literal value shape (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "blocked-marker-without-text-stays-empty",
       "source": "| ^ | b |\n+   | u |\n",
-      "path": "/children/0/rows/0/cells/0",
-      "expected": { "type": "table_cell", "header": false, "span": "rowspan", "children": [] },
-      "html": "<td></td>"
+      "path": "/children/0/children/0/children/0/children/0",
+      "expected": {
+        "type": "table_cell",
+        "header": false,
+        "span": "rowspan",
+        "children": [
+          {
+            "type": "cell_paragraph",
+            "children": []
+          }
+        ]
+      },
+      "html": "<td></td>",
+      "pinnedPath": "/children/0/rows/0/cells/0",
+      "aheadOfPin": {
+        "pinned": {
+          "type": "table_cell",
+          "header": false,
+          "span": "rowspan",
+          "children": []
+        },
+        "reason": "The pinned serializer still emits the 1.2 table-cell or literal value shape (carve#3262, carve#3598)."
+      }
     },
     {
       "id": "blocked-marker-text-on-a-later-plus-line-names-that-line",
       "source": "| ^ | b |\n+   | u |\n+ t | v |\n",
-      "path": "/children/0/rows/0/cells/0",
+      "path": "/children/0/children/0/children/0/children/0",
       "continuationLines": 2,
-      "expected": { "type": "table_cell", "header": false, "span": "rowspan", "children": [{ "type": "cell_wrap", "line": 2 }, { "type": "text", "value": "t" }] }
+      "expected": {
+        "type": "table_cell",
+        "header": false,
+        "span": "rowspan",
+        "children": [
+          {
+            "type": "cell_paragraph",
+            "children": [
+              {
+                "type": "cell_wrap",
+                "line": 2
+              },
+              {
+                "type": "text",
+                "value": "t"
+              }
+            ]
+          }
+        ]
+      },
+      "pinnedPath": "/children/0/rows/0/cells/0",
+      "aheadOfPin": {
+        "pinned": {
+          "type": "table_cell",
+          "header": false,
+          "span": "rowspan",
+          "children": [
+            {
+              "type": "cell_wrap",
+              "line": 2
+            },
+            {
+              "type": "text",
+              "value": "t"
+            }
+          ]
+        },
+        "reason": "The pinned serializer still emits the 1.2 table-cell or literal value shape (carve#3262, carve#3598)."
+      }
     }
   ]
 }

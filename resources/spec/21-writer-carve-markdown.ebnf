@@ -248,14 +248,13 @@
    6g. A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE -- NORMATIVE [CARVE-P11-041].
       PART 2 admits seven task states while rendering collapses
       them to two. The AST records the authored character (PART 12,
-      `list_item.taskState`) and the writer emits it.
+      `list_item.task.mark`) and the writer emits it.
 
-      THE FIELD IS THE SPELLING, `checked` IS THE MEANING. This is §6's own
+      THE MARK IS THE SPELLING, `task.status` IS THE MEANING. This is §6's own
       rule, not an exception to it: a spelling is the author's to keep BECAUSE
-      THE AST RECORDS IT, and the state is recorded exactly as `bulletChar`
-      records `*`. An absent field is the default for the box -- `x` when
-      `checked` is true, ` ` when it is false -- which is what a tree assembled
-      by hand or by a converter carries.
+      THE AST RECORDS IT, and the mark is recorded exactly as
+      `list.marker.char` records `*`. An absent `task` means the item has no
+      task box; a box carries both mark and status.
 
       `X` IS A CASE, NOT A STATE. `[X]` is written `[x]`.
       The field admits six characters rather than seven for that reason: the
@@ -290,7 +289,7 @@
       native marker and a separator colon.
 
       THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING. This is §6's rule
-      again, on the same terms as `bulletChar` and `thematic_break.marker`: a
+      again, on the same terms as `list.marker.char` and `thematic_break.marker`: a
       spelling is the author's to keep BECAUSE THE AST RECORDS IT.
 
       THE WIDTHS ARE WRITTEN AS RECORDED, one entry per separator cell, each a

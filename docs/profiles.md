@@ -33,20 +33,20 @@ spelling.
 **Inline:** `text`, `emphasis`, `strong`, `underline`, `strike`,
 `inline_extension`, `mention`, `code`, `link`, `autolink`, `image`,
 `non_breaking_space`, `soft_break`, `hard_break`, `raw_inline`, `escaped_text`, `footnote_ref`,
-`inline_footnote`, `heading_ref`, `citation_group`, `citation`, `caption_number`,
+`inline_footnote`, `xref`, `citation_group`, `citation`, `caption_number`,
 `span`, `superscript`, `subscript`, `highlight`, `insert`, `delete`,
-`substitution`, `critic_comment`, `symbol`, `math`, `abbreviation`, `small_caps`,
+`critic_substitution`, `critic_comment`, `symbol`, `math`, `abbreviation`, `small_caps`,
 `ruby`.
 
-A caption is **not** in this list, because it is not a node: `figure`, `figure_group`
-and `table` each carry their caption as an inline array, so there is nothing for a
-profile to deny separately from its host. It used to be listed here and no
-implementation could act on it ([carve#2207](https://github.com/markup-carve/carve/issues/2207)).
+A caption is a typed child of its figure or table. Like table groups, columns,
+cell paragraphs, and ruby pairs, it belongs to its host and is not separately
+deniable. A profile denies the host when it cannot carry that structure.
 
-Five types the schema declares are **not** deniable and so are not listed either:
+The following structural types are **not** deniable and so are not listed either:
 `smart_punctuation`, `literal_inline` and `tag`, which a profile refusing them
 would leave with no way to represent the characters the author typed,
-`document`, which is the root, and `cell_wrap`, which marks where a `+`
+`document`, which is the root, `caption`, `cell_paragraph`, `ruby_pair`,
+`table_head`, `table_body`, `table_foot`, `table_column`, and `cell_wrap`, which marks where a `+`
 continuation row joined a table cell and renders as the space it replaced.
 Denying `table` or `table_cell` removes it with its cell. `section` and `small_caps` are listed and denyable,
 but Carve 0.1 source spells neither - they reach a tree through a format bridge.

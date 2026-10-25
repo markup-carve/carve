@@ -81,21 +81,21 @@ test('formatter-internal nodes stay out of the vocabulary', () => {
   }
 })
 
-test('types the implementations emit are all covered', () => {
+test('2.0 contract node types are covered', () => {
   // Regression guard for the specific gaps that let nodes degrade unchecked in
   // every chat target at once before anyone noticed.
   for (const type of [
     'autolink',
     'admonition',
-    'heading_ref',
+    'xref',
     'citation',
     'citation_group',
     'caption_number',
-    'substitution',
+    'critic_substitution',
   ]) {
     assert.ok(
       [...block, ...inline].includes(type),
-      `"${type}" is emitted by an implementation but absent from the vocabulary`,
+      `"${type}" is absent from the 2.0 vocabulary`,
     )
   }
 })

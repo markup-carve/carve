@@ -45,16 +45,16 @@ const validate = ajv.compile(schema)
 
 test('citation items are typed nodes, positioned where they can be placed', () => {
   const pos = { startLine: 1, endLine: 1, startColumn: 2, endColumn: 12, startOffset: 1, endOffset: 11 }
-  const citation = { type: 'citation', key: 'smith', suppressAuthor: false, pos }
-  const group = { type: 'citation_group', items: [citation], raw: '[@smith]', pos }
+  const citation = { type: 'citation', key: 'smith', namespace: 'citation', suppressAuthor: false, pos }
+  const group = { type: 'citation_group', children: [citation], raw: '[@smith]', pos }
   const document = {
-    type: 'document',
+    type: 'document', astVersion: '2.0',
     srcByteLength: 12,
     children: [{ type: 'paragraph', children: [group], pos }],
   }
   const withItems = (items) => ({
     ...document,
-    children: [{ type: 'paragraph', children: [{ ...group, items }], pos }],
+    children: [{ type: 'paragraph', children: [{ ...group, children: items }], pos }],
   })
 
   assert.equal(validate(document), true, firstErrors())
@@ -68,22 +68,22 @@ test('citation items are typed nodes, positioned where they can be placed', () =
    * conformant encoding at all: omitting the field failed the schema, and
    * supplying one violated section 4 (carve#2192).
    */
-  assert.equal(validate(withItems([{ type: 'citation', key: 'smith', suppressAuthor: false }])), true, firstErrors())
+  assert.equal(validate(withItems([{ type: 'citation', key: 'smith', namespace: 'citation', suppressAuthor: false }])), true, firstErrors())
 })
 
 test('a citation group mode requires the mode on every item', () => {
-  const citation = { type: 'citation', key: 'smith', suppressAuthor: false }
+  const citation = { type: 'citation', key: 'smith', namespace: 'citation', suppressAuthor: false }
   const document = (group) => ({
-    type: 'document', srcByteLength: 0,
+    type: 'document', astVersion: '2.0', srcByteLength: 0,
     children: [{ type: 'paragraph', children: [{ type: 'citation_group', raw: '[@smith]', ...group }] }],
   })
 
-  assert.equal(validate(document({ mode: 'integral', items: [{ ...citation, mode: 'integral' }] })), true, firstErrors())
-  assert.equal(validate(document({ mode: 'integral', items: [citation] })), false)
-  assert.equal(validate(document({ mode: 'integral', items: [{ ...citation, mode: 'integral' }, citation] })), false)
-  assert.equal(validate(document({ items: [{ ...citation, mode: 'integral' }, citation] })), true, firstErrors())
-  assert.equal(validate(document({ items: [{ ...citation, mode: 'integral' }] })), true, firstErrors())
-  assert.equal(validate(document({ mode: 'integral', items: [] })), true, firstErrors())
+  assert.equal(validate(document({ mode: 'integral', children: [{ ...citation, mode: 'integral' }] })), true, firstErrors())
+  assert.equal(validate(document({ mode: 'integral', children: [citation] })), false)
+  assert.equal(validate(document({ mode: 'integral', children: [{ ...citation, mode: 'integral' }, citation] })), false)
+  assert.equal(validate(document({ children: [{ ...citation, mode: 'integral' }, citation] })), true, firstErrors())
+  assert.equal(validate(document({ children: [{ ...citation, mode: 'integral' }] })), true, firstErrors())
+  assert.equal(validate(document({ mode: 'integral', children: [] })), true, firstErrors())
 })
 
 test('source layout is a separate closed versioned sidecar', () => {
@@ -94,24 +94,42 @@ test('source layout is a separate closed versioned sidecar', () => {
   assert.equal(validateLayout(layout), true, JSON.stringify(validateLayout.errors))
   assert.equal(validateLayout({ ...layout, version: 2 }), false)
   assert.equal(validateLayout({ ...layout, unknown: true }), false)
-  assert.equal(validate({ type: 'document', children: [], srcByteLength: 0, sourceLayout: {} }), false)
+  assert.equal(validate({ type: 'document', astVersion: '2.0', children: [], srcByteLength: 0, sourceLayout: {} }), false)
 })
 
-test('figures and tables accept an optional structural short caption', () => {
+test('figures and tables accept caption nodes with optional short content', () => {
   const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
   const shortCaption = [{ type: 'text', value: 'Navigation label', pos }]
   const image = { type: 'image', src: '/x.png', alt: 'x', pos }
-  const figure = { type: 'figure', target: image, caption: [], shortCaption, pos }
-  const table = { type: 'table', rows: [], shortCaption, pos }
-  assert.equal(validate({ type: 'document', children: [figure, table], srcByteLength: 1 }), true, firstErrors())
-  assert.equal(validate({ type: 'document', children: [{ ...figure, shortCaption: 'label' }], srcByteLength: 1 }), false)
+  const caption = { type: 'caption', children: [{ type: 'paragraph', children: [] }], short: shortCaption }
+  const figure = { type: 'figure', children: [image], caption, pos }
+  const table = { type: 'table', children: [], columns: [], caption, pos }
+  assert.equal(validate({ type: 'document', astVersion: '2.0', children: [figure, table], srcByteLength: 1 }), true, firstErrors())
+  const { caption: _caption, ...uncaptionedFigure } = figure
+  assert.equal(validate({ type: 'document', astVersion: '2.0', children: [uncaptionedFigure], srcByteLength: 1 }), true, firstErrors())
+  assert.equal(validate({ type: 'document', astVersion: '2.0', children: [{ ...figure, caption: { ...caption, short: 'label' } }], srcByteLength: 1 }), false)
+})
+
+test('extension declarations require a version in both schemas', () => {
+  const declaration = { name: 'org.example.notes', version: '1', required: false }
+  const document = { type: 'document', astVersion: '2.0', children: [], extensions: [declaration] }
+  const envelopeSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-envelope-schema.json'), 'utf8'))
+  const envelopeAjv = new Ajv2020({ allErrors: true, strict: true })
+  envelopeAjv.addSchema(schema)
+  const validateEnvelope = envelopeAjv.compile(envelopeSchema)
+  const envelope = { astVersion: '2.0', document, extensions: [declaration] }
+  assert.equal(validate(document), true, firstErrors())
+  assert.equal(validateEnvelope(envelope), true, JSON.stringify(validateEnvelope.errors))
+  const withoutVersion = { name: declaration.name, required: declaration.required }
+  assert.equal(validate({ ...document, extensions: [withoutVersion] }), false)
+  assert.equal(validateEnvelope({ ...envelope, extensions: [withoutVersion] }), false)
 })
 
 test('small caps are a structural inline wrapper with children', () => {
   const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 5, startOffset: 0, endOffset: 4 }
   const smallCaps = { type: 'small_caps', children: [{ type: 'text', value: 'NASA', pos }], pos }
   const document = {
-    type: 'document',
+    type: 'document', astVersion: '2.0',
     srcByteLength: 4,
     children: [{ type: 'paragraph', children: [smallCaps], pos }],
   }
@@ -130,12 +148,13 @@ test('small caps are a structural inline wrapper with children', () => {
 test('ruby keeps ordered base and annotation pairs', () => {
   const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 3, startOffset: 0, endOffset: 2 }
   const pair = {
+    type: 'ruby_pair',
     base: [{ type: 'text', value: '漢', pos }],
     annotation: [{ type: 'text', value: 'かん' }],
   }
-  const ruby = { type: 'ruby', pairs: [pair, { base: [{ type: 'text', value: '字' }], annotation: [] }], pos }
+  const ruby = { type: 'ruby', pairs: [pair, { type: 'ruby_pair', base: [{ type: 'text', value: '字' }], annotation: [] }], pos }
   const document = {
-    type: 'document',
+    type: 'document', astVersion: '2.0',
     srcByteLength: 6,
     children: [{ type: 'paragraph', children: [ruby], pos }],
   }
@@ -156,6 +175,10 @@ test('ruby keeps ordered base and annotation pairs', () => {
   assert.equal(validate({
     ...document,
     children: [{ type: 'paragraph', children: [{ ...ruby, pairs: [{ ...pair, attrs: {} }] }], pos }],
+  }), true, firstErrors())
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...ruby, pairs: [{ ...pair, unknown: true }] }], pos }],
   }), false)
 })
 
@@ -164,14 +187,14 @@ test('display math accepts an authored label and resolved number', () => {
   const equation = {
     type: 'math',
     display: true,
-    content: 'E = mc^2',
-    label: 'Equation',
+    value: 'E = mc^2',
+    numberPrefix: 'Equation',
     number: 1,
     attrs: { id: 'eq-emc' },
     pos,
   }
   const document = {
-    type: 'document',
+    type: 'document', astVersion: '2.0',
     srcByteLength: 11,
     children: [{ type: 'paragraph', children: [equation], pos }],
   }
@@ -183,19 +206,19 @@ test('display math accepts an authored label and resolved number', () => {
   }), false)
   assert.equal(validate({
     ...document,
-    children: [{ type: 'paragraph', children: [{ ...equation, label: '' }], pos }],
+    children: [{ type: 'paragraph', children: [{ ...equation, numberPrefix: '' }], pos }],
   }), false)
   assert.equal(validate({
     ...document,
-    children: [{ type: 'paragraph', children: [{ ...equation, label: '   ' }], pos }],
+    children: [{ type: 'paragraph', children: [{ ...equation, numberPrefix: '   ' }], pos }],
   }), false)
   assert.equal(validate({
     ...document,
-    children: [{ type: 'paragraph', children: [{ ...equation, label: ' Equation' }], pos }],
+    children: [{ type: 'paragraph', children: [{ ...equation, numberPrefix: ' Equation' }], pos }],
   }), false)
   assert.equal(validate({
     ...document,
-    children: [{ type: 'paragraph', children: [{ ...equation, label: 'Equation ' }], pos }],
+    children: [{ type: 'paragraph', children: [{ ...equation, numberPrefix: 'Equation ' }], pos }],
   }), false)
   assert.equal(validate({
     ...document,
@@ -205,7 +228,7 @@ test('display math accepts an authored label and resolved number', () => {
     ...document,
     children: [{ type: 'paragraph', children: [{ ...equation, number: 1.5 }], pos }],
   }), false)
-  const { label: _label, ...numberWithoutLabel } = equation
+  const { numberPrefix: _label, ...numberWithoutLabel } = equation
   assert.equal(validate({
     ...document,
     children: [{ type: 'paragraph', children: [numberWithoutLabel], pos }],
@@ -217,134 +240,69 @@ test('display math accepts an authored label and resolved number', () => {
   }), true, firstErrors())
 })
 
-test('a figure targets a table, which no Carve source spells', () => {
-  // PART 12 §17 from both directions. The table branch is the one an HTML
-  // importer produces from `<figure><table>…<figcaption>` and no Carve source
-  // spells; the quote and image branches are the ordinary ones a captioned
-  // document produces. Pinning the set here is what makes a change to it a
-  // decision rather than a drift - carve#1161 removed the quote branch and one
-  // engine kept decoding it, because nothing said the set was closed.
+test('a figure holds block content and keeps nested table captions distinct', () => {
   const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
-  const figure = (target) => ({
-    type: 'document',
-    srcByteLength: 1,
-    children: [{ type: 'figure', target, caption: [{ type: 'text', value: 'Cap', pos }], pos }],
-  })
-  const cell = { type: 'table_cell', header: true, children: [{ type: 'text', value: 'A', pos }], pos }
-  const table = { type: 'table', rows: [{ type: 'table_row', cells: [cell], pos }], pos }
-  const quote = { type: 'block_quote', children: [{ type: 'paragraph', children: [], pos }], pos }
-
-  assert.equal(validate(figure(table)), true, firstErrors())
-  assert.equal(validate(figure(quote)), true, firstErrors())
-  assert.equal(validate(figure({ type: 'image', src: '/x.png', alt: 'x', pos })), true, firstErrors())
-  // A heading is not a captionable host, so it is not a target either.
-  assert.equal(validate(figure({ type: 'heading', level: 1, children: [], pos })), false)
+  const caption = { type: 'caption', children: [{ type: 'paragraph', children: [{ type: 'text', value: 'Cap' }] }] }
+  const cell = { type: 'table_cell', header: true, children: [{ type: 'cell_paragraph', children: [{ type: 'text', value: 'A' }] }] }
+  const table = { type: 'table', children: [{ type: 'table_head', children: [{ type: 'table_row', children: [cell] }] }], columns: [{ type: 'table_column' }], caption }
+  const figure = (children) => ({ type: 'document', astVersion: '2.0', children: [{ type: 'figure', children, caption, pos }] })
+  assert.equal(validate(figure([table])), true, firstErrors())
+  assert.equal(validate(figure([{ type: 'block_quote', children: [] }])), true, firstErrors())
+  assert.equal(validate(figure([{ type: 'image', src: '/x.png', alt: 'x' }])), true, firstErrors())
+  assert.equal(validate(figure([table, { type: 'paragraph', children: [] }])), true, firstErrors())
+  assert.equal(validate(figure([{ type: 'table_row', children: [] }])), false)
+  assert.equal(validate({ ...figure([table]), children: [{ type: 'figure', target: table, caption }] }), false)
 })
 
-test('a table accepts an optional row grouping, and only a complete one', () => {
-  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
-  const table = (rowGroups) => ({
-    type: 'document',
-    srcByteLength: 1,
-    children: [{ type: 'table', rows: [], rowGroups, pos }],
-  })
-  const grouping = {
-    headRows: 1,
-    bodies: [
-      { headRows: 1, bodyRows: 3, rowHeadColumns: 1 },
-      { headRows: 0, bodyRows: 2 },
-    ],
-    footRows: 1,
-  }
-  assert.equal(validate(table(grouping)), true, firstErrors())
-  // A table with no grouping at all is the ordinary case and stays valid: the
-  // field is optional, which is what lets an engine that has never heard of it
-  // keep producing valid trees.
-  assert.equal(
-    validate({ type: 'document', srcByteLength: 1, children: [{ type: 'table', rows: [], pos }] }),
-    true,
-    firstErrors(),
-  )
-  // PART 12 §15: the three parts are required TOGETHER. A partition missing one
-  // of them would have to be read as a zero, and a zero head is a claim.
-  for (const missing of ['headRows', 'bodies', 'footRows']) {
-    const partial = { ...grouping }
-    delete partial[missing]
-    assert.equal(validate(table(partial)), false, `a grouping without ${missing} must be refused`)
-  }
-  assert.equal(validate(table({ ...grouping, footRows: -1 })), false, 'a negative row count')
-  assert.equal(validate(table({ ...grouping, headRows: 1.5 })), false, 'a fractional row count')
-  assert.equal(validate(table({ ...grouping, rows: [] })), false, 'an unknown key in the grouping')
-  assert.equal(
-    validate(table({ ...grouping, bodies: [{ bodyRows: 2 }] })),
-    false,
-    'a body group without its intermediate-header count',
-  )
-  assert.equal(
-    validate(table({ ...grouping, bodies: [{ headRows: 0, bodyRows: 2, span: 1 }] })),
-    false,
-    'an unknown key in a body group',
-  )
-  // `rowHeadColumns` is the one part that IS optional - it partitions nothing.
-  assert.equal(
-    validate(table({ headRows: 0, bodies: [{ headRows: 0, bodyRows: 1 }], footRows: 0 })),
-    true,
-    firstErrors(),
-  )
-  // An EMPTY `bodies` is a partition like any other, and deliberately so: a
-  // head-only table would otherwise be the one shape the field cannot describe.
-  assert.equal(validate(table({ headRows: 1, bodies: [], footRows: 0 })), true, firstErrors())
+test('table group nodes hold rows directly and reject the 1.2 count object', () => {
+  const row = { type: 'table_row', children: [{ type: 'table_cell', header: false, children: [] }] }
+  const doc = (groups) => ({ type: 'document', astVersion: '2.0', children: [{ type: 'table', children: groups, columns: groups.length ? [{ type: 'table_column' }] : [] }] })
+  assert.equal(validate(doc([{ type: 'table_head', children: [row] }, { type: 'table_body', children: [row], headRows: 0 }])), true, firstErrors())
+  assert.equal(validate(doc([])), true, firstErrors())
+  assert.equal(validate(doc([{ type: 'table_foot', children: [row] }])), true, firstErrors())
+  assert.equal(validate(doc([{ type: 'table_body', children: [row], rowHeadColumns: -1 }])), false)
+  assert.equal(validate(doc([{ type: 'table_body', children: [row], headRows: 1.5 }])), false)
+  assert.equal(validate(doc([{ type: 'table_body', children: [row], rows: [] }])), false)
+  assert.equal(validate({ ...doc([]), children: [{ type: 'table', rows: [], rowGroups: {} }] }), false)
 })
 
-test('§15 does NOT make the schema the check that the counts sum', () => {
-  // The clause says the counts MUST account for every row exactly once. JSON
-  // Schema cannot express a sum across sibling fields, so validation is not
-  // that check and must not be mistaken for it - same reason the srcByteLength
-  // row below is pinned. A consumer enforces §15 itself.
-  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
-  const row = { type: 'table_row', cells: [{ type: 'table_cell', header: false, children: [] }] }
-  const doc = {
-    type: 'document',
-    srcByteLength: 1,
-    children: [
-      {
-        type: 'table',
-        rows: [row],
-        rowGroups: { headRows: 9, bodies: [{ headRows: 0, bodyRows: 9 }], footRows: 9 },
-        pos,
-      },
-    ],
-  }
-  assert.equal(validate(doc), true, `the schema is not the sum check: ${firstErrors()}`)
+test('table groups cannot become stale row counts', () => {
+  const row = { type: 'table_row', children: [{ type: 'table_cell', header: false, children: [] }] }
+  const table = { type: 'table', children: [{ type: 'table_body', children: [row] }], columns: [{ type: 'table_column' }] }
+  const doc = { type: 'document', astVersion: '2.0', children: [table] }
+  assert.equal(validate(doc), true, firstErrors())
+  assert.equal(validate({ ...doc, children: [{ ...table, children: [{ type: 'table_body', children: [] }] }] }), true, firstErrors())
+  assert.equal(validate({ ...doc, children: [{ ...table, rowGroups: { bodyRows: 1 } }] }), false)
 })
 
 test('a table accepts positional column metadata, with closed bounded entries', () => {
   const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
   const table = (columns) => ({
-    type: 'document',
+    type: 'document', astVersion: '2.0',
     srcByteLength: 1,
-    children: [{ type: 'table', rows: [], columns, pos }],
+    children: [{ type: 'table', children: [], columns, pos }],
   })
 
   assert.equal(
-    validate(table([{ align: 'right' }, {}, { align: 'center', valign: 'middle', width: 0.25 }])),
+    validate(table([{ type: 'table_column', align: 'right' }, { type: 'table_column' }, { type: 'table_column', align: 'center', valign: 'middle', width: 0.25 }])),
     true,
     firstErrors(),
   )
   assert.equal(validate(table([])), true, firstErrors())
-  assert.equal(validate(table([{ align: 'justify' }])), false, 'alignment is a closed vocabulary')
-  assert.equal(validate(table([{ width: 0 }])), false, 'zero is not a positive width fraction')
-  assert.equal(validate(table([{ width: 1.01 }])), false, 'a width fraction cannot exceed one')
-  assert.equal(validate(table([{ width: '0.25' }])), false, 'a width fraction is numeric')
-  assert.equal(validate(table([{ valign: 'baseline' }])), false, 'vertical alignment is a closed vocabulary')
+  assert.equal(validate({ ...table([]), children: [{ type: 'table', children: [] }] }), false, '2.0 tables declare their resolved columns')
+  assert.equal(validate(table([{ type: 'table_column', align: 'justify' }])), false, 'alignment is a closed vocabulary')
+  assert.equal(validate(table([{ type: 'table_column', width: 0 }])), false, 'zero is not a positive width fraction')
+  assert.equal(validate(table([{ type: 'table_column', width: 1.01 }])), false, 'a width fraction cannot exceed one')
+  assert.equal(validate(table([{ type: 'table_column', width: '0.25' }])), false, 'a width fraction is numeric')
+  assert.equal(validate(table([{ type: 'table_column', valign: 'baseline' }])), false, 'vertical alignment is a closed vocabulary')
 })
 
 test('a table cell carries an optional vertical alignment', () => {
   const cell = (valign) => ({
-    type: 'document', srcByteLength: 1,
-    children: [{ type: 'table', rows: [{ type: 'table_row', cells: [
+    type: 'document', astVersion: '2.0', srcByteLength: 1,
+    children: [{ type: 'table', columns: [{ type: 'table_column' }], children: [{ type: 'table_body', children: [{ type: 'table_row', children: [
       { type: 'table_cell', header: false, children: [], ...(valign === undefined ? {} : { valign }) },
-    ] }] }],
+    ] }] }] }],
   })
   for (const value of [undefined, 'top', 'middle', 'bottom']) {
     assert.equal(validate(cell(value)), true, `${value}: ${firstErrors()}`)
@@ -490,11 +448,11 @@ function identityClause() {
 
 test('node identity is a separate closed versioned sidecar', () => {
   const validateIdentity = new Ajv2020({ strict: true }).compile(identitySchema())
-  const sidecar = { version: 1, session: 's-7f3', nodes: [{ id: 'n4', path: '/children/3' }] }
+  const sidecar = { version: 2, session: 's-7f3', nodes: [{ id: 'n4', path: '/children/3', editorKey: 'e4', collaborationId: 'c4' }] }
   assert.equal(validateIdentity(sidecar), true, JSON.stringify(validateIdentity.errors))
-  assert.equal(validateIdentity({ ...sidecar, version: 2 }), false, 'an unimplemented version validated')
+  assert.equal(validateIdentity({ ...sidecar, version: 3 }), false, 'an unimplemented version validated')
   assert.equal(validateIdentity({ ...sidecar, unknown: true }), false, 'an unnamed root property validated')
-  assert.equal(validateIdentity({ version: 1, nodes: [] }), false, 'a sidecar with no session validated')
+  assert.equal(validateIdentity({ version: 2, nodes: [] }), false, 'a sidecar with no session validated')
   assert.equal(validateIdentity({ ...sidecar, nodes: [{ id: 'n4' }] }), false, 'an entry with no path validated')
   assert.equal(validateIdentity({ ...sidecar, nodes: [{ path: '/children/3' }] }), false, 'an entry with no id validated')
   // §38 carries no span: `pos` on the node the path addresses is the one copy.
@@ -510,7 +468,7 @@ test('an identity sidecar is not a field of the tree', () => {
   // so an ordinary consumer pays nothing and §6 round trip holds with and
   // without a sidecar. §11 already rejects an unnamed property - this asserts
   // it reaches THESE names, which is the shape an implementer reaches for.
-  const root_ = { type: 'document', children: [], srcByteLength: 0 }
+  const root_ = { type: 'document', astVersion: '2.0', children: [], srcByteLength: 0 }
   assert.equal(validate(root_), true, firstErrors())
   assert.equal(validate({ ...root_, nodeIdentity: {} }), false, 'a root carrying nodeIdentity validated')
   assert.equal(validate({ ...root_, nodeIds: {} }), false, 'a root carrying nodeIds validated')
@@ -586,7 +544,7 @@ test('a line block publishes its lines as per-stanza ranges', () => {
     ],
   }
   const withLines = (lines) => ({
-    type: 'document',
+    type: 'document', astVersion: '2.0',
     srcByteLength: 40,
     children: [{ type: 'line_block', children: [stanza], ...(lines === undefined ? {} : { lines }) }],
   })
@@ -730,6 +688,39 @@ test('the corpus is non-trivial', () => {
  */
 const SCHEMA_ROLLOUT_PENDING = new Map([])
 
+const AHEAD_OF_PIN = {
+  astVersion: 'The pinned carve-js serializer still emits 1.2 bare trees without required astVersion 2.0.',
+  byteOffsets: 'The pinned carve-js serializer still counts Unicode codepoints instead of UTF-8 bytes (carve#3598).',
+  tableColumns: 'The pinned carve-js serializer omits generated table columns and resolved defaults (carve#3262).',
+  renamedTypes: 'The pinned carve-js serializer still emits heading_ref and substitution.',
+  newTypes: {
+    caption: 'The pinned serializer still emits inline caption arrays.',
+    cell_paragraph: 'The pinned serializer still emits inline table cell children.',
+    critic_substitution: 'The pinned serializer still emits substitution.',
+    ruby_pair: 'The pinned serializer still emits untyped ruby pair records.',
+    table_body: 'The pinned serializer still emits flat table rows.',
+    table_column: 'The pinned serializer still emits untyped column records.',
+    table_foot: 'The pinned serializer still emits row-group counts.',
+    table_head: 'The pinned serializer still emits row-group counts.',
+    xref: 'The pinned serializer still emits heading_ref.',
+  },
+}
+
+test('2.0 source offsets count UTF-8 bytes', () => {
+  const node = serialize('😀\n').children[0]
+  assert.equal(node.pos.endOffset, AHEAD_OF_PIN.byteOffsets ? 1 : 4,
+    'the pinned offset unit changed; remove AHEAD_OF_PIN.byteOffsets')
+})
+
+test('2.0 tables publish columns through their widest row', () => {
+  const table = serialize('| a |\n|---|\n| b |\n').children[0]
+  if (AHEAD_OF_PIN.tableColumns) {
+    assert.equal(table.columns, undefined, 'the pinned table serializer caught up; remove AHEAD_OF_PIN.tableColumns')
+  } else {
+    assert.equal(table.columns.length, 1)
+  }
+})
+
 test('every corpus document serializes to a schema-valid AST', () => {
   const failures = []
   const cleared = []
@@ -743,7 +734,13 @@ test('every corpus document serializes to a schema-valid AST', () => {
     if (!validate(serialize(source))) failures.push(`${name} (parse): ${firstErrors()}`)
     if (!validate(serializeResolved(source))) failures.push(`${name} (resolved): ${firstErrors()}`)
   }
-  assert.deepEqual(failures.slice(0, 8), [], `${failures.length} documents fail the schema`)
+  if (AHEAD_OF_PIN.astVersion) {
+    assert.equal(failures.length, corpus.length * 2, 'the 2.0 pin debt changed; remove the declaration when the pin moves')
+    assert.ok(failures.every((failure) => failure.includes("must have required property 'astVersion'")),
+      'a pinned tree failed for a reason beyond the declared missing version')
+  } else {
+    assert.deepEqual(failures.slice(0, 8), [], `${failures.length} documents fail the schema`)
+  }
   assert.deepEqual(
     cleared,
     [],
@@ -758,7 +755,8 @@ test('every node type the reference emits is declared in the schema', () => {
     for (const tree of bothStages(source)) for (const node of walk(tree)) seen.add(node.type)
   }
   const undeclared = [...seen].filter((t) => !declared.has(t)).sort()
-  assert.deepEqual(undeclared, [], `node types emitted but not in the schema: ${undeclared.join(', ')}`)
+  assert.deepEqual(undeclared, AHEAD_OF_PIN.renamedTypes ? ['heading_ref', 'substitution'] : [],
+    `node types emitted but not in the schema: ${undeclared.join(', ')}`)
 })
 
 /*
@@ -800,7 +798,7 @@ test('every node type the schema declares is produced by a corpus document, or n
     .sort()
   assert.deepEqual(
     missing,
-    [],
+    Object.keys(AHEAD_OF_PIN.newTypes).sort(),
     `the schema declares node type(s) no corpus document produces: ${missing.join(', ')}. ` +
       'A declared type with no producer is either dead or unimplemented, and the schema ' +
       'cannot tell those apart. Add a corpus document, or name it in NOT_PRODUCIBLE with the reason.',
@@ -855,6 +853,13 @@ test('every type the schema declares is either in the vocabulary or listed as no
     // anything off the page - the link or image it feeds is the deniable node.
     // Same argument as abbreviation_def, one definition kind over (carve#642).
     'link_reference_definition',
+    'caption',
+    'cell_paragraph',
+    'ruby_pair',
+    'table_head',
+    'table_body',
+    'table_foot',
+    'table_column',
     // A layout marker for a continuation row; it renders as one space (CARVE-P12-069).
     'cell_wrap',
   ]
@@ -884,21 +889,21 @@ test('every declared type is snake_case', () => {
  */
 const REJECTED = [
   {
-    why: 'a root field beyond the three PART 12 section 7 allows',
-    doc: { type: 'document', children: [], srcByteLength: 0, footnoteDefs: {} },
+    why: 'an unknown core root field',
+    doc: { type: 'document', astVersion: '2.0', children: [], srcByteLength: 0, footnoteDefs: {} },
   },
   {
-    why: 'a root missing srcByteLength',
+    why: 'a root missing astVersion',
     doc: { type: 'document', children: [] },
   },
   {
     why: 'an unknown node type',
-    doc: { type: 'document', children: [{ type: 'callout', children: [] }], srcByteLength: 0 },
+    doc: { type: 'document', astVersion: '2.0', children: [{ type: 'callout', children: [] }], srcByteLength: 0 },
   },
   {
     why: 'a hyphenated type identifier (carve-php shipped `citation-group`)',
     doc: {
-      type: 'document',
+      type: 'document', astVersion: '2.0',
       srcByteLength: 0,
       children: [{ type: 'paragraph', children: [{ type: 'critic-comment', text: 'x' }] }],
     },
@@ -906,7 +911,7 @@ const REJECTED = [
   {
     why: 'a synonym for a spec field name (`destination` for a link `href`)',
     doc: {
-      type: 'document',
+      type: 'document', astVersion: '2.0',
       srcByteLength: 0,
       children: [
         { type: 'paragraph', children: [{ type: 'link', destination: '/a', children: [] }] },
@@ -914,21 +919,21 @@ const REJECTED = [
     },
   },
   {
-    why: 'a footnote definition spelled `id` rather than `label` (PART 12 section 7)',
-    doc: { type: 'document', srcByteLength: 0, children: [{ type: 'footnote', id: 'a', children: [] }] },
+    why: 'a footnote definition spelled `id` rather than `key` (PART 12 section 7)',
+    doc: { type: 'document', astVersion: '2.0', srcByteLength: 0, children: [{ type: 'footnote', id: 'a', children: [] }] },
   },
   {
     why: 'frontmatter published as a parsed mapping instead of raw text',
     doc: {
-      type: 'document',
+      type: 'document', astVersion: '2.0',
       srcByteLength: 0,
-      children: [{ type: 'frontmatter', format: 'yaml', content: { title: 'x' } }],
+      children: [{ type: 'frontmatter', format: 'yaml', value: { title: 'x' } }],
     },
   },
   {
     why: 'a partial pos - six fields or none',
     doc: {
-      type: 'document',
+      type: 'document', astVersion: '2.0',
       srcByteLength: 0,
       children: [{ type: 'thematic_break', pos: { startLine: 1, endLine: 1 } }],
     },
@@ -936,7 +941,7 @@ const REJECTED = [
   {
     why: 'a 0-based line in pos (PART 12 section 4 makes lines 1-based)',
     doc: {
-      type: 'document',
+      type: 'document', astVersion: '2.0',
       srcByteLength: 0,
       children: [
         {
@@ -948,19 +953,35 @@ const REJECTED = [
   },
   {
     why: 'an inline node in block position',
-    doc: { type: 'document', srcByteLength: 0, children: [{ type: 'text', value: 'x' }] },
+    doc: { type: 'document', astVersion: '2.0', srcByteLength: 0, children: [{ type: 'text', value: 'x' }] },
   },
   {
     why: 'a block node in inline position',
     doc: {
-      type: 'document',
+      type: 'document', astVersion: '2.0',
       srcByteLength: 0,
       children: [{ type: 'paragraph', children: [{ type: 'heading', level: 1, children: [] }] }],
     },
   },
   {
-    why: 'a heading level outside 1-6',
-    doc: { type: 'document', srcByteLength: 0, children: [{ type: 'heading', level: 7, children: [] }] },
+    why: 'a nonpositive heading level',
+    doc: { type: 'document', astVersion: '2.0', srcByteLength: 0, children: [{ type: 'heading', level: 0, children: [] }] },
+  },
+  {
+    why: 'a 1.2 list items slot',
+    doc: { type: 'document', astVersion: '2.0', children: [{ type: 'list', marker: { kind: 'bullet', char: '-' }, spacing: 'tight', items: [] }] },
+  },
+  {
+    why: 'a contradictory list marker',
+    doc: { type: 'document', astVersion: '2.0', children: [{ type: 'list', marker: { kind: 'bullet', char: '-', style: '1' }, spacing: 'tight', children: [] }] },
+  },
+  {
+    why: 'cell_wrap outside a cell paragraph',
+    doc: { type: 'document', astVersion: '2.0', children: [{ type: 'paragraph', children: [{ type: 'cell_wrap', line: 1 }] }] },
+  },
+  {
+    why: 'an unknown core node field',
+    doc: { type: 'document', astVersion: '2.0', children: [{ type: 'paragraph', children: [], extra: 1 }] },
   },
 ]
 
@@ -974,35 +995,39 @@ test('the schema accepts a minimal document', () => {
   // The mirror of the rejection block: a validator that rejects EVERYTHING would
   // pass every test above.
   assert.ok(
-    validate({ type: 'document', children: [], srcByteLength: 0 }),
+    validate({ type: 'document', astVersion: '2.0', children: [], srcByteLength: 0 }),
     `an empty document must validate: ${firstErrors()}`,
   )
 })
 
-test('contract 1.2: a bare root may carry astVersion', () => {
-  assert.equal(validate({ type: 'document', srcByteLength: 0, children: [], astVersion: '1.2' }), true)
-  assert.equal(validate({ type: 'document', srcByteLength: 0, children: [], astVersion: '01.2' }), false)
+test('contract 2.0: a bare root requires astVersion', () => {
+  assert.equal(validate({ type: 'document', srcByteLength: 0, children: [], astVersion: '2.0' }), true)
+  assert.equal(validate({ type: 'document', srcByteLength: 0, children: [], astVersion: '1.2' }), false)
+  assert.equal(validate({ type: 'document', srcByteLength: 0, children: [] }), false)
 })
 
-test('contract 1.2: a reference resolved to an empty definition says so', () => {
-  const link = { type: 'link', href: '', ref: 'r', rawRef: '[t][r]', resolved: true, children: [] }
-  const doc = (inline) => ({ type: 'document', srcByteLength: 0, children: [{ type: 'paragraph', children: [inline] }] })
+test('contract 2.0: an absent destination means unresolved', () => {
+  const link = { type: 'link', href: '', key: 'r', namespace: 'link', rawRef: '[t][r]', children: [] }
+  const doc = (inline) => ({ type: 'document', astVersion: '2.0', srcByteLength: 0, children: [{ type: 'paragraph', children: [inline] }] })
   assert.equal(validate(doc(link)), true)
-  assert.equal(validate(doc({ ...link, resolved: false })), false)
-  assert.equal(validate(doc({ type: 'image', src: '', alt: 'a', ref: 'r', rawRef: '[r]', resolved: true })), true)
+  const { href: _href, ...unresolved } = link
+  assert.equal(validate(doc(unresolved)), true)
+  assert.equal(validate(doc({ ...link, resolved: true })), false)
+  assert.equal(validate(doc({ type: 'image', src: '', alt: 'a', key: 'r', namespace: 'link', rawRef: '[r]' })), true)
 })
 
-test('contract 1.2: comment form is block, line or braced', () => {
-  const doc = (form) => ({ type: 'document', srcByteLength: 0, children: [{ type: 'comment', block: true, content: '', form }] })
+test('contract 2.0: comment form alone names the spelling', () => {
+  const doc = (form) => ({ type: 'document', astVersion: '2.0', srcByteLength: 0, children: [{ type: 'comment', value: '', form }] })
   for (const form of ['block', 'line', 'braced']) assert.equal(validate(doc(form)), true, form)
   assert.equal(validate(doc('trailing')), false)
+  assert.equal(validate({ ...doc('block'), children: [{ type: 'comment', value: '', form: 'block', block: true }] }), false)
 })
 
 test('the schema accepts an authored empty link reference definition', () => {
   assert.equal(validate({
-    type: 'document',
+    type: 'document', astVersion: '2.0',
     srcByteLength: 0,
-    children: [{ type: 'link_reference_definition', label: 'a', href: '' }],
+    children: [{ type: 'link_reference_definition', key: 'a', namespace: 'link', href: '' }],
   }), true)
 })
 
@@ -1033,7 +1058,7 @@ const INGEST_POS = {
   endOffset: 1,
 }
 const ingestDoc = () => ({
-  type: 'document',
+  type: 'document', astVersion: '2.0',
   srcByteLength: 2,
   children: [
     {
@@ -1228,19 +1253,19 @@ test('a citation is only ever an item of a group', () => {
   // wherever an inline node goes - while a group's payload is untouched,
   // because `citation_group.items` refs the type directly (carve#2227).
   const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
-  const citation = { type: 'citation', key: 'x', suppressAuthor: false, pos }
-  const para = (children) => ({ type: 'document', srcByteLength: 0, children: [{ type: 'paragraph', children }] })
+  const citation = { type: 'citation', key: 'x', namespace: 'citation', suppressAuthor: false, pos }
+  const para = (children) => ({ type: 'document', astVersion: '2.0', srcByteLength: 0, children: [{ type: 'paragraph', children }] })
 
   assert.equal(validate(para([{ type: 'text', value: 'see ' }, citation])), false)
   assert.equal(validate(para([{ type: 'link', href: '/u', children: [citation] }])), false)
   assert.equal(
-    validate(para([{ type: 'citation_group', raw: '[@x]', items: [citation] }])),
+    validate(para([{ type: 'citation_group', raw: '[@x]', children: [citation] }])),
     true,
     firstErrors(),
   )
   // Nor inside another citation's own inline slots.
   assert.equal(
-    validate(para([{ type: 'citation_group', raw: '[@x]', items: [{ ...citation, prefix: [citation] }] }])),
+    validate(para([{ type: 'citation_group', raw: '[@x]', children: [{ ...citation, prefix: [citation] }] }])),
     false,
   )
 })
@@ -1262,9 +1287,9 @@ test('a count with no continuation cell is a shape the schema admits', () => {
   // that refused this shape would make the clause unreachable.
   const cell = (extra) => ({ type: 'table_cell', header: false, children: [], ...extra })
   const doc = (cells) => ({
-    type: 'document',
+    type: 'document', astVersion: '2.0',
     srcByteLength: 1,
-    children: [{ type: 'table', rows: [{ type: 'table_row', cells }] }],
+    children: [{ type: 'table', columns: [{ type: 'table_column' }, { type: 'table_column' }], children: [{ type: 'table_body', children: [{ type: 'table_row', children: cells }] }] }],
   })
 
   assert.equal(validate(doc([cell({ colspan: 2, rowspan: 2 })])), true, firstErrors())
@@ -1302,7 +1327,7 @@ test('a directive carries the title its opener spells', () => {
   // slot for it, so the title was dropped with no diagnostic.
   const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
   const title = [{ type: 'text', value: 'Contents', pos }]
-  const doc = (node) => ({ type: 'document', srcByteLength: 1, children: [node] })
+  const doc = (node) => ({ type: 'document', astVersion: '2.0', srcByteLength: 1, children: [node] })
 
   assert.equal(validate(doc({ type: 'directive', kind: 'toc', title, children: [] })), true, firstErrors())
   // The title is optional; children is present even when the body is empty.
@@ -1317,7 +1342,7 @@ test('a directive carries the title its opener spells', () => {
 })
 
 test('generated-content kinds are directives, not admonitions', () => {
-  const doc = (node) => ({ type: 'document', srcByteLength: 0, children: [node] })
+  const doc = (node) => ({ type: 'document', astVersion: '2.0', srcByteLength: 0, children: [node] })
   for (const kind of schema.$defs.directive.properties.kind.enum) {
     assert.equal(validate(doc({ type: 'directive', kind, children: [] })), true, `${kind} must be a directive`)
     assert.equal(validate(doc({ type: 'directive', kind })), false, `${kind} must publish children`)
@@ -1332,7 +1357,7 @@ test('generated-content kinds are directives, not admonitions', () => {
 
 test('an admonition kind must name a type word', () => {
   const document = (kind) => ({
-    type: 'document',
+    type: 'document', astVersion: '2.0',
     srcByteLength: 0,
     children: [{ type: 'admonition', kind, children: [] }],
   })
@@ -1345,7 +1370,8 @@ test('the reference parser publishes all six generated-content kinds with author
     for (const body of ['', 'Body\n']) {
       const source = `::: ${kind}\n${body}:::\n`
       const document = serialize(source)
-      assert.equal(validate(document), true, `${kind}: ${firstErrors()}`)
+      assert.equal(validate(document), AHEAD_OF_PIN.astVersion ? false : true, `${kind}: ${firstErrors()}`)
+      if (AHEAD_OF_PIN.astVersion) assert.equal(document.astVersion, undefined, 'pin debt must still be present')
       assert.equal(document.children.length, 1, `${kind}: one block`)
       const directive = document.children[0]
       assert.equal(directive.type, 'directive', kind)
@@ -1401,22 +1427,24 @@ test('an annotation range is a separate closed versioned sidecar', () => {
   const range = {
     id: 'comment-12',
     kind: 'comment',
+    payload: { author: 'A', date: '2026-10-25', resolved: false, replies: [] },
     start: { path: '/children/3', offset: 4 },
     end: { path: '/children/4', offset: 9 },
   }
-  const sidecar = { version: 1, ranges: [range] }
+  const sidecar = { version: 2, ranges: [range] }
   assert.equal(validateRanges(sidecar), true, JSON.stringify(validateRanges.errors))
   // The crossing range is the point of the shape: two anchors, different nodes.
-  assert.equal(validateRanges({ version: 1, ranges: [range, { ...range, id: 'hit-1', kind: 'search' }] }), true)
-  assert.equal(validateRanges({ ...sidecar, version: 2 }), false, 'an unimplemented version validated')
+  assert.equal(validateRanges({ version: 2, ranges: [range, { ...range, id: 'hit-1', kind: 'org.example.search' }] }), true)
+  assert.equal(validateRanges({ ...sidecar, ranges: [{ ...range, start: { path: '/children/3', boundary: 'before' } }] }), true)
+  assert.equal(validateRanges({ ...sidecar, version: 3 }), false, 'an unimplemented version validated')
   assert.equal(validateRanges({ ...sidecar, unknown: true }), false, 'an unnamed root property validated')
   assert.equal(validateRanges({ ranges: [] }), false, 'a sidecar with no version validated')
-  assert.equal(validateRanges({ version: 1, ranges: [{ ...range, kind: undefined }] }), false, 'a range with no kind validated')
-  assert.equal(validateRanges({ version: 1, ranges: [{ ...range, start: { path: '/children/3' } }] }), false, 'an anchor with no offset validated')
-  assert.equal(validateRanges({ version: 1, ranges: [{ ...range, end: { path: '/children/4', offset: -1 } }] }), false, 'a negative offset validated')
+  assert.equal(validateRanges({ version: 2, ranges: [{ ...range, kind: undefined }] }), false, 'a range with no kind validated')
+  assert.equal(validateRanges({ version: 2, ranges: [{ ...range, start: { path: '/children/3' } }] }), false, 'an anchor with no offset or boundary validated')
+  assert.equal(validateRanges({ version: 2, ranges: [{ ...range, end: { path: '/children/4', offset: -1 } }] }), false, 'a negative offset validated')
   // §40 restates no span: the anchor is a path and an offset, not a byte range.
   assert.equal(
-    validateRanges({ version: 1, ranges: [{ ...range, start: { path: '/children/3', offset: 4, startByte: 0 } }] }),
+    validateRanges({ version: 2, ranges: [{ ...range, start: { path: '/children/3', offset: 4, startByte: 0 } }] }),
     false,
     'an anchor restating a byte validated',
   )
@@ -1427,7 +1455,7 @@ test('an annotation range is not a field of the tree', () => {
   // so §6 equality holds with and without a sidecar and an ordinary consumer
   // pays nothing. §11 rejects an unnamed property - this asserts it reaches the
   // names an implementer would reach for first.
-  const bare = { type: 'document', children: [], srcByteLength: 0 }
+  const bare = { type: 'document', astVersion: '2.0', children: [], srcByteLength: 0 }
   assert.equal(validate(bare), true, firstErrors())
   assert.equal(validate({ ...bare, ranges: [] }), false, 'a root carrying ranges validated')
   assert.equal(validate({ ...bare, annotationRanges: {} }), false, 'a root carrying annotationRanges validated')
@@ -1490,7 +1518,7 @@ test('PART 12 §40 settles the four points carve#2232 left open', () => {
   const unsettled = [
     ['the anchor form', 'RFC 6901'],
     ['what an edit invalidates', 'not tombstoned'],
-    ['the kind vocabulary', 'OPEN VOCABULARY'],
+    ['the kind vocabulary', 'qualified extension'],
     ['a canonical write', 'NOT SURVIVE A CANONICAL WRITE'],
   ].filter(([, phrase]) => !clause.includes(phrase))
   assert.deepEqual(
@@ -1534,7 +1562,7 @@ test('provenance is a separate closed versioned sidecar', () => {
   assert.equal(validateProvenance({ ...sidecar, nodes: [{ ...node, origin: 'imported' }] }), false, 'a third origin validated')
   assert.equal(validateProvenance({ ...sidecar, nodes: [{ ...node, endByte: undefined }] }), false, 'half a byte range validated')
   assert.equal(validateProvenance({ ...sidecar, nodes: [{ ...node, source: undefined }] }), false, 'a node naming no source validated')
-  // §41 restates no codepoint offset: `pos` on the node is measured elsewhere.
+  // §41 does not duplicate the node's `pos` byte offsets.
   assert.equal(validateProvenance({ ...sidecar, nodes: [{ ...node, startOffset: 0 }] }), false, 'a node restating an offset validated')
 })
 
@@ -1542,7 +1570,7 @@ test('provenance is not a field of the tree', () => {
   // §41's first sentence from the tree's side. §13 keeps filesystem paths out of
   // the core tree, so the names an implementer would reach for first have to be
   // refused there rather than merely discouraged.
-  const bare = { type: 'document', children: [], srcByteLength: 0 }
+  const bare = { type: 'document', astVersion: '2.0', children: [], srcByteLength: 0 }
   assert.equal(validate(bare), true, firstErrors())
   assert.equal(validate({ ...bare, provenance: {} }), false, 'a root carrying provenance validated')
   assert.equal(validate({ ...bare, sources: [] }), false, 'a root carrying sources validated')
@@ -1594,7 +1622,7 @@ test('PART 12 §41 settles the five points carve#2233 left open', () => {
   const clause = provenanceClause() + sharedSidecarClause()
   const unsettled = [
     ['what ancestry hangs on', 'ANCESTRY IS ON THE SOURCE'],
-    ['bytes against codepoints', 'A BYTE RANGE IS NOT AN OFFSET'],
+    ['provenance versus node position', 'A PROVENANCE RANGE IS NOT A NODE OFFSET'],
     ['where a path may appear', 'FILESYSTEM PATH MAY APPEAR'],
     ['node or range', 'PROVENANCE IS PER NODE'],
     ['a canonical write', 'NOT SURVIVE A CANONICAL WRITE'],
@@ -1609,19 +1637,28 @@ test('PART 12 §41 settles the five points carve#2233 left open', () => {
 })
 
 test('table head and foot attributes use the ordinary closed attributes schema', () => {
-  const groups = { headRows: 0, bodies: [], footRows: 0, headAttrs: {}, footAttrs: { id: 'total', classes: ['sum'], keyValues: { 'data-total': '1' } } }
-  const doc = { type: 'document', srcByteLength: 0, children: [{ type: 'table', rows: [], rowGroups: groups }] }
+  const groups = [{ type: 'table_head', children: [], attrs: {} }, { type: 'table_foot', children: [], attrs: { id: 'total', classes: ['sum'], keyValues: { 'data-total': '1' } } }]
+  const doc = { type: 'document', astVersion: '2.0', srcByteLength: 0, children: [{ type: 'table', children: groups, columns: [] }] }
   assert.equal(validate(doc), true, firstErrors())
   for (const invalid of [null, [], { unknown: 'x' }, { classes: 4 }, { keyValues: { x: 1 } }]) {
-    assert.equal(validate({ ...doc, children: [{ ...doc.children[0], rowGroups: { ...groups, headAttrs: invalid } }] }), false)
+    assert.equal(validate({ ...doc, children: [{ ...doc.children[0], children: [{ ...groups[0], attrs: invalid }, groups[1]] }] }), false)
   }
 })
 
+test('empty attributed table groups survive the 2.0 fixture upgrade', () => {
+  const rows = JSON.parse(readFileSync(resolve(root, 'tests/fixtures/table-section-attributes.json'), 'utf8'))
+  for (const row of rows) assert.equal(validate(row.ast), true, `${row.name}: ${firstErrors()}`)
+  const groups = rows[0].ast.children[0].children
+  assert.deepEqual(groups.map((group) => group.type), ['table_head', 'table_body', 'table_foot'])
+  assert.equal(groups[0].attrs.id, 'head')
+  assert.equal(groups[2].attrs.keyValues['data-total'], '1')
+})
+
 test('raw payload stores literal termination and rejects obsolete metadata', () => {
-  const document = raw => ({ type: 'document', srcByteLength: 3, children: [raw] })
+  const document = raw => ({ type: 'document', astVersion: '2.0', srcByteLength: 3, children: [raw] })
   const vectors = JSON.parse(readFileSync(resolve(root, 'tests/fixtures/raw-payload-termination.json'), 'utf8'))
   for (const vector of vectors) assert.equal(validate(document(vector.raw)), true, firstErrors())
-  const raw = { type: 'raw_block', format: 'html', content: 'x\n' }
+  const raw = { type: 'raw_block', format: 'html', value: 'x\n' }
   for (const value of [true, false, 0, '', null]) {
     assert.equal(validate(document({ ...raw, contentTerminated: value })), false)
   }
