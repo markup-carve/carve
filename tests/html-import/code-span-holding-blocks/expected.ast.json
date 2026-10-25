@@ -1,1 +1,1 @@
-{"type":"document","children":[{"type":"paragraph","children":[{"type":"code","value":"foobar"}]}]}
+{"type":"document","children":[{"type":"paragraph","children":[{"type":"code","value":"foobar"}]}],"astVersion":"2.0","stages":["blockImagePromotion","referenceResolution","tableAlignment"]}
