@@ -65088,3 +65088,40 @@ body
 ```
 
 ::::
+
+## A display-math span with trailing attributes takes a caption
+
+::: compare
+
+```carve
+$$`E=mc^2`{#eq-1}
+^ cap
+```
+
+```html
+<figure>
+  <p><span class="math display" id="eq-1" role="math">\[E=mc^2\]</span></p>
+  <figcaption>cap</figcaption>
+</figure>
+```
+
+:::
+
+## A styled display-math span takes a caption across one blank line
+
+::: compare
+
+```carve
+$$`x+y`{.boxed data-k=v}
+
+^ Equation #: Sum
+```
+
+```html
+<figure>
+  <p><span class="math display boxed" data-k="v" role="math">\[x+y\]</span></p>
+  <figcaption>Equation 1: Sum</figcaption>
+</figure>
+```
+
+:::
