@@ -475,8 +475,8 @@ CarveCore {
   // and the skip would have been a third copy.
   destSlot   = "(" destSlotBody ")"
   destSlotBody = dest destTitle? -- nonempty
-               | destTitle (" " | "\t")* -- emptyTitle
-               | (" " | "\t")* -- empty
+               | destTitle " "* -- emptyTitle
+               | " "* -- empty
   refTail    = "[" refLabel? "]" attrRun?
   refLabel   = (~"]" ~newline any)+
   // A destination's parentheses BALANCE (grammar link_destination), so a URL

@@ -20,7 +20,7 @@ The count-only run covers 3,056 core documents and their 193 target sidecars.
 The run scores 3,249 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: `660-a-titled-admonition-skips-an-authored-heading-id`.
+Corpus added since this run: `660-an-empty-link-destination-takes-spaces`, `661-a-tab-cannot-pad-an-empty-link-destination`, `660-a-titled-admonition-skips-an-authored-heading-id`.
 
 Sidecars added since this run: none.
 

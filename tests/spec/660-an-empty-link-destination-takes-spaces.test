@@ -1,0 +1,7 @@
+An empty link destination takes spaces
+
+```
+[t](  )
+.
+<p><a href="">t</a></p>
+```
