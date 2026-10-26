@@ -1074,6 +1074,7 @@ index: examples/edge-cases/index.md
   nested-term-after-a-list-in-a-description
   a-flush-left-description-leaves-a-nested-term-s-host
   a-flush-left-description-leaves-a-deeper-host
+  indented-term-ends-with-its-unclosed-host
   abbreviation-matches-on-word-boundaries-only
   abbreviation-definition-interrupts-a-paragraph
   abbreviation-definition-separator-must-be-a-space
