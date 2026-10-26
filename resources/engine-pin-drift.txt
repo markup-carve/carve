@@ -24,3 +24,6 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+
+673-link-titles-accept-trailing-ascii-padding-with-either-destination  B9: pinned engine rejects title padding
+673-link-titles-accept-trailing-ascii-padding-with-either-destination-2  B9: pinned engine rejects title padding

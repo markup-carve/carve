@@ -474,7 +474,7 @@ CarveCore {
   // tail, the image and the nested-run skip above. It was written out twice
   // and the skip would have been a third copy.
   destSlot   = "(" destSlotBody ")"
-  destSlotBody = dest destTitle? -- nonempty
+  destSlotBody = dest (destTitle " "*)? -- nonempty
                | destTitle " "* -- emptyTitle
                | " "* -- empty
   refTail    = "[" refLabel? "]" attrRun?

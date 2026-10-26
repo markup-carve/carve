@@ -357,6 +357,11 @@
       "feature": "smart-typography-quotes-off",
       "target": "ansi",
       "description": "Quote source runs, including apostrophes and derived heading labels, with other smart substitutions enabled."
+    },
+    {
+      "slug": "99-citations-definition-space-run",
+      "feature": "citations-numbered",
+      "description": "Citation definitions consume a run of ASCII spaces after the marker."
     }
   ]
 }

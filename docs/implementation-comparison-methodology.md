@@ -20,7 +20,7 @@ The count-only run covers 3,063 core documents and their 193 target sidecars.
 The run scores 3,256 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: `660-an-empty-link-destination-takes-spaces`, `661-a-tab-cannot-pad-an-empty-link-destination`, `662-a-tab-after-a-comment-marker-stays-in-its-text`, `663-a-titled-admonition-skips-an-authored-heading-id`, `670-bidi-controls-in-math-content`, `671-a-fence-with-no-host-prefix-leaves-an-inline-run`, `672-table-content-parses-inline-markup`.
+Corpus added since this run: `660-an-empty-link-destination-takes-spaces`, `661-a-tab-cannot-pad-an-empty-link-destination`, `662-a-tab-after-a-comment-marker-stays-in-its-text`, `663-a-titled-admonition-skips-an-authored-heading-id`, `670-bidi-controls-in-math-content`, `671-a-fence-with-no-host-prefix-leaves-an-inline-run`, `672-table-content-parses-inline-markup`, `673-link-titles-accept-trailing-ascii-padding-with-either-destination`.
 
 Sidecars added since this run: none.
 
@@ -109,7 +109,7 @@ than rely on the ceilings agreeing, because §25 says they will not.
 
 ## Optional Tier-2 Profile
 
-Optional corpus added since this run: none.
+Optional corpus added since this run: `99-citations-definition-space-run`.
 
 The optional profile was measured on 2026-10-25 CET with the same engine commits as
 the core snapshot. It enables a shared adapter per feature where each
