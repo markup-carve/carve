@@ -998,6 +998,7 @@ index: examples/edge-cases/index.md
 > Bodies as blocks, the body content column, collection inside containers and placement of the rendered list.
 out: examples/edge-cases/footnotes.md
 index: examples/edge-cases/index.md
+  authored-inline-footnote-reference-ids
   footnote-with-multiple-blocks
   a-fence-after-a-footnote-quote-has-its-own-base
   cross-references-resolve-inside-footnote-bodies
