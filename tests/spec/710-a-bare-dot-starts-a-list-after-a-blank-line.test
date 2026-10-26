@@ -1,0 +1,14 @@
+A bare dot starts a list after a blank line
+
+```
+Before.
+
+. first
+. second
+.
+<p>Before.</p>
+<ol>
+  <li>first</li>
+  <li>second</li>
+</ol>
+```
