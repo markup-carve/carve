@@ -116,6 +116,16 @@ function reserveHeadingIds(blocks) {
   const authoredIds = []
   const visited = new WeakSet()
   const visit = (value) => {
+    if (typeof value === 'string') {
+      if (value.includes('{#') || value.includes('id=')) {
+        const inline = renderInline(value)
+        for (const match of inline.matchAll(/<[a-z][^>]*\bid="([^"]*)"/g)) {
+          authoredIds.push(match[1].replace(/&(?:lt|gt|quot|apos|amp);/g, (entity) =>
+            ({ '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'", '&amp;': '&' })[entity]))
+        }
+      }
+      return
+    }
     if (!value || typeof value !== 'object' || visited.has(value)) return
     visited.add(value)
     if (value instanceof Map) {

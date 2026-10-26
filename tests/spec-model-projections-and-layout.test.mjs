@@ -20,6 +20,7 @@ test('authored block IDs are reserved before heading slugs', () => {
   assert.match(html('# x\n{#x}\nbody'), /<section id="x-2">/)
   assert.match(html('# x\n{#x}\nbody'), /<p id="x">body<\/p>/)
   assert.match(html('# x\n{#x}\n{#y}\nbody'), /<section id="x">/)
+  assert.match(html('# x\n\n[body]{#x}'), /<section id="x-2">/)
 })
 
 test('structural image attributes precede authored block attributes', () => {
