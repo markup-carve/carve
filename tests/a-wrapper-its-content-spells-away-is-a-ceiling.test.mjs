@@ -4,9 +4,8 @@
  * Where a block's whole content is a single node whose own spelling, at that
  * block's column, is read back as a block opener of the node's kind, the writer
  * emits that spelling and the WRAPPER is lost. `parse(fmt(x)) == parse(x)`
- * cannot hold for such a document, so what the producer owes is that the loss
- * is DECLARED - `structure-unspellable` where there is a diagnostic channel,
- * and a contract that names the carve-out where there is not.
+ * cannot hold for such a document, so the writer's contract names the loss.
+ * HTML import follows CARVE-P9R-007 and emits an image without a wrapper loss.
  *
  * WHY THIS IS A TEST AND NOT A CORPUS DOCUMENT. The corpus compares a source
  * against rendered output, and this clause is about a WRITE: the document that
@@ -19,12 +18,8 @@
  * always dropped" and a rule read as "the writer never keeps a wrapper" both
  * pass the two positive cases and fail the controls.
  *
- * PIN LAG IS DECLARED, never tolerated, and it fails in BOTH directions - the
- * same rule as resources/engine-pin-drift.txt. The build package.json pins
- * predates markup-carve/carve-js#1422, which is the change that puts the
- * `structure-unspellable` row on the paragraph-wrapped image, so the declared
- * value below is the row's ABSENCE. When the pin moves past it the assertion
- * goes red and the declaration goes out with the bump.
+ * CARVE-P9R-007 now makes an imported image-only paragraph a plain image.
+ * That import does not report the former wrapper loss.
  */
 
 import { test } from 'node:test'
@@ -36,13 +31,6 @@ import { htmlToCarve, parse, renderCarve } from '@markup-carve/carve'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
-
-// Declared lag against the `@markup-carve/carve` build package.json pins.
-// EMPTY IS THE GOAL. The pin moved past markup-carve/carve-js#1422, the engine
-// now reports the row, and the declaration came out with the bump. A new lag is
-// declared here as a one-sentence reason; the assertion below fails in both
-// directions, so it cannot age into folklore.
-const PIN_LAG = ''
 
 const types = (source) => parse(source).children.map((block) => block.type)
 
@@ -137,20 +125,11 @@ test('the control: the writer is not simply dropping every wrapper', () => {
   assert.deepEqual(types(renderCarve(parse(' hello\n'))), ['paragraph'])
 })
 
-test('the loss is DECLARED where the producer has a channel to declare it in', () => {
+test('HTML import writes an image-only paragraph without a wrapper loss', () => {
   const { value, report } = htmlToCarve('<p><img src="g.jpg" alt="G"></p>')
   const codes = report.diagnostics.map((d) => d.code)
 
-  // The source half holds on both sides of the pin: the wrapper is lost either
-  // way, and only the reporting moves.
   assert.equal(value, '![G](g.jpg)\n')
   assert.deepEqual(types(value), ['image'])
-
-  if (PIN_LAG) {
-    // Fails in the other direction too: when the pinned build reports the row,
-    // this assertion goes red and the declaration must go out.
-    assert.deepEqual(codes, [], `pin lag is declared and the engine no longer has it - delete PIN_LAG: ${PIN_LAG}`)
-    return
-  }
-  assert.deepEqual(codes, ['structure-unspellable'], 'the wrapper was lost and nothing said so')
+  assert.deepEqual(codes, [])
 })

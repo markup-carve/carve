@@ -20,4 +20,3 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-697-a-final-tab-does-not-change-list-ownership-in-a-description  The pinned JavaScript formatter changes two tight description-body lists into another layout (carve-js#3629).
