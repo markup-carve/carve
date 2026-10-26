@@ -65726,24 +65726,6 @@ Without a symbol map, the shortcode emits its literal text. Its final colon puts
 
 :::
 
-## Frontmatter closer at end of input
-
-The fixture omits the final newline after the closer.
-
-::: compare no-final-newline
-
-```carve
----
-a: 1
----
-```
-
-```html
-
-```
-
-:::
-
 ## Non-row pipe keeps lazy plus in a description item
 
 A pipe line with text after its closing pipe stays paragraph text, so a flush-left plus line continues that item.
@@ -65821,6 +65803,24 @@ An open paragraph inside the div keeps the flush-left line in the item and div.
     </div>
   </li>
 </ul>
+```
+
+:::
+
+## Frontmatter closer at end of input
+
+The fixture omits the final newline after the closer.
+
+::: compare no-final-newline
+
+```carve
+---
+a: 1
+---
+```
+
+```html
+
 ```
 
 :::
