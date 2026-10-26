@@ -1,0 +1,18 @@
+A definition opens a sibling block after a list
+
+```
+:: term
+: - a
+
+   > c
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+    <blockquote><p>c</p></blockquote>
+  </dd>
+</dl>
+```

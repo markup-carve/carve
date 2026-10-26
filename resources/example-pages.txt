@@ -204,6 +204,8 @@ source: examples-tier3.md
 > Alignment, spans, multi-line cells, ragged rows and the pipe rules that decide whether a table exists at all.
 out: examples/edge-cases/tables.md
 index: examples/edge-cases/index.md
+  an-indented-line-after-a-table-is-a-paragraph
+  escaped-table-hyphens-stay-literal
   a-head-row-alignment-marker-sets-the-whole-column
   table-content-parses-inline-markup
   table-spans-keep-alignment-defaults-in-physical-columns
@@ -262,6 +264,9 @@ index: examples/edge-cases/index.md
 > Markers, looseness, the content-column model, continuation markers and block openers inside items.
 out: examples/edge-cases/lists.md
 index: examples/edge-cases/index.md
+  a-tabbed-table-ends-before-a-flush-left-list-line
+  a-list-import-preserves-its-hard-break
+  a-post-marker-tab-keeps-a-quote-literal
   635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text
   635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-2
   635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-3
@@ -1056,6 +1061,8 @@ index: examples/edge-cases/index.md
 > Terms and descriptions, abbreviation definitions and the document levels that may declare them.
 out: examples/edge-cases/definitions.md
 index: examples/edge-cases/index.md
+  a-below-column-fence-stays-in-a-definition-paragraph
+  a-definition-opens-a-sibling-block-after-a-list
   abbreviation-matches-on-word-boundaries-only
   abbreviation-definition-interrupts-a-paragraph
   abbreviation-definition-separator-must-be-a-space
