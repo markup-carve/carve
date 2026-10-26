@@ -1190,6 +1190,7 @@ index: examples/edge-cases/index.md
   headings-inside-containers-are-not-wrapped
   attribute-order-on-an-unwrapped-heading
   implicit-heading-references-with-no-definition
+  explicit-references-do-not-use-heading-fallback
   a-heading-id-keeps-a-non-ascii-space
   a-heading-reference-folds-unicode-normalization-but-not-compatibility
   a-collapsed-reference-reaches-a-heading-by-the-heading-s-rendered-text

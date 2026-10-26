@@ -16,17 +16,18 @@ implementation exposes.
 
 ## Core fixture counts (2026-10-26 CET)
 
-The count-only run covers 3,068 core documents and their 193 target sidecars.
-The run scores 3,261 fixtures per engine. It checks expected output on
+The count-only run covers 3,107 core documents and their 193 target sidecars.
+The run scores 3,300 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: `660-an-empty-link-destination-takes-spaces`, `661-a-tab-cannot-pad-an-empty-link-destination`, `662-a-tab-after-a-comment-marker-stays-in-its-text`, `663-a-titled-admonition-skips-an-authored-heading-id`, `670-bidi-controls-in-math-content`, `671-a-fence-with-no-host-prefix-leaves-an-inline-run`, `672-table-content-parses-inline-markup`, `673-link-titles-accept-trailing-ascii-padding-with-either-destination`, `674-a-partial-braced-opener-before-a-terminal-backslash`, `675-authored-inline-footnote-reference-ids`, `676-an-unclosed-backtick-run-still-forms-math`, `677-an-unresolved-symbol-leaves-a-colon-before-a-quote`, `678-a-below-column-fence-stays-in-a-definition-paragraph`, `679-a-tabbed-table-ends-before-a-flush-left-list-line`, `680-an-indented-line-after-a-table-is-a-paragraph`, `681-a-list-import-preserves-its-hard-break`, `682-escaped-table-hyphens-stay-literal`, `683-a-definition-opens-a-sibling-block-after-a-list`, `684-a-post-marker-tab-keeps-a-quote-literal`, `685-escaped-hyphen-run-in-a-table-cell`, `686-nested-term-after-a-list-in-a-description`, `687-quotes-open-after-an-unresolved-symbol`, `691-frontmatter-closer-at-end-of-input`, `692-a-flush-left-description-leaves-a-nested-term-s-host`, `693-a-flush-left-description-leaves-a-deeper-host`, `694-line-block-inline-note`, `697-a-final-tab-does-not-change-list-ownership-in-a-description`, `698-indented-term-ends-with-its-unclosed-host`, `699-a-quoted-link-definition-in-a-footnote-body-registers-globally`, `700-a-marker-line-sublist-stays-open-in-a-description-body`, `701-a-class-key-value-shares-the-class-slot`.
+Corpus added since this run: none.
 
 Sidecars added since this run: none.
 
-The fixture trees match spec commit `180dd2d13`. The runner reported clean
-spec and engine worktrees at the commits below. Engine spec submodules were not
-initialized because these runs read this repository's corpus directly.
+The run used this branch's corpus, including the new reference cases. The spec
+worktree held those additions; the engine worktrees were clean at the commits
+below. Engine spec submodules were not initialized because this comparison
+reads this repository's corpus directly.
 
 Earlier measurements remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/2c3d174b605ab8da3c0c2e59e5c1067f20aafa9d/docs/implementation-comparison-methodology.md),
@@ -35,15 +36,15 @@ including the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>3068 / 3068</strong>
+    <strong>3107 / 3107</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3068 / 3068</strong>
+    <strong>3107 / 3107</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3068 / 3068</strong>
+    <strong>3107 / 3107</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -54,9 +55,9 @@ including the
 
 | Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `a5bdaee14` | `3068 / 3068` | `3261 / 3261` | `0` | `0` |
-| JS | `67d3ea249` | `3068 / 3068` | `3261 / 3261` | `0` | `0` |
-| PHP | `8d5f7c58c` | `3068 / 3068` | `3261 / 3261` | `0` | `0` |
+| Rust | `fc0f31c78` | `3107 / 3107` | `3300 / 3300` | `0` | `0` |
+| JS | `4a10e5eae` | `3107 / 3107` | `3300 / 3300` | `0` | `0` |
+| PHP | `6280573be` | `3107 / 3107` | `3300 / 3300` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
@@ -483,12 +484,12 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3068 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=3261/3261 mismatch=0 error=0 skipped=0 runs=3261
+profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3107 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=3300/3300 mismatch=0 error=0 skipped=0 runs=3300
   mismatching documents: 0
-js: pass=3261/3261 mismatch=0 error=0 skipped=0 runs=3261
+js: pass=3300/3300 mismatch=0 error=0 skipped=0 runs=3300
   mismatching documents: 0
-php: pass=3261/3261 mismatch=0 error=0 skipped=0 runs=3261
+php: pass=3300/3300 mismatch=0 error=0 skipped=0 runs=3300
   mismatching documents: 0
 cross_impl_diffs=0
 

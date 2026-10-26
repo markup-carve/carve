@@ -1441,9 +1441,9 @@ function resolveRefsOnce(html, ctx) {
     const key = /[\r\n]/.test(rawKey) ? null : labelKey(rawKey)
     if (key === null) return `[${source ?? text}][${label ?? ''}]${attrSrc ?? ''}`
     const def = ctx.linkDefs.get(key)
-    if (!def) {
+    if (!def && label === null) {
       // R1 IMPLICIT HEADING FALLBACK. Link definitions win the tie above, so
-      // this only runs when the label matches none. Every production engine
+      // this only runs for a collapsed reference with no definition. Every production engine
       // does this; the oracle did not, and no corpus case could tell because
       // each one pairing `[X][]` with a definition never reaches the branch
       // (carve#453).
@@ -1453,12 +1453,13 @@ function resolveRefsOnce(html, ctx) {
       // this side only, so `# a :smile: b` was reachable by
       // `[a :smile: b][]` and not by `[a b][]`, while all three engines
       // resolve both (markup-carve/carve#1011).
-      const indexKey =
-        label == null && typeof source === 'string' ? derivedText(source) : (label ?? text)
+      const indexKey = typeof source === 'string' ? derivedText(source) : text
       const heading = ctx.headingRefs.get(refKey(indexKey))
       if (heading !== undefined) {
         return `<a href="#${escapeAttr(heading)}"${renderAttrs(attrList ?? [])}>${text}</a>`
       }
+    }
+    if (!def) {
       // UNRESOLVED -> LITERAL (R1), and literal means the SOURCE. `text` is
       // the bracket content already rendered, so emitting it turned
       // `[*bold*][]` into `[<strong>bold</strong>][]` - a construct the reader
