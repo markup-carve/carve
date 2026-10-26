@@ -16,15 +16,15 @@ implementation exposes.
 
 ## Core fixture counts (2026-10-26 CET)
 
-The count-only run covers 3,108 core documents and their 193 target sidecars.
-The run scores 3,301 fixtures per engine. It checks expected output on
+The count-only run covers 3,114 core documents and their 193 target sidecars.
+The run scores 3,307 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: `704-a-non-ascii-letter-does-not-block-a-bare-delimiter`, `705-unicode-whitespace-ends-a-link-destination`, `706-an-invalid-attribute-block-leaves-a-definition-as-prose`, `707-a-reference-definition-needs-a-separator-before-its-destination`.
+Corpus added since this run: none.
 
 Sidecars added since this run: none.
 
-The run used this branch's corpus, including the new reference and heading clone cases. The spec
+The run used this branch's corpus, including the new inline, reference, heading clone, and image promotion cases. The spec
 worktree held those additions; the engine worktrees were clean at the commits
 below. Engine spec submodules were not initialized because this comparison
 reads this repository's corpus directly.
@@ -36,15 +36,15 @@ including the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>3108 / 3108</strong>
+    <strong>3114 / 3114</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3108 / 3108</strong>
+    <strong>3114 / 3114</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3108 / 3108</strong>
+    <strong>3114 / 3114</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -55,9 +55,9 @@ including the
 
 | Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `fc0f31c78` | `3108 / 3108` | `3301 / 3301` | `0` | `0` |
-| JS | `4a10e5eae` | `3108 / 3108` | `3301 / 3301` | `0` | `0` |
-| PHP | `6280573be` | `3108 / 3108` | `3301 / 3301` | `0` | `0` |
+| Rust | `fc0f31c78` | `3114 / 3114` | `3307 / 3307` | `0` | `0` |
+| JS | `364d00f43` | `3114 / 3114` | `3307 / 3307` | `0` | `0` |
+| PHP | `6280573be` | `3114 / 3114` | `3307 / 3307` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
@@ -484,12 +484,12 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3108 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=3301/3301 mismatch=0 error=0 skipped=0 runs=3301
+profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3114 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=3307/3307 mismatch=0 error=0 skipped=0 runs=3307
   mismatching documents: 0
-js: pass=3301/3301 mismatch=0 error=0 skipped=0 runs=3301
+js: pass=3307/3307 mismatch=0 error=0 skipped=0 runs=3307
   mismatching documents: 0
-php: pass=3301/3301 mismatch=0 error=0 skipped=0 runs=3301
+php: pass=3307/3307 mismatch=0 error=0 skipped=0 runs=3307
   mismatching documents: 0
 cross_impl_diffs=0
 

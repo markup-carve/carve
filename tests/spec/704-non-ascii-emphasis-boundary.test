@@ -1,7 +1,0 @@
-Non-ASCII emphasis boundary
-
-```
-é*x*
-.
-<p>é<strong>x</strong></p>
-```
