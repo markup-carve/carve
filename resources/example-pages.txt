@@ -265,6 +265,7 @@ index: examples/edge-cases/index.md
 > Markers, looseness, the content-column model, continuation markers and block openers inside items.
 out: examples/edge-cases/lists.md
 index: examples/edge-cases/index.md
+  non-row-pipe-keeps-lazy-plus-in-a-nested-item
   a-tabbed-table-ends-before-a-flush-left-list-line
   a-list-import-preserves-its-hard-break
   a-post-marker-tab-keeps-a-quote-literal
@@ -648,6 +649,7 @@ index: examples/edge-cases/index.md
 out: examples/edge-cases/containers.md
   invalid-named-container-metadata-keeps-the-subtree
 index: examples/edge-cases/index.md
+  non-row-pipe-keeps-lazy-plus-in-an-unclosed-div
   a-fence-with-no-host-prefix-leaves-an-inline-run
   fenced-code-shorter-inner-fence
   blockquote-caption-after-a-blank-line
@@ -1063,6 +1065,7 @@ index: examples/edge-cases/index.md
 > Terms and descriptions, abbreviation definitions and the document levels that may declare them.
 out: examples/edge-cases/definitions.md
 index: examples/edge-cases/index.md
+  non-row-pipe-keeps-lazy-plus-in-a-description-item
   a-below-column-fence-stays-in-a-definition-paragraph
   a-definition-opens-a-sibling-block-after-a-list
   nested-term-after-a-list-in-a-description

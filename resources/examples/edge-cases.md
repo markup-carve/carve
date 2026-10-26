@@ -65725,3 +65725,84 @@ Without a symbol map, the shortcode emits its literal text. Its final colon puts
 ```
 
 :::
+
+## Non-row pipe keeps lazy plus in a description item
+
+A pipe line with text after its closing pipe stays paragraph text, so a flush-left plus line continues that item.
+
+::: compare
+
+```carve
+:: term
+: - a
+    | x | y | Ω
++ c
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <ul>
+      <li>a
+| x | y | Ω
++ c</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+:::
+
+## Non-row pipe keeps lazy plus in a nested item
+
+The nested item's open paragraph also owns the flush-left plus line.
+
+::: compare
+
+```carve
+- a
+  - b
+  | x | y | Ω
++ c
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+| x | y | Ω
++ c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+## Non-row pipe keeps lazy plus in an unclosed div
+
+An open paragraph inside the div keeps the flush-left line in the item and div.
+
+::: compare
+
+```carve
+- a
+  ::: box
+  | x | y | Ω
++ c
+```
+
+```html
+<ul>
+  <li>a
+    <div class="box">
+      <p>| x | y | Ω
++ c</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::

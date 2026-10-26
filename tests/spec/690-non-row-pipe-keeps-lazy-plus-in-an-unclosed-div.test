@@ -1,0 +1,17 @@
+Non-row pipe keeps lazy plus in an unclosed div
+
+```
+- a
+  ::: box
+  | x | y | Ω
++ c
+.
+<ul>
+  <li>a
+    <div class="box">
+      <p>| x | y | Ω
++ c</p>
+    </div>
+  </li>
+</ul>
+```

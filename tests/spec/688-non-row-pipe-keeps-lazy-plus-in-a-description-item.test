@@ -1,0 +1,19 @@
+Non-row pipe keeps lazy plus in a description item
+
+```
+:: term
+: - a
+    | x | y | Ω
++ c
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <ul>
+      <li>a
+| x | y | Ω
++ c</li>
+    </ul>
+  </dd>
+</dl>
+```

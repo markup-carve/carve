@@ -7638,7 +7638,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // engine renders as the second line of the item's paragraph, and `tail`
         // became a document sibling (carve#1345). Same clause, same spelling, as
         // the marker-line seed above.
-        else if (dedented[0] === '|' || contRow) closePara()
+        else if (isTableRow(dedented) || contRow) closePara()
         // A HEADING AT THE CONTENT COLUMN is a block, not prose. PART 1 S4
         // asks whether the item holds an OPEN paragraph and PART 9 §24 C3
         // says this column is the item body's column 0. Falling through to

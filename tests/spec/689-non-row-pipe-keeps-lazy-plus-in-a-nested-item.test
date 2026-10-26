@@ -1,0 +1,18 @@
+Non-row pipe keeps lazy plus in a nested item
+
+```
+- a
+  - b
+  | x | y | Ω
++ c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+| x | y | Ω
++ c</li>
+    </ul>
+  </li>
+</ul>
+```
