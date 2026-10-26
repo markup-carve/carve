@@ -287,7 +287,6 @@ const MANIFEST = [
   // Single-string lags against the pinned build. Deleting the constant IS the
   // fix, so an absent one counts zero rather than failing - the undeclared
   // sweep below is what catches a RENAME.
-  { repo: 'spec', path: 'tests/a-wrapper-its-content-spells-away-is-a-ceiling.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, staleness: 'pin lag is declared and the engine no longer has it - delete PIN_LAG', owner: 'markup-carve/carve-js#1422' },
   { repo: 'spec', path: 'tests/an-ingested-default-start-is-not-re-emitted.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, staleness: 'pin lag is declared and the engine no longer has it - delete PIN_LAG', owner: 'markup-carve/carve-js#1391, markup-carve/carve-rs#1293' },
   { repo: 'spec', path: 'tests/an-unspellable-block-does-not-cancel-list-adjacency.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, staleness: 'pin lag is declared and the engine no longer has it - delete PIN_LAG', owner: 'markup-carve/carve#1621' },
   { repo: 'spec', path: 'tests/empty-raw-list-placement.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', optional: true, staleness: 'pin lag is declared and the class is no longer missing - delete PIN_LAG', owner: 'markup-carve/carve#2887' },
