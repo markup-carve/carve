@@ -932,11 +932,11 @@ function withTaskListClass(list) {
 }
 
 // PART 2 `task_marker`: the task box is named by what the item VISIBLY says. Only the
-// item's FIRST block can sit beside the box, and only a paragraph carries
-// inline text, so that is the one block read.
+// item's FIRST block can sit beside the box, and only an unpromoted paragraph
+// carries inline text, so that is the one block read.
 function taskLabel(item) {
   const first = item.blocks[0]
-  if (first === undefined || first.t !== 'para') return ''
+  if (first === undefined || first.t !== 'para' || first.blockImage) return ''
   // A paragraph spans lines - a soft wrap, or a lazy continuation folded in -
   // and a NAME is one line. Each run of ASCII whitespace collapses to a single
   // space, which is what the reader hears anyway. A no-break space is CONTENT

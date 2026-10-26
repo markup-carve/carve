@@ -1,0 +1,13 @@
+A resolved reference image also leaves the checkbox unnamed
+
+```
+- [ ] ![x][r]
+
+[r]: x
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <img src="x" alt="x">
+  </li>
+</ul>
+```
