@@ -66012,3 +66012,52 @@ A term past the div opener still opens a definition list. The flush-left descrip
 ```
 
 ::::
+
+## A quoted link definition in a footnote body registers globally
+
+The quote opens at the footnote body's column. Its definition enters the document's symbol table.
+
+:::: compare
+
+```carve
+[^n]: a
+
+    > [r]: /x
+[x][r]
+```
+
+```html
+<p><a href="/x">x</a></p>
+```
+
+::::
+
+## A marker-line sublist stays open in a description body
+
+The second inner marker joins the list opened on the description's marker line.
+
+:::: compare
+
+```carve
+:: t
+: - - a
+    - b
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>a</li>
+          <li>b</li>
+        </ul>
+      </li>
+    </ul>
+  </dd>
+</dl>
+```
+
+::::

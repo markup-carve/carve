@@ -1,0 +1,10 @@
+A quoted link definition in a footnote body registers globally
+
+```
+[^n]: a
+
+    > [r]: /x
+[x][r]
+.
+<p><a href="/x">x</a></p>
+```
