@@ -932,6 +932,7 @@ index: examples/edge-cases/index.md
   40-superscript-and-subscript-2
   46-symbols-2
   46-symbols-3
+  a-partial-braced-opener-before-a-terminal-backslash
 
 [edge-links] Links, images and references
 > Destinations, titles, reference and collapsed forms, autolinks and where a definition may live.
