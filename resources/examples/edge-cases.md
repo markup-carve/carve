@@ -65501,3 +65501,32 @@ A tab after the required marker space is content, so it does not expose a quote 
 ```
 
 :::
+
+## A below-item marker starts a sibling list in a description
+
+A blank-separated marker that reaches the description but not the open item's content column starts another list.
+
+::: compare
+
+```carve
+:: term
+: - a
+
+   - c
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>c</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+:::

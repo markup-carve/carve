@@ -1,0 +1,20 @@
+A below-item marker starts a sibling list in a description
+
+```
+:: term
+: - a
+
+   - c
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>c</li>
+    </ul>
+  </dd>
+</dl>
+```
