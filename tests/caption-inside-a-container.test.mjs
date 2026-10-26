@@ -49,7 +49,7 @@ test('a resolved reference image keeps block attrs on the figure', () => {
 
 test('an uncaptioned reference image keeps block attrs on the image', () => {
   const out = html('{.gallery}\n![alt][img]\n\n[img]: /i.png\n')
-  assert.equal(out, '<img class="gallery" src="/i.png" alt="alt">')
+  assert.equal(out, '<img src="/i.png" alt="alt" class="gallery">')
 })
 
 test('and inside a div', () => {
