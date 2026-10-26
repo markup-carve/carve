@@ -69,5 +69,5 @@ test('the clause the module reads is the one in the grammar', () => {
   assert.match(grammar, /NORMATIVE\s+\[CARVE-P2-030\]/)
   assert.match(grammar, /A TYPED OPENER IS FRONTMATTER UNCONDITIONALLY/)
   assert.match(grammar, /holds no `:`/)
-  assert.match(grammar, /MALFORMED CONTENT: `title: \[unclosed`/)
+  assert.match(grammar, /`title: \[unclosed` has the required shape and\s+therefore opens frontmatter despite malformed YAML content/)
 })

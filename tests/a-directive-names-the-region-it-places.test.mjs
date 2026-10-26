@@ -35,7 +35,7 @@ test('the clause carries its id and puts both tokens inside a nameable element',
 test('the clause names the region and refuses the sibling shape', () => {
   const body = clause()
   assert.match(body, /aria-labelledby="adm-1"/)
-  assert.match(body, /A SIBLING TITLE WAS REFUSED FOR A NAMEABLE REGION/)
+  assert.match(body, /A title goes inside a nameable region and names it rather than\s+appearing as a sibling/)
   assert.match(body, /THE SEPARATOR DOES NOT MOVE/)
   assert.match(body, /A DEGRADED MARKER CARRIES THEM TOO/)
 })

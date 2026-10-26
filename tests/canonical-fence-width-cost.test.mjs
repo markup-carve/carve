@@ -77,7 +77,7 @@ test('decision history quotes the canonical-form cost this corpus document measu
   const ratio = (canonicalBytes / sourceBytes).toFixed(1)
   const grouped = (n) => n.toLocaleString('en-US')
 
-  assert.ok(grammar.includes('d^2 + 5d'), 'PART 2 states the invariant at colon_fence_close')
+  assert.match(grammar, /colon_fence_close = colon_fence:close\s+where len\(close\) = len\(open\)/)
 
   for (const [where, text] of [['decision history', history], ['divergence §13', page]]) {
     for (const claim of [grouped(sourceBytes), grouped(canonicalBytes), grouped(fenceBytes), `${share}%`, String(CAP), String(widest)]) {
