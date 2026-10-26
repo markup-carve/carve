@@ -265,12 +265,9 @@
       advisory and re-introduces the re-derivation this clause removes.
 
       ABSENCE IS NOT A CLAIM. It means the producer did not run the phase --
-      every tree serialized before this clause lacks the field -- so a reader
+      a tree may lack the field -- so a reader
       MUST NOT read absence as "this paragraph is ordinary", and MUST NOT
-      reject a tree for omitting it. Requiring it was considered and refused:
-      it breaks every existing AST JSON document for no benefit, and CARVE-P12-030's
-      strict-ingest surface is about properties the schema does not NAME, not
-      about ones it names optionally.
+      reject a tree for omitting it.
 
       `fmt` WRITES THE SOURCE SPELLING, NOT `blockImage` -- NORMATIVE [CARVE-P12-045]. `fmt` writes the SOURCE SPELLING,
       so promotion is not observable in `fmt` output and a document whose

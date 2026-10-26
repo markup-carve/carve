@@ -520,9 +520,7 @@
       why this is a NEW type rather than a target-less `figure`.
 
       NO `shortCaption`, NO legends, NO label fields. CARVE-P12-033's `shortCaption`
-      stays on `figure` and `table`; whether it ever reaches the group, and
-      whether repeated `^` blocks become legends, remains open and is not
-      claimed here. The schema
+      stays on `figure` and `table`. The schema
       (`resources/ast-schema.json`) pins the shape; an unknown property on a
       `figure_group` is rejected on ingest like any other (CARVE-P12-030).
    ============================================================================ *)
