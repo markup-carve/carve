@@ -274,11 +274,10 @@
       `suffix` mean nothing outside one. No clause defines what a bare
       citation renders to in any target, because no target was ever asked.
 
-      ALL THREE ENGINES ALREADY AGREE: their inline unions admit only
-      citation groups. CARVE-P12-038's typed, positioned item and inline-profile vocabulary
-      requirements remain satisfied by the `citation` definition and vocabulary
-      entry. THE COST OF LEAVING IT WAS NOT SYMMETRIC: narrowing the dispatch
-      lets CARVE-P12-068(d) reject standalone citations at ingest instead of at rendering.
+      The inline union admits citation groups. CARVE-P12-038's typed,
+      positioned item and inline-profile vocabulary requirements are satisfied
+      by the `citation` definition and vocabulary entry. A standalone citation
+      is refused at ingest under CARVE-P12-068(d).
 
    38. NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-060]. A
       producer MAY return ephemeral node ids beside an AST, as a sidecar under

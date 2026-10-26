@@ -11,13 +11,7 @@
         (blank)                          (blank)
         x                                x
 
-      THE SPLIT IS CARVE-P11-028'S TEST, not a new one. HTML may drop an unused
-      definition "because HTML has nowhere to put a definition nobody used";
-      Markdown has exactly somewhere to put frontmatter, so on this target the
-      drop is content loss. Plain text and the terminal are on HTML's side of
-      that test here rather than Markdown's: neither reads a delimited metadata
-      block, so emitting one leaves raw YAML in prose, which is not
-      preservation.
+      Plain text and the terminal omit frontmatter.
 
       THE FORMAT TOKEN IS CARVE'S, NOT THE ECOSYSTEM'S. A `toml` body is not
       rewritten to `+++`, and no per-format delimiter table is implied. A
@@ -134,12 +128,8 @@
       nothing to bracket. No read recovers that, so the cell narrowing is
       deliberate.
 
-      THE CARRIER IS A COMMENT, NOT A LINK REFERENCE DEFINITION. An HTML
-      comment survives as a node in a Markdown reader, can interrupt a
-      paragraph and is not entity-decoded; a `[meta]: # (payload)`
-      definition collapses with its duplicates and can capture an author's
-      reference. The mode is OPT-IN because a renderer with raw HTML turned
-      off shows the comment as text.
+      The carrier is an HTML comment. The mode is OPT-IN because a renderer
+      with raw HTML turned off shows the comment as text.
 
       THE ROUND TRIP IS WHAT THE MODE BUYS. A document this target writes
       with the mode on, imported back with `markdown` as the source format,
@@ -176,14 +166,9 @@
       fidelity and `fallback` confidence. Only a damaged set falls back as a
       whole.
 
-      WHAT THIS CLAUSE DOES NOT COVER, so a reader does not look for it here.
-      A construct whose Markdown output already holds an element needs no
-      carrier: `highlight`, `subscript`, `superscript` and a CriticMarkup
-      insertion round-trip through `<mark>`, `<sub>`, `<sup>` and `<ins>`
-      today. Where such an element does not read back (`<u>`, the
-      `critic-comment` span, `<abbr>`, `<del>`), the emitted bytes are
-      faithful and the defect is on the import or in CARVE-P11-045, not here.
-      `small_caps` and `ruby` have no Carve opener to carry. Attributes on a
+      This carrier does not apply to constructs whose Markdown output already
+      contains an element. `small_caps` and `ruby` have no Carve opener to
+      carry. Attributes on a
       list item's marker line are not carried: CARVE-P11-067 carries an
       attribute LINE, and that is not spelled with one. That is a stated
       limit: the attributes degrade as they do with the mode off, unreported,

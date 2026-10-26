@@ -9926,16 +9926,13 @@ EOF = (* end of file *) ;
         - Composer 2.7
         %% #endregion requirements
 
-      is its own canonical form. Without (a) the writer opened a blank line
-      under the opener; without (b) it wrote the closer at the item's content
-      column, two spaces in. So is
+      is its own canonical form. So is
 
         %% #region links
         [ref]: /u
         %% #endregion links
 
-      which without (c) came out as an empty region with the definition
-      written after its closer.
+      with the definition inside its region.
 
       NOT COVERED. Normalization the writer applies to the content itself
       (an escape, a run of blank lines) changes the selected bytes exactly as
@@ -10761,10 +10758,7 @@ EOF = (* end of file *) ;
       `<em><em>x</em></em>` against `<strong>x</strong>` is an italic turned
       bold, which is a different document.
 
-      THE LIST IS ENUMERATED AND MECHANICAL, never a judgment about what means
-      the same. The defects this comparison has found were found because it was
-      exact, and an open-ended equivalence would hide the next one. An entry is
-      written here or it does not exist.
+      The list is exhaustive: an equivalence is accepted only when named here.
 
   10l. THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS -- NORMATIVE [CARVE-P11-047].
       The emitted Markdown reads back with the tightness PART 9 §17 L1 gives the
@@ -10966,13 +10960,7 @@ EOF = (* end of file *) ;
         (blank)                          (blank)
         x                                x
 
-      THE SPLIT IS CARVE-P11-028'S TEST, not a new one. HTML may drop an unused
-      definition "because HTML has nowhere to put a definition nobody used";
-      Markdown has exactly somewhere to put frontmatter, so on this target the
-      drop is content loss. Plain text and the terminal are on HTML's side of
-      that test here rather than Markdown's: neither reads a delimited metadata
-      block, so emitting one leaves raw YAML in prose, which is not
-      preservation.
+      Plain text and the terminal omit frontmatter.
 
       THE FORMAT TOKEN IS CARVE'S, NOT THE ECOSYSTEM'S. A `toml` body is not
       rewritten to `+++`, and no per-format delimiter table is implied. A
@@ -11089,12 +11077,8 @@ EOF = (* end of file *) ;
       nothing to bracket. No read recovers that, so the cell narrowing is
       deliberate.
 
-      THE CARRIER IS A COMMENT, NOT A LINK REFERENCE DEFINITION. An HTML
-      comment survives as a node in a Markdown reader, can interrupt a
-      paragraph and is not entity-decoded; a `[meta]: # (payload)`
-      definition collapses with its duplicates and can capture an author's
-      reference. The mode is OPT-IN because a renderer with raw HTML turned
-      off shows the comment as text.
+      The carrier is an HTML comment. The mode is OPT-IN because a renderer
+      with raw HTML turned off shows the comment as text.
 
       THE ROUND TRIP IS WHAT THE MODE BUYS. A document this target writes
       with the mode on, imported back with `markdown` as the source format,
@@ -11131,14 +11115,9 @@ EOF = (* end of file *) ;
       fidelity and `fallback` confidence. Only a damaged set falls back as a
       whole.
 
-      WHAT THIS CLAUSE DOES NOT COVER, so a reader does not look for it here.
-      A construct whose Markdown output already holds an element needs no
-      carrier: `highlight`, `subscript`, `superscript` and a CriticMarkup
-      insertion round-trip through `<mark>`, `<sub>`, `<sup>` and `<ins>`
-      today. Where such an element does not read back (`<u>`, the
-      `critic-comment` span, `<abbr>`, `<del>`), the emitted bytes are
-      faithful and the defect is on the import or in CARVE-P11-045, not here.
-      `small_caps` and `ruby` have no Carve opener to carry. Attributes on a
+      This carrier does not apply to constructs whose Markdown output already
+      contains an element. `small_caps` and `ruby` have no Carve opener to
+      carry. Attributes on a
       list item's marker line are not carried: CARVE-P11-067 carries an
       attribute LINE, and that is not spelled with one. That is a stated
       limit: the attributes degrade as they do with the mode off, unreported,
@@ -13182,11 +13161,10 @@ EOF = (* end of file *) ;
       `suffix` mean nothing outside one. No clause defines what a bare
       citation renders to in any target, because no target was ever asked.
 
-      ALL THREE ENGINES ALREADY AGREE: their inline unions admit only
-      citation groups. CARVE-P12-038's typed, positioned item and inline-profile vocabulary
-      requirements remain satisfied by the `citation` definition and vocabulary
-      entry. THE COST OF LEAVING IT WAS NOT SYMMETRIC: narrowing the dispatch
-      lets CARVE-P12-068(d) reject standalone citations at ingest instead of at rendering.
+      The inline union admits citation groups. CARVE-P12-038's typed,
+      positioned item and inline-profile vocabulary requirements are satisfied
+      by the `citation` definition and vocabulary entry. A standalone citation
+      is refused at ingest under CARVE-P12-068(d).
 
    38. NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-060]. A
       producer MAY return ephemeral node ids beside an AST, as a sidecar under

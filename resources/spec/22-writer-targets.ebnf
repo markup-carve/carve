@@ -706,10 +706,7 @@
       `<em><em>x</em></em>` against `<strong>x</strong>` is an italic turned
       bold, which is a different document.
 
-      THE LIST IS ENUMERATED AND MECHANICAL, never a judgment about what means
-      the same. The defects this comparison has found were found because it was
-      exact, and an open-ended equivalence would hide the next one. An entry is
-      written here or it does not exist.
+      The list is exhaustive: an equivalence is accepted only when named here.
 
   10l. THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS -- NORMATIVE [CARVE-P11-047].
       The emitted Markdown reads back with the tightness PART 9 §17 L1 gives the

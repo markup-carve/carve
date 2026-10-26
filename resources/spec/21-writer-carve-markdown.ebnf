@@ -669,16 +669,13 @@
         - Composer 2.7
         %% #endregion requirements
 
-      is its own canonical form. Without (a) the writer opened a blank line
-      under the opener; without (b) it wrote the closer at the item's content
-      column, two spaces in. So is
+      is its own canonical form. So is
 
         %% #region links
         [ref]: /u
         %% #endregion links
 
-      which without (c) came out as an empty region with the definition
-      written after its closer.
+      with the definition inside its region.
 
       NOT COVERED. Normalization the writer applies to the content itself
       (an escape, a run of blank lines) changes the selected bytes exactly as
