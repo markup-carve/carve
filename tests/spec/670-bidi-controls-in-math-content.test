@@ -1,0 +1,13 @@
+Bidi controls in math content
+
+```
+$`a‮b`
+.
+<p><span class="math inline" role="math">\(ab\)</span></p>
+```
+
+```
+$`x⁦y`
+.
+<p><span class="math inline" role="math">\(xy\)</span></p>
+```

@@ -1279,13 +1279,13 @@
     {
       "id": "CARVE-P11-024",
       "part": "11",
-      "title": "M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP",
+      "title": "M1f `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP",
       "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-044",
       "part": "11",
-      "title": "M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING",
+      "title": "M1h `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING",
       "scope": "canonical-writing"
     },
     {
@@ -1994,6 +1994,12 @@
       "id": "CARVE-P12-069",
       "part": "12",
       "title": "A CONTINUATION LINE IS A MARKER IN THE JOINED CELL",
+      "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-070",
+      "part": "12",
+      "title": "FOOTNOTE AND LINK REFERENCE DEFINITIONS HOIST TO THE DOCUMENT",
       "scope": "ast-interchange"
     },
     {

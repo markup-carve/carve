@@ -61,9 +61,7 @@
       from profiles.md (CARVE-P12-001). A document is
       `{"type":"document","children":[...]}`.
 
-      The root's own fields are fixed by CARVE-P12-024: `type`, `children` and
-      `srcByteLength`, plus an optional `astVersion` on a bare tree, and
-      nothing else.
+      The root's own fields are fixed by CARVE-P12-024.
 
         {"type":"document","children":[...],"srcByteLength":42}
 
@@ -329,7 +327,7 @@
 
       A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS
       AUTHORED IN -- NORMATIVE [CARVE-P12-016]. A definition hoisted to the
-      document (CARVE-P12-029) keeps the `pos` it was written at, so it and its
+      document (CARVE-P12-070) keeps the `pos` it was written at, so it and its
       former host are siblings whose spans may overlap, whatever the host's
       extent:
 
@@ -467,6 +465,7 @@
 | figure.shortCaption,table.shortCaption | CARVE-P12-033 | omit_field | ignore_field | unspecified | ignore_field | ignore_field | clause |
 | figure.target[table] | CARVE-P12-036 | table_caption | figure | unspecified | unspecified | unspecified | clause |
 | table_cell.blocks | CARVE-P12-049 | unspecified | cell_blocks | flatten_blocks | flatten_blocks | flatten_blocks | field-unspellable (Carve,Markdown,Plain,ANSI) |
+| table.rowGroups[attrs] | CARVE-P12-034 | omit_field | unspecified | omit_field | omit_field | omit_field | field-unspellable (Carve,Markdown,Plain,ANSI) |
 | small_caps | CARVE-P12-050 | unwrap | smallcaps_span | smallcaps_span | unwrap | unwrap | structure-unspellable (Carve) |
 | section | CARVE-P12-052 | unwrap | section | unwrap | unwrap | unwrap | structure-unspellable (Carve) |
 | ruby | CARVE-P12-054 | parenthesized_pairs | ruby | ruby | parenthesized_pairs | parenthesized_pairs | ruby-flattened (Carve,Plain,ANSI) |

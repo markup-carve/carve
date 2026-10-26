@@ -149,7 +149,7 @@ link_text = {inline_element | text_run | literal_special} ;
    `[{+a\]b+}](u)` works and those constructs are NOT skipped.
 
    THE DESTINATION SLOT, THE AUTOLINK and THE CROSS-REFERENCE joined by it:
-   none resolves an escape (`docs/dismissed-syntax.md`, normative), so a `]`
+   none resolves an escape (PART 3 destination escapes), so a `]`
    there has no second spelling. The slot is skipped through its closing
    parenthesis, title included, and NOT a trailing attribute block -- an
    attribute value does resolve escapes, so `[t[x](/u){title="]"}y](/z)`
@@ -222,8 +222,7 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 (* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE [CARVE-P3-002]:
    `destination_char` excludes whitespace without qualifying it to ASCII.
    So a NARROW NO-BREAK SPACE, an IDEOGRAPHIC SPACE and a THIN SPACE end an
-   inline destination exactly as a plain space does, and an unbracketed
-   destination cannot contain one -- an href MUST NOT carry one.
+   inline destination exactly as a plain space does, and a destination cannot contain one -- an href MUST NOT carry one.
 
    ZERO-WIDTH characters (U+200B, U+FEFF) are NOT whitespace and ARE ordinary
    destination characters. The test is the Unicode White_Space property, not

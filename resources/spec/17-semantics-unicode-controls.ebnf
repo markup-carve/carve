@@ -13,7 +13,7 @@
         U+200B yields an id with NEITHER codepoint.
       - PRESENTATION TARGETS -- HTML, Markdown, plain text, and terminal
         (ANSI) -- strip the bidi-override / isolate controls (U+202A..U+202E,
-        U+2066..U+2069) from rendered text and CODE-SPAN / CODE-BLOCK content.
+        U+2066..U+2069) from rendered text, code and math content.
         They are REMOVED, not escaped: in HTML, entity-encoding one would let
         it DECODE BACK to the raw control downstream; in the other presentation
         targets it would either remain live or change the author's visible

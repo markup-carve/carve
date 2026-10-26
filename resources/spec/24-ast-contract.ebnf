@@ -53,12 +53,10 @@
       `label`, not `id`: PART 9 §16 calls it a label throughout, and `id`
       collides with the attribute of that name.
 
-      A DEFINITION IS A CHILD OF THE DOCUMENT even when it was authored inside
-      a container. PART 9 §16 already makes a definition document-level
-      metadata that is collected out of its blockquote or list item, leaving
-      that container empty; the serialized tree follows the same rule rather
-      than inventing a second one. Its `pos` still records where it was
-      WRITTEN, so nothing about navigation is lost by the move.
+      FOOTNOTE AND LINK REFERENCE DEFINITIONS HOIST TO THE DOCUMENT -- NORMATIVE
+      [CARVE-P12-070]. A definition authored inside a block quote or list item
+      is a child of the document. Its `pos` records where it was written.
+      The former container retains its remaining content.
 
       AN ABBREVIATION DEFINITION IS A BLOCK NODE, `type: "abbreviation_def"`,
       carrying:
@@ -186,18 +184,9 @@
         title   the quoted title, unescaped, when the definition carries one
         attrs   a trailing attribute block on the definition line (CARVE-P3-007)
 
-      IT HOISTS TO THE DOCUMENT, exactly as CARVE-P12-024 requires of the FOOTNOTE
-      definition: a definition authored inside a block quote or a list item is
-      a child of the DOCUMENT, and its `pos` still says where it was written.
-      The container is left as the author's remaining content, which is what
-      corpus 117-footnote-definition-inside-a-container-is-collected already
-      pins for the footnote case.
+      Hoisting and source position follow CARVE-P12-070.
 
-      THE ABBREVIATION DEFINITION IS NOT THE THIRD KIND HERE. CARVE-P12-024's clause AN
-      ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL says the
-      opposite for that one: inside a container the line is not a definition
-      at all, it is paragraph text, and nothing is hoisted because nothing was
-      collected.
+      Abbreviation definitions do not hoist (CARVE-P12-026).
 
       A node carries the definition's required `pos`, attributes and document
       order, so document order rather than merge order decides which definition
@@ -218,10 +207,9 @@
       Extension data crosses a round trip only in a DECLARED place, such as a
       `block_extension` payload (CARVE-P12-055); anywhere else it is an unnamed property.
 
-   12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. CARVE-P12-024
-      fixes the root at `type`, `children` and `srcByteLength`, with an optional
-      `astVersion`; the schema marks the three `required` and pins `type` to
-      `document`.
+   12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031].
+      An ingest refuses a root that deviates from CARVE-P12-024
+      (CARVE-P12-068(a), (b)).
 
       AN INGEST REFUSAL IS A TYPED ERROR NAMING WHAT AND WHERE -- NORMATIVE
       [CARVE-P12-068]. Where PART 12 says an ingest refuses, it fails with an
@@ -367,9 +355,11 @@
 
       A SHAPE NO CARVE SOURCE SPELLS IS CARRIED, NOT INVENTED -- NORMATIVE
       [CARVE-P12-066]. An INTERCHANGE-ONLY shape is a node type, field or
-      wrapper that Carve 0.1 source cannot spell: `shortCaption` (CARVE-P12-033), a
+      wrapper that Carve source cannot spell: `shortCaption` (CARVE-P12-033), a
       `figure` wrapping a `table` (CARVE-P12-036), `table_cell.blocks` (CARVE-P12-049),
-      `small_caps` (CARVE-P12-050), `math.label` and `math.number` (CARVE-P12-051), `section`
+      `small_caps` (CARVE-P12-050), `math.label` and `math.number` (CARVE-P12-051),
+      `rowGroups.headAttrs`, `rowGroups.footAttrs` and `rowGroups.bodies[].attrs`
+      (CARVE-P12-034), `section`
       (CARVE-P12-052), `ruby` (CARVE-P12-054) and `block_extension` (CARVE-P12-055). A parser never
       synthesizes one; AST consumers and format bridges supply it, and AST
       encode/decode preserves it (PART 12 §6). A canonical Carve writer MUST NOT invent
@@ -486,7 +476,8 @@
       Attribute-free tables retain the existing single-body fallback for spans
       that cross a section boundary. Without `rowGroups`,
       HTML retains its implicit partition. Plain and ANSI keep the flat rows.
-      Carve source cannot spell section attributes, and neither can Markdown,
+      The fallback matrix row `table.rowGroups[attrs]` covers the three
+      section-attribute fields. Carve source cannot spell section attributes, and neither can Markdown,
       plain or ANSI. A writer for one of those targets reports one
       `field-unspellable` entry per discarded nonempty attributes field on the
       CARVE-P11-046 channel, with `node` `table` and `field` the path within the

@@ -407,7 +407,7 @@
 
         source     written as    what changed
         `* %%`     `* +`         a line comment became the CONTINUATION MARKER
-                                 (PART 9 §17 L3), a different construct with a body
+                                 (PART 9 §17 L4 first-block form), a different construct with a body
         `| %%%`    `| %% %`      a comment-block fence (CARVE-P9-060) split into a line
                                  comment plus text
 

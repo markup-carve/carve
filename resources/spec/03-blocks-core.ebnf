@@ -359,7 +359,7 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
    line.
    CONTINUATION MARKER (PART 9 §17): to attach a real BLOCK (a list, fenced code,
    table, ...) to the quote without `>`-prefixing every line, put a lone `+` at
-   column 0 right after a quoted line; the following flush-left block joins the
+   the quote's marker column right after a quoted line; the following block at that column joins the
    quote body. This is the un-prefixed analogue of the list item's `+`. *)
 lazy_continuation_line = inline_content, newline ;
 (* SEMANTIC CONSTRAINT: matches only while a paragraph is open at the deepest
@@ -493,7 +493,7 @@ indent = whitespace, {whitespace} ;
    identical to writing the sub-marker on its own indented line. It is NOT a
    one-off lone item: following markers at the sub-list's content column MERGE
    into the same nested list, and a post-blank block indented to that column is
-   ABSORBED into the open nested item as a lazy continuation. This matches
+   a further block of the open nested item (it reaches its content column). This matches
    reference djot.js (`@djot/djot`) and CommonMark. *)
 (* Continuation marker (Carve addition; see PART 9 §17 and
    markup-carve/carve#3421): a lone `+` at an open container's marker column,
@@ -634,7 +634,7 @@ definition_body = (':', definition_separator, first_block_content)
                    | lazy_continuation_line }) ;
 definition_separator = space, {space} ;
 (* FIRST-BLOCK (`: +`): when the sole content is a lone `+`, the body is the
-   FOLLOWING flush-left block, with no indentation -- the definition-list twin
+   following block at the container's marker column -- the definition-list twin
    of the list-item `- +` opener (`first_block_content`). `: \+` is a literal
    `+`. *)
 
@@ -652,8 +652,7 @@ definition_separator = space, {space} ;
    continuation inside that body down by the same amount. A formatter that
    trims the separator and leaves the body where it was changes what the
    document says. *)
-definition_continuation = (definition_indent, inline_content, newline)
-                        | (backslash, newline, definition_indent, inline_content, newline) ;
+definition_continuation = definition_indent, inline_content, newline ;
 definition_indent = whitespace, {whitespace} ;
 (* INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE [CARVE-P2-016]. A tab has a column
    value (PART 9 §24 C1, to the next multiple of 4), and a definition body's
@@ -666,9 +665,6 @@ definition_indent = whitespace, {whitespace} ;
    column 3. A bare tab reaches column 4 and qualifies for either. This is
    INDENTATION, not a marker SEPARATOR: it does not change the separator run
    after the `:` marker (CARVE-P7-002).
-
-   The BACKSLASH branch spells the same indentation: it resolves through the
-   hard break, which folds the next line in regardless of its indentation.
 
    BELOW THE BODY'S COLUMN THE BODY ENDS -- NORMATIVE [CARVE-P2-017]. The three
    bands, in column order, so the rule can be read off once:
@@ -777,8 +773,7 @@ definition_indent = whitespace, {whitespace} ;
 
    A definition body CONTINUES like a list item (PART 9 §17): a blank line
    followed by an indented block folds in (so a `<dd>` may hold multiple
-   paragraphs -- FORM A); a lone `+` attaches the FOLLOWING flush-left block
-   with no indentation (`continuation_marker_block` -- FORM B, the un-prefixed
+   paragraphs -- FORM A); a lone `+` attaches the following block at the container's marker column (`continuation_marker_block` -- FORM B, the un-prefixed
    analogue of the list-item and block-quote `+` forms); and a flush-left line
    with no blank before it that does not start an interrupting block lazily
    continues the open paragraph (`lazy_continuation_line`, the same rule as list

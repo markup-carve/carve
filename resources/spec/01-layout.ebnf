@@ -453,7 +453,7 @@
         register in that body.
 
         At document column 0 a definition is a document-level interrupter.
-        At a nonzero column below `content_column` it is lazy paragraph text
+        At a nonzero column below every open `content_column` it is lazy paragraph text
         and does not register: `- a` / ` [r]: /u` / `tail` folds. Abbreviation
         definitions are recognized only at document level (CARVE-P12-026); inside a
         container their lines are ordinary text and reopen the paragraph.
@@ -495,10 +495,6 @@
         itself register ends its extent above that line, and the line takes
         its base in the container whose content column it does reach.
 
-        BELOW EVERY OPEN COLUMN IS UNCHANGED. A nonzero-column definition
-        below every open content column remains lazy paragraph text and does
-        not register (PART 9 §24 C3).
-
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
         UNDER -- NORMATIVE [CARVE-P0-011]. A block at the content column is
         recognized as at document column 0 (PART 9 §24 C3). It ends the preceding
@@ -537,7 +533,7 @@
             ```
 
         the item closes with an empty code block; `x` is document text and the
-        trailing run is ordinary inline text.
+        trailing run is inline content (an unclosed verbatim run).
 
         Where no container in the stack holds an open paragraph, select the
         nearest surviving ancestor whose content column the line reaches and

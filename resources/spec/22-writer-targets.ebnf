@@ -6,9 +6,6 @@
       only at a line's content position, where it opens an ATX heading. A `[`
       can open a link at any position, so its escape is kept everywhere.
 
-        a -- b        ->  a – b
-        a \-\- b      ->  a -- b
-
       A LINE'S CONTENT POSITION IS AFTER ITS CONTAINER PREFIX. It is measured
       on the EMITTED LINE: every prefix the writer put in front of the
       content is passed over first (a block quote marker, a list or task
@@ -121,9 +118,9 @@
          `)`,
 
       the line is escaped: for T1 and T2 its first character, for T3 the
-      character M1c escapes (`\-`, `\+`, `1\.`), unless an escape another rule
+      character M1d or M1e escapes (`\-`, `\+`, `1\.`), unless an escape another rule
       gives already stands on it. T1 is a thematic break, T2 turns the
-      paragraph above into a heading and T3 is an empty list item, and M1c
+      paragraph above into a heading and T3 is an empty list item, and M1d
       reaches none of them: it asks for a marker followed by a space or tab.
 
         text "---"                 ->  \---
@@ -362,8 +359,7 @@
       A LINK REFERENCE DEFINITION IS COVERED TOO: PART 12 §10 gives it a node,
       so all three kinds walk and all three emit. A REFERENCED link definition
       writes no line on Markdown, because the inlined `[it](/url)` already
-      carries its destination; that is CARVE-P11-033's test, one design for
-      both.
+      carries its destination (CARVE-P11-028).
 
       UNDER ROUNDTRIP EXPORT A REFERENCE LINK IS WRITTEN NATIVELY. With the
       carrier mode on (CARVE-P10-015), a link that resolved through a
@@ -552,7 +548,7 @@
           that expanded anywhere would delete the string `a` from the document
           outright, which is the loss this clause moves to prevent.
 
-      THE MARKDOWN TARGET NEEDS NONE OF THAT TEST -- it keeps every definition
+      THE MARKDOWN TARGET NEEDS NONE OF THAT TEST -- it keeps every abbreviation definition
       line whatever became of it. So does the canonical writer, where PART 11
       §1's `parse(fmt(x)) == parse(x)` requires it, which leaves the round
       trip intact on both of the targets that have one.

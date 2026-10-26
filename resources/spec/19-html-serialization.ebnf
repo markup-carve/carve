@@ -11,7 +11,8 @@
       R1 STRUCTURAL. What the element derives from its OWN marker,
          destination or resolution: `<ol>`'s `type` and `start` (PART 9 §11
          N2) and then its `data-delim` (§12), a link's `href`, an image's
-         `src` and `alt`, a task item's `data-task-state` (§11) and, under
+         `src` and `alt`, a link's or image's `title`, a task item's
+         `data-task-state` (§11) and, under
          roundtrip export, the carriers of §13, which follow the element's
          other structural attributes.
       R2 A MANDATORY BASE CLASS, where the author wrote no class: math's
@@ -566,7 +567,7 @@
 
       A CARRIER IS STRUCTURAL (§1 R1). It sits after the element's other
       structural attributes (`type`, `start`, `data-delim`, `href`, `src`,
-      `alt`, `title`) and before the first attribute the author wrote, and
+      `alt`, `title`; §16 R1) and before the first attribute the author wrote, and
       the placement does not vary by carrier:
         > {.c #i}
         > ***            -> <hr data-char="*" class="c" id="i">
@@ -839,12 +840,10 @@
       mode and alias controls are in
       `resources/footnote-carrier-recovery-fixtures.json`.
 
-      ONE CARRIER IS THE EXCEPTION, and CARVE-P10-017 is why. `data-carve-raw` RETURNS
-      ITS PAYLOAD VERBATIM as a raw inline, so consuming it is not
-      reconstructing syntax the tree already expresses -- it decides that
-      foreign content may re-enter the document as raw. That stays on the
-      importer's own trust setting, and an importer that declines it drops the
-      carrier and takes the span's text.
+      ONE CARRIER IS THE EXCEPTION. A `data-carve-raw` naming format `html`
+      returns its payload as raw HTML only under CARVE-P10-017's mode gate.
+      Otherwise the importer drops the carrier and takes the span's text.
+      Other formats are consumed in every import mode.
 
       WHAT THE MODE DECIDES IS NOTHING ELSE. Every other name in CARVE-P10-016 is
       consumed whatever the mode, and reconstruction of raw HTML outside a

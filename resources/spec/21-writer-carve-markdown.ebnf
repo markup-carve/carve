@@ -1,9 +1,8 @@
 (* ============================================================================
-   6. WHAT IS NOT THE WRITER'S JOB. `fmt` does not re-wrap prose, reorder
-      attributes, or respell a construct to a synonym (`*` vs `-` bullets,
-      ordered-list dialect, thematic-break marker). Those are the author's
-      choices and the AST records them; changing one would satisfy §1 while
-      still surprising the author.
+   6. WHAT IS NOT THE WRITER'S JOB. `fmt` does not re-wrap prose or reorder
+      attributes. A spelling the AST records is the author's and is reproduced
+      (`*` vs `-` bullets, ordered-list dialect, thematic-break marker).
+      A spelling it does not record is chosen by the writer canonically.
 
       FENCE LENGTH IS NOT ONE OF THEM: `code_block` records neither fence
       length nor character (PART 12 §3).
@@ -471,8 +470,7 @@
         SAME TREE. EVERYWHERE ELSE IT WRITES THE PART 3 FORM, `\` BEFORE THE
         NEWLINE.
 
-      §7 permits stripping a line's trailing whitespace on the ground that
-      "where the PARSER discards trailing whitespace the writer may too". The
+      §7 strips a content line's trailing whitespace because CARVE-P2-025 drops it on parse. The
       parser does NOT discard it when a backslash follows: CARVE-P2-025 makes the
       run before a line-break backslash INTERIOR, and PART 9 §23 gives that
       the visible consequence. So none of this is a new principle, it is §7
@@ -709,17 +707,17 @@
                              another live `_` in the same inline
                              content could close the emphasis it
                              could open (CARVE-P11-023)
-        M1b   `[`            ADJACENT to an unescaped `[`, or inside  `\[`
+        M1c   `[`            ADJACENT to an unescaped `[`, or inside  `\[`
                              an emitted link label or image
                              description (CARVE-P11-023)
-        M1c   `-` `+`        at a paragraph line's content position,  `\-` `\+`
+        M1d   `-` `+`        at a paragraph line's content position,  `\-` `\+`
                              before a space or tab
-        M1c   `.` `)`        after one to nine ASCII digits at a      `\.` `\)`
+        M1e   `.` `)`        after one to nine ASCII digits at a      `\.` `\)`
                              paragraph line's content position,
                              before a space or tab
-        M1e   `<`            before an ASCII letter, `/`, `!` or `?`  `\<`
-        M1e   `>`            at a line's content position             `\>`
-        M1f   `#`            opening a run of one to six hashes at a  `\#`
+        M1f   `<`            before an ASCII letter, `/`, `!` or `?`  `\<`
+        M1g   `>`            at a line's content position             `\>`
+        M1h   `#`            opening a run of one to six hashes at a  `\#`
                              line's content position, closed by a
                              space, a tab or the line's end; and a
                              trailing run of any length after a
@@ -752,7 +750,7 @@
       M2; that is a defect in the AST, not license to skip the row.
 
    8a. THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE -- NORMATIVE [CARVE-P11-023]. Rows
-      M1b to M1f of §8's table are conditional. These terms decide them.
+      M1b to M1h of §8's table are conditional. These terms decide them.
 
       ADJACENT means the position immediately before or immediately after the
       character, in the line the writer is building, holds that same
@@ -773,8 +771,8 @@
       can neither open nor close, so `company_id` stays bare while `*x*_y_`
       is written `*x*\_y\_`.
 
-      A PARAGRAPH LINE'S CONTENT POSITION, for M1c, includes up to three
-      leading spaces. M1c applies to paragraph text only: a marker the
+      A PARAGRAPH LINE'S CONTENT POSITION, for M1d, includes up to three
+      leading spaces. M1d applies to paragraph text only: a marker the
       renderer emits for an actual list remains live, and punctuation inside
       code remains content.
 
@@ -786,7 +784,7 @@
       if-and-only-if. An engine neither drops an escape a row keeps nor keeps
       one a row drops, narrows no further character and loosens no test.
 
-      M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP --
+      M1f `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP --
           NORMATIVE [CARVE-P11-024]. An opening tag, a closing tag, a comment
           and a processing instruction open raw HTML through a CommonMark
           reader, and those four next-characters are the whole hazard. The
@@ -795,7 +793,7 @@
 
             a \<b> c       ->  a &lt;b&gt; c
 
-      M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX
+      M1h `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX
           HEADING -- NORMATIVE [CARVE-P11-044]. The content position is the
           one CARVE-P11-025 defines, and the escape goes on the `#` that opens the run:
 

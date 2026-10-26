@@ -1,0 +1,21 @@
+Table content parses inline markup
+
+```
+|=hot= |
+.
+<table>
+  <tbody>
+    <tr><td><mark>hot</mark></td></tr>
+  </tbody>
+</table>
+```
+
+```
+|=warm= |
+.
+<table>
+  <tbody>
+    <tr><td><mark>warm</mark></td></tr>
+  </tbody>
+</table>
+```

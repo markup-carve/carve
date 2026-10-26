@@ -1,0 +1,29 @@
+A fence with no host prefix leaves an inline run
+
+````
+- ```
+x
+```
+.
+<ul>
+  <li>
+    <pre><code></code></pre>
+  </li>
+</ul>
+<p>x
+<code></code></p>
+````
+
+````
+- ```
+y
+```
+.
+<ul>
+  <li>
+    <pre><code></code></pre>
+  </li>
+</ul>
+<p>y
+<code></code></p>
+````

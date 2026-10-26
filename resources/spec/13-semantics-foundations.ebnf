@@ -463,7 +463,7 @@
 
              |= a |          header cell, content `a`
              |=a |           data cell, content `=a`
-             |=hot= |        data cell, content `=hot=`
+             |=hot= |        data cell; its inline content `=hot=` is a highlight
              |{#x} =R |      data cell with `id="x"`, content `=R`
              |{#x}=R|        data cell, content `{#x}=R`
 

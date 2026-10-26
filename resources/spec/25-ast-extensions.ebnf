@@ -248,7 +248,7 @@
       `true`; a paragraph that is not a block image omits it rather than
       carrying `false`, which is CARVE-P12-042's absent-value rule applied here.
 
-      IT IS NOT A NON-ANCHOR FLAG. CARVE-P12-005 refuses a flag on a nested link because
+      IT IS NOT A NON-ANCHOR FLAG. CARVE-P12-007 refuses a flag on a nested link because
       that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back
       into a format that describes the source. This field carries a RESOLUTION
       fact, which CARVE-P12-005 already publishes, and it is set by the resolution phase
@@ -300,7 +300,7 @@
       array holding one is a tree no parser produces and no renderer has a
       case for.
 
-      THE UNION IS THE ENFORCEMENT. CARVE-P12-031(d) validates a payload against the
+      THE UNION IS THE ENFORCEMENT. CARVE-P12-068(d) validates a payload against the
       schema, so the block union names content blocks only, and a `children`
       array holding a container-internal type fails at decode
       ([carve#2189](https://github.com/markup-carve/carve/issues/2189)).

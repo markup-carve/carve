@@ -71,8 +71,8 @@
      compatibility measurements and decision archaeology. Those facts may
      explain a current rule but do not belong inside its normative algorithm.
    - resources/examples/*.md and the generated tests/corpus/* pairs are the
-     CONFORMANCE CONTRACT: every example is checked against the reference
-     implementation in CI. A spec change is not real until a corpus pair
+     CONFORMANCE CONTRACT: every example is checked in CI against the spec model in `scripts/spec/` and the
+     engines pinned by the conformance run. A spec change is not real until a corpus pair
      pins it.
    - resources/carve-core.ohm and scripts/spec/*.mjs are DERIVED CHECKERS.
      They execute what this file states so that a contradiction inside it
@@ -537,7 +537,7 @@
         register in that body.
 
         At document column 0 a definition is a document-level interrupter.
-        At a nonzero column below `content_column` it is lazy paragraph text
+        At a nonzero column below every open `content_column` it is lazy paragraph text
         and does not register: `- a` / ` [r]: /u` / `tail` folds. Abbreviation
         definitions are recognized only at document level (CARVE-P12-026); inside a
         container their lines are ordinary text and reopen the paragraph.
@@ -579,10 +579,6 @@
         itself register ends its extent above that line, and the line takes
         its base in the container whose content column it does reach.
 
-        BELOW EVERY OPEN COLUMN IS UNCHANGED. A nonzero-column definition
-        below every open content column remains lazy paragraph text and does
-        not register (PART 9 §24 C3).
-
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
         UNDER -- NORMATIVE [CARVE-P0-011]. A block at the content column is
         recognized as at document column 0 (PART 9 §24 C3). It ends the preceding
@@ -621,7 +617,7 @@
             ```
 
         the item closes with an empty code block; `x` is document text and the
-        trailing run is ordinary inline text.
+        trailing run is inline content (an unclosed verbatim run).
 
         Where no container in the stack holds an open paragraph, select the
         nearest surviving ancestor whose content column the line reaches and
@@ -1138,7 +1134,7 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
    line.
    CONTINUATION MARKER (PART 9 §17): to attach a real BLOCK (a list, fenced code,
    table, ...) to the quote without `>`-prefixing every line, put a lone `+` at
-   column 0 right after a quoted line; the following flush-left block joins the
+   the quote's marker column right after a quoted line; the following block at that column joins the
    quote body. This is the un-prefixed analogue of the list item's `+`. *)
 lazy_continuation_line = inline_content, newline ;
 (* SEMANTIC CONSTRAINT: matches only while a paragraph is open at the deepest
@@ -1272,7 +1268,7 @@ indent = whitespace, {whitespace} ;
    identical to writing the sub-marker on its own indented line. It is NOT a
    one-off lone item: following markers at the sub-list's content column MERGE
    into the same nested list, and a post-blank block indented to that column is
-   ABSORBED into the open nested item as a lazy continuation. This matches
+   a further block of the open nested item (it reaches its content column). This matches
    reference djot.js (`@djot/djot`) and CommonMark. *)
 (* Continuation marker (Carve addition; see PART 9 §17 and
    markup-carve/carve#3421): a lone `+` at an open container's marker column,
@@ -1413,7 +1409,7 @@ definition_body = (':', definition_separator, first_block_content)
                    | lazy_continuation_line }) ;
 definition_separator = space, {space} ;
 (* FIRST-BLOCK (`: +`): when the sole content is a lone `+`, the body is the
-   FOLLOWING flush-left block, with no indentation -- the definition-list twin
+   following block at the container's marker column -- the definition-list twin
    of the list-item `- +` opener (`first_block_content`). `: \+` is a literal
    `+`. *)
 
@@ -1431,8 +1427,7 @@ definition_separator = space, {space} ;
    continuation inside that body down by the same amount. A formatter that
    trims the separator and leaves the body where it was changes what the
    document says. *)
-definition_continuation = (definition_indent, inline_content, newline)
-                        | (backslash, newline, definition_indent, inline_content, newline) ;
+definition_continuation = definition_indent, inline_content, newline ;
 definition_indent = whitespace, {whitespace} ;
 (* INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE [CARVE-P2-016]. A tab has a column
    value (PART 9 §24 C1, to the next multiple of 4), and a definition body's
@@ -1445,9 +1440,6 @@ definition_indent = whitespace, {whitespace} ;
    column 3. A bare tab reaches column 4 and qualifies for either. This is
    INDENTATION, not a marker SEPARATOR: it does not change the separator run
    after the `:` marker (CARVE-P7-002).
-
-   The BACKSLASH branch spells the same indentation: it resolves through the
-   hard break, which folds the next line in regardless of its indentation.
 
    BELOW THE BODY'S COLUMN THE BODY ENDS -- NORMATIVE [CARVE-P2-017]. The three
    bands, in column order, so the rule can be read off once:
@@ -1556,8 +1548,7 @@ definition_indent = whitespace, {whitespace} ;
 
    A definition body CONTINUES like a list item (PART 9 §17): a blank line
    followed by an indented block folds in (so a `<dd>` may hold multiple
-   paragraphs -- FORM A); a lone `+` attaches the FOLLOWING flush-left block
-   with no indentation (`continuation_marker_block` -- FORM B, the un-prefixed
+   paragraphs -- FORM A); a lone `+` attaches the following block at the container's marker column (`continuation_marker_block` -- FORM B, the un-prefixed
    analogue of the list-item and block-quote `+` forms); and a flush-left line
    with no blank before it that does not start an interrupting block lazily
    continues the open paragraph (`lazy_continuation_line`, the same rule as list
@@ -2054,8 +2045,7 @@ comment_line = [whitespace], "%%", [space], {character}, newline ;
    degrades to a `comment_line`. Both rules are NORMATIVE in PART 9 §28. *)
 comment_block = comment_block_open, newline,
                 {character | newline},
-                comment_block_close, newline
-                where exists(comment_block_close) ;  (* PART 9 §28: else comment_line *)
+                comment_block_close, newline ;  (* PART 9 §28: else comment_line *)
 
 (* Both delimiters may be INDENTED, exactly as `comment_line` may: leading
    whitespace is not part of the delimiter, only the `%` run is, so the length
@@ -2497,7 +2487,7 @@ link_text = {inline_element | text_run | literal_special} ;
    `[{+a\]b+}](u)` works and those constructs are NOT skipped.
 
    THE DESTINATION SLOT, THE AUTOLINK and THE CROSS-REFERENCE joined by it:
-   none resolves an escape (`docs/dismissed-syntax.md`, normative), so a `]`
+   none resolves an escape (PART 3 destination escapes), so a `]`
    there has no second spelling. The slot is skipped through its closing
    parenthesis, title included, and NOT a trailing attribute block -- an
    attribute value does resolve escapes, so `[t[x](/u){title="]"}y](/z)`
@@ -2570,8 +2560,7 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 (* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE [CARVE-P3-002]:
    `destination_char` excludes whitespace without qualifying it to ASCII.
    So a NARROW NO-BREAK SPACE, an IDEOGRAPHIC SPACE and a THIN SPACE end an
-   inline destination exactly as a plain space does, and an unbracketed
-   destination cannot contain one -- an href MUST NOT carry one.
+   inline destination exactly as a plain space does, and a destination cannot contain one -- an href MUST NOT carry one.
 
    ZERO-WIDTH characters (U+200B, U+FEFF) are NOT whitespace and ARE ordinary
    destination characters. The test is the Unicode White_Space property, not
@@ -3714,8 +3703,8 @@ quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' 
    need not be on the opening line): a continuation is a single line
    break optionally followed by indentation. A BLANK line (two line
    breaks) ends the block -- it is not interior padding; an attribute
-   block interrupted by a blank line is not a block_attributes (both
-   grammar treats it as literal text). Merge + reach semantics
+   block interrupted by a blank line is not a `block_attributes`; its lines
+   are literal paragraph text. Merge + reach semantics
    (including float-across-blank-lines BETWEEN separate blocks): PART 9 §15. *)
 (* Continuation lines may sit at any column within the quote prefix of the
    container that opened the block attribute. A line that drops a `>` can only
@@ -5094,7 +5083,7 @@ EOF = (* end of file *) ;
 
              |= a |          header cell, content `a`
              |=a |           data cell, content `=a`
-             |=hot= |        data cell, content `=hot=`
+             |=hot= |        data cell; its inline content `=hot=` is a highlight
              |{#x} =R |      data cell with `id="x"`, content `=R`
              |{#x}=R|        data cell, content `{#x}=R`
 
@@ -5757,7 +5746,7 @@ EOF = (* end of file *) ;
 
    13. HEADING SECTION WRAPPING -- NORMATIVE [CARVE-P9-019] (governs `atx_heading` in
       PART 2 and the renderer; matches djot, see `jgm/djot` official
-      `headings.test`). Every heading emits a `<section id="{id}">`
+      `headings.test`). Every top-level heading emits a `<section id="{id}">`
       wrapper around itself and the following content up to the next
       same-or-shallower heading. CARVE-P2-004 computes the heading id; this
       clause places it on the `<section>` element, NOT on the
@@ -7381,7 +7370,7 @@ EOF = (* end of file *) ;
         total work stays O(n): in particular an empty abbreviation term is
         rejected, a reference is not resolved by rescanning the whole output
         per occurrence, and a crossref target is not cloned without bound.
-      I1 FILE INCLUSION. The `{{ … }}` directive (CARVE-P6-001) does no I/O in the
+      FILE INCLUSION. The `{{ … }}` directive (CARVE-P6-001) does no I/O in the
         parser and stays literal until a host configures a resolver (PART 6 I3). Enabling
         it for UNTRUSTED input requires one explicit, absolute containment root
         that never defaults to the process working directory, containment
@@ -7393,7 +7382,7 @@ EOF = (* end of file *) ;
         user-supplied content. If such a host offers inclusion, it MUST require
         an explicit, administrator-only opt-in with an explicit root; that
         opt-in MUST NOT be inherited by front-end rendering paths.
-      I2 NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
+      NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
         renderers MUST NOT become injection vectors either. The TERMINAL
         target MUST strip text, code, math AND URL values of every control
         character before emission -- the non-whitespace C0 controls, DEL
@@ -7420,7 +7409,7 @@ EOF = (* end of file *) ;
         U+200B yields an id with NEITHER codepoint.
       - PRESENTATION TARGETS -- HTML, Markdown, plain text, and terminal
         (ANSI) -- strip the bidi-override / isolate controls (U+202A..U+202E,
-        U+2066..U+2069) from rendered text and CODE-SPAN / CODE-BLOCK content.
+        U+2066..U+2069) from rendered text, code and math content.
         They are REMOVED, not escaped: in HTML, entity-encoding one would let
         it DECODE BACK to the raw control downstream; in the other presentation
         targets it would either remain live or change the author's visible
@@ -8065,7 +8054,8 @@ EOF = (* end of file *) ;
       R1 STRUCTURAL. What the element derives from its OWN marker,
          destination or resolution: `<ol>`'s `type` and `start` (PART 9 §11
          N2) and then its `data-delim` (§12), a link's `href`, an image's
-         `src` and `alt`, a task item's `data-task-state` (§11) and, under
+         `src` and `alt`, a link's or image's `title`, a task item's
+         `data-task-state` (§11) and, under
          roundtrip export, the carriers of §13, which follow the element's
          other structural attributes.
       R2 A MANDATORY BASE CLASS, where the author wrote no class: math's
@@ -8620,7 +8610,7 @@ EOF = (* end of file *) ;
 
       A CARRIER IS STRUCTURAL (§1 R1). It sits after the element's other
       structural attributes (`type`, `start`, `data-delim`, `href`, `src`,
-      `alt`, `title`) and before the first attribute the author wrote, and
+      `alt`, `title`; §16 R1) and before the first attribute the author wrote, and
       the placement does not vary by carrier:
         > {.c #i}
         > ***            -> <hr data-char="*" class="c" id="i">
@@ -8893,12 +8883,10 @@ EOF = (* end of file *) ;
       mode and alias controls are in
       `resources/footnote-carrier-recovery-fixtures.json`.
 
-      ONE CARRIER IS THE EXCEPTION, and CARVE-P10-017 is why. `data-carve-raw` RETURNS
-      ITS PAYLOAD VERBATIM as a raw inline, so consuming it is not
-      reconstructing syntax the tree already expresses -- it decides that
-      foreign content may re-enter the document as raw. That stays on the
-      importer's own trust setting, and an importer that declines it drops the
-      carrier and takes the span's text.
+      ONE CARRIER IS THE EXCEPTION. A `data-carve-raw` naming format `html`
+      returns its payload as raw HTML only under CARVE-P10-017's mode gate.
+      Otherwise the importer drops the carrier and takes the span's text.
+      Other formats are consumed in every import mode.
 
       WHAT THE MODE DECIDES IS NOTHING ELSE. Every other name in CARVE-P10-016 is
       consumed whatever the mode, and reconstruction of raw HTML outside a
@@ -9349,7 +9337,7 @@ EOF = (* end of file *) ;
 
         source     written as    what changed
         `* %%`     `* +`         a line comment became the CONTINUATION MARKER
-                                 (PART 9 §17 L3), a different construct with a body
+                                 (PART 9 §17 L4 first-block form), a different construct with a body
         `| %%%`    `| %% %`      a comment-block fence (CARVE-P9-060) split into a line
                                  comment plus text
 
@@ -9536,11 +9524,10 @@ EOF = (* end of file *) ;
 
    ============================================================================ *)
 (* ============================================================================
-   6. WHAT IS NOT THE WRITER'S JOB. `fmt` does not re-wrap prose, reorder
-      attributes, or respell a construct to a synonym (`*` vs `-` bullets,
-      ordered-list dialect, thematic-break marker). Those are the author's
-      choices and the AST records them; changing one would satisfy §1 while
-      still surprising the author.
+   6. WHAT IS NOT THE WRITER'S JOB. `fmt` does not re-wrap prose or reorder
+      attributes. A spelling the AST records is the author's and is reproduced
+      (`*` vs `-` bullets, ordered-list dialect, thematic-break marker).
+      A spelling it does not record is chosen by the writer canonically.
 
       FENCE LENGTH IS NOT ONE OF THEM: `code_block` records neither fence
       length nor character (PART 12 §3).
@@ -10008,8 +9995,7 @@ EOF = (* end of file *) ;
         SAME TREE. EVERYWHERE ELSE IT WRITES THE PART 3 FORM, `\` BEFORE THE
         NEWLINE.
 
-      §7 permits stripping a line's trailing whitespace on the ground that
-      "where the PARSER discards trailing whitespace the writer may too". The
+      §7 strips a content line's trailing whitespace because CARVE-P2-025 drops it on parse. The
       parser does NOT discard it when a backslash follows: CARVE-P2-025 makes the
       run before a line-break backslash INTERIOR, and PART 9 §23 gives that
       the visible consequence. So none of this is a new principle, it is §7
@@ -10246,17 +10232,17 @@ EOF = (* end of file *) ;
                              another live `_` in the same inline
                              content could close the emphasis it
                              could open (CARVE-P11-023)
-        M1b   `[`            ADJACENT to an unescaped `[`, or inside  `\[`
+        M1c   `[`            ADJACENT to an unescaped `[`, or inside  `\[`
                              an emitted link label or image
                              description (CARVE-P11-023)
-        M1c   `-` `+`        at a paragraph line's content position,  `\-` `\+`
+        M1d   `-` `+`        at a paragraph line's content position,  `\-` `\+`
                              before a space or tab
-        M1c   `.` `)`        after one to nine ASCII digits at a      `\.` `\)`
+        M1e   `.` `)`        after one to nine ASCII digits at a      `\.` `\)`
                              paragraph line's content position,
                              before a space or tab
-        M1e   `<`            before an ASCII letter, `/`, `!` or `?`  `\<`
-        M1e   `>`            at a line's content position             `\>`
-        M1f   `#`            opening a run of one to six hashes at a  `\#`
+        M1f   `<`            before an ASCII letter, `/`, `!` or `?`  `\<`
+        M1g   `>`            at a line's content position             `\>`
+        M1h   `#`            opening a run of one to six hashes at a  `\#`
                              line's content position, closed by a
                              space, a tab or the line's end; and a
                              trailing run of any length after a
@@ -10289,7 +10275,7 @@ EOF = (* end of file *) ;
       M2; that is a defect in the AST, not license to skip the row.
 
    8a. THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE -- NORMATIVE [CARVE-P11-023]. Rows
-      M1b to M1f of §8's table are conditional. These terms decide them.
+      M1b to M1h of §8's table are conditional. These terms decide them.
 
       ADJACENT means the position immediately before or immediately after the
       character, in the line the writer is building, holds that same
@@ -10310,8 +10296,8 @@ EOF = (* end of file *) ;
       can neither open nor close, so `company_id` stays bare while `*x*_y_`
       is written `*x*\_y\_`.
 
-      A PARAGRAPH LINE'S CONTENT POSITION, for M1c, includes up to three
-      leading spaces. M1c applies to paragraph text only: a marker the
+      A PARAGRAPH LINE'S CONTENT POSITION, for M1d, includes up to three
+      leading spaces. M1d applies to paragraph text only: a marker the
       renderer emits for an actual list remains live, and punctuation inside
       code remains content.
 
@@ -10323,7 +10309,7 @@ EOF = (* end of file *) ;
       if-and-only-if. An engine neither drops an escape a row keeps nor keeps
       one a row drops, narrows no further character and loosens no test.
 
-      M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP --
+      M1f `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP --
           NORMATIVE [CARVE-P11-024]. An opening tag, a closing tag, a comment
           and a processing instruction open raw HTML through a CommonMark
           reader, and those four next-characters are the whole hazard. The
@@ -10332,7 +10318,7 @@ EOF = (* end of file *) ;
 
             a \<b> c       ->  a &lt;b&gt; c
 
-      M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX
+      M1h `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX
           HEADING -- NORMATIVE [CARVE-P11-044]. The content position is the
           one CARVE-P11-025 defines, and the escape goes on the `#` that opens the run:
 
@@ -10347,9 +10333,6 @@ EOF = (* end of file *) ;
       reached (M2a). `#` is its ONLY narrowing (M2b): a hash is read as markup
       only at a line's content position, where it opens an ATX heading. A `[`
       can open a link at any position, so its escape is kept everywhere.
-
-        a -- b        ->  a – b
-        a \-\- b      ->  a -- b
 
       A LINE'S CONTENT POSITION IS AFTER ITS CONTAINER PREFIX. It is measured
       on the EMITTED LINE: every prefix the writer put in front of the
@@ -10463,9 +10446,9 @@ EOF = (* end of file *) ;
          `)`,
 
       the line is escaped: for T1 and T2 its first character, for T3 the
-      character M1c escapes (`\-`, `\+`, `1\.`), unless an escape another rule
+      character M1d or M1e escapes (`\-`, `\+`, `1\.`), unless an escape another rule
       gives already stands on it. T1 is a thematic break, T2 turns the
-      paragraph above into a heading and T3 is an empty list item, and M1c
+      paragraph above into a heading and T3 is an empty list item, and M1d
       reaches none of them: it asks for a marker followed by a space or tab.
 
         text "---"                 ->  \---
@@ -10704,8 +10687,7 @@ EOF = (* end of file *) ;
       A LINK REFERENCE DEFINITION IS COVERED TOO: PART 12 §10 gives it a node,
       so all three kinds walk and all three emit. A REFERENCED link definition
       writes no line on Markdown, because the inlined `[it](/url)` already
-      carries its destination; that is CARVE-P11-033's test, one design for
-      both.
+      carries its destination (CARVE-P11-028).
 
       UNDER ROUNDTRIP EXPORT A REFERENCE LINK IS WRITTEN NATIVELY. With the
       carrier mode on (CARVE-P10-015), a link that resolved through a
@@ -10894,7 +10876,7 @@ EOF = (* end of file *) ;
           that expanded anywhere would delete the string `a` from the document
           outright, which is the loss this clause moves to prevent.
 
-      THE MARKDOWN TARGET NEEDS NONE OF THAT TEST -- it keeps every definition
+      THE MARKDOWN TARGET NEEDS NONE OF THAT TEST -- it keeps every abbreviation definition
       line whatever became of it. So does the canonical writer, where PART 11
       §1's `parse(fmt(x)) == parse(x)` requires it, which leaves the round
       trip intact on both of the targets that have one.
@@ -11788,9 +11770,7 @@ EOF = (* end of file *) ;
       from profiles.md (CARVE-P12-001). A document is
       `{"type":"document","children":[...]}`.
 
-      The root's own fields are fixed by CARVE-P12-024: `type`, `children` and
-      `srcByteLength`, plus an optional `astVersion` on a bare tree, and
-      nothing else.
+      The root's own fields are fixed by CARVE-P12-024.
 
         {"type":"document","children":[...],"srcByteLength":42}
 
@@ -12056,7 +12036,7 @@ EOF = (* end of file *) ;
 
       A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS
       AUTHORED IN -- NORMATIVE [CARVE-P12-016]. A definition hoisted to the
-      document (CARVE-P12-029) keeps the `pos` it was written at, so it and its
+      document (CARVE-P12-070) keeps the `pos` it was written at, so it and its
       former host are siblings whose spans may overlap, whatever the host's
       extent:
 
@@ -12194,6 +12174,7 @@ EOF = (* end of file *) ;
 | figure.shortCaption,table.shortCaption | CARVE-P12-033 | omit_field | ignore_field | unspecified | ignore_field | ignore_field | clause |
 | figure.target[table] | CARVE-P12-036 | table_caption | figure | unspecified | unspecified | unspecified | clause |
 | table_cell.blocks | CARVE-P12-049 | unspecified | cell_blocks | flatten_blocks | flatten_blocks | flatten_blocks | field-unspellable (Carve,Markdown,Plain,ANSI) |
+| table.rowGroups[attrs] | CARVE-P12-034 | omit_field | unspecified | omit_field | omit_field | omit_field | field-unspellable (Carve,Markdown,Plain,ANSI) |
 | small_caps | CARVE-P12-050 | unwrap | smallcaps_span | smallcaps_span | unwrap | unwrap | structure-unspellable (Carve) |
 | section | CARVE-P12-052 | unwrap | section | unwrap | unwrap | unwrap | structure-unspellable (Carve) |
 | ruby | CARVE-P12-054 | parenthesized_pairs | ruby | ruby | parenthesized_pairs | parenthesized_pairs | ruby-flattened (Carve,Plain,ANSI) |
@@ -12271,12 +12252,10 @@ EOF = (* end of file *) ;
       `label`, not `id`: PART 9 §16 calls it a label throughout, and `id`
       collides with the attribute of that name.
 
-      A DEFINITION IS A CHILD OF THE DOCUMENT even when it was authored inside
-      a container. PART 9 §16 already makes a definition document-level
-      metadata that is collected out of its blockquote or list item, leaving
-      that container empty; the serialized tree follows the same rule rather
-      than inventing a second one. Its `pos` still records where it was
-      WRITTEN, so nothing about navigation is lost by the move.
+      FOOTNOTE AND LINK REFERENCE DEFINITIONS HOIST TO THE DOCUMENT -- NORMATIVE
+      [CARVE-P12-070]. A definition authored inside a block quote or list item
+      is a child of the document. Its `pos` records where it was written.
+      The former container retains its remaining content.
 
       AN ABBREVIATION DEFINITION IS A BLOCK NODE, `type: "abbreviation_def"`,
       carrying:
@@ -12404,18 +12383,9 @@ EOF = (* end of file *) ;
         title   the quoted title, unescaped, when the definition carries one
         attrs   a trailing attribute block on the definition line (CARVE-P3-007)
 
-      IT HOISTS TO THE DOCUMENT, exactly as CARVE-P12-024 requires of the FOOTNOTE
-      definition: a definition authored inside a block quote or a list item is
-      a child of the DOCUMENT, and its `pos` still says where it was written.
-      The container is left as the author's remaining content, which is what
-      corpus 117-footnote-definition-inside-a-container-is-collected already
-      pins for the footnote case.
+      Hoisting and source position follow CARVE-P12-070.
 
-      THE ABBREVIATION DEFINITION IS NOT THE THIRD KIND HERE. CARVE-P12-024's clause AN
-      ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL says the
-      opposite for that one: inside a container the line is not a definition
-      at all, it is paragraph text, and nothing is hoisted because nothing was
-      collected.
+      Abbreviation definitions do not hoist (CARVE-P12-026).
 
       A node carries the definition's required `pos`, attributes and document
       order, so document order rather than merge order decides which definition
@@ -12436,10 +12406,9 @@ EOF = (* end of file *) ;
       Extension data crosses a round trip only in a DECLARED place, such as a
       `block_extension` payload (CARVE-P12-055); anywhere else it is an unnamed property.
 
-   12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. CARVE-P12-024
-      fixes the root at `type`, `children` and `srcByteLength`, with an optional
-      `astVersion`; the schema marks the three `required` and pins `type` to
-      `document`.
+   12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031].
+      An ingest refuses a root that deviates from CARVE-P12-024
+      (CARVE-P12-068(a), (b)).
 
       AN INGEST REFUSAL IS A TYPED ERROR NAMING WHAT AND WHERE -- NORMATIVE
       [CARVE-P12-068]. Where PART 12 says an ingest refuses, it fails with an
@@ -12585,9 +12554,11 @@ EOF = (* end of file *) ;
 
       A SHAPE NO CARVE SOURCE SPELLS IS CARRIED, NOT INVENTED -- NORMATIVE
       [CARVE-P12-066]. An INTERCHANGE-ONLY shape is a node type, field or
-      wrapper that Carve 0.1 source cannot spell: `shortCaption` (CARVE-P12-033), a
+      wrapper that Carve source cannot spell: `shortCaption` (CARVE-P12-033), a
       `figure` wrapping a `table` (CARVE-P12-036), `table_cell.blocks` (CARVE-P12-049),
-      `small_caps` (CARVE-P12-050), `math.label` and `math.number` (CARVE-P12-051), `section`
+      `small_caps` (CARVE-P12-050), `math.label` and `math.number` (CARVE-P12-051),
+      `rowGroups.headAttrs`, `rowGroups.footAttrs` and `rowGroups.bodies[].attrs`
+      (CARVE-P12-034), `section`
       (CARVE-P12-052), `ruby` (CARVE-P12-054) and `block_extension` (CARVE-P12-055). A parser never
       synthesizes one; AST consumers and format bridges supply it, and AST
       encode/decode preserves it (PART 12 §6). A canonical Carve writer MUST NOT invent
@@ -12704,7 +12675,8 @@ EOF = (* end of file *) ;
       Attribute-free tables retain the existing single-body fallback for spans
       that cross a section boundary. Without `rowGroups`,
       HTML retains its implicit partition. Plain and ANSI keep the flat rows.
-      Carve source cannot spell section attributes, and neither can Markdown,
+      The fallback matrix row `table.rowGroups[attrs]` covers the three
+      section-attribute fields. Carve source cannot spell section attributes, and neither can Markdown,
       plain or ANSI. A writer for one of those targets reports one
       `field-unspellable` entry per discarded nonempty attributes field on the
       CARVE-P11-046 channel, with `node` `table` and `field` the path within the
@@ -13004,7 +12976,7 @@ EOF = (* end of file *) ;
       `true`; a paragraph that is not a block image omits it rather than
       carrying `false`, which is CARVE-P12-042's absent-value rule applied here.
 
-      IT IS NOT A NON-ANCHOR FLAG. CARVE-P12-005 refuses a flag on a nested link because
+      IT IS NOT A NON-ANCHOR FLAG. CARVE-P12-007 refuses a flag on a nested link because
       that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back
       into a format that describes the source. This field carries a RESOLUTION
       fact, which CARVE-P12-005 already publishes, and it is set by the resolution phase
@@ -13056,7 +13028,7 @@ EOF = (* end of file *) ;
       array holding one is a tree no parser produces and no renderer has a
       case for.
 
-      THE UNION IS THE ENFORCEMENT. CARVE-P12-031(d) validates a payload against the
+      THE UNION IS THE ENFORCEMENT. CARVE-P12-068(d) validates a payload against the
       schema, so the block union names content blocks only, and a `children`
       array holding a container-internal type fails at decode
       ([carve#2189](https://github.com/markup-carve/carve/issues/2189)).
@@ -13516,7 +13488,7 @@ EOF = (* end of file *) ;
       citation groups. CARVE-P12-038's typed, positioned item and inline-profile vocabulary
       requirements remain satisfied by the `citation` definition and vocabulary
       entry. THE COST OF LEAVING IT WAS NOT SYMMETRIC: narrowing the dispatch
-      lets CARVE-P12-031(d) reject standalone citations at ingest instead of at rendering
+      lets CARVE-P12-068(d) reject standalone citations at ingest instead of at rendering
       ([carve#2227](https://github.com/markup-carve/carve/issues/2227)).
 
    38. NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-060]. A

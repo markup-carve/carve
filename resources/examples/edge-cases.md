@@ -65249,3 +65249,113 @@ b</p>
 ```
 
 :::
+
+## Bidi controls in math content
+
+Math content drops bidi override and isolate controls under PART 9 §26. These two inputs use different controls and different surrounding text.
+
+<!-- The math body contains a, RIGHT-TO-LEFT OVERRIDE (U+202E), b. -->
+::: compare no-render
+
+```carve
+$`a‮b`
+```
+
+```html
+<p><span class="math inline" role="math">\(ab\)</span></p>
+```
+
+:::
+
+<!-- The math body contains x, LEFT-TO-RIGHT ISOLATE (U+2066), y. -->
+::: compare no-render
+
+```carve
+$`x⁦y`
+```
+
+```html
+<p><span class="math inline" role="math">\(xy\)</span></p>
+```
+
+:::
+
+## A fence with no host prefix leaves an inline run
+
+A fence opener inside a list item owns no flush-left body line. The closing backticks then form an unclosed inline code run in the document paragraph.
+
+::: compare
+
+````carve
+- ```
+x
+```
+````
+
+```html
+<ul>
+  <li>
+    <pre><code></code></pre>
+  </li>
+</ul>
+<p>x
+<code></code></p>
+```
+
+:::
+
+::: compare
+
+````carve
+- ```
+y
+```
+````
+
+```html
+<ul>
+  <li>
+    <pre><code></code></pre>
+  </li>
+</ul>
+<p>y
+<code></code></p>
+```
+
+:::
+
+## Table content parses inline markup
+
+A leading `=` opens a data cell here. The `=hot=` inside it is a highlight.
+
+::: compare
+
+```carve
+|=hot= |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td><mark>hot</mark></td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|=warm= |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td><mark>warm</mark></td></tr>
+  </tbody>
+</table>
+```
+
+:::

@@ -195,8 +195,8 @@ quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' 
    need not be on the opening line): a continuation is a single line
    break optionally followed by indentation. A BLANK line (two line
    breaks) ends the block -- it is not interior padding; an attribute
-   block interrupted by a blank line is not a block_attributes (both
-   grammar treats it as literal text). Merge + reach semantics
+   block interrupted by a blank line is not a `block_attributes`; its lines
+   are literal paragraph text. Merge + reach semantics
    (including float-across-blank-lines BETWEEN separate blocks): PART 9 §15. *)
 (* Continuation lines may sit at any column within the quote prefix of the
    container that opened the block attribute. A line that drops a `>` can only

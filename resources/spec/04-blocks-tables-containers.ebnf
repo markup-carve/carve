@@ -488,8 +488,7 @@ comment_line = [whitespace], "%%", [space], {character}, newline ;
    degrades to a `comment_line`. Both rules are NORMATIVE in PART 9 §28. *)
 comment_block = comment_block_open, newline,
                 {character | newline},
-                comment_block_close, newline
-                where exists(comment_block_close) ;  (* PART 9 §28: else comment_line *)
+                comment_block_close, newline ;  (* PART 9 §28: else comment_line *)
 
 (* Both delimiters may be INDENTED, exactly as `comment_line` may: leading
    whitespace is not part of the delimiter, only the `%` run is, so the length

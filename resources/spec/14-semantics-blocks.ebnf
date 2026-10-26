@@ -500,7 +500,7 @@
 
    13. HEADING SECTION WRAPPING -- NORMATIVE [CARVE-P9-019] (governs `atx_heading` in
       PART 2 and the renderer; matches djot, see `jgm/djot` official
-      `headings.test`). Every heading emits a `<section id="{id}">`
+      `headings.test`). Every top-level heading emits a `<section id="{id}">`
       wrapper around itself and the following content up to the next
       same-or-shallower heading. CARVE-P2-004 computes the heading id; this
       clause places it on the `<section>` element, NOT on the
