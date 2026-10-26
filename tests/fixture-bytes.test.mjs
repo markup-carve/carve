@@ -73,6 +73,8 @@ const INVENTORY = [
   },
   { base: '120-trojan-source-rendered-text-and-code-strip-bidi-override-controls', crv: ['RLO'], html: [] },
   { base: '120-trojan-source-rendered-text-and-code-strip-bidi-override-controls-2', crv: ['RLO'], html: [] },
+  { base: '670-bidi-controls-in-math-content', crv: ['RLO'], html: [] },
+  { base: '670-bidi-controls-in-math-content-2', crv: ['LRI'], html: [] },
   { base: '141-trailing-whitespace-boundaries-4', crv: ['NBSP'], html: [] },
   { base: '16-reference-link-9', crv: ['trailing-WS'], html: [] },
   { base: '29-non-breaking-space-3', crv: ['NBSP'], html: [] },

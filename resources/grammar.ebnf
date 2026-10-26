@@ -1427,7 +1427,7 @@ definition_separator = space, {space} ;
    continuation inside that body down by the same amount. A formatter that
    trims the separator and leaves the body where it was changes what the
    document says. *)
-definition_continuation = definition_indent, inline_content, newline ;
+definition_continuation = (definition_indent, inline_content, newline) ;
 definition_indent = whitespace, {whitespace} ;
 (* INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE [CARVE-P2-016]. A tab has a column
    value (PART 9 §24 C1, to the next multiple of 4), and a definition body's
