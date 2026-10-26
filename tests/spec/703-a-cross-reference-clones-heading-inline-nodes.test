@@ -1,0 +1,12 @@
+A cross-reference clones heading inline nodes
+
+```
+# *Setup*
+
+See </#Setup>.
+.
+<section id="Setup">
+  <h1><strong>Setup</strong></h1>
+  <p>See <a href="#Setup"><strong>Setup</strong></a>.</p>
+</section>
+```

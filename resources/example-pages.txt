@@ -1206,6 +1206,7 @@ index: examples/edge-cases/index.md
   15-heading-ids-5
   15-heading-ids-6
   empty-heading-slugs-use-the-ordinary-duplicate-suffix
+  a-cross-reference-clones-heading-inline-nodes
 
 [edge-whitespace] Whitespace, tabs and columns
 > Where a space is required, where a tab reaches, blank lines, line endings and trailing whitespace.
