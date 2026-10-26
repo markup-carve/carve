@@ -65482,3 +65482,22 @@ b</p></blockquote>
 ```
 
 :::
+
+
+## A tab after a list separator keeps the quote mark literal
+
+A tab after the required marker space is content, so it does not expose a quote opener.
+
+::: compare
+
+```carve
+- 	> a
+```
+
+```html
+<ul>
+  <li>&gt; a</li>
+</ul>
+```
+
+:::

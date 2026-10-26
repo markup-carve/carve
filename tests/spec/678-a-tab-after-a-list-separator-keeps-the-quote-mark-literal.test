@@ -1,0 +1,9 @@
+A tab after a list separator keeps the quote mark literal
+
+```
+- 	> a
+.
+<ul>
+  <li>&gt; a</li>
+</ul>
+```

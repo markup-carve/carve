@@ -1241,6 +1241,7 @@ index: examples/edge-cases/index.md
   a-closed-fence-in-a-nested-child-leaves-no-paragraph-open
   a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base
   a-fence-closer-below-the-authored-base-is-measured-as-its-payload
+  a-tab-after-a-list-separator-keeps-the-quote-mark-literal
 
 [edge-security] Security and limits
 > Trojan-Source stripping, scheme probes, attribute hardening and the nesting cap.
