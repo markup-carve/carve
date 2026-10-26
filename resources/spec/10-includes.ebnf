@@ -183,8 +183,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       reporting (I11).
 
    I1a FRAGMENT SELECTION (`#name`). `name` is an `explicit_identifier`
-      (`include_section`), so every explicit id is nameable, digit-leading ones such
-      as `{#2024-plan}` included. It is matched the way a `</#id>`
+      (`include_section`; see its production), so every explicit id is
+      nameable. It is matched the way a `</#id>`
       cross-reference matches (PART 9R R4), against the child's OWN parse, before
       the child's nested includes expand. Two steps, the first that
       matches wins:
@@ -368,9 +368,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       CARVE-P0-023 covers the document handed to the processor, not an
       included file.
 
-   I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A TRANSFORM option
-      (I1), orthogonal to selection. `@shift` takes EITHER a SIGNED integer
-      OR the literal value `auto`, NEVER both.
+   I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A transform option
+      orthogonal to selection (I1).
       LITERAL FORM. N is a SIGNED integer; every heading in the included
       content has its level increased by N (N=2: an h1 becomes an h3; a
       NEGATIVE N raises levels, N=-1: an h2 becomes an h1). An omitted

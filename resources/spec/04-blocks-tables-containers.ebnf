@@ -73,17 +73,11 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    preceding whitespace); the attribute block attaches after them. A
    cell containing only '^' or '<', with any space padding or none, is span_cell.
 
-   AND IT ENDS AT A SPACE. `cell_padding` is the run's terminator, so a cell
-   carrying any part of the run -- kind marker, alignment run, attribute
-   block -- must follow it with one space. Without that space there is no
-   run and every character of it is content: `|=a |` is a data cell whose
-   text is `=a`. A cell with NO run keeps the unpadded spelling (`|a|`).
-   PART 9 §5 T11 is the rule and its cost. *)
+   A marker run ends with one space (PART 9 §5 T11). A cell with no run
+   accepts unpadded content (`|a|`). *)
 (* CELL ATTRIBUTES (NORMATIVE): an attribute block sets the cell's attributes.
-   It binds LAST -- after the kind marker and after the alignment marker, in
-   every cell -- and is GLUED to whatever precedes it: to the marker run where
-   the cell has one (`|=<{.x} …`), to the opening `|` where it has none
-   (`|{.x} …`). No whitespace may intervene. The rest of the cell, after
+   It binds last (PART 9 §5 T10) and is glued to the marker run or the
+   opening `|` (`|=<{.x} …`, `|{.x} …`). The rest of the cell, after
    optional whitespace, is the content. A space before the brace (`| {.x}`) is
    ordinary content, NOT attributes. The whole brace payload must be valid
    attribute syntax (PART 9 §15); otherwise the '{' is literal content. A cell
@@ -120,8 +114,7 @@ vertical_alignment = '^' | '~' | 'v' ;    (* top, middle, bottom *)
 inherited_horizontal_alignment = '?' ;
 cell_padding = space | (* empty only when the cell carries no marker run *) ;
 (* An alignment run is a horizontal marker, optionally followed by a vertical
-   marker. Like every other part of the marker run it MUST be followed by one
-   space, after an optional attached attribute block (PART 9 §5 T11). A
+   marker. Its ending space follows PART 9 §5 T11. A
    vertical marker therefore never stands
    alone: `|^ x` and `|v x` keep `^`/`v` as visible content.
    Reverse-order pairs are invalid. Duplicate axes are invalid, except `~~`,
@@ -130,7 +123,7 @@ cell_padding = space | (* empty only when the cell carries no marker run *) ;
    only vertical alignment and inherit horizontal alignment from the column.
    It is valid only in that leading two-marker form. A lone `~` is horizontal
    center; no vertical value has a one-marker spelling.
-   With no alignment run the old unpadded cell spelling remains valid. *)
+   With no alignment run, an unpadded cell follows the `data_cell` production. *)
 
 cell_content = [inline_content] ;
 (* CELL CONTENT MAY BE EMPTY. `inline_content` is one-or-more, so the option

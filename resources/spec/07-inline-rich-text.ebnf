@@ -153,8 +153,7 @@ forced_content    = inline_span_content ;
      {//}  {**}  {__}  {~~}  {^^}  {,,}  {==}  {++}  {##}
 
    all render literally. IT APPLIES TO THE EDITORIAL FAMILY TOO, whose content
-   slots are the same `+` repetition; the string `{--}` this frees is the
-   braced en dash (PART 9 §8).
+   slots are the same `+` repetition (braced en dash: CARVE-P3-020).
 
    THE ONE EXCEPTION is a fully empty SUBSTITUTION, `{~~>~}`, which renders an
    empty del followed by an empty ins (CARVE-P3-016). *)
@@ -186,9 +185,7 @@ highlight_content = inline_span_content ;
    document-order sequence), endnotes rendering, and the inline form's
    balanced-bracket close are PART 9 §16. A bare `^` opens no superscript,
    so `^[` is unambiguous. These two are the only
-   note forms; the once-proposed sidenote `[>content]` was DISMISSED (a
-   sidenote is footnote content placed by CSS, not a separate construct) --
-   see docs/dismissed-syntax.md. *)
+   note forms; `[>` opens nothing, so `[>foo]` is literal text. *)
 footnote = reference_footnote | inline_footnote ;
 reference_footnote = "[^", footnote_label, ']', [attribute_run] ;
 (* A label is a physical-line identifier and never holds a source newline: a
@@ -231,11 +228,6 @@ footnote_indent = whitespace, {whitespace} ;
    indent. A reader first consumes that minimum and then applies PART 0's ONE
    AUTHORED BLOCK BASE. Two is a floor for the body, not a ceiling for its
    blocks; this construct adds no second rebase rule. *)
-
-(* DISMISSED (not reserved, no production): a sidenote form `[>content]` --
-   margin placement is CSS over the existing footnote/endnote output. The `[>`
-   opener is therefore UNCLAIMED and `[>foo]` is literal text (pinned by the
-   corpus). Rationale: docs/dismissed-syntax.md. *)
 
 (* --- Citations (Tier-2 extension) --- *)
 (* TIER-2, OFF BY DEFAULT. A `[...]` whose content contains a `@key` and which
@@ -334,12 +326,10 @@ comment_content = (* any text until the matching `#}`, preserved literally;
    AN ADDITION'S AND A DELETION'S CONTENT IS NON-EMPTY -- `inline_content` is a
    `+` repetition, and `comment_content` says it too. `{++}`, `{--}` and `{##}`
    are therefore text, under the same empty-brace clause the forced spans carry;
-   while `{---}` is still `<del>-</del>` and `{-x-}` is still
-   `<del>x</del>`. The string `{--}` freed is the braced en dash (PART 9 §8).
+   while braced dash and nonempty deletion spellings follow CARVE-P3-020.
 
    `substitution` is NOT widened: a half-empty substitution is a real edit --
-   `{~a~>~}` deletes and `{~~>b~}` inserts -- so the fully empty `{~~>~}` still
-   renders two empty elements. `substitution` takes `inline_content` on both
+   `{~a~>~}` deletes and `{~~>b~}` inserts -- so the fully empty form follows CARVE-P3-014. `substitution` takes `inline_content` on both
    sides, so `{~*b*~>*e*~}` emphasizes both (carve#2083). *)
 (* ADDITION AND DELETION ATTRIBUTES BIND TO THEIR ELEMENT -- NORMATIVE [CARVE-P3-017]: an addition / deletion is an ordinary inline node,
    so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
@@ -461,8 +451,7 @@ ellipsis = "..." ;    (* → … *)
    it is flag-shaped and stays literal, so `x ---That`, `x ---(p)` and
    `x ---, y` are all refused by that rule.
 
-   Exactly one string moves: `{---}` is still `<del>-</del>` and `{-x-}` is
-   still `<del>x</del>`. Every other empty brace pair reads back as TEXT rather
+   `{---}` is `<del>-</del>` and `{-x-}` is `<del>x</del>`. Every other empty brace pair reads back as TEXT rather
    than as a dash (see the empty-brace clause under Forced Intraword Emphasis).
    There is NO braced EM dash -- `{---}` is a deletion of a hyphen -- so a
    tight em dash still has no shorthand and is written as the literal

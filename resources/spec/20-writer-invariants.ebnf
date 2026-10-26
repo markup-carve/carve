@@ -57,13 +57,7 @@
       prose or swapping a construct for a synonym are not available here: each
       of them changes the document, which is the thing §1 forbids.
 
-      For a block below a refused first-block `+` on an indented list opener,
-      choose the column nearest the enclosing item's content column that
-      preserves the block in its intended enclosing item. Keep it on the next
-      line without adding a blank line. The choice depends on ownership, not
-      on the kind of block. In `- foo` followed by `  1. +`, a quote belonging
-      to the outer item starts at column 3 (`   > b`): column 2 attaches it to
-      `1.`, while column 4 is farther from the content column than needed.
+      Placement after an unattached first-block `+` follows CARVE-P11-042.
 
    1b. A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES -- NORMATIVE [CARVE-P11-003]. CARVE-P11-002 settles
       what a producer owes where §1's invariant CAN hold. This settles what it
@@ -152,9 +146,7 @@
       DECLARED and not silent:
 
         - A PRODUCER WITH A DIAGNOSTIC CHANNEL REPORTS IT. The code is
-          `structure-unspellable`, which `docs/html-import.md` already defines
-          for exactly this and already makes the single carve-out to that
-          page's own `parse(htmlToCarve(h)) == htmlToAst(h)`. The AST-returning
+          `structure-unspellable` (CARVE-P11-046). The AST-returning
           exit loses nothing and reports nothing; the source-writing exit
           reports the row.
         - A PRODUCER WITH NO CHANNEL STATES THE CEILING IN ITS CONTRACT.
@@ -312,13 +304,8 @@
       `destination-denied` names two and `editorial-comment-flattened` one;
       this channel names none.
 
-      THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum
-      holds `raw-format-dropped`, `ruby-flattened`, `destination-denied`,
-      `editorial-comment-flattened` and `carrier-attribute-dropped`, each naming a whole
-      node, destination or attribute one selected renderer dropped,
-      flattened or blanked. It answers what THIS
-      RENDER dropped; this channel answers what the OUTPUT MODEL CANNOT SAY, on
-      every target at once, and it is the only one of the two that can name a
+      CARVE-P2-024 reports what one render dropped. This channel reports
+      what Carve source cannot spell, and it alone can name a
       field.
 
       ONE LOSS IS REPORTED ON BOTH. A `ruby` node the canonical writer

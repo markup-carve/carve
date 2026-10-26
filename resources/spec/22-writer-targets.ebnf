@@ -405,12 +405,7 @@
        column would re-parse as one block, the writer emits each child from the
        first such child onward at the item's marker column, preceded by its
        own `+` when required for the round-trip contract.
-       In a nested tight item, the writer first writes the block at the item's
-       content column with a blank line before it; L2 keeps the item tight.
-       It MAY emit a `+` at that nested item's marker column only when the
-       blank-line spelling changes the parsed tree, including its tightness or
-       the block's owner (markup-carve/carve#3421). If no spelling round-trips,
-       the writer reports a writer loss.
+       A nested tight item follows CARVE-P11-042.
 
        This includes adjacent block quotes, tables, line blocks, definition
        lists, and lists whose marker kind is compatible. A single block opener

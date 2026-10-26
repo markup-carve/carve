@@ -236,13 +236,10 @@
         A wrapped attribute block applies T once across its complete source
         extent. In `- {.a` / `  .b}` / `tail`, the attribute_line transition
         leaves no claim or open paragraph, so `tail` is outside the item.
-        A block attribute opened at a container's column is one construct, and
-        its continuation lines may sit at any column: `- a` / `  {.c` / `}` /
-        `para` reads like the one-line `{.c}`, so the attribute reaches no
-        block and `para` is outside the item (markup-carve/carve#3421).
-        Its continuation lines may sit at any column within the quote prefix
-        of the container that opened it. A line that drops a `>` can only lazily
-        continue an open paragraph and never closes the attribute.
+        A block attribute opened at a container's column is one construct
+        (PART 4 `block_attributes`); its complete source extent takes one
+        attribute-line transition. In `- a` / `  {.c` / `}` / `para`, the
+        attribute reaches no block and `para` is outside the item.
 
         A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES -- NORMATIVE [CARVE-P0-015].
         A lazy fold closes no container. A later line returning to the
@@ -379,8 +376,7 @@
         A blank closes the paragraph. In the host, the same opener then opens
         a sibling block on its authored base (carve#2598).
 
-        At document level an indented fence is text at every nonzero column,
-        with or without a blank; no container minimum permits rebasing there.
+        At document level an indented fence is text (CARVE-P0-004).
         Apply the host rule equally to list items, definition bodies and
         footnote bodies. In `:: t` / `:  - a` / `    [r]: /url`, the body's
         content column is 3 and the item's is 5; the definition at column 4
@@ -444,9 +440,8 @@
 
         A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE
         CONTAINER -- NORMATIVE [CARVE-P0-010]. A link or footnote definition
-        at a list item's or definition body's `content_column` interrupts the
-        paragraph and registers (PART 9 §10 I5). A comment there also interrupts.
-        The container stays open until a later line is owned elsewhere (O2).
+        registers in the owner O4 reads it in. The paragraph transition
+        follows CARVE-P0-011 and PART 9 §10 I5.
         Thus `- a` / `  [r]: /u` / `tail` registers `r`, then ends the item and
         publishes `tail` at document level. A definition registers only in
         the owner O4 reads it in: one below a body's content column does not
@@ -551,9 +546,7 @@
         without ending a container.
 
         FENCE KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-014].
-        Container reach depends on whether an open paragraph exists in the
-        stack. Code bodies cannot hold one; colon bodies can. A column-0 line
-        ends the host when no paragraph is open; with one open, it folds (O3).
+        Apply CARVE-P0-013's open-paragraph test to code and colon bodies.
 
         A code fence interrupts an open paragraph only when a closer exists
         (PART 9 §10 I4). Otherwise its line is paragraph text, including at a
@@ -576,19 +569,20 @@
         closes the paragraph; a terminated fence leaves no paragraph open.
 
         A REAL DIV IS A CONTAINER LIKE ANY OTHER -- NORMATIVE [CARVE-P0-016].
-        An unterminated colon div permits a lazy fold when its last block is
-        an open paragraph: `- item` / `  ::: note` / `  body` / `tail` folds.
+        Apply CARVE-P0-013's open-paragraph test to a colon div:
+        `- item` / `  ::: note` / `  body` / `tail` folds.
         Omitting `body` leaves an empty div and no paragraph to continue, so
         `tail` is top-level. Closing the div also closes its paragraph and
         leaves `tail` at top level.
 
         CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-017].
-        Apply the same test in quotes. `> quote` / `> ::: note` / `tail` ends
+        Apply CARVE-P0-013's test in quotes. `> quote` / `> ::: note` / `tail` ends
         the quote, as does the form with `> body` / `> :::` before `tail`.
         An empty or closed colon container leaves no open paragraph.
 
         DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE -- NORMATIVE [CARVE-P0-018].
-        A definition body's canonical prefix reaches column 2. In
+        Apply CARVE-P0-013 to a definition body. Its canonical prefix reaches
+        column 2. In
 
             :: t
             : ```

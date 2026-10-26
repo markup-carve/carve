@@ -4,8 +4,7 @@
 
    The two-pass model (PART 8 "first pass"): PASS 1 collects definitions
    while blocks are parsed; PASS 2 resolves inline uses. A definition may
-   appear before or after its use. Complexity is O(n) -- no rescanning per
-   occurrence (PART 9 §25 RESOURCE BOUNDS). Definitions are collected even
+   appear before or after its use. Expansion follows PART 9 §25 RESOURCE BOUNDS. Definitions are collected even
    inside a block-level container, which then renders as though the
    definition line were never written (PART 9 §17 L6 states the general
    rule once, for every container that can hold one; CARVE-P9-025; corpus "Footnote
@@ -219,8 +218,7 @@
       because PART 9 §14 renders that run's content. The rule is not about
       brackets; it is about whether the text reached the reader.
    R3 ABBREVIATIONS. Each abbrDefs term matches in rendered text at WORD
-      BOUNDARIES only and emits <abbr>. Expansion is bounded per PART 9 §25
-      (an empty term is rejected; total work stays O(n)).
+      BOUNDARIES only and emits <abbr>. Expansion follows PART 9 §25 RESOURCE BOUNDS.
    R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
       spelling of an id resolves; corpus 15-heading-ids), then captionIds for numbered captions and

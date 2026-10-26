@@ -687,7 +687,9 @@
         into output MUST be escaped per the output target's rules.
       - RESOURCE BOUNDS (DoS). An implementation MUST parse and render any
         input in time and space LINEAR in input size (within a constant
-        factor). It MUST enforce a FINITE nesting-depth cap for block and
+        factor). It MUST bound abbreviation, reference, footnote, and crossref
+        expansion so total work stays O(n): reject an empty abbreviation term,
+        avoid per-occurrence rescanning, and bound target cloning. It MUST enforce a FINITE nesting-depth cap for block and
         inline containers, beyond which further openers degrade to literal
         text rather than recursing. The cap is a single constant
         MAX_NESTING_DEPTH applied UNIFORMLY to blockquote, list, and
@@ -756,12 +758,6 @@
         ingested trees deeper than the parser's limit. Trees built through the
         API can reach it and MUST receive that failure.
 
-        The cost is accepted knowingly: this makes a renderer FALLIBLE in
-        implementations whose signature says it cannot fail. An implementation
-        MUST bound abbreviation, reference, footnote, and crossref expansion so
-        total work stays O(n): in particular an empty abbreviation term is
-        rejected, a reference is not resolved by rescanning the whole output
-        per occurrence, and a crossref target is not cloned without bound.
       I1 FILE INCLUSION. The `{{ … }}` directive (CARVE-P6-001) does no I/O in the
         parser and stays literal until a host configures a resolver (PART 6 I3). Enabling
         it for UNTRUSTED input requires one explicit, absolute containment root

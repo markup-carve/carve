@@ -416,8 +416,7 @@
          to the cell covering it, so `|= A | < |` heads its table
          (CARVE-P11-056, carve#3048).
 
-         AN AUTHORED `scope` REPLACES THE DEFAULT rather than joining it. A
-         cell block naming `scope` suppresses the emitted one, so
+         An authored `scope` replaces the default (PART 10 §1), so
          `|={scope="colgroup"} a |` -- a header cell carrying attributes,
          which is grammatical because of T10 and was not before it -- is
          `<th scope="colgroup">` and not
@@ -425,13 +424,8 @@
          `rowgroup`, which have no marker spelling here, stay reachable: two
          attributes of one name is not valid HTML and is not an override.
 
-         THE TEST IS CASE-INSENSITIVE, which is the one place this rule departs
-         from Carve's case-sensitive attribute names. `{Scope="colgroup"}` is a
-         different Carve attribute from `{scope=…}` and still reaches the output
-         as `Scope`, but HTML attribute names are ASCII case-insensitive, so
-         emitting the default beside it is the same collision by another
-         spelling. The suppression is about the collision, not about folding the
-         author's name.
+         `{Scope="colgroup"}` remains authored as `Scope` and suppresses the
+         generated default under the same PART 10 §1 rule.
 
          Otherwise `scope` precedes `rowspan`, `colspan` and the authored
          block in the serialization.

@@ -33,6 +33,9 @@
       R5 A RENDER ANNOTATION. The one in the core is `data-source-line` (the
          `sourceLine` render option), which records where a block was written.
 
+      An authored attribute replaces a generated attribute of the same name,
+      compared ASCII case-insensitively. The generated one is omitted.
+
         > {k=v .attr}  -> <ol type="a" k="v" class="attr">
         > a. alpha
         > {a=b .c}     -> <h1 a="b" class="c" id="Auto">
@@ -504,22 +507,14 @@
       S1 OFF BY DEFAULT on every surface. The default bytes are the ones §1
          to §12 and PART 11 pin, and enabling the option neither removes nor
          reorders anything those sections write.
-      S2 ONE OPTION SWITCHES BOTH TARGETS (CARVE-P10-018).
-      S3 A CARRIER VALUE IS UNTRUSTED INPUT. Finding a carrier in a document
-         is not a reason to trust that document, and export selects no import
-         mode (CARVE-P10-017).
       S4 A VALUE OUTSIDE ITS GRAMMAR IS NOT A CARRIER, AND IT IS REPORTED.
          Nothing is rebuilt from it, and only that carrier falls with it, except
          that an invalid Markdown opener marker falls together with its closer
          (CARVE-P10-017, CARVE-P11-063). A Markdown marker set
          whose opener and closer pairing breaks reads the whole file as plain
          Markdown (CARVE-P11-063).
-      S5 CONTRADICTORY CARRIERS RESTORE NEITHER MEANING. The pairs are the
-         closed list in CARVE-P10-021.
-      S6 CONSUMED IN EVERY IMPORT MODE. An HTML import consumes the carriers
-         whatever its mode and writes no reserved name back, with the one
-         exception CARVE-P10-021 names. A Markdown import reads the markers where
-         `markdown` is the source format (CARVE-P11-063).
+      Trust, contradiction and import-mode handling: CARVE-P10-017,
+      CARVE-P10-018, CARVE-P10-021 and CARVE-P11-063.
 
       WHAT IT GUARANTEES IS RECOVERY OF THE NAMED DISTINCTIONS, not
       byte-identical source. Every HTML carrier names a field or a node type

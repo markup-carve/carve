@@ -28,11 +28,8 @@
         and its backlink, and its trailing `{attrs}` and
         `data-carve-footnote-label` go on that `<sup>`. So `[t[^1]][r]` renders
         `<a href="/u">t<sup id="fnref1">1</sup></a>`.
-        AN AUTHORED `{#id}` ON A REFERENCE REPLACES ITS GENERATED refId, on
-        the `<a>` or, inside link text, on the `<sup>`, and the backlink
-        targets it: two `id` attributes on one element are not valid HTML,
-        and a backlink to a replaced id points nowhere (CARVE-P9-006 T9
-        states the same for `scope`). A reference without one keeps
+        An authored `{#id}` replaces the generated refId under PART 10 §1,
+        on the `<a>` or, inside link text, on the `<sup>`. The backlink targets it. A reference without one keeps
         `fnref{n}` / `fnref{n}-{k}`, and the ordinals do not change. So
         `a [t[^1]{#z}][r] [^1]{#y}` renders `<sup id="z">1</sup>` and
         `<a id="y" href="#fn1" role="doc-noteref">`, and the note's
@@ -452,29 +449,10 @@
          REDUNDANT USE IS A NO-OP. The key is legal on an already-loose list
          or a description already holding two blocks and changes no rendering.
 
-         THE CANONICAL WRITER EMITS IT ONLY WHERE THE BLANK-LINE SPELLING
-         CANNOT. Follow PART 11 §2: emit the key only when omitting it changes
-         the re-parsed document. Multi-item loose lists already spell looseness
-         with blanks and need no key.
-
-         THE TEST IS A RE-PARSE, AND IT IS OVER THE DOCUMENT. Write the body
-         without the key, re-parse it, and emit the key exactly when the
-         container's looseness field fails to survive (PART 11 §1 equality).
-         Render equality is not the test.
-
-         THE ITEM COUNT IS NOT THE TEST. A one-item list may spell looseness
-         with an interior blank, so count alone would add an unnecessary key.
-         Two or more items always re-parse loose; that one-way shortcut may
-         skip the read.
-
-         THE COUNT IS ALSO WRONG IN THE OTHER DIRECTION. Blanks between
-         definition entries never loosen the definition list, at any count.
-
-         ON A DEFINITION LIST THE ANSWER IS UNCONDITIONAL: emit the key for
-         every definition list carrying `loose`. PART 12 §8 publishes that
-         field only when authored, so it never returns from a body written
-         without the key. Two-block descriptions make the key redundant in
-         rendering, not in the tree that the equality tests.
+         The canonical writer emits `loose` only when omitting it changes
+         the re-parsed tree (CARVE-P11-006). On a definition list it always
+         emits an authored `loose`, because that field is authored-only
+         (PART 12 §8).
 
          ORDERED AND NESTED CONTAINERS TAKE THE SAME KEY AT THE SAME PLACEMENT.
          `{loose}` before an ordered list loosens it; at a sublist's indent

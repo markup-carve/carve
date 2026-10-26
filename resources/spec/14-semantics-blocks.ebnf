@@ -101,8 +101,7 @@
          continuation; a list needs a blank line before it (matching Djot).
          "Liste: \n - eins \n - zwei" is ONE paragraph, so is
          "x = 5 \n * 3 + 17"; a blank line starts the list.
-         The only exception is the one-line paragraph formed by a refused
-         sibling `+` under §17 L3. A following list item may interrupt it.
+         Exception: the one-line paragraph a refused `+` forms (§17 L3).
          TIGHT NESTED LISTS UNAFFECTED:
          indented marker inside an open list ITEM opens a sublist with no
          blank line -- that is §24 C3 (content column), not this relation.
@@ -177,35 +176,8 @@
          PART 0 before visible ownership. They close the paragraph without
          choosing or extending an owner; their AST/source extent is retained.
 
-         DEFINITION OWNERSHIP IS COLUMN-SCOPED. A link or footnote definition
-         belongs to an open list item only at that item's content_column, or
-         when L3's `+` marker explicitly attaches its flush-left block. At
-         DOCUMENT column 0 it is a document-level interrupter: it ends the item,
-         is collected into the shared symbol table, and the following block is
-         a document sibling. At a nonzero column BELOW content_column it is lazy
-         paragraph text of THAT container -- the one whose content column it
-         fell below -- and does not register. Comment recognition is not an
-         exception to this opener set: PART 0 has already removed comment
-         tokens from visible block classification. Pinned by corpus
-         287-a-column-zero-definition-ends-an-open-list-item.
-
-         THE COLUMN SCOPE IS THE SAME FOR AN ATTRIBUTE LINE, and the three
-         bands are the same three bands. A block-attribute line is
-         on I5's interrupter list with the definitions, and §15 A2's pending
-         metadata is scoped to a container exactly as a definition's collection
-         is: at DOCUMENT column 0 it ends the container and floats forward at
-         document level, at content_column it is the container's own pending
-         metadata, and at a nonzero column below it is lazy paragraph text that
-         attaches nothing. Only the SEMANTIC ACTION differs by kind -- register
-         in scope versus retain pending metadata -- and the column that selects
-         the band does not.
-
-         WHICH CONTAINER, NOT ONLY THAT IT IS TEXT. "Lazy paragraph text" names
-         an operation on an OPEN PARAGRAPH, so the text lands in the container
-         that holds that paragraph; a reader that ends the container and then
-         publishes the same characters one level out has produced text in a
-         place the sentence does not name. Pinned per kind by corpus
-         430-below-a-definition-body-s-column-an-invisible-line-folds-as-text.
+         Below-column placement and ownership follow §24 C3 (CARVE-P9-052,
+         CARVE-P9-053).
 
          A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
          PARAGRAPH (CARVE-P0-010). The next nonblank line therefore stays in
@@ -463,7 +435,7 @@
       nameable region uses `aria-labelledby` at the title's minted id;
       an untitled one uses the `labels` map (§16a `endnotes`, TOC `tocNav`).
       The author's own `aria-label` or `aria-labelledby` still
-      wins, matched case-insensitively, preventing id minting
+      wins under PART 10 §1, preventing id minting
       WHERE THE MARKER'S ATTRIBUTES REACH
       THE PLACED ELEMENT: they reach the TOC nav, but none reaches the
       endnotes section; any OTHER `aria-*`
@@ -731,7 +703,8 @@
          one block: id `id`, class `foo`). A BLANK line inside the braces
          ends the attempt -- the text is then literal, not a
          block_attributes. A quoted value containing a literal `}` across
-         lines is outside this form.
+         lines is outside this form. Continuation placement inside containers
+         follows PART 4 `block_attributes` and CARVE-P0-009.
       A6 NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE. A `{…}` line whose
          braces do not parse as an attribute list is ordinary paragraph
          content under normal inline rules (a `{#a #}` line is an editorial

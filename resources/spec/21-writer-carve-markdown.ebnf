@@ -105,8 +105,7 @@
       PART 2 ALREADY NAMES THE FORM: its `fenced_code_block` production
       calls the glued spelling canonical, and a reader accepts either spacing
       there.
-      THE TREE RECORDS NO SLOT: `code_block` records no padding, fence length
-      or fence character (PART 12 §3), so the writer chooses the canonical form.
+      The writer chooses the canonical form under §6 (PART 12 §3).
 
    6e. A TABLE CELL'S CONTENT IS PADDED -- NORMATIVE [CARVE-P11-014].
       The canonical writer emits every cell as its PREFIX glued to the opening
@@ -135,10 +134,8 @@
       prefixed and unprefixed cells therefore share one padding rule, and the
       padded side is the one a reader can scan.
 
-      THE TREE RECORDS NO SLOT, the same reason CARVE-P11-013 gives: `table_cell` records
-      its padding no more than `code_block` records the space before its info
-      string (PART 12 §3), so the writer has nothing to reproduce and must
-      CHOOSE.
+      Cell padding follows §6's rule for spelling absent from the AST
+      (CARVE-P11-013).
 
    6e1. EMPTY DESTINATIONS HAVE A CANONICAL SPELLING -- NORMATIVE
       [CARVE-P11-070]. A native inline link with `href: ""` and no reference
@@ -243,10 +240,7 @@
       them to two. The AST records the authored character (PART 12,
       `list_item.taskState`) and the writer emits it.
 
-      THE FIELD IS THE SPELLING, `checked` IS THE MEANING. This is §6's own
-      rule, not an exception to it: a spelling is the author's to keep BECAUSE
-      THE AST RECORDS IT, and the state is recorded exactly as `bulletChar`
-      records `*`. An absent field is the default for the box -- `x` when
+      THE FIELD IS THE SPELLING, `checked` IS THE MEANING (§6). An absent field is the default for the box -- `x` when
       `checked` is true, ` ` when it is false -- which is what a tree assembled
       by hand or by a converter carries.
 
@@ -284,9 +278,7 @@
       alignment marker, having no separator slot. No column is given both a
       native marker and a separator colon.
 
-      THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING. This is §6's rule
-      again, on the same terms as `bulletChar` and `thematic_break.marker`: a
-      spelling is the author's to keep BECAUSE THE AST RECORDS IT.
+      THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING (§6).
 
       THE WIDTHS ARE WRITTEN AS RECORDED, one entry per separator cell, each a
       run of that many `-` characters. An alignment colon is NOT one of them:
@@ -415,11 +407,8 @@
       -- an admonition, a BARE div and a div with a word class alike, and the
       same for a line block (`::: |`) and a local hard-break block
       (`::: \`). THERE IS NO EXCEPTION ON THIS TARGET: the shape does not vary
-      by container kind, by type word, or by attribute. A body that renders
-      nothing is an empty body here as it is in CARVE-P10-001, so a container
-      holding only a comment takes this shape too. A comment-only line in a
-      line block has already become the empty verse line defined by PART 9
-      §23, so its paragraph remains body content.
+      by container kind, by type word, or by attribute. What counts as an
+      empty body follows CARVE-P10-001.
 
       IT REACHES THE CONSTRUCTS THAT HAVE A CLOSER LINE, which is what a colon
       fence has and a block quote does not. An empty block quote is a `>` line
@@ -606,6 +595,12 @@
       only when that blank-line spelling would change the parsed tree, including
       tightness or block ownership (markup-carve/carve#3421). If no spelling
       round-trips, it reports a writer loss.
+
+      In a nested item, a block that a first-block `+` on the opener line
+      does not attach is written at the nearest column to the enclosing
+      item's content column that keeps it in that item. No blank line is
+      added. For `- foo` followed by `  1. +`, an outer quote starts at
+      column 3 (`   > b`): column 2 attaches it to `1.`.
 
    7e2. A FENCE A DEDENT ENDED IN A NESTED CHILD IS WRITTEN CLOSED -- NORMATIVE [CARVE-P11-074].
       A fenced code block that ended because a line below its nested list

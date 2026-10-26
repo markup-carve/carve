@@ -320,13 +320,10 @@
         A wrapped attribute block applies T once across its complete source
         extent. In `- {.a` / `  .b}` / `tail`, the attribute_line transition
         leaves no claim or open paragraph, so `tail` is outside the item.
-        A block attribute opened at a container's column is one construct, and
-        its continuation lines may sit at any column: `- a` / `  {.c` / `}` /
-        `para` reads like the one-line `{.c}`, so the attribute reaches no
-        block and `para` is outside the item (markup-carve/carve#3421).
-        Its continuation lines may sit at any column within the quote prefix
-        of the container that opened it. A line that drops a `>` can only lazily
-        continue an open paragraph and never closes the attribute.
+        A block attribute opened at a container's column is one construct
+        (PART 4 `block_attributes`); its complete source extent takes one
+        attribute-line transition. In `- a` / `  {.c` / `}` / `para`, the
+        attribute reaches no block and `para` is outside the item.
 
         A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES -- NORMATIVE [CARVE-P0-015].
         A lazy fold closes no container. A later line returning to the
@@ -463,8 +460,7 @@
         A blank closes the paragraph. In the host, the same opener then opens
         a sibling block on its authored base (carve#2598).
 
-        At document level an indented fence is text at every nonzero column,
-        with or without a blank; no container minimum permits rebasing there.
+        At document level an indented fence is text (CARVE-P0-004).
         Apply the host rule equally to list items, definition bodies and
         footnote bodies. In `:: t` / `:  - a` / `    [r]: /url`, the body's
         content column is 3 and the item's is 5; the definition at column 4
@@ -528,9 +524,8 @@
 
         A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE
         CONTAINER -- NORMATIVE [CARVE-P0-010]. A link or footnote definition
-        at a list item's or definition body's `content_column` interrupts the
-        paragraph and registers (PART 9 §10 I5). A comment there also interrupts.
-        The container stays open until a later line is owned elsewhere (O2).
+        registers in the owner O4 reads it in. The paragraph transition
+        follows CARVE-P0-011 and PART 9 §10 I5.
         Thus `- a` / `  [r]: /u` / `tail` registers `r`, then ends the item and
         publishes `tail` at document level. A definition registers only in
         the owner O4 reads it in: one below a body's content column does not
@@ -635,9 +630,7 @@
         without ending a container.
 
         FENCE KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-014].
-        Container reach depends on whether an open paragraph exists in the
-        stack. Code bodies cannot hold one; colon bodies can. A column-0 line
-        ends the host when no paragraph is open; with one open, it folds (O3).
+        Apply CARVE-P0-013's open-paragraph test to code and colon bodies.
 
         A code fence interrupts an open paragraph only when a closer exists
         (PART 9 §10 I4). Otherwise its line is paragraph text, including at a
@@ -660,19 +653,20 @@
         closes the paragraph; a terminated fence leaves no paragraph open.
 
         A REAL DIV IS A CONTAINER LIKE ANY OTHER -- NORMATIVE [CARVE-P0-016].
-        An unterminated colon div permits a lazy fold when its last block is
-        an open paragraph: `- item` / `  ::: note` / `  body` / `tail` folds.
+        Apply CARVE-P0-013's open-paragraph test to a colon div:
+        `- item` / `  ::: note` / `  body` / `tail` folds.
         Omitting `body` leaves an empty div and no paragraph to continue, so
         `tail` is top-level. Closing the div also closes its paragraph and
         leaves `tail` at top level.
 
         CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-017].
-        Apply the same test in quotes. `> quote` / `> ::: note` / `tail` ends
+        Apply CARVE-P0-013's test in quotes. `> quote` / `> ::: note` / `tail` ends
         the quote, as does the form with `> body` / `> :::` before `tail`.
         An empty or closed colon container leaves no open paragraph.
 
         DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE -- NORMATIVE [CARVE-P0-018].
-        A definition body's canonical prefix reaches column 2. In
+        Apply CARVE-P0-013 to a definition body. Its canonical prefix reaches
+        column 2. In
 
             :: t
             : ```
@@ -712,27 +706,10 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    closer the guard fails, so a bare `---` at document start is an ordinary
    thematic break and the following lines are ordinary blocks (same lookahead
    model as PART 9 §10). *)
-(* The opening delimiter may carry a format token (yaml | json | toml | neon |
-   ...); a bare `---` defaults to `yaml`. The space before the token is
-   OPTIONAL (lenient: both `---yaml` and `--- yaml` are accepted; `---yaml` is
-   canonical) and it is a PADDING SLOT, not a marker separator (PART 7). Both
-   roles take `space`: the slot sits after the `---`, and A TAB IS SYNTAX ONLY
-   IN THE LEADING RUN (PART 7). So `---<TAB>yaml` is not a typed opener; it is
-   paragraph text followed by ordinary lines. Reading it as frontmatter
-   diverges from this production.
-   POSITION DECIDES WHICH CLAUSE GOVERNS: the slot BEFORE the format token
-   differs from trailing whitespace with no token. PART 2 drops that trailing
-   `whitespace` (spaces and tabs), so `---<TAB>` and `---<SP><TAB>` are bare
-   frontmatter delimiters, but `---<TAB>yaml` is not a typed opener.
-   Form feed and no-break space are content, so `---<FF>` is not an opener.
-   The code fence's `fenced_code_block` slot follows the same split.
-   CARDINALITY IS EXACTLY ONE: `---<SP><SP>yaml` is not
-   a typed opener either, because the second space reaches
-   `frontmatter_format`, which is letters and digits only. What is left is not
-   a thematic break -- a break is a dash run and nothing else -- so the line is
-   ordinary paragraph text.
-   The closing delimiter is always a bare `---`. The token distinguishes a typed
-   opener from a thematic break. *)
+(* An optional format token names the frontmatter dialect; bare `---` means
+   yaml. Its padding slot is exactly one space (CARVE-P7-002):
+   `---<TAB>yaml` and `---<SP><SP>yaml` are text. A trailing tab with no token
+   is removed under CARVE-P2-025. The closer is a bare `---`. *)
 frontmatter_open = "---", [space], [frontmatter_format], newline ;
 frontmatter_close = "---", newline ;
 frontmatter_format = (letter | digit)+ ;
@@ -789,9 +766,8 @@ atx_heading = heading_first_line ;
 heading_first_line = heading_marker, space+, inline_content, newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 (* A HEADING MARKER STARTS AT ITS CONTAINER'S CONTENT COLUMN -- NORMATIVE [CARVE-P2-001]. At
-   the document level and in a block quote a heading_marker sits EXACTLY at
-   the content column: column 0 of the document, or the column after the quote
-   prefix ("> # H" is a quoted heading). Carve does NOT accept CommonMark's 0-3
+   the document level and in a block quote a heading_marker sits exactly at
+   the content column (CARVE-P0-004). Carve does NOT accept CommonMark's 0-3
    space indent there: "   # H" is <p># H</p>, not a heading -- including one
    written directly under a heading, where it starts its own paragraph
    (CARVE-P2-003). In a list item, a definition body or a footnote body a
@@ -975,25 +951,10 @@ code_block = fenced_code_block, [caption_slot] ;
 fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
                     code_content,
                     code_fence_close, newline ;
-(* The space between the fence and the info string is OPTIONAL (lenient:
-   both ```php and ``` php are accepted; Markdown writes no space, Djot writes
-   the space). The no-space form (```php) is canonical and is what the X->Carve
-   converters emit. It is a PADDING SLOT, not a marker separator (CARVE-P7-002), but
-   both roles take `space`: the slot sits after the fence run, and A TAB IS
-   SYNTAX ONLY IN THE LEADING RUN (CARVE-P7-001). The same holds for the two slots
-   inside code_fence_info below. So ```` ```<TAB>php ```` is not a fence opener;
-   the backtick run is an ordinary inline verbatim run. A TAB WITH NOTHING AFTER
-   IT IS NOT THIS SLOT: it is trailing whitespace on a content line, CARVE-P2-025
-   drops it, and ```` ```<TAB> ```` opens an ordinary fence with no info string.
-   Position decides which clause governs, here and at `frontmatter_open`.
-   raw_block (PART 9 §20) spells its otherwise identical slot the same way, for
-   the additional reason that the `=` after it SELECTS a raw block over a code
-   block.
-   CARDINALITY DIFFERS BETWEEN THIS SLOT AND THE TWO INSIDE code_fence_info,
-   deliberately: this one is `[space]`, exactly one, and those are `space+`.
-   So ``` ```<SP><SP>php ``` is not a fence opener at all -- the second space
-   reaches `language_info`, whose class holds no space, and the INVALID-FENCE
-   FALLBACK applies. *)
+(* The optional info-string padding is exactly one space (CARVE-P7-002).
+   The glued form is canonical; ```` ```<TAB>php ```` and
+   ```` ```<SP><SP>php ```` fall back to text. A trailing tab with no info
+   token follows CARVE-P2-025. Raw-block selection follows PART 9 §20. *)
 (* CODE-FENCE INFO STRING -- NORMATIVE [CARVE-P2-005]. After the optional language_info
    token the opener admits, in this fixed order, an optional "header" (a
    quoted_title -- the SAME token as the admonition header, PART 9 §12) and an
@@ -1042,14 +1003,9 @@ code_fence_close = (backtick_fence | tilde_fence):close
 (* FORMAL (PART 9 §2, stated as a guard): the closer uses the SAME fence
    character as its opener and is at least as long. The `where` clause is the
    grammar's counting device -- see GUARD NOTATION in the header. *)
-(* COLUMN-EXACT DELIMITERS -- NORMATIVE [CARVE-P2-006] (PART 2). A fenced-code delimiter --
-   the opener AND the closer -- sits exactly at its block's base column. At the
-   document level and in a block quote the base is the content column: after
-   the quote prefixes are stripped (PART 0), NO leading whitespace. In a list
-   item, a definition body or a footnote body an opener past the content
-   column sets the base, and the closer is measured from it (CARVE-P0-004).
-   A closer written below that base is read at the base once its available
-   prefix is gone, as a payload line there is. Carve has no indented-code-block construct, so at the document level an
+(* COLUMN-EXACT DELIMITERS -- NORMATIVE [CARVE-P2-006] (PART 2). A fenced-code
+   opener and closer follow CARVE-P0-004's block base. Carve has no
+   indented-code-block construct, so at the document level an
    indented fence is plain text, as an indented heading, thematic break or
    block quote is (PART 9 §10). Consequences:
      - A backtick/tilde run indented at the document level is an ordinary
@@ -1066,15 +1022,9 @@ tilde_fence = '~', '~', '~', {'~'} ;
 code_fence_info = ( language_info, [space+, quoted_title], [space+, label] )
                 | ( quoted_title, [space+, label] )
                 | label ;
-(* fixed order: language, then "header", then [label]; each optional, but a
-   non-empty info string matches one of these three shapes or it is an
-   INVALID-FENCE FALLBACK (see the NORMATIVE note above). quoted_title is the
-   shared header token defined under Admonitions. Both metadata slots are
-   PADDING (CARVE-P7-002), the same classification the admonition opener's identical
-   "title" and [label] slots carry: the fence has already decided the block --
-   and padding takes `space`, by A TAB IS SYNTAX ONLY IN THE LEADING RUN
-   (CARVE-P7-001). The label slot appears in two alternatives and is one slot with
-   one role, so both spellings carry the same terminal. *)
+(* Fixed order: language, then header, then label. Both metadata slots
+   are padding runs (CARVE-P7-002). Invalid info takes the invalid-fence
+   fallback above. *)
 language_info = (letter | digit | '-' | '_' | '+' | '#' | '.' | '/')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net, text/html. May start with a digit. The `/` is normative across all impls (so `text/html`, `image/svg` are language tokens, not split). A token MUST NOT start with `=`: a leading `=` is the raw_block opener (above), not a language. *)
 label = '[', { character - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
 (* SEMANTIC CONSTRAINT: the slot ends at the MATCHING `]` -- the same balanced,
@@ -1112,9 +1062,8 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
    blockquote_lines, a line that does NOT carry the '>' marker still continues
    the blockquote -- folding into the INNERMOST open paragraph, at whatever
    depth that paragraph sits -- provided:
-     - a paragraph IS open at the quote's deepest frame (CARVE-P0-009). A
-       quote whose last block is a heading, a table, a thematic break, a closed
-       fence or an empty container takes no lazy line; and the line is
+     - a paragraph IS open at the quote's deepest frame (CARVE-P0-006,
+       CARVE-P0-009); and the line is
      - not blank (a blank line ends the blockquote), and
      - not an interrupting opener in the selected owner's coordinates: a
        heading, table, guarded fenced code opener, `:::` div, thematic break,
@@ -1630,17 +1579,11 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    preceding whitespace); the attribute block attaches after them. A
    cell containing only '^' or '<', with any space padding or none, is span_cell.
 
-   AND IT ENDS AT A SPACE. `cell_padding` is the run's terminator, so a cell
-   carrying any part of the run -- kind marker, alignment run, attribute
-   block -- must follow it with one space. Without that space there is no
-   run and every character of it is content: `|=a |` is a data cell whose
-   text is `=a`. A cell with NO run keeps the unpadded spelling (`|a|`).
-   PART 9 §5 T11 is the rule and its cost. *)
+   A marker run ends with one space (PART 9 §5 T11). A cell with no run
+   accepts unpadded content (`|a|`). *)
 (* CELL ATTRIBUTES (NORMATIVE): an attribute block sets the cell's attributes.
-   It binds LAST -- after the kind marker and after the alignment marker, in
-   every cell -- and is GLUED to whatever precedes it: to the marker run where
-   the cell has one (`|=<{.x} …`), to the opening `|` where it has none
-   (`|{.x} …`). No whitespace may intervene. The rest of the cell, after
+   It binds last (PART 9 §5 T10) and is glued to the marker run or the
+   opening `|` (`|=<{.x} …`, `|{.x} …`). The rest of the cell, after
    optional whitespace, is the content. A space before the brace (`| {.x}`) is
    ordinary content, NOT attributes. The whole brace payload must be valid
    attribute syntax (PART 9 §15); otherwise the '{' is literal content. A cell
@@ -1677,8 +1620,7 @@ vertical_alignment = '^' | '~' | 'v' ;    (* top, middle, bottom *)
 inherited_horizontal_alignment = '?' ;
 cell_padding = space | (* empty only when the cell carries no marker run *) ;
 (* An alignment run is a horizontal marker, optionally followed by a vertical
-   marker. Like every other part of the marker run it MUST be followed by one
-   space, after an optional attached attribute block (PART 9 §5 T11). A
+   marker. Its ending space follows PART 9 §5 T11. A
    vertical marker therefore never stands
    alone: `|^ x` and `|v x` keep `^`/`v` as visible content.
    Reverse-order pairs are invalid. Duplicate axes are invalid, except `~~`,
@@ -1687,7 +1629,7 @@ cell_padding = space | (* empty only when the cell carries no marker run *) ;
    only vertical alignment and inherit horizontal alignment from the column.
    It is valid only in that leading two-marker form. A lone `~` is horizontal
    center; no vertical value has a one-marker spelling.
-   With no alignment run the old unpadded cell spelling remains valid. *)
+   With no alignment run, an unpadded cell follows the `data_cell` production. *)
 
 cell_content = [inline_content] ;
 (* CELL CONTENT MAY BE EMPTY. `inline_content` is one-or-more, so the option
@@ -3072,8 +3014,7 @@ forced_content    = inline_span_content ;
      {//}  {**}  {__}  {~~}  {^^}  {,,}  {==}  {++}  {##}
 
    all render literally. IT APPLIES TO THE EDITORIAL FAMILY TOO, whose content
-   slots are the same `+` repetition; the string `{--}` this frees is the
-   braced en dash (PART 9 §8).
+   slots are the same `+` repetition (braced en dash: CARVE-P3-020).
 
    THE ONE EXCEPTION is a fully empty SUBSTITUTION, `{~~>~}`, which renders an
    empty del followed by an empty ins (CARVE-P3-016). *)
@@ -3105,9 +3046,7 @@ highlight_content = inline_span_content ;
    document-order sequence), endnotes rendering, and the inline form's
    balanced-bracket close are PART 9 §16. A bare `^` opens no superscript,
    so `^[` is unambiguous. These two are the only
-   note forms; the once-proposed sidenote `[>content]` was DISMISSED (a
-   sidenote is footnote content placed by CSS, not a separate construct) --
-   see docs/dismissed-syntax.md. *)
+   note forms; `[>` opens nothing, so `[>foo]` is literal text. *)
 footnote = reference_footnote | inline_footnote ;
 reference_footnote = "[^", footnote_label, ']', [attribute_run] ;
 (* A label is a physical-line identifier and never holds a source newline: a
@@ -3150,11 +3089,6 @@ footnote_indent = whitespace, {whitespace} ;
    indent. A reader first consumes that minimum and then applies PART 0's ONE
    AUTHORED BLOCK BASE. Two is a floor for the body, not a ceiling for its
    blocks; this construct adds no second rebase rule. *)
-
-(* DISMISSED (not reserved, no production): a sidenote form `[>content]` --
-   margin placement is CSS over the existing footnote/endnote output. The `[>`
-   opener is therefore UNCLAIMED and `[>foo]` is literal text (pinned by the
-   corpus). Rationale: docs/dismissed-syntax.md. *)
 
 (* --- Citations (Tier-2 extension) --- *)
 (* TIER-2, OFF BY DEFAULT. A `[...]` whose content contains a `@key` and which
@@ -3253,12 +3187,10 @@ comment_content = (* any text until the matching `#}`, preserved literally;
    AN ADDITION'S AND A DELETION'S CONTENT IS NON-EMPTY -- `inline_content` is a
    `+` repetition, and `comment_content` says it too. `{++}`, `{--}` and `{##}`
    are therefore text, under the same empty-brace clause the forced spans carry;
-   while `{---}` is still `<del>-</del>` and `{-x-}` is still
-   `<del>x</del>`. The string `{--}` freed is the braced en dash (PART 9 §8).
+   while braced dash and nonempty deletion spellings follow CARVE-P3-020.
 
    `substitution` is NOT widened: a half-empty substitution is a real edit --
-   `{~a~>~}` deletes and `{~~>b~}` inserts -- so the fully empty `{~~>~}` still
-   renders two empty elements. `substitution` takes `inline_content` on both
+   `{~a~>~}` deletes and `{~~>b~}` inserts -- so the fully empty form follows CARVE-P3-014. `substitution` takes `inline_content` on both
    sides, so `{~*b*~>*e*~}` emphasizes both (carve#2083). *)
 (* ADDITION AND DELETION ATTRIBUTES BIND TO THEIR ELEMENT -- NORMATIVE [CARVE-P3-017]: an addition / deletion is an ordinary inline node,
    so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
@@ -3380,8 +3312,7 @@ ellipsis = "..." ;    (* → … *)
    it is flag-shaped and stays literal, so `x ---That`, `x ---(p)` and
    `x ---, y` are all refused by that rule.
 
-   Exactly one string moves: `{---}` is still `<del>-</del>` and `{-x-}` is
-   still `<del>x</del>`. Every other empty brace pair reads back as TEXT rather
+   `{---}` is `<del>-</del>` and `{-x-}` is `<del>x</del>`. Every other empty brace pair reads back as TEXT rather
    than as a dash (see the empty-brace clause under Forced Intraword Emphasis).
    There is NO braced EM dash -- `{---}` is a deletion of a hyphen -- so a
    tight em dash still has no shorthand and is written as the literal
@@ -3706,9 +3637,10 @@ quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' 
    block interrupted by a blank line is not a `block_attributes`; its lines
    are literal paragraph text. Merge + reach semantics
    (including float-across-blank-lines BETWEEN separate blocks): PART 9 §15. *)
-(* Continuation lines may sit at any column within the quote prefix of the
-   container that opened the block attribute. A line that drops a `>` can only
-   lazily continue an open paragraph and never closes the attribute. *)
+(* Continuation lines may sit at any column but must carry the quote prefix
+   of the container that opened the block. A line without that prefix does
+   not continue the attribute: its first line is paragraph text, and the
+   prefix-less line may lazily continue that paragraph. *)
 block_attributes = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}', newline ;
 (* THE PADDING ADMITS A LINE BREAK TOO, not only the separator: `{` + newline
    + `.a}`, `{.a` + newline + `}` and `{.a` + newline + `.b}` are all block
@@ -3947,8 +3879,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       reporting (I11).
 
    I1a FRAGMENT SELECTION (`#name`). `name` is an `explicit_identifier`
-      (`include_section`), so every explicit id is nameable, digit-leading ones such
-      as `{#2024-plan}` included. It is matched the way a `</#id>`
+      (`include_section`; see its production), so every explicit id is
+      nameable. It is matched the way a `</#id>`
       cross-reference matches (PART 9R R4), against the child's OWN parse, before
       the child's nested includes expand. Two steps, the first that
       matches wins:
@@ -4132,9 +4064,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       CARVE-P0-023 covers the document handed to the processor, not an
       included file.
 
-   I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A TRANSFORM option
-      (I1), orthogonal to selection. `@shift` takes EITHER a SIGNED integer
-      OR the literal value `auto`, NEVER both.
+   I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A transform option
+      orthogonal to selection (I1).
       LITERAL FORM. N is a SIGNED integer; every heading in the included
       content has its level increased by N (N=2: an h1 becomes an h3; a
       NEGATIVE N raises levels, N=-1: an h2 becomes an h1). An omitted
@@ -4366,11 +4297,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
      5. A LINE-FINAL RUN of spaces and tabs is INSIGNIFICANT. It is dropped
         before anything reads the line, so no production sees it and 3 applies
         to what precedes it: `{.a}<TAB>` is an attribute line and
-        `[a]: /u<TAB>` a definition. TWO EXCEPTIONS (CARVE-P2-025): a
-        verbatim payload line, and a line-block body line, where CARVE-P9-044
-        MEDIAL GAPS first turns a trailing run of two or more columns into
-        no-break-space content; a one-column run there is dropped as anywhere
-        else.
+        `[a]: /u<TAB>` a definition. Exceptions: CARVE-P2-025.
 
    Every other mention of a tab in this grammar APPLIES one of those five
    sentences to one construct; none of them restates it. Three of the five keep
@@ -5036,8 +4963,7 @@ EOF = (* end of file *) ;
          to the cell covering it, so `|= A | < |` heads its table
          (CARVE-P11-056, carve#3048).
 
-         AN AUTHORED `scope` REPLACES THE DEFAULT rather than joining it. A
-         cell block naming `scope` suppresses the emitted one, so
+         An authored `scope` replaces the default (PART 10 §1), so
          `|={scope="colgroup"} a |` -- a header cell carrying attributes,
          which is grammatical because of T10 and was not before it -- is
          `<th scope="colgroup">` and not
@@ -5045,13 +4971,8 @@ EOF = (* end of file *) ;
          `rowgroup`, which have no marker spelling here, stay reachable: two
          attributes of one name is not valid HTML and is not an override.
 
-         THE TEST IS CASE-INSENSITIVE, which is the one place this rule departs
-         from Carve's case-sensitive attribute names. `{Scope="colgroup"}` is a
-         different Carve attribute from `{scope=…}` and still reaches the output
-         as `Scope`, but HTML attribute names are ASCII case-insensitive, so
-         emitting the default beside it is the same collision by another
-         spelling. The suppression is about the collision, not about folding the
-         author's name.
+         `{Scope="colgroup"}` remains authored as `Scope` and suppresses the
+         generated default under the same PART 10 §1 rule.
 
          Otherwise `scope` precedes `rowspan`, `colspan` and the authored
          block in the serialization.
@@ -5347,8 +5268,7 @@ EOF = (* end of file *) ;
          continuation; a list needs a blank line before it (matching Djot).
          "Liste: \n - eins \n - zwei" is ONE paragraph, so is
          "x = 5 \n * 3 + 17"; a blank line starts the list.
-         The only exception is the one-line paragraph formed by a refused
-         sibling `+` under §17 L3. A following list item may interrupt it.
+         Exception: the one-line paragraph a refused `+` forms (§17 L3).
          TIGHT NESTED LISTS UNAFFECTED:
          indented marker inside an open list ITEM opens a sublist with no
          blank line -- that is §24 C3 (content column), not this relation.
@@ -5423,35 +5343,8 @@ EOF = (* end of file *) ;
          PART 0 before visible ownership. They close the paragraph without
          choosing or extending an owner; their AST/source extent is retained.
 
-         DEFINITION OWNERSHIP IS COLUMN-SCOPED. A link or footnote definition
-         belongs to an open list item only at that item's content_column, or
-         when L3's `+` marker explicitly attaches its flush-left block. At
-         DOCUMENT column 0 it is a document-level interrupter: it ends the item,
-         is collected into the shared symbol table, and the following block is
-         a document sibling. At a nonzero column BELOW content_column it is lazy
-         paragraph text of THAT container -- the one whose content column it
-         fell below -- and does not register. Comment recognition is not an
-         exception to this opener set: PART 0 has already removed comment
-         tokens from visible block classification. Pinned by corpus
-         287-a-column-zero-definition-ends-an-open-list-item.
-
-         THE COLUMN SCOPE IS THE SAME FOR AN ATTRIBUTE LINE, and the three
-         bands are the same three bands. A block-attribute line is
-         on I5's interrupter list with the definitions, and §15 A2's pending
-         metadata is scoped to a container exactly as a definition's collection
-         is: at DOCUMENT column 0 it ends the container and floats forward at
-         document level, at content_column it is the container's own pending
-         metadata, and at a nonzero column below it is lazy paragraph text that
-         attaches nothing. Only the SEMANTIC ACTION differs by kind -- register
-         in scope versus retain pending metadata -- and the column that selects
-         the band does not.
-
-         WHICH CONTAINER, NOT ONLY THAT IT IS TEXT. "Lazy paragraph text" names
-         an operation on an OPEN PARAGRAPH, so the text lands in the container
-         that holds that paragraph; a reader that ends the container and then
-         publishes the same characters one level out has produced text in a
-         place the sentence does not name. Pinned per kind by corpus
-         430-below-a-definition-body-s-column-an-invisible-line-folds-as-text.
+         Below-column placement and ownership follow §24 C3 (CARVE-P9-052,
+         CARVE-P9-053).
 
          A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
          PARAGRAPH (CARVE-P0-010). The next nonblank line therefore stays in
@@ -5709,7 +5602,7 @@ EOF = (* end of file *) ;
       nameable region uses `aria-labelledby` at the title's minted id;
       an untitled one uses the `labels` map (§16a `endnotes`, TOC `tocNav`).
       The author's own `aria-label` or `aria-labelledby` still
-      wins, matched case-insensitively, preventing id minting
+      wins under PART 10 §1, preventing id minting
       WHERE THE MARKER'S ATTRIBUTES REACH
       THE PLACED ELEMENT: they reach the TOC nav, but none reaches the
       endnotes section; any OTHER `aria-*`
@@ -5977,7 +5870,8 @@ EOF = (* end of file *) ;
          one block: id `id`, class `foo`). A BLANK line inside the braces
          ends the attempt -- the text is then literal, not a
          block_attributes. A quoted value containing a literal `}` across
-         lines is outside this form.
+         lines is outside this form. Continuation placement inside containers
+         follows PART 4 `block_attributes` and CARVE-P0-009.
       A6 NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE. A `{…}` line whose
          braces do not parse as an attribute list is ordinary paragraph
          content under normal inline rules (a `{#a #}` line is an editorial
@@ -6035,11 +5929,8 @@ EOF = (* end of file *) ;
         and its backlink, and its trailing `{attrs}` and
         `data-carve-footnote-label` go on that `<sup>`. So `[t[^1]][r]` renders
         `<a href="/u">t<sup id="fnref1">1</sup></a>`.
-        AN AUTHORED `{#id}` ON A REFERENCE REPLACES ITS GENERATED refId, on
-        the `<a>` or, inside link text, on the `<sup>`, and the backlink
-        targets it: two `id` attributes on one element are not valid HTML,
-        and a backlink to a replaced id points nowhere (CARVE-P9-006 T9
-        states the same for `scope`). A reference without one keeps
+        An authored `{#id}` replaces the generated refId under PART 10 §1,
+        on the `<a>` or, inside link text, on the `<sup>`. The backlink targets it. A reference without one keeps
         `fnref{n}` / `fnref{n}-{k}`, and the ordinals do not change. So
         `a [t[^1]{#z}][r] [^1]{#y}` renders `<sup id="z">1</sup>` and
         `<a id="y" href="#fn1" role="doc-noteref">`, and the note's
@@ -6459,29 +6350,10 @@ EOF = (* end of file *) ;
          REDUNDANT USE IS A NO-OP. The key is legal on an already-loose list
          or a description already holding two blocks and changes no rendering.
 
-         THE CANONICAL WRITER EMITS IT ONLY WHERE THE BLANK-LINE SPELLING
-         CANNOT. Follow PART 11 §2: emit the key only when omitting it changes
-         the re-parsed document. Multi-item loose lists already spell looseness
-         with blanks and need no key.
-
-         THE TEST IS A RE-PARSE, AND IT IS OVER THE DOCUMENT. Write the body
-         without the key, re-parse it, and emit the key exactly when the
-         container's looseness field fails to survive (PART 11 §1 equality).
-         Render equality is not the test.
-
-         THE ITEM COUNT IS NOT THE TEST. A one-item list may spell looseness
-         with an interior blank, so count alone would add an unnecessary key.
-         Two or more items always re-parse loose; that one-way shortcut may
-         skip the read.
-
-         THE COUNT IS ALSO WRONG IN THE OTHER DIRECTION. Blanks between
-         definition entries never loosen the definition list, at any count.
-
-         ON A DEFINITION LIST THE ANSWER IS UNCONDITIONAL: emit the key for
-         every definition list carrying `loose`. PART 12 §8 publishes that
-         field only when authored, so it never returns from a body written
-         without the key. Two-block descriptions make the key redundant in
-         rendering, not in the tree that the equality tests.
+         The canonical writer emits `loose` only when omitting it changes
+         the re-parsed tree (CARVE-P11-006). On a definition list it always
+         emits an authored `loose`, because that field is authored-only
+         (PART 12 §8).
 
          ORDERED AND NESTED CONTAINERS TAKE THE SAME KEY AT THE SAME PLACEMENT.
          `{loose}` before an ordered list loosens it; at a sublist's indent
@@ -6512,7 +6384,7 @@ EOF = (* end of file *) ;
       Author `{attrs}` after the span merge onto the <span> (the base
       `math …` class is kept; see PART 10 §1).
 
-      A directly numbered display equation renders its label and number after
+      A display equation numbered under PART 9R R5a renders its label and number after
       the math span as one U+0020 followed by
       `<span class="equation-number">LABEL NUMBER</span>`, with one U+0020
       between LABEL and NUMBER and no brackets. `attrs.id` remains on the math
@@ -6523,8 +6395,7 @@ EOF = (* end of file *) ;
       A MATH SPAN CARRIES ROLE MATH -- NORMATIVE [CARVE-P9-037].
       The renderer adds `role="math"` even without a typesetter.
       THE NAME STAYS THE AUTHOR'S: a trailing `aria-label` supplies the
-      formula's spoken form; no §16a key is added. An authored `role` wins
-      under any ASCII casing, as in CARVE-P9-018. Generated `role` is written LAST, after
+      formula's spoken form; no §16a key is added. An authored `role` wins under PART 10 §1. Generated `role` is written LAST, after
       merged author attributes, without moving them (PART 10 §1).
 
       AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE --
@@ -6575,11 +6446,9 @@ EOF = (* end of file *) ;
         kind, the existing `mentionUrl` / `tagUrl` template behavior applies.
         When neither mechanism is configured, the node remains an inert span.
 
-        A TEMPLATE receives a percent-encoded name before substitution. A
-        resolver receives the exact parsed name and returns a complete
-        destination, so the processor MUST NOT encode or interpolate that
-        result a second time. Both template and resolver destinations MUST pass
-        the CARVE-P9-054 URL-scheme denylist; a denied destination is
+        Templates follow PART 9 §25 URL TEMPLATE ENCODING. A resolver receives
+        the exact parsed name and returns a complete destination without
+        re-encoding. Its result passes the CARVE-P9-054 URL-scheme denylist; a denied destination is
         UNRESOLVED and renders the inert span. The callback is host code, not a
         permission to perform network or database access: a host that does so
         owns authentication, authorization, timeouts, request bounds, and
@@ -7295,7 +7164,9 @@ EOF = (* end of file *) ;
         into output MUST be escaped per the output target's rules.
       - RESOURCE BOUNDS (DoS). An implementation MUST parse and render any
         input in time and space LINEAR in input size (within a constant
-        factor). It MUST enforce a FINITE nesting-depth cap for block and
+        factor). It MUST bound abbreviation, reference, footnote, and crossref
+        expansion so total work stays O(n): reject an empty abbreviation term,
+        avoid per-occurrence rescanning, and bound target cloning. It MUST enforce a FINITE nesting-depth cap for block and
         inline containers, beyond which further openers degrade to literal
         text rather than recursing. The cap is a single constant
         MAX_NESTING_DEPTH applied UNIFORMLY to blockquote, list, and
@@ -7364,12 +7235,6 @@ EOF = (* end of file *) ;
         ingested trees deeper than the parser's limit. Trees built through the
         API can reach it and MUST receive that failure.
 
-        The cost is accepted knowingly: this makes a renderer FALLIBLE in
-        implementations whose signature says it cannot fail. An implementation
-        MUST bound abbreviation, reference, footnote, and crossref expansion so
-        total work stays O(n): in particular an empty abbreviation term is
-        rejected, a reference is not resolved by rescanning the whole output
-        per occurrence, and a crossref target is not cloned without bound.
       I1 FILE INCLUSION. The `{{ … }}` directive (CARVE-P6-001) does no I/O in the
         parser and stays literal until a host configures a resolver (PART 6 I3). Enabling
         it for UNTRUSTED input requires one explicit, absolute containment root
@@ -7705,8 +7570,7 @@ EOF = (* end of file *) ;
 
    The two-pass model (PART 8 "first pass"): PASS 1 collects definitions
    while blocks are parsed; PASS 2 resolves inline uses. A definition may
-   appear before or after its use. Complexity is O(n) -- no rescanning per
-   occurrence (PART 9 §25 RESOURCE BOUNDS). Definitions are collected even
+   appear before or after its use. Expansion follows PART 9 §25 RESOURCE BOUNDS. Definitions are collected even
    inside a block-level container, which then renders as though the
    definition line were never written (PART 9 §17 L6 states the general
    rule once, for every container that can hold one; CARVE-P9-025; corpus "Footnote
@@ -7920,8 +7784,7 @@ EOF = (* end of file *) ;
       because PART 9 §14 renders that run's content. The rule is not about
       brackets; it is about whether the text reached the reader.
    R3 ABBREVIATIONS. Each abbrDefs term matches in rendered text at WORD
-      BOUNDARIES only and emits <abbr>. Expansion is bounded per PART 9 §25
-      (an empty term is rejected; total work stays O(n)).
+      BOUNDARIES only and emits <abbr>. Expansion follows PART 9 §25 RESOURCE BOUNDS.
    R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
       spelling of an id resolves; corpus 15-heading-ids), then captionIds for numbered captions and
@@ -8075,6 +7938,9 @@ EOF = (* end of file *) ;
          `toc`, `glossary`, `index`, `tabs` or `code-group` class.
       R5 A RENDER ANNOTATION. The one in the core is `data-source-line` (the
          `sourceLine` render option), which records where a block was written.
+
+      An authored attribute replaces a generated attribute of the same name,
+      compared ASCII case-insensitively. The generated one is omitted.
 
         > {k=v .attr}  -> <ol type="a" k="v" class="attr">
         > a. alpha
@@ -8547,22 +8413,14 @@ EOF = (* end of file *) ;
       S1 OFF BY DEFAULT on every surface. The default bytes are the ones §1
          to §12 and PART 11 pin, and enabling the option neither removes nor
          reorders anything those sections write.
-      S2 ONE OPTION SWITCHES BOTH TARGETS (CARVE-P10-018).
-      S3 A CARRIER VALUE IS UNTRUSTED INPUT. Finding a carrier in a document
-         is not a reason to trust that document, and export selects no import
-         mode (CARVE-P10-017).
       S4 A VALUE OUTSIDE ITS GRAMMAR IS NOT A CARRIER, AND IT IS REPORTED.
          Nothing is rebuilt from it, and only that carrier falls with it, except
          that an invalid Markdown opener marker falls together with its closer
          (CARVE-P10-017, CARVE-P11-063). A Markdown marker set
          whose opener and closer pairing breaks reads the whole file as plain
          Markdown (CARVE-P11-063).
-      S5 CONTRADICTORY CARRIERS RESTORE NEITHER MEANING. The pairs are the
-         closed list in CARVE-P10-021.
-      S6 CONSUMED IN EVERY IMPORT MODE. An HTML import consumes the carriers
-         whatever its mode and writes no reserved name back, with the one
-         exception CARVE-P10-021 names. A Markdown import reads the markers where
-         `markdown` is the source format (CARVE-P11-063).
+      Trust, contradiction and import-mode handling: CARVE-P10-017,
+      CARVE-P10-018, CARVE-P10-021 and CARVE-P11-063.
 
       WHAT IT GUARANTEES IS RECOVERY OF THE NAMED DISTINCTIONS, not
       byte-identical source. Every HTML carrier names a field or a node type
@@ -8987,13 +8845,7 @@ EOF = (* end of file *) ;
       prose or swapping a construct for a synonym are not available here: each
       of them changes the document, which is the thing §1 forbids.
 
-      For a block below a refused first-block `+` on an indented list opener,
-      choose the column nearest the enclosing item's content column that
-      preserves the block in its intended enclosing item. Keep it on the next
-      line without adding a blank line. The choice depends on ownership, not
-      on the kind of block. In `- foo` followed by `  1. +`, a quote belonging
-      to the outer item starts at column 3 (`   > b`): column 2 attaches it to
-      `1.`, while column 4 is farther from the content column than needed.
+      Placement after an unattached first-block `+` follows CARVE-P11-042.
 
    1b. A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES -- NORMATIVE [CARVE-P11-003]. CARVE-P11-002 settles
       what a producer owes where §1's invariant CAN hold. This settles what it
@@ -9082,9 +8934,7 @@ EOF = (* end of file *) ;
       DECLARED and not silent:
 
         - A PRODUCER WITH A DIAGNOSTIC CHANNEL REPORTS IT. The code is
-          `structure-unspellable`, which `docs/html-import.md` already defines
-          for exactly this and already makes the single carve-out to that
-          page's own `parse(htmlToCarve(h)) == htmlToAst(h)`. The AST-returning
+          `structure-unspellable` (CARVE-P11-046). The AST-returning
           exit loses nothing and reports nothing; the source-writing exit
           reports the row.
         - A PRODUCER WITH NO CHANNEL STATES THE CEILING IN ITS CONTRACT.
@@ -9242,13 +9092,8 @@ EOF = (* end of file *) ;
       `destination-denied` names two and `editorial-comment-flattened` one;
       this channel names none.
 
-      THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum
-      holds `raw-format-dropped`, `ruby-flattened`, `destination-denied`,
-      `editorial-comment-flattened` and `carrier-attribute-dropped`, each naming a whole
-      node, destination or attribute one selected renderer dropped,
-      flattened or blanked. It answers what THIS
-      RENDER dropped; this channel answers what the OUTPUT MODEL CANNOT SAY, on
-      every target at once, and it is the only one of the two that can name a
+      CARVE-P2-024 reports what one render dropped. This channel reports
+      what Carve source cannot spell, and it alone can name a
       field.
 
       ONE LOSS IS REPORTED ON BOTH. A `ruby` node the canonical writer
@@ -9634,8 +9479,7 @@ EOF = (* end of file *) ;
       PART 2 ALREADY NAMES THE FORM: its `fenced_code_block` production
       calls the glued spelling canonical, and a reader accepts either spacing
       there.
-      THE TREE RECORDS NO SLOT: `code_block` records no padding, fence length
-      or fence character (PART 12 §3), so the writer chooses the canonical form.
+      The writer chooses the canonical form under §6 (PART 12 §3).
 
    6e. A TABLE CELL'S CONTENT IS PADDED -- NORMATIVE [CARVE-P11-014].
       The canonical writer emits every cell as its PREFIX glued to the opening
@@ -9664,10 +9508,8 @@ EOF = (* end of file *) ;
       prefixed and unprefixed cells therefore share one padding rule, and the
       padded side is the one a reader can scan.
 
-      THE TREE RECORDS NO SLOT, the same reason CARVE-P11-013 gives: `table_cell` records
-      its padding no more than `code_block` records the space before its info
-      string (PART 12 §3), so the writer has nothing to reproduce and must
-      CHOOSE.
+      Cell padding follows §6's rule for spelling absent from the AST
+      (CARVE-P11-013).
 
    6e1. EMPTY DESTINATIONS HAVE A CANONICAL SPELLING -- NORMATIVE
       [CARVE-P11-070]. A native inline link with `href: ""` and no reference
@@ -9772,10 +9614,7 @@ EOF = (* end of file *) ;
       them to two. The AST records the authored character (PART 12,
       `list_item.taskState`) and the writer emits it.
 
-      THE FIELD IS THE SPELLING, `checked` IS THE MEANING. This is §6's own
-      rule, not an exception to it: a spelling is the author's to keep BECAUSE
-      THE AST RECORDS IT, and the state is recorded exactly as `bulletChar`
-      records `*`. An absent field is the default for the box -- `x` when
+      THE FIELD IS THE SPELLING, `checked` IS THE MEANING (§6). An absent field is the default for the box -- `x` when
       `checked` is true, ` ` when it is false -- which is what a tree assembled
       by hand or by a converter carries.
 
@@ -9813,9 +9652,7 @@ EOF = (* end of file *) ;
       alignment marker, having no separator slot. No column is given both a
       native marker and a separator colon.
 
-      THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING. This is §6's rule
-      again, on the same terms as `bulletChar` and `thematic_break.marker`: a
-      spelling is the author's to keep BECAUSE THE AST RECORDS IT.
+      THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING (§6).
 
       THE WIDTHS ARE WRITTEN AS RECORDED, one entry per separator cell, each a
       run of that many `-` characters. An alignment colon is NOT one of them:
@@ -9944,11 +9781,8 @@ EOF = (* end of file *) ;
       -- an admonition, a BARE div and a div with a word class alike, and the
       same for a line block (`::: |`) and a local hard-break block
       (`::: \`). THERE IS NO EXCEPTION ON THIS TARGET: the shape does not vary
-      by container kind, by type word, or by attribute. A body that renders
-      nothing is an empty body here as it is in CARVE-P10-001, so a container
-      holding only a comment takes this shape too. A comment-only line in a
-      line block has already become the empty verse line defined by PART 9
-      §23, so its paragraph remains body content.
+      by container kind, by type word, or by attribute. What counts as an
+      empty body follows CARVE-P10-001.
 
       IT REACHES THE CONSTRUCTS THAT HAVE A CLOSER LINE, which is what a colon
       fence has and a block quote does not. An empty block quote is a `>` line
@@ -10135,6 +9969,12 @@ EOF = (* end of file *) ;
       only when that blank-line spelling would change the parsed tree, including
       tightness or block ownership (markup-carve/carve#3421). If no spelling
       round-trips, it reports a writer loss.
+
+      In a nested item, a block that a first-block `+` on the opener line
+      does not attach is written at the nearest column to the enclosing
+      item's content column that keeps it in that item. No blank line is
+      added. For `- foo` followed by `  1. +`, an outer quote starts at
+      column 3 (`   > b`): column 2 attaches it to `1.`.
 
    7e2. A FENCE A DEDENT ENDED IN A NESTED CHILD IS WRITTEN CLOSED -- NORMATIVE [CARVE-P11-074].
       A fenced code block that ended because a line below its nested list
@@ -10737,12 +10577,7 @@ EOF = (* end of file *) ;
        column would re-parse as one block, the writer emits each child from the
        first such child onward at the item's marker column, preceded by its
        own `+` when required for the round-trip contract.
-       In a nested tight item, the writer first writes the block at the item's
-       content column with a blank line before it; L2 keeps the item tight.
-       It MAY emit a `+` at that nested item's marker column only when the
-       blank-line spelling changes the parsed tree, including its tightness or
-       the block's owner (markup-carve/carve#3421). If no spelling round-trips,
-       the writer reports a writer loss.
+       A nested tight item follows CARVE-P11-042.
 
        This includes adjacent block quotes, tables, line blocks, definition
        lists, and lists whose marker kind is compatible. A single block opener

@@ -13,7 +13,7 @@
       Author `{attrs}` after the span merge onto the <span> (the base
       `math …` class is kept; see PART 10 §1).
 
-      A directly numbered display equation renders its label and number after
+      A display equation numbered under PART 9R R5a renders its label and number after
       the math span as one U+0020 followed by
       `<span class="equation-number">LABEL NUMBER</span>`, with one U+0020
       between LABEL and NUMBER and no brackets. `attrs.id` remains on the math
@@ -24,8 +24,7 @@
       A MATH SPAN CARRIES ROLE MATH -- NORMATIVE [CARVE-P9-037].
       The renderer adds `role="math"` even without a typesetter.
       THE NAME STAYS THE AUTHOR'S: a trailing `aria-label` supplies the
-      formula's spoken form; no §16a key is added. An authored `role` wins
-      under any ASCII casing, as in CARVE-P9-018. Generated `role` is written LAST, after
+      formula's spoken form; no §16a key is added. An authored `role` wins under PART 10 §1. Generated `role` is written LAST, after
       merged author attributes, without moving them (PART 10 §1).
 
       AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE --
@@ -76,11 +75,9 @@
         kind, the existing `mentionUrl` / `tagUrl` template behavior applies.
         When neither mechanism is configured, the node remains an inert span.
 
-        A TEMPLATE receives a percent-encoded name before substitution. A
-        resolver receives the exact parsed name and returns a complete
-        destination, so the processor MUST NOT encode or interpolate that
-        result a second time. Both template and resolver destinations MUST pass
-        the CARVE-P9-054 URL-scheme denylist; a denied destination is
+        Templates follow PART 9 §25 URL TEMPLATE ENCODING. A resolver receives
+        the exact parsed name and returns a complete destination without
+        re-encoding. Its result passes the CARVE-P9-054 URL-scheme denylist; a denied destination is
         UNRESOLVED and renders the inert span. The callback is host code, not a
         permission to perform network or database access: a host that does so
         owns authentication, authorization, timeouts, request bounds, and
