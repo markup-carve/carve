@@ -803,6 +803,7 @@ index: examples/edge-cases/index.md
   an-at-sign-before-a-space-and-a-doubled-delimiter-inside-bold-italic-are-text
   mention-ignores-email-addresses
   tag-requires-a-word-boundary
+  non-ascii-emphasis-boundary
   smart-typography-escapes-and-code
   the-doubled-run-is-the-canonical-arrow-in-both-families
   empty-delimiters
@@ -991,6 +992,7 @@ index: examples/edge-cases/index.md
   a-link-definition-written-before-a-footnote-stays-before-it
   a-zero-width-character-in-a-reference-definition-destination
   a-block-image-is-separated-from-the-block-after-it-on-every-target
+  invisible-content-and-image-promotion
   a-reference-definition-is-anchored-at-end-of-line
   an-autolink-body-admits-non-ascii-and-excludes-format-characters
   unresolved-reference-link
