@@ -31,8 +31,8 @@
       pieces and joins them at the end of the parse is exactly as conformant as
       one that never split.
 
-      TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION -- NORMATIVE [CARVE-P12-003].
-      PART 12 §6 requires `parse(x)` serialized and deserialized to equal `parse(x)`.
+      Text coalescing occurs during `parse(x)`, not serialization. PART 12 §6
+      requires `parse(x)` serialized and deserialized to equal `parse(x)`.
       An implementation that leaves the run split in the parsed tree and joins
       it in the encoder satisfies CARVE-P12-002 and BREAKS PART 12 §6 on the same document: what
       comes back holds one node where the tree held three, so the round trip is

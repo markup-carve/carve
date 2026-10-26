@@ -540,8 +540,7 @@ snake_case stay literal` is one text node, not four. The merge happens in
 `parse(x)`, not in the encoder, or the round trip fails. `escaped_text` never
 merges with `text`. A merged run keeps a `pos` only where its pieces are
 contiguous in the source. JSON Schema cannot express this rule, so
-`scripts/ast-conformance.mjs` checks it. See [`CARVE-P12-002`](./rules/ast-interchange) and
-[`CARVE-P12-003`](./rules/ast-interchange).
+`scripts/ast-conformance.mjs` checks it. See [`CARVE-P12-002`](./rules/ast-interchange).
 
 ## Nonbreaking spaces and literal Unicode
 

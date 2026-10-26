@@ -1607,12 +1607,6 @@
       "scope": "ast-interchange"
     },
     {
-      "id": "CARVE-P12-003",
-      "part": "12",
-      "title": "TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION",
-      "scope": "ast-interchange"
-    },
-    {
       "id": "CARVE-P12-004",
       "part": "12",
       "title": "GENERATED NONBREAKING SPACES ARE NODES",
@@ -2165,6 +2159,12 @@
       "part": "9",
       "title": "A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT",
       "replacement": "CARVE-P3-023"
+    },
+    {
+      "id": "CARVE-P12-003",
+      "part": "12",
+      "title": "TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION",
+      "replacement": "CARVE-P12-002"
     }
   ]
 }
