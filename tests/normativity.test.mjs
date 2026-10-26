@@ -18,7 +18,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { extractNormativeClauses, readInventory } from '../scripts/normative-clauses.mjs'
-import { audit, blankFences, clausesOf, conditionStated, obligationTables, part9Sections as specPart9Sections, sectionLabel } from '../scripts/normative-page-audit.mjs'
+import { audit, blankFences, clausesOf, conditionStated, obligationTables, part9Sections as specPart9Sections, sectionLabel, namedSecurityBullets } from '../scripts/normative-page-audit.mjs'
 import { classifyLayoutComment, ownershipTransition } from '../scripts/spec/layout.mjs'
 import { bareCitation, eachClause, qualifiedCitation } from '../scripts/lib/citations.mjs'
 
@@ -33,9 +33,10 @@ test('the checked-in grammar is assembled from its normative modules', () => {
     cwd: repo,
     encoding: 'utf8',
   })
-  assert.match(output, /grammar aggregate matches 29 normative source modules/)
+  assert.match(output, /grammar aggregate matches 30 normative source modules/)
 
   const modules = readdirSync(resolve(repo, 'resources/spec')).filter((file) => file.endsWith('.ebnf'))
+  assert.ok(modules.includes('22b-writer-render-loss.ebnf'), 'render-loss reporting belongs with writer targets')
   for (const module of modules) {
     const source = readFileSync(resolve(repo, 'resources/spec', module), 'utf8')
     assert.ok(source.endsWith('\n'), `${module} must end with a newline`)
@@ -674,9 +675,9 @@ test('every obligation the includes page states names the clause that now carrie
   assert.equal(clauseFor('- A configured root MUST be absolute'), 'PART 6 I10')
   assert.equal(clauseFor('- A refusal MUST NOT reveal whether the target'), 'PART 6 I10')
   assert.equal(clauseFor('Both targets MUST be refused as containment denials'), 'PART 6 I10')
-  assert.equal(clauseFor('- Inclusion MUST remain disabled on these paths'), 'PART 9 §25 I1')
+  assert.equal(clauseFor('- Inclusion MUST remain disabled on these paths'), 'PART 9 §25 FILE INCLUSION')
   assert.equal(ledger.filter((row) => row.text.startsWith('- If such a host ever offers inclusion, it')).length, 2)
-  assert.ok(ledger.filter((row) => row.text.startsWith('- If such a host ever offers inclusion, it')).every((row) => row.clause === 'PART 9 §25 I1'))
+  assert.ok(ledger.filter((row) => row.text.startsWith('- If such a host ever offers inclusion, it')).every((row) => row.clause === 'PART 9 §25 FILE INCLUSION'))
 })
 
 test('a clause that loses the sentence its row anchors on is reported', () => {
@@ -693,7 +694,6 @@ test('a clause that loses the sentence its row anchors on is reported', () => {
     ['P6', 'I15', 'I15: a processor targeting Carve source MUST NOT expand'],
     ['P6', 'I10', '- A refusal MUST NOT reveal whether the target'],
     ['P6', 'I10', 'Both targets MUST be refused as containment denials'],
-    ['25', 'I1', '- Inclusion MUST remain disabled on these paths'],
   ]
   for (const [section, id, opening] of cases) {
     const row = ledger.find((r) => r.text.startsWith(opening))
@@ -703,11 +703,19 @@ test('a clause that loses the sentence its row anchors on is reported', () => {
     assert.ok(flat(clauses.get(id)).includes(flat(row.anchor)), `§${section} ${id} carries "${row.anchor}"`)
     assert.equal(flat(clauses.get(id)).replace(flat(row.anchor), '').includes(flat(row.anchor)), false)
   }
-  for (const row of ledger.filter((r) => r.clause === 'PART 9 §25 I1')) {
-    const clauses = clausesOf(sections.get('25').text)
-    assert.ok(flat(clauses.get('I1')).includes(flat(row.anchor)), `§25 I1 carries "${row.anchor}"`)
-    assert.ok(!flat(clauses.get('I2')).includes(flat(row.anchor)), `§25 I2 does not carry "${row.anchor}"`)
+  for (const row of ledger.filter((r) => r.clause === 'PART 9 §25 FILE INCLUSION')) {
+    const bullets = namedSecurityBullets(sections.get('25').text)
+    assert.ok(flat(bullets.get('FILE INCLUSION')).includes(flat(row.anchor)), `§25 FILE INCLUSION carries "${row.anchor}"`)
+    assert.ok(!flat(bullets.get('NON-HTML TARGETS')).includes(flat(row.anchor)), `§25 NON-HTML TARGETS does not carry "${row.anchor}"`)
   }
+})
+
+test('I7 states the shared include-error consequence', () => {
+  const section = specPart9Sections().get('P6')
+  const clause = clausesOf(section.text).get('I7')
+  assert.match(clause, /Each include error emits a Warning and leaves the directive\s+literal/)
+  assert.match(clause, /NEVER silently drops a directive/)
+  assert.doesNotMatch(clause, /include-lines-out-of-range|include-duplicate-option/)
 })
 
 test('the Errors-table check fails on exactly the rows carve#1995 found', () => {

@@ -1021,7 +1021,7 @@ Inclusion is bounded to keep expansion linear and terminating:
 Every failure path is **visible**, never a silent drop. Each of these emits a
 **Warning** and leaves the directive **literal**:
 
-<!-- normative-obligations: PART 6 I3 I6 I7 -->
+<!-- normative-obligations: PART 6 I1 I1a I1b I2 I3 I6 I11 -->
 | Condition | Result |
 |---|---|
 | Unreadable / missing path | `include-unresolved` Warning + literal directive |

@@ -92,7 +92,7 @@ test('a message other than the named one is refused', () => {
 })
 
 test('the clause names every table code, its message and its CLI exception', () => {
-  const clause = readFileSync(resolve(repo, 'resources/spec/04-blocks-tables-containers.ebnf'), 'utf8')
+  const clause = readFileSync(resolve(repo, 'resources/spec/22b-writer-render-loss.ebnf'), 'utf8')
     .replace(/\n\s+/g, ' ')
   for (const text of [
     SPAN, HEADER, HOISTED, CELL,

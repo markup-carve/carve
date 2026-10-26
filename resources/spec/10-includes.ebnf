@@ -94,8 +94,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       per I8), never both. A MODE option chooses what the selected content
       becomes: `@code` and `@code:lang` make it one code block (I1c). Without
       it the content is read as Carve. Every other `@key` is RESERVED.
-      An option key appears AT MOST ONCE: a directive that gives the same
-      key twice (`@lines:1-2 @lines:5-6`, `@code:js @code:ts`, `@shift:1
+      An option key appears AT MOST ONCE: the same key given
+      twice (`@lines:1-2 @lines:5-6`, `@code:js @code:ts`, `@shift:1
       @shift:2`, or a bare `@code` beside `@code:lang`, which share the key
       `code`) is an ERROR (`include-duplicate-option`, Warning + literal,
       per I7). The last value never silently wins. Like a malformed option,
@@ -225,6 +225,10 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       includingFileContext) it returns resolved Carve source text OR an
       error. If NO resolver is configured the directive is left LITERAL
       (CARVE-P6-001).
+      An included file whose bytes are not well-formed UTF-8 is non-text
+      content and is refused, not replaced: the replacement rule of
+      CARVE-P0-023 covers the document handed to the processor, not an
+      included file.
       OPT-IN: no resolver is configured by default, and a host MUST leave
       it off for untrusted input unless it has satisfied PART 9 §25 (File
       inclusion).
@@ -341,28 +345,14 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       invoking their resolver -- not resolved and then refused -- and the
       two bounds therefore limit reads as well as emitted output.
 
-   I7 ERRORS. Unreadable path, binary / non-text content, a `#name` that
-      selects nothing (I1a), an invalid or missing named region (I1b),
-      more than one of `#section`, `@lines` and `@region` (I1), `#section`
-      with `@code` (I1c), an `@lines` range that starts past the file's
-      last line (`include-lines-out-of-range`, I1), an option key given
-      twice (`include-duplicate-option`, I1), block-structured
-      content in INLINE position (I2), cycle, depth-exceeded,
-      size-exceeded, call-bound-exceeded, and a directive reached AFTER
-      byte-budget or call-bound exhaustion EACH emit a Warning and leave
-      the directive LITERAL (CARVE-P6-001, visible and debuggable). The last two are
-      never passed to the resolver at all (I6). Inclusion NEVER silently
-      drops a directive. See PART 9 §25 (File inclusion) for the security
-      model: parser stays pure, resolver is host-supplied and MUST enforce
+   I7 ERRORS. Each include error emits a Warning and leaves the directive
+      literal. Inclusion NEVER silently drops a directive. See PART 9 §25
+      (File inclusion) for the security model: parser stays pure, resolver is host-supplied and MUST enforce
       canonical path containment after symlink resolution and MUST NOT
       fetch remote URLs without an explicit allowlist. Included content
       receives the same sanitization as its parent. The processor-neutral
       vectors in `tests/include-security-conformance/` pin these security
       requirements separately from the broader include-language suite.
-      An included file whose bytes are not well-formed UTF-8 is non-text
-      content and is refused, not replaced: the replacement rule of
-      CARVE-P0-023 covers the document handed to the processor, not an
-      included file.
 
    I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A transform option
       orthogonal to selection (I1).

@@ -24,7 +24,8 @@ const clauses = (grammar) => {
       .replace(/^-\s+/, '')
     return {
       id: match[2],
-      part,
+      // The render-loss contract retains its P2 ID in the writer-targets module.
+      part: match[2] === 'CARVE-P2-024' ? '2' : part,
       title,
     }
   })

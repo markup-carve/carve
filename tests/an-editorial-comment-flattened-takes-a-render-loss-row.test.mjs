@@ -50,7 +50,7 @@ test('a message other than the named one is refused', () => {
 })
 
 test('the clause names the code, the message and the CLI exception the schema holds', () => {
-  const clause = readFileSync(resolve(repo, 'resources/spec/04-blocks-tables-containers.ebnf'), 'utf8')
+  const clause = readFileSync(resolve(repo, 'resources/spec/22b-writer-render-loss.ebnf'), 'utf8')
     .replace(/\n\s+/g, ' ')
   assert.ok(clause.includes(`\`${MESSAGE}\``), 'CARVE-P2-024 no longer names the message')
   assert.ok(clause.includes('`--allow-loss editorial-comment-flattened`'))

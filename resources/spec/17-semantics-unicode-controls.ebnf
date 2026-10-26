@@ -152,7 +152,7 @@
          (U+009B) and OSC (U+009D).
 
       T5 DEL (U+007F) AND THE C1 CONTROLS: Markdown, plain text and ANSI
-         strip them (PART 9 §25 I2). The canonical `carve` writer is a source
+         strip them (PART 9 §25, NON-HTML TARGETS). The canonical `carve` writer is a source
          serializer (PART 9 §26, CARVE-P9-054) and preserves them, like other
          authored content characters.
 *)

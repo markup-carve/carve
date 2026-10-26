@@ -74,7 +74,7 @@ test('the enum still refuses an unknown code and an unknown key', () => {
 const CLAUSE_STRINGS = ['Blanked a denied destination scheme', 'Blanked a denied image source']
 
 test('the clause names both messages, and the schema holds exactly those two', () => {
-  const clause = readFileSync(resolve(repo, 'resources/spec/04-blocks-tables-containers.ebnf'), 'utf8')
+  const clause = readFileSync(resolve(repo, 'resources/spec/22b-writer-render-loss.ebnf'), 'utf8')
   for (const text of CLAUSE_STRINGS) {
     assert.ok(clause.includes(`\`${text}\``), `CARVE-P2-024 no longer names ${text}`)
   }

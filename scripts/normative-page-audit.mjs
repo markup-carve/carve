@@ -123,6 +123,17 @@ export function clausesOf(sectionText) {
   return clauses
 }
 
+/** Named security bullets in PART 9 §25. */
+export function namedSecurityBullets(sectionText) {
+  const bullets = new Map()
+  const marks = [...sectionText.matchAll(/^[ \t]*- (FILE INCLUSION|NON-HTML TARGETS)\./gm)]
+  marks.forEach((mark, index) => {
+    const end = index + 1 < marks.length ? marks[index + 1].index : sectionText.length
+    bullets.set(mark[1], sectionText.slice(mark.index, end))
+  })
+  return bullets
+}
+
 /** The comparison form both surfaces reduce to: one line, case folded. */
 const flatten = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
 
@@ -284,7 +295,7 @@ export function audit() {
       if (!findings.includes(note)) findings.push(note)
       continue
     }
-    const cite = /^(?:WEAKER )?(?:PART 9 §(\d+)|PART 6) (I\d+[ab]?)$/.exec(row.clause)
+    const cite = /^(?:WEAKER )?(?:PART 9 §(\d+)|PART 6) (I\d+[ab]?|FILE INCLUSION|NON-HTML TARGETS)$/.exec(row.clause)
     if (row.clause === 'UNSTATED') {
       if (row.anchor !== '-') findings.push(`resources/normative-page-obligations.txt: UNSTATED row carries an anchor - "${row.text.slice(0, 60)}"`)
       continue
@@ -295,7 +306,9 @@ export function audit() {
     }
     const key = cite[1] ?? 'P6'
     const section = sections.get(key)
-    const clause = section && clausesOf(section.text).get(cite[2])
+    const clause = section && (cite[2].startsWith('I')
+      ? clausesOf(section.text).get(cite[2])
+      : key === '25' ? namedSecurityBullets(section.text).get(cite[2]) : undefined)
     if (!clause) {
       findings.push(`resources/normative-page-obligations.txt cites ${sectionLabel(key)} ${cite[2]}, which resources/spec/ does not define`)
       continue

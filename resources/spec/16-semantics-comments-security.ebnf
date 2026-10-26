@@ -748,7 +748,7 @@
         ingested trees deeper than the parser's limit. Trees built through the
         API can reach it and MUST receive that failure.
 
-      I1 FILE INCLUSION. The `{{ … }}` directive (CARVE-P6-001) does no I/O in the
+      - FILE INCLUSION. The `{{ … }}` directive (CARVE-P6-001) does no I/O in the
         parser and stays literal until a host configures a resolver (PART 6 I3). Enabling
         it for UNTRUSTED input requires one explicit, absolute containment root
         that never defaults to the process working directory, containment
@@ -760,7 +760,7 @@
         user-supplied content. If such a host offers inclusion, it MUST require
         an explicit, administrator-only opt-in with an explicit root; that
         opt-in MUST NOT be inherited by front-end rendering paths.
-      I2 NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
+      - NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
         renderers MUST NOT become injection vectors either. The TERMINAL
         target MUST strip text, code, math AND URL values of every control
         character before emission -- the non-whitespace C0 controls, DEL
