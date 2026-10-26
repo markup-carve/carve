@@ -288,9 +288,9 @@
       and it is the same inline-HTML fallback CARVE-P11-045 uses for a node that has no
       Markdown spelling. §9 holds where its backslash and newline read back as a hard break.
 
-      NO CARVE SOURCE SPELLS THIS TREE. A table row is one line, so a hard
-      break has no Carve spelling inside a cell. The tree reaches the writer
-      from an AST payload (PART 12) or an editor. The HTML importer still
+      A terminal hard break in a cell has the Carve spelling `\ ` before its
+      closing pipe; an interior hard break has no single-line Carve spelling.
+      The latter tree reaches the writer from an AST payload (PART 12) or an editor. The HTML importer still
       writes a `<br>` in a cell as a space and reports the loss
       (`structure-unspellable`, fixture `table-cell-hard-break`); this clause
       does not change that half.

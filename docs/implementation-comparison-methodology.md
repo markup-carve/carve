@@ -16,11 +16,11 @@ implementation exposes.
 
 ## Core fixture counts (2026-10-26 CET)
 
-The count-only run covers 3,117 core documents and their 194 target sidecars.
-The run scores 3,311 fixtures per engine. It checks expected output on
+The count-only run covers 3,118 core documents and their 194 target sidecars.
+The run scores 3,312 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: one.
+Corpus added since this run: two.
 
 Sidecars added since this run: one Markdown target.
 
@@ -36,15 +36,15 @@ including the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>3114 / 3117</strong>
+    <strong>3115 / 3118</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3117 / 3117</strong>
+    <strong>3118 / 3118</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3117 / 3117</strong>
+    <strong>3118 / 3118</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -55,9 +55,9 @@ including the
 
 | Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `fc0f31c78` | `3114 / 3117` | `3308 / 3311` | `3` | `0` |
-| JS | `4a10e5eae` | `3117 / 3117` | `3311 / 3311` | `0` | `0` |
-| PHP | `6280573be` | `3117 / 3117` | `3311 / 3311` | `0` | `0` |
+| Rust | `fc0f31c78` | `3115 / 3118` | `3309 / 3312` | `3` | `0` |
+| JS | `4a10e5eae` | `3118 / 3118` | `3312 / 3312` | `0` | `0` |
+| PHP | `6280573be` | `3118 / 3118` | `3312 / 3312` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
@@ -487,15 +487,15 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3117 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=3306/3309 mismatch=3 error=0 skipped=0 runs=3309
+profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3118 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=3309/3312 mismatch=3 error=0 skipped=0 runs=3312
   mismatch: html 699-a-quoted-link-definition-in-a-footnote-body-registers-globally
   mismatch: html 700-a-marker-line-sublist-stays-open-in-a-description-body
   mismatch: html 708-invisible-content-and-image-promotion
   mismatching documents: 3
-js: pass=3309/3309 mismatch=0 error=0 skipped=0 runs=3309
+js: pass=3312/3312 mismatch=0 error=0 skipped=0 runs=3312
   mismatching documents: 0
-php: pass=3309/3309 mismatch=0 error=0 skipped=0 runs=3309
+php: pass=3312/3312 mismatch=0 error=0 skipped=0 runs=3312
   mismatching documents: 0
 cross_impl_diffs=3
 

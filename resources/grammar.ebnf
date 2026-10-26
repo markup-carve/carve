@@ -8602,12 +8602,15 @@ EOF = (* end of file *) ;
       bounded at the boundary: the words and the constructs on either side of
       it survive as themselves.
 
-      A HARD BREAK IN SUCH A SLOT IS FLATTENED THE SAME WAY. No spelling
+      A HARD BREAK IN SUCH A SLOT IS FLATTENED THE SAME WAY, except at the end
+      of a pipe-table cell. No other spelling
       carries a hard break in a single-line slot, so the producer writes one
       space in its place, or nothing where the slot holds no token on one side
       of it: `<td>x<br>y</td>` writes `| x y |` and `<td>x<br></td>` writes
       `| x |`. A producer with a diagnostic channel reports each break as
       `structure-unspellable`.
+      A terminal hard break in a pipe-table cell has the Carve spelling `\ `
+      before the closing pipe and the canonical writer MUST keep it.
 
    1c. A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING --
       NORMATIVE [CARVE-P11-004]. CARVE-P11-003 settles what a producer owes where an
@@ -10133,9 +10136,9 @@ EOF = (* end of file *) ;
       and it is the same inline-HTML fallback CARVE-P11-045 uses for a node that has no
       Markdown spelling. §9 holds where its backslash and newline read back as a hard break.
 
-      NO CARVE SOURCE SPELLS THIS TREE. A table row is one line, so a hard
-      break has no Carve spelling inside a cell. The tree reaches the writer
-      from an AST payload (PART 12) or an editor. The HTML importer still
+      A terminal hard break in a cell has the Carve spelling `\ ` before its
+      closing pipe; an interior hard break has no single-line Carve spelling.
+      The latter tree reaches the writer from an AST payload (PART 12) or an editor. The HTML importer still
       writes a `<br>` in a cell as a space and reports the loss
       (`structure-unspellable`, fixture `table-cell-hard-break`); this clause
       does not change that half.
