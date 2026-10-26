@@ -84,7 +84,7 @@
         CLASSIFICATION, and it is TOTAL: the line is a `comment_line` for every
         question the layout asks about it, container OWNERSHIP included, so at a
         container's own column 0 it leaves the frame open exactly as a `%%` line
-        does (§24 C3, carve#1903). Reading it as a visibility rule alone would
+        does (§24 C3). Reading it as a visibility rule alone would
         make one line two constructs at once. This DIVERGES from
         the `:::` rule (§12), where an unclosed opener opens and closes at end
         of input, and the difference is VISIBILITY: an unclosed div still
@@ -211,10 +211,7 @@
    require the host to configure the same text twice. Two extension-written
    strings have no key and are options only -- the heading-permalink label and
    the table-of-contents summary (which is the `<details>` disclosure's VISIBLE
-   text, and not the nav's name: that one is the `tocNav` key above). That is
-   the RULE and not merely the state: a string the extension already exposes as
-   an option is configured there, and §1.5's admission sentence has been
-   narrowed to say so.
+   text, and not the nav's name: that one is the `tocNav` key above). A string the extension exposes as an option is configured there.
 
    This is not a localization system: it defines no locale or built-in table
    beyond the English defaults. The map is the seam to a host's catalog.
@@ -264,16 +261,12 @@
    rebuild. Nothing else qualifies; a value the element does not determine
    is the author's and is kept.
 
-   THE WRAPPER IS DERIVED ON THE SAME TERMS. The rule is stated over attributes
-   because that is where it was first needed, but an ELEMENT can be
-   reconstructable too, and the endnotes `<section>` is: PART 9 §16 writes one
+   THE WRAPPER IS DERIVED ON THE SAME TERMS. An element can also be reconstructable: the endnotes `<section>` is. PART 9 §16 writes one
    around the notes whenever the document has any, and no Carve construct spells
    a `<section>` at all. So unwrapping it removes nothing an author wrote, and
    an importer does not report the unwrapping -- not as `element-unwrapped`, and
    not as an `attribute-dropped` naming the `doc-endnotes` role or the
-   `endnotes` name that came with it. Whether an importer reports a
-   NON-derived wrapper is not settled here; the engines differ and no document
-   loses anything either way.
+   `endnotes` name that came with it..
 
    THE IMPORT'S OUTCOME DOES NOT CHANGE THE ANSWER. Derivation is a property of
    the element being READ, not of what the import goes on to do with it. Both

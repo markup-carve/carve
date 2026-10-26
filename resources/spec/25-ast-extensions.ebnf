@@ -85,8 +85,7 @@
       PART 12 §4 GOVERNS THE POSITION, AS IT DOES EVERYWHERE ELSE, exemptions included:
       a producer unable to place a node omits `pos`; synthesized nodes MUST
       omit it. The schema MUST NOT require `pos` on `citation`. A parser
-      still places every citation it reads
-      ([carve#2192](https://github.com/markup-carve/carve/issues/2192)).
+      still places every citation it reads.
 
    19. A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA -- NORMATIVE [CARVE-P12-039]. A
       `table` MAY carry `columns`, an array whose entry at index N describes
@@ -302,8 +301,7 @@
 
       THE UNION IS THE ENFORCEMENT. CARVE-P12-068(d) validates a payload against the
       schema, so the block union names content blocks only, and a `children`
-      array holding a container-internal type fails at decode
-      ([carve#2189](https://github.com/markup-carve/carve/issues/2189)).
+      array holding a container-internal type fails at decode.
 
       A `list_item` REACHES ITS OWN CHILDREN THE SAME WAY. It holds content
       blocks, so a nested `list` is a child of an item and a nested
@@ -317,8 +315,7 @@
 
       `footnote_ref` requires `label` likewise. Resolution results stay
       optional, as PART 12 §5 has them: `number` arrives when the document resolves
-      the reference and is absent when nothing does
-      ([carve#2193](https://github.com/markup-carve/carve/issues/2193)).
+      the reference and is absent when nothing does.
 
       AND IT IS SPELLED `label`, THE NAME ITS DEFINITION USES. A `footnote`
       carries `label` and so does a `footnote_ref`, for the identical string.
@@ -351,8 +348,7 @@
       `span`. With no joined text it renders as an empty cell. A marker that
       carries joined `+` text (PART 9 §5 T6) keeps `span`, holds that text as
       its children, and renders a cell holding that text; a Carve writer
-      writes the marker back on the standard row and the text on its `+` line
-      ([carve#3158](https://github.com/markup-carve/carve/issues/3158)).
+      writes the marker back on the standard row and the text on its `+` line.
 
         | ^ | b |
         + t | u |
@@ -415,8 +411,7 @@
       source-spelled cell publishes `children`. A producer that wrapped that
       inline content in a `paragraph` and published `blocks` would be
       describing the same document two ways, which CARVE-P12-002's coalescing rule
-      rejects one layer down for the same reason
-      ([carve#2191](https://github.com/markup-carve/carve/issues/2191)).
+      rejects one layer down for the same reason.
 
    28. SMALL CAPS SURVIVE INTERCHANGE -- NORMATIVE [CARVE-P12-050]. A
       `small_caps` inline node carries `children`, plus optional `attrs` and

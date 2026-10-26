@@ -2,9 +2,7 @@
    16. FOOTNOTES -- NORMATIVE [CARVE-P9-025] (governs `footnote` / `footnote_definition`
       in PART 3). The reference form `[^label]` + `[^label]: body` and the
       INLINE form `^[content]` are implemented, and they are the only note
-      forms: the proposed sidenote (`[>content]`) was dismissed as a
-      presentation concern, so `[>` is unclaimed and `[>foo]` is literal
-      text (docs/dismissed-syntax.md). Numbering, which definition wins,
+      forms: `[>` is unclaimed and `[>foo]` is literal text. Numbering, which definition wins,
       collection inside containers, unresolved references and unreferenced
       definitions are PART 9R R2 and CARVE-P9-034; the rendering rules below stay
       normative here.
@@ -226,7 +224,7 @@
          the block, so recognition and the uniformity principle are
          unchanged -- only the tight/loose RENDERING differs (djot renders
          these loose). Pinned by corpus compact-list-blocks.
-      L3 CONTINUATION MARKER `+` -- Carve addition (markup-carve/carve#3421).
+      L3 CONTINUATION MARKER `+` -- Carve addition.
          A lone `+` at an open container's marker column attaches one following
          block that starts at that same column. A lone `+` directly after one
          or more quote prefixes is a marker for that quote level. Each `>`
@@ -297,9 +295,7 @@
          differently because of WHAT it is attaching, and there is no second
          ATTACHMENT rule for a quote, a list, a fence, a caption or a definition
          under the marker. L4 decides where a refused first-block marker lands.
-         In particular the ONE BLOCK count and the boundary
-         set above hold in EVERY container in L4, not only in the two that had
-         them spelled out.
+         The one-block count and boundary hold in every L4 container.
 
          A marker at a container's marker column is outside its code,
          raw or colon fence. That fence ends before the attached block begins.
@@ -344,7 +340,7 @@
          line's own column is its first marker's column, so a block at an inner
          list opener's column (column 2 below `- - > +`) is at an intervening
          column: the `+` is refused and reads like a letter there
-         (markup-carve/carve#3421). The column of the quote that owns the `+`
+. The column of the quote that owns the `+`
          stays eligible at every stacking depth, next to column 0 and the
          line's own column: `- > +` / `  b` and `- - > +` / `    b` both attach
          `b` to the quote. The columns are raw line columns, so below
@@ -361,7 +357,7 @@
          With no eligible block after it (the end of the input, a blank line,
          or a line at an ineligible column), the `+` is refused. In a list
          item's first-block form, that refused `+` leaves the item empty and is
-         not text (markup-carve/carve#3421); the lint still reports it.
+         not text; the lint still reports it.
          In a list item or definition description it adds no block, and a
          follower at another column follows ordinary column rules. Ordinary
          ownership decides where its text lands: an open code or raw fence

@@ -264,17 +264,7 @@
       wrapper, and the fixture is then evidence of nothing. The clause is the
       definition; a fixture is at most an instance of it.
 
-      WHERE THE SET IS SOURCED FROM IS FREE. One engine states a predicate over
-      what the shape spells and is bounded by construction, another derives the
-      set from the corpus documents whose pinned canonical form re-parses
-      differently and applies the bound explicitly. Both conform. The bound is
-      the rule; the sourcing is not.
-
-      A CHECKER THAT WIDENS THE BOUND CANNOT DETECT ITS OWN WIDENING, so the
-      width is pinned separately or it is not pinned at all. The dissolution is
-      applied to BOTH trees, so widening it can only ever HIDE a difference and
-      never create one, and a corpus sweep stays green under any widening
-      whatsoever.
+      The bound is the rule; how a checker sources it is free.
 
    1d. THE CONVERSION-DIAGNOSTICS CHANNEL -- NORMATIVE [CARVE-P11-046]. A
       producer handed a shape no Carve source spells reports it on a

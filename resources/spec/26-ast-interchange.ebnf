@@ -25,8 +25,7 @@
       THE LEVEL IS WHAT THE SOURCE SAID, NOT WHAT THE NESTING IMPLIES. A format
       stating a level publishes it; otherwise the field is absent and nesting
       supplies the answer. They cannot disagree in an importer-built tree, so
-      readers need not check
-      ([carve#2207](https://github.com/markup-carve/carve/issues/2207)).
+      readers need not check.
 
       A CAPTION IS NOT A NODE, and the profile vocabulary no longer says it is.
       `figure`, `figure_group` and `table` each carry their caption as an
@@ -55,9 +54,7 @@
       A READER MUST REFUSE A GROUP WITH `mode` WHEN ANY ITEM LACKS IT. The
       schema rejects that contradiction. Without group `mode`, items MAY carry
       different modes; each item's value remains authoritative. No source-spelled
-      group has mixed item modes
-      ([carve#2203](https://github.com/markup-carve/carve/issues/2203),
-      [carve#2251](https://github.com/markup-carve/carve/issues/2251)).
+      group has mixed item modes.
    32. RUBY ANNOTATIONS SURVIVE INTERCHANGE -- NORMATIVE [CARVE-P12-054]. A
       `ruby` inline node carries `pairs`, a non-empty ordered array. Each pair
       is a closed object with exactly `base` and `annotation`: `base` is a
@@ -119,8 +116,7 @@
       THE LOSS. It does not refuse the tree: an unknown extension is not an
       unknown field, and the node states its own degradation. Where the envelope
       marks the extension `required`, refusal happens at that boundary (CARVE-P12-056),
-      before reading the tree
-      ([carve#2200](https://github.com/markup-carve/carve/issues/2200)).
+      before reading the tree.
    34. A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE -- NORMATIVE
       [CARVE-P12-056]. At a STORAGE OR PROCESS boundary a Carve AST is carried
       inside an envelope validating against
@@ -172,11 +168,7 @@
           1.0 reader handed a 1.1 tree fails on the field itself, as a schema
           error that names no version. Accepting the envelope and then refusing
           its payload is the worse of the two failures, not the gentler one.
-          THE READER ACCEPTS ITS OWN VERSION OR LOWER. Weakening the ingest
-          instead is the answer CARVE-P12-030 already ruled cannot be right
-          ([carve#2199](https://github.com/markup-carve/carve/issues/2199)),
-          and this clause's own reason for existing is that the reader need not
-          be weakened to evolve.
+          THE READER ACCEPTS ITS OWN VERSION OR LOWER.
       (c) AN EXTENSION MARKED REQUIRED AND NOT IMPLEMENTED IS REFUSED, named.
           Rendering the understood parts and reporting success is what
           CARVE-P12-068 forbids.
@@ -197,10 +189,7 @@
       not carry it.
 
       THE SCHEMA STAYS CLOSED. `additionalProperties: false` holds on the
-      envelope and on every node inside it. Versioning solves evolution without
-      weakening the ingest, and CARVE-P12-030 already ruled that a pass-through is the
-      answer that cannot be right
-      ([carve#2199](https://github.com/markup-carve/carve/issues/2199)).
+      envelope and on every node inside it.
 
    35. A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV -- NORMATIVE
       [CARVE-P12-057]. An ordinary `:::` container produces one of three
@@ -216,8 +205,7 @@
       own list of generated-content kinds that are not callouts.
 
       `admonition.kind` REFUSES the six kinds, so the split is checked and not
-      only stated: one thing has one spelling
-      ([carve#2231](https://github.com/markup-carve/carve/issues/2231)).
+      only stated: one thing has one spelling.
 
       FOLDING THEM INTO `div` WAS REFUSED: a profile can deny admonitions
       while keeping generic containers; a fold would remove that ability.
@@ -231,17 +219,14 @@
       blocks were written between the markers. Its content is usually generated
       from the document; authored blocks are carried. PART 9 §16 governs the
       body of a core `footnotes` directive. Tier-3 extension contracts govern
-      their own bodies. This is the same empty-container shape as `admonition`
-      ([carve#2195](https://github.com/markup-carve/carve/issues/2195),
-      [carve#2333](https://github.com/markup-carve/carve/issues/2333)).
+      their own bodies. This is the same empty-container shape as `admonition`.
 
       A DIRECTIVE MAY CARRY A `title`. The opener admits a quoted title on
       every named container, so `::: toc "Contents"` spells one: the field is
       optional and holds that text as authored inline content, exactly as
       `admonition.title` does. The DISPATCH DOES NOT MOVE - the kind alone
       decides the type, an untitled directive is unchanged, and a titled one
-      renders its title and label under PART 9 §12
-      ([carve#2247](https://github.com/markup-carve/carve/issues/2247)).
+      renders its title and label under PART 9 §12.
 
    36. A LINE BLOCK MAY PUBLISH ITS LINES -- NORMATIVE [CARVE-P12-058]. A
       `line_block` MAY carry `lines`, parallel to `children`: entry `i` holds
@@ -276,8 +261,7 @@
       ABSENT, THE LINES ARE WHAT SPLITTING `children` ON `hard_break` YIELDS,
       which over-counts a trailing break and under-counts a boundary inside a
       run. Where both are present they cannot disagree in a tree a parser
-      produced, and `lines` is the finer statement
-      ([carve#2235](https://github.com/markup-carve/carve/issues/2235)).
+      produced, and `lines` is the finer statement.
 
    37. A CITATION IS ONLY EVER AN ITEM OF A GROUP -- NORMATIVE [CARVE-P12-059].
       The inline dispatch does NOT name `citation`. The type stays declared,
@@ -294,8 +278,7 @@
       citation groups. CARVE-P12-038's typed, positioned item and inline-profile vocabulary
       requirements remain satisfied by the `citation` definition and vocabulary
       entry. THE COST OF LEAVING IT WAS NOT SYMMETRIC: narrowing the dispatch
-      lets CARVE-P12-068(d) reject standalone citations at ingest instead of at rendering
-      ([carve#2227](https://github.com/markup-carve/carve/issues/2227)).
+      lets CARVE-P12-068(d) reject standalone citations at ingest instead of at rendering.
 
    38. NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-060]. A
       producer MAY return ephemeral node ids beside an AST, as a sidecar under
@@ -414,8 +397,7 @@
       path across an edit.
 
       `id` is the holder's, not `attrs.id` and not a CARVE-P12-060 node id, and a holder
-      keeps it across a canonical write, which the anchors do not survive
-      ([carve#2232](https://github.com/markup-carve/carve/issues/2232)).
+      keeps it across a canonical write, which the anchors do not survive.
 
    41. PROVENANCE IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-063]. A
       producer MAY return provenance beside an AST, as a sidecar under
@@ -453,8 +435,7 @@
       a missing fact as unknown and never as a guessed default.
 
       PROVENANCE IS PER NODE. A range has no independent existence in the tree,
-      so CARVE-P12-062's holder reads the nodes its anchors address
-      ([carve#2233](https://github.com/markup-carve/carve/issues/2233)).
+      so CARVE-P12-062's holder reads the nodes its anchors address.
 
    42. A CONTINUATION LINE IS A MARKER IN THE JOINED CELL -- NORMATIVE
       [CARVE-P12-069]. Where a `+` continuation row joins non-empty content
@@ -517,7 +498,7 @@
       that entry sits at the padding boundary, offset 0 for a join right
       after the opening backtick run and the value's length for one right
       before the closing run
-      ([carve#3138](https://github.com/markup-carve/carve/issues/3138)). A
+. A
       `cellWraps` entry stands for the join a `cell_wrap` would otherwise
       mark; no `cell_wrap` is placed beside or inside the atomic node for
       that join. Rendering is unchanged, and `table_row.continuationLines`
@@ -567,7 +548,6 @@
       `colspan`, or two markers in one cell with the same `line`, `row` and
       `col` (a `cellWraps` entry counts as a marker here), or
       a `cellWraps` entry whose offset is not ascending, does not name a space
-      inside the payload and is not a padding-boundary entry, or sits on a node outside a `table_cell` is invalid in the sense of CARVE-P12-030
-      ([carve#3094](https://github.com/markup-carve/carve/issues/3094)).
+      inside the payload and is not a padding-boundary entry, or sits on a node outside a `table_cell` is invalid in the sense of CARVE-P12-030.
 
    ============================================================================ *)

@@ -184,8 +184,7 @@
       E1 reads on the emitted line and in text only, as U1 and U2 do. The
       comment REACHES THE OUTPUT,
       and a reader that strips comments before matching addresses re-links.
-      Neither reader this target answers to strips it
-      ([carve#2413](https://github.com/markup-carve/carve/issues/2413)).
+      Neither reader this target answers to strips it.
 
   8j. INLINE CODE PRESERVES ITS PAYLOAD -- NORMATIVE [CARVE-P11-064]. The
       Markdown target MUST preserve the exact code text. CommonMark code spans
@@ -701,7 +700,7 @@
          may separate two constructs that would otherwise merge with an empty
          `{% ... %}`, which is how two adjacent code spans are kept apart.
          Where an escape separates them, the escape is written instead: it is
-         what §2 already emits and it leaves no node (carve#2068).
+         what §2 already emits and it leaves no node.
 
       Everything else is byte-exact. EQUAL strengths are not on the list:
       `<em><em>x</em></em>` against `<strong>x</strong>` is an italic turned
@@ -789,8 +788,7 @@
       the row CARVE-P11-031 writes as the header has fewer cells than the widest row,
       it gains one empty cell per missing column, and so does the delimiter
       row, whose added cells take the column's effective alignment under CARVE-P11-031
-      and are `---` where no header row sets one
-      ([carve#2408](https://github.com/markup-carve/carve/issues/2408)).
+      and are `---` where no header row sets one.
 
         |= a |= b |          ->  | a | b |  |
         | 1 | 2 | 3 |            | --- | --- | --- |

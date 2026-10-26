@@ -688,10 +688,6 @@
       has no upper bound, because a parse records what the author typed and no
       amplification happens there.
 
-      THE BOUND IS STATED SO THE ENGINES AGREE ON THE BYTES. 1000 is a round
-      number chosen for parity rather than derived from anything, and no
-      separator row anyone writes approaches it.
-
       A VALUE ESCAPES AS §2 ESCAPES ANY ATTRIBUTE VALUE. §2's text-content
       exception for U+00A0 is not an attribute rule, so a carrier value
       holding a no-break space keeps that character.
@@ -868,8 +864,7 @@
       RAW HTML REMAINS MODE-GATED. A `data-carve-raw` value naming format
       `html` reconstructs raw HTML only in `roundtrip` import mode. A carrier
       must not restore markup the selected mode filtered out. Other raw-inline
-      formats, inert in HTML output, may reconstruct in every import mode
-      (carve#2918).
+      formats, inert in HTML output, may reconstruct in every import mode.
 
    13f. ONE OPTION SWITCHES EVERY TARGET'S CARRIERS -- NORMATIVE
       [CARVE-P10-018]. Roundtrip export is the only switch for the carriers

@@ -101,6 +101,35 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       per I7). The last value never silently wins. Like a malformed option,
       it is never passed to the resolver.
 
+   I1a FRAGMENT SELECTION (`#name`). `name` is an `explicit_identifier`
+      (`include_section`; see its production), so every explicit id is
+      nameable. It is matched the way a `</#id>`
+      cross-reference matches (PART 9R R4), against the child's OWN parse, before
+      the child's nested includes expand. Two steps, the first that
+      matches wins:
+      (1) HEADING. A heading whose id (explicit `{#id}` or auto slug) is
+          `name` selects its SECTION: that heading and the sibling blocks
+          after it in the same block sequence, up to the next heading of
+          the same or higher level or the end of that sequence. A heading
+          nested in a container is bounded by its container.
+      (2) BLOCK. Otherwise a BLOCK carrying the EXPLICIT id `name`
+          selects exactly that block, with its own attributes. A block is
+          a `blockNode` (PART 12) standing in a block sequence of the
+          child's body, at any depth, other than a definition (footnote,
+          reference, abbreviation, citation), a comment or frontmatter.
+      Within a step, the FIRST match in document order wins (a container
+      precedes its descendants). An id carried only by something that is
+      not a block in the body -- an inline element, a list item, a table
+      row or cell, a definition term, a footnote definition or a block
+      inside one -- selects NOTHING: the directive is an ERROR (Warning +
+      literal, per I7), as for an id the child does not contain. Every
+      other rule treats a block selection as it treats a section: I2 in
+      inline position (a selected paragraph splices its inlines and its
+      own attributes do not carry into the sentence; any other block is
+      block-in-inline), I4 provenance, I5, I6, I8 (T is measured over the
+      selected block; no headings in it makes `auto` a no-op), I11 (a
+      missing id leaves the dependency RESOLVED).
+
    I1b NAMED SOURCE REGION (`@region:name`). `name` is an `identifier` and is
       matched exactly. A marker is a whole physical line: optional ASCII
       spaces or tabs, one of the comment forms below, and nothing after it
@@ -182,35 +211,6 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       cycles, depth and the byte budget (I6), errors (I7) and dependency
       reporting (I11).
 
-   I1a FRAGMENT SELECTION (`#name`). `name` is an `explicit_identifier`
-      (`include_section`; see its production), so every explicit id is
-      nameable. It is matched the way a `</#id>`
-      cross-reference matches (PART 9R R4), against the child's OWN parse, before
-      the child's nested includes expand. Two steps, the first that
-      matches wins:
-      (1) HEADING. A heading whose id (explicit `{#id}` or auto slug) is
-          `name` selects its SECTION: that heading and the sibling blocks
-          after it in the same block sequence, up to the next heading of
-          the same or higher level or the end of that sequence. A heading
-          nested in a container is bounded by its container.
-      (2) BLOCK. Otherwise a BLOCK carrying the EXPLICIT id `name`
-          selects exactly that block, with its own attributes. A block is
-          a `blockNode` (PART 12) standing in a block sequence of the
-          child's body, at any depth, other than a definition (footnote,
-          reference, abbreviation, citation), a comment or frontmatter.
-      Within a step, the FIRST match in document order wins (a container
-      precedes its descendants). An id carried only by something that is
-      not a block in the body -- an inline element, a list item, a table
-      row or cell, a definition term, a footnote definition or a block
-      inside one -- selects NOTHING: the directive is an ERROR (Warning +
-      literal, per I7), as for an id the child does not contain. Every
-      other rule treats a block selection as it treats a section: I2 in
-      inline position (a selected paragraph splices its inlines and its
-      own attributes do not carry into the sentence; any other block is
-      block-in-inline), I4 provenance, I5, I6, I8 (T is measured over the
-      selected block; no headings in it makes `auto` a no-op), I11 (a
-      missing id leaves the dependency RESOLVED).
-
    I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
       include: the resolved content merges as BLOCKS at the directive
       site. A directive within inline content is an INLINE include: the
@@ -224,9 +224,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       resolver with the contract: given (path, section?, options?,
       includingFileContext) it returns resolved Carve source text OR an
       error. If NO resolver is configured the directive is left LITERAL
-      (CARVE-P6-001). This mirrors the
-      bibliography loader precedent (host resolves, parser stays pure;
-      docs/extensions.md §6.1) and preserves browser / WASM parity.
+      (CARVE-P6-001).
       OPT-IN: no resolver is configured by default, and a host MUST leave
       it off for untrusted input unless it has satisfied PART 9 §25 (File
       inclusion).
@@ -248,9 +246,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       whose physical slice can cut a fence or div in half: the torn
       construct is bounded to the fragment, never the parent. Source
       positions SHOULD be remapped so source-mapped hosts can attribute
-      included spans to the child file (Carve's AST already distinguishes
-      snippet-local from document-space offsets; carve-js src/ast.ts
-      `Position`).
+      included spans to the child file.
 
    I5 CROSS-FILE COLLISIONS. An identifier that expansion brings together
       is handled according to whether it is DOCUMENT-VISIBLE or FILE-LOCAL.

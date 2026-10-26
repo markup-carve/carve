@@ -10,7 +10,7 @@ attribute_list = attribute, {space+, attribute} ;
    in this grammar that has an attribute slot spells it `[attribute_run]`.
    The list-marker slot, a table row or cell, and a citation definition line
    keep a single `attributes`. Editorial substitution, editorial comment and
-   braced comment take no slot at all (CARVE-P3-017, carve#2138, carve#2929). *)
+   braced comment take no slot at all (CARVE-P3-017). *)
 attribute_run = attributes, {attributes} ;
 (* interior padding is accepted: `{ .a }` and `{.a  .b}` are valid inline
    attribute blocks. The terminal is `space`, NOT `whitespace`: see
@@ -74,10 +74,8 @@ attribute = language_attribute | id_attribute | class_attribute
    a partially consumed attribute: the whole block stays literal (PART 9 §14),
    so `{:en_US}`, `{:en--GB}`, `{:-en}` and `{:français}` are literal source.
 
-   LANGUAGE NEVER IMPLIES WRITING DIRECTION. A tag need not carry a script
-   subtag, so deriving direction would require changing CLDR likely-subtag and
-   script-direction data and could change unchanged output after a data update.
-   No tag produces `dir` in either direction. Authors use HTML's independent
+   LANGUAGE NEVER IMPLIES WRITING DIRECTION. No tag produces `dir` in either
+   direction. Authors use HTML's independent
    mechanism explicitly where needed: `[…]{:ar dir=rtl}` or `dir=auto`.
 
    The deferred braced-symbol spelling `{:name:}` stays literal under this
@@ -89,10 +87,7 @@ attribute = language_attribute | id_attribute | class_attribute
    separator, so `{: fr}` is the empty language attribute followed by a
    SEPARATE boolean `fr`, giving `lang="" fr=""`. It is not a language
    attribute reading `fr`, and it does not fail the block. This follows from
-   `':', [ language_tag ]` with no special case, and it is the answer a reader
-   derives from the production; a rule that made a space here fail the whole
-   block would be one the grammar does not say. The cost lands on a typo rather
-   than on a shape anyone writes deliberately.
+   `':', [ language_tag ]` with no special case.
 
    LANGUAGE SHORTHAND USES THE `lang` KEY -- NORMATIVE [CARVE-P4-004]: `:TAG` and `lang=TAG`
    ARE THE SAME KEY, so writing
@@ -156,8 +151,7 @@ boolean_attribute = identifier - ('_', {character}) ;
    as the boolean attribute `_x_` and as a forced underline. The underline is
    what an author writing `{_x_}` means, so the BARE form gives the collision
    up. There is no boolean attribute to lose: HTML's set
-   is `disabled`, `checked`, `readonly`, `required`, `hidden` and their kind,
-   and not one of them starts with `_`.
+   is `disabled`, `checked`, `readonly`, `required`, `hidden` and their kind.
 
    ONLY THE BARE FORM IS NARROWED. `{#_id}`, `{._class}` and `{_k=1}` all keep
    their leading underscore, and none of them can be read as an underline
@@ -240,4 +234,4 @@ continuation = newline, opt_ws ;         (* a single line break + indent; NOT a 
    comment whose text is dropped, exactly as `{#id` / `  key=1}` applies
    attributes where `{#id` / `key=1}` does not. Inside a container the column
    compared is the opener's, so a list item's content column governs there.
-   (carve#2910) *)
+ *)

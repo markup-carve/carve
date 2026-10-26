@@ -52,7 +52,7 @@
         and never joins an attribute run (CARVE-P3-017). A following inline
         attribute block is text: `*x*{% c %}{.k}` renders
         `<strong>x</strong>{.k}`; the block attaches to neither comment nor
-        emphasis (carve#2929).
+        emphasis.
       - MULTI-LINE WITHIN A PARAGRAPH. The run may cross soft line breaks:
         `a {% one\ntwo %} b` renders `<p>a  b</p>`. It never joins two
         paragraphs across a blank line -- `%%%` is the block form (§28).
@@ -103,7 +103,7 @@
         A combined token activates two kinds, and E3 reads both as ordinary
         active kinds, so a braced child of either nests inside it:
         /*a {*b*} c*/ holds a strong child. The absence of a carve-out for
-        the combined token is deliberate (carve#2903).
+        the combined token is deliberate.
         The X} closes the innermost reachable matching braced span. It MUST
         NOT cross an intervening braced boundary (E2a) or bracket-run bound
         (E2b). Unmatched explicit openers remain literal, not implicitly
@@ -520,8 +520,7 @@
              A processor with lint diagnostics SHOULD report this ambiguous
              compatibility spelling and name both author choices: dedent to
              content_column for the canonical structural spelling, or escape
-             the opener to preserve the literal meaning older readers assigned
-             to it. It SHOULD likewise
+             the opener to preserve the literal reading. It SHOULD likewise
              report a block-shaped line between the marker and content_column
              that detached after a blank. The stable rule ids and exact scopes
              are `list-item-block-overindented` and `list-item-body-detached`
@@ -576,16 +575,7 @@
         U+202F case (resources/examples/edge-cases.md "Scheme probe strips Unicode
         whitespace").
 
-        THE CLASS STOPS THERE ON PURPOSE, and the reason is a property of URL
-        parsing rather than a judgement about which characters look
-        suspicious. The WHATWG URL parser strips leading C0 controls and
-        SPACE before reading a scheme, and nothing else. A destination
-        beginning with any other format character -- ZERO WIDTH SPACE
-        (U+200B), LEFT-TO-RIGHT MARK (U+200E), WORD JOINER (U+2060), SOFT
-        HYPHEN (U+00AD) -- therefore FAILS to parse as a URL at all. So the
-        probe strips what an eventual URL parser would strip (plus the Unicode
-        spaces and the BOM), and it deliberately does NOT strip the wider `Cf`
-        category.
+        The probe does not strip the wider `Cf` category.
         A `data:` exception for images, if offered, MUST be opt-in. An
         attribute-block `href`/`src` override (PART 4) MUST NOT reintroduce a
         rejected scheme.

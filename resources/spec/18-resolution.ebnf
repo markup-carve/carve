@@ -130,21 +130,11 @@
    R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS --
       NORMATIVE [CARVE-P9R-002]. A
       definition line that PART 0's O3 folds into an OPEN PARAGRAPH yields no
-      entry in ANY symbol table -- linkDefs, footnoteDefs or abbrDefs. It is
+      entry in ANY symbol table -- linkDefs or footnoteDefs. It is
       paragraph text, it renders as the text the author typed, and nothing on it
       defines anything. The container makes no difference: the document level, a
       quote and a div are one rule, because PART 0 O3 asks only whether a paragraph is
       open and which container holds it.
-
-      THE ABBREVIATION KIND IS DECIDED BEFORE THIS CLAUSE REACHES IT, and it is
-      named above for completeness rather than as a case that discriminates.
-      CARVE-P12-026 already makes `*[TERM]: expansion` a definition ONLY as a
-      direct child of the document, so every marker-line and in-container
-      spelling is ordinary text by that rule; and at the document level an
-      abbreviation definition INTERRUPTS an open paragraph (PART 9 §10 I5,
-      invisible constructs interrupt), so it is never a lazy line there. No
-      document distinguishes this clause's answer from CARVE-P12-026's for that kind.
-      The link and footnote kinds are the ones this clause governs on its own.
 
       HOW AN ENGINE MAY DECIDE IT. Collection is a pre-pass over lines, so the
       answer is not local to the line. An implementation MAY ask the block

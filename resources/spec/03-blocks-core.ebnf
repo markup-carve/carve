@@ -20,7 +20,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    written directly under a heading, where it starts its own paragraph
    (CARVE-P2-003). In a list item, a definition body or a footnote body a
    marker PAST the content column opens the heading on its authored base
-   (CARVE-P0-004). Pinned by corpus 103-heading-marker-column-zero. *)
+   (CARVE-P0-004). *)
 
 (* THE HEADING MARKER SEPARATOR IS A RUN -- NORMATIVE [CARVE-P2-002]. `space+`: one or more
    ASCII spaces after the hashes, ALL of them separator, and the first
@@ -156,7 +156,7 @@ thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '
 
    THERE IS NO TOML SHAPE RULE. A typed `---toml` is frontmatter unconditionally
    and a bare opener is yaml, so a toml shape test has no reachable caller, and
-   a rule no implementation can reach is a check that cannot fire.
+   the shape test applies only to bare YAML openers.
 
    THE TEST. Take the lines between the opener and the closer. Skip blank lines
    and lines whose first non-space character is `#`. The block is frontmatter
@@ -172,12 +172,8 @@ thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '
    indented key is that line and fails the test; only a blank line and a
    `#` line are ever skipped.
 
-   IT IS A SHAPE TEST AND NOT A PARSE, deliberately: the shape gives identical
-   results in every engine, conformance cases can pin it, and it adds no YAML
-   dependency to an implementation. Libraries disagree on YAML edge cases, so a
-   real parse would let two conformant engines answer differently on one input.
-   The ONE divergence from a real parse is MALFORMED CONTENT: `title: [unclosed`
-   has the shape, so it is frontmatter here.
+   This is a shape test. `title: [unclosed` has the required shape and
+   therefore opens frontmatter despite malformed YAML content.
 
    THE GATE IS THE IMPORTER'S, NOT THE GRAMMAR'S. `frontmatter_content` is
    opaque lines (PART 1), so `---` / `Foo` / `---` is valid Carve frontmatter
@@ -209,11 +205,7 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
    optional bracketed [label]. Both are STRUCTURED METADATA -- neither is part
    of the language/class:
      - HEADER ("...") -- a human-visible title for the block. Carried by core
-       as the `title` attribute on the <pre> (rendering choice A: code's
-       <pre><code> is atomic preformatted text, so the title cannot be a child
-       element the way an admonition title is -- it rides as an attribute, and
-       the host CSS/JS decides whether to draw a filename bar or leave it as the
-       native mouseover tooltip). The header uses the same quoted_title TOKEN as
+       as the `title` attribute on `<pre>`. The header uses the same quoted_title TOKEN as
        the admonition header, but because it targets an HTML attribute the text
        is LITERAL (not inline-parsed) -- only HTML-escaped -- so markup-like
        characters in a filename (`*.config.js`, `a_b.py`) survive intact. An
@@ -285,7 +277,7 @@ label = '[', { character - ']' }, ']' ;  (* structured metadata, e.g. [Installat
    which leaves the slot without a close, and the opener without its metadata,
    exactly as it leaves `[a `b](/u)` as prose rather than a link. Closing at
    the first `]` regardless of depth would select a nested link's closer, failing
-   the opener's trailing-junk check (carve#2573). Not expressible context-free. *)
+   the opener's trailing-junk check. Not expressible context-free. *)
 code_content = (* any text until matching fence, preserved literally *) ;
 (* TABS IN CODE -- NORMATIVE [CARVE-P2-007]. Literal tab characters in code content (fenced
    code blocks and inline code spans) are PRESERVED verbatim; a tab and N spaces
@@ -304,7 +296,7 @@ blockquote_line = quote_continuation_line | ('>', (newline | (space, inline_cont
 quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
 (* Every '>' takes one space, as on any quote line: `>+`, `>>+` and `>> +`
    are not quote lines and read as text, and `> >+` is a quote holding the
-   text `>+` (markup-carve/carve#3421). *)
+   text `>+`. *)
 
 (* LAZY CONTINUATION -- NORMATIVE [CARVE-P2-008] (CommonMark-compatible). After one or more
    blockquote_lines, a line that does NOT carry the '>' marker still continues
@@ -384,7 +376,7 @@ ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
    The two delimiters are the trailing `.` and `)` only. djot's
    parenthesized `(1)` / `(a)` form is INTENTIONALLY NOT a marker -- it is
    too easily confused with a prose parenthetical -- so `(1) text` stays
-   literal paragraph text (pinned by corpus parenthesized-ordered-marker). *)
+   literal paragraph text. *)
 ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')')
                | '.' ;
 (* A BARE DOT OPENS A DECIMAL LIST -- NORMATIVE [CARVE-P2-011] (Carve addition; no Djot or CommonMark equivalent).
@@ -407,18 +399,13 @@ ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')')
    and the block sits BEFORE the required space rather than competing with it.
 
    A BARE DOT AFTER A BLANK LINE OPENS A LIST -- NORMATIVE [CARVE-P2-012]. After a blank line a paragraph beginning `. ` opens a
-   list, where it was prose before; so does one beginning with `.{` plus a
+   list; so does one beginning with `.{` plus a
    valid attribute block and a space. Escape the marker (`\. text`) to keep the
    line prose.
 
-   AUTHORED FORM (PART 11 §6). The two spellings parse to the same list, so a
-   canonical writer cannot tell them apart from the tree alone and MUST record
-   which one opened the list to write it back. Author NUMBERING is not authored
-   form and never was -- `1.`/`1.`/`1.` comes back renumbered. Whether that
-   record is published in the serialized AST (PART 12) is a separate question:
-   it is not part of the interchange shape until the schema names it, so an
-   implementation that keeps it internally still round-trips source -> fmt and
-   loses only the spelling through a JSON round trip. *)
+   AUTHORED FORM (PART 11 §6). An implementation MUST record the list-marker
+   spelling so the writer reproduces it. Ordered list numbers are
+   canonicalized on output. *)
 roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
               | ('I' | 'V' | 'X' | 'L' | 'C' | 'D' | 'M')+ ;
 
@@ -445,11 +432,9 @@ roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
      `.class`, `key=value`) OR is the blessed empty block (`-{} text` -> bare
      `<li>`). Otherwise (`-{+a+}`, `-{not attrs}`) the `-{` is not a marker and
      the line stays ordinary paragraph/inline text.
-   - Free slot: `-{` and `1.{` / `1){` are NOT list markers (bullet and
-     ordered both require the space), so no existing input changes meaning.
-   - Diverges from djot (which has no li-attribute form); deliberate Carve
-     extension. A trailing `{…}` line folded onto a tight item is NOT a
-     li-attribute mechanism. *)
+   - `-{` and `1.{` / `1){` are not list markers: each requires a space.
+   - A trailing `{…}` line folded onto a tight item is not a
+     list-item attribute. *)
 item_attributes = attributes ;
 
 list_item_content = first_block_content
@@ -467,8 +452,7 @@ indent = whitespace, {whitespace} ;
    into the same nested list, and a post-blank block indented to that column is
    a further block of the open nested item (it reaches its content column). This matches
    reference djot.js (`@djot/djot`) and CommonMark. *)
-(* Continuation marker (Carve addition; see PART 9 §17 and
-   markup-carve/carve#3421): a lone `+` at an open container's marker column,
+(* Continuation marker (PART 9 §17): a lone `+` at an open container's marker column,
    or directly after a quote prefix, attaches one block starting at that
    column. A first-block `+` after the last opener on its line attaches to
    that innermost opener when a non-list block starts at document column 0 or
@@ -526,9 +510,7 @@ task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
    the item's own visible text: the DERIVED TEXT of the item's first block
    (PART 9R R4's derivation). A name is ONE line, so each run of ASCII
    whitespace in the derived text collapses to a single space and the result is
-   trimmed; a NO-BREAK space is content and survives. Deriving rather than
-   inventing is what keeps this string out of the `labels` map (PART 9 §16a) -
-   it is the AUTHOR's text, already on the page.
+   trimmed; a NO-BREAK space is content and survives.
      `- [ ] unchecked`   ->  `<input type="checkbox" disabled
                               aria-label="unchecked">`
      `- [x] done with `c``  ->  `... checked disabled aria-label="done with c"`
@@ -536,9 +518,7 @@ task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
    block can sit beside the box, and only a paragraph carries inline text, so
    an item whose first block is a quote, a fence, a `:::` div, a table, a
    heading or a thematic break takes NO `aria-label` - as does one whose first
-   paragraph derives to the empty string. An empty name is worse than an absent
-   one: it names the control the empty string instead of leaving a reader's own
-   fallback, the adjacent text, in play. The checkbox and its state are still
+   paragraph derives to the empty string. The checkbox and its state are still
    written in every one of those leads, which is the rule directly above. *)
 
 (* --- Definition Lists --- *)
@@ -660,7 +640,7 @@ definition_indent = whitespace, {whitespace} ;
        paragraph, a flush-left fence line without a closer is paragraph
        content, with or without a language. A closed nested fence leaves no
        paragraph open, so the body ends and the surviving context reads the
-       run as a block opener for either spelling (CARVE-P0-009; carve#2895).
+       run as a block opener for either spelling (CARVE-P0-009).
 
      - AT the column, the line is the body's own block content, so a block
        opener opens inside the `dd`.
@@ -680,9 +660,7 @@ definition_indent = whitespace, {whitespace} ;
    That is what the first band's `A NON-OPENER STILL FOLDS` is conditioned on.
    The open paragraph it names is not a given: with the paragraph closed a
    flush-left non-opener has nothing left to reach, so the body ENDS at the
-   opener and the line below is classified in the surviving context. The two
-   columns therefore agree - a reader whose answer moves between the body's
-   column and one column past it is reading indentation rather than the rule.
+   opener and the line below is classified in the surviving context.
 
    AN OPENER THAT LEAVES A PARAGRAPH OPEN IS NOT COVERED, and must not be read
    into it: what ends the body is a CLOSED PARAGRAPH, never the presence of an

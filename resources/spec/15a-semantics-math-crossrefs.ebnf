@@ -31,12 +31,8 @@
       NORMATIVE [CARVE-P9-038]. `<div class="math display">` imports as `$$`
       plus a verbatim backtick span in a paragraph holding a `math` node;
       `<span class="math inline">` imports as the inline `$` form.
-      THE REASON IS THAT AN IMPORTER MUST NOT EMIT A CONSTRUCT WHOSE MEANING
-      DEPENDS ON THE CONSUMER'S CONFIGURATION: the ```` ```math ```` extension
-      fence degrades to `language-math` code when the extension is absent.
-      THE ROUND-TRIP ARGUMENT IS REAL AND LOSES ANYWAY: even if that extension
-      generated the HTML, the importer MUST emit the same core form regardless
-      of whether an extension is registered.
+      Importer output does not depend on extension registration; the core
+      form is required even when the math fence extension is enabled.
       THE MATHML PATH WRITES NO TRAILING DELIMITER. A `<math>` read through
       `alttext` writes `` $`E = mc^2` `` inline or ``` $$`E = mc^2` ``` for
       `display="block"`. The closing backtick ends the construct; a trailing

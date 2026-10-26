@@ -40,7 +40,7 @@ continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
       pipe, is prose exactly as before. An attribute value is one of those
       positions: a writer spells a value holding `|` quoted, as
       `{k="a\|b"}`, and the quoted value reads the escape back as the pipe
-      (markup-carve/carve#2383). *)
+. *)
 
 (* Row-level attributes: a `{…}` attribute block GLUED to the row's closing `|`
    (no intervening space) sets the row's `<tr>` attributes -- the row-level twin
@@ -232,8 +232,7 @@ colon_fence_close = colon_fence:close
        inward-widening form: the outermost container is `:::` and each level
        inward adds one colon. The writer sizes each fence from the depth it
        is already carrying, with no lookahead, and the widths along any one
-       chain are strictly increasing. A nest d containers deep spends
-       d^2 + 5d bytes on fence markers in that form.
+       chain are strictly increasing.
 
    Code fences keep >= (PART 9 §2) because their length axis really is
    quoting: opaque content that never nests, which must be able to hold a
@@ -318,7 +317,7 @@ admonition = admonition_open, newline,
    The type word must end at the line end, Unicode White_Space or U+FEFF,
    a straight double quote, `{`, `[`, or a curly double quote. Recovery is
    confined to one source line. It reports fence-title-syntax, drops all opener metadata, and parses the children as
-   blocks through the matching-width closer (carve#2693): `::: note {.x}` opens
+   blocks through the matching-width closer: `::: note {.x}` opens
    the `note` container with no metadata. This recovery does
    not admit a bare title as valid syntax. An unrecognized fence/type prefix
    remains paragraph text.
@@ -358,7 +357,7 @@ admonition_type = "note" | "tip" | "warning" | "danger" | "info"
 quoted_title = '"', {character - '"'}, '"' ;
 (* there is NO escape mechanism inside a quoted title -- a title cannot
    contain a `"`; a malformed title is diagnosed and dropped while its recognized
-   container keeps its children (carve#2693). Unlike `quoted_value`, this
+   container keeps its children. Unlike `quoted_value`, this
    token does not accept escapes *)
 
 (* --- Composite figures (CARVE-P9-001) --- *)
@@ -507,21 +506,6 @@ braced_comment = "{%", !(grapheme_extender), {character - "%}"}, "%}" ;
 (* `{%` followed by a grapheme_extender is text, like every braced opener
    (CARVE-P3-025). *)
 
-(* PROVENANCE MARKER (convention, not a distinct production): tooling such as
-   `carve fmt --stamp` may write a trailing comment recording the spec version a
-   document was last processed under and the engine that wrote it. It is an
-   ordinary comment -- a `%%` line or a `%%%` block -- so it renders nothing; it
-   is identified by a `carve-version:` field as its first key. Two forms:
-     %% carve-version: 0.1; generated-by: carve-js 0.1.0
-   or
-     %%%
-     carve-version: 0.1
-     generated-by: carve-js 0.1.0
-     %%%
-   It is tool-written and deterministic (no timestamp), replace-in-place (a tool
-   updates the existing marker rather than appending a second), and lives at the
-   END of the document. Authors do not hand-write it. See PART 9 / docs. *)
-
 (* --- Raw Blocks --- *)
 raw_block = code_fence_open, [space], "=", format_name, newline,
             raw_content,
@@ -536,7 +520,7 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    raw). The closer follows the PART 9 §2 rule: same fence character, length
    >= opener. Content is verbatim; it is emitted UNESCAPED when the format
    matches the output format (html) and DROPPED otherwise -- the block parallel
-   of raw inline (PART 9 §20). Adopts djot's raw-block syntax.
+   of raw inline (PART 9 §20).
 
    THE INTERIOR IS VERBATIM, THE OPENING IS PLACED -- NORMATIVE [CARVE-P2-023]. Inside a
    container, a renderer that indents its output indents the raw block's

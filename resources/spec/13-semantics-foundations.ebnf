@@ -167,13 +167,6 @@
       ordinary paragraph (PART 2, `caption_slot`). Neither the table nor the
       empty quote is captioned.
 
-      WHY RESET RATHER THAN CARRY. Carrying the scope would make the rule "a
-      caption attaches to the nearest host still in scope"; resetting keeps
-      the rule §4 actually states, "a caption attaches to its host". An empty
-      container between a host and its marker is a line the author wrote, not
-      whitespace, and a caption that survives it binds to a host it was not
-      written under.
-
       WHAT THIS CLAUSE DOES NOT REACH. Only lines that are structural-only. A
       further `^ ` line after a captioned host, and a `^ ` line with no
       captionable host above it, are governed by §4 and by PART 2's caption
@@ -185,7 +178,7 @@
       consumed(r,c) marks a position absorbed by a span originating at
       another cell; avail(r,c) := a cell was emitted at (r,c) and NOT
       consumed(r,c).
-      DELIMITED BODY (carve#2726). A preceding boolean `{table}` attribute
+      DELIMITED BODY. A preceding boolean `{table}` attribute
          makes a fence whose language is exactly `csv` or `tsv` an ordinary
          `table` node rather than a `code_block`. The flag is consumed; other
          table attributes, including `header-rows`, `footer-rows`, `aligns`,
@@ -275,7 +268,7 @@
       T5 SPAN WALK -- NORMATIVE [CARVE-P9-002], a total function. Markers
          resolve in row-major order. Every position belongs to the cell whose
          rectangle covers it; a span never covers a position another cell
-         owns, so the emitted grid has no overlap (carve#3047).
+         owns, so the emitted grid has no overlap.
            `<` at (r,c): the cell covering (r,c-1) gains one column, if that
              cell starts in row r. A cell that started above would widen
              across rows already placed.
@@ -309,7 +302,7 @@
          marker joins the cell the T5 walk resolves the marker into, in
          row-major order. A BLOCKED marker (T5) is a cell of its own: it renders
          no marker, and the fragments on it are its content
-         (markup-carve/carve#3151). A
+. A
          table cannot BEGIN with a continuation row (PART 2 `table`). The AST
          keeps each join as a `cell_wrap` marker, so a writer can put the
          `+` lines back (CARVE-P12-069).
@@ -414,11 +407,11 @@
          The head-row run is the leading rows that own a cell and in which
          every cell a row owns is a header cell; a span placeholder belongs
          to the cell covering it, so `|= A | < |` heads its table
-         (CARVE-P11-056, carve#3048).
+         (CARVE-P11-056).
 
          An authored `scope` replaces the default (PART 10 §1), so
          `|={scope="colgroup"} a |` -- a header cell carrying attributes,
-         which is grammatical because of T10 and was not before it -- is
+         which follows T10 -- is
          `<th scope="colgroup">` and not
          `<th scope="col" scope="colgroup">`. That is how `colgroup` and
          `rowgroup`, which have no marker spelling here, stay reachable: two
@@ -481,7 +474,7 @@
          for the whole run, because T11 is one rule for the whole run: it
          reports a glued kind marker, a glued alignment run and a glued
          attribute block alike, and `fmt --migrate` repairs any of them by
-         inserting the space. It supersedes `table-alignment-run-padding`.
+         inserting the space.
 
    6. REFERENCE RESOLUTION -- PART 9R R1-R3.
 

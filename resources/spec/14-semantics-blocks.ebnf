@@ -22,7 +22,7 @@
          (with raw inline and math), a BRACED INLINE (§22's forced spans,
          `{+ +}`, `{- -}`, `{~ ~> ~}`, `{# #}`, `{% %}`), a LINK DESTINATION (title
          included), an AUTOLINK or a CROSS-REFERENCE (`</#id>`), in either
-         direction; they are atomic (ruled 2026-10-15). Inside a braced inline
+         direction; they are atomic. Inside a braced inline
          only its own entries are reachable, and open ones demote at its closer.
          `~{/x/}{/y~/}` -> ~<em>x</em><em>y~</em>.
       E2b BRACKET-RUN BOUND. PART 8 resolves a BRACKET RUN before bare
@@ -205,11 +205,8 @@
          "Text \n ^ cap" is one paragraph, and so is
          "Text \n ![a](x.png) \n ^ cap", where the image is not the whole
          paragraph and so there is no host to attach to.
-         NOT IN CONFLICT WITH THE CAPTION'S OWN RULE. A `^ ` line DOES end an
-         open CAPTION (PART 2, MULTI-LINE CAPTIONS, item 4) -- that is a rule
-         about a caption, stated separately from item 2's "a line that
-         interrupts a paragraph" precisely because a caret line is not one of
-         those. Item 4 would be redundant if it were.
+         A `^ ` line ends an open caption under PART 2's multi-line
+         caption rule.
          An INDENTED caret line opens no top-level block at all, so both
          readings agree there.
 
@@ -444,9 +441,8 @@
       consumes it. An untitled, unlabeled marker emits neither paragraph.
       Non-HTML targets follow CARVE-P11-032 T1 for both tokens.
 
-      A SIBLING TITLE WAS REFUSED FOR A NAMEABLE REGION. Put the visible title
-      inside a region that admits it, and use it as that region's accessible
-      name rather than the map default.
+      A title goes inside a nameable region and names it rather than
+      appearing as a sibling.
 
       THE SEPARATOR DOES NOT MOVE. `footnotes` emits title, label, `<hr>`,
       then `<ol>`; a title does not suppress the separator.
@@ -605,7 +601,7 @@
           brace group is still inline-parsed. `[text]{=y=}` ->
           `[text]<mark>y</mark>`, and `[x]{% c %}` -> `[x]`. The inner bracket
           content is still inline-parsed, so `[*x*]{???}` ->
-          `[<strong>x</strong>]{???}` (carve#2929).
+          `[<strong>x</strong>]{???}`.
         - an id or class that is not an `explicit_identifier`, or a key that is not
           an `identifier`, is also unrecognized. A leading ASCII digit is valid
           only for the id/class forms (`{.123}`, `{#1}`), not `{2=v}`.

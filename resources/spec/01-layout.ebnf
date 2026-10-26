@@ -229,8 +229,7 @@
         whether its leaf can take a lazy line. If it cannot, a below-column
         line closes the missed frames and starts a block in O2's owner; no
         surviving frame adopts it merely because it once held a paragraph.
-        X1 is the retained-ownership exception. In corpus
-        75-list-nesting-and-looseness-4 the inner heading leaves no claim or
+        X1 is the retained-ownership exception. An inner heading leaves no claim or
         open paragraph, so `lazy` starts a document paragraph.
 
         A wrapped attribute block applies T once across its complete source
@@ -267,7 +266,7 @@
         quote marker; a list marker at an admissible column; a `+`
         continuation marker at an open container's marker column or directly
         after a quote prefix, or first after the last opener on its line,
-        PART 9 §17 L3/L4 and markup-carve/carve#3421; a
+        PART 9 §17 L3/L4; a
         fence opener whose closer-lookahead guard holds when it
         interrupts or would consume a host closer), push the container and
         recurse on the remaining residue.
@@ -341,7 +340,7 @@
             outside the container.
           - An unmatched `%%%` fence is a line comment and follows this rule.
             A matched comment fence at the enclosing context's opener column
-            ends the item (corpus 214).
+            ends the item.
 
      X2 THE QUOTE BAND. Under a quote holding an open paragraph, a line that
         writes no `>` folds into that paragraph in two places where the host
@@ -364,17 +363,17 @@
         enclosing item owns the line and PART 9 §24 C3 opens a list element at its
         content column. A blank ends the quote and its nested columns
         (CARVE-P0-019). Intervening lazy prose keeps the quote open, including
-        for following markers (CARVE-P0-015). Corpus 448 pins folds and controls.
+        for following markers (CARVE-P0-015).
 
         A BLOCK OPENER IN THE BAND FOLDS ON THE SAME TERMS -- NORMATIVE [CARVE-P0-021].
         Under a quote holding an open paragraph, a code/raw fence, heading,
         thematic break or table row opens a block only at the host's content
         column. At every other column it folds into the paragraph. For
         `- a` / `  > q`, column 2 opens; column 1 and columns 3 through 8 fold,
-        including the quote's column 4. Corpus 531 pins this band in all hosts.
+        including the quote's column 4.
 
         A blank closes the paragraph. In the host, the same opener then opens
-        a sibling block on its authored base (carve#2598).
+        a sibling block on its authored base.
 
         At document level an indented fence is text (CARVE-P0-004).
         Apply the host rule equally to list items, definition bodies and
@@ -485,7 +484,7 @@
         content columns are 2 and 4; the definition at column 3 registers in
         the outer item. Columns 2, 4 and 5 also register. Past a content column,
         extra indentation may change the owner but never remove registration.
-        Corpus 441 pins the four columns. A block standing open does not
+        A block standing open does not
         withhold the columns below its own either: a definition it does not
         itself register ends its extent above that line, and the line takes
         its base in the container whose content column it does reach.
@@ -534,7 +533,7 @@
         nearest surviving ancestor whose content column the line reaches and
         close intervening containers at every depth. The inner item keeps its
         fence body; reclassify the run in the selected owner at its own column
-        (carve#2490). With no open paragraph at document level, a run at
+. With no open paragraph at document level, a run at
         document column 0 opens a code block. With inner
         content column 4, a run at column 0 or 1 reaches the document; a run at
         column 2 reaches an outer item.
@@ -602,8 +601,7 @@
             code
 
         `code` misses every prefix: the nested item closes with an empty code
-        block and `code` is document text, as it is under a `- - ` marker line
-        (corpus 455).
+        block and `code` is document text, as it is under a `- - ` marker line.
    OUTPUT. The layout-resolved line stream (equivalently: INDENT / DEDENT /
            CONT events plus line residues). PARTS 1-2 parse blocks over it;
            inline parsing (PART 3) runs per finished block -- the two-phase

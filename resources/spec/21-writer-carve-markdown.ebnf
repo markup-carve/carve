@@ -16,7 +16,7 @@
       it away would rewrite the documented form into one documented nowhere.
       Where a letter or digit stands against its outer `/`, the bare token
       does not parse (PART 3 `bold_italic`), so the writer spells the strong
-      and its emphasis in the forced form: `a{*/y/*}b` (carve#3217).
+      and its emphasis in the forced form: `a{*/y/*}b`.
 
       THE THEMATIC BREAK JOINS IT ON THE SAME TERMS. `---`, `***` and `___` are
       three spellings of one construct, and the AST RECORDS the character --
@@ -593,7 +593,7 @@
       writes the block at the item's content column with a blank line before
       it, as L2 permits. It MAY write a `+` at the nested item's marker column
       only when that blank-line spelling would change the parsed tree, including
-      tightness or block ownership (markup-carve/carve#3421). If no spelling
+      tightness or block ownership. If no spelling
       round-trips, it reports a writer loss.
 
       In a nested item, a block that a first-block `+` on the opener line

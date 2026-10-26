@@ -61,9 +61,7 @@
      stack in a single left-to-right pass (NO backtracking, linear time); e.g.
      *bold /italic/* and /italic *bold*/ nests fully.
 
-   Note: "shorter spans / earlier opening wins" does NOT apply -- it would
-   truncate /usr/local/ to <em>usr</em> and break nested emphasis. The
-   delimiter-stack model is what makes Design Principle 1 (no backtracking)
-   hold while still producing the canonical outputs in the corpus.
+   "Shorter spans / earlier opening wins" does not apply; `/usr/local/`
+   remains one span under the delimiter-stack rule.
 *)
 

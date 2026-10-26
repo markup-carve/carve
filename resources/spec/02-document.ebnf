@@ -6,7 +6,7 @@ document = [frontmatter], {block}, EOF ;
 
 frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatter_close),
               frontmatter_open, frontmatter_content, frontmatter_close, newline ;
-(* FORMAL closer lookahead (was prose): the leading &(...) guard demands that
+(* The leading &(...) guard demands that
    a closing `---` line exist ahead before the opener is claimed. With no
    closer the guard fails, so a bare `---` at document start is an ordinary
    thematic break and the following lines are ordinary blocks (same lookahead

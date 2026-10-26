@@ -64,8 +64,7 @@ bare_closer(d) = <&(non_ws), d, !(alnum | grapheme_extender) ;
    grapheme_extender is the first code point of a larger character, so it is
    text: it neither opens nor closes (the `grapheme_extender` terms of both
    templates). The keycap emoji U+002A U+FE0F U+20E3 is one character to the
-   reader, and its `*` opens or closes nothing, before a word or after one
-   (carve#3209; corpus 600-a-delimiter-that-is-part-of-a-larger-character-is-text).
+   reader, and its `*` opens or closes nothing, before a word or after one.
    The character is skipped, not a barrier: a later delimiter still pairs
    across it. The same guard sits on the delimiter of every braced opener:
    the seven forced openers, `{^` and `{,` included, the editorial openers
@@ -330,7 +329,7 @@ comment_content = (* any text until the matching `#}`, preserved literally;
 
    `substitution` is NOT widened: a half-empty substitution is a real edit --
    `{~a~>~}` deletes and `{~~>b~}` inserts -- so the fully empty form follows CARVE-P3-014. `substitution` takes `inline_content` on both
-   sides, so `{~*b*~>*e*~}` emphasizes both (carve#2083). *)
+   sides, so `{~*b*~>*e*~}` emphasizes both. *)
 (* ADDITION AND DELETION ATTRIBUTES BIND TO THEIR ELEMENT -- NORMATIVE [CARVE-P3-017]: an addition / deletion is an ordinary inline node,
    so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
    exactly like a span, code span, link, or emphasis: `{+a+}{.a}` ->
@@ -343,9 +342,9 @@ comment_content = (* any text until the matching `#}`, preserved literally;
    `<span class="critic-comment">c</span>{.k}`. A substitution renders two
    elements and has no single one to carry attributes (attaching to both
    would repeat an `id`), and an editorial comment's content is inert
-   (CARVE-P3-016, carve#2138). A braced comment never joins an attribute run or passes
+   (CARVE-P3-016). A braced comment never joins an attribute run or passes
    attachment to the preceding element, with or without intervening spaces:
-   `*x*{% c %}{.k}` -> `<strong>x</strong>{.k}` (carve#2929). *)
+   `*x*{% c %}{.k}` -> `<strong>x</strong>{.k}`. *)
 (* DISAMBIGUATION (PART 9 §22). `{~ … ~}` is editorial SUBSTITUTION when it
    contains a top-level `~>`, and forced STRIKETHROUGH otherwise. `{# … #}`
    stays editorial comment (`#` is not an emphasis delimiter, no collision). *)

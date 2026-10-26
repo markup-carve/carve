@@ -39,7 +39,6 @@
 
    (Carve has no two-trailing-space hard break -- a hard break is the backslash
    form, `\` + newline; see PART 3. This rule is why: a document cannot carry
-   meaning in whitespace nothing can see.) Pinned by corpus
-   104-paragraph-trailing-whitespace, 268 and 498. *)
+   meaning in whitespace nothing can see.) *)
 paragraph = inline_content+, [blank_line] ;
 
