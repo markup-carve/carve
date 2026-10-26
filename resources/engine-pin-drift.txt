@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+712-a-hard-break-in-a-pipe-table-cell-survives-markdown-export  Pinned canonical writers predate carve#3735 and flatten the terminal break.
