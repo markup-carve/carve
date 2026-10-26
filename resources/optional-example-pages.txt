@@ -10,6 +10,7 @@ order: 1
   citations-numbered
   citations-author-date
   code-callouts
+  toc-placement
   details
   list-table
   list-table-columns-1344

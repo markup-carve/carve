@@ -34,6 +34,7 @@ import {
   semanticSpan,
   spoiler,
   tabs,
+  tocPlacement,
 } from '@markup-carve/carve'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -140,6 +141,7 @@ const featureRunners = {
   'smart-typography-default': (source, render) => render(source),
   'ansi-typography-source': (source, render) => render(source, { smartTypography: 'source' }),
   'code-callouts': (source, render) => render(source, { extensions: [codeCallouts()] }),
+  'toc-placement': (source, render) => render(source, { extensions: [tocPlacement()] }),
   details: (source, render) => render(source, { extensions: [details()] }),
   'list-table': (source, render) => render(source, { extensions: [listTable()] }),
   'list-table-columns-1344': (source, render) => render(source, { extensions: [listTable()] }),
