@@ -127,6 +127,12 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    import-time repair does not change Carve's case-sensitive link or
    cross-reference resolution. *)
 
+(* UNRESOLVED MARKDOWN REFERENCES KEEP THEIR SYNTAX ON IMPORT -- NORMATIVE
+   [CARVE-P2-032]. A Markdown importer MUST write an unresolved link reference
+   or footnote reference as a Carve reference, without escaping its opener.
+   The rule applies in every inline position, including headings and task
+   items. The reference remains available for later definition resolution. *)
+
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
 

@@ -215,6 +215,12 @@
       "scope": "imports-security-extensions"
     },
     {
+      "id": "CARVE-P2-032",
+      "part": "2",
+      "title": "UNRESOLVED MARKDOWN REFERENCES KEEP THEIR SYNTAX ON IMPORT",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P2-006",
       "part": "2",
       "title": "COLUMN-EXACT DELIMITERS",

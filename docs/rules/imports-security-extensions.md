@@ -9,15 +9,16 @@ description: "Optional and host-facing behavior, importer contracts, security li
 
 Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces.
 
-This view contains 37 of 350 active rules. Every rule remains mandatory where applicable.
+This view contains 38 of 351 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
 | Rule | Part | Clause |
 |---|---:|---|
-| [`CARVE-P2-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L233) | 2 | AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE |
-| [`CARVE-P2-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L134) | 2 | A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING |
+| [`CARVE-P2-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L239) | 2 | AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE |
+| [`CARVE-P2-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L140) | 2 | A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING |
 | [`CARVE-P2-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L102) | 2 | MARKDOWN MIGRATION FRAGMENTS |
+| [`CARVE-P2-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L130) | 2 | UNRESOLVED MARKDOWN REFERENCES KEEP THEIR SYNTAX ON IMPORT |
 | [`CARVE-P2-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/22b-writer-render-loss.ebnf#L2) | 2 | RENDER-LOSS REPORTING |
 | [`CARVE-P4-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L221) | 4 | AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED |
 | [`CARVE-P6-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/10-includes.ebnf#L61) | 6 | FILE INCLUSION SEMANTICS |
