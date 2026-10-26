@@ -65460,3 +65460,25 @@ A symbol without a replacement renders literally. Its final colon makes the foll
 ```
 
 :::
+
+## An indented quoted item keeps a lazy line at its base
+
+A plain line at the list's base stays in the open quoted paragraph when it does not interrupt it.
+
+::: compare
+
+```carve
+ - > a
+ b
+```
+
+```html
+<ul>
+  <li>
+    <blockquote><p>a
+b</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
