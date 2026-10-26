@@ -1,0 +1,21 @@
+Nested term after a list in a description
+
+```
+:: term
+: - a
+   :: sub
+: def
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+    <dl>
+      <dt>sub</dt>
+    </dl>
+  </dd>
+  <dd>def</dd>
+</dl>
+```

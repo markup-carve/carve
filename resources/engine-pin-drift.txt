@@ -24,7 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-678-a-below-column-fence-stays-in-a-definition-paragraph  The pinned JavaScript parser reads a left-of-column closer as a block fence (carve-js#3606).
-679-a-tabbed-table-ends-before-a-flush-left-list-line  The pinned JavaScript parser keeps a flush-left line inside the preceding list item (carve-js#3607).
-683-a-definition-opens-a-sibling-block-after-a-list  The pinned JavaScript parser keeps the quote inside a nested list item (carve-js#3612).
-684-a-post-marker-tab-keeps-a-quote-literal  The pinned JavaScript parser opens a quote after a tab inside item content (carve-js#3614).

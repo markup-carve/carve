@@ -1,0 +1,15 @@
+Escaped hyphen run in a table cell
+
+```
+|= a |= b |
+| \-\-\- | x |
+.
+<table>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col">b</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>---</td><td>x</td></tr>
+  </tbody>
+</table>
+```
