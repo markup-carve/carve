@@ -314,11 +314,7 @@
    2. THE ESCAPING RULE -- NORMATIVE [CARVE-P11-006]. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
-      Escaping MORE than that is a defect, not a safe default. It is how a
-      formatter turns `50% faster: yes (ok)` into `50\% faster\: yes \(ok\)`,
-      which re-parses identically -- so nothing there needed escaping.
-
-      Escaping LESS is a correctness bug: the document changes meaning.
+      Escaping more than that is a defect, not a safe default.
 
       THE UNIT IS THE OPENER, NOT THE CHARACTER. Where a construct opens on a
       RUN of characters, the whole run is escaped. `--` opens an en dash
