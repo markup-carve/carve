@@ -409,6 +409,8 @@ const visibleText = (html) =>
 // The JS pin from 34ba9eeb to 52bb3c2e gains eleven Markdown round trips
 // and loses none over the same 2,963 documents. The gains are one each in
 // corpus 88, 326, 349, 361, 368 and 589; two in 535; and three in 634.
+// Pin fcfcd1a6 makes the first two 673 title-padding rows round-trip through
+// both HTML and Markdown. The tab control in 673-3 still does not round-trip.
 
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
