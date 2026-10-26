@@ -25,3 +25,9 @@
 #
 # Format: <slug><space><space><reason>
 676-quotes-open-after-an-unresolved-symbol  The pinned JavaScript parser treats the unresolved symbol as a quote boundary incorrectly (carve-js#3613).
+677-a-below-column-fence-stays-in-a-definition-paragraph  The pinned JavaScript parser reads a left-of-column closer as a block fence (carve-js#3606).
+678-a-tabbed-table-ends-before-a-flush-left-list-line  The pinned JavaScript parser keeps a flush-left line inside the preceding list item (carve-js#3607).
+679-an-indented-line-after-a-table-is-a-paragraph  The pinned JavaScript renderer extends the table into an indented row (carve-js#3608).
+682-an-empty-unclosed-math-code-span  The pinned JavaScript parser drops math around an empty unclosed code span (carve-js#3611).
+683-a-definition-opens-a-sibling-block-after-a-list  The pinned JavaScript parser keeps the quote inside a nested list item (carve-js#3612).
+684-a-post-marker-tab-keeps-a-quote-literal  The pinned JavaScript parser opens a quote after a tab inside item content (carve-js#3614).
