@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+676-quotes-open-after-an-unresolved-symbol  The pinned JavaScript parser treats the unresolved symbol as a quote boundary incorrectly (carve-js#3613).
