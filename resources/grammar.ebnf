@@ -9107,27 +9107,8 @@ EOF = (* end of file *) ;
       second node beside it, a text run, a NO-BREAK SPACE (§7) -- keeps its
       wrapper and no ceiling is reached.
 
-      EXPLICIT SAME-TYPE EMPHASIS DOES NOT REACH THIS CEILING. PART 9 §22
-      permits a braced child of an active kind, so repeated emphasis,
-      including <sup><sup>x</sup></sup>, has a native spelling. The writer
-      MUST preserve both nodes, their child order and their attributes,
-      using braced spans where bare syntax cannot represent the tree.
-      CANONICAL REPEATED KINDS: every emphasis node with an ancestor or
-      descendant of its own kind MUST use its forced braced spelling,
-      including when other emphasis kinds intervene. Thus both bare-parent
-      and braced-parent spellings of outer strong with an inner strong
-      canonicalize to {*outer {*inner*} tail*}. Other emphasis nodes keep
-      their existing spelling rules; a repeated kind does not force an
-      unrelated sibling into braces. If a literal ~> would be visible at
-      top level inside an emitted forced strike, the writer MUST escape its
-      tilde as \~>; changing a child from braced to bare MUST NOT change the
-      parent into substitution. This also applies through non-opaque bare
-      children. Separator escaping follows the emitted structure.
-      An importer MUST NOT unwrap a representable same-kind child or report
-      structure-unspellable merely for that relationship. Depth-limit
-      recovery and other independently unspellable shapes retain their
-      diagnostics. Markdown export follows its own target contract
-      (CARVE-P11-045); this clause does not widen that syntax.
+      Repeated same-kind emphasis has a native spelling (CARVE-P11-076)
+      and does not reach this ceiling.
 
       DECIDED ON THE SPELLING, NEVER ON RESOLUTION -- and PART 9R R7 does not
       change that. R7's promotion phase reads the RESOLVED tree; this clause
@@ -9159,6 +9140,29 @@ EOF = (* end of file *) ;
       bounds the loss TO the wrapper -- the content, its attributes and its
       neighbours all survive as themselves -- and it puts the loss on the
       record, which is the whole of what §1 can be held to here.
+
+      REPEATED EMPHASIS KINDS ARE WRITTEN BRACED -- NORMATIVE [CARVE-P11-076].
+      PART 9 §22
+      permits a braced child of an active kind, so repeated emphasis,
+      including <sup><sup>x</sup></sup>, has a native spelling. The writer
+      MUST preserve both nodes, their child order and their attributes,
+      using braced spans where bare syntax cannot represent the tree.
+      CANONICAL REPEATED KINDS: every emphasis node with an ancestor or
+      descendant of its own kind MUST use its forced braced spelling,
+      including when other emphasis kinds intervene. Thus both bare-parent
+      and braced-parent spellings of outer strong with an inner strong
+      canonicalize to {*outer {*inner*} tail*}. Other emphasis nodes keep
+      their existing spelling rules; a repeated kind does not force an
+      unrelated sibling into braces. If a literal ~> would be visible at
+      top level inside an emitted forced strike, the writer MUST escape its
+      tilde as \~>; changing a child from braced to bare MUST NOT change the
+      parent into substitution. This also applies through non-opaque bare
+      children. Separator escaping follows the emitted structure.
+      An importer MUST NOT unwrap a representable same-kind child or report
+      structure-unspellable merely for that relationship. Depth-limit
+      recovery and other independently unspellable shapes retain their
+      diagnostics. Markdown export follows its own target contract
+      (CARVE-P11-045); this clause does not widen that syntax.
 
       WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT -- NORMATIVE [CARVE-P11-005].
       The paragraph above says what this clause forgives. This

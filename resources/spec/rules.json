@@ -1583,6 +1583,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-076",
+      "part": "11",
+      "title": "REPEATED EMPHASIS KINDS ARE WRITTEN BRACED",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P12-001",
       "part": "12",
       "title": "AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY",
