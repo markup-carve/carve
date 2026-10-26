@@ -65399,3 +65399,20 @@ A title may end with ASCII spaces before the closing parenthesis, regardless of 
 ```
 
 :::
+
+## A partial braced opener before a terminal backslash
+
+A braced opener without its matching closer remains text. The final backslash creates a hard break.
+
+::: compare
+
+```carve
+{*}\
+```
+
+```html
+<p>{*}<br>
+</p>
+```
+
+:::

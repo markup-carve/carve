@@ -1,0 +1,8 @@
+A partial braced opener before a terminal backslash
+
+```
+{*}\
+.
+<p>{*}<br>
+</p>
+```
