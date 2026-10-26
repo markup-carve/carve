@@ -16,8 +16,8 @@ implementation exposes.
 
 ## Core fixture counts (2026-10-26 CET)
 
-The count-only run covers 3,114 core documents and their 193 target sidecars.
-The run scores 3,307 fixtures per engine. It checks expected output on
+The count-only run covers 3,115 core documents and their 193 target sidecars.
+The run scores 3,308 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
 Corpus added since this run: none.
@@ -36,15 +36,15 @@ including the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>3114 / 3114</strong>
+    <strong>3112 / 3115</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3114 / 3114</strong>
+    <strong>3115 / 3115</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3114 / 3114</strong>
+    <strong>3115 / 3115</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -55,13 +55,16 @@ including the
 
 | Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `fc0f31c78` | `3114 / 3114` | `3307 / 3307` | `0` | `0` |
-| JS | `364d00f43` | `3114 / 3114` | `3307 / 3307` | `0` | `0` |
-| PHP | `6280573be` | `3114 / 3114` | `3307 / 3307` | `0` | `0` |
+| Rust | `fc0f31c78` | `3112 / 3115` | `3305 / 3308` | `3` | `0` |
+| JS | `4a10e5eae` | `3115 / 3115` | `3308 / 3308` | `0` | `0` |
+| PHP | `6280573be` | `3115 / 3115` | `3308 / 3308` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
-skipped and no mismatch or engine error was reported. The output below records
+skipped and no engine error was reported. Rust mismatched three HTML fixtures:
+699-a-quoted-link-definition-in-a-footnote-body-registers-globally,
+700-a-marker-line-sublist-stays-open-in-a-description-body, and
+708-invisible-content-and-image-promotion. The output below records
 the limited target coverage of this run. The linked 2026-09-26 revision retains
 the earlier five-target snapshot.
 
@@ -484,21 +487,24 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3114 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=3307/3307 mismatch=0 error=0 skipped=0 runs=3307
+profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3115 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=3305/3308 mismatch=3 error=0 skipped=0 runs=3308
+  mismatch: html 699-a-quoted-link-definition-in-a-footnote-body-registers-globally
+  mismatch: html 700-a-marker-line-sublist-stays-open-in-a-description-body
+  mismatch: html 708-invisible-content-and-image-promotion
+  mismatching documents: 3
+js: pass=3308/3308 mismatch=0 error=0 skipped=0 runs=3308
   mismatching documents: 0
-js: pass=3307/3307 mismatch=0 error=0 skipped=0 runs=3307
+php: pass=3308/3308 mismatch=0 error=0 skipped=0 runs=3308
   mismatching documents: 0
-php: pass=3307/3307 mismatch=0 error=0 skipped=0 runs=3307
-  mismatching documents: 0
-cross_impl_diffs=0
+cross_impl_diffs=3
 
 counts_only=1 targets_measured=html,markdown,plain,carve,ansi of html,markdown,plain,carve,ansi
 counts_only_note=this run validates the corpus counts only. Each document was rendered on the default target plus any target it carries an expected-output file for, so every SCORED case is scored - but nothing was compared engine-against-engine on an unscored target, so this makes no agreement claim and is not the published snapshot. Use `npm run compare:impls` for that.
 ```
 
 The output names all targets that have scored fixtures. Its
-`cross_impl_diffs=0` counts only scored cases. It does not claim that every
+`cross_impl_diffs=3` counts only scored cases. It does not claim that every
 document was rendered on every target. Use `npm run compare:impls` for
 that full comparison and `--roundtrip` for formatter conformance.
 
