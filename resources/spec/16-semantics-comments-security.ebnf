@@ -423,6 +423,7 @@
              blank it ends the item and parses in the nearest surviving
              owner (PART 0 O2). That owner is the document only when no
              enclosing container's content column is reached.
+             A description opener below the content column with no open paragraph ends the host like any other line.
 
              A definition at DOCUMENT column 0 is the I5 interrupter, not the
              lazy-text branch: column 0 is the surrounding document's own

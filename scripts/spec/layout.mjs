@@ -7210,7 +7210,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const inPayload = col >= contentCol && fence.colon.length !== 0 &&
         colonLineBlock.at(-1) === true
       const nm = inPayload ? null : matchMarkerAt(lm)
-      if (DEFLIST_TERM.test(lm.rest) && col >= contentCol && !insideFence() &&
+      if (DEFLIST_TERM.test(lm.rest) && col >= contentCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) {
         lastListBlock = 'term'
         lastTermSourceCol = lm.L?.col ?? col

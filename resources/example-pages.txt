@@ -1069,6 +1069,8 @@ index: examples/edge-cases/index.md
   a-below-column-fence-stays-in-a-definition-paragraph
   a-definition-opens-a-sibling-block-after-a-list
   nested-term-after-a-list-in-a-description
+  a-flush-left-description-leaves-a-nested-term-s-host
+  a-flush-left-description-leaves-a-deeper-host
   abbreviation-matches-on-word-boundaries-only
   abbreviation-definition-interrupts-a-paragraph
   abbreviation-definition-separator-must-be-a-space

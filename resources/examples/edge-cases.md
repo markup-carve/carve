@@ -65824,3 +65824,63 @@ a: 1
 ```
 
 :::
+## A flush-left description leaves a nested term's host
+
+A description opener below a list item's content column cannot bind to a term inside its unclosed div.
+
+::: compare
+
+```carve
+- a
+  ::: box
+  :: sub
+: def
+```
+
+```html
+<ul>
+  <li>a
+    <div class="box">
+      <dl>
+        <dt>sub</dt>
+      </dl>
+    </div>
+  </li>
+</ul>
+<p>: def</p>
+```
+
+:::
+
+## A flush-left description leaves a deeper host
+
+The same boundary applies when the div sits in a nested list item.
+
+::: compare
+
+```carve
+- a
+  - b
+    ::: box
+    :: sub
+: def
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <div class="box">
+          <dl>
+            <dt>sub</dt>
+          </dl>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>: def</p>
+```
+
+:::
