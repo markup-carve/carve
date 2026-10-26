@@ -19,6 +19,7 @@ test('a promoted image in a definition body uses block layout', () => {
 test('authored block IDs are reserved before heading slugs', () => {
   assert.match(html('# x\n{#x}\nbody'), /<section id="x-2">/)
   assert.match(html('# x\n{#x}\nbody'), /<p id="x">body<\/p>/)
+  assert.match(html('# x\n{#x}\n{#y}\nbody'), /<section id="x">/)
 })
 
 test('structural image attributes precede authored block attributes', () => {

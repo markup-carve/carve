@@ -124,9 +124,11 @@ function reserveHeadingIds(blocks) {
     }
     if (value.t === 'heading') headings.push(value)
     if (Array.isArray(value.battrs)) {
+      let effectiveId = null
       for (const list of value.battrs) {
-        for (const attr of list) if (attr[0] === 'id') authoredIds.push(attr[1])
+        for (const attr of list) if (attr[0] === 'id') effectiveId = attr[1]
       }
+      if (effectiveId !== null) authoredIds.push(effectiveId)
     }
     for (const child of Object.values(value)) visit(child)
   }
