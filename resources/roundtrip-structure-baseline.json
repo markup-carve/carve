@@ -5,36 +5,36 @@
       "html": {
         "identical": 2547,
         "strict": 2401,
-        "total": 3090
+        "total": 3091
       },
       "md": {
         "identical": 2300,
         "strict": 1745,
-        "total": 3090
+        "total": 3091
       }
     },
     "php": {
       "html": {
         "identical": 2569,
         "strict": 2421,
-        "total": 3090
+        "total": 3091
       },
       "md": {
         "identical": 2253,
         "strict": 1678,
-        "total": 3090
+        "total": 3091
       }
     },
     "rs": {
       "html": {
         "identical": 2535,
         "strict": 2391,
-        "total": 3090
+        "total": 3091
       },
       "md": {
         "identical": 2350,
         "strict": 2047,
-        "total": 3090
+        "total": 3091
       }
     }
   }

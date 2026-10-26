@@ -941,6 +941,7 @@ index: examples/edge-cases/index.md
   a-partial-braced-opener-before-a-terminal-backslash
   an-unclosed-backtick-run-still-forms-math
   an-unresolved-symbol-leaves-a-colon-before-a-quote
+  quotes-open-after-an-unresolved-symbol
 
 [edge-links] Links, images and references
 > Destinations, titles, reference and collapsed forms, autolinks and where a definition may live.

@@ -65707,3 +65707,21 @@ A term at the description's content column starts a nested definition list after
 ```
 
 :::
+
+## Quotes open after an unresolved symbol
+
+Without a symbol map, the shortcode emits its literal text. Its final colon puts the following quote in opening context under CARVE-P3-023.
+
+::: compare
+
+```carve
+:a:"q"
+:long-name:'q'
+```
+
+```html
+<p>:a:“q”
+:long-name:‘q’</p>
+```
+
+:::
