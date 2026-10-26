@@ -1,0 +1,19 @@
+Link titles accept trailing ASCII padding with either destination
+
+```
+[t]( "T"  ) and [t](/u "T" )
+.
+<p><a href="" title="T">t</a> and <a href="/u" title="T">t</a></p>
+```
+
+```
+[t](/u 'T'   ) and ![t](/img "T"  )
+.
+<p><a href="/u" title="T">t</a> and <img src="/img" alt="t" title="T"></p>
+```
+
+```
+[t](/u "T"	)
+.
+<p>[t](/u “T”	)</p>
+```

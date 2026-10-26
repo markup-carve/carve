@@ -280,7 +280,7 @@ citation_key = (letter | digit | '_'), {citation_key_char} ;
    these internal punctuation marks are allowed. *)
 citation_key_char = letter | digit | '_' | ':' | '.' | '#' | '$' | '%' | '&'
                   | '+' | '?' | '<' | '>' | '~' | '/' | '-' ;
-citation_definition = '[@', citation_key, "]:", space, [attributes], inline_content, newline ;
+citation_definition = '[@', citation_key, "]:", space+, [attributes], inline_content, newline ;
 (* The line is a NODE in the serialized tree -- `citation_definition`, carrying
    the key, the entry's inline content and the metadata block (PART 12 §18).
    Like the other definition kinds it renders nothing where it sits. *)

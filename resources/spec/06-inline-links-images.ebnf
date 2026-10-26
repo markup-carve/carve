@@ -120,7 +120,7 @@ link = inline_link | reference_link | collapsed_reference_link ;
 (* autolink and auto_text_link (crossref) are listed directly in
    inline_element, not here. *)
 
-inline_link = '[', link_text, ']', '(', (link_destination, [link_title]
+inline_link = '[', link_text, ']', '(', (link_destination, [link_title, {space}]
                                        | empty_destination), ')', [attribute_run] ;
 reference_link = '[', link_text, ']', '[', reference_label, ']', [attribute_run] ;
 collapsed_reference_link = '[', link_text, ']', '[', ']', [attribute_run] ;
@@ -280,7 +280,7 @@ link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' -
    title: `[t]( "T")` has href "" and title T; `[t]("T")` has the
    nonempty destination `"T"` and no title. Multiple spaces before
    a quote do not open a title. A nonempty destination keeps its existing
-   one-space title separator and accepts no trailing padding. Unicode
+   one-space title separator and accepts the same trailing ASCII spaces. Unicode
    whitespace and tabs cannot fill the empty destination's padding slot.
 
    Empty children, an empty destination, and title presence are independent.
@@ -429,7 +429,7 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    cannot reproduce the definition, so `parse(fmt(x)) == parse(x)` fails for
    every resolved reference. *)
 (* THE DEFINITION MARKER SEPARATOR -- NORMATIVE [CARVE-P3-009]. The marker-to-content
-   separator is the `space` terminal (U+0020) ONLY, in all three definition
+   separator is the `space` terminal (U+0020) ONLY, in all four definition
    markers: `reference_definition`, `footnote_definition` and
    `abbreviation_definition`. A tab does NOT satisfy `space` (`space = ' '`),
    so `[^a]:<TAB>x`, `[a]:<TAB>/url` and `*[HTML]:<TAB>x` are ordinary
@@ -437,7 +437,7 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    mirrors the heading, list and task markers, which likewise require a
    literal space after the marker.
 
-   AND THE SEPARATOR IS A RUN. All three markers spell it `space+`: one or
+   AND THE SEPARATOR IS A RUN. All four markers spell it `space+`: one or
    more ASCII spaces, all of them separator.
 
    WHAT THE RUN DOES NOT INCLUDE. It is ASCII spaces, so the first character
@@ -445,7 +445,7 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    is content: `*[HTML]:<SP><NBSP>Hyper` expands to `<NBSP>Hyper`, and
    `[^f]:<SP><NBSP>note` is a footnote whose body starts with the character.
 
-   A TAB AFTER THE RUN is content too, by the same rule, and the three markers
+   A TAB AFTER THE RUN is content too, by the same rule, and the markers
    then answer differently for a reason that is downstream of this clause
    rather than in it: an `abbreviation_expansion` is a raw string, so the tab
    survives into the `title`; a footnote's `inline_content` is parsed as
@@ -550,7 +550,7 @@ control_char = (* any character in Unicode General_Category Cc *) ;
 (* An image has the same three forms as a link (inline / reference / collapsed
    reference); only the leading `!` and the `<img src>` output differ. *)
 image = inline_image | reference_image | collapsed_reference_image ;
-inline_image = '!', '[', alt_text, ']', '(', (image_source, [image_title]
+inline_image = '!', '[', alt_text, ']', '(', (image_source, [image_title, {space}]
                                                | empty_destination), ')', [attribute_run] ;
 reference_image = '!', '[', alt_text, ']', '[', reference_label, ']', [attribute_run] ;
 collapsed_reference_image = '!', '[', alt_text, ']', '[', ']', [attribute_run] ;
