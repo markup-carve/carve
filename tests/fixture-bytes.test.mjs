@@ -66,6 +66,7 @@ const WATCHED = new Map([
 const INVENTORY = [
   { base: '05-lists-3', crv: ['trailing-WS'], html: [] }, // `:: ` - the separator space IS the case
   { base: '104-paragraph-trailing-whitespace', crv: ['trailing-WS'], html: [] },
+  { base: '697-a-final-tab-does-not-change-list-ownership-in-a-description', crv: ['trailing-WS'], html: [] },
   {
     base: '119-trojan-source-heading-ids-are-nfc-normalized-and-strip-invisible-controls-3',
     crv: ['RLO', 'ZWSP'],

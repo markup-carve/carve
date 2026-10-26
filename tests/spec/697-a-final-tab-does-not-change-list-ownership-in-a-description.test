@@ -1,0 +1,20 @@
+A final tab does not change list ownership in a description
+
+```
+:: term
+: - a
+
+   - c	
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>c</li>
+    </ul>
+  </dd>
+</dl>
+```

@@ -1211,6 +1211,7 @@ index: examples/edge-cases/index.md
   a-marker-separator-is-a-space-never-a-tab
   a-tab-inside-a-line-is-content-in-a-label-and-after-a-definition-marker
   a-line-final-run-of-spaces-and-tabs-is-dropped-before-the-line-is-read
+  a-final-tab-does-not-change-list-ownership-in-a-description
   a-tab-is-content-in-a-heading-key-and-in-a-cross-reference-id
   an-invisible-line-does-not-cancel-a-blank-line-separation
   an-invisible-line-before-the-blank-does-not-cancel-the-separation
