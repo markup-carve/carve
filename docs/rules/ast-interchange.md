@@ -15,7 +15,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 
 | Rule | Part | Clause |
 |---|---:|---|
-| [`CARVE-P9-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L562) | 9 | SMART TYPOGRAPHY RECORDS SOURCE AND RESOLVED KIND |
+| [`CARVE-P9-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L555) | 9 | SMART TYPOGRAPHY RECORDS SOURCE AND RESOLVED KIND |
 | [`CARVE-P12-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L12) | 12 | AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY |
 | [`CARVE-P12-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L16) | 12 | ADJACENT TEXT RUNS ARE COALESCED |
 | [`CARVE-P12-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L34) | 12 | TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION |
@@ -46,33 +46,33 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L179) | 12 | A LINK REFERENCE DEFINITION IS A NODE |
 | [`CARVE-P12-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L199) | 12 | A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST |
 | [`CARVE-P12-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L210) | 12 | A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST |
-| [`CARVE-P12-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L499) | 12 | A COMPOSITE FIGURE IS ITS OWN NODE TYPE |
-| [`CARVE-P12-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L182) | 12 | U+0000 IS REPLACED ON INGEST |
-| [`CARVE-P12-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L215) | 12 | AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY |
-| [`CARVE-P12-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L238) | 12 | A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH |
-| [`CARVE-P12-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L263) | 12 | AN INGESTED `blockImage` VALUE IS AUTHORITATIVE |
-| [`CARVE-P12-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L289) | 12 | A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK |
-| [`CARVE-P12-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L312) | 12 | A REFERENCE NODE CARRIES ITS TARGET |
-| [`CARVE-P12-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L334) | 12 | A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT |
-| [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L373) | 12 | A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE |
-| [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L421) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
-| [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L438) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
+| [`CARVE-P12-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L498) | 12 | A COMPOSITE FIGURE IS ITS OWN NODE TYPE |
+| [`CARVE-P12-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L181) | 12 | U+0000 IS REPLACED ON INGEST |
+| [`CARVE-P12-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L214) | 12 | AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY |
+| [`CARVE-P12-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L237) | 12 | A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH |
+| [`CARVE-P12-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L262) | 12 | AN INGESTED `blockImage` VALUE IS AUTHORITATIVE |
+| [`CARVE-P12-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L288) | 12 | A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK |
+| [`CARVE-P12-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L310) | 12 | A REFERENCE NODE CARRIES ITS TARGET |
+| [`CARVE-P12-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L331) | 12 | A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT |
+| [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L369) | 12 | A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE |
+| [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L416) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
+| [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L433) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
 | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L2) | 12 | SECTIONING IS INTERCHANGE-ONLY |
-| [`CARVE-P12-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L36) | 12 | A CITATION ITEM CARRIES ITS OWN MODE |
-| [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L61) | 12 | RUBY ANNOTATIONS SURVIVE INTERCHANGE |
-| [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L98) | 12 | A BLOCK EXTENSION DECLARES A CORE FALLBACK |
-| [`CARVE-P12-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L124) | 12 | A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE |
-| [`CARVE-P12-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L205) | 12 | A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV |
-| [`CARVE-P12-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L246) | 12 | A LINE BLOCK MAY PUBLISH ITS LINES |
-| [`CARVE-P12-059`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L282) | 12 | A CITATION IS ONLY EVER AN ITEM OF A GROUP |
-| [`CARVE-P12-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L300) | 12 | NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR |
-| [`CARVE-P12-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L332) | 12 | A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN |
-| [`CARVE-P12-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L358) | 12 | AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR |
-| [`CARVE-P12-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L420) | 12 | PROVENANCE IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L35) | 12 | A CITATION ITEM CARRIES ITS OWN MODE |
+| [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L58) | 12 | RUBY ANNOTATIONS SURVIVE INTERCHANGE |
+| [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L95) | 12 | A BLOCK EXTENSION DECLARES A CORE FALLBACK |
+| [`CARVE-P12-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L120) | 12 | A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE |
+| [`CARVE-P12-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L194) | 12 | A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV |
+| [`CARVE-P12-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L231) | 12 | A LINE BLOCK MAY PUBLISH ITS LINES |
+| [`CARVE-P12-059`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L266) | 12 | A CITATION IS ONLY EVER AN ITEM OF A GROUP |
+| [`CARVE-P12-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L283) | 12 | NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L315) | 12 | A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN |
+| [`CARVE-P12-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L341) | 12 | AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L402) | 12 | PROVENANCE IS A SEPARATE OPT-IN SIDECAR |
 | [`CARVE-P12-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L146) | 12 | CODE BLOCK CONTENT IS LITERAL PAYLOAD TEXT |
 | [`CARVE-P12-065`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L181) | 12 | RAW BLOCK CONTENT IS LITERAL PAYLOAD TEXT |
 | [`CARVE-P12-066`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L356) | 12 | A SHAPE NO CARVE SOURCE SPELLS IS CARRIED, NOT INVENTED |
 | [`CARVE-P12-067`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L254) | 12 | A SIDECAR TRAVELS BESIDE THE TREE AND NEVER IN IT |
 | [`CARVE-P12-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L214) | 12 | AN INGEST REFUSAL IS A TYPED ERROR NAMING WHAT AND WHERE |
-| [`CARVE-P12-069`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L459) | 12 | A CONTINUATION LINE IS A MARKER IN THE JOINED CELL |
+| [`CARVE-P12-069`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L440) | 12 | A CONTINUATION LINE IS A MARKER IN THE JOINED CELL |
 | [`CARVE-P12-070`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L56) | 12 | FOOTNOTE AND LINK REFERENCE DEFINITIONS HOIST TO THE DOCUMENT |
