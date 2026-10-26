@@ -261,6 +261,8 @@ index: examples/edge-cases/index.md
   09-tables-4
   09-tables-5
 
+  a-hard-break-in-a-pipe-table-cell-survives-markdown-export
+
 [edge-lists] Lists
 > Markers, looseness, the content-column model, continuation markers and block openers inside items.
 out: examples/edge-cases/lists.md

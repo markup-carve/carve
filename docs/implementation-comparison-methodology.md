@@ -16,8 +16,8 @@ implementation exposes.
 
 ## Core fixture counts (2026-10-26 CET)
 
-The count-only run covers 3,114 core documents and their 193 target sidecars.
-The run scores 3,307 fixtures per engine. It checks expected output on
+The count-only run covers 3,115 core documents and their 193 target sidecars.
+The run scores 3,308 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
 Corpus added since this run: none.
@@ -36,15 +36,15 @@ including the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>3114 / 3114</strong>
+    <strong>3115 / 3115</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3114 / 3114</strong>
+    <strong>3115 / 3115</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3114 / 3114</strong>
+    <strong>3115 / 3115</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -55,9 +55,9 @@ including the
 
 | Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `fc0f31c78` | `3114 / 3114` | `3307 / 3307` | `0` | `0` |
-| JS | `364d00f43` | `3114 / 3114` | `3307 / 3307` | `0` | `0` |
-| PHP | `6280573be` | `3114 / 3114` | `3307 / 3307` | `0` | `0` |
+| Rust | `fc0f31c78` | `3115 / 3115` | `3308 / 3308` | `0` | `0` |
+| JS | `364d00f43` | `3115 / 3115` | `3308 / 3308` | `0` | `0` |
+| PHP | `6280573be` | `3115 / 3115` | `3308 / 3308` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
@@ -484,12 +484,12 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3114 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=3307/3307 mismatch=0 error=0 skipped=0 runs=3307
+profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3115 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=3308/3308 mismatch=0 error=0 skipped=0 runs=3308
   mismatching documents: 0
-js: pass=3307/3307 mismatch=0 error=0 skipped=0 runs=3307
+js: pass=3308/3308 mismatch=0 error=0 skipped=0 runs=3308
   mismatching documents: 0
-php: pass=3307/3307 mismatch=0 error=0 skipped=0 runs=3307
+php: pass=3308/3308 mismatch=0 error=0 skipped=0 runs=3308
   mismatching documents: 0
 cross_impl_diffs=0
 

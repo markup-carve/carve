@@ -1,0 +1,12 @@
+A hard break in a pipe-table cell survives Markdown export
+
+```
+| a\ | b |
+.
+<table>
+  <tbody>
+    <tr><td>a<br>
+</td><td>b</td></tr>
+  </tbody>
+</table>
+```

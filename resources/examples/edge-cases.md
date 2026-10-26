@@ -66252,3 +66252,23 @@ The same rule applies when a line comment precedes the image.
 
 :::
 
+## A hard break in a pipe-table cell survives Markdown export
+
+A table cell's terminal hard break is written as `<br>` in Markdown because a newline would end the row.
+
+:::: compare
+
+```carve
+| a\ | b |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a<br>
+</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+::::
