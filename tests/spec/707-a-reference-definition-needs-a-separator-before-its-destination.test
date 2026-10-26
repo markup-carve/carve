@@ -1,0 +1,11 @@
+A reference definition needs a separator before its destination
+
+```
+[b]: /v
+
+[a]:/u
+[a][] and [b][]
+.
+<p>[a]:/u
+[a][] and <a href="/v">b</a></p>
+```

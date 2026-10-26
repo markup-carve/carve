@@ -66139,3 +66139,84 @@ See </#Setup>.
 ```
 
 ::::
+
+## A non-ASCII letter does not block a bare delimiter
+
+The boundary guard uses ASCII letters and digits. The same delimiter stays literal after or before an ASCII letter.
+
+:::: compare
+
+```carve
+é*x* y and a*x* y
+y *x*é and y *x*a
+```
+
+```html
+<p>é<strong>x</strong> y and a*x* y
+y <strong>x</strong>é and y *x*a</p>
+```
+
+::::
+
+## Unicode whitespace ends a link destination
+
+The gap in each rejected destination below is U+202F NARROW NO-BREAK SPACE. Ordinary spaces and a valid destination provide the controls.
+
+:::: compare
+
+```carve
+[okref]: https://e.com/path
+
+[t](u v) and [ok](u-v)
+
+[r]: https://e.com /path
+[text][r] and [text][okref]
+```
+
+```html
+<p>[t](u v) and <a href="u-v">ok</a></p>
+<p>[r]: https://e.com /path
+[text][r] and <a href="https://e.com/path">text</a></p>
+```
+
+::::
+
+## An invalid attribute block leaves a definition as prose
+
+A trailing `{#}` is not an attribute block. A valid definition above it still resolves and carries its class.
+
+:::: compare
+
+```carve
+[b]: /v {.ok}
+
+[a]: /u {#}
+[a][] and [b][]
+```
+
+```html
+<p>[a]: /u {#}
+[a][] and <a href="/v" class="ok">b</a></p>
+```
+
+::::
+
+## A reference definition needs a separator before its destination
+
+The missing space after `[a]:` leaves that line as prose. The definition with a space still resolves.
+
+:::: compare
+
+```carve
+[b]: /v
+
+[a]:/u
+[a][] and [b][]
+```
+
+```html
+<p>[a]:/u
+[a][] and <a href="/v">b</a></p>
+```
+
+::::

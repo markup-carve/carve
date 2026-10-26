@@ -20,7 +20,7 @@ The count-only run covers 3,108 core documents and their 193 target sidecars.
 The run scores 3,301 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: none.
+Corpus added since this run: `704-a-non-ascii-letter-does-not-block-a-bare-delimiter`, `705-unicode-whitespace-ends-a-link-destination`, `706-an-invalid-attribute-block-leaves-a-definition-as-prose`, `707-a-reference-definition-needs-a-separator-before-its-destination`.
 
 Sidecars added since this run: none.
 

@@ -1,0 +1,11 @@
+An invalid attribute block leaves a definition as prose
+
+```
+[b]: /v {.ok}
+
+[a]: /u {#}
+[a][] and [b][]
+.
+<p>[a]: /u {#}
+[a][] and <a href="/v" class="ok">b</a></p>
+```

@@ -1,0 +1,6 @@
+[okref]: https://e.com/path
+
+[t](u v) and [ok](u-v)
+
+[r]: https://e.com /path
+[text][r] and [text][okref]

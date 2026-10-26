@@ -1,0 +1,14 @@
+Unicode whitespace ends a link destination
+
+```
+[okref]: https://e.com/path
+
+[t](u v) and [ok](u-v)
+
+[r]: https://e.com /path
+[text][r] and [text][okref]
+.
+<p>[t](u v) and <a href="u-v">ok</a></p>
+<p>[r]: https://e.com /path
+[text][r] and <a href="https://e.com/path">text</a></p>
+```
