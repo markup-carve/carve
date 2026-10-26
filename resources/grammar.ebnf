@@ -697,19 +697,14 @@
 
 document = [frontmatter], {block}, EOF ;
 
-frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatter_close),
-              frontmatter_open, frontmatter_content, frontmatter_close, newline ;
-(* The leading &(...) guard demands that
-   a closing `---` line exist ahead before the opener is claimed. With no
-   closer the guard fails, so a bare `---` at document start is an ordinary
-   thematic break and the following lines are ordinary blocks (same lookahead
-   model as PART 9 §10). *)
+frontmatter = frontmatter_open, frontmatter_content, frontmatter_close ;
+(* A frontmatter opener is claimed when a closer follows its content. *)
 (* An optional format token names the frontmatter dialect; bare `---` means
    yaml. Its padding slot is exactly one space (CARVE-P7-002):
    `---<TAB>yaml` and `---<SP><SP>yaml` are text. A trailing tab with no token
    is removed under CARVE-P2-025. The closer is a bare `---`. *)
 frontmatter_open = "---", [space], [frontmatter_format], newline ;
-frontmatter_close = "---", newline ;
+frontmatter_close = "---", (newline | EOF) ;
 frontmatter_format = (letter | digit)+ ;
 frontmatter_content = {content_line - frontmatter_close} ;
 content_line = {character - newline}, newline ;

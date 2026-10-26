@@ -40,13 +40,14 @@ const lines = src.split('\n')
  * SYMBOL FOR NULL, which is exactly as reviewable as the character it stands
  * for is not, and this transform substitutes the real byte (carve#1523).
  */
-const KNOWN_MODIFIERS = new Set(['no-render', 'crlf', 'cr', 'bom', 'nul'])
+const KNOWN_MODIFIERS = new Set(['no-render', 'crlf', 'cr', 'bom', 'nul', 'no-final-newline'])
 
 // Byte transforms, applied to the .crv in this order. The expected HTML is
 // unaffected: the point of each pair is that the document means the same thing
 // however its lines end.
 const applyModifiers = (carve, modifiers) => {
   let out = carve
+  if (modifiers.has('no-final-newline')) out = out.replace(/\n$/, '')
   if (modifiers.has('crlf')) out = out.replace(/\n/g, '\r\n')
   if (modifiers.has('cr')) out = out.replace(/\n/g, '\r')
   if (modifiers.has('bom')) out = '\ufeff' + out

@@ -35,7 +35,7 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
   let segmentStartLine = 0
 
   const finalizePair = (endLine, atCloser = false) => {
-    if (currentSection && pendingBlocks.carve && pendingBlocks.html) {
+    if (currentSection && pendingBlocks.carve && (pendingBlocks.html || (compareModifiers.has('no-final-newline') && pendingBlocks.html === ''))) {
       const example = {
         section: currentSection.title,
         carve: pendingBlocks.carve,
