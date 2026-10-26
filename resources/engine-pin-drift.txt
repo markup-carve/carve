@@ -26,3 +26,4 @@
 # Format: <slug><space><space><reason>
 676-an-unclosed-backtick-run-still-forms-math  The pinned JS build treats an empty math span as a literal dollar and code span (carve-rs#3201).
 676-an-unclosed-backtick-run-still-forms-math-2  The pinned JS build treats an empty display math span as literal dollars and a code span (carve-rs#3201).
+677-an-unresolved-symbol-leaves-a-colon-before-a-quote  The pinned JS build chooses a closing quote after an unresolved symbol (carve-rs#3205).
