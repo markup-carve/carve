@@ -722,6 +722,7 @@ index: examples/edge-cases/index.md
   26-comments-4
   26-comments-6
   an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block
+  line-block-inline-note
   a-line-block-takes-a-lazy-line-whatever-its-last-payload-line
   a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run
   a-terminal-comment-in-a-quote-leaves-no-paragraph-open

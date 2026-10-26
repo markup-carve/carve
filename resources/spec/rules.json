@@ -889,13 +889,13 @@
     {
       "id": "CARVE-P9-045",
       "part": "9",
-      "title": "A BACKSLASH BREAK IS NOT ADDITIVE",
+      "title": "AN EXISTING HARD BREAK",
       "scope": "parsing"
     },
     {
       "id": "CARVE-P9-046",
       "part": "9",
-      "title": "AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT",
+      "title": "AT ANY INLINE DEPTH",
       "scope": "parsing"
     },
     {

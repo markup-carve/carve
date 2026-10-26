@@ -202,18 +202,13 @@
       - WRAPPER. Renders as `<div class="line-block">` (a generic div, never an
         `<aside>`); extra classes / id attach via a PRECEDING block-attribute
         line, which floats onto the div (§15).
-      - LINE BREAKS. Each SOFT line break inside a stanza becomes a HARD break
-        (`<br>`). So consecutive non-blank body lines render as one paragraph
+      - LINE BREAKS. Within a stanza, every `soft_break` node becomes a
+        `hard_break` node. Consecutive non-blank lines render as one paragraph
         with `<br>` between them.
 
-        A BACKSLASH BREAK IS NOT ADDITIVE -- NORMATIVE [CARVE-P9-045]. The rule above has a
-        subject, and it is the SOFT break. `hard_break = '\', newline` (PART 3)
-        consumes its own newline, so no soft break survives a backslash and
-        there is nothing left to convert: ONE line boundary produces ONE
-        `<br>`, however the boundary is spelled. The additive reading would
-        have to SYNTHESIZE a break node no production yields, and it would
-        make the container ADD a line to the layout this block exists to
-        preserve. It holds on the markdown, plain and ansi targets too.
+        AN EXISTING HARD BREAK -- NORMATIVE [CARVE-P9-045]. A `hard_break`,
+        including one spelled with a backslash, is unchanged. It has already
+        consumed its newline, so the stanza adds no second break.
 
         THE BACKSLASH STILL HAS A JOB HERE, so it is not redundant syntax the
         writer may drop. PART 7 makes the whitespace run before it INTERIOR,
@@ -226,36 +221,10 @@
         tree and in the HTML, which is why the canonical writer may not drop
         either (CARVE-P11-020).
 
-        AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT -- NORMATIVE [CARVE-P9-046].
-        The subject is the SOFT break, so the only question at a boundary is
-        whether a `soft_break` NODE is there. Nothing conditions the rule on
-        what ENCLOSES that node, and an emphasis run, a link label or a
-        semantic span spanning a boundary encloses one: the newline is a node
-        BESIDE the construct's text, not part of it. So a stanza holding `*a`
-        over `b*` gives `<strong>a<br>` over `b</strong>`, the same break the
-        same two lines get with no emphasis around them.
-
-        THE CONVERSION IS IN THE TREE, NOT ONLY IN THE HTML. A stanza's bare
-        newline is a `hard_break` NODE (PART 12), which is what lets
-        CARVE-P11-020 spell one as a bare newline at all - "re-reading that newline
-        yields the SAME TREE" is a statement about nodes.
-
-        THE TWO EXEMPTIONS ABOVE ARE DIFFERENT IN KIND, NOT IN DEPTH. A
-        backslash is exempt because `hard_break` consumes its own newline. A
-        verbatim run is exempt because it carries the newline as its own
-        CONTENT (BUT IT DOES NOT SURVIVE A RUN THAT ATE ITS LINE below: "there
-        is no boundary left in the tree"). Both leave NO NODE. A run that
-        closes on a LATER line is exempt for that same reason and not for
-        closing, the newline being inside its value either way:
-
-          ::: |
-          a `b
-          c` d
-          :::
-
-        keeps the newline as content while the emphasis above hardens. The
-        two documents differ only in WHICH CONSTRUCT spans the boundary, and
-        that is the difference the rule turns on.
+        AT ANY INLINE DEPTH -- NORMATIVE [CARVE-P9-046]. The conversion also
+        applies inside emphasis, link text, spans and inline notes. A newline
+        held in verbatim content is unchanged because it is not a `soft_break`
+        node. The conversion is in the tree, not only in the HTML (PART 12).
       - STANZAS. A blank line ends a stanza; each stanza is its own `<p>` inside
         the single `<div class="line-block">`.
       - LEADING WHITESPACE. Each body line's leading whitespace is PRESERVED
