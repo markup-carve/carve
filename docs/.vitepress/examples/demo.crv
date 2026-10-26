@@ -94,13 +94,6 @@ Definition list:
 :: Djot
 : The markup language Carve evolves from.
 
-A lone `+` attaches the next block to an item without indenting it:
-
-- install the CLI
-+
-> Needs Node 20 or newer.
-- render a file
-
 ## Blockquotes
 
 > The best way to predict the future is to invent it.
