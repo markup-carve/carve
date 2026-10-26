@@ -1,0 +1,17 @@
+A below-column fence stays in a definition paragraph
+
+````
+:: t
+: d
+ ```
+x
+```
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+<code>
+x
+</code></dd>
+</dl>
+````

@@ -1,0 +1,18 @@
+A tabbed table ends before a flush-left list line
+
+```
+- a
+	|x|
++ c
+.
+<ul>
+  <li>a
+    <table>
+      <tbody>
+        <tr><td>x</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+<p>+ c</p>
+```

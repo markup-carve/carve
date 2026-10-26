@@ -65458,3 +65458,189 @@ Without a symbol map, the shortcode emits its literal text. Its final colon puts
 ```
 
 :::
+
+## A below-column fence stays in a definition paragraph
+
+A closer left of the authored fence cannot turn that fence into a block.
+
+::: compare
+
+````carve
+:: t
+: d
+ ```
+x
+```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d
+<code>
+x
+</code></dd>
+</dl>
+```
+
+:::
+
+## A tabbed table ends before a flush-left list line
+
+The table belongs to the item, and the next line falls below its content column.
+
+::: compare
+
+```carve
+- a
+	|x|
++ c
+```
+
+```html
+<ul>
+  <li>a
+    <table>
+      <tbody>
+        <tr><td>x</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+<p>+ c</p>
+```
+
+:::
+
+## An indented line after a table is a paragraph
+
+A body row must start at the table base.
+
+::: compare
+
+```carve
+|a|
+|---|
+|b|
+ |c|
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">a</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>b</td></tr>
+  </tbody>
+</table>
+<p>|c|</p>
+```
+
+:::
+
+## A list import preserves its hard break
+
+A backslash at the end of an item line keeps the break before lazy continuation.
+
+::: compare
+
+```carve
+- a\
+b
+```
+
+```html
+<ul>
+  <li>a<br>
+b</li>
+</ul>
+```
+
+:::
+
+## Escaped table hyphens stay literal
+
+Escaped hyphens in a data cell do not form a typographic dash.
+
+::: compare
+
+```carve
+|a|b|
+|---|---|
+|\-\-\-|x|
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col">b</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>---</td><td>x</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## An empty unclosed math code span
+
+An unclosed backtick run after a dollar sign still forms inline math.
+
+::: compare
+
+```carve
+$`
+```
+
+```html
+<p><span class="math inline" role="math">\(\)</span></p>
+```
+
+:::
+
+## A definition opens a sibling block after a list
+
+The quote reaches the description content column after its nested item.
+
+::: compare
+
+```carve
+:: term
+: - a
+
+   > c
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+    <blockquote><p>c</p></blockquote>
+  </dd>
+</dl>
+```
+
+:::
+
+## A post-marker tab keeps a quote literal
+
+A tab after a list marker separator is content and cannot expose a quote opener.
+
+::: compare
+
+```carve
+- 	> a
+```
+
+```html
+<ul>
+  <li>&gt; a</li>
+</ul>
+```
+
+:::

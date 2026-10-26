@@ -1,0 +1,18 @@
+An indented line after a table is a paragraph
+
+```
+|a|
+|---|
+|b|
+ |c|
+.
+<table>
+  <thead>
+    <tr><th scope="col">a</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>b</td></tr>
+  </tbody>
+</table>
+<p>|c|</p>
+```

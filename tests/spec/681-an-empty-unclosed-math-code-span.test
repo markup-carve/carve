@@ -1,0 +1,7 @@
+An empty unclosed math code span
+
+```
+$`
+.
+<p><span class="math inline" role="math">\(\)</span></p>
+```

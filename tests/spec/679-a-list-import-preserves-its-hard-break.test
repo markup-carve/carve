@@ -1,0 +1,11 @@
+A list import preserves its hard break
+
+```
+- a\
+b
+.
+<ul>
+  <li>a<br>
+b</li>
+</ul>
+```
