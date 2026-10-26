@@ -113,6 +113,7 @@ export function renderDoc(doc) {
 
 function reserveHeadingIds(blocks) {
   const headings = []
+  const authoredIds = []
   const visited = new WeakSet()
   const visit = (value) => {
     if (!value || typeof value !== 'object' || visited.has(value)) return
@@ -122,6 +123,11 @@ function reserveHeadingIds(blocks) {
       return
     }
     if (value.t === 'heading') headings.push(value)
+    if (Array.isArray(value.battrs)) {
+      for (const list of value.battrs) {
+        for (const attr of list) if (attr[0] === 'id') authoredIds.push(attr[1])
+      }
+    }
     for (const child of Object.values(value)) visit(child)
   }
   visit(blocks)
@@ -133,7 +139,7 @@ function reserveHeadingIds(blocks) {
     }
     return id
   }
-  const used = new Set(headings.map(authoredId).filter((id) => id !== null))
+  const used = new Set(authoredIds)
   const byHeading = new WeakMap()
   const slug = makeSlugger()
   for (const heading of headings) {
@@ -692,7 +698,7 @@ function renderBlock(b, depth, ctx) {
         // shape a loose item's single paragraph takes in `<li>`. A description
         // that already holds two blocks is wrapped either way, so the key is a
         // no-op there.
-        if (blocks.length === 1 && blocks[0].t === 'para' && blocks[0].caption === undefined) {
+        if (blocks.length === 1 && blocks[0].t === 'para' && !blocks[0].blockImage && blocks[0].caption === undefined) {
           const inline = renderInline(blocks[0].lines.join('\n'))
           return `${pad}  <dd>${b.loose ? `<p>${inline}</p>` : inline}</dd>`
         }
@@ -872,7 +878,7 @@ function standaloneImage(line, ctx) {
 }
 
 function withBlockImageAttrs(image, attrs) {
-  return attrs ? image.replace('<img ', `<img${attrs} `) : image
+  return attrs ? image.replace(/>$/, `${attrs}>`) : image
 }
 
 function renderList(list, depth, ctx) {
@@ -1518,7 +1524,12 @@ const ENTITIES = { '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp
  */
 function derivedText(source) {
   const html = renderInlineWithoutSymbols(source)
+    .replace(REF_FRAME, (_frame, json) => {
+      const ref = JSON.parse(json)
+      return ref.img ? ref.alt : ref.text
+    })
     .replace(/\uE000[\s\S]*?\uE001/g, '')
+    .replace(/<span\b[^>]*\bclass="[^"]*\bmath\b[^"]*"[^>]*>\\\((.*?)\\\)<\/span>/gs, '$1')
     // An image's plain-text projection is its alternative text. Preserve it
     // before the generic tag strip removes the `<img>` leaf altogether.
     .replace(/<img\b[^>]*\balt="([^"]*)"[^>]*>/g, '$1')
