@@ -1249,7 +1249,7 @@
     {
       "id": "CARVE-P11-018",
       "part": "11",
-      "title": "AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO",
+      "title": "AN EMPTY COLON FENCE BODY IS A BLANK LINE",
       "scope": "canonical-writing"
     },
     {

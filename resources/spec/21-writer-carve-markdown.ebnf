@@ -396,7 +396,7 @@
       node was never built.
 
 
-   7a. AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO -- NORMATIVE [CARVE-P11-018]. A COLON
+   7a. AN EMPTY COLON FENCE BODY IS A BLANK LINE -- NORMATIVE [CARVE-P11-018]. EVERY COLON
       FENCE whose body is empty is written with a BLANK LINE between its
       opener and its closer:
 
@@ -404,16 +404,14 @@
         [blank line]      [blank line]    [blank line]
         :::               :::             :::
 
-      -- an admonition, a BARE div and a div with a word class alike, and the
-      same for a line block (`::: |`) and a local hard-break block
-      (`::: \`). THERE IS NO EXCEPTION ON THIS TARGET: the shape does not vary
-      by container kind, by type word, or by attribute. What counts as an
-      empty body follows CARVE-P10-001.
+      -- an admonition, a BARE div and a div with a word class alike. The
+      same rule covers line blocks (`::: |`), local hard-break blocks
+      (`::: \`), fenced quotes (`::: >`), figures, list-tables, and details.
+      The shape does not vary by container kind, type word, or attribute.
+      What counts as an empty body follows CARVE-P10-001.
 
-      IT REACHES THE CONSTRUCTS THAT HAVE A CLOSER LINE, which is what a colon
-      fence has and a block quote does not. An empty block quote is a `>` line
-      and the question does not arise; §7's rule governs that line, not this
-      one.
+      A one-line `>` block quote has no closer line. §7 governs that line;
+      this rule governs the colon-fenced `::: >` quote and its closer.
 
    7b. A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL
       `{empty}` -- NORMATIVE [CARVE-P11-019]. A `footnote_definition` whose body holds NO
