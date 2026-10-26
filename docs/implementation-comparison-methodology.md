@@ -20,7 +20,7 @@ The count-only run covers 3,063 core documents and their 193 target sidecars.
 The run scores 3,256 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: `660-an-empty-link-destination-takes-spaces`, `661-a-tab-cannot-pad-an-empty-link-destination`, `662-a-tab-after-a-comment-marker-stays-in-its-text`, `663-a-titled-admonition-skips-an-authored-heading-id`, `670-bidi-controls-in-math-content`, `671-a-fence-with-no-host-prefix-leaves-an-inline-run`, `672-table-content-parses-inline-markup`, `673-link-titles-accept-trailing-ascii-padding-with-either-destination`, `674-a-partial-braced-opener-before-a-terminal-backslash`, `675-authored-inline-footnote-reference-ids`.
+Corpus added since this run: `660-an-empty-link-destination-takes-spaces`, `661-a-tab-cannot-pad-an-empty-link-destination`, `662-a-tab-after-a-comment-marker-stays-in-its-text`, `663-a-titled-admonition-skips-an-authored-heading-id`, `670-bidi-controls-in-math-content`, `671-a-fence-with-no-host-prefix-leaves-an-inline-run`, `672-table-content-parses-inline-markup`, `673-link-titles-accept-trailing-ascii-padding-with-either-destination`, `674-a-partial-braced-opener-before-a-terminal-backslash`, `675-authored-inline-footnote-reference-ids`, `676-quotes-open-after-an-unresolved-symbol`.
 
 Sidecars added since this run: none.
 
