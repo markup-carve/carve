@@ -7572,6 +7572,7 @@ EOF = (* end of file *) ;
 
       ONE PHASE, AFTER R1. A paragraph whose whole content resolves to a single
       image becomes a BLOCK IMAGE (PART 9 §4's image-paragraph host,
+      A construct that renders nothing does not count as content.
       CARVE-P11-004's writer-side collapse, PART 10's bare `<img>`). This is the ONLY
       place the question is asked. Nothing before it may treat an image
       paragraph as a block image, and nothing after it may re-derive the answer

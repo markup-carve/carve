@@ -1,0 +1,14 @@
+Invisible content and image promotion
+
+```
+{%%}![alt](x.png)
+.
+<img src="x.png" alt="alt">
+```
+
+```
+%% hidden
+![alt](x.png)
+.
+<img src="x.png" alt="alt">
+```
