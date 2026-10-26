@@ -110,7 +110,7 @@ than rely on the ceilings agreeing, because §25 says they will not.
 
 ## Optional Tier-2 Profile
 
-Optional corpus added since this run: `99-citations-definition-space-run`.
+Optional corpus added since this run: `99-citations-definition-space-run`, `100-toc-body-keeps-placement-scope`.
 
 The optional profile was measured on 2026-10-25 CET with the same engine commits as
 the core snapshot. It enables a shared adapter per feature where each

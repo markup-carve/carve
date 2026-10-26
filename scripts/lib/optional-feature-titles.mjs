@@ -26,6 +26,7 @@ export const optionalFeatureTitles = new Map([
   ['fenced-render-vega-lite', 'Vega-Lite hydration wrapper'],
   ['fenced-render-chart', 'Chart.js hydration wrapper'],
   ['math-block', 'Display math hydration wrapper'],
+  ['toc-placement', 'TOC placement'],
   ['citations-numbered', 'Citations, numbered'],
   ['citations-author-date', 'Citations, author-date'],
   ['code-callouts', 'CodeCallouts'],

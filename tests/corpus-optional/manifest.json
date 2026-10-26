@@ -362,6 +362,11 @@
       "slug": "99-citations-definition-space-run",
       "feature": "citations-numbered",
       "description": "Citation definitions consume a run of ASCII spaces after the marker."
+    },
+    {
+      "slug": "100-toc-body-keeps-placement-scope",
+      "feature": "toc-placement",
+      "description": "A footnotes marker inside a TOC body stays nested and leaves endnotes at the document end."
     }
   ]
 }

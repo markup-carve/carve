@@ -252,6 +252,7 @@ const PLAIN_EXTENSION_FEATURES = {
   'fenced-render-vega-lite': { js: 'vegaLite', php: 'FencedRenderExtension', phpFactory: 'vegaLite' },
   'fenced-render-chart': { js: 'chart', php: 'FencedRenderExtension', phpFactory: 'chart' },
   'math-block': { js: 'mathBlock', php: 'MathBlockExtension' },
+  'toc-placement': { js: 'tocPlacement', php: 'TocPlacementExtension' },
   'citations-numbered': { js: 'citations', php: 'CitationsExtension' },
   'citations-author-date': {
     js: 'citations',
@@ -329,6 +330,7 @@ const RUST_EXTENSION_FEATURES = {
   'fenced-render-vega-lite': ['fenced-render-vega-lite'],
   'fenced-render-chart': ['fenced-render-chart'],
   'math-block': ['math-block'],
+  'toc-placement': ['toc'],
   'bare-url-autolink': ['autolink'],
   'citations-numbered': ['citations'],
   'citations-author-date': ['citations', '--citation-mode', 'author-date'],
