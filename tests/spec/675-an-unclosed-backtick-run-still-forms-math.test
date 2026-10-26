@@ -1,0 +1,13 @@
+An unclosed backtick run still forms math
+
+```
+$`
+.
+<p><span class="math inline" role="math">\(\)</span></p>
+```
+
+```
+$$``
+.
+<p><span class="math display" role="math">\[\]</span></p>
+```
