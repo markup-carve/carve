@@ -1,0 +1,7 @@
+An unresolved symbol leaves a colon before a quote
+
+```
+:a:"
+.
+<p>:a:“</p>
+```
