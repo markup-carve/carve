@@ -1015,6 +1015,8 @@ index: examples/edge-cases/index.md
   unicode-whitespace-ends-a-link-destination
   a-reference-definition-needs-a-separator-before-its-destination
   an-invalid-attribute-block-leaves-a-definition-as-prose
+  a-bang-before-a-link-is-escaped
+
 [edge-footnotes] Footnotes
 > Bodies as blocks, the body content column, collection inside containers and placement of the rendered list.
 out: examples/edge-cases/footnotes.md

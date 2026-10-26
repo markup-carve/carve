@@ -1,0 +1,7 @@
+A bang before a link is escaped
+
+```
+a \![x](/u)
+.
+<p>a !<a href="/u">x</a></p>
+```
