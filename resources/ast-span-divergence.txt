@@ -48,5 +48,5 @@
 # and neither engine has a row to answer for. The document arrived with
 # markup-carve/carve#2426.
 
-list (extent)  2  corpus 503-9 and 636: an engine opens the list inside the leading indentation, which a container may do; all spans conform under markup-carve/carve#1928.
-list_item (extent)  3  the list rows above, plus corpus 245, where carve-php and carve-rs open the tab-indented sibling item inside its indentation; conformant under markup-carve/carve#1928.
+list (extent)  3  corpus 503-9, 636, and 697: an engine opens the list inside the leading indentation, which a container may do; all spans conform under markup-carve/carve#1928.
+list_item (extent)  4  the list rows above, plus corpus 245, where carve-php and carve-rs open the tab-indented sibling item inside its indentation; conformant under markup-carve/carve#1928.
