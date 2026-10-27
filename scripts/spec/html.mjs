@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -888,7 +888,7 @@ function standaloneImage(line, ctx) {
   }
 
   const html = renderInline(line)
-  return IMG_ONLY.test(html) ? html : null
+  return IMG_ONLY.test(html) && IMG_ONLY.test(renderInlineWithoutRaw(line)) ? html : null
 }
 
 function withBlockImageAttrs(image, attrs) {

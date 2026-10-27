@@ -1849,6 +1849,15 @@ export function renderInlineWithoutSymbols(text, prevCtx = '') {
   }
 }
 
+export function renderInlineWithoutRaw(text, prevCtx = '') {
+  omitRawInline = true
+  try {
+    return renderInline(text, prevCtx)
+  } finally {
+    omitRawInline = false
+  }
+}
+
 /*
  * PART 2 HEADING IDENTIFIERS step 1: smart typography is reversed to ASCII
  * before slugging, so `# Don't repeat yourself` gives `Don-t-repeat-yourself`

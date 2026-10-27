@@ -6991,13 +6991,16 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         }
         const nextCloser = j < n && nestedOpaque?.markerLine && ind(j).col >= nestedOpaque.col
           ? PURE_FENCE.exec(ind(j).rest) : null
-        const descendantFence = bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k], hasFutureCommentCloser)
         const closedMarkerFence = nestedOpaque?.kind === 'code' && nestedOpaque.markerLine &&
           nextCloser && nextCloser[1][0] === nestedOpaque.run[0] && nextCloser[1].length >= nestedOpaque.run.length
         const unfinishedDescendantFence = nestedOpaque?.kind === 'code' &&
           !CONT_MARKER.test(lines[previousVisible(i - 1)] ?? '') &&
-          (j >= n || ind(j).col < contentCol)
-        if (descendantFence || unfinishedDescendantFence || closedMarkerFence) {
+          (j >= n || ind(j).col < contentCol ||
+            (ind(j).col === contentCol && !CONT_MARKER.test(ind(j).rest) &&
+              ind(j).rest !== state.ordinaryPlusSentinel &&
+              ind(j).rest !== state.refusedSiblingSentinel))
+        const descendantFence = bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k], hasFutureCommentCloser) || unfinishedDescendantFence
+        if (descendantFence || closedMarkerFence) {
           // A descendant fence owns the full blank run, including one before
           // its closer. An unfinished fence also owns the run at its boundary.
           for (let k = i; k < j; k++) {
