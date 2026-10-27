@@ -7709,6 +7709,9 @@ EOF = (* end of file *) ;
       div, figure, section, endnotes) indent their children by TWO spaces
       per nesting level. Inline content stays flat on its block's line.
 
+      The HTML API returns a fragment with no final LF. A caller writing an
+      output file may add its own line ending after the fragment.
+
       AN EMPTY CONTAINER BODY -- NORMATIVE [CARVE-P10-001]. A container whose body renders
       nothing keeps a BLANK LINE where the body would be:
 
