@@ -66723,3 +66723,45 @@ A heading made only of raw inline content uses the empty id fallback:
 ```
 
 :::
+
+## Raw inline image bytes stay inside a paragraph
+
+::: compare
+
+```carve
+`<img a>`{=html}
+```
+
+```html
+<p><img a></p>
+```
+
+:::
+
+## An unclosed nested fence keeps blanks before outer text
+
+::: compare
+
+```carve
+- - ```
+
+
+  tail
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>
+
+</code></pre>
+      </li>
+    </ul>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+:::

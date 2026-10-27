@@ -1,0 +1,21 @@
+An unclosed nested fence keeps blanks before outer text
+
+````
+- - ```
+
+
+  tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>
+
+</code></pre>
+      </li>
+    </ul>
+    <p>tail</p>
+  </li>
+</ul>
+````

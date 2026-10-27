@@ -779,6 +779,7 @@ index: examples/edge-cases/index.md
   quoted-values-and-titles-retain-a-non-punctuation-backslash
   a-marker-line-opaque-quote-keeps-overindented-markers-literal
   a-blank-ends-the-old-quote-s-child-column
+  an-unclosed-nested-fence-keeps-blanks-before-outer-text
 
 [edge-blocks] Paragraphs, breaks and captions
 > Paragraph folding, thematic breaks, caption attachment and adjacent block openers.
@@ -1021,6 +1022,7 @@ index: examples/edge-cases/index.md
   an-invalid-attribute-block-leaves-a-definition-as-prose
   a-bang-before-a-link-is-escaped
   citation-shaped-lines-remain-core-text
+  raw-inline-image-bytes-stay-inside-a-paragraph
 
 [edge-footnotes] Footnotes
 > Bodies as blocks, the body content column, collection inside containers and placement of the rendered list.
