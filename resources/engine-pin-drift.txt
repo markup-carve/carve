@@ -35,3 +35,6 @@
 727-an-enclosing-closer-ends-a-tag-name  The pinned JS parser consumes the deletion closer's hyphen as part of the tag name (carve#3774, fixed by carve-js#3720).
 732-paired-german-quotes-leave-no-quote-in-a-heading-id  The pinned JS heading slugger keeps the German opening quote (carve#3799, carve-js#3737).
 733-consecutive-continuation-markers-in-a-div-hosted-quote  The pinned JS parser drops the continuation content inside a div-hosted quote (carve#3789).
+735-invalid-line-range-includes-within-paragraphs-stay-literal  The pinned JS parser marks invalid inline include options as mentions (carve-js#3743).
+735-invalid-line-range-includes-within-paragraphs-stay-literal-2  The pinned JS parser marks invalid inline include options as mentions (carve-js#3743).
+735-invalid-line-range-includes-within-paragraphs-stay-literal-3  The pinned JS parser marks invalid inline include options as mentions (carve-js#3743).
