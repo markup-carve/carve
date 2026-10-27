@@ -727,6 +727,7 @@ const sem = g.createSemantics().addOperation('h', {
     return `<span class="critic-comment">${escapeHtml(body.child(1).sourceString)}</span>`
   },
   rawInline(code, _ob, fmt, _cb) {
+    if (omitRawInline) return ''
     // PART 9 SS20: emitted UNESCAPED for the html format, dropped otherwise
     const text = codeText(codeInner(code).child(1))
     return fmt.sourceString === 'html' ? quoteOpaque(text) : ''
@@ -1779,6 +1780,7 @@ let quotePrevCtx = '' // preceding character for recursive inline parses
  * renders its own copy of the heading (markup-carve/carve#1011).
  */
 let omitSymbols = false
+let omitRawInline = false
 
 /*
  * HARD BREAKS: a soft break renders as `<br>` (PART 9 SS23).
@@ -1826,10 +1828,12 @@ let noFootnotes = false
 
 export function renderInlineWithoutSymbols(text, prevCtx = '') {
   omitSymbols = true
+  omitRawInline = true
   try {
     return renderInline(text, prevCtx)
   } finally {
     omitSymbols = false
+    omitRawInline = false
   }
 }
 

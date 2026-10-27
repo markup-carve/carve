@@ -1,0 +1,17 @@
+Raw inline content in heading ids
+
+```
+# a `<b>x</b>`{=html} c
+.
+<section id="a-c">
+  <h1>a <b>x</b> c</h1>
+</section>
+```
+
+```
+# `<b>x</b>`{=html}
+.
+<section id="s">
+  <h1><b>x</b></h1>
+</section>
+```

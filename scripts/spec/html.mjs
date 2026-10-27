@@ -1516,8 +1516,8 @@ function stripTags(s) {
 const ENTITIES = { '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp;': '\u00a0', '&amp;': '&' }
 
 /*
- * The text a heading's id is slugged from: the heading's RENDERED PLAIN TEXT
- * (syntax.md section 4.1 step 1), not its source.
+ * The text a heading's id is slugged from: the contributing inline constructs,
+ * excluding raw inline content for every target format.
  *
  * It used to be the source with `</#id>` runs deleted, which reaches the right
  * answer for most headings by accident: the slug replaces each run of
@@ -1533,7 +1533,8 @@ const ENTITIES = { '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp
  * 9R sentinel - a footnote reference, an inline note, a cross-reference - and
  * each is excluded from a heading's derived text, which is also what deleting
  * the `</#id>` run did before. A symbol is excluded by re-rendering without it.
- * The escapes then come back off, so `# A & B` is `A-B` and not `A-amp-B`.
+ * Raw inlines are omitted by the same heading-only render pass. The escapes
+ * then come back off, so `# A & B` is `A-B` and not `A-amp-B`.
  */
 function derivedText(source) {
   const html = renderInlineWithoutSymbols(source)
