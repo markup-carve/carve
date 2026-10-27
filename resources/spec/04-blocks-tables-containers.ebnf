@@ -248,18 +248,14 @@ admonition = admonition_open, newline,
              [admonition_close, newline] ;
 (* the body may be EMPTY, like the generic div's (PART 9 §12).
 
-   UNCLOSED. The closer is OPTIONAL: an opener always opens, bare or labeled, and
-   a block still open when its HOST ends closes there, innermost first. The
-   host is the ENCLOSING CONTAINER where there is one and the DOCUMENT
-   otherwise, so "closes at end of input" is the top-level case rather than
-   the whole rule: a `::: note` opened inside a block quote and never closed
-   ends WITH THE QUOTE. A flush-left line below that cannot continue an open
-   paragraph lazily, for example after a blank line, is a sibling paragraph
-   outside both. An unclosed opener SHOULD be
-   diagnosed by lint and by the language server; it is not an error for the
-   parser. Note this is NOT the `%%%` comment-block rule (CARVE-P9-060), where an
-   opener with no exact closer ahead opens nothing: a comment block is
-   invisible either way, so failing closed costs nothing there.
+   UNCLOSED. The closer is OPTIONAL: a bare or labeled opener always opens.
+   At its HOST end, an open container closes innermost first. The host is
+   the ENCLOSING CONTAINER, or the DOCUMENT at top level. Thus an unclosed
+   `::: note` inside a block quote ends WITH THE QUOTE. A flush-left line
+   below that cannot continue an open paragraph lazily, for example after
+   a blank line, is a sibling paragraph outside both. Lint and the language
+   server SHOULD diagnose an unclosed opener; the parser accepts it.
+   See the RECOVERY DECISION TABLE in PART 0 for the distinct `%%%` rule.
 
    A MARKER-LINE OPENER OPENS TOO. A `:::` opener written as the sole content
    of a list item's marker line opens its container whatever the next line
@@ -267,16 +263,20 @@ admonition = admonition_open, newline,
    leaves no paragraph open, and `tail` is a document paragraph
    (CARVE-P0-009, CARVE-P0-016).
 
-   OPAQUE SPANS. `{block - admonition_close}` is a BLOCK
-   sequence, so a fenced code block, a raw block and a comment block inside
-   the body are single blocks and their lines are never examined for a
-   closer. A colon fence written inside one is content: it neither closes the
-   container nor opens a child. An implementation that collects the body by
-   scanning raw lines has to model this explicitly, and must consume the
-   span's opener BEFORE testing for its closer -- an opener with no info
-   string (a bare code fence, a `%%%`) is closer-shaped itself, so testing it
-   first ends the span on its own line and hands the span's contents back to
-   the block parser.
+   OPAQUE SPANS. `{block - admonition_close}` is a BLOCK sequence. In a
+   colon body, recognize a code, raw or matched comment opener before
+   testing its line as a closer. Consume the opaque span as one child block;
+   bare code and `%%%` openers can themselves look like closers. A colon
+   run inside that span is payload and cannot close the colon body. When
+   the span closes, resume normal colon-body parsing. A raw-line body
+   scanner MUST make the same decision.
+
+   If a code opener has NO MATCHING code closer ahead, the host's
+   exact-length colon closer ends the code block and stays structural,
+   closing the colon body. This is the host-boundary rule below, not a
+   colon closer found inside an opaque span. Example: `::: note` / ``` /
+   `x` / `:::` / `after` renders a note containing a code block with `x`,
+   then `after` as a top-level paragraph.
 
    TOOLING FOR NEAR MATCHES. Exact length remains a parse rule,
    not a recoverable syntax error. A processor with diagnostics SHOULD report

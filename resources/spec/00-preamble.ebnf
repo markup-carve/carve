@@ -81,4 +81,17 @@
      generated goldens lives under WHAT SETTLES A QUESTION in
      `.github/CONTRIBUTING.md`, and what earns a new clause lives beside it
      under WHAT EARNS A CLAUSE. Both are process rules, not language rules.
+
+   RECOVERY DECISION TABLE (PARTS 0-9; construct guards still govern).
+   Decide within the current host after testing the complete opener:
+   | Case | Recovery |
+   | Visible colon opener, optional closer | Open; close at host end, innermost first. |
+   | Code/raw opener, optional closer | Retain payload to host end, subject to paragraph interruption. |
+   | `%%%` without exact closer ahead | Classify opener as `%%` for layout and ownership. |
+   | Paired inline form without required closer | Keep declining extent literal; an unclosed backtick run consumes to block end. |
+   | Invalid or incomplete opener | Use its own literal/paragraph fallback; a recognized typed prefix may retain its container and drop bad metadata. |
+   Exact width, bracket extent, attribute atomicity and frontmatter shape
+   retain their construct-specific tests. A failed closer search stays within
+   the host; consuming an unclosed invisible comment would hide later blocks.
+
    ============================================================================ *)

@@ -279,33 +279,29 @@
         registers or remains visible text; it MUST NOT disappear from both
         rendering and definition tables.
 
-        ONE AUTHORED BLOCK BASE -- NORMATIVE [CARVE-P0-004]. Every open
-        container which accepts child blocks has a minimum
-        `content_column`. A recognized block opener AT that column opens
-        there. In an INDENTATION CONTAINER (a list item, a definition body
-        or a footnote body) a recognized opener PAST it establishes its
-        authored visual column as the local `base_column` for that ONE
-        complete block; the opener, payload, structural continuations,
-        metadata and closer are measured from that base. A closer written
-        below that base is measured as a payload line there is: once the
-        line's available prefix is gone, a run matching the opener closes
-        the block. Canonical output
-        returns the block to the container's minimum column. Ordinary
-        over-indented text establishes no base.
+        ONE AUTHORED BLOCK BASE -- NORMATIVE [CARVE-P0-004]. A block opener
+        in a list item, definition body or footnote body may start at or
+        past that body's minimum `content_column`. At the column it opens
+        there. Past the column, a recognized opener establishes its authored
+        visual column as the local `base_column` for that ONE complete block:
+        opener, payload, structural continuations, metadata and closer are
+        measured from that base. This includes every recognized block opener,
+        including `::: |` and an opener in a colon body hosted by an
+        indentation container. That opener closes a paragraph of the colon
+        body open above it (CARVE-P2-017). Under `- a` / `  ::: box`, a code
+        fence at column 4 opens in the box. The next block returns to the
+        body's minimum column, as does canonical output. Ordinary
+        over-indented text establishes no block base.
 
-        THE DOCUMENT AND A BLOCK QUOTE DO NOT REBASE. There an opener is
-        recognized at the content column exactly, except that list markers
-        may open at any column (PART 9 §24 C4). An over-indented non-list opener
-        is text: `   # H` is a paragraph at the document level and after
-        `> `. The frame that answers is the owner O2 selected.
+        A closer below the authored base is read after the line's available
+        prefix is consumed; a run matching the opener closes the block.
+        In a document or block quote, a non-list opener must start at the
+        content column selected by O2. An indented `# H` there is paragraph
+        text. List markers use the separate PART 9 §24 C4 rule.
 
-        EVERY RECOGNIZED BLOCK OPENER QUALIFIES, the line-block opener
-        `::: |` included. A colon body has no prefix, so it answers as its
-        host does: inside a colon body an indentation container hosts, an
-        opener past the column opens on its authored base, and closes a
-        paragraph of that body open above it, as in every indentation host
-        (CARVE-P2-017). So under `- a` / `  ::: box`, a code fence run at
-        column 4 opens a code block in the box.
+        Example: `- a` / `    ```` / `    x` / `    ```` opens a code
+        block inside the item; the model renders `a` followed by
+        `<pre><code>x\n</code></pre>` in that item.
 
         OWNERSHIP PRECEDES REBASING. While an authored block is open, a
         nested body's opener at its own content column is owned by that

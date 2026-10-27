@@ -85,12 +85,9 @@
         question the layout asks about it, container OWNERSHIP included, so at a
         container's own column 0 it leaves the frame open exactly as a `%%` line
         does (§24 C3). Reading it as a visibility rule alone would
-        make one line two constructs at once. This DIVERGES from
-        the `:::` rule (§12), where an unclosed opener opens and closes at end
-        of input, and the difference is VISIBILITY: an unclosed div still
-        renders the blocks it swallowed, so a forgotten closer costs the
-        reader a stray wrapper, while an unclosed comment would HIDE them and
-        silently delete the rest of the document. An implementation that
+        make one line two constructs at once. The RECOVERY DECISION TABLE
+        in PART 0 compares this with an unclosed visible colon container.
+        An implementation that
         surfaces diagnostics SHOULD report an unterminated comment fence;
         emitting one is OPTIONAL, since not every implementation has a
         warning channel.

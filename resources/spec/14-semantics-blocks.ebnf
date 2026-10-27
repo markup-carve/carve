@@ -109,16 +109,16 @@
          does not interrupt: an image is not a block of its own in Carve;
          it stays an inline image inside the paragraph.
       I4 CLOSER LOOKAHEAD -- the same &(...) the VERBATIM fence productions
-         carry. An UNTERMINATED ``` or ~~~ opener does not interrupt; the line
-         stays paragraph text, and a stray ``` in prose then opens an unclosed
-         inline verbatim run rendering as <code> to the end of the block (the
-         code_span maximal-run rule). Pinned by corpus
-         81-paragraph-interruption-19.
+         carry. A ``` or ~~~ code fence interrupts an open paragraph only
+         when a matching code closer is reachable in its host. Otherwise
+         the fence line stays in that paragraph, where the code_span
+         maximal-run rule may consume it. Corpus 81-paragraph-interruption-19
+         pins `Text` / ``` / `more` as one paragraph with an inline code span.
 
-         A `:::` OPENER IS NOT GUARDED. It interrupts whether or not a closer
-         follows; where an unterminated one closes is PART 2's UNCLOSED rule
-         (`admonition`). Pinned by corpus 81-paragraph-interruption-20: `Text` /
-         `:::` / `stuff` is a paragraph followed by a div holding `stuff`.
+         A `:::` colon opener interrupts an open paragraph even without a
+         closer. PART 2's UNCLOSED `admonition` rule determines where its
+         body ends. Corpus 81-paragraph-interruption-20 pins `Text` / `:::` /
+         `stuff` as a paragraph followed by a div holding `stuff`.
 
       I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
          definition (link `[r]: url`, footnote `[^r]: …`, abbreviation

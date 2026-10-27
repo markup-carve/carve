@@ -81,6 +81,19 @@
      generated goldens lives under WHAT SETTLES A QUESTION in
      `.github/CONTRIBUTING.md`, and what earns a new clause lives beside it
      under WHAT EARNS A CLAUSE. Both are process rules, not language rules.
+
+   RECOVERY DECISION TABLE (PARTS 0-9; construct guards still govern).
+   Decide within the current host after testing the complete opener:
+   | Case | Recovery |
+   | Visible colon opener, optional closer | Open; close at host end, innermost first. |
+   | Code/raw opener, optional closer | Retain payload to host end, subject to paragraph interruption. |
+   | `%%%` without exact closer ahead | Classify opener as `%%` for layout and ownership. |
+   | Paired inline form without required closer | Keep declining extent literal; an unclosed backtick run consumes to block end. |
+   | Invalid or incomplete opener | Use its own literal/paragraph fallback; a recognized typed prefix may retain its container and drop bad metadata. |
+   Exact width, bracket extent, attribute atomicity and frontmatter shape
+   retain their construct-specific tests. A failed closer search stays within
+   the host; consuming an unclosed invisible comment would hide later blocks.
+
    ============================================================================ *)
 (* ============================================================================
    PART 0: LAYOUT LAYER (L0) -- LINE AUTOMATON (NORMATIVE)
@@ -363,33 +376,29 @@
         registers or remains visible text; it MUST NOT disappear from both
         rendering and definition tables.
 
-        ONE AUTHORED BLOCK BASE -- NORMATIVE [CARVE-P0-004]. Every open
-        container which accepts child blocks has a minimum
-        `content_column`. A recognized block opener AT that column opens
-        there. In an INDENTATION CONTAINER (a list item, a definition body
-        or a footnote body) a recognized opener PAST it establishes its
-        authored visual column as the local `base_column` for that ONE
-        complete block; the opener, payload, structural continuations,
-        metadata and closer are measured from that base. A closer written
-        below that base is measured as a payload line there is: once the
-        line's available prefix is gone, a run matching the opener closes
-        the block. Canonical output
-        returns the block to the container's minimum column. Ordinary
-        over-indented text establishes no base.
+        ONE AUTHORED BLOCK BASE -- NORMATIVE [CARVE-P0-004]. A block opener
+        in a list item, definition body or footnote body may start at or
+        past that body's minimum `content_column`. At the column it opens
+        there. Past the column, a recognized opener establishes its authored
+        visual column as the local `base_column` for that ONE complete block:
+        opener, payload, structural continuations, metadata and closer are
+        measured from that base. This includes every recognized block opener,
+        including `::: |` and an opener in a colon body hosted by an
+        indentation container. That opener closes a paragraph of the colon
+        body open above it (CARVE-P2-017). Under `- a` / `  ::: box`, a code
+        fence at column 4 opens in the box. The next block returns to the
+        body's minimum column, as does canonical output. Ordinary
+        over-indented text establishes no block base.
 
-        THE DOCUMENT AND A BLOCK QUOTE DO NOT REBASE. There an opener is
-        recognized at the content column exactly, except that list markers
-        may open at any column (PART 9 §24 C4). An over-indented non-list opener
-        is text: `   # H` is a paragraph at the document level and after
-        `> `. The frame that answers is the owner O2 selected.
+        A closer below the authored base is read after the line's available
+        prefix is consumed; a run matching the opener closes the block.
+        In a document or block quote, a non-list opener must start at the
+        content column selected by O2. An indented `# H` there is paragraph
+        text. List markers use the separate PART 9 §24 C4 rule.
 
-        EVERY RECOGNIZED BLOCK OPENER QUALIFIES, the line-block opener
-        `::: |` included. A colon body has no prefix, so it answers as its
-        host does: inside a colon body an indentation container hosts, an
-        opener past the column opens on its authored base, and closes a
-        paragraph of that body open above it, as in every indentation host
-        (CARVE-P2-017). So under `- a` / `  ::: box`, a code fence run at
-        column 4 opens a code block in the box.
+        Example: `- a` / `    ```` / `    x` / `    ```` opens a code
+        block inside the item; the model renders `a` followed by
+        `<pre><code>x\n</code></pre>` in that item.
 
         OWNERSHIP PRECEDES REBASING. While an authored block is open, a
         nested body's opener at its own content column is owned by that
@@ -1732,18 +1741,14 @@ admonition = admonition_open, newline,
              [admonition_close, newline] ;
 (* the body may be EMPTY, like the generic div's (PART 9 §12).
 
-   UNCLOSED. The closer is OPTIONAL: an opener always opens, bare or labeled, and
-   a block still open when its HOST ends closes there, innermost first. The
-   host is the ENCLOSING CONTAINER where there is one and the DOCUMENT
-   otherwise, so "closes at end of input" is the top-level case rather than
-   the whole rule: a `::: note` opened inside a block quote and never closed
-   ends WITH THE QUOTE. A flush-left line below that cannot continue an open
-   paragraph lazily, for example after a blank line, is a sibling paragraph
-   outside both. An unclosed opener SHOULD be
-   diagnosed by lint and by the language server; it is not an error for the
-   parser. Note this is NOT the `%%%` comment-block rule (CARVE-P9-060), where an
-   opener with no exact closer ahead opens nothing: a comment block is
-   invisible either way, so failing closed costs nothing there.
+   UNCLOSED. The closer is OPTIONAL: a bare or labeled opener always opens.
+   At its HOST end, an open container closes innermost first. The host is
+   the ENCLOSING CONTAINER, or the DOCUMENT at top level. Thus an unclosed
+   `::: note` inside a block quote ends WITH THE QUOTE. A flush-left line
+   below that cannot continue an open paragraph lazily, for example after
+   a blank line, is a sibling paragraph outside both. Lint and the language
+   server SHOULD diagnose an unclosed opener; the parser accepts it.
+   See the RECOVERY DECISION TABLE in PART 0 for the distinct `%%%` rule.
 
    A MARKER-LINE OPENER OPENS TOO. A `:::` opener written as the sole content
    of a list item's marker line opens its container whatever the next line
@@ -1751,16 +1756,20 @@ admonition = admonition_open, newline,
    leaves no paragraph open, and `tail` is a document paragraph
    (CARVE-P0-009, CARVE-P0-016).
 
-   OPAQUE SPANS. `{block - admonition_close}` is a BLOCK
-   sequence, so a fenced code block, a raw block and a comment block inside
-   the body are single blocks and their lines are never examined for a
-   closer. A colon fence written inside one is content: it neither closes the
-   container nor opens a child. An implementation that collects the body by
-   scanning raw lines has to model this explicitly, and must consume the
-   span's opener BEFORE testing for its closer -- an opener with no info
-   string (a bare code fence, a `%%%`) is closer-shaped itself, so testing it
-   first ends the span on its own line and hands the span's contents back to
-   the block parser.
+   OPAQUE SPANS. `{block - admonition_close}` is a BLOCK sequence. In a
+   colon body, recognize a code, raw or matched comment opener before
+   testing its line as a closer. Consume the opaque span as one child block;
+   bare code and `%%%` openers can themselves look like closers. A colon
+   run inside that span is payload and cannot close the colon body. When
+   the span closes, resume normal colon-body parsing. A raw-line body
+   scanner MUST make the same decision.
+
+   If a code opener has NO MATCHING code closer ahead, the host's
+   exact-length colon closer ends the code block and stays structural,
+   closing the colon body. This is the host-boundary rule below, not a
+   colon closer found inside an opaque span. Example: `::: note` / ``` /
+   `x` / `:::` / `after` renders a note containing a code block with `x`,
+   then `after` as a top-level paragraph.
 
    TOOLING FOR NEAR MATCHES. Exact length remains a parse rule,
    not a recoverable syntax error. A processor with diagnostics SHOULD report
@@ -5047,16 +5056,16 @@ EOF = (* end of file *) ;
          does not interrupt: an image is not a block of its own in Carve;
          it stays an inline image inside the paragraph.
       I4 CLOSER LOOKAHEAD -- the same &(...) the VERBATIM fence productions
-         carry. An UNTERMINATED ``` or ~~~ opener does not interrupt; the line
-         stays paragraph text, and a stray ``` in prose then opens an unclosed
-         inline verbatim run rendering as <code> to the end of the block (the
-         code_span maximal-run rule). Pinned by corpus
-         81-paragraph-interruption-19.
+         carry. A ``` or ~~~ code fence interrupts an open paragraph only
+         when a matching code closer is reachable in its host. Otherwise
+         the fence line stays in that paragraph, where the code_span
+         maximal-run rule may consume it. Corpus 81-paragraph-interruption-19
+         pins `Text` / ``` / `more` as one paragraph with an inline code span.
 
-         A `:::` OPENER IS NOT GUARDED. It interrupts whether or not a closer
-         follows; where an unterminated one closes is PART 2's UNCLOSED rule
-         (`admonition`). Pinned by corpus 81-paragraph-interruption-20: `Text` /
-         `:::` / `stuff` is a paragraph followed by a div holding `stuff`.
+         A `:::` colon opener interrupts an open paragraph even without a
+         closer. PART 2's UNCLOSED `admonition` rule determines where its
+         body ends. Corpus 81-paragraph-interruption-20 pins `Text` / `:::` /
+         `stuff` as a paragraph followed by a div holding `stuff`.
 
       I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
          definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
@@ -7065,12 +7074,9 @@ EOF = (* end of file *) ;
         question the layout asks about it, container OWNERSHIP included, so at a
         container's own column 0 it leaves the frame open exactly as a `%%` line
         does (§24 C3). Reading it as a visibility rule alone would
-        make one line two constructs at once. This DIVERGES from
-        the `:::` rule (§12), where an unclosed opener opens and closes at end
-        of input, and the difference is VISIBILITY: an unclosed div still
-        renders the blocks it swallowed, so a forgotten closer costs the
-        reader a stray wrapper, while an unclosed comment would HIDE them and
-        silently delete the rest of the document. An implementation that
+        make one line two constructs at once. The RECOVERY DECISION TABLE
+        in PART 0 compares this with an unclosed visible colon container.
+        An implementation that
         surfaces diagnostics SHOULD report an unterminated comment fence;
         emitting one is OPTIONAL, since not every implementation has a
         warning channel.
