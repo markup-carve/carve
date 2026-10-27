@@ -1029,6 +1029,7 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 | A `#section` that selects nothing | `include-section` Warning + literal directive; a case-only mismatch names the exact id |
 | More than one of `#section`, `@lines` and `@region`, or `#section` with `@code` | `include-selection-conflict` Warning + literal directive |
 | Invalid or missing named region | `include-region-invalid` Warning + literal directive |
+| An invalid `@lines` value, including zero, a reversed range, or a leading zero | `include-lines-invalid` Warning + literal directive; file remains a resolved dependency |
 | An `@lines` range that starts past the file's last line | `include-lines-out-of-range` Warning + literal directive |
 | The same option key given twice | `include-duplicate-option` Warning + literal directive |
 | Block-structured content in inline position (inline include) | `include-block-in-inline` Warning + literal directive |

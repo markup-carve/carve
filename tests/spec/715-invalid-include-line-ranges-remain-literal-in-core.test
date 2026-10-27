@@ -1,0 +1,19 @@
+Invalid include line ranges remain literal in core
+
+```
+{{ data/p2.csv @code:csv @lines:0-2 }}
+.
+<p>{{ data/p2.csv @code:csv @lines:0-2 }}</p>
+```
+
+```
+{{ data/p2.csv @code:csv @lines:2-1 }}
+.
+<p>{{ data/p2.csv @code:csv @lines:2-1 }}</p>
+```
+
+```
+{{ data/p2.csv @code:csv @lines:01-2 }}
+.
+<p>{{ data/p2.csv @code:csv @lines:01-2 }}</p>
+```

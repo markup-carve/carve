@@ -3577,7 +3577,12 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       three kinds: SELECTION, TRANSFORM and MODE. SELECTION chooses content:
       `#section` (semantic -- a heading's section or one block, I1a) and
       `@lines:N-M` (physical -- a 1-based inclusive line range), and
-      `@region:name` (physical -- a named source region, I1b). A line range
+      `@region:name` (physical -- a named source region, I1b). For `@lines`,
+      N and M MUST be decimal integers without leading zeros, N MUST be at
+      least 1, and N MUST be no greater than M (a reversed range is invalid).
+      Zero and a leading zero are invalid. Any other value is an ERROR
+      (`include-lines-invalid`, Warning + literal, per I7); the file stays
+      a resolved dependency (I11). A line range
       that STARTS past the file's last line is an ERROR
       (`include-lines-out-of-range`, Warning + literal, per I7); the file
       stays a resolved dependency (I11). A range that starts on or before
