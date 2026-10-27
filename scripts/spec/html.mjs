@@ -1166,9 +1166,7 @@ function renderTable(node, depth, ctx) {
   const attrAlign = positional('aligns').map((v) => ['left', 'right', 'center'].includes(v) ? v : null)
   const attrValign = positional('valigns').map((v) => ['top', 'middle', 'bottom'].includes(v) ? v : null)
   const attrWidths = positional('widths').map((v) => v === '' ? null : Number(v))
-  if ([attrAlign, attrValign, attrWidths].some((values) => values.length > widest)) {
-    throw new Refuse('table column attribute has more entries than columns')
-  }
+  for (const values of [attrAlign, attrValign, attrWidths]) values.length = Math.min(values.length, widest)
   // resolve span markers (T5): row-major; consumed positions are skipped in
   // the output; a marker whose span would cover another cell renders as an
   // EMPTY cell (carve#3047)
@@ -1253,13 +1251,16 @@ function renderTable(node, depth, ctx) {
     if (!tableKeys.has(key)) return 0
     const value = String(tableKeys.get(key)).trim()
     if (value === '') return 1
-    if (!/^\d+$/.test(value)) throw new Refuse(`invalid ${key} table attribute`)
+    if (!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value))) return null
     return Number(value)
   }
   const explicitPartition = tableKeys.has('header-rows') || tableKeys.has('footer-rows')
   let headCount = groups?.head ?? rowCount('header-rows')
-  const footCount = groups?.foot ?? rowCount('footer-rows')
-  if (headCount + footCount > rows.length) throw new Refuse('table header and footer rows overlap')
+  let footCount = groups?.foot ?? rowCount('footer-rows')
+  if (headCount === null || footCount === null || headCount + footCount > rows.length) {
+    headCount = 0
+    footCount = 0
+  }
   if (!explicitPartition && !groups) {
     while (headCount < rows.length && rows[headCount].isHead) headCount++
   }
@@ -1400,8 +1401,8 @@ function resolveImageRef(parsed, ctx, literal) {
   if (!def) return `![${escapeHtml(alt)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}`
   const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
   const a = def.attrs?.length
-    ? renderBlockAttrs([def.attrs, attrList ?? []])
-    : renderAttrs(attrList ?? [])
+    ? renderBlockAttrs([def.attrs, attrList ?? []], 'src')
+    : renderAttrs(attrList ?? [], 'src')
   return `<img src="${escapeUrlAttr(def.url)}" alt="${escapeAttr(alt.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
 }
 
@@ -1430,7 +1431,7 @@ function resolveRefsOnce(html, ctx) {
     } catch {
       return _
     }
-    const { label, text, source, attrList, img, attrSrc } = parsed
+    const { label, text, source, attrList, img, attrSrc, flat } = parsed
     if (img) return resolveImageRef(parsed, ctx, _)
     if (typeof text !== 'string') return _
     // A collapsed reference is keyed by the label AS WRITTEN, the same spelling
@@ -1460,7 +1461,8 @@ function resolveRefsOnce(html, ctx) {
       const indexKey = typeof source === 'string' ? derivedText(source) : text
       const heading = ctx.headingRefs.get(refKey(indexKey))
       if (heading !== undefined) {
-        return `<a href="#${escapeAttr(heading)}"${renderAttrs(attrList ?? [])}>${text}</a>`
+        if (flat) return text
+        return `<a href="#${escapeAttr(heading)}"${renderAttrs(attrList ?? [], 'href')}>${text}</a>`
       }
     }
     if (!def) {
@@ -1473,6 +1475,7 @@ function resolveRefsOnce(html, ctx) {
       // Same PART 10 SS2 escaping as the image-reference literal above.
       return `[${escapeHtml(source ?? text)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}`
     }
+    if (flat) return text
     const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
     // R1: the definition's attributes transfer to the link, and the link's own
     // override per key. "Per key" is SS15 A3's merge - the one stacked
@@ -1486,8 +1489,8 @@ function resolveRefsOnce(html, ctx) {
     // link's own list through the block merge turned `{.a .a}` into
     // `class="a a"` on reference links alone.
     const a = def.attrs?.length
-      ? renderBlockAttrs([def.attrs, attrList ?? []])
-      : renderAttrs(attrList ?? [])
+      ? renderBlockAttrs([def.attrs, attrList ?? []], 'href')
+      : renderAttrs(attrList ?? [], 'href')
     return `<a href="${escapeUrlAttr(def.url)}"${t}${a}>${text}</a>`
   })
 }
@@ -1576,7 +1579,12 @@ function footnotesHeading(b, depth, titleId) {
 function footnotesMarkerFloor(heading, body, depth, attrs) {
   const pad = '  '.repeat(depth)
   const contents = [heading, body].filter(Boolean).join('\n')
-  const inner = contents === '' ? '' : contents.split('\n').map((line) => `  ${line}`).join('\n')
+  let paragraphOpen = 0
+  const inner = contents === '' ? '' : contents.split('\n').map((line) => {
+    const prefix = paragraphOpen === 0 ? '  ' : ''
+    paragraphOpen += (line.match(/<p(?:\s|>)/g) ?? []).length - (line.match(/<\/p>/g) ?? []).length
+    return `${prefix}${line}`
+  }).join('\n')
   return `${pad}<div${attrs}>\n${inner}\n${pad}</div>`
 }
 

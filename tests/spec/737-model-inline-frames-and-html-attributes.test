@@ -1,0 +1,42 @@
+Model inline frames and HTML attributes
+
+```
+[a](/u){href=/v}
+.
+<p><a href="/u">a</a></p>
+```
+
+```
+![a](/u){src=/v}
+.
+<img src="/u" alt="a">
+```
+
+```
+=>g=
+.
+<p>=&gt;g=</p>
+```
+
+```
+[[][]]()
+.
+<p><a href="">[][]</a></p>
+```
+
+```
+::: footnotes
+x
+y
+.
+<div class="footnotes">
+  <p>x
+y</p>
+</div>
+```
+
+```
+{{ d @lines:0 }}*a*
+.
+<p>{{ d @lines:0 }}<strong>a</strong></p>
+```

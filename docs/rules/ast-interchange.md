@@ -45,17 +45,17 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L179) | 12 | A LINK REFERENCE DEFINITION IS A NODE |
 | [`CARVE-P12-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L199) | 12 | A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST |
 | [`CARVE-P12-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L210) | 12 | A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST |
-| [`CARVE-P12-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L498) | 12 | A COMPOSITE FIGURE IS ITS OWN NODE TYPE |
-| [`CARVE-P12-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L181) | 12 | U+0000 IS REPLACED ON INGEST |
-| [`CARVE-P12-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L214) | 12 | AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY |
-| [`CARVE-P12-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L237) | 12 | A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH |
-| [`CARVE-P12-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L262) | 12 | AN INGESTED `blockImage` VALUE IS AUTHORITATIVE |
-| [`CARVE-P12-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L285) | 12 | A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK |
-| [`CARVE-P12-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L307) | 12 | A REFERENCE NODE CARRIES ITS TARGET |
-| [`CARVE-P12-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L328) | 12 | A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT |
-| [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L366) | 12 | A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE |
-| [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L413) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
-| [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L430) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
+| [`CARVE-P12-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L500) | 12 | A COMPOSITE FIGURE IS ITS OWN NODE TYPE |
+| [`CARVE-P12-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L182) | 12 | U+0000 IS REPLACED ON INGEST |
+| [`CARVE-P12-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L215) | 12 | AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY |
+| [`CARVE-P12-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L238) | 12 | A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH |
+| [`CARVE-P12-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L263) | 12 | AN INGESTED `blockImage` VALUE IS AUTHORITATIVE |
+| [`CARVE-P12-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L286) | 12 | A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK |
+| [`CARVE-P12-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L308) | 12 | A REFERENCE NODE CARRIES ITS TARGET |
+| [`CARVE-P12-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L329) | 12 | A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT |
+| [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L367) | 12 | A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE |
+| [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L414) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
+| [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L431) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
 | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L2) | 12 | SECTIONING IS INTERCHANGE-ONLY |
 | [`CARVE-P12-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L31) | 12 | A CITATION ITEM CARRIES ITS OWN MODE |
 | [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L54) | 12 | RUBY ANNOTATIONS SURVIVE INTERCHANGE |

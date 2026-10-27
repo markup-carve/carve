@@ -1325,3 +1325,11 @@ index: examples/edge-cases/index.md
 out: examples/edge-cases/generated-container-documents.md
 index: examples/edge-cases/index.md
   generated-container-documents
+
+[edge-model-fixes] Model boundary and fallback cases
+> Syntax ownership, inline frames, and table metadata.
+out: examples/edge-cases/model-boundaries.md
+index: examples/edge-cases/index.md
+  model-syntax-boundaries-and-ownership
+  model-inline-frames-and-html-attributes
+  invalid-table-metadata-keeps-the-table

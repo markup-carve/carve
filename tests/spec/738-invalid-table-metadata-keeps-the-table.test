@@ -1,0 +1,34 @@
+Invalid table metadata keeps the table
+
+```
+{header-rows=2 footer-rows=1}
+| a | b |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{footer-rows=>}
+| a | b |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{aligns=right,left,center}
+| a | b |
+.
+<table>
+  <tbody>
+    <tr><td style="text-align: right;">a</td><td style="text-align: left;">b</td></tr>
+  </tbody>
+</table>
+```

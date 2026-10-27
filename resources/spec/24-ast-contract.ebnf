@@ -430,6 +430,8 @@
       header rows to a column-header cell; native `|=` cells outside that head
       remain header cells and default to row scope. The attributes are consumed
       in HTML, where the three ranges render as `thead`, `tbody`, and `tfoot`.
+      Invalid counts or overlapping ranges synthesize no partition. HTML then
+      renders the rows in one body group instead of aborting conversion.
       Promotion changes the HTML cell kind and row group, not the source
       marker run: a plain `|>` in an explicit header row remains a cell-only
       override and creates no column default. A native `|=>` still sets its

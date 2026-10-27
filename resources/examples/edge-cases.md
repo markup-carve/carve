@@ -67271,3 +67271,235 @@ before {{ data/p2.csv @lines:0-2 }} after
 ```
 
 :::
+
+## Model syntax boundaries and ownership
+
+:::: compare
+
+```carve
+::: e[]
+```
+
+```html
+<div class="e">
+
+</div>
+```
+
+::::
+
+:::: compare
+
+```carve
+> u
++
+# H
+-
+```
+
+```html
+<blockquote>
+  <p>u</p>
+  <h1 id="H">H</h1>
+</blockquote>
+<p>-</p>
+```
+
+::::
+
+:::: compare
+
+```carve
+||
+|-|
+|-|
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col"></th></tr>
+  </thead>
+  <tbody>
+    <tr><td>-</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+- 	- B
+```
+
+```html
+<ul>
+  <li>- B</li>
+</ul>
+```
+
+::::
+
+:::: compare
+
+```carve
+{x} {k}
+a
+```
+
+```html
+<p>{x} {k}
+a</p>
+```
+
+::::
+
+:::: compare
+
+```carve
+- {{ c@code }}
+```
+
+```html
+<ul>
+  <li>{{ c@code }}</li>
+</ul>
+```
+
+::::
+
+
+## Model inline frames and HTML attributes
+
+:::: compare
+
+```carve
+[a](/u){href=/v}
+```
+
+```html
+<p><a href="/u">a</a></p>
+```
+
+::::
+
+:::: compare
+
+```carve
+![a](/u){src=/v}
+```
+
+```html
+<img src="/u" alt="a">
+```
+
+::::
+
+:::: compare
+
+```carve
+=>g=
+```
+
+```html
+<p>=&gt;g=</p>
+```
+
+::::
+
+:::: compare
+
+```carve
+[[][]]()
+```
+
+```html
+<p><a href="">[][]</a></p>
+```
+
+::::
+
+:::: compare
+
+```carve
+::: footnotes
+x
+y
+```
+
+```html
+<div class="footnotes">
+  <p>x
+y</p>
+</div>
+```
+
+::::
+
+:::: compare
+
+```carve
+{{ d @lines:0 }}*a*
+```
+
+```html
+<p>{{ d @lines:0 }}<strong>a</strong></p>
+```
+
+::::
+
+
+## Invalid table metadata keeps the table
+
+:::: compare
+
+```carve
+{header-rows=2 footer-rows=1}
+| a | b |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{footer-rows=>}
+| a | b |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{aligns=right,left,center}
+| a | b |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td style="text-align: right;">a</td><td style="text-align: left;">b</td></tr>
+  </tbody>
+</table>
+```
+
+::::

@@ -1,0 +1,61 @@
+Model syntax boundaries and ownership
+
+```
+::: e[]
+.
+<div class="e">
+
+</div>
+```
+
+```
+> u
++
+# H
+-
+.
+<blockquote>
+  <p>u</p>
+  <h1 id="H">H</h1>
+</blockquote>
+<p>-</p>
+```
+
+```
+||
+|-|
+|-|
+.
+<table>
+  <thead>
+    <tr><th scope="col"></th></tr>
+  </thead>
+  <tbody>
+    <tr><td>-</td></tr>
+  </tbody>
+</table>
+```
+
+```
+- 	- B
+.
+<ul>
+  <li>- B</li>
+</ul>
+```
+
+```
+{x} {k}
+a
+.
+<p>{x} {k}
+a</p>
+```
+
+```
+- {{ c@code }}
+.
+<ul>
+  <li>{{ c@code }}</li>
+</ul>
+```

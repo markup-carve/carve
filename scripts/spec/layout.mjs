@@ -878,7 +878,7 @@ function parseValidColonOpener(tail) {
     out.title = qt[1]
     s = s.slice(qt[0].length)
   }
-  const lb = takeLabelSlot(s)
+  const lb = s.startsWith(' ') || !out.type ? takeLabelSlot(s) : null
   if (lb) {
     out.label = lb.label
     s = lb.rest
@@ -1365,6 +1365,7 @@ function tryAttrLine(lines, i) {
     const list = parseBlockAttrList(buf)
     if (list === null) return null // A6: not an attribute list
     lists.push(list)
+    if (text.slice(pos).trim() !== '' && text[pos] !== '{') return null
   }
   if (lists.length === 0) return null
   return { lists, next: li + 1 }
@@ -3499,7 +3500,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         push(node)
       } else {
         i++
-        push({ t: 'includeLiteral', text: line.trim(), quotedPath: directive.quoted })
+        push(top
+          ? { t: 'includeLiteral', text: line.trim(), quotedPath: directive.quoted }
+          : { t: 'para', lines: [line.trim()] })
       }
       continue
     }
@@ -4467,7 +4470,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // T7: the GFM delimiter row (second line only; a delimiter-shaped
         // FIRST row disqualifies promotion - the second row is then data)
         if (
-          node.rows.length === 1 && sr.cells.every((c) => DELIM_CELL.test(c)) &&
+          !afterDelimiterRow && node.rows.length === 1 && sr.cells.every((c) => DELIM_CELL.test(c)) &&
           !node.rows[0].rawCells.every((c) => DELIM_CELL.test(c))
         ) {
           node.rows[0].cells.forEach((c) => (c.header = true))
@@ -5186,6 +5189,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             if (!insideColon || qOpenPara) inner.push('')
             inner.push(...attached.rawMarker, '')
+            qOpenPara = false
+            qItemPara = false
+            qTermOpen = false
+            qPara = []
             i = attached.next
             continue
           }
@@ -5892,6 +5899,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
   while (i < n) {
     const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
+    if (head.text.startsWith('\t') && !/^%{3}/.test(head.text.slice(1))) {
+      head.text = LAZY + head.text.slice(1)
+    }
     const sourceQuoteCol = (i === 0 ? markerLineQuoteColumns.get(lines) : undefined) ??
       firstBlockQuoteColumn(ind(i).L?.src ?? lines[i])
     if (list.ord && list.items.length > 0) {

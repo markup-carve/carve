@@ -25,6 +25,9 @@
          `class` slot at its first-appearance position. An Attrs built
          programmatically with no recorded order falls back to `class`, then
          `id`, then key=value order.
+      An authored `href` or `src` on a link or image does not replace the
+      URL derived at R1. The structural URL is emitted once; the colliding
+      authored URL attribute is omitted.
       R4 GENERATED. What the engine mints on top of the authored set: the
          auto-slug id an unwrapped heading carries (CARVE-P9-019) and, where
          the author wrote no class, a marker-derived class such as

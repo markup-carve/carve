@@ -7744,6 +7744,9 @@ EOF = (* end of file *) ;
          `class` slot at its first-appearance position. An Attrs built
          programmatically with no recorded order falls back to `class`, then
          `id`, then key=value order.
+      An authored `href` or `src` on a link or image does not replace the
+      URL derived at R1. The structural URL is emitted once; the colliding
+      authored URL attribute is omitted.
       R4 GENERATED. What the engine mints on top of the authored set: the
          auto-slug id an unwrapped heading carries (CARVE-P9-019) and, where
          the author wrote no class, a marker-derived class such as
@@ -12441,6 +12444,8 @@ EOF = (* end of file *) ;
       header rows to a column-header cell; native `|=` cells outside that head
       remain header cells and default to row scope. The attributes are consumed
       in HTML, where the three ranges render as `thead`, `tbody`, and `tfoot`.
+      Invalid counts or overlapping ranges synthesize no partition. HTML then
+      renders the rows in one body group instead of aborting conversion.
       Promotion changes the HTML cell kind and row group, not the source
       marker run: a plain `|>` in an explicit header row remains a cell-only
       override and creates no column default. A native `|=>` still sets its
@@ -12650,7 +12655,8 @@ EOF = (* end of file *) ;
       vocabularies above. Widths are numbers greater than zero and at most 100
       in source, and divide by 100 on the way into the fractional AST field;
       any other width is an error. More entries than columns is
-      an error. Fewer is valid, leaves the tail unset, and produces a lint
+      an error: conversion keeps the entries that have columns and ignores
+      the excess. Fewer is valid, leaves the tail unset, and produces a lint
       diagnostic. Widths need not total 100; a total above it lints.
 
       PRECEDENCE IS LOCALITY, PER FIELD: a cell marker wins, then an in-table

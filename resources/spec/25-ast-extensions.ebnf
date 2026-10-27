@@ -113,7 +113,8 @@
       vocabularies above. Widths are numbers greater than zero and at most 100
       in source, and divide by 100 on the way into the fractional AST field;
       any other width is an error. More entries than columns is
-      an error. Fewer is valid, leaves the tail unset, and produces a lint
+      an error: conversion keeps the entries that have columns and ignores
+      the excess. Fewer is valid, leaves the tail unset, and produces a lint
       diagnostic. Widths need not total 100; a total above it lints.
 
       PRECEDENCE IS LOCALITY, PER FIELD: a cell marker wins, then an in-table

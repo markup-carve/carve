@@ -320,7 +320,7 @@ export function flattenInnerLinks(text) {
     } catch {
       return m
     }
-    return parsed.img ? m : parsed.text
+    return parsed.img ? m : refFrame({ ...parsed, flat: true })
   })
   return out
 }
@@ -398,7 +398,7 @@ export const classValue = (a) => {
 }
 export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && a[1] === 'class')
 
-export function renderAttrs(list) {
+export function renderAttrs(list, structuralUrl = null) {
   // serialization: SOURCE order; all classes merge (deduplicated, corpus
   // 121) into one class attribute at the position of the FIRST class;
   // a repeated id/key keeps the LAST value at its first position
@@ -407,6 +407,7 @@ export function renderAttrs(list) {
   let classAt = -1
   const seen = new Map() // name -> index in parts
   for (const a of list) {
+    if (structuralUrl && (a[0] === 'kv' || a[0] === 'bool') && a[1].toLowerCase() === structuralUrl) continue
     if (isClass(a)) {
       if (classAt === -1) {
         classAt = parts.length
@@ -627,7 +628,7 @@ const sem = g.createSemantics().addOperation('h', {
   image(_b, _o, alt, _c, slot, attrs) {
     const [dest, title] = destSlotParts(slot)
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
-    const a = renderAttrs(attrsOf(attrs))
+    const a = renderAttrs(attrsOf(attrs), 'src')
     return `<img src="${escapeUrlAttr(destValue(dest))}" alt="${escapeAttr(alt.sourceString.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
   },
   imageRef(_b, _o, alt, _c, _ro, label, _rc, attrs) {
@@ -640,7 +641,7 @@ const sem = g.createSemantics().addOperation('h', {
   autolink(body, attrs) {
     const raw = body.child(1).sourceString
     const href = /@/.test(raw) && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw) ? `mailto:${raw}` : raw
-    const a = renderAttrs(attrsOf(attrs))
+    const a = renderAttrs(attrsOf(attrs), 'href')
     return `<a href="${escapeUrlAttr(href)}"${a}>${escapeHtml(raw)}</a>`
   },
   escape(_bs, ch) {
@@ -915,7 +916,7 @@ sem.addOperation('applyTail(text, source)', {
     // engines do - and what this pipeline already did for the INLINE note form,
     // whose sentinel this check never named (markup-carve/carve#1188).
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
-    const a = renderAttrs(attrsOf(attrs))
+    const a = renderAttrs(attrsOf(attrs), 'href')
     return `<a href="${escapeUrlAttr(destValue(dest))}"${t}${a}>${text}</a>`
   },
   refTail(_o, label, _c, attrs) {
@@ -1100,7 +1101,7 @@ function classify(t, src, blocked) {
     t.canOpen = t.canClose = false
     return
   }
-  t.canOpen = !t.closeOnly && !blocked?.has(t.at) && bareOpener(t.ch, prev, next)
+  t.canOpen = !t.closeOnly && !blocked?.has(t.at) && !(t.ch === '=' && next === '>') && bareOpener(t.ch, prev, next)
   t.canClose = bareCloser(t.ch, prev, next)
 }
 
@@ -1603,13 +1604,14 @@ export function parseBlockAttrList(text) {
 // earlier one's, and a class already present is not added twice. This used to
 // keep the duplicate, following a clause sentence no engine implemented
 // (carve#615).
-export function renderBlockAttrs(lists) {
+export function renderBlockAttrs(lists, structuralUrl = null) {
   const parts = []
   const classes = []
   let classAt = -1
   const seen = new Map()
   for (const list of lists) {
     for (const a of list) {
+      if (structuralUrl && (a[0] === 'kv' || a[0] === 'bool') && a[1].toLowerCase() === structuralUrl) continue
       if (isClass(a)) {
         if (classAt === -1) {
           classAt = parts.length
@@ -1890,8 +1892,9 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false) {
   quotePrevCtx = prevCtx
   try {
     let html
-    if (text.includes('@lines') && text.includes('{{')) {
-      const literals = findDirectives(text).filter(hasInvalidLineRange)
+    if (text.includes('{{')) {
+      const literals = findDirectives(text).filter((directive) =>
+        hasInvalidLineRange(directive) || !directive.quoted && directive.options.some(([key, value]) => key === 'code' && value === null))
       if (literals.length) {
         let key = randomUUID().replaceAll('-', '')
         while (text.includes(key)) key = randomUUID().replaceAll('-', '')
@@ -1900,7 +1903,7 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false) {
         const replacements = []
         for (const directive of literals) {
           if (directive.start < at) continue
-          const marker = `CARVEINVALIDINCLUDE${key}X${replacements.length}X`
+          const marker = `CARVEINVALIDINCLUDE${key}X${replacements.length}X}`
           masked += text.slice(at, directive.start) + marker
           replacements.push([marker, text.slice(directive.start, directive.end)])
           at = directive.end
