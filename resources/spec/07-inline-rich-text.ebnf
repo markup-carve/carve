@@ -368,7 +368,11 @@ name_word = (letter | digit | '_' | '-')+ ;
    character continues the name (`@john.doe`, `#release-1.0`); a dot at the
    end of the run is sentence punctuation, never part of the name
    (`ping @markus.` -> mention `markus` + literal `.`). Pinned by corpus
-   91-mention-and-tag-name-boundaries / 31-mention-ignores-email-addresses. *)
+   91-mention-and-tag-name-boundaries / 31-mention-ignores-email-addresses.
+   When an enclosing inline frame has a closer beginning with a name character,
+   that closer ends the mention or tag name before the name consumes it. Thus
+   `{-{#x-}` closes the deletion and leaves `#x` as the tag, while a bare `#x-`
+   remains a tag named `x-`. *)
 
 (* ATTRIBUTES ON A MENTION OR TAG (normative, PART 10 §1). The node carries an
    `attrs` slot (PART 12) and those attributes RENDER, with the author's

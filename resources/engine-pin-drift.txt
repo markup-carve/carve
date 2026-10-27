@@ -32,3 +32,4 @@
 726-a-second-plus-starts-its-own-paragraph-after-attachment  The pinned JS parser folds the second plus into the open quote paragraph instead of closing it (carve#3777, carve-js#3724).
 726-a-second-plus-starts-its-own-paragraph-after-attachment-3  The pinned JS parser folds the second plus into the open description paragraph instead of closing it (carve#3777, carve-js#3724).
 726-a-second-plus-starts-its-own-paragraph-after-attachment-4  The pinned JS parser folds the second plus into the open footnote paragraph instead of closing it (carve#3777, carve-js#3724).
+727-an-enclosing-closer-ends-a-tag-name  The pinned JS parser consumes the deletion closer's hyphen as part of the tag name (carve#3774, fixed by carve-js#3720).

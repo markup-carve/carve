@@ -781,6 +781,7 @@ index: examples/edge-cases/index.md
   a-blank-ends-the-old-quote-s-child-column
   an-unclosed-nested-fence-keeps-blanks-before-outer-text
   a-second-plus-starts-its-own-paragraph-after-attachment
+  an-enclosing-closer-ends-a-tag-name
   a-contentless-description-marker-folds-under-a-quoted-term
   an-overindented-colon-opener-keeps-the-quote-paragraph-open
 

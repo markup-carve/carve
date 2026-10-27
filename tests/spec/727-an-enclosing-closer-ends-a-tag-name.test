@@ -1,0 +1,10 @@
+An enclosing closer ends a tag name
+
+```
+{-{#x-}
+
+#x-
+.
+<p><del>{<span class="tag"><strong>#x</strong></span></del></p>
+<p><span class="tag"><strong>#x-</strong></span></p>
+```
