@@ -571,19 +571,10 @@
     },
     {
       "name": "item-first-block-indented",
-      "description": "A refused first-block plus adds no block; the indented line follows the column rules (CARVE-P9-067).",
+      "description": "A first-block plus attaches the following block at the item content column (CARVE-P9-067).",
       "source": "- +\n  x\n",
       "expected": {
-        "findings": [
-          {
-            "line": 1,
-            "column": 3,
-            "includes": [
-              "+",
-              "column rules"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {

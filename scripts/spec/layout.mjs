@@ -6736,9 +6736,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const followerCol = follower?.L?.col ?? follower?.col
       const firstBlockAtZero = attachNext && attachmentCol > 0 && followerCol === 0 &&
         !matchMarkerAt(follower)
+      const firstBlockAtContent = attachNext && follower?.col >= contentCol &&
+        !matchMarkerAt(follower)
       if (i >= n || isBlank(lines[i]) ||
-          (!firstBlockAtZero && !attachesFlushLeft(follower, attachmentCol))) return false
-      const blockColumn = firstBlockAtZero ? 0 : attachmentCol
+          (!firstBlockAtZero && !firstBlockAtContent && !attachesFlushLeft(follower, attachmentCol))) return false
+      const blockColumn = firstBlockAtZero ? 0 : firstBlockAtContent ? followerCol : attachmentCol
       const closesColon = fence.colon.length > 0
       if ((fence.opaque?.kind === 'code' && fence.opaque.opens !== false) || closesColon) {
         const bounds = state.attachmentBoundaries ??= new WeakMap()

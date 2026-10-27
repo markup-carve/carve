@@ -1,1 +1,10 @@
-{}
+{
+  "item-first-block-indented": {
+    "actual": [
+      [
+        1,
+        3
+      ]
+    ]
+  }
+}

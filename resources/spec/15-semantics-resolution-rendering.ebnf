@@ -307,8 +307,9 @@
          - LIST ITEM (pinned by corpus list-continuation-marker): a separate
            `+` at an item's marker column attaches a block to that item.
            FIRST-BLOCK form: `- +` or a stacked opener ending in `+` opens
-           an item whose body is one following non-list block at document
-           column 0 or the opener line's own column, with no inline lead;
+           an item whose body is the next block in that item's ownership,
+           wherever that block starts, with no inline lead; a sibling list
+           item remains a sibling;
            `- + text` keeps `+ text` as literal text.
            A task-item opener `- [ ] ` or `- [x] ` followed by `+` has
            the same first-block form, while `- [ ] + text` is a task item
@@ -333,14 +334,18 @@
          EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM --
          NORMATIVE [CARVE-P9-067]. The four containers above take the second
          marker place in L3: `- +`, `: +`, `> +` and `[^a]: +` open a body whose
-         content is one following block, as everywhere else in L3. For an
-         indented opener, a non-list block at document column 0 or at the
-         opener line's own column enters the item opened on that line; a block
-         at an intervening column does not. On a line of stacked openers the
-         line's own column is its first marker's column, so a block at an inner
-         list opener's column (column 2 below `- - > +`) is at an intervening
-         column: the `+` is refused and reads like a letter there
-. The column of the quote that owns the `+`
+         content is one following block, as everywhere else in L3. For a
+         list item's `- +`, the next block in the item's ownership is that one
+         attachment wherever it starts, including the item's content column.
+         Its own starting column sets its extent; the item ends at that block's
+         boundary (CARVE-P9-032). A line in an enclosing item's column still
+         belongs to that enclosing item. A later quote, heading, or thematic
+         break begins outside the attached item. A sibling list item stays a
+         sibling. For a first-block quote on a line
+         of stacked openers, the line's own column is its first marker's
+         column, so a block at an inner list opener's column (column 2 below
+         `- - > +`) is at an intervening column: the `+` is refused and reads
+         like a letter there. The column of the quote that owns the `+`
          stays eligible at every stacking depth, next to column 0 and the
          line's own column: `- > +` / `  b` and `- - > +` / `    b` both attach
          `b` to the quote. The columns are raw line columns, so below
@@ -355,7 +360,8 @@
          line keep the innermost owner.
 
          With no eligible block after it (the end of the input, a blank line,
-         or a line at an ineligible column), the `+` is refused. In a list
+         or for a column-bound host a line at an ineligible column), the `+` is
+         refused. In a list
          item's first-block form, that refused `+` leaves the item empty and is
          not text; the lint still reports it.
          In a list item or definition description it adds no block, and a
