@@ -37,5 +37,3 @@
 #     Delete the line in the same commit as the fix.
 #
 # Format: <document id><space><space><reason>
-docs/includes.md#1  PART 10 I2 (#3759): a standalone @code directive has its own source-line boundary; the pinned carve-js still parses the directive as inline content.
-docs/recipes.md#10  PART 10 I2 (#3759): a standalone @code directive has its own source-line boundary; the pinned carve-js still parses the directive as inline content.

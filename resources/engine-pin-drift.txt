@@ -25,16 +25,7 @@
 #
 # Format: <slug><space><space><reason>
 
-713-a-description-continues-after-any-blank-run-2  The pinned JS formatter closes the description after two blank lines (carve-js#3694).
-715-invalid-include-line-ranges-remain-literal-in-core  PART 10 I1 (#3764): the pinned JS core parser marks @lines as a mention in the literal directive.
-715-invalid-include-line-ranges-remain-literal-in-core-2  PART 10 I1 (#3764): the pinned JS core parser marks @lines as a mention in the literal directive.
-715-invalid-include-line-ranges-remain-literal-in-core-3  PART 10 I1 (#3764): the pinned JS core parser marks @lines as a mention in the literal directive.
-726-a-second-plus-starts-its-own-paragraph-after-attachment  The pinned JS parser folds the second plus into the open quote paragraph instead of closing it (carve#3777, carve-js#3724).
-726-a-second-plus-starts-its-own-paragraph-after-attachment-3  The pinned JS parser folds the second plus into the open description paragraph instead of closing it (carve#3777, carve-js#3724).
-726-a-second-plus-starts-its-own-paragraph-after-attachment-4  The pinned JS parser folds the second plus into the open footnote paragraph instead of closing it (carve#3777, carve-js#3724).
-727-an-enclosing-closer-ends-a-tag-name  The pinned JS parser consumes the deletion closer's hyphen as part of the tag name (carve#3774, fixed by carve-js#3720).
 732-paired-german-quotes-leave-no-quote-in-a-heading-id  The pinned JS heading slugger keeps the German opening quote (carve#3799, carve-js#3737).
-733-consecutive-continuation-markers-in-a-div-hosted-quote  The pinned JS parser drops the continuation content inside a div-hosted quote (carve#3789).
 735-invalid-line-range-includes-within-paragraphs-stay-literal  The pinned JS parser marks invalid inline include options as mentions (carve-js#3743).
 735-invalid-line-range-includes-within-paragraphs-stay-literal-2  The pinned JS parser marks invalid inline include options as mentions (carve-js#3743).
 735-invalid-line-range-includes-within-paragraphs-stay-literal-3  The pinned JS parser marks invalid inline include options as mentions (carve-js#3743).
