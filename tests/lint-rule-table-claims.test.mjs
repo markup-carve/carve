@@ -114,6 +114,10 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  */
 const NOT_IN_THE_PIN_YET = new Map([
   [
+    'include-lines-invalid',
+    'specified by CARVE-P6-001 I1 in carve#3764; the pinned build still reports include-unknown-option',
+  ],
+  [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',
   ],
