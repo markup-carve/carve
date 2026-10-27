@@ -1,20 +1,19 @@
 name: AST conformance
 
-# `ast:check` is the only thing that measures PART 12 conformance, and until now
-# it ran nowhere (carve#475). It needs the satellite checkouts, which is why it
-# was never wired into ci.yml - so it lives here instead, on a schedule.
-#
-# SCHEDULED rather than per-PR on purpose. What this catches is cross-repo
-# DRIFT: an engine's main moving away from the published AST while this repo's
-# main stands still. That is a daily-cadence problem, and cloning and BUILDING
-# three engines on every PR would add minutes to a gate that would almost always
-# say the same thing. workflow_dispatch is here for when you want it now.
+# `ast:check` measures PART 12 conformance with the reviewed engine pins.
+# A pull request that changes resources/engine-pins.json must run it before
+# those revisions enter main. The daily schedule also catches cross-repo drift
+# while this repository stands still; workflow_dispatch permits an immediate
+# run. The satellite checkouts are provisioned here rather than in ci.yml.
 #
 # CARVE_REQUIRE_ALL_ENGINES=1 turns a missing or unbuildable engine into a red
 # run. That is the whole point of running it here: the checkouts are provisioned
 # deliberately, so one dropping out is a broken job, not a line of prose.
 
 on:
+  pull_request:
+    paths:
+      - resources/engine-pins.json
   schedule:
     # 04:00 UTC daily, after the downstream bump workflow has had a night to run.
     # Sunday has its own spelling so the generated differential sweeps below
