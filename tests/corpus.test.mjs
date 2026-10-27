@@ -44,10 +44,6 @@ for (const entry of emptyDestinationCases.cases.filter((item) => item.html)) {
 }
 for (const entry of emptyDestinationCases.cases.filter((item) => Object.hasOwn(item, 'definition'))) {
   test(`empty destination definition: ${entry.id}`, () => {
-    if (entry.id === 'reserved-citation-label') {
-      assert.throws(() => parse(entry.source), Refuse)
-      return
-    }
     const definitions = [...parse(entry.source).linkDefs.values()]
     if (entry.definition === null) {
       assert.equal(definitions.length, 0)

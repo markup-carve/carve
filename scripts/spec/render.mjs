@@ -512,15 +512,15 @@ const sem = g.createSemantics().addOperation('h', {
       this.source.startIdx,
     )
   },
-  boldItalic(_o, inner, _c, attrs) {
+  boldItalic(_o, first, rest, _c, attrs) {
     const a = renderAttrs(attrsOf(attrs))
     // The combined token owns BOTH `/` and `*`, so §9 E3 holds both literal
     // inside it while the other three delimiters resolve normally.
     const body = resolveEmphasis(
-      () => buildToks(inner.children, '/*'),
+      () => combinedInner(first, rest, '/*'),
       this.source.sourceString,
       '/*',
-      inner.source.startIdx,
+      first.source.startIdx,
     )
     return `<strong${a}><em>${body}</em></strong>`
   },
@@ -1072,12 +1072,20 @@ function forcedUnder(alt) {
 
 // A blocked combined token as the delimiters it is made of. Its content keeps
 // the reading `biInner` gave it.
+function combinedInner(first, rest, literalDelims, blocked) {
+  const head = first.child(0)
+  const leading = head.ctorName === 'biCloser'
+    ? [{ k: 't', h: escapeHtml(head.sourceString) }]
+    : buildToks([head], literalDelims, blocked)
+  return [...leading, ...buildToks(rest.children, literalDelims, blocked)]
+}
+
 function splitCombined(bi, literalDelims, blocked) {
   const delim = (ch, at) => literalDelims.includes(ch) ? { k: 't', h: escapeHtml(ch) } : { k: 'd', ch, at }
   const open = bi.child(0).source.startIdx
-  const close = bi.child(2).source.startIdx
-  const toks = [delim('/', open), delim('*', open + 1), ...buildToks(bi.child(1).children, literalDelims, blocked), delim('*', close), delim('/', close + 1)]
-  const attrs = bi.child(3).children[0]
+  const close = bi.child(3).source.startIdx
+  const toks = [delim('/', open), delim('*', open + 1), ...combinedInner(bi.child(1), bi.child(2), literalDelims, blocked), delim('*', close), delim('/', close + 1)]
+  const attrs = bi.child(4).children[0]
   if (attrs) toks.push({ k: 'attrs', node: attrs, at: attrs.source.startIdx, h: attrs.h(), heldMarker: literalDelims.includes('/'), markerAt: close + 1, markerChar: '/' })
   return toks
 }

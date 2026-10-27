@@ -448,11 +448,6 @@ export const rawPayload = (bodyLines, terminated = true) =>
 const BLANK_MEAS = { col: 0, rest: '', tabs: false }
 const LAZY_MEAS = (rest) => ({ col: 0, rest: LAZY + rest, tabs: false })
 
-// Lines that put the whole document out of the executable subset.
-const REFUSERS = [
-  [/^\[@/, 'citation definition'],
-]
-
 // The leading whitespace run, removed. `line.replace(/^[ \t]+/, '')` spells the
 // same thing without being counted, and this is a walk over indentation like
 // any other - carve#752 is about how many times that walk happens, so all of
@@ -3429,9 +3424,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         k++
         continue
       }
-      for (const [re, what] of REFUSERS) {
-        if (re.test(lines[k])) throw new Refuse(`${what} interrupting a caption`)
-      }
       if (CAPTION.test(lines[k])) break // item 4: no repeated marker
       if (ind(k).rest.startsWith('%%')) break // §10 I5
       if (peekInterrupts(k)) break // §10 I1/I4/I5
@@ -3467,10 +3459,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       }
       // not a valid attribute line: ordinary paragraph content (A6)
     }
-    for (const [re, what] of REFUSERS) {
-      if (re.test(line)) throw new Refuse(what)
-    }
-
     // PART 10 I2: the source spelling closes a standalone code include line.
     // Resolution changes its block, never the boundary before a caption.
     const codeInclude = standaloneCodeInclude(line)
@@ -5306,9 +5294,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         para.push(lines[i].slice(LAZY.length).replace(/[ \t]+$/, ''))
         i++
         continue
-      }
-      for (const [re, what] of REFUSERS) {
-        if (re.test(lines[i])) throw new Refuse(`${what} interrupting a paragraph`)
       }
       // SS4, NOT SS10. A `^ ` line ends an open paragraph only where SS4 has
       // something to attach it to: a paragraph whose WHOLE content is one image

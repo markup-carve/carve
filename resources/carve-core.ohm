@@ -178,7 +178,7 @@ CarveCore {
   inline     = wordSlash | word | spComment | bracedComment | inlineSpace
              | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
-             | editorial | bracedDash | emptyForced | overlapForced | forcedSpan
+             | editorial | bracedDash | emptyForced | forcedSpan | overlapForced
              | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escapedCrossref | escape | imageRef | image | bracketed
              | autolink | bang | dollar
              | ellipsis | dashRun | dot | dash | plus | pct | lt | gt
@@ -204,7 +204,8 @@ CarveCore {
   // The outer `/` takes bare_opener and bare_closer (carve#3217). A PEG has no
   // look-behind, so `wordSlash` takes a `/` glued after a word before `span`
   // can see it; a `*/` before a letter or digit is content, not the closer.
-  boldItalic = "/*" ~spaceOrEnd ~graphemeExt biInner+ biCloser attrRun?
+  boldItalic = "/*" ~spaceOrEnd ~graphemeExt biFirst biInner* biCloser attrRun?
+  biFirst    = biCloser | biInner
   biCloser   = "*/" ~wordChar ~graphemeExt
   // The `/` stays a §9 candidate: it cannot open after the word, but it can
   // close an open italic (render.mjs). A mention or tag ends on a name
@@ -229,7 +230,7 @@ CarveCore {
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)
   rich       = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
-             | editorial | bracedDash | emptyForced | overlapForced | forcedSpan | mathD | mathI
+             | editorial | bracedDash | emptyForced | forcedSpan | overlapForced | mathD | mathI
              | litInline | codeA | escape | imageRef | image | bracketed | autolink | bang | dollar
              | ellipsis | dashRun | dquote | squote
              | dot | dash | plus | pct
@@ -387,7 +388,7 @@ CarveCore {
   edSubNew   = ~"~}" (crossref | autolink | edSubAtom)
   // A `$` or `!` prefix needs no alternative of its own: the backtick run
   // behind it is what carries the arrow, and this rule skips that run.
-  edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | emptyForced | overlapForced | forcedSpan | nested | edChar
+  edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | emptyForced | forcedSpan | overlapForced | nested | edChar
   edSubCode  = codeClosed | edSubCodeU
   edSubCodeU = "\u0060" "\u0060"* (~"~}" any)*
   edComment  = edCommentBody
