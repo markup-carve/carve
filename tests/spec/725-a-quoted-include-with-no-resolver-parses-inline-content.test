@@ -1,0 +1,7 @@
+A quoted include with no resolver parses inline content
+
+```
+{{ "a}}b" @code }}
+.
+<p>{{ “a}}b” <span class="mention"><strong>@code</strong></span> }}</p>
+```

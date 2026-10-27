@@ -3482,7 +3482,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         push(node)
       } else {
         i++
-        push({ t: 'includeLiteral', text: line.trim() })
+        push({ t: 'includeLiteral', text: line.trim(), quotedPath: directive.quoted })
       }
       continue
     }

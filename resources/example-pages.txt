@@ -1305,6 +1305,7 @@ index: examples/edge-cases/index.md
   a-denied-destination-takes-one-render-loss-row-per-sink
   include-directive-with-no-resolver-renders-literal
   invalid-include-line-ranges-remain-literal-in-core
+  a-quoted-include-with-no-resolver-parses-inline-content
   url-sinks-reject-schemes-after-emitted-value-normalization
   45-inline-extensions-9
   36-autolinks-2
