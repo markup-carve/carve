@@ -1,0 +1,50 @@
+{
+  "js": {
+    "unknown-option": [
+      "category-missing"
+    ],
+    "invalid-ast-json": [
+      "category-missing"
+    ],
+    "unreadable-input": [
+      "category-missing"
+    ],
+    "bad-option-value": [
+      "category-missing"
+    ]
+  },
+  "php": {
+    "unknown-option": [
+      "status-1",
+      "category-missing"
+    ],
+    "invalid-ast-json": [
+      "status-1",
+      "category-missing"
+    ],
+    "unreadable-input": [
+      "status-1",
+      "category-missing"
+    ],
+    "bad-option-value": [
+      "category-missing"
+    ]
+  },
+  "rust": {
+    "unknown-option": [
+      "status-1",
+      "category-missing"
+    ],
+    "invalid-ast-json": [
+      "status-1",
+      "category-missing"
+    ],
+    "unreadable-input": [
+      "status-1",
+      "category-missing"
+    ],
+    "bad-option-value": [
+      "category-missing"
+    ]
+  }
+}

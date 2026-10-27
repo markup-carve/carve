@@ -114,6 +114,12 @@ jobs:
           CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
         run: npm run migration:evidence
+      - name: Check CLI error contract
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
+        run: node --test --test-concurrency=4 tests/cli-error-contract.test.mjs
 
   roundtrip-structure:
     name: Structural roundtrip baseline

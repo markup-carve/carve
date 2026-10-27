@@ -82,6 +82,18 @@
      `.github/CONTRIBUTING.md`, and what earns a new clause lives beside it
      under WHAT EARNS A CLAUSE. Both are process rules, not language rules.
 
+   CLI ERROR CONTRACT (NORMATIVE). A command-line invocation exits with status
+   2 for an unknown option or invalid option value (`usage`), a missing or
+   unreadable input file (`input-unreadable`), or invalid AST JSON supplied to
+   `--from-json` (`ast-json-invalid`). The same status applies to each class
+   on every implementation.
+
+   The first stderr diagnostic line begins `carve[CATEGORY]:`, with CATEGORY
+   replaced by exactly one of the three names above. The category token is
+   stable for scripts; text after the colon is implementation-specific. The
+   category identifies the failed input or invocation, not a parser or lint
+   finding within a successfully read document.
+
    RECOVERY DECISION TABLE (PARTS 0-9; construct guards still govern).
    Decide within the current host after testing the complete opener:
    | Case | Recovery |

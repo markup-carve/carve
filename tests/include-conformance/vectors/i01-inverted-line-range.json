@@ -1,6 +1,6 @@
 {
   "name": "i01-inverted-line-range",
-  "description": "An inverted line range is not a valid option; warns and stays literal.",
+  "description": "A reversed @lines range warns as include-lines-invalid, stays literal, and retains its resolved dependency.",
   "rules": [
     "I1"
   ],
@@ -15,9 +15,14 @@
     "fmt": "{{ child @lines:3-1 }}\n",
     "warnings": [
       {
-        "rule": "include-unknown-option"
+        "rule": "include-lines-invalid"
       }
     ],
-    "dependencies": []
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
   }
 }

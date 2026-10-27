@@ -33,6 +33,11 @@ and pre-commit hooks:
 carve lint docs/**/*.crv
 ```
 
+Across commands, usage errors, unreadable input, and invalid AST JSON exit with
+status `2`. The first stderr line begins `carve[category]:`, where `category`
+is `usage`, `input-unreadable`, or `ast-json-invalid`. Scripts can use that
+token; wording after the colon may differ by implementation.
+
 Use `carve lint --json` when an editor, CI job, or migration tool needs stable
 rule IDs, source ranges, and rule-specific details rather than display text.
 

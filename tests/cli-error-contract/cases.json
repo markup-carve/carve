@@ -1,0 +1,40 @@
+{
+  "cases": [
+    {
+      "id": "unknown-option",
+      "args": [
+        "--unknown"
+      ],
+      "stdin": "",
+      "category": "usage"
+    },
+    {
+      "id": "bad-option-value",
+      "args": [
+        "migrate",
+        "--from",
+        "nope"
+      ],
+      "stdin": "",
+      "category": "usage"
+    },
+    {
+      "id": "invalid-ast-json",
+      "args": [
+        "--from-json",
+        "--html"
+      ],
+      "stdin": "{bad",
+      "category": "ast-json-invalid"
+    },
+    {
+      "id": "unreadable-input",
+      "args": [
+        "--html",
+        "__carve_missing_cli_input_3770__.crv"
+      ],
+      "stdin": "",
+      "category": "input-unreadable"
+    }
+  ]
+}
