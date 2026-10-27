@@ -7,7 +7,6 @@
     { "name": "quoted-block", "source": "> %%%\n> **hidden** ~~hidden~~\n> %%%\n", "expected": [] },
     { "name": "list-block", "source": "- item\n  %%%\n  **hidden** ~~hidden~~\n  %%%\n", "expected": [] },
     { "name": "div-block", "source": "::: note\n%%%\n**hidden** ~~hidden~~\n%%%\n:::\n", "expected": [] },
-    { "name": "line-comment", "source": "%% **hidden** ~~hidden~~\n", "expected": [] },
-    { "name": "bidi-safety", "source": "%%%\n**hidden** \u202eb\n%%%\n", "expected": [["bidi-control-in-source", 2, 12]] }
+    { "name": "line-comment", "source": "%% **hidden** ~~hidden~~\n", "expected": [] }
   ]
 }

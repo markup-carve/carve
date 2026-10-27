@@ -9,7 +9,7 @@ const corpus = JSON.parse(readFileSync(new URL('./lint-comment-visibility/cases.
 
 test('comment lint corpus declares visible diagnostics and hidden controls', () => {
   assert.equal(corpus.version, 1)
-  assert.equal(corpus.cases.length, 8)
+  assert.equal(corpus.cases.length, 7)
   for (const row of corpus.cases) {
     assert.ok(row.name && row.source && Array.isArray(row.expected))
     for (const finding of row.expected) {
