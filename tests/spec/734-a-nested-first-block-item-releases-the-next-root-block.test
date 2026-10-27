@@ -1,0 +1,86 @@
+A nested first-block item releases the next root block
+
+```
+- - +
+    x
+> tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+<blockquote><p>tail</p></blockquote>
+```
+
+```
+- - +
+    x
+# tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+<section id="tail">
+  <h1>tail</h1>
+</section>
+```
+
+```
+- - +
+    x
+---
+.
+<ul>
+  <li>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+<hr>
+```
+
+```
+- - +
+    x
+::: note
+tail
+:::
+.
+<ul>
+  <li>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+<aside class="admonition note" aria-label="Note">
+  <p>tail</p>
+</aside>
+```
+
+```
+- - +
+    x
+:: tail
+:  definition
+.
+<ul>
+  <li>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+<dl>
+  <dt>tail</dt>
+  <dd>definition</dd>
+</dl>
+```

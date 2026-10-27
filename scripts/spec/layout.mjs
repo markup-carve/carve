@@ -6839,6 +6839,23 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const line = lines[i]
       // `+` at the item's marker column attaches one block there (SS17 L3/L4).
       const lm = ind(i)
+      // Measure a descendant's first attached block before the ordinary
+      // content-column branch collects it. Otherwise only a later root block
+      // reaches the below-column attachment branch and becomes the candidate.
+      if (carriesBareContinuation && nestedAttachmentEnd < 0 && lm.rest !== '' &&
+          !matchMarkerAt(lm) &&
+          (lm.col >= contentCol || attachesFlushLeft(lm, nestedAttachmentColumn))) {
+        const column = lm.col >= contentCol ? lm.col : nestedAttachmentColumn
+        nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
+          ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
+          matchMarkerAt(ind(idx))?.indent === baseIndent, lm, column)
+      }
+      // A descendant's first-block marker has spent its one attached block.
+      // A later line at this item's marker column belongs to the enclosing
+      // frame, unless it is a new continuation marker for this item.
+      if (nestedAttachmentEnd >= 0 && i >= nestedAttachmentEnd &&
+          lm.rest !== '' && lm.col <= baseIndent &&
+          !CONT_MARKER.test(lm.rest)) break
       if (i <= wrappedAttrEnd) {
         const body = dedentMeasured(lm, line, contentCol)
         pushLine(body.text, body.meas)
