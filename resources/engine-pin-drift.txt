@@ -26,3 +26,6 @@
 # Format: <slug><space><space><reason>
 
 713-a-description-continues-after-any-blank-run-2  The pinned JS formatter closes the description after two blank lines (carve-js#3694).
+715-invalid-include-line-ranges-remain-literal-in-core  PART 10 I1 (#3764): the pinned JS core parser marks @lines as a mention in the literal directive.
+715-invalid-include-line-ranges-remain-literal-in-core-2  PART 10 I1 (#3764): the pinned JS core parser marks @lines as a mention in the literal directive.
+715-invalid-include-line-ranges-remain-literal-in-core-3  PART 10 I1 (#3764): the pinned JS core parser marks @lines as a mention in the literal directive.
