@@ -68,6 +68,7 @@ const INVENTORY = [
   { base: '104-paragraph-trailing-whitespace', crv: ['trailing-WS'], html: [] },
   { base: '697-a-final-tab-does-not-change-list-ownership-in-a-description', crv: ['trailing-WS'], html: [] },
   { base: '705-unicode-whitespace-ends-a-link-destination', crv: ['NNBSP'], html: ['NNBSP'] },
+  { base: '716-url-sinks-reject-schemes-after-emitted-value-normalization', crv: ['RLO'], html: ['RLO'] },
   {
     base: '119-trojan-source-heading-ids-are-nfc-normalized-and-strip-invisible-controls-3',
     crv: ['RLO', 'ZWSP'],
