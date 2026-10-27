@@ -1296,6 +1296,7 @@ index: examples/edge-cases/index.md
   a-format-character-before-a-scheme-is-not-stripped-and-is-inert
   a-denied-destination-takes-one-render-loss-row-per-sink
   include-directive-with-no-resolver-renders-literal
+  invalid-include-line-ranges-remain-literal-in-core
   45-inline-extensions-9
   36-autolinks-2
 
