@@ -3,13 +3,3 @@
 # target. The comparison gate accepts only that exact shape and rejects a line
 # that no longer differs at the pinned engine revisions.
 # Format: target/engine/slug  owner/repo#issue and reason
-plain/js/352-a-bracketed-construct-s-identifiers-stay-on-one-line  markup-carve/carve-js#3742: literal multiline reference soft break.
-ansi/js/352-a-bracketed-construct-s-identifiers-stay-on-one-line  markup-carve/carve-js#3742: literal multiline reference soft break.
-plain/js/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3  markup-carve/carve-js#3742: literal multiline image reference soft break.
-ansi/js/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3  markup-carve/carve-js#3742: literal multiline image reference soft break.
-markdown/js/716-url-sinks-reject-schemes-after-emitted-value-normalization  markup-carve/carve-js#3741: emitted link destination admits a denied scheme.
-ansi/js/716-url-sinks-reject-schemes-after-emitted-value-normalization  markup-carve/carve-js#3741: emitted link destination admits a denied scheme.
-html/js/732-paired-german-quotes-leave-no-quote-in-a-heading-id  markup-carve/carve-js#3737: generated heading ID retains the opening quote.
-html/js/735-invalid-line-range-includes-within-paragraphs-stay-literal  markup-carve/carve-js#3743: invalid inline range remains a mention.
-html/js/735-invalid-line-range-includes-within-paragraphs-stay-literal-2  markup-carve/carve-js#3743: invalid inline range remains a mention.
-html/js/735-invalid-line-range-includes-within-paragraphs-stay-literal-3  markup-carve/carve-js#3743: invalid inline range remains a mention.

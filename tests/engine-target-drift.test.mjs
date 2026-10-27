@@ -14,18 +14,24 @@ test('every declared target difference names a published corpus row', () => {
 })
 
 test('a declared target difference requires one outlier and two agreeing engines', () => {
+  const sampleEntries = new Set([
+    'plain/js/352-a-bracketed-construct-s-identifiers-stay-on-one-line',
+    'ansi/js/352-a-bracketed-construct-s-identifiers-stay-on-one-line',
+    'markdown/js/716-url-sinks-reject-schemes-after-emitted-value-normalization',
+    'html/js/732-paired-german-quotes-leave-no-quote-in-a-heading-id',
+  ])
   const slug = '352-a-bracketed-construct-s-identifiers-stay-on-one-line'
   const good = [['js', 'a\nb'], ['php', 'a b'], ['rust', 'a b']]
-  assert.equal(targetDriftKey('plain', slug, good, entries), `plain/js/${slug}`)
-  assert.equal(targetDriftKey('ansi', slug, good, entries), `ansi/js/${slug}`)
+  assert.equal(targetDriftKey('plain', slug, good, sampleEntries), `plain/js/${slug}`)
+  assert.equal(targetDriftKey('ansi', slug, good, sampleEntries), `ansi/js/${slug}`)
   const security = '716-url-sinks-reject-schemes-after-emitted-value-normalization'
-  assert.equal(targetDriftKey('markdown', security, [['js', 'javascript:alert(1)'], ['php', ''], ['rust', '']], entries), `markdown/js/${security}`)
+  assert.equal(targetDriftKey('markdown', security, [['js', 'javascript:alert(1)'], ['php', ''], ['rust', '']], sampleEntries), `markdown/js/${security}`)
   const heading = '732-paired-german-quotes-leave-no-quote-in-a-heading-id'
-  assert.equal(targetDriftKey('html', heading, [['js', 'id="„2"'], ['php', 'id="2"'], ['rust', 'id="2"']], entries), `html/js/${heading}`)
-  assert.equal(targetDriftKey('markdown', slug, good, entries), null)
-  assert.equal(targetDriftKey('plain', slug, [['js', 'a b'], ['php', 'a b'], ['rust', 'a b']], entries), null)
-  assert.equal(targetDriftKey('plain', slug, [['js', 'a'], ['php', 'b'], ['rust', 'c']], entries), null)
-  assert.equal(targetDriftKey('plain', slug, [['js', 'a'], ['rust', 'a'], ['other', 'b']], entries), null)
-  assert.equal(targetDriftKey('plain', slug, [['js', 'a'], ['php', 'ERROR:bad'], ['rust', 'a']], entries), null)
-  assert.equal(targetDriftKey('plain', slug, good.slice(0, 2), entries), null)
+  assert.equal(targetDriftKey('html', heading, [['js', 'id="„2"'], ['php', 'id="2"'], ['rust', 'id="2"']], sampleEntries), `html/js/${heading}`)
+  assert.equal(targetDriftKey('markdown', slug, good, sampleEntries), null)
+  assert.equal(targetDriftKey('plain', slug, [['js', 'a b'], ['php', 'a b'], ['rust', 'a b']], sampleEntries), null)
+  assert.equal(targetDriftKey('plain', slug, [['js', 'a'], ['php', 'b'], ['rust', 'c']], sampleEntries), null)
+  assert.equal(targetDriftKey('plain', slug, [['js', 'a'], ['rust', 'a'], ['other', 'b']], sampleEntries), null)
+  assert.equal(targetDriftKey('plain', slug, [['js', 'a'], ['php', 'ERROR:bad'], ['rust', 'a']], sampleEntries), null)
+  assert.equal(targetDriftKey('plain', slug, good.slice(0, 2), sampleEntries), null)
 })
