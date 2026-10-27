@@ -39,4 +39,4 @@
 # AN EMPTY FILE IS A REAL STATE, not a missing one: it says the three engines
 # agreed on every scalar the last run compared. It does not say they agree on
 # fields no corpus document reaches.
-heading.attrs.id  1  carve-js#3737 keeps a German opening quote in the generated heading ID (carve#3799).
+heading.attrs.id  1  markup-carve/carve-js#3737 keeps a German opening quote in the generated heading ID (carve#3799).

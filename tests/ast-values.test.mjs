@@ -146,8 +146,8 @@ const shippedDeclaration = () =>
  *
  * Run 36552218597, on the next head, fails the same step again.
  */
-// Re-measured after the engine pin advance: scalar values now agree.
-const LAST_MEASURED = new Map()
+// Re-measured at the pinned engines: the German heading ID differs in one document.
+const LAST_MEASURED = new Map([['heading.attrs.id', 1]])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>
