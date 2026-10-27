@@ -100,6 +100,11 @@
       line. Nested block structures (list, blockquote, table, admonition,
       div, figure, section, endnotes) indent their children by TWO spaces
       per nesting level. Inline content stays flat on its block's line.
+      A blockquote whose only visible child is an uncaptioned paragraph
+      writes that paragraph directly between its tags on one line, with no
+      child indentation or inserted newline: `<blockquote><p>q</p></blockquote>`.
+      Invisible children do not prevent this compact form. A block image,
+      captioned paragraph, or second visible block takes the multiline form.
 
       The HTML API returns a fragment with no final LF. A caller writing an
       output file may add its own line ending after the fragment.

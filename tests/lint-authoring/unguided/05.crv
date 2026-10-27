@@ -1,0 +1,7 @@
+| Backend | Latency (ms) | Retention (days) |
+|:--------|-------------:|-----------------:|
+| Redis   |            2 |                1 |
+| NATS    |            5 |                7 |
+| SQS     |           30 |               14 |
+
+Lowest-latency choice: Redis.

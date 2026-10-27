@@ -1,0 +1,11 @@
+# Betriebsanleitung: Worker neu starten
+
+1. Prüfen, ob ein Neustart des Workers erforderlich ist.
+2. Worker neu starten.
+   - Den folgenden Befehl auf dem zuständigen Server ausführen:
+
+   ```shell
+   systemctl restart worker
+   ```
+
+3. Prüfen, ob der Worker wieder läuft.

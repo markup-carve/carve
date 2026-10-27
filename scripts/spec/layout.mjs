@@ -2902,12 +2902,29 @@ export function parse(src, { authoredBodyBases = true, stateSink = null, include
   let hostedMarkerDepth = 0
   let hostedMarkerSourceColumn = null
   let liveQuoteItem = false
+  // A closer owned by an outer div cannot be the block attached after `+`.
+  // Record those boundaries before classifying plus lines inside quotes.
+  const enclosingColonClosers = new Set()
+  const enclosingColonStack = []
   if (sourceHasLonePlus) for (const [index, line] of sourceLines.entries()) {
     quotePathBefore.push({ depth: liveQuoteDepth, hostedColumn: hostedQuoteColumn, hostedMarker: hostedMarkerQuote,
       hostedDepth: hostedMarkerDepth, hostedSourceColumn: hostedMarkerSourceColumn, item: liveQuoteItem })
     const inFence = sourceFenceOpenBefore(index)
     sourceFenceBefore.push(inFence)
     if (inFence) continue
+    const measuredColon = indentCols(line)
+    const colonRun = COLON_FENCE.exec(measuredColon.rest)
+    if (colonRun && COLON_CLOSER.test(measuredColon.rest)) {
+      const top = enclosingColonStack.at(-1)
+      if (top?.length === colonRun[1].length && top.column === measuredColon.col) {
+        enclosingColonClosers.add(index)
+        enclosingColonStack.pop()
+      } else {
+        enclosingColonStack.push({ length: colonRun[1].length, column: measuredColon.col })
+      }
+    } else if (colonRun && parseColonOpener(colonRun[2]) !== null) {
+      enclosingColonStack.push({ length: colonRun[1].length, column: measuredColon.col })
+    }
     const quoted = quoteLeaf(line)
     const rest = quoted.measured.rest
     const marker = matchMarkerAt(quoted.measured)
@@ -3040,7 +3057,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null, include
       const next = sourceLines[index + 1] === undefined ? null : indentCols(sourceLines[index + 1])
       const sibling = markerColumns.includes(measured.col) && openSiblingList(index, measured.col, 0) &&
         next && next.col === measured.col && matchMarkerAt(next)
-      const refused = !next || !next.rest || next.col !== measured.col
+      const refused = !next || !next.rest || next.col !== measured.col || enclosingColonClosers.has(index + 1)
       const owner = quotePathBefore[index]
       const missingQuotePrefix = !sourceFenceBefore[index] &&
         (owner.hostedColumn !== null && measured.col >= owner.hostedColumn &&

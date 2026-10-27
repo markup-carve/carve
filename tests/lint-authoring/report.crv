@@ -1,0 +1,153 @@
+# PDF-Editor und Dokumentvorlagen: Bericht
+
+Stand 27.10.2026, geprüft gegen `origin/main` @ `bacea9e32`. Alle Zeilenangaben beziehen sich auf diesen Stand.
+
+Grundlage ist der Bericht `pdf-editor-audit.crv` vom 26.10. (`main` @ `3e4a0790a`), der lokal durchgeklickt wurde (Demo Office B, Test-PDFs mit und ohne DIN-Master). Dieser Bericht übernimmt dessen weiterhin gültige Inhalte, prüft jeden Befund im Code nach und ergänzt, was fehlte. Für diesen Bericht wurde nichts neu gerendert. Aussagen zum Aussehen der PDFs stammen aus der Sichtprüfung vom 26.10.
+
+Seit `3e4a0790a` hat sich im PDF- und Vorlagenbereich nichts geändert. Der einzige Diff in den betroffenen Pfaden betrifft die Rechnungsnummern-Muster in den Firmeneinstellungen.
+
+## Kurzfassung
+
+- *Vorlagen anlegen:* fertig. Finanzen › Vorlagen, TipTap-Editor mit Platzhaltern, Datenblöcken, Vorschau und Test-PDF, für Angebot, Rechnung, Rechnungskorrektur und Mahnung.
+- *Adressen:* teilweise. Es gibt zwei Quellen für die eigene Adresse (Firmendaten und Firmenadressen), die auf demselben PDF auseinanderlaufen können.
+- *Bild:* fertig für ein Firmenlogo auf allen Dokumenten. Weitere Bilder im Vorlagentext oder ein ganzseitiges Briefpapier gibt es nicht.
+- *Globale und lokale Vorlagen:* fertig, aber die Liste zeigt nicht, welche Vorlage druckt. Das erklärt die „2 aktiven“ Vorlagen. Bei der Auflösung gibt es zwei Fallen.
+- *Ausgabe Angebot, Rechnung, Mahnung:* fertig. Alle drei nutzen dasselbe Vorlagensystem und denselben Briefkopf. Rechnungen tragen ZUGFeRD EN16931.
+- *Nutzbarkeit:* nutzbar, mit einer Handvoll Ecken: Test-PDF ohne Fußzeile, Fußzeilenfelder pro Vorlage, irreführende Hinweise, zwei Bankverbindungen, fest verdrahtete Mahntexte.
+- *Header und Footer:* bereits getrennt. Briefkopf und Fußzeile kommen aus den Firmendaten, nicht aus der Vorlage. Eine eigene Briefpapier-Entität ist nicht nötig, zu schließen sind das Fußzeilen-Leck und die doppelte Adressquelle.
+
+## 1. Vorlagen anlegen
+
+- *Wo:* Finanzen › Vorlagen, Route `finanzen.vorlagen` und `finanzen.vorlagen.editor` (`routes/web.php:839-840`), Berechtigung `document-templates.manage`. Es ist eine Mandanten-Seite. Eine Admin-Oberfläche für globale Vorlagen gibt es nicht, diese kommen nur aus dem Seeder (`DocumentTemplateSeeder.php:91-115`).
+- *Typen:* Das Enum kennt neun Dokumenttypen (`DocumentType.php:9-37`), registriert sind vier Datenquellen: Angebot, Rechnung, Rechnungskorrektur, Mahnung (`config/documents.php:75-80`). Nur diese vier erscheinen im Editor.
+- *Neue Vorlage:* startet als Kopie der aktuell druckenden Vorlage des Typs (`index.blade.php:92-101`).
+- *Editor:* TipTap 3 (`package.json:20-36`), Speichern per Autosave (`editor.blade.php:114`). Eine Palette bietet die Platzhalter und Datenblöcke der Datenquelle mit Suche (`editor.blade.php:83-110`, `:345-377`). Erlaubt sind Absätze, Überschriften, Listen, Tabellen, Trennlinie, Zitat, Seitenumbruch sowie fett, kursiv, durchgestrichen, unterstrichen (`TiptapContentSanitizer.php:19-44`).
+- *Seiteneinstellungen:* Ränder, „Platz für Briefkopf freihalten“, vier Fußzeilenspalten (`editor.blade.php:385-416`).
+- *Vorschau:* Das Modal rendert gegen den neuesten echten Datensatz des Typs mit Briefkopf und Fußzeile (`routes/web.php:841-864`, `TemplateQueries.php:177-207`). Das Test-PDF läuft über Chrome (`routes/web.php:865-888`).
+
+## 2. Adressen: wo was gepflegt wird
+
+Der Vorlagentext enthält keine Adressen, nur Platzhalter wie `firma.absenderzeile`, `kunde.adresse`, `empfaenger.adresse`. Die eigene Adresse hat aber zwei Quellen.
+
+|= Stelle auf dem PDF |= Quelle |= Wo ändern |= Beleg |
+| Absenderzeile Rechnung, Korrektur, Mahnung | Standard-Firmenadresse, sonst Firmendaten | Finanzen › Firmenadressen | `InvoicePartyResolver.php:102-126` |
+| Absenderzeile Angebot | Freitext „Anschrift des Anbieters“ am Angebot, sonst die gewählte Absenderadresse, sonst Firmendaten | im Angebot oder unter Firmenadressen | `OfferPartyResolver.php:85-104` |
+| Anbietername auf der Rechnung | Firmenname laut Standard-Firmenadresse, sonst Firmenname | Firmenadressen | `InvoicePartyResolver.php:22-27` |
+| DIN-Infoblock oben rechts | Firmendaten: Anschrift, Telefon, E-Mail, Web | Einstellungen › Unternehmen › Übersicht und Corporate Design | `master.blade.php:50-62` |
+| Fußzeile: Firma, Anschrift, Kontakt, Register, Steuer | Firmendaten, oder die Fußzeilenspalten aus Corporate Design | Übersicht, Corporate Design | `CompanyFooterLines.php:20-43`, `DocumentFooterColumns.php:31-48` |
+| Fußzeile: Bank | Standardkonto der Firma | Übersicht › Bankkonten | `CompanyFooterLines.php:45-64` |
+| Bank im Rechnungstext und in der E-Rechnung | erstes für den Kunden angebotenes Konto | Bankkonten und Kontoauswahl am Kunden | `InvoicePlaceholderResolver.php:155-166` |
+| Steuernummer, USt-IdNr. | Firmendaten | Übersicht | `InvoicePlaceholderResolver.php:170-171` |
+| Logo | Firmenlogo | Corporate Design › Logo | `DocumentLogo.php:18-33` |
+| Empfänger Angebot | Kunde live, oder abweichende Empfängeranschrift am Angebot | CRM › Kunden oder im Angebot | `OfferPartyResolver.php:31-43` |
+| Empfänger Rechnung und Mahnung | beim Anlegen der Rechnung eingefroren | nicht mehr änderbar | `InvoiceBillingPlanner.php:565-583` |
+| ZUGFeRD-Verkäufer | Standard-Firmenadresse, Straße notfalls aus Firmendaten | Firmenadressen | `EInvoiceDataMapper.php:164-181` |
+^ Herkunft der Adressen und Angaben auf dem PDF
+
+Was das für den Nutzer heißt:
+
+- Wer eine Standard-Firmenadresse angelegt hat und nur die Übersicht ändert, bekommt oben die alte Absenderzeile und unten die neue Fußzeile. Die Seite Firmenadressen nennt sich „Anbieter-Adressen für Angebote“ (`firmenadressen.blade.php:178`), wirkt aber auch auf Rechnung, Mahnung und E-Rechnung.
+- Der Hinweis unter der Postanschrift in der Übersicht sagt nur, sie diene der Erkennung des eigenen Unternehmens in importierten Briefen (`general-form.blade.php:38`). Dass sie Briefkopf und Fußzeile aller PDFs speist, steht nirgends.
+- Zwei IBANs auf einer Rechnung sind möglich, wenn dem Kunden ein anderes Konto als das Standardkonto zugewiesen ist. Ohne Standardkonto fehlt die Bankspalte in der Fußzeile, die Zahlungserinnerung verweist trotzdem auf „das unten genannte Konto“ (`DunningLevelWording.php:42`).
+- Die Empfängeranschrift einer Rechnung kommt ausschließlich aus dem Snapshot (`InvoicePartyResolver.php:44-82`). Eine Korrektur im CRM erreicht bestehende Rechnungen und ihre Mahnungen nicht. Für gestellte Rechnungen ist das gewollt, für Entwürfe überrascht es.
+- Das Land wird gespeichert, aber nie gedruckt: die Adresszeilen bestehen nur aus Straße, Hausnummer, PLZ und Ort (`InvoicePartyResolver.php:128-135`, `OfferPartyResolver.php:106-113`).
+
+## 3. Bilder
+
+- *Logo:* PNG, JPG oder SVG bis 2 MB (`CompanySettingsRules.php:127-131`), Upload unter Corporate Design, abgelegt als `company-logos/{id}.{ext}` auf der Disk `public` (`UploadCompanyLogoAction.php:49-69`).
+- *Darstellung:* Das Logo wird als Data-URI in das HTML eingebettet (`DocumentLogo.php:18-33`) und mit Chrome über Browsershot gedruckt (`config/documents.php:82`, `BrowsershotPdfEngine.php:49-62`). Es erscheint laut Sichtprüfung auf Angebot, Rechnung und Mahnung oben rechts, auch auf dem Ersatz-Mahnbrief (`RenderLegacyDunningPdfAction.php:60-62`).
+- *Grenzen:* Mit DIN-Master höchstens 58 mm breit und 42 mm minus oberer Rand hoch, sonst 58 × 20 mm (`master.blade.php:21-28`, `:73-77`). Ist in Corporate Design „Briefkopfbereich reservieren“ für Vordruckpapier gesetzt, entfällt das Logo (`master.blade.php:64`).
+- *Nicht vorhanden:* Bilder im Vorlagentext (der Sanitizer kennt keinen Bildknoten), Unterschrift, Zweitlogo, ganzseitiges Briefpapier als PDF-Hintergrund.
+
+## 4. Globale und Mandanten-Vorlagen, „2 aktive Templates“
+
+- *Global:* `company_id` NULL, geseedet „Standard Honorarangebot“, „Standard Rechnung“, „Standard Rechnungskorrektur“, „Standard Mahnung“, jeweils als Standard markiert (`DocumentTemplateSeeder.php:102-115`). Globale Vorlagen lassen sich weder deaktivieren noch löschen (`ToggleDocumentTemplateActiveAction.php:19-21`, `DeleteDocumentTemplateAction.php:19-21`).
+- *Copy-on-write:* Bearbeiten einer globalen Vorlage legt eine Mandanten-Kopie mit gleichem Namen an, nie als Standard (`SaveDocumentTemplateAction.php:64-92`). Die globale wird in der Liste nur ausgeblendet, solange die Kopie gleich heißt (`TemplateQueries.php:41-62`). Nach dem Umbenennen erscheint sie wieder, getestet als gewollt (`DocumentTemplateServiceTest.php:121`).
+- *Welche druckt:* Aktive Standard-Vorlage der Firma, sonst die alphabetisch erste aktive Firmenvorlage, sonst der globale Standard, sonst die erste globale (`TemplateQueries.php:123-155`).
+- *Auswahl pro Dokument:* Nur das Angebot hat einen Picker über alle aktiven Vorlagen (`offers/show.blade.php:365`, `:1929`). Rechnung, Korrektur und Mahnung nehmen immer die Auflösung oben (`EnsureInvoiceDocumentDraftAction.php:104`, `GenerateStornoDocumentAction.php:71`, `GenerateDunningPdfAction.php:68`). „Aktiv“ heißt also nur „im Angebots-Picker wählbar“.
+- *Datenbank:* `UNIQUE (company_id, document_type, is_default_active)` über eine generierte Spalte erlaubt höchstens einen Standard pro Firma und Typ (Tabelle `document_templates` in `database/schema/mysql-schema.sql`). Für „aktiv“ gibt es bewusst keine Grenze. Zwei aktive Vorlagen sind deshalb kein Datenfehler.
+
+Warum ein Mandant zwei aktive Vorlagen sieht: Die Liste setzt das Badge „Standard“ allein nach dem Feld `is_default` (`index.blade.php:280-285`). Hat die Firma einen eigenen Standard und die globale Vorlage ist sichtbar (umbenannte Kopie, Duplikat, neue Vorlage), stehen zwei Zeilen mit „Standard“ da. Gedruckt wird die eigene. Am 26.10. so reproduziert.
+
+Zwei Fallen, die das Audit vom 26.10. nicht nannte:
+
+- *Alphabet:* Kopien, Duplikate und neue Vorlagen werden nie automatisch Standard (`SaveDocumentTemplateAction.php:74`, `:137-148`; `DuplicateDocumentTemplateAction.php:29`). Ohne ausdrücklich gesetzten Firmen-Standard druckt die alphabetisch erste aktive Firmenvorlage. Eine neue Vorlage „Rechnung 2026“ verdrängt so stillschweigend „Standard Rechnung“, während „Standard“ an der globalen Zeile steht.
+- *Inaktiver Standard:* Der Standard lässt sich deaktivieren, die Aktion prüft `is_default` nicht (`ToggleDocumentTemplateActiveAction.php:17-31`). Die Liste zeigt dann „Standard“ und „Inaktiv“ zugleich, gedruckt wird eine andere Vorlage.
+
+Die Liste sagt an keiner Stelle, welche Vorlage für Rechnung und Mahnung tatsächlich verwendet wird. Das ist der eigentliche Fehler.
+
+## 5. Angebot, Rechnung, Mahnung
+
+Alle drei laufen durch dasselbe System: Vorlage wird beim Anlegen in ein `Document` kopiert (`CreateDocumentFromTemplateAction.php:58-70`), `DocumentHtmlRenderer` setzt Body, Briefkopf und Fußzeile zusammen (`DocumentHtmlRenderer.php:55-93`), Chrome druckt, die Fußzeile kommt über Chromes `footerTemplate` auf jede Seite (`DocumentHtmlRenderer.php:185-205`). Ausgegebene PDFs werden gespeichert und nicht neu gerendert.
+
+|= Typ |= Entstehung |= Vorlage |= Besonderheit |
+| Angebot | Entwurf im Angebot, beim Versenden finalisiert (`SendOfferAction.php:119-135`); PDF-Route bevorzugt das finale PDF (`routes/web.php:493-530`) | Picker oder Auflösung | Platzhalter `kunde.*`, `projekt.*`, Blöcke Honorarberechnung, Zusammenstellung, Zahlungsbedingungen |
+| Rechnung | Entwurf beim Anlegen (`EnsureInvoiceDocumentDraftAction.php:104-112`), gespeichertes PDF (`routes/web.php:574-583`) | immer Auflösung | ZUGFeRD EN16931 beim Finalisieren (`config/documents.php:105-109`, `FinalizeDocumentAction.php:76-78`) |
+| Rechnungskorrektur und Storno | eigener Beleg (`GenerateStornoDocumentAction.php:71`) | immer Auflösung | E-Rechnung Typ 384 mit Bezug auf die Ursprungsrechnung |
+| Mahnung | `GenerateDunningPdfAction.php:56-80`, archiviertes PDF (`routes/web.php:786`) | immer Auflösung | Stufentext fest im Code; ohne Vorlage greift ein fester Ersatzbrief (`RenderLegacyDunningPdfAction.php:53-62`) |
+^ Ausgabe je Dokumenttyp
+
+Gemeinsam sind Logo, DIN-Infoblock und Fußzeile. Laut Sichtprüfung vom 26.10. ist die Fußzeile auf allen drei Typen identisch: Spalte 1 Firma und Anschrift, Spalte 2 Kontakt, Spalte 3 Geschäftsführer, Register, Steuernummer, Spalte 4 Bank (nur mit Standardkonto), dazu „Seite x von y“.
+
+Die Mahnungsvorlage setzt die Datums-Tabelle direkt unter die Anschrift (`standard-mahnung.json`, Knoten 5). Rechnung und Angebot haben davor eine Überschrift. Mit DIN-Master stößt deshalb die letzte Zeile des Infoblocks an die Tabelle (Sichtprüfung 26.10., nicht erneut gerendert).
+
+## 6. Nutzbarkeit: Befunde
+
+Die Befunde 1 bis 7 stammen aus dem Bericht vom 26.10. und sind hier am aktuellen Code nachgeprüft. N1 bis N5 sind neu. Behoben ist seit dem 26.10. keiner.
+
+|= Nr. |= Befund |= Stand |= Beleg |
+| 1 | Test-PDF zeigt keine Fußzeile, weil die Route das Dokument ohne `company_id` baut und der Footer nur darüber die Firma findet | bestätigt | `routes/web.php:877-883`, `DocumentHtmlRenderer.php:189-192` gegenüber `:220-237` |
+| 2 | Fußzeilenspalten pro Vorlage: überschreiben ohne DIN-Master die Firmen-Fußzeile, werden mit DIN-Master stillschweigend ignoriert, werden beim Anlegen eines Dokuments eingefroren | bestätigt | `DocumentFooterColumns.php:41-45`, `editor.blade.php:407-416`, `CreateDocumentFromTemplateAction.php:58-61` |
+| 2a | Präzisierung: Die geseedeten Platzhaltertexte („Firmenname … in den Vorlagen-Einstellungen anpassen“) werden herausgefiltert und drucken nie. Erst selbst eingetragene Spalten überschreiben | neu | `DocumentFooterColumns.php:21-36` |
+| 3 | Liste zeigt zwei „Standard“ | bestätigt | `index.blade.php:280-285`, `TemplateQueries.php:41-62` |
+| 4 | Hinweis zur Postanschrift verschweigt die Wirkung auf alle PDFs | bestätigt | `general-form.blade.php:38` |
+| 5 | Label „Platz für Briefkopf freihalten“ schaltet den ganzen Briefkopf | teilweise: Label irreführend, die Beschreibung darunter erklärt das Verhalten bereits | `DocumentHtmlRenderer.php:73-76`, `editor.blade.php:404` |
+| 6 | Mahnung: Infoblock stößt an die Datums-Tabelle | strukturell bestätigt, Sicht nicht erneut geprüft | `standard-mahnung.json`, `master.blade.php:32-41` |
+| 7 | Editor nicht WYSIWYG für den Briefkopf | teilweise widerlegt: Das Vorschau-Modal zeigt Briefkopf und Fußzeile; nur Editorfläche und Test-PDF nicht | `DocumentHtmlRenderer.php:78-93`, `layout.blade.php:148-154` |
+| N1 | Zwei Quellen für die eigene Adresse (Firmendaten und Firmenadressen) | neu | Abschnitt 2 |
+| N2 | Zwei Bankverbindungen auf einer Rechnung möglich | neu | `InvoicePlaceholderResolver.php:155-166`, `CompanyFooterLines.php:45-64` |
+| N3 | Empfänger eingefroren und ohne Land | neu | `InvoicePartyResolver.php:44-82`, `:128-135` |
+| N4 | Auflösung nach Alphabet und deaktivierbarer Standard | neu | Abschnitt 4 |
+| N5 | Mahnstufentexte fest im Code, pro Firma nicht änderbar | neu | `DunningLevelWording.php:23-60` |
+^ Befunde mit Prüfstand
+
+Kleinere Punkte: Es gibt zwei ähnlich klingende Schalter auf zwei Ebenen, „Platz für Briefkopf freihalten“ pro Vorlage (`editor.blade.php:401-405`) und „Briefkopfbereich im Dokumentinhalt reservieren“ unter Corporate Design (`corporate-design-form.blade.php:77`). Eine reine XRechnung (XML ohne PDF) ist nur über `DOCUMENTS_EINVOICE_FORMAT` vorgesehen. Ob dieser Pfad ausgeliefert wird, ist nicht geprüft.
+
+## 7. Header und Footer trennen?
+
+Technisch sind sie schon getrennt. Logo und DIN-Infoblock rendert `documents.print.master` aus den Firmendaten (`DocumentHtmlRenderer.php:78-88`), die Fußzeile kommt aus Corporate Design oder den Firmendaten (`DocumentFooterColumns.php:31-48`). Beides ist für Angebot, Rechnung und Mahnung dasselbe. Die Vorlage liefert nur den Body.
+
+Es gibt zwei Lecks: die Fußzeilenspalten pro Vorlage (Befund 2) und die zweite Adressquelle (N1). Eine neue Briefpapier-Entität mit eigener Tabelle würde beides nicht lösen und eine dritte Stelle schaffen.
+
+Vorschlag:
+
+- Corporate Design ist die einzige Quelle für das Briefpapier. Die Seite bekommt den Satz „Gilt für alle Angebote, Rechnungen und Mahnungen“ und eine Vorschau mit echter Fußzeile.
+- Die Fußzeilenfelder verschwinden aus den Seiteneinstellungen der Vorlage, oder sie liegen hinter einem standardmäßig ausgeschalteten Schalter „Abweichende Fußzeile für diese Vorlage“.
+- Migration: Die geseedeten Platzhaltertexte aus `document_templates.settings.footer.columns` entfernen. Selbst eingetragene Spalten bleiben erhalten und lösen den Schalter aus, damit sich kein ausgegebenes Layout ändert.
+- Absenderzeile, Infoblock, Fußzeile und E-Rechnung lesen dieselbe Adresse (siehe Empfehlung 1).
+
+## Empfehlungen
+
+Nach Priorität. Alle Größen sind Schätzungen in Personentagen.
+
+1. *Eine Adressquelle für das Briefpapier* (N1). Absenderzeile, Infoblock, Fußzeile und ZUGFeRD lesen die Standard-Firmenadresse, sonst die Firmendaten. Auf beiden Seiten ein Hinweis, was wo wirkt. Schätzung: 1 bis 1,5 PT.
+2. *Druckende Vorlage sichtbar und eindeutig* (Befund 3, N4). Badge „Wird verwendet“ nach der tatsächlichen Auflösung statt nach `is_default`. Die erste eigene Vorlage eines Typs wird automatisch Standard, der Standard lässt sich nicht deaktivieren. Schätzung: 0,5 bis 1 PT.
+3. *Fußzeilen-Leck schließen und Test-PDF reparieren* (Befunde 1 und 2, Abschnitt 7). Schätzung: 0,5 bis 1 PT.
+4. *Eine Bankverbindung pro Rechnung* (N2). Die Fußzeile zeigt dasselbe Konto wie der Text. Schätzung: 0,5 PT.
+5. *Hinweistexte korrigieren* (Befunde 4 und 5, Untertitel Firmenadressen). Schätzung: 0,25 PT.
+6. *Land in der Empfängeranschrift*, wenn es vom Firmensitz abweicht (N3). Schätzung: 0,25 PT.
+7. *Mahnung: Abstand zwischen Anschrift und Tabelle* in der Standardvorlage (Befund 6). Schätzung: 0,25 PT.
+8. *Mahnstufentexte pro Firma editierbar*, mit den heutigen Texten als Vorgabe (N5). Schätzung: 1 bis 2 PT.
+
+## Verlauf und Tickets
+
+- Letzte inhaltliche Änderungen im Bereich, alle vor dem 26.10.: `#1457` Briefkopf, Logo und Fußzeile auf allen drei Typen; `#1462` Ersatz-Mahnbrief mit Logo und Fußzeile; `#1622` mehrere Bankkonten mit Auswahl je Rechnung; `#1631` Icon neben dem Logo.
+- Offene Issues zu Vorlage, Briefkopf, Briefpapier, Fußzeile oder Mahnungs-Layout: keine. Am Rand verwandt: `#1461` (Feedback: mehr Informationen auf der Abrechnung) und `#1608` (Import-Vorschau rendert Angebots-PDFs im Request).
+- Offene PRs im Bereich: keine.
+
+## Offene Fragen
+
+- Ist die Seite Firmenadressen bewusst die Quelle für den Rechnungsabsender, oder soll sie nur Angebote betreffen, wie ihr Untertitel sagt?
+- Soll die Fußzeile das Standardkonto zeigen oder das Konto der jeweiligen Rechnung?
+- Bei welchem Mandanten traten die zwei aktiven Vorlagen auf? Mit der Firmen-ID lässt sich auf der Produktivdatenbank prüfen, ob nur die Anzeige verwirrt hat oder eine der beiden Fallen aus Abschnitt 4 vorlag.
+- Wird ein ganzseitiges Briefpapier als PDF-Hintergrund gebraucht, oder genügen Logo und DIN-Block?

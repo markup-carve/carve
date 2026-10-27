@@ -1,0 +1,12 @@
+# FAQ zum Backup-Dienst
+
+Welche Daten werden gesichert?
+: Der Dienst sichert die von Ihnen ausgewählten Dateien. Weitere Informationen finden Sie unter [Backups](https://example.com/backups).
+
+Wie oft werden Backups erstellt?
+: Backups werden nach dem von Ihnen festgelegten Zeitplan erstellt.
+
+Wie stelle ich Dateien wieder her?
+: Wählen Sie ein Backup und anschließend die Dateien aus, die Sie wiederherstellen möchten.
+
+*Hinweis: Prüfen Sie nach der Wiederherstellung, ob sich die Dateien öffnen lassen.*

@@ -21,6 +21,9 @@
                           aria-label="{name}">↩</a>.
         First reference to note n has refId `fnref{n}`; a k-th (k>1)
         repeat uses `fnref{n}-{k}` and adds another backlink.
+        The first backlink follows the final paragraph's inline content
+        immediately, with no inserted whitespace. Separate later backlinks
+        from one another with one ASCII space.
         INSIDE LINK TEXT A REFERENCE IS NOT A LINK, since links never nest
         (PART 3): it renders `<sup id="{refId}">{n}</sup>`, keeps its ordinal
         and its backlink, and its trailing `{attrs}` and
@@ -141,6 +144,10 @@
          ALL render WITHOUT `<p>` (<li>text</li>), every one of them, not
          only the first, except as CARVE-P9-081 below states; a loose
          item's paragraphs are ALL wrapped (<li><p>text</p></li>). An item can hold more than one paragraph
+         When the first visible block of an item is a paragraph, it follows
+         the opening `<li>` directly, whether the list is tight or loose and
+         whether later blocks follow it. Later visible blocks start on their
+         own indented lines.
          block and still be tight -- L2 and L6 below cover the ways that
          happens without a blank line ever appearing.
          A TIGHT ITEM'S ATTRIBUTED PARAGRAPH KEEPS ITS `<p>` -- NORMATIVE

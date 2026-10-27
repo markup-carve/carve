@@ -1,0 +1,15 @@
+# Security audit note: Internal API
+
+## Findings
+
+- **High priority: Missing Content-Security-Policy (CSP) header**
+  - The API response does not include a `Content-Security-Policy` header.
+  - Check the response with:
+
+    ```sh
+    curl -sSI "$API_URL" | grep -i '^content-security-policy:'
+    ```
+
+## Recommendation
+
+Add a CSP header appropriate for the API’s responses, then verify it is present on all relevant routes.

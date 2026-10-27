@@ -81,7 +81,9 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    references, cross-references and symbols `:name:` do
    not, and a line comment ends the line it sits on. Then, on that text:
      - reverse smart-typography output to its ASCII source first, so the id does
-       not depend on presentation (`Don’t` -> `Don-t`, `Step 1 → 2` -> `Step-1-2`);
+       not depend on presentation (`Don’t` -> `Don-t`, `Step 1 → 2` -> `Step-1-2`).
+       Paired quotation marks reverse together: `‘`, `’`, `‚`, `‛` to ASCII
+       apostrophe, and `“`, `”`, `„`, `‟`, `«`, `»` to ASCII double quote;
      - replace each maximal run of non-alphanumeric ASCII characters with a single
        `-` (covers spaces, punctuation, `_`, and runs of `-`) -- the jgm/djot#393 rule;
      - trim leading/trailing `-`;

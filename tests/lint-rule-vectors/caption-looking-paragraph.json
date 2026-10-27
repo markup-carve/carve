@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "rule": "caption-looking-paragraph",
+  "vectors": [
+    {
+      "name": "after-table",
+      "description": "after table.",
+      "source": "|= A |\n| x |\n\nTable 1: caption\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 4,
+            "column": 1,
+            "includes": [
+              "caption"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "ordinary-paragraph",
+      "description": "ordinary paragraph.",
+      "source": "|= A |\n| x |\n\nThe table has one row.\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "before-table",
+      "description": "A caption-like paragraph immediately before a table is opt-in.",
+      "source": "Table: Results\n\n|= A |\n| x |\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "caption"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "colon-after-table",
+      "description": "A colon-led caption paragraph after a table is opt-in.",
+      "source": "|= A |\n| x |\n\n: Results\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 4,
+            "column": 1,
+            "includes": [
+              "caption"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+What is cache invalidation?
+: Cache invalidation is the process of removing or updating cached data when it is no longer accurate.
+
+When should a cached entry be invalidated?
+: Invalidate it when the source data changes or when the entry reaches its time to live, or `TTL`.
+
+How can stale cached data be reduced?
+: Set an appropriate `TTL` and invalidate affected entries when the underlying data changes.

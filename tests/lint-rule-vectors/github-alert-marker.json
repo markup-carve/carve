@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "rule": "github-alert-marker",
+  "vectors": [
+    {
+      "name": "warning-alert",
+      "description": "warning alert.",
+      "source": "> [!WARNING]\n> Careful.\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "github"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "ordinary-bracket",
+      "description": "ordinary bracket.",
+      "source": "> [warning]\n> Careful.\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

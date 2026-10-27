@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "rule": "unclosed-inline-emphasis",
+  "vectors": [
+    {
+      "name": "unclosed-strong",
+      "description": "unclosed strong.",
+      "source": "A *word never closed.\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "unclosed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "closed-strong",
+      "description": "closed strong.",
+      "source": "A *word* closed.\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

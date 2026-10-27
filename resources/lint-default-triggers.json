@@ -43,5 +43,16 @@
   "semantic-attribute-value-ignored": "[x]{kbd=\"https://example.org/dune\"}\n",
   "semantic-attribute-outside-span": "`c`{kbd}\n",
   "braced-comment-in-a-template-source": "{% if user %}\n",
-  "quote-fence-ends-the-quote-above": "> a\n::: >\nb\n:::\n"
+  "quote-fence-ends-the-quote-above": "> a\n::: >\nb\n:::\n",
+  "table-shaped-paragraph": "|= A |= B |\n| 1 | 2\n",
+  "table-row-cell-count": "|= A |= B |\n| 1 | 2 | 3 |\n",
+  "table-separator-near-miss": "| A | B |\n|---|--x|\n",
+  "list-marker-without-blank-line": "Intro:\n- item\n",
+  "unclosed-inline-emphasis": "A *word without a closer.\n",
+  "link-gap-before-destination": "See [guide] (https://example.com).\n",
+  "markdown-italic-underline": "This is _not_ intended.\n",
+  "heading-level-skip": "# One\n\n### Three\n",
+  "bare-html-tag": "Use <b>bold</b>.\n",
+  "markdown-definition-paragraph": "Term\n: definition\n",
+  "github-alert-marker": "> [!WARNING]\n> Careful.\n"
 }

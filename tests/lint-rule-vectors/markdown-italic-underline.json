@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "rule": "markdown-italic-underline",
+  "vectors": [
+    {
+      "name": "underscored-word",
+      "description": "underscored word.",
+      "source": "This is _not_ intended.\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 9,
+            "includes": [
+              "markdown"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "explicit-italic",
+      "description": "explicit italic.",
+      "source": "This is /not/ intended.\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

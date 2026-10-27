@@ -1,0 +1,20 @@
+# Troubleshooting a 502 Response
+
+A 502 response from nginx usually means it could not get a valid response from the upstream application.
+
+> [!WARNING]
+> Reload nginx only after validating the configuration. An invalid configuration can interrupt traffic.
+
+```nginx
+location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_set_header Host $host;
+}
+```
+
+## Checks
+
+- Confirm the application is running and listening on `127.0.0.1:3000`.
+- Check the nginx error log for connection failures or upstream timeouts.
+
+After making a change, repeat the [Checks](#checks).

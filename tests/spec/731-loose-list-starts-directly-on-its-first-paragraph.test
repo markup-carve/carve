@@ -1,0 +1,15 @@
+Loose list starts directly on its first paragraph
+
+```
+- first
+
+  second
+- next
+.
+<ul>
+  <li><p>first</p>
+    <p>second</p>
+  </li>
+  <li><p>next</p></li>
+</ul>
+```

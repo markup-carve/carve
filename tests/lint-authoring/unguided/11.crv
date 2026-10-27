@@ -1,0 +1,10 @@
+OAuth
+: A framework that lets an application access a user's resources with permission.
+
+JWT
+: A JSON Web Token is a compact, signed token that carries claims.
+
+Scope
+: A scope names the access an application is requesting.
+
+Further reading: [OAuth 2.0](https://oauth.net/2/)

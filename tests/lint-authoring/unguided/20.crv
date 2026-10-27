@@ -1,0 +1,13 @@
+# On-call handoff
+
+| Alert | Owner | Next check |
+| --- | --- | --- |
+| [Alert 1] | [Owner] | [Time][^utc] |
+| [Alert 2] | [Owner] | [Time][^utc] |
+
+Table: Open alerts
+
+- Review both alerts at their next check.
+- Record any changes and hand off unresolved issues.
+
+[^utc]: All times are UTC.

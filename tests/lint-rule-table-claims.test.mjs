@@ -114,6 +114,54 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  */
 const NOT_IN_THE_PIN_YET = new Map([
   [
+    'table-shaped-paragraph',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'table-row-cell-count',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'table-separator-near-miss',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'list-marker-without-blank-line',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'unclosed-inline-emphasis',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'link-gap-before-destination',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'markdown-italic-underline',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'heading-level-skip',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'bare-html-tag',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'markdown-definition-paragraph',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'github-alert-marker',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
+    'caption-looking-paragraph',
+    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
+  ],
+  [
     'include-lines-invalid',
     'specified by CARVE-P6-001 I1 in carve#3764; the pinned build still reports include-unknown-option',
   ],

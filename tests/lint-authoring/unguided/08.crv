@@ -1,0 +1,16 @@
+# Statusbericht zur API-Migration
+
+Ein konkreter Projektstand wurde nicht übermittelt.
+
+| Aufgabe | Status |
+| --- | --- |
+| API-Endpunkte erfassen | Nicht angegeben |
+| Aufrufe auf die neue API umstellen | Nicht angegeben |
+| Integration testen | Nicht angegeben |
+
+*Tabelle: Arbeitspakete der API-Migration*
+
+Risiken:
+
+- Veränderte API-Antworten können bestehende Abläufe beeinträchtigen.
+- Fehlende Integrationstests können Fehler erst nach der Umstellung sichtbar machen.

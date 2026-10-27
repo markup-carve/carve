@@ -1,0 +1,615 @@
+{
+  "version": 1,
+  "issue": 3792,
+  "cases": [
+    {
+      "file": "errors/E00-control.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E01-unclosed-fence.crv",
+      "expected": [
+        [
+          "unclosed-code-fence",
+          7
+        ]
+      ],
+      "aheadOfPin": [],
+      "pinned": [
+        [
+          "unclosed-code-fence",
+          7
+        ]
+      ],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E02-row-missing-closing-pipe.crv",
+      "expected": [
+        [
+          "table-shaped-paragraph",
+          6
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "table-shaped-paragraph",
+          6
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E03-wrong-cell-count.crv",
+      "expected": [
+        [
+          "table-row-cell-count",
+          7
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "table-row-cell-count",
+          7
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E04-bold-never-closed.crv",
+      "expected": [
+        [
+          "unclosed-inline-emphasis",
+          5
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "unclosed-inline-emphasis",
+          5
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E05-space-in-link.crv",
+      "expected": [
+        [
+          "link-gap-before-destination",
+          5
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "link-gap-before-destination",
+          5
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E06-foreign-bold-habit.crv",
+      "expected": [
+        [
+          "markdown-strong-double-star",
+          5
+        ]
+      ],
+      "aheadOfPin": [],
+      "pinned": [
+        [
+          "markdown-strong-double-star",
+          5
+        ]
+      ],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E07-markdown-italic-habit.crv",
+      "expected": [
+        [
+          "markdown-italic-underline",
+          5
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "markdown-italic-underline",
+          5
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E08-heading-level-skip.crv",
+      "expected": [
+        [
+          "heading-level-skip",
+          5
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "heading-level-skip",
+          5
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E09-list-without-blank-line.crv",
+      "expected": [
+        [
+          "list-marker-without-blank-line",
+          6
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "list-marker-without-blank-line",
+          6
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E10-sublist-one-space.crv",
+      "expected": [
+        [
+          "list-marker-below-content-column",
+          6
+        ],
+        [
+          "list-marker-below-content-column",
+          7
+        ]
+      ],
+      "aheadOfPin": [],
+      "pinned": [
+        [
+          "list-marker-below-content-column",
+          6
+        ],
+        [
+          "list-marker-below-content-column",
+          7
+        ]
+      ],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E11-unclosed-container.crv",
+      "expected": [
+        [
+          "unclosed-container-fence",
+          5
+        ]
+      ],
+      "aheadOfPin": [],
+      "pinned": [
+        [
+          "unclosed-container-fence",
+          5
+        ]
+      ],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E12-stray-html.crv",
+      "expected": [
+        [
+          "bare-html-tag",
+          5
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "bare-html-tag",
+          5
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "errors/E13-separator-typo.crv",
+      "expected": [
+        [
+          "table-separator-near-miss",
+          6
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "table-separator-near-miss",
+          6
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "report.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/01.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": [
+        [
+          "caption-looking-paragraph",
+          3
+        ]
+      ]
+    },
+    {
+      "file": "unguided/02.crv",
+      "expected": [
+        [
+          "markdown-strong-double-star",
+          5
+        ]
+      ],
+      "aheadOfPin": [],
+      "pinned": [
+        [
+          "markdown-strong-double-star",
+          5
+        ]
+      ],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/03.crv",
+      "expected": [
+        [
+          "markdown-strong-double-star",
+          13
+        ]
+      ],
+      "aheadOfPin": [],
+      "pinned": [
+        [
+          "markdown-strong-double-star",
+          13
+        ]
+      ],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/04.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/05.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/06.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": [
+        [
+          "caption-looking-paragraph",
+          6
+        ]
+      ]
+    },
+    {
+      "file": "unguided/07.crv",
+      "expected": [
+        [
+          "markdown-definition-paragraph",
+          2
+        ],
+        [
+          "markdown-definition-paragraph",
+          5
+        ],
+        [
+          "markdown-definition-paragraph",
+          8
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "markdown-definition-paragraph",
+          2
+        ],
+        [
+          "markdown-definition-paragraph",
+          5
+        ],
+        [
+          "markdown-definition-paragraph",
+          8
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/08.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": [
+        [
+          "caption-looking-paragraph",
+          11
+        ]
+      ]
+    },
+    {
+      "file": "unguided/09.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/10.crv",
+      "expected": [
+        [
+          "list-marker-without-blank-line",
+          8
+        ],
+        [
+          "list-marker-without-blank-line",
+          12
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "list-marker-without-blank-line",
+          8
+        ],
+        [
+          "list-marker-without-blank-line",
+          12
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/11.crv",
+      "expected": [
+        [
+          "markdown-definition-paragraph",
+          2
+        ],
+        [
+          "markdown-definition-paragraph",
+          5
+        ],
+        [
+          "markdown-definition-paragraph",
+          8
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "markdown-definition-paragraph",
+          2
+        ],
+        [
+          "markdown-definition-paragraph",
+          5
+        ],
+        [
+          "markdown-definition-paragraph",
+          8
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/12.crv",
+      "expected": [
+        [
+          "block-marker-as-text",
+          3
+        ]
+      ],
+      "aheadOfPin": [],
+      "pinned": [
+        [
+          "block-marker-as-text",
+          3
+        ]
+      ],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/13.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": [
+        [
+          "caption-looking-paragraph",
+          5
+        ]
+      ]
+    },
+    {
+      "file": "unguided/14.crv",
+      "expected": [
+        [
+          "markdown-strong-double-star",
+          9
+        ]
+      ],
+      "aheadOfPin": [],
+      "pinned": [
+        [
+          "markdown-strong-double-star",
+          9
+        ]
+      ],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/15.crv",
+      "expected": [
+        [
+          "markdown-strong-double-star",
+          10
+        ]
+      ],
+      "aheadOfPin": [],
+      "pinned": [
+        [
+          "markdown-strong-double-star",
+          10
+        ]
+      ],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/16.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": [
+        [
+          "caption-looking-paragraph",
+          5
+        ]
+      ]
+    },
+    {
+      "file": "unguided/17.crv",
+      "expected": [
+        [
+          "github-alert-marker",
+          5
+        ],
+        [
+          "broken-fragment-link",
+          20
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "github-alert-marker",
+          5
+        ]
+      ],
+      "pinned": [
+        [
+          "broken-fragment-link",
+          20
+        ]
+      ],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/18.crv",
+      "expected": [
+        [
+          "markdown-definition-paragraph",
+          4
+        ],
+        [
+          "markdown-definition-paragraph",
+          7
+        ],
+        [
+          "markdown-definition-paragraph",
+          10
+        ]
+      ],
+      "aheadOfPin": [
+        [
+          "markdown-definition-paragraph",
+          4
+        ],
+        [
+          "markdown-definition-paragraph",
+          7
+        ],
+        [
+          "markdown-definition-paragraph",
+          10
+        ]
+      ],
+      "pinned": [],
+      "optInAheadOfPin": []
+    },
+    {
+      "file": "unguided/19.crv",
+      "expected": [],
+      "aheadOfPin": [],
+      "pinned": [],
+      "optInAheadOfPin": [
+        [
+          "caption-looking-paragraph",
+          9
+        ]
+      ]
+    },
+    {
+      "file": "unguided/20.crv",
+      "expected": [
+        [
+          "unresolved-reference-link",
+          5
+        ],
+        [
+          "unresolved-reference-link",
+          6
+        ],
+        [
+          "unused-footnote-definition",
+          13
+        ]
+      ],
+      "aheadOfPin": [],
+      "pinned": [
+        [
+          "unresolved-reference-link",
+          5
+        ],
+        [
+          "unresolved-reference-link",
+          6
+        ],
+        [
+          "unused-footnote-definition",
+          13
+        ]
+      ],
+      "optInAheadOfPin": [
+        [
+          "caption-looking-paragraph",
+          8
+        ]
+      ]
+    }
+  ]
+}

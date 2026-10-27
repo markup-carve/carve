@@ -1,0 +1,11 @@
+# Image Pipeline Failure
+
+Use the [image pipeline runbook](https://example.com/runbook/images) for escalation details.
+
+![Diagram of the image pipeline and its processing stages](assets/pipeline.png)
+*Figure 1: Image pipeline processing flow.*
+
+## Recovery checks
+
+1. Confirm the source images are available and the pipeline can read them.
+2. Retry a failed image and verify that the output is generated and accessible.

@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "rule": "bare-html-tag",
+  "vectors": [
+    {
+      "name": "bare-paired-tag",
+      "description": "bare paired tag.",
+      "source": "Use <b>bold</b>.\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "bare"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "code-tag",
+      "description": "code tag.",
+      "source": "Use `<b>` as an example.\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

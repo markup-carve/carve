@@ -1,0 +1,13 @@
+# Rotate a service token
+
+1. Create a new service token.
+2. Update the service to use the new token.
+3. Validate that the service works, then revoke the old token.
+
+::: warning
+Keep the old token until you have validated the new one.
+:::
+
+The tokens can overlap for 24 hours.[^overlap]
+
+[^overlap]: The 24-hour overlap gives you time to update the service and confirm that the new token works before revoking the old one.

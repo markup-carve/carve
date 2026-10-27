@@ -1,0 +1,11 @@
+# Weekly Database Migration Status
+
+Caption: Migration milestones
+
+| Date | Milestone |
+| --- | --- |
+| May 6 | Schema mapping completed. |
+| May 13 | Test migration completed. |
+| May 20 | Production migration planned. |
+
+The next risk is that production data may expose conversion issues missed in testing. Validate record counts and key queries before the May 20 migration.

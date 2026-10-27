@@ -1,0 +1,12 @@
+# Bericht
+
+Einleitung mit Umlauten: Fußzeile, Prüfstand.
+
+Beispiel:
+
+```php
+$x = 1;
+
+## Nächster Abschnitt
+
+Text danach.

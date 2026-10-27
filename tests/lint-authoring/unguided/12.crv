@@ -1,0 +1,16 @@
+# Rollback durchführen
+
+:::note
+Prüfe vor dem Rollback, ob die betroffene Transaktion noch offen ist. Bereits bestätigte Änderungen lassen sich mit `ROLLBACK` nicht rückgängig machen.
+:::
+
+1. Identifiziere die betroffene, noch offene Transaktion.
+2. Führe in derselben Sitzung den Rollback aus:
+
+```sql
+ROLLBACK;
+```
+
+Backups werden sieben Tage aufbewahrt.[^1]
+
+[^1]: Nach Ablauf der sieben Tage ist eine Wiederherstellung aus diesen Backups nicht mehr möglich.

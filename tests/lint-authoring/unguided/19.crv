@@ -1,0 +1,9 @@
+# Request path
+
+1. The client sends a request to the `gateway` process.
+2. The gateway routes the request to the application service.
+3. The application service sends its response back through the gateway to the client.
+
+![Request flow through the gateway and application service](diagrams/request-flow.svg)
+
+*Figure: The request and response path.*

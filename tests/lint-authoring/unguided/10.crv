@@ -1,0 +1,15 @@
+# Decision Record: PostgreSQL for the Team Service
+
+> Decision: Use PostgreSQL instead of SQLite for the team service.
+
+The service will have multiple users and application instances writing to shared data. PostgreSQL provides a central database suited to that workload.
+
+Pros:
+- Supports concurrent access from multiple instances.
+- Provides a shared database with established backup and access controls.
+
+Cons:
+- Requires a separate database service to operate.
+- Adds deployment and maintenance work compared with SQLite.
+
+*The main operational constraint is that the team must run, back up, and monitor PostgreSQL.*

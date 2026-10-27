@@ -1,0 +1,14 @@
+# Added
+
+- No new features were specified.
+- No new options were specified.
+
+# Fixed
+
+- No fixes were specified.
+- No resolved issues were specified.
+
+# Upgrade
+
+- **Breaking change: `--legacy` has been removed.**
+- Remove `--legacy` from scripts and commands before upgrading.

@@ -41,12 +41,11 @@ token; wording after the colon may differ by implementation.
 Use `carve lint --json` when an editor, CI job, or migration tool needs stable
 rule IDs, source ranges, and rule-specific details rather than display text.
 
-By default `carve lint` reports the semantic rules below plus the
-Djot/Markdown constructs that actually mis-render in Carve (`**bold**`,
-`~~strike~~`, `^sup^`, and `+` bullets). It does **not** flag valid Carve
-whose meaning merely differs from Djot: `_x_` (underline, not emphasis),
-`~x~` (strikethrough, not subscript), and `{=x=}` (highlight) are intentional
-in hand-written Carve, so surfacing them there is noise.
+By default `carve lint` reports the semantic rules below and source that
+looks like intended markup but renders as something else. The default hint for
+`_word_` explains that Carve renders underline and `/word/` renders italic;
+a document can suppress it when underline is intended. Caption-looking prose
+adjacent to a table or image is opt-in because ordinary prose can use the same words.
 
 Pass `--from-djot` when the document was migrated from Djot and you want those
 semantic shifts flagged too:
@@ -162,6 +161,18 @@ the command-line and editor behavior stay aligned.
 
 | Rule | Catches |
 | ---- | ------- |
+| `table-shaped-paragraph` | a line beginning like a pipe table row that misses its closing `|` and stays paragraph text; report the first unclosed row |
+| `table-row-cell-count` | a pipe-table body row with a different effective cell count from its header, after colspan and rowspan are counted; rendering keeps the row as written |
+| `table-separator-near-miss` | a separator-like row that remains a body row, or a cell containing only a dash run that looks like a separator |
+| `list-marker-without-blank-line` | a list marker folded into the preceding paragraph because no blank line separates them |
+| `unclosed-inline-emphasis` | a strong or emphasis opener with no closer in its paragraph |
+| `link-gap-before-destination` | whitespace between `]` and `(` prevents an intended inline link from forming |
+| `markdown-italic-underline` | `_word_` renders underline; use `/word/` for italic. This default hint can be suppressed per document |
+| `heading-level-skip` | a heading jumps over a level; default-on hint |
+| `bare-html-tag` | an HTML-like tag in prose renders as escaped text; default-on hint |
+| `markdown-definition-paragraph` | `term` followed by `: definition` remains a paragraph; Carve needs `:: term` |
+| `github-alert-marker` | `[!NOTE]` or `[!WARNING]` in a blockquote stays literal text |
+| `caption-looking-paragraph` | opt-in hint for a caption-like paragraph directly before or after a table or image |
 | `bidi-control-in-source` | a Trojan-Source bidi override or isolate control (U+202A–U+202E, U+2066–U+2069) that canonical Carve preserves but every presentation target strips |
 | `duplicate-heading-id` | two headings producing the same id, either by slug collision or repeated explicit `{#id}` |
 | `broken-crossref` | a `</#id>` cross-reference with no matching heading or numbered caption id; when the id exists on another element, the message names that element and suggests `[text](#id)`, since a cross-reference cannot target it. Matching is case-sensitive (PART 9R R4); a case-only mismatch names the real id, and `carve fmt --migrate` rewrites the reference to it when exactly one id matches |

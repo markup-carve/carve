@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "rule": "link-gap-before-destination",
+  "vectors": [
+    {
+      "name": "space-after-bracket",
+      "description": "space after bracket.",
+      "source": "See [guide] (https://example.com).\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "link"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "adjacent-link",
+      "description": "adjacent link.",
+      "source": "See [guide](https://example.com).\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

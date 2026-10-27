@@ -67014,3 +67014,102 @@ root block begins after the item.
 ```
 
 :::
+
+## Compact single-paragraph quote
+
+::: compare
+
+```carve
+> q
+```
+
+```html
+<blockquote><p>q</p></blockquote>
+```
+
+:::
+
+## Multiple footnote backlinks follow inline content
+
+::: compare
+
+```carve
+a[^n] b[^n]
+
+[^n]: Note
+```
+
+```html
+<p>a<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b<a id="fnref1-2" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>Note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference 1">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink" aria-label="Back to reference 2">↩<sup>2</sup></a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## Loose list starts directly on its first paragraph
+
+::: compare
+
+```carve
+- first
+
+  second
+- next
+```
+
+```html
+<ul>
+  <li><p>first</p>
+    <p>second</p>
+  </li>
+  <li><p>next</p></li>
+</ul>
+```
+
+:::
+
+## Paired German quotes leave no quote in a heading id
+
+::: compare
+
+```carve
+## 4. Globale und Mandanten-Vorlagen, „2 aktive Templates“
+```
+
+```html
+<section id="s-4-Globale-und-Mandanten-Vorlagen-2-aktive-Templates">
+  <h2>4. Globale und Mandanten-Vorlagen, „2 aktive Templates“</h2>
+</section>
+```
+
+:::
+
+## Consecutive continuation markers in a div-hosted quote
+
+::: compare
+
+```carve
+::: note
+> q
++
++
+:::
+```
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <blockquote>
+    <p>q</p>
+    <p>+</p>
+  </blockquote>
+</aside>
+```
+
+:::

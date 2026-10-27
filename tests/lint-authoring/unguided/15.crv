@@ -1,0 +1,11 @@
+# Neu
+- Die API unterstützt Filter für Listenabfragen.
+- Antworten enthalten jetzt eine Anfrage-ID.
+
+# Behoben
+- Leere Ergebnisse liefern wieder eine leere Liste.
+- Ungültige Parameter geben eine eindeutige Fehlermeldung zurück.
+
+# Migration
+- **Der Endpunkt `/v1/items` wurde durch `/v2/items` ersetzt.**
+- Passe bestehende Anfragen an den neuen Pfad an.

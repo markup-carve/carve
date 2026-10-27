@@ -228,6 +228,12 @@
          The two uses may never disagree: a line the block parser builds a
          table from but the §17 sub-block test calls prose would make a list
          item loose AND fill it with a table.
+         Lint reports `table-shaped-paragraph` at the first line of a
+         table-shaped run lacking its closing pipe. A non-table-shaped
+         paragraph does not qualify. A pipe-table body row with more or
+         fewer effective cells than its header renders as written and lint
+         reports `table-row-cell-count` at that row. Colspan and rowspan
+         markers count the cells they span; a correctly spanned row is quiet.
 
          A CELL SLOT IS COUNTED, NOT WEIGHED -- NORMATIVE [CARVE-P9-082]. The
          delimiters are T1's: an escaped `|` and a `|` inside a code span
@@ -609,5 +615,37 @@
           separately nameable in a profile (profiles.md).
         See divergence-from-djot.md section 12 for how this compares to
         Djot's container-node model.
+
+   AUTHORING LINT. These findings report source that resembles a construct but
+   renders differently, without changing the parse or HTML. Unless stated
+   otherwise they are on by default. The finding points at the source line
+   carrying the failed spelling, and an escaped or verbatim example is quiet.
+
+   `table-separator-near-miss` reports a separator-shaped row that does not
+   become a delimiter, including a typo in its dash cells or a dash-only cell
+   rendered as body content. A valid delimiter is quiet.
+   `list-marker-without-blank-line` reports a marker line folded into an open
+   preceding paragraph for lack of a blank separator. A separated list and a
+   marker inside a list's own body are quiet.
+   `unclosed-inline-emphasis` reports a strong or emphasis opener with no
+   closer in its paragraph. A paired delimiter is quiet.
+   `link-gap-before-destination` reports `] (` where a link destination would
+   follow a label. `](` is quiet.
+   `markdown-italic-underline` hints that `_word_` renders underline, while
+   `/word/` renders italic. It is on by default and can be disabled per
+   document. Escaped underscores and code spans are quiet.
+   `heading-level-skip` hints when a heading jumps over one or more levels.
+   A next-level heading is quiet.
+   `bare-html-tag` hints that an HTML-like tag in text is escaped. A tag in
+   code or raw HTML is quiet.
+   `markdown-definition-paragraph` reports `term` followed by `: definition`
+   when both remain paragraph text. A `:: term` definition is quiet.
+   `github-alert-marker` reports `[!NOTE]`, `[!WARNING]` and the other GitHub
+   alert labels in a blockquote when they remain literal text. An ordinary
+   bracketed label is quiet.
+   `caption-looking-paragraph` is opt-in: next to a table or image, a paragraph
+   beginning with a caption label such as `Table 1:` or `*Figure:` may be a
+   missed caption. Ordinary following prose is quiet. The default mode emits
+   no `caption-looking-paragraph` finding.
 
    ============================================================================ *)

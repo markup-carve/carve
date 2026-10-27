@@ -1,0 +1,13 @@
+# Incident recap
+
+An alert occurred at 09:10. A restart followed at 09:18, and recovery was recorded at 09:35.
+
+Table: Incident timeline
+
+| Time | Event |
+| --- | --- |
+| 09:10 | Alert |
+| 09:18 | Restart |
+| 09:35 | Recovery |
+
+[Incident 42](https://example.com/incidents/42)
