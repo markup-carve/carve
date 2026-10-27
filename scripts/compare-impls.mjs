@@ -1714,10 +1714,15 @@ if (roundtrip) {
       if (rendered.length < 2) continue
       roundtripCompared++
       if (new Set(rendered.map(([, out]) => out)).size > 1) {
-        roundtripDiffs++
-        console.log(
-          `ROUNDTRIP DIFF ${pair.slug} (${pair.feature}): ${rendered.map(([name]) => name).join(', ')}`,
-        )
+        const declared = targetDriftKey('html', pair.slug, rendered, targetDrift)
+        if (declared !== null && usedTargetDrift.has(declared)) {
+          console.log(`DECLARED ROUNDTRIP ${pair.slug} (${pair.feature}): ${declared}`)
+        } else {
+          roundtripDiffs++
+          console.log(
+            `ROUNDTRIP DIFF ${pair.slug} (${pair.feature}): ${rendered.map(([name]) => name).join(', ')}`,
+          )
+        }
       }
     }
   } finally {
@@ -2012,9 +2017,9 @@ if (reportPath) {
   console.log(`\nWrote ${reportPath}.`)
 }
 
-// The gate. In roundtrip mode a diff means an engine's formatter changed what a
-// document says, which is wrong under any reading of PART 11 - there is no
-// design question behind it. In the default mode a diff means the engines
+// The gate. In roundtrip mode a new diff means an engine's formatter changed what a
+// document says, which is wrong under PART 11. An exact declared HTML outlier
+// that survives formatting is counted separately. In the default mode a diff means the engines
 // disagree about a target's output; whether every one of those is a defect is
 // still open (carve#474), so gate that mode only once they are resolved.
 if (failOnDiff) {
