@@ -1,12 +1,12 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-10-23",
-    "spec": "7840718432fd2f9eb35449bc129cc35338c70da1",
-    "js": "6706ff83c405f354ef6412683eb3c26140034ef7",
-    "php": "8f1822274f6ae89ba5728107ec6458a35ace5311",
-    "rust": "4d0df469a5ecd12a0da606f4ab83c9102bfa70be",
-    "documents": 3135
+    "date": "2026-10-27",
+    "spec": "0856a4117f8d01fdf2f27dfa513a87720d78a1dd",
+    "js": "94f0a4ae203f1942fcc3f52a42c5a4336165b12c",
+    "php": "eca6b3ac5d09ad5430d4a274007e2f14b36a9a9a",
+    "rust": "a7e1e16cb510ac1328990e84487aea0058359993",
+    "documents": 3241
   },
   "differences": [
     {
@@ -80,6 +80,28 @@
       }
     },
     {
+      "file": "tests/corpus/390-a-table-cell-s-marker-run-ends-at-a-space-3.crv",
+      "reason": "Rust omits table-marker-run-padding for a glued cell attribute block; carve-rs#3254 covers the parser-backed lint scan.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3254",
+      "diagnostics": {
+        "js": [
+          [
+            "table-marker-run-padding",
+            2,
+            2
+          ]
+        ],
+        "php": [
+          [
+            "table-marker-run-padding",
+            2,
+            2
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
       "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-11.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -99,6 +121,28 @@
             1
           ]
         ]
+      }
+    },
+    {
+      "file": "tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-12.crv",
+      "reason": "Rust omits table-marker-run-padding for a glued cell attribute block; carve-rs#3254 covers the parser-backed lint scan.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3254",
+      "diagnostics": {
+        "js": [
+          [
+            "table-marker-run-padding",
+            1,
+            2
+          ]
+        ],
+        "php": [
+          [
+            "table-marker-run-padding",
+            1,
+            2
+          ]
+        ],
+        "rust": []
       }
     },
     {
