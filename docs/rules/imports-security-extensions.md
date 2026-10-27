@@ -15,17 +15,17 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 
 | Rule | Part | Clause |
 |---|---:|---|
-| [`CARVE-P2-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L240) | 2 | AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE |
-| [`CARVE-P2-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L141) | 2 | A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING |
-| [`CARVE-P2-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L103) | 2 | MARKDOWN MIGRATION FRAGMENTS |
-| [`CARVE-P2-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L131) | 2 | UNRESOLVED MARKDOWN REFERENCES KEEP THEIR SYNTAX ON IMPORT |
+| [`CARVE-P2-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L242) | 2 | AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE |
+| [`CARVE-P2-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L143) | 2 | A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING |
+| [`CARVE-P2-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L105) | 2 | MARKDOWN MIGRATION FRAGMENTS |
+| [`CARVE-P2-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L133) | 2 | UNRESOLVED MARKDOWN REFERENCES KEEP THEIR SYNTAX ON IMPORT |
 | [`CARVE-P2-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/22b-writer-render-loss.ebnf#L2) | 2 | RENDER-LOSS REPORTING |
 | [`CARVE-P4-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L221) | 4 | AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED |
 | [`CARVE-P6-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/10-includes.ebnf#L61) | 6 | FILE INCLUSION SEMANTICS |
 | [`CARVE-P9-070`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L47) | 9 | SOCIAL LINK RESOLUTION |
 | [`CARVE-P9-071`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L284) | 9 | THE MEDIA TYPE AND THE FILE EXTENSION |
-| [`CARVE-P9-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L472) | 9 | TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID |
-| [`CARVE-P9-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L504) | 9 | HOSTS MAY OFFER A DOCUMENT-WIDE SMART TYPOGRAPHY SWITCH |
+| [`CARVE-P9-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L478) | 9 | TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID |
+| [`CARVE-P9-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L510) | 9 | HOSTS MAY OFFER A DOCUMENT-WIDE SMART TYPOGRAPHY SWITCH |
 | [`CARVE-P9-074`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L574) | 9 | A MARKDOWN LABEL THAT IS BOTH A CHECKBOX AND A DEFINED REFERENCE IS THE CHECKBOX |
 | [`CARVE-P9-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L30) | 9 | AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE |
 | [`CARVE-P9-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L41) | 9 | CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES |
@@ -38,9 +38,9 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L197) | 9 | AN EXTENSION WRITES INTO THE SAME MAP |
 | [`CARVE-P9-065`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L216) | 9 | AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE |
 | [`CARVE-P9-066`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L253) | 9 | A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT |
-| [`CARVE-P10-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L279) | 10 | THE OTHER SEMANTIC NAMES ARE AN EXTENSION |
-| [`CARVE-P10-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L296) | 10 | A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES |
-| [`CARVE-P10-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L132) | 10 | A PLACED ELEMENT'S OWN TAGS CARRY THE PER-IMPLEMENTATION INDENTATION |
+| [`CARVE-P10-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L284) | 10 | THE OTHER SEMANTIC NAMES ARE AN EXTENSION |
+| [`CARVE-P10-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L301) | 10 | A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES |
+| [`CARVE-P10-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L137) | 10 | A PLACED ELEMENT'S OWN TAGS CARRY THE PER-IMPLEMENTATION INDENTATION |
 | [`CARVE-P12-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L272) | 12 | A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST |
 | [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L250) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
 | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L335) | 12 | A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION |
@@ -49,7 +49,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L33) | 12 | A CITATION DEFINITION IS A NODE |
 | [`CARVE-P12-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L69) | 12 | A CITATION ITEM IS A POSITIONED INLINE NODE |
 | [`CARVE-P12-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L90) | 12 | A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA |
-| [`CARVE-P10-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L176) | 10 | AN ESCAPED RAW BLOCK IS WRITTEN AS CODE |
-| [`CARVE-P10-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L859) | 10 | EXPORT DOES NOT SELECT AN IMPORT MODE |
-| [`CARVE-P10-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L777) | 10 | AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING |
-| [`CARVE-P10-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L801) | 10 | EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK |
+| [`CARVE-P10-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L181) | 10 | AN ESCAPED RAW BLOCK IS WRITTEN AS CODE |
+| [`CARVE-P10-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L864) | 10 | EXPORT DOES NOT SELECT AN IMPORT MODE |
+| [`CARVE-P10-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L782) | 10 | AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING |
+| [`CARVE-P10-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L806) | 10 | EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK |

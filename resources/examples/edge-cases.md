@@ -67093,7 +67093,7 @@ a[^n] b[^n]
 
 ## Consecutive continuation markers in a div-hosted quote
 
-::: compare
+:::: compare
 
 ```carve
 ::: note
@@ -67112,4 +67112,4 @@ a[^n] b[^n]
 </aside>
 ```
 
-:::
+::::
