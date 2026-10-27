@@ -186,6 +186,7 @@ caption_slot = [blank_line], caption ;
    `table`, `figure_group` and `quote_block`; the last two attach it to their
    CLOSING fence (CARVE-P9-001, PART 9 §4). Image paragraphs and standalone display-math blocks
    follow the same allowance under PART 9 §4 without a slot-carrying production.
+   A block code include carries this slot after its directive line (PART 10 I1c).
    Any other `^ ` line is ordinary inline/paragraph content and, when a
    paragraph is OPEN above it, folds into it (PART 9 §10 I7).
 

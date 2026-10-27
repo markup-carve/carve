@@ -1,0 +1,16 @@
+{
+  "name": "malformed-csv-caret",
+  "source": "{table}\n{{ data.csv @code:csv }}\n^ Plans",
+  "files": {
+    "data.csv": "a,b\n\"bad\n"
+  },
+  "expected": {
+    "html": "<figure table=\"\">\n  <pre><code class=\"language-csv\">a,b\n\"bad\n</code></pre>\n  <figcaption>Plans</figcaption>\n</figure>",
+    "ast": [
+      {
+        "type": "code",
+        "caption": "Plans"
+      }
+    ]
+  }
+}

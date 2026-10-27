@@ -20,6 +20,16 @@
 import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd } from './render.mjs'
 import { labelKey } from './label-key.mjs'
 import { delimitedRowCount, delimitedRows } from './delimited-table.mjs'
+import { scanDirective } from './include-directive.mjs'
+
+function standaloneCodeInclude(line) {
+  const start = line.search(/\S/)
+  if (start < 0 || line.slice(start, start + 2) !== '{{') return null
+  const directive = scanDirective(line, start)
+  if (!directive || line.slice(directive.end).trim() !== '') return null
+  const code = directive.options.find(([key]) => key === 'code')
+  return code ? { directive, lang: code[1] ?? '' } : null
+}
 import layoutTransitions from '../../resources/spec/layout-transitions.json' with { type: 'json' }
 
 export { TIER1 }
@@ -2831,7 +2841,7 @@ function restoreOrdinaryPlus(value, sentinel) {
  * it could not otherwise be checked by a test. Passing one changes no answer.
  * Introduced with the per-descendant question-1 state (carve#2746).
  */
-export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) {
+export function parse(src, { authoredBodyBases = true, stateSink = null, includeFiles = null } = {}) {
   src = normalizeSource(src)
   // A private character keeps indented plus lines ordinary through recursive dedents.
   let hasOrdinaryPlus = false
@@ -3075,6 +3085,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
     footnoteDefs: new Map(),
     abbrDefs: new Map(),
     authoredBodyBases,
+    includeFiles,
     prefixMemos: new WeakMap(),
     markerLineColumns: new WeakMap(),
     sourceHasLonePlus,
@@ -3164,6 +3175,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
   // PART 9 SS4c no-nesting demotion); it is false again here, so drop it too.
   delete state.inFigureGroup
   delete state.authoredBodyBases
+  delete state.includeFiles
   delete state.markerCommentClosers
   delete state.prefixMemos
   delete state.attachmentBoundaries
@@ -3457,6 +3469,31 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     }
     for (const [re, what] of REFUSERS) {
       if (re.test(line)) throw new Refuse(what)
+    }
+
+    // PART 10 I2: the source spelling closes a standalone code include line.
+    // Resolution changes its block, never the boundary before a caption.
+    const codeInclude = standaloneCodeInclude(line)
+    if (codeInclude) {
+      const { directive, lang } = codeInclude
+      const file = state.includeFiles instanceof Map
+        ? state.includeFiles.get(directive.path)
+        : state.includeFiles?.[directive.path]
+      if (typeof file === 'string' && !directive.section) {
+        const content = file.replace(/^\uFEFF/, '').replace(/\r\n?|\n/g, '\n')
+        const node = { t: 'code', lang, text: content === '' ? '' : content.endsWith('\n') ? content : `${content}\n` }
+        i++
+        const cap = captionSlot(i)
+        if (cap) {
+          node.caption = cap.text
+          i = cap.next
+        }
+        push(node)
+      } else {
+        i++
+        push({ t: 'includeLiteral', text: line.trim() })
+      }
+      continue
     }
 
     // --- comments (SS21; invisible) ---

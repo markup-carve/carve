@@ -1679,6 +1679,7 @@ caption_slot = [blank_line], caption ;
    `table`, `figure_group` and `quote_block`; the last two attach it to their
    CLOSING fence (CARVE-P9-001, PART 9 §4). Image paragraphs and standalone display-math blocks
    follow the same allowance under PART 9 §4 without a slot-carrying production.
+   A block code include carries this slot after its directive line (PART 10 I1c).
    Any other `^ ` line is ordinary inline/paragraph content and, when a
    paragraph is OPEN above it, folds into it (PART 9 §10 I7).
 
@@ -3707,6 +3708,13 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       headings (I8).
       POSITION. A code block is block structure, so a code include in INLINE
       position is an ERROR (`include-block-in-inline`, I2).
+      CAPTION. A block code include carries the ordinary `caption_slot` after
+      its directive line: no blank line or one blank line may precede `^ `.
+      The caption attaches to the block the include becomes, the table when
+      `{table}` applies to well-formed data, otherwise the code block. When
+      malformed delimited data leaves a code block, that block keeps the
+      caption. The caption's `pos` is in the including file; the table's or
+      code block's `pos` remains in the included file.
       Every other rule is unchanged: resolution and containment (I3, I10),
       cycles, depth and the byte budget (I6), errors (I7) and dependency
       reporting (I11).
@@ -3719,6 +3727,14 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       spliced into the surrounding inline sequence. Resolved content
       with any other block structure in inline position is an ERROR
       (Warning + literal, per I7). Mirrors the PART 9 §10 block/inline model.
+      A line holding only a `{{ ... }}` directive with `@code` or
+      `@code:lang`, at a block start, is a block include by its source
+      spelling. It ends at its own line and does not open a paragraph, so a
+      following `^ ` line is not paragraph text. Resolution does not change
+      this boundary. An unresolved or refused directive, or one with no
+      resolver, stays literal as its own paragraph; the following caption
+      line is an ordinary paragraph. A Carve-content include without `@code`
+      keeps the block/inline behavior above.
 
    I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies a
       resolver with the contract: given (path, section?, options?,
@@ -11279,6 +11295,10 @@ EOF = (* end of file *) ;
    `markdown-container-flattened`, each block whose authored attributes have
    no Markdown representation as `markdown-attributes-dropped`, and each figure
    or table caption written as ordinary text as `markdown-caption-flattened`.
+   This also applies to a table from a CSV code include: Markdown export writes
+   the GFM pipe table and its caption as a paragraph, with
+   `markdown-caption-flattened`, exactly as for the authored CSV table. It does
+   not write the source `^ ` caption line literally.
    A code fence title dropped because the fence has no language reports
    `fence-title-dropped` with message
    `Dropped a code fence title without a language in Markdown`.

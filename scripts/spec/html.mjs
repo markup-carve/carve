@@ -344,6 +344,8 @@ function renderBlock(b, depth, ctx) {
   const pad = '  '.repeat(depth)
   const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
   switch (b.t) {
+    case 'includeLiteral':
+      return `${pad}<p${renderTextBlockAttrs(b.battrs, 'p')}>${escapeHtml(b.text)}</p>`
     case 'para': {
       // PART 11 SS1c IS ALREADY SETTLED WHEN THIS RUNS (carve#1784). `blockImage`
       // is set by the promotion phase, the one place allowed to ask whether a

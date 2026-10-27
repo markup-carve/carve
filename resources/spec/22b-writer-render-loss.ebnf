@@ -50,6 +50,10 @@
    `markdown-container-flattened`, each block whose authored attributes have
    no Markdown representation as `markdown-attributes-dropped`, and each figure
    or table caption written as ordinary text as `markdown-caption-flattened`.
+   This also applies to a table from a CSV code include: Markdown export writes
+   the GFM pipe table and its caption as a paragraph, with
+   `markdown-caption-flattened`, exactly as for the authored CSV table. It does
+   not write the source `^ ` caption line literally.
    A code fence title dropped because the fence has no language reports
    `fence-title-dropped` with message
    `Dropped a code fence title without a language in Markdown`.

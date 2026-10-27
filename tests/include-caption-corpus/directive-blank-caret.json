@@ -1,0 +1,18 @@
+{
+  "name": "directive-blank-caret",
+  "source": "{table}\n{{ data/plans.csv @code:csv }}\n\n^ Plans",
+  "files": {
+    "data/plans.csv": "Plan,Seats,Price\nStarter,1,\"$0\"\nTeam,10,\"$49, billed yearly\"\n"
+  },
+  "expected": {
+    "html": "<table>\n  <caption>Plans</caption>\n  <thead>\n    <tr><th scope=\"col\">Plan</th><th scope=\"col\">Seats</th><th scope=\"col\">Price</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>Starter</td><td>1</td><td>$0</td></tr>\n    <tr><td>Team</td><td>10</td><td>$49, billed yearly</td></tr>\n  </tbody>\n</table>",
+    "ast": [
+      {
+        "type": "table",
+        "caption": "Plans"
+      }
+    ],
+    "markdown": "| Plan | Seats | Price |\n| --- | --- | --- |\n| Starter | 1 | $0 |\n| Team | 10 | $49, billed yearly |\n\nPlans\n",
+    "markdownLoss": "markdown-caption-flattened"
+  }
+}

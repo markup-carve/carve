@@ -1,0 +1,17 @@
+{
+  "name": "unresolved-directive-caret",
+  "source": "{table}\n{{ missing.csv @code:csv }}\n^ Plans",
+  "files": {},
+  "expected": {
+    "html": "<p table=\"\">{{ missing.csv @code:csv }}</p>\n<p>^ Plans</p>",
+    "ast": [
+      {
+        "type": "includeLiteral",
+        "text": "{{ missing.csv @code:csv }}"
+      },
+      {
+        "type": "para"
+      }
+    ]
+  }
+}
