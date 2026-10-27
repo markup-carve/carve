@@ -2,14 +2,14 @@
   "version": 1,
   "measured": {
     "date": "2026-10-27",
-    "spec": "af8140af0306e6bed94192d381e711a63eb706c7",
+    "spec": "2a176573ab324f6e85891d903dafdcdfa8c2febb",
     "js": "c79692da8ba38d0978cbdb52c7424c3e024160a1",
     "php": "4bbbfbfd512a61c420c6850a952732588625caa7",
     "rust": "6de2ed4cc1f39f3f0a07fb2c6d979b4f0dca21f5",
     "coverage": {
       "full": {
-        "documents": 3281,
-        "pairs": 29529
+        "documents": 3284,
+        "pairs": 29556
       }
     }
   },
@@ -56,6 +56,138 @@
         "expected": "<section id=\"s-4-Globale-und-Mandanten-Vorlagen-„2-aktive-Templates\">\n  <h2>4. Globale und Mandanten-Vorlagen, „2 aktive Templates“</h2>\n</section>",
         "status": 0,
         "actual": "<section id=\"s-4-Globale-und-Mandanten-Vorlagen-2-aktive-Templates\">\n  <h2>4. Globale und Mandanten-Vorlagen, „2 aktive Templates“</h2>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal-2.crv/js->rust",
+      "fingerprint": "24311d44ebd03ec48a266efe8ea528fcedbd6a0807c18281ee8bfd2632dae997",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p>before {{ data/p2.csv @lines:0-2 }} after</p>",
+        "status": 0,
+        "actual": "<p>before {{ data/p2.csv <span class=\"mention\"><strong>@lines</strong></span>:0-2 }} after</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal-2.crv/php->rust",
+      "fingerprint": "24311d44ebd03ec48a266efe8ea528fcedbd6a0807c18281ee8bfd2632dae997",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p>before {{ data/p2.csv @lines:0-2 }} after</p>",
+        "status": 0,
+        "actual": "<p>before {{ data/p2.csv <span class=\"mention\"><strong>@lines</strong></span>:0-2 }} after</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal-2.crv/rust->js",
+      "fingerprint": "d6478936fc290e0b36e6faa31b06e034cfba28afe400386d5d7aa55c8cfd9ecd",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p>before {{ data/p2.csv <span class=\"mention\"><strong>@lines</strong></span>:0-2 }} after</p>",
+        "status": 0,
+        "actual": "<p>before {{ data/p2.csv @lines:0-2 }} after</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal-2.crv/rust->php",
+      "fingerprint": "d6478936fc290e0b36e6faa31b06e034cfba28afe400386d5d7aa55c8cfd9ecd",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p>before {{ data/p2.csv <span class=\"mention\"><strong>@lines</strong></span>:0-2 }} after</p>",
+        "status": 0,
+        "actual": "<p>before {{ data/p2.csv @lines:0-2 }} after</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal-3.crv/js->rust",
+      "fingerprint": "96011f2fdc525f686caf67a7e0cc2c12e82f696bab49d26e3b6aa35bdf156c9a",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p><strong>before {{ data/p2.csv @lines:2-1 }} after</strong></p>",
+        "status": 0,
+        "actual": "<p><strong>before {{ data/p2.csv <span class=\"mention\"><strong>@lines</strong></span>:2-1 }} after</strong></p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal-3.crv/php->rust",
+      "fingerprint": "96011f2fdc525f686caf67a7e0cc2c12e82f696bab49d26e3b6aa35bdf156c9a",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p><strong>before {{ data/p2.csv @lines:2-1 }} after</strong></p>",
+        "status": 0,
+        "actual": "<p><strong>before {{ data/p2.csv <span class=\"mention\"><strong>@lines</strong></span>:2-1 }} after</strong></p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal-3.crv/rust->js",
+      "fingerprint": "551b95ebc2dbc2b6d26a0601551a84a9825322f56b494816a21342829097d6bd",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p><strong>before {{ data/p2.csv <span class=\"mention\"><strong>@lines</strong></span>:2-1 }} after</strong></p>",
+        "status": 0,
+        "actual": "<p><strong>before {{ data/p2.csv @lines:2-1 }} after</strong></p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal-3.crv/rust->php",
+      "fingerprint": "551b95ebc2dbc2b6d26a0601551a84a9825322f56b494816a21342829097d6bd",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p><strong>before {{ data/p2.csv <span class=\"mention\"><strong>@lines</strong></span>:2-1 }} after</strong></p>",
+        "status": 0,
+        "actual": "<p><strong>before {{ data/p2.csv @lines:2-1 }} after</strong></p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal.crv/js->rust",
+      "fingerprint": "0ae505d59a9a7a089cc385a56028c3444779f3e2019190ff0ac371cf7eaa6a10",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p>before {{ data/p2.csv @code:csv @lines:01-2 }} after</p>",
+        "status": 0,
+        "actual": "<p>before {{ data/p2.csv <span class=\"mention\"><strong>@code</strong></span>:csv <span class=\"mention\"><strong>@lines</strong></span>:01-2 }} after</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal.crv/php->rust",
+      "fingerprint": "0ae505d59a9a7a089cc385a56028c3444779f3e2019190ff0ac371cf7eaa6a10",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p>before {{ data/p2.csv @code:csv @lines:01-2 }} after</p>",
+        "status": 0,
+        "actual": "<p>before {{ data/p2.csv <span class=\"mention\"><strong>@code</strong></span>:csv <span class=\"mention\"><strong>@lines</strong></span>:01-2 }} after</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal.crv/rust->js",
+      "fingerprint": "4072763d886638c53e413a73211009f5b8fab89d2583f921128990a1567e11fc",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p>before {{ data/p2.csv <span class=\"mention\"><strong>@code</strong></span>:csv <span class=\"mention\"><strong>@lines</strong></span>:01-2 }} after</p>",
+        "status": 0,
+        "actual": "<p>before {{ data/p2.csv @code:csv @lines:01-2 }} after</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/735-invalid-line-range-includes-within-paragraphs-stay-literal.crv/rust->php",
+      "fingerprint": "4072763d886638c53e413a73211009f5b8fab89d2583f921128990a1567e11fc",
+      "reason": "The pinned JavaScript parser reads an invalid inline range option as a mention instead of literal include text.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3743",
+      "observation": {
+        "expected": "<p>before {{ data/p2.csv <span class=\"mention\"><strong>@code</strong></span>:csv <span class=\"mention\"><strong>@lines</strong></span>:01-2 }} after</p>",
+        "status": 0,
+        "actual": "<p>before {{ data/p2.csv @code:csv @lines:01-2 }} after</p>"
       }
     }
   ]
