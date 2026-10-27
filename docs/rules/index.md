@@ -29,5 +29,5 @@ Retired IDs are never reused. Their replacement points to the document that now 
 | `CARVE-PRE-001` | THE EXECUTABLE ARTIFACTS DECIDE NOTHING | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-PRE-002` | A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-PRE-003` | A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
-| `CARVE-P9-079` | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT | [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L495) |
+| `CARVE-P9-079` | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT | [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L499) |
 | `CARVE-P12-003` | TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION | [`CARVE-P12-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L16) |
