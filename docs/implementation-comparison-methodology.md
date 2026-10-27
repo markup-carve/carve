@@ -20,7 +20,7 @@ The count-only run covers 3,118 core documents and their 194 target sidecars.
 The run scores 3,312 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: two, then `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-5`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-6`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-7`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-8`, `209-an-unresolved-reference-image-takes-no-caption-2`, `209-an-unresolved-reference-image-takes-no-caption-3`.
+Corpus added since this run: two, then `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-5`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-6`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-7`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-8`, `209-an-unresolved-reference-image-takes-no-caption-2`, `209-an-unresolved-reference-image-takes-no-caption-3`, `713-a-description-continues-after-any-blank-run`.
 
 Sidecars added since this run: one Markdown target.
 
