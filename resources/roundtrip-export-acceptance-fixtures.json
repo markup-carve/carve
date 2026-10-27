@@ -450,14 +450,7 @@
       "returnedSourceFragments": [
         "*[A]: a",
         "*[A]: b"
-      ],
-      "aheadOfPin": {
-        "fails": [
-          "exported html matches fixture",
-          "data-carve-abbreviations",
-          "*[A]: a"
-        ]
-      }
+      ]
     },
     {
       "id": "table-separator-widths",
@@ -1079,7 +1072,7 @@
           "element": "a"
         }
       ],
-      "exportedHtml": "<section id=\"Café\" data-carve-generated-id=\"1\">\n  <h1>Café</h1>\n  <p>See <a href=\"#Café\" data-carve-xref>Café</a>.</p>\n</section>"
+      "exportedHtml": "<section data-carve-generated-id=\"1\" id=\"Café\">\n  <h1>Café</h1>\n  <p>See <a href=\"#Café\" data-carve-xref>Café</a>.</p>\n</section>"
     },
     {
       "id": "cross-reference-assigned-id",
@@ -1106,7 +1099,7 @@
           "element": "a"
         }
       ],
-      "exportedHtml": "<section id=\"a.b\" data-carve-explicit-id=\"1\">\n  <h1>Head</h1>\n  <p>See <a href=\"#a.b\" data-carve-xref>Head</a>.</p>\n</section>"
+      "exportedHtml": "<section data-carve-explicit-id=\"1\" id=\"a.b\">\n  <h1>Head</h1>\n  <p>See <a href=\"#a.b\" data-carve-xref>Head</a>.</p>\n</section>"
     },
     {
       "id": "bare-div-carrier",

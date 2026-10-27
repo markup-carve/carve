@@ -413,39 +413,22 @@ test('formatting a corpus document re-parses to the same tree (PART 11 §1, boun
   )
 })
 
-// THE CARVE-OUT IS REACHED, so it cannot rot unnoticed. The sweep above takes
-// the §1c branch silently: if the corpus or the pin changed so that no document
-// re-parsed differently at all, the branch would stop executing, the bound
-// would stop being exercised and nothing would say so. Asked once, over the
-// corpus, because it is a question about the corpus - and it fails in the
-// direction a per-document assertion cannot: the day a lone indented image
-// round-trips cleanly, this goes red and the branch and this test are deleted
-// together. The message names the documents, so a renumbering reads as the
-// rename it is.
-test('a corpus document still reaches the PART 11 §1c ceiling', () => {
+// The current pin preserves the full AST on this corpus. Keep that stronger
+// result checked alongside the PART 11 §1c bound above.
+test('the pinned writer preserves the corpus AST through formatting', () => {
   const reached = documents
     .filter(({ slug }) => !declaredDrift.has(slug))
     .filter(({ source }) => astTree(written(source)) !== astTree(source))
     .map(({ slug }) => slug)
-  assert.notDeepEqual(
+  assert.deepEqual(
     reached,
     [],
-    'no corpus document re-parses differently after formatting: the PART 11 §1c bound in the sweep ' +
-      'above is dead and should be deleted along with this test',
+    'the pinned writer must preserve the corpus AST through formatting',
   )
 })
 
-// THE WIDENED BRANCH IS LOAD-BEARING, asked separately from the ceiling above
-// because it is a separate way for this file to rot, and asked as "does a
-// document NEED it" rather than "does one produce the shape". The weaker
-// question - is there a wrapper carrying the field anywhere - stays green in a
-// world where the writer starts preserving those wrappers and some unrelated
-// comment wrapper keeps the ceiling reached, so it would report a dead carve-out
-// as live. This runs the sweep's own comparison twice, once with the carve-out
-// and once without, and names the documents that agree only WITH it.
-//
-// The day none do, the metadata carve-out and this test are deleted together.
-test('a corpus document needs the PART 11 §1c metadata carve-out to agree', () => {
+// The current corpus also agrees without the wrapper metadata exception.
+test('the pinned corpus needs no PART 11 §1c metadata carve-out', () => {
   const needed = documents
     .filter(({ slug }) => !declaredDrift.has(slug))
     .filter(({ source }) => {
@@ -456,12 +439,10 @@ test('a corpus document needs the PART 11 §1c metadata carve-out to agree', () 
       )
     })
     .map(({ slug }) => slug)
-  assert.notDeepEqual(
+  assert.deepEqual(
     needed,
     [],
-    'no corpus document is reconciled by the WRAPPER_METADATA carve-out: every document that agrees ' +
-      'under it agrees without it, so the widening of isBareWrapper is dead and should be deleted ' +
-      'along with this test',
+    'the pinned corpus must need no WRAPPER_METADATA carve-out',
   )
 })
 
@@ -632,10 +613,8 @@ test('the strong property still fails on every difference PART 11 §1c does not 
   for (const [what, source, output] of arms) {
     assert.notEqual(astShape(source), astShape(output), `${what} survived the PART 11 §1c bound`)
   }
-  // THE CONTROL, without which every arm above would pass a comparison that
-  // simply never forgives anything. The ceiling itself IS forgiven: the two
-  // spellings of a lone image differ as trees and agree as shapes.
-  assert.notEqual(astTree(' ![Apollo](a.jpg)\n'), astTree('![Apollo](a.jpg)\n'))
+  // Both spellings of a lone image now produce the same tree and shape.
+  assert.equal(astTree(' ![Apollo](a.jpg)\n'), astTree('![Apollo](a.jpg)\n'))
   assert.equal(astShape(' ![Apollo](a.jpg)\n'), astShape('![Apollo](a.jpg)\n'))
 })
 

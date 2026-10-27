@@ -1,17 +1,9 @@
 {
   "js": {
-    "unknown-option": [
-      "category-missing"
-    ],
-    "invalid-ast-json": [
-      "category-missing"
-    ],
-    "unreadable-input": [
-      "category-missing"
-    ],
-    "bad-option-value": [
-      "category-missing"
-    ]
+    "unknown-option": [],
+    "invalid-ast-json": [],
+    "unreadable-input": [],
+    "bad-option-value": []
   },
   "php": {
     "unknown-option": [
