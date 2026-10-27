@@ -42,10 +42,11 @@ const extendsGrapheme = (src, at) => GRAPHEME_EXTENDER.test(src.slice(at, at + 2
 // text must never carry these through into the resolution passes, or it would
 // be reinterpreted as pipeline framing (spoofed refs/footnotes, JSON.parse).
 const STRIP = /[‪-‮⁦-⁩]/g
+const STRIP_FRAMES = /[]/g
 
-const escapeMarkup = (s) =>
+const escapeMarkup = (s, preserveBidi = false) =>
   s
-    .replace(STRIP, '')
+    .replace(preserveBidi ? STRIP_FRAMES : STRIP, '')
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
@@ -59,6 +60,7 @@ export const escapeHtml = (s) => escapeMarkup(s).replaceAll(' ', '&nbsp;')
 // space came out as id="&nbsp;Title" here and id=" Title" everywhere
 // else.
 export const escapeAttr = (s) => escapeMarkup(s).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
+export const escapeUrlAttr = (s) => escapeMarkup(checkUrl(s), true).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
 
 // PART 9 SS25: URL sink scheme denylist -- a denylisted scheme renders an
 // EMPTY value. Scheme detection first strips ASCII controls and ALL Unicode
@@ -108,7 +110,7 @@ export function isImageSource(text) {
 }
 
 export function checkUrl(url) {
-  const probe = url.replace(/[\x00-\x20\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/g, '')
+  const probe = url.replace(STRIP_FRAMES, '').replace(/[\x00-\x20\x7f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/g, '')
   const m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(probe)
   if (m && DENY.has(m[1].toLowerCase())) return ''
   return url
@@ -420,10 +422,12 @@ export function renderAttrs(list) {
     } else if (a[0] === 'kv') {
       const h = hardenAttr(a[1], a[2])
       if (!h) continue
-      if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}="${escapeAttr(h.value)}"`
+      const name = a[1].toLowerCase()
+      const value = name === 'href' || name === 'src' || Object.hasOwn(URL_LIST_SEPARATORS, name) ? escapeUrlAttr(h.value) : escapeAttr(h.value)
+      if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}="${value}"`
       else {
         seen.set(a[1], parts.length)
-        parts.push(` ${a[1]}="${escapeAttr(h.value)}"`)
+        parts.push(` ${a[1]}="${value}"`)
       }
     } else {
       // A BOOLEAN IS A KEY/VALUE WHOSE VALUE IS EMPTY, so it takes the same
@@ -623,7 +627,7 @@ const sem = g.createSemantics().addOperation('h', {
     const [dest, title] = destSlotParts(slot)
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
     const a = renderAttrs(attrsOf(attrs))
-    return `<img src="${escapeAttr(checkUrl(destValue(dest)))}" alt="${escapeAttr(alt.sourceString.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
+    return `<img src="${escapeUrlAttr(destValue(dest))}" alt="${escapeAttr(alt.sourceString.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
   },
   imageRef(_b, _o, alt, _c, _ro, label, _rc, attrs) {
     // Same sentinel as a reference LINK, flagged so resolution emits an
@@ -636,7 +640,7 @@ const sem = g.createSemantics().addOperation('h', {
     const raw = body.child(1).sourceString
     const href = /@/.test(raw) && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw) ? `mailto:${raw}` : raw
     const a = renderAttrs(attrsOf(attrs))
-    return `<a href="${escapeAttr(checkUrl(href))}"${a}>${escapeHtml(raw)}</a>`
+    return `<a href="${escapeUrlAttr(href)}"${a}>${escapeHtml(raw)}</a>`
   },
   escape(_bs, ch) {
     return escapeHtml(ch.sourceString)
@@ -911,7 +915,7 @@ sem.addOperation('applyTail(text, source)', {
     // whose sentinel this check never named (markup-carve/carve#1188).
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
     const a = renderAttrs(attrsOf(attrs))
-    return `<a href="${escapeAttr(checkUrl(destValue(dest)))}"${t}${a}>${text}</a>`
+    return `<a href="${escapeUrlAttr(destValue(dest))}"${t}${a}>${text}</a>`
   },
   refTail(_o, label, _c, attrs) {
     const { source } = this.args

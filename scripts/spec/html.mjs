@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, captionPlaceholder, deTypography, makeSlugger, checkUrl, escapeAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -1400,7 +1400,7 @@ function resolveImageRef(parsed, ctx, literal) {
   const a = def.attrs?.length
     ? renderBlockAttrs([def.attrs, attrList ?? []])
     : renderAttrs(attrList ?? [])
-  return `<img src="${escapeAttr(checkUrl(def.url))}" alt="${escapeAttr(alt.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
+  return `<img src="${escapeUrlAttr(def.url)}" alt="${escapeAttr(alt.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
 }
 
 // --- PART 9R R1: reference links --------------------------------------------
@@ -1486,7 +1486,7 @@ function resolveRefsOnce(html, ctx) {
     const a = def.attrs?.length
       ? renderBlockAttrs([def.attrs, attrList ?? []])
       : renderAttrs(attrList ?? [])
-    return `<a href="${escapeAttr(checkUrl(def.url))}"${t}${a}>${text}</a>`
+    return `<a href="${escapeUrlAttr(def.url)}"${t}${a}>${text}</a>`
   })
 }
 

@@ -1,0 +1,13 @@
+URL sinks reject schemes after emitted-value normalization
+
+```
+[x](‮javascript:alert(1))
+.
+<p><a href="‮javascript:alert(1)">x</a></p>
+```
+
+```
+[x](javascript:alert(1))
+.
+<p><a href="">x</a></p>
+```
