@@ -24,3 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+209-an-unresolved-reference-image-takes-no-caption-2  carve#3743: pinned JS folds the second caret line into the first paragraph
+209-an-unresolved-reference-image-takes-no-caption-3  carve#3743: pinned JS folds the second caret line after a resolved image
