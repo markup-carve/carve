@@ -112,12 +112,13 @@
          carry. A ``` or ~~~ code fence interrupts an open paragraph only
          when a matching code closer is reachable in its host. Otherwise
          the fence line stays in that paragraph, where the code_span
-         maximal-run rule may consume it. Corpus 81-paragraph-interruption-19
-         pins `Text` / ``` / `more` as one paragraph with an inline code span.
+         maximal-run rule may consume it. Pinned by corpus
+         81-paragraph-interruption-19: `Text` / ``` / `more` as one paragraph with an inline code span.
 
          A `:::` colon opener interrupts an open paragraph even without a
          closer. PART 2's UNCLOSED `admonition` rule determines where its
-         body ends. Corpus 81-paragraph-interruption-20 pins `Text` / `:::` /
+         body ends. Pinned by corpus
+         81-paragraph-interruption-20: `Text` / `:::` /
          `stuff` as a paragraph followed by a div holding `stuff`.
 
       I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
