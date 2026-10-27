@@ -25,7 +25,3 @@
 #
 # Format: <slug><space><space><reason>
 
-732-paired-german-quotes-leave-no-quote-in-a-heading-id  The pinned JS heading slugger keeps the German opening quote (carve#3799, carve-js#3737).
-735-invalid-line-range-includes-within-paragraphs-stay-literal  The pinned JS parser marks invalid inline include options as mentions (carve-js#3743).
-735-invalid-line-range-includes-within-paragraphs-stay-literal-2  The pinned JS parser marks invalid inline include options as mentions (carve-js#3743).
-735-invalid-line-range-includes-within-paragraphs-stay-literal-3  The pinned JS parser marks invalid inline include options as mentions (carve-js#3743).
