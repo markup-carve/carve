@@ -1,11 +1,64 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-10-14",
-    "spec": "0dc05afe7c8188ffa372a7a544044f62c388a715",
-    "js": "bbd58b59364659e96f46db7b54896417ebff7c0b",
-    "php": "e206cedc4e3f41cc92297b43bacca4c102a84cec",
-    "rust": "6a474d0b31ab020dade6daefa5fe3f8a73c3bdd0"
+    "date": "2026-10-27",
+    "spec": "0856a4117f8d01fdf2f27dfa513a87720d78a1dd",
+    "js": "94f0a4ae203f1942fcc3f52a42c5a4336165b12c",
+    "php": "eca6b3ac5d09ad5430d4a274007e2f14b36a9a9a",
+    "rust": "a7e1e16cb510ac1328990e84487aea0058359993"
   },
-  "differences": []
+  "differences": [
+    {
+      "key": "commonmark/markdown/569",
+      "fingerprint": "7055d00617f6bc318d8474cafed8555ddf6222a9e87cdf75b260fd7d33535e5c",
+      "reason": "Rust import selects the final bracket pair as the linked text; the CommonMark result links the middle pair (CARVE-P2-032).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3306",
+      "observation": {
+        "kind": "meaning",
+        "answers": {
+          "js": {
+            "status": 0,
+            "source": "\\[foo][bar][baz]\n\n[baz]: /url\n",
+            "html": "<p>[foo]<a href=\"/url\">bar</a></p>"
+          },
+          "php": {
+            "status": 0,
+            "source": "\\[foo][bar][baz]\n\n[baz]: /url\n",
+            "html": "<p>[foo]<a href=\"/url\">bar</a></p>"
+          },
+          "rust": {
+            "status": 0,
+            "source": "[foo][bar][baz][]\n\n[baz]: /url\n",
+            "html": "<p>[foo][bar]<a href=\"/url\">baz</a></p>"
+          }
+        }
+      }
+    },
+    {
+      "key": "commonmark/markdown/571",
+      "fingerprint": "555ac1612e50f1610f6981c0e27f441062e22e4c197dda155f5b8fcf0ab7ecce",
+      "reason": "Rust import selects the final bracket pair as the linked text; the CommonMark result links the middle pair (CARVE-P2-032).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3306",
+      "observation": {
+        "kind": "meaning",
+        "answers": {
+          "js": {
+            "status": 0,
+            "source": "\\[foo][bar][baz]\n\n[baz]: /url1\n\n[foo]: /url2\n",
+            "html": "<p>[foo]<a href=\"/url1\">bar</a></p>"
+          },
+          "php": {
+            "status": 0,
+            "source": "\\[foo][bar][baz]\n\n[baz]: /url1\n\n[foo]: /url2\n",
+            "html": "<p>[foo]<a href=\"/url1\">bar</a></p>"
+          },
+          "rust": {
+            "status": 0,
+            "source": "[foo][bar][baz][]\n\n[baz]: /url1\n\n[foo]: /url2\n",
+            "html": "<p>[foo][bar]<a href=\"/url1\">baz</a></p>"
+          }
+        }
+      }
+    }
+  ]
 }

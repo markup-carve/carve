@@ -23,3 +23,7 @@
 #
 # Format: <a>|<b>/<slug><two or more spaces><reason naming owner/repo#N>
 # Engines are js, php, rust, written in that order.
+js|php/325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-7  PHP keeps the + while JS folds it; both preserve the attached block, markup-carve/carve#3740.
+php|rust/325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-7  PHP keeps the + while Rust folds it; both preserve the attached block, markup-carve/carve#3740.
+js|php/708-invisible-content-and-image-promotion  PHP drops the empty invisible comment while JS writes it; both preserve the image, markup-carve/carve#3712.
+php|rust/708-invisible-content-and-image-promotion  PHP drops the empty invisible comment while Rust writes it; both preserve the image, markup-carve/carve#3712.

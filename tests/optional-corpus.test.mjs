@@ -186,16 +186,7 @@ const DECLARED_UNIMPLEMENTED = {
  * Each entry is `{ reason, pinned: [[fixtureFragment, pinnedFragment], ...] }`, the same shape as
  * the Tier-3 ledger: any output other than the declared substitution fails.
  */
-const AHEAD_OF_PIN = {
-  '101-profile-denied-cross-reference': {
-    reason: 'carve#3741: JS emits an internal node name',
-    pinned: [['<p>a</p>', '<p>[heading_ref]</p>']],
-  },
-  '102-profile-denied-code-block': {
-    reason: 'carve#3741: JS emits an inline code span',
-    pinned: [['<p>x</p>', '<p>`x`</p>']],
-  },
-}
+const AHEAD_OF_PIN = {}
 
 /*
  * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a
