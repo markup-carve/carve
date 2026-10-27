@@ -1,0 +1,19 @@
+Invalid line-range includes within paragraphs stay literal
+
+```
+before {{ data/p2.csv @code:csv @lines:01-2 }} after
+.
+<p>before {{ data/p2.csv @code:csv @lines:01-2 }} after</p>
+```
+
+```
+before {{ data/p2.csv @lines:0-2 }} after
+.
+<p>before {{ data/p2.csv @lines:0-2 }} after</p>
+```
+
+```
+*before {{ data/p2.csv @lines:2-1 }} after*
+.
+<p><strong>before {{ data/p2.csv @lines:2-1 }} after</strong></p>
+```

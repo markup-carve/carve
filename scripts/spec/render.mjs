@@ -13,6 +13,7 @@ import { resolve as presolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import * as ohm from 'ohm-js'
 import { MAX_CODE_RUN, Refuse, trimWs } from './layout.mjs'
+import { findDirectives, hasInvalidLineRange } from './include-directive.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const g = ohm.grammar(readFileSync(presolve(here, '../../resources/carve-core.ohm'), 'utf8'))
@@ -1888,7 +1889,29 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false) {
   quoteRun.depth++
   quotePrevCtx = prevCtx
   try {
-    const html = renderInlineInner(text)
+    let html
+    if (text.includes('@lines') && text.includes('{{')) {
+      const literals = findDirectives(text).filter(hasInvalidLineRange)
+      if (literals.length) {
+        let key = randomUUID().replaceAll('-', '')
+        while (text.includes(key)) key = randomUUID().replaceAll('-', '')
+        let at = 0
+        let masked = ''
+        const replacements = []
+        for (const directive of literals) {
+          if (directive.start < at) continue
+          const marker = `CARVEINVALIDINCLUDE${key}X${replacements.length}X`
+          masked += text.slice(at, directive.start) + marker
+          replacements.push([marker, text.slice(directive.start, directive.end)])
+          at = directive.end
+        }
+        html = renderInlineInner(masked + text.slice(at))
+        for (const [marker, literal] of replacements) {
+          html = html.replaceAll(marker, quoteOpaque(escapeHtml(literal)))
+        }
+      }
+    }
+    html ??= renderInlineInner(text)
     return root ? settleQuotes(html, quoteRun, prevCtx) : html
   } finally {
     quotePrevCtx = saved

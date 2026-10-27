@@ -181,3 +181,12 @@ export function findDirectives(text) {
   }
   return found
 }
+
+// I1 rejects zero, leading zeros, and reversed physical line ranges.
+export function hasInvalidLineRange(directive) {
+  return directive.options.some(([key, value]) => {
+    if (key !== 'lines') return false
+    const match = /^([1-9][0-9]*)-([1-9][0-9]*)$/.exec(value ?? '')
+    return !match || BigInt(match[1]) > BigInt(match[2])
+  })
+}
