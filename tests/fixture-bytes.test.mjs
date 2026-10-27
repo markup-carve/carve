@@ -69,6 +69,8 @@ const INVENTORY = [
   { base: '697-a-final-tab-does-not-change-list-ownership-in-a-description', crv: ['trailing-WS'], html: [] },
   { base: '705-unicode-whitespace-ends-a-link-destination', crv: ['NNBSP'], html: ['NNBSP'] },
   { base: '716-url-sinks-reject-schemes-after-emitted-value-normalization', crv: ['RLO'], html: ['RLO'] },
+  // The space after the colon is the contentless-marker spelling this row tests.
+  { base: '723-a-contentless-description-marker-folds-under-a-quoted-term', crv: ['trailing-WS'], html: [] },
   {
     base: '119-trojan-source-heading-ids-are-nfc-normalized-and-strip-invisible-controls-3',
     crv: ['RLO', 'ZWSP'],
