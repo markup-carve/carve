@@ -7,7 +7,7 @@
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E01-unclosed-fence.crv",
@@ -24,7 +24,7 @@
           7
         ]
       ],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E02-row-missing-closing-pipe.crv",
@@ -34,14 +34,14 @@
           6
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "table-shaped-paragraph",
           6
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E03-wrong-cell-count.crv",
@@ -51,14 +51,14 @@
           7
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "table-row-cell-count",
           7
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E04-bold-never-closed.crv",
@@ -68,14 +68,14 @@
           5
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "unclosed-inline-emphasis",
           5
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E05-space-in-link.crv",
@@ -85,14 +85,14 @@
           5
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "link-gap-before-destination",
           5
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E06-foreign-bold-habit.crv",
@@ -109,7 +109,7 @@
           5
         ]
       ],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E07-markdown-italic-habit.crv",
@@ -119,14 +119,14 @@
           5
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "markdown-italic-underline",
           5
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E08-heading-level-skip.crv",
@@ -136,14 +136,14 @@
           5
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "heading-level-skip",
           5
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E09-list-without-blank-line.crv",
@@ -153,14 +153,14 @@
           6
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "list-marker-without-blank-line",
           6
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E10-sublist-one-space.crv",
@@ -185,7 +185,7 @@
           7
         ]
       ],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E11-unclosed-container.crv",
@@ -202,7 +202,7 @@
           5
         ]
       ],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E12-stray-html.crv",
@@ -212,14 +212,14 @@
           5
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "bare-html-tag",
           5
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "errors/E13-separator-typo.crv",
@@ -229,28 +229,28 @@
           6
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "table-separator-near-miss",
           6
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "report.crv",
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/01.crv",
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": [
+      "optIn": [
         [
           "caption-looking-paragraph",
           3
@@ -272,7 +272,7 @@
           5
         ]
       ],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/03.crv",
@@ -289,28 +289,28 @@
           13
         ]
       ],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/04.crv",
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/05.crv",
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/06.crv",
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": [
+      "optIn": [
         [
           "caption-looking-paragraph",
           6
@@ -333,7 +333,8 @@
           8
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "markdown-definition-paragraph",
           2
@@ -347,15 +348,14 @@
           8
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/08.crv",
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": [
+      "optIn": [
         [
           "caption-looking-paragraph",
           11
@@ -367,7 +367,7 @@
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/10.crv",
@@ -381,7 +381,8 @@
           12
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "list-marker-without-blank-line",
           8
@@ -391,8 +392,7 @@
           12
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/11.crv",
@@ -410,7 +410,8 @@
           8
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "markdown-definition-paragraph",
           2
@@ -424,8 +425,7 @@
           8
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/12.crv",
@@ -442,14 +442,14 @@
           3
         ]
       ],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/13.crv",
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": [
+      "optIn": [
         [
           "caption-looking-paragraph",
           5
@@ -471,7 +471,7 @@
           9
         ]
       ],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/15.crv",
@@ -488,14 +488,14 @@
           10
         ]
       ],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/16.crv",
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": [
+      "optIn": [
         [
           "caption-looking-paragraph",
           5
@@ -514,19 +514,18 @@
           20
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "github-alert-marker",
           5
-        ]
-      ],
-      "pinned": [
+        ],
         [
           "broken-fragment-link",
           20
         ]
       ],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/18.crv",
@@ -544,7 +543,8 @@
           10
         ]
       ],
-      "aheadOfPin": [
+      "aheadOfPin": [],
+      "pinned": [
         [
           "markdown-definition-paragraph",
           4
@@ -558,15 +558,14 @@
           10
         ]
       ],
-      "pinned": [],
-      "optInAheadOfPin": []
+      "optIn": []
     },
     {
       "file": "unguided/19.crv",
       "expected": [],
       "aheadOfPin": [],
       "pinned": [],
-      "optInAheadOfPin": [
+      "optIn": [
         [
           "caption-looking-paragraph",
           9
@@ -604,7 +603,7 @@
           13
         ]
       ],
-      "optInAheadOfPin": [
+      "optIn": [
         [
           "caption-looking-paragraph",
           8

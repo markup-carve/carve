@@ -65,6 +65,7 @@ const TRIGGERS = {
   'region-marker-renders-as-text': '// #region demo\nBody.\n// #endregion demo\n',
   'consumed-key-near-miss': '{tabel}\n```csv\na,b\n```\n',
   'description-separator-below-content-column': '- a\n  :: term\n : detail\n',
+  'caption-looking-paragraph': { source: '|= A |\n| x |\n\nTable 1: caption\n', options: { captionLookingParagraph: true } },
   'platform-mention-token': {
     source: 'Use @minutely for that cron alias.\n',
     options: { platforms: ['github'] },
@@ -114,58 +115,6 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  */
 const NOT_IN_THE_PIN_YET = new Map([
   [
-    'table-shaped-paragraph',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'table-row-cell-count',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'table-separator-near-miss',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'list-marker-without-blank-line',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'unclosed-inline-emphasis',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'link-gap-before-destination',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'markdown-italic-underline',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'heading-level-skip',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'bare-html-tag',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'markdown-definition-paragraph',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'github-alert-marker',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'caption-looking-paragraph',
-    'specified by the carve#3792 authoring ruling; the pinned build does not carry it',
-  ],
-  [
-    'include-lines-invalid',
-    'specified by CARVE-P6-001 I1 in carve#3764; the pinned build still reports include-unknown-option',
-  ],
-  [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',
   ],
@@ -198,6 +147,7 @@ const INCLUDE_TRIGGERS = {
   'include-selection-conflict': withIncludes('{{ a.crv #a @lines:1-2 }}\n'),
   'include-unknown-option': withIncludes('{{ a.crv @bogus:1 }}\n'),
   'include-lines-out-of-range': withIncludes('{{ a.crv @lines:9-9 }}\n'),
+  'include-lines-invalid': withIncludes('{{ a.crv @lines:2-1 }}\n'),
   'include-duplicate-option': withIncludes('{{ a.crv @shift:1 @shift:2 }}\n'),
   'include-block-in-inline': withIncludes('See {{ para.crv }} here.\n'),
   'include-cycle': withIncludes('{{ loop.crv }}\n'),

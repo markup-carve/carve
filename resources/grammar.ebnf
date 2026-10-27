@@ -94,6 +94,14 @@
    category identifies the failed input or invocation, not a parser or lint
    finding within a successfully read document.
 
+   FORMATTER DIAGNOSTIC CONTRACT (NORMATIVE). When `carve fmt --check`
+   finds a change, it prints the first changed source line for each file as
+   `path:line`, followed by the old and new line text. The path for stdin is
+   `<stdin>`. `carve fmt --diff` prints a unified source diff. Both modes
+   leave the input unchanged and return status 1 for a formatting change,
+   status 0 for no change, and the existing usage or input error status for
+   failures. The diagnostic does not change what the canonical writer emits.
+
    RECOVERY DECISION TABLE (PARTS 0-9; construct guards still govern).
    Decide within the current host after testing the complete opener:
    | Case | Recovery |

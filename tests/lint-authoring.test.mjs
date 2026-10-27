@@ -23,7 +23,7 @@ test('authoring scorecard inventory and pin declarations are complete', () => {
   for (const c of data.cases) {
     const source = readFileSync(resolve(root, 'tests/lint-authoring', c.file), 'utf8')
     const lines = source.split('\n')
-    for (const [rule, line] of [...c.expected, ...c.optInAheadOfPin]) {
+    for (const [rule, line] of [...c.expected, ...c.optIn]) {
       assert.match(rule, /^[a-z][a-z0-9-]+$/)
       assert.ok(Number.isInteger(line) && line > 0 && line <= lines.length && lines[line - 1].trim(), `${c.file}:${line}`)
     }

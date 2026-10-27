@@ -66,7 +66,8 @@ for (const file of files) {
   const carried = lintSource.includes(`'${data.rule}'`) || lintSource.includes(`"${data.rule}"`)
   test(`${file}: carve-js`, { skip: carried ? false : `${engineDir} does not carry ${data.rule}` }, () => {
     for (const v of data.vectors) {
-      const actual = lintCarve(v.source).filter((w) => w.rule === data.rule)
+      const actual = lintCarve(v.source, data.rule === 'caption-looking-paragraph'
+        ? { captionLookingParagraph: true } : {}).filter((w) => w.rule === data.rule)
       const pinned = data.rule === 'continuation-marker-refused' ? ahead[v.name] : undefined
       const expected = v.expected.findings.map((f) => [f.line, f.column])
       if (pinned?.actual) assert.notDeepEqual(pinned.actual, expected, `${v.name}: stale pin declaration`)
