@@ -620,6 +620,11 @@
    renders differently, without changing the parse or HTML. Unless stated
    otherwise they are on by default. The finding points at the source line
    carrying the failed spelling, and an escaped or verbatim example is quiet.
+   Source-pattern findings inspect only parsed source that can reach rendered
+   content. A recognized line comment, fenced block comment, or inline comment
+   excludes its entire source span, including delimiters, from these findings
+   at every container depth. Source safety checks that explicitly inspect
+   hidden bytes, such as `bidi-control-in-source`, still inspect comment text.
 
    `table-separator-near-miss` reports a separator-shaped row that does not
    become a delimiter, including a typo in its dash cells or a dash-only cell

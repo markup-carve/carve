@@ -759,6 +759,10 @@ the same thing under different names.
 
 The Markdown strong and strike checks use `markdown-strong-double-star` and
 `markdown-strikethrough-double-tilde` in all three measured engines.
+These source-pattern checks ignore recognized comments, including their fence
+lines and bodies inside containers. The same visibility rule applies to the
+other authoring checks. Source safety checks such as `bidi-control-in-source`
+still inspect hidden comment text.
 
 ### Accessibility checks
 

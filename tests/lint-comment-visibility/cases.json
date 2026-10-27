@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "cases": [
+    { "name": "root-block", "source": "%%%\n**hidden** ~~hidden~~\n%%%\n", "expected": [] },
+    { "name": "root-visible", "source": "**visible** ~~visible~~\n", "expected": [["markdown-strong-double-star", 1, 1], ["markdown-strikethrough-double-tilde", 1, 13]] },
+    { "name": "comment-between-visible", "source": "**first**\n%%%\n**hidden** ~~hidden~~\n%%%\n~~last~~\n", "expected": [["markdown-strong-double-star", 1, 1], ["markdown-strikethrough-double-tilde", 5, 1]] },
+    { "name": "quoted-block", "source": "> %%%\n> **hidden** ~~hidden~~\n> %%%\n", "expected": [] },
+    { "name": "list-block", "source": "- item\n  %%%\n  **hidden** ~~hidden~~\n  %%%\n", "expected": [] },
+    { "name": "div-block", "source": "::: note\n%%%\n**hidden** ~~hidden~~\n%%%\n:::\n", "expected": [] },
+    { "name": "line-comment", "source": "%% **hidden** ~~hidden~~\n", "expected": [] },
+    { "name": "bidi-safety", "source": "%%%\n**hidden** \u202eb\n%%%\n", "expected": [["bidi-control-in-source", 2, 12]] }
+  ]
+}
