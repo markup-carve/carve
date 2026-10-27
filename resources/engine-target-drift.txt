@@ -3,7 +3,10 @@
 # target. The comparison gate accepts only that exact shape and rejects a line
 # that no longer differs at the pinned engine revisions.
 # Format: target/engine/slug  owner/repo#issue and reason
-plain/php/352-a-bracketed-construct-s-identifiers-stay-on-one-line  markup-carve/carve-php#4091: malformed multiline reference soft break.
-ansi/php/352-a-bracketed-construct-s-identifiers-stay-on-one-line  markup-carve/carve-php#4091: malformed multiline reference soft break.
-plain/php/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3  markup-carve/carve-php#4091: malformed multiline image reference soft break.
-ansi/php/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3  markup-carve/carve-php#4091: malformed multiline image reference soft break.
+plain/js/352-a-bracketed-construct-s-identifiers-stay-on-one-line  markup-carve/carve-js#3742: literal multiline reference soft break.
+ansi/js/352-a-bracketed-construct-s-identifiers-stay-on-one-line  markup-carve/carve-js#3742: literal multiline reference soft break.
+plain/js/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3  markup-carve/carve-js#3742: literal multiline image reference soft break.
+ansi/js/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3  markup-carve/carve-js#3742: literal multiline image reference soft break.
+markdown/js/716-url-sinks-reject-schemes-after-emitted-value-normalization  markup-carve/carve-js#3741: emitted link destination admits a denied scheme.
+ansi/js/716-url-sinks-reject-schemes-after-emitted-value-normalization  markup-carve/carve-js#3741: emitted link destination admits a denied scheme.
+html/js/732-paired-german-quotes-leave-no-quote-in-a-heading-id  markup-carve/carve-js#3737: generated heading ID retains the opening quote.

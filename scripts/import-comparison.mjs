@@ -78,7 +78,7 @@ async function each(items, work) {
   let cursor = 0
   let done = 0
   let failed = false
-  const workers = await Promise.allSettled(Array.from({ length: 6 }, async () => {
+  const workers = await Promise.allSettled(Array.from({ length: 4 }, async () => {
     while (!failed && cursor < items.length) {
       const index = cursor++
       try { await work(items[index]) } catch (error) { failed = true; throw error }

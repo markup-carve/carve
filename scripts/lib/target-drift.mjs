@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 
-const TARGETS = new Set(['markdown', 'plain', 'ansi'])
+const TARGETS = new Set(['html', 'markdown', 'plain', 'ansi'])
 const ENGINES = new Set(['js', 'php', 'rust'])
 
 export function parseTargetDrift(path) {

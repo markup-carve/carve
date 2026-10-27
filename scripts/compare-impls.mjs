@@ -1466,7 +1466,7 @@ if (enginePopulation !== null) {
 const stats = Object.fromEntries(
   active.map((i) => [
     i.name,
-    { ok: 0, mismatch: 0, error: 0, skipped: 0, ms: 0, runnable: 0, mismatched: [] },
+    { ok: 0, declared: 0, mismatch: 0, error: 0, skipped: 0, ms: 0, runnable: 0, mismatched: [] },
   ]),
 )
 /*
@@ -1593,7 +1593,17 @@ for (const pair of pairs) {
     const declaredTarget = unique.size > 1
       ? targetDriftKey(target, pair.slug, outputs, targetDrift)
       : null
-    if (declaredTarget !== null) {
+    const declaredOutlier = declaredTarget?.split('/')[1]
+    const fixtureAgreesWithPeers = expected === null || outputs
+      .filter(([engine]) => engine !== declaredOutlier)
+      .every(([, output]) => output === expected)
+    if (declaredTarget !== null && fixtureAgreesWithPeers) {
+      if (expected !== null) {
+        const score = stats[declaredOutlier]
+        score.mismatch--
+        score.declared++
+        score.mismatched = score.mismatched.filter((item) => item !== `${target} ${pair.slug}`)
+      }
       usedTargetDrift.add(declaredTarget)
       console.log(`DECLARED [${target}] ${pair.slug} (${pair.feature}): ${agreementPartition(outputs)} - ${declaredTarget}`)
       continue
@@ -1740,7 +1750,7 @@ for (const impl of active) {
   // changing - and printing one here would invite pasting it onto a page that
   // already says the timings are not a benchmark (carve#836).
   console.log(
-    `${impl.name}: pass=${s.ok}/${s.ok + s.mismatch} mismatch=${s.mismatch} error=${s.error} skipped=${s.skipped} runs=${s.runnable}${countsOnly ? '' : ` avg_ms=${avg}`}`,
+    `${impl.name}: pass=${s.ok}/${s.ok + s.declared + s.mismatch} declared_drift=${s.declared} mismatch=${s.mismatch} error=${s.error} skipped=${s.skipped} runs=${s.runnable}${countsOnly ? '' : ` avg_ms=${avg}`}`,
   )
   // NAME the mismatching cases. `rust: pass=594/595 mismatch=1` was a number
   // with nothing to act on: the run took twenty minutes and finding the one

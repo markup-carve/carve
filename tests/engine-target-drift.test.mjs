@@ -15,11 +15,15 @@ test('every declared target difference names a published corpus row', () => {
 
 test('a declared target difference requires one outlier and two agreeing engines', () => {
   const slug = '352-a-bracketed-construct-s-identifiers-stay-on-one-line'
-  const good = [['js', 'a\nb'], ['php', 'a b'], ['rust', 'a\nb']]
-  assert.equal(targetDriftKey('plain', slug, good, entries), `plain/php/${slug}`)
-  assert.equal(targetDriftKey('ansi', slug, good, entries), `ansi/php/${slug}`)
+  const good = [['js', 'a\nb'], ['php', 'a b'], ['rust', 'a b']]
+  assert.equal(targetDriftKey('plain', slug, good, entries), `plain/js/${slug}`)
+  assert.equal(targetDriftKey('ansi', slug, good, entries), `ansi/js/${slug}`)
+  const security = '716-url-sinks-reject-schemes-after-emitted-value-normalization'
+  assert.equal(targetDriftKey('markdown', security, [['js', 'javascript:alert(1)'], ['php', ''], ['rust', '']], entries), `markdown/js/${security}`)
+  const heading = '732-paired-german-quotes-leave-no-quote-in-a-heading-id'
+  assert.equal(targetDriftKey('html', heading, [['js', 'id="„2"'], ['php', 'id="2"'], ['rust', 'id="2"']], entries), `html/js/${heading}`)
   assert.equal(targetDriftKey('markdown', slug, good, entries), null)
-  assert.equal(targetDriftKey('plain', slug, [['js', 'a\nb'], ['php', 'a\nb'], ['rust', 'a\nb']], entries), null)
+  assert.equal(targetDriftKey('plain', slug, [['js', 'a b'], ['php', 'a b'], ['rust', 'a b']], entries), null)
   assert.equal(targetDriftKey('plain', slug, [['js', 'a'], ['php', 'b'], ['rust', 'c']], entries), null)
   assert.equal(targetDriftKey('plain', slug, [['js', 'a'], ['rust', 'a'], ['other', 'b']], entries), null)
   assert.equal(targetDriftKey('plain', slug, [['js', 'a'], ['php', 'ERROR:bad'], ['rust', 'a']], entries), null)
