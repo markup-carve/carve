@@ -328,11 +328,10 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // pinned engines; sections 556 to 575 moved the counts below.
 // Re-measured 2026-10-27 at the pinned JS, PHP and Rust revisions; corpus 697
 // adds one document to each extent count.
+// Re-measured after the engine pin advance: the definition extents now agree.
 const LAST_MEASURED = new Map([
   ['list (extent)', 3],
   ['list_item (extent)', 4],
-  ['definition_list (extent)', 1],
-  ['definition_term (extent)', 1],
 ])
 
 const asMeasured = (counts) =>

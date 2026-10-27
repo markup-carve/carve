@@ -146,8 +146,8 @@ const shippedDeclaration = () =>
  *
  * Run 36552218597, on the next head, fails the same step again.
  */
-// Re-measured 2026-10-23 at the pinned JS, PHP and Rust revisions.
-const LAST_MEASURED = new Map([['table.attrs.keyValues', 1]])
+// Re-measured after the engine pin advance: scalar values now agree.
+const LAST_MEASURED = new Map()
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>
