@@ -299,14 +299,13 @@ const PLAIN_EXTENSION_FEATURES = {
  * point of the case is where the stamp goes relative to that id.
  */
 /*
- * Why a case reaches fewer than two engines, where the answer is a missing
- * CAPABILITY rather than a missing adapter.
+ * Why a case reaches fewer than two engines, with a declared capability or
+ * adapter gap.
  *
  * Left out of the reporting entirely, "not compared" reads as a harness
- * backlog. This one is not: the option does not exist in either engine that
- * would have to run it, so writing an adapter is impossible rather than
- * pending, and the fix is in the engine (or in the page that documents an
- * option nobody implemented - carve#560).
+ * backlog. The historical entry was a missing engine option (carve#560).
+ * Profile fixtures added later have a missing comparison adapter; their
+ * pinned JS outputs are checked separately by the optional corpus runner.
  *
  * `section-wrapper-off` and `source-line-after-generated-id` used to live here
  * too, on the strength of "carve-php has no sections switch". carve-php#537
