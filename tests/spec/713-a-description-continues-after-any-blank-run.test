@@ -1,0 +1,32 @@
+A description continues after any blank run
+
+```
+:: t
+: d
+
+    > q
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <blockquote><p>q</p></blockquote>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: d
+
+
+    > q
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <blockquote><p>q</p></blockquote>
+  </dd>
+</dl>
+```

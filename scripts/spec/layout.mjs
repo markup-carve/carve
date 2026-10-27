@@ -3845,6 +3845,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             isDefinitionContinuationLine(lines[at], sourceBodyColumn, {
               col: sourceColumns?.[at] ?? ind(at).L?.col ?? ind(at).col, rest: ind(at).rest,
             })
+          const blankRunEnds = new Map()
+          const afterBlankRun = (at) => {
+            if (blankRunEnds.has(at)) return blankRunEnds.get(at)
+            let end = at
+            while (end < n && isBlank(lines[end])) end++
+            for (let row = at; row < end; row++) blankRunEnds.set(row, end)
+            return end
+          }
           const entryAtOwner = (at) => isEntry(lines[at] ?? '') && !reachesBody(at)
           // definition (dd): collect its full body, then parse it to blocks. A
           // definition body continues like a list item (SS17): lazy
@@ -3914,7 +3922,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const endsBodyAt = (at) => {
             const cur = lines[at] ?? ''
             return entryAtOwner(at) ||
-              (isBlank(cur) && !reachesBody(at + 1))
+              (isBlank(cur) && !reachesBody(afterBlankRun(at)))
           }
           let afterComment = false
           // Lines before the last comment this arm kept cannot hold a paragraph or a
@@ -3940,9 +3948,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (entryAtOwner(i)) break
             if (isBlank(cur)) {
               afterComment = false
-              // a blank before an indented line is an internal paragraph break;
-              // otherwise the blank ends this definition body.
-              if (reachesBody(i + 1)) { pushBody(dedent(cur, bodyColumn)); i++; continue }
+              // The whole blank run belongs to a continuation at the body column.
+              if (reachesBody(afterBlankRun(i))) { pushBody(dedent(cur, bodyColumn)); i++; continue }
               break
             }
             if (CONT_MARKER.test(cur)) {
