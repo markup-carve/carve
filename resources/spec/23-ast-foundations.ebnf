@@ -143,6 +143,13 @@
       authored private-use character with generated whitespace. Temporary
       parser or writer markers MUST be collision-free and MUST NOT be published.
 
+      PROFILE TEXT FALLBACK USES VISIBLE CONTENT.
+      When `to_text` denies a `heading_ref`, its replacement is the title
+      displayed by a resolved reference, or the target when unresolved.
+      When it denies a `code_block`, its replacement is the literal payload,
+      with its line breaks preserved and without source fence delimiters.
+      The fallback marker applies only when the node has no text.
+
       CODE BLOCK CONTENT IS LITERAL PAYLOAD TEXT -- NORMATIVE [CARVE-P12-064].
       `code_block.content` MUST retain every payload character, including the
       final line break when present. Container prefixes and fence delimiters

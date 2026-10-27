@@ -169,6 +169,11 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
      4. a further `^ ` line does NOT continue the caption (there is no repeated
         marker); it ends the caption and, having no captionable block to attach
         to, is ordinary paragraph text.
+   A further `^ ` line begins its own paragraph after the caption slot even
+   when the preceding reference image does not resolve. Resolution returns
+   unbound caption source as text within the block structure already parsed;
+   it does not move that paragraph boundary. A later reference definition
+   therefore changes the image and caption rendering, not this boundary.
    Continuation lines join with a newline, so `^ cap` + `more` yields the
    caption text `cap\nmore`. The caption id (`#` placeholder) and cross-reference
    targeting use the full folded text. *)

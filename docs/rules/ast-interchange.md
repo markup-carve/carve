@@ -19,23 +19,23 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L12) | 12 | AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY |
 | [`CARVE-P12-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L16) | 12 | ADJACENT TEXT RUNS ARE COALESCED |
 | [`CARVE-P12-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L121) | 12 | GENERATED NONBREAKING SPACES ARE NODES |
-| [`CARVE-P12-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L199) | 12 | THE SERIALIZED TREE IS PRE-RESOLVE |
-| [`CARVE-P12-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L212) | 12 | A RESOLVED REFERENCE KEEPS ITS DESTINATION |
-| [`CARVE-P12-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L245) | 12 | A NESTED LINK AND AN AUTOLINK STAY NODES |
-| [`CARVE-P12-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L253) | 12 | A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED |
-| [`CARVE-P12-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L272) | 12 | A CROSSREF REMAINS A HEADING-REFERENCE NODE AFTER RESOLUTION |
-| [`CARVE-P12-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L319) | 12 | A SPAN CONTAINS ITS CHILDREN'S SPANS |
-| [`CARVE-P12-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L348) | 12 | A SPAN COVERS THE MARKUP THE AUTHOR WROTE |
-| [`CARVE-P12-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L355) | 12 | A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP |
-| [`CARVE-P12-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L375) | 12 | A SPAN ENDS IMMEDIATELY AFTER THE CONSTRUCT'S LAST OWNED SOURCE CODEPOINT |
-| [`CARVE-P12-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L394) | 12 | A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE IT |
-| [`CARVE-P12-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L329) | 12 | A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS AUTHORED IN |
-| [`CARVE-P12-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L406) | 12 | A DEFINITION LIST ENDS AT ITS LAST PLACED CHILD |
-| [`CARVE-P12-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L419) | 12 | A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS THERE |
-| [`CARVE-P12-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L364) | 12 | A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS UNPLACED |
-| [`CARVE-P12-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L383) | 12 | A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD IS UNPLACED |
-| [`CARVE-P12-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L368) | 12 | A SPAN DOES NOT BEGIN AT A LINE TERMINATOR |
-| [`CARVE-P12-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L430) | 12 | A REASSEMBLED NODE MUST OMIT `pos` |
+| [`CARVE-P12-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L206) | 12 | THE SERIALIZED TREE IS PRE-RESOLVE |
+| [`CARVE-P12-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L219) | 12 | A RESOLVED REFERENCE KEEPS ITS DESTINATION |
+| [`CARVE-P12-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L252) | 12 | A NESTED LINK AND AN AUTOLINK STAY NODES |
+| [`CARVE-P12-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L260) | 12 | A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED |
+| [`CARVE-P12-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L279) | 12 | A CROSSREF REMAINS A HEADING-REFERENCE NODE AFTER RESOLUTION |
+| [`CARVE-P12-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L326) | 12 | A SPAN CONTAINS ITS CHILDREN'S SPANS |
+| [`CARVE-P12-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L355) | 12 | A SPAN COVERS THE MARKUP THE AUTHOR WROTE |
+| [`CARVE-P12-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L362) | 12 | A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP |
+| [`CARVE-P12-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L382) | 12 | A SPAN ENDS IMMEDIATELY AFTER THE CONSTRUCT'S LAST OWNED SOURCE CODEPOINT |
+| [`CARVE-P12-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L401) | 12 | A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE IT |
+| [`CARVE-P12-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L336) | 12 | A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS AUTHORED IN |
+| [`CARVE-P12-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L413) | 12 | A DEFINITION LIST ENDS AT ITS LAST PLACED CHILD |
+| [`CARVE-P12-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L426) | 12 | A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS THERE |
+| [`CARVE-P12-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L371) | 12 | A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS UNPLACED |
+| [`CARVE-P12-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L390) | 12 | A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD IS UNPLACED |
+| [`CARVE-P12-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L375) | 12 | A SPAN DOES NOT BEGIN AT A LINE TERMINATOR |
+| [`CARVE-P12-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L437) | 12 | A REASSEMBLED NODE MUST OMIT `pos` |
 | [`CARVE-P12-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L8) | 12 | A GENERATED HEADING ID IS A RESOLUTION RESULT |
 | [`CARVE-P12-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L30) | 12 | THE DOCUMENT ROOT CARRIES THREE FIELDS AND AN OPTIONAL VERSION |
 | [`CARVE-P12-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L42) | 12 | CONTENT IS RAW, NOT PARSED |
@@ -68,8 +68,8 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L292) | 12 | A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN |
 | [`CARVE-P12-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L318) | 12 | AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR |
 | [`CARVE-P12-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L379) | 12 | PROVENANCE IS A SEPARATE OPT-IN SIDECAR |
-| [`CARVE-P12-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L146) | 12 | CODE BLOCK CONTENT IS LITERAL PAYLOAD TEXT |
-| [`CARVE-P12-065`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L181) | 12 | RAW BLOCK CONTENT IS LITERAL PAYLOAD TEXT |
+| [`CARVE-P12-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L153) | 12 | CODE BLOCK CONTENT IS LITERAL PAYLOAD TEXT |
+| [`CARVE-P12-065`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L188) | 12 | RAW BLOCK CONTENT IS LITERAL PAYLOAD TEXT |
 | [`CARVE-P12-066`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L356) | 12 | A SHAPE NO CARVE SOURCE SPELLS IS CARRIED, NOT INVENTED |
 | [`CARVE-P12-067`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L254) | 12 | A SIDECAR TRAVELS BESIDE THE TREE AND NEVER IN IT |
 | [`CARVE-P12-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L214) | 12 | AN INGEST REFUSAL IS A TYPED ERROR NAMING WHAT AND WHERE |

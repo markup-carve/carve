@@ -1652,6 +1652,11 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
      4. a further `^ ` line does NOT continue the caption (there is no repeated
         marker); it ends the caption and, having no captionable block to attach
         to, is ordinary paragraph text.
+   A further `^ ` line begins its own paragraph after the caption slot even
+   when the preceding reference image does not resolve. Resolution returns
+   unbound caption source as text within the block structure already parsed;
+   it does not move that paragraph boundary. A later reference definition
+   therefore changes the image and caption rendering, not this boundary.
    Continuation lines join with a newline, so `^ cap` + `more` yields the
    caption text `cap\nmore`. The caption id (`#` placeholder) and cross-reference
    targeting use the full folded text. *)
@@ -7767,6 +7772,9 @@ EOF = (* end of file *) ;
 
    6. CODE. A fenced code block is `<pre><code[ class="language-X"]>` +
       escaped literal `code_block.content` + `</code></pre>` (PART 12 §3).
+      In static HTML, a diagram whose renderer is absent falls back to an
+      ordinary code block. It emits the unchanged payload, including an
+      authored final LF before `</code>`, under the same rule.
       No payload newline is added. An inline
       code span is `<code>` + escaped content + `</code>`.
 
@@ -11513,6 +11521,13 @@ EOF = (* end of file *) ;
       text, code, literal-inline or raw content. A parser MUST NOT confuse an
       authored private-use character with generated whitespace. Temporary
       parser or writer markers MUST be collision-free and MUST NOT be published.
+
+      PROFILE TEXT FALLBACK USES VISIBLE CONTENT.
+      When `to_text` denies a `heading_ref`, its replacement is the title
+      displayed by a resolved reference, or the target when unresolved.
+      When it denies a `code_block`, its replacement is the literal payload,
+      with its line breaks preserved and without source fence delimiters.
+      The fallback marker applies only when the node has no text.
 
       CODE BLOCK CONTENT IS LITERAL PAYLOAD TEXT -- NORMATIVE [CARVE-P12-064].
       `code_block.content` MUST retain every payload character, including the

@@ -38,10 +38,10 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L200) | 9 | AN EXTENSION WRITES INTO THE SAME MAP |
 | [`CARVE-P9-065`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L219) | 9 | AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE |
 | [`CARVE-P9-066`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L256) | 9 | A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT |
-| [`CARVE-P10-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L273) | 10 | THE OTHER SEMANTIC NAMES ARE AN EXTENSION |
-| [`CARVE-P10-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L290) | 10 | A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES |
+| [`CARVE-P10-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L276) | 10 | THE OTHER SEMANTIC NAMES ARE AN EXTENSION |
+| [`CARVE-P10-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L293) | 10 | A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES |
 | [`CARVE-P10-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L129) | 10 | A PLACED ELEMENT'S OWN TAGS CARRY THE PER-IMPLEMENTATION INDENTATION |
-| [`CARVE-P12-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L265) | 12 | A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST |
+| [`CARVE-P12-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L272) | 12 | A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST |
 | [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L250) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
 | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L335) | 12 | A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION |
 | [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L370) | 12 | A TABLE MAY CARRY AN OPTIONAL ROW GROUPING |
@@ -49,7 +49,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L33) | 12 | A CITATION DEFINITION IS A NODE |
 | [`CARVE-P12-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L69) | 12 | A CITATION ITEM IS A POSITIONED INLINE NODE |
 | [`CARVE-P12-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L90) | 12 | A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA |
-| [`CARVE-P10-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L170) | 10 | AN ESCAPED RAW BLOCK IS WRITTEN AS CODE |
-| [`CARVE-P10-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L847) | 10 | EXPORT DOES NOT SELECT AN IMPORT MODE |
-| [`CARVE-P10-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L765) | 10 | AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING |
-| [`CARVE-P10-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L789) | 10 | EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK |
+| [`CARVE-P10-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L173) | 10 | AN ESCAPED RAW BLOCK IS WRITTEN AS CODE |
+| [`CARVE-P10-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L850) | 10 | EXPORT DOES NOT SELECT AN IMPORT MODE |
+| [`CARVE-P10-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L768) | 10 | AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING |
+| [`CARVE-P10-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L792) | 10 | EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK |

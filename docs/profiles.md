@@ -164,7 +164,11 @@ Deny always beats allow; an allowlist is a closed set.
 - **`to_text`** (default) — replace the node with its rendered text content
   (children flattened to text). Non-destructive: the words survive, the markup
   does not. A disallowed `link` keeps its label text; a disallowed `image`
-  keeps its alt text. A disallowed `ruby` has no `children`; its text content is
+  keeps its alt text. A disallowed `heading_ref` keeps its displayed title
+  when resolved, or its target when unresolved. A disallowed `code_block`
+  becomes plain text containing its payload and line breaks, without the
+  source fences. The fallback marker is used only when the node has no text.
+  A disallowed `ruby` has no `children`; its text content is
   each pair's base followed by `(`, its annotation, and `)` in pair order.
   A disallowed `raw_block` becomes a `code_block` when the profile allows
   code blocks. It keeps the raw format as the code language, its attributes and

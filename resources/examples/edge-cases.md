@@ -8760,6 +8760,45 @@ The caption attaches to a captionable block, and a reference image that resolves
 
 :::
 
+The second caret line ends the slot. It starts a new paragraph whether the
+reference resolves or not:
+
+::: compare
+
+```carve
+![a][r]
+^ cap
+^ cap
+```
+
+```html
+<p>![a][r]
+^ cap</p>
+<p>^ cap</p>
+```
+
+:::
+
+::: compare
+
+```carve
+![a][r]
+^ cap
+^ cap
+
+[r]: u
+```
+
+```html
+<figure>
+  <img src="u" alt="a">
+  <figcaption>cap</figcaption>
+</figure>
+<p>^ cap</p>
+```
+
+:::
+
 ## A quote marker is `>` plus a space, and a lazy line keeps its own text
 
 `>text` with no space is prose, not a quote marker (§10 I1). Inside an open quoted paragraph such a line folds in as lazy continuation and keeps its `>`, rather than being read as a marker and stripped.

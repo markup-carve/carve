@@ -41,7 +41,7 @@ The table describes the JavaScript, PHP, and Rust implementations.
 | Tabs / code-group | clickable tabs; `[label]` is the tab header | each panel shown in sequence, **its `[label]` as a caption heading** | see the label rule below |
 | Disclosure (`details`) | native `<details>`/`<summary>` (interactive without scripts) | native `<details open>` - kept, not flattened | special case - see below |
 | Spoiler | blurred until revealed | revealed | hiding is not retained |
-| Mermaid / charts | script-drawn diagram | diagram source preserved (a ` ```mermaid ` fence in Markdown); for PDF the extension SHOULD pre-render to SVG/PNG at build time | source never lost; image needs build-time render |
+| Mermaid / charts | script-drawn diagram | static HTML without a diagram renderer emits a code block with the full source, including an authored final LF before `</code>`; diagram source preserved (a ` ```mermaid ` fence in Markdown); for PDF the extension SHOULD pre-render to SVG/PNG at build time | source never lost; image needs build-time render |
 | Math (`$\`...\``) | KaTeX / MathJax | source preserved (`$...$` in Markdown); for PDF use server-side KaTeX to MathML/HTML | source never lost |
 | Footnotes | jump links | print-native footnotes; `[^id]` preserved in Markdown | content retained |
 | Links / autolinks | clickable | clickable in PDF; URL preserved in plain text | destination retained |

@@ -164,6 +164,9 @@
 
    6. CODE. A fenced code block is `<pre><code[ class="language-X"]>` +
       escaped literal `code_block.content` + `</code></pre>` (PART 12 §3).
+      In static HTML, a diagram whose renderer is absent falls back to an
+      ordinary code block. It emits the unchanged payload, including an
+      authored final LF before `</code>`, under the same rule.
       No payload newline is added. An inline
       code span is `<code>` + escaped content + `</code>`.
 

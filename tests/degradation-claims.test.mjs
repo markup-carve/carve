@@ -36,7 +36,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml, carveToMarkdown, details, spoiler } from '@markup-carve/carve'
+import { carveToHtml, carveToMarkdown, details, mermaid, spoiler } from '@markup-carve/carve'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const page = readFileSync(resolve(root, 'docs/graceful-degradation.md'), 'utf8')
@@ -70,6 +70,12 @@ test('a diagram keeps its source in Markdown', () => {
   // The page: "diagram source preserved (a ```mermaid fence in Markdown)".
   const source = '```mermaid\ngraph TD;\nA-->B;\n```\n'
   assert.equal(carveToMarkdown(source), '```mermaid\ngraph TD;\nA-->B;\n```\n')
+})
+
+test('a static Mermaid fallback keeps the authored final LF', () => {
+  const source = '```mermaid\ngraph TD; A-->B\n```\n'
+  const html = carveToHtml(source, { extensions: [mermaid()], mode: 'static' })
+  assert.equal(html.trim(), '<pre class="mermaid"><code class="language-mermaid">graph TD; A--&gt;B\n</code></pre>')
 })
 
 test('math keeps its source in Markdown', () => {

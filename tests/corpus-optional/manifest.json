@@ -367,6 +367,16 @@
       "slug": "100-toc-body-keeps-placement-scope",
       "feature": "toc-placement",
       "description": "A footnotes marker inside a TOC body stays nested and leaves endnotes at the document end."
+    },
+    {
+      "slug": "101-profile-denied-cross-reference",
+      "feature": "profile-comment",
+      "description": "Denied unresolved cross-reference keeps its target text."
+    },
+    {
+      "slug": "102-profile-denied-code-block",
+      "feature": "profile-minimal",
+      "description": "Denied code block keeps payload text without fences."
     }
   ]
 }
