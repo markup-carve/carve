@@ -50,3 +50,5 @@
 
 list (extent)  3  corpus 503-9, 636, and 697: an engine opens the list inside the leading indentation, which a container may do; all spans conform under markup-carve/carve#1928.
 list_item (extent)  4  the list rows above, plus corpus 245, where carve-php and carve-rs open the tab-indented sibling item inside its indentation; conformant under markup-carve/carve#1928.
+definition_list (extent)  1  corpus 698: container start varies within leading indentation; both spans conform under markup-carve/carve#1928.
+definition_term (extent)  1  carve-js starts in leading indentation before the term marker; tracked at markup-carve/carve-js#3691.
