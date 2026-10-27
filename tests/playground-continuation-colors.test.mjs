@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { createHighlighter } from 'shiki'
-import { carveGrammar, carveLightTheme, carveDarkTheme } from '@markup-carve/carve-grammars/shiki'
+import { carveGrammar, carveLightTheme, carveDarkTheme, carvePalette } from '@markup-carve/carve-grammars/shiki'
 import { standaloneContinuationOffsets } from '../docs/.vitepress/semantic-continuations.js'
 import { insertMarkerOverride } from '../docs/.vitepress/shiki-editor-source.js'
 
@@ -51,8 +51,8 @@ test('playground colors only standalone continuations accepted by the parser', a
       lang: 'carve',
       themes: { light: 'github-light', dark: 'github-dark' },
     }).tokens[0].find((token) => token.content === '+')
-    assert.equal(marker?.htmlStyle.color.toLowerCase(), '#8250df')
-    assert.equal(marker?.htmlStyle['--shiki-dark'].toLowerCase(), '#d2a8ff')
+    assert.equal(marker?.htmlStyle.color.toLowerCase(), carvePalette.light.definition)
+    assert.equal(marker?.htmlStyle['--shiki-dark'].toLowerCase(), carvePalette.dark.definition)
   } finally {
     highlighter.dispose()
   }
