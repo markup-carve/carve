@@ -92,4 +92,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L690) | 11 | THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST |
 | [`CARVE-P11-076`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L209) | 11 | REPEATED EMPHASIS KINDS ARE WRITTEN BRACED |
 | [`CARVE-P12-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L272) | 12 | `fmt` WRITES THE SOURCE SPELLING, NOT `blockImage` |
-| [`CARVE-P10-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L875) | 10 | ONE OPTION SWITCHES EVERY TARGET'S CARRIERS |
+| [`CARVE-P10-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L881) | 10 | ONE OPTION SWITCHES EVERY TARGET'S CARRIERS |
