@@ -47,6 +47,8 @@ export const optionalFeatureTitles = new Map([
   ['smart-typography-off', 'Smart typography off'],
   ['smart-typography-default', 'Smart typography at default (control)'],
   ['section-wrapper-off', 'Section wrapper off'],
+  ['profile-comment', 'Comment profile text fallback'],
+  ['profile-minimal', 'Minimal profile text fallback'],
   ['source-line-after-generated-id', 'Source-line annotation order'],
   ['markdown-typography-source', 'Markdown target, source typography'],
   ['plain-typography-source', 'Plain-text target, source typography'],

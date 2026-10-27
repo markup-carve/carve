@@ -39,6 +39,8 @@ out: examples/processor-options.md
   smart-typography-quotes-off
   smart-typography-default
   section-wrapper-off
+  profile-comment
+  profile-minimal
   source-line-after-generated-id
   markdown-typography-source
   plain-typography-source
