@@ -1414,7 +1414,7 @@ function foldablePlainLine(cur) {
     !FOOTNOTE_DEF.test(cur) && !BULLET.test(trimLineEnd(cur)) && !isOrderedMarkerLine(cur) &&
     !isCodeBlockOpener(cur) && !isColonBlockOpener(cur) &&
     !CAPTION.test(cur) && !COMMENT_LINE.test(cur) &&
-    !/^::? /.test(cur)
+    !/^::? (?=[ \t]*[^ \t\n\r])/.test(cur)
 }
 
 function startsVisibleBlock(line) {
@@ -2128,6 +2128,9 @@ function hostColonStep(h, inner, commentCloses = () => false, markerLine = false
     return false
   }
   const base = h.columns.at(-1)
+  // A quote line past its content column is paragraph text until a nested
+  // host claims it. Its apparent colon opener cannot end that paragraph.
+  if (!top && h.columns.length === 1 && inner.col > base) return false
   // An opener past a hosted container establishes its own base and may
   // interrupt its paragraph (CARVE-P0-004, CARVE-P2-017).
   if (top && base === top.base && inner.col > top.column &&

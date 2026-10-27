@@ -1,0 +1,13 @@
+A contentless description marker folds under a quoted term
+
+```
+> :: t
+: 
+.
+<blockquote>
+  <dl>
+    <dt>t
+:</dt>
+  </dl>
+</blockquote>
+```

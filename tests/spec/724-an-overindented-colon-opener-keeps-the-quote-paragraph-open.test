@@ -1,0 +1,9 @@
+An overindented colon opener keeps the quote paragraph open
+
+```
+>  ::: |
+x
+.
+<blockquote><p>::: |
+x</p></blockquote>
+```

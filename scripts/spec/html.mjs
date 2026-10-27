@@ -1655,9 +1655,9 @@ function resolveFootnotes(html, ctx) {
         return carrier(`fnref${n}`, n, parsed.attrs)
       }
       const label = payload
-      if (/[\r\n]/.test(label)) return `[^${label}]`
+      if (/[\r\n]/.test(label)) return escapeHtml(`[^${label}]`)
       const key = labelKey(label)
-      if (!ctx.footnoteDefs.has(key)) return `[^${label}]` // unresolved -> literal
+      if (!ctx.footnoteDefs.has(key)) return escapeHtml(`[^${label}]`) // unresolved -> literal
       let n = order.indexOf(key) + 1
       if (n === 0) {
         order.push(key)

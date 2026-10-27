@@ -66765,3 +66765,53 @@ A heading made only of raw inline content uses the empty id fallback:
 ```
 
 :::
+
+## Unresolved footnote literal escapes HTML text
+
+::: compare
+
+```carve
+[^&]
+```
+
+```html
+<p>[^&amp;]</p>
+```
+
+:::
+
+## A contentless description marker folds under a quoted term
+
+::: compare
+
+```carve
+> :: t
+: 
+```
+
+```html
+<blockquote>
+  <dl>
+    <dt>t
+:</dt>
+  </dl>
+</blockquote>
+```
+
+:::
+
+## An overindented colon opener keeps the quote paragraph open
+
+::: compare
+
+```carve
+>  ::: |
+x
+```
+
+```html
+<blockquote><p>::: |
+x</p></blockquote>
+```
+
+:::
