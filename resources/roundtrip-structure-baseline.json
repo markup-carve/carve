@@ -2,40 +2,16 @@
   "version": 2,
   "engines": {
     "js": {
-      "html": {
-        "identical": 2601,
-        "strict": 2449,
-        "total": 3167
-      },
-      "md": {
-        "identical": 2412,
-        "strict": 1833,
-        "total": 3167
-      }
+      "html": { "identical": 2609, "strict": 2458, "total": 3167 },
+      "md": { "identical": 2419, "strict": 1834, "total": 3167 }
     },
     "php": {
-      "html": {
-        "identical": 2634,
-        "strict": 2480,
-        "total": 3167
-      },
-      "md": {
-        "identical": 2365,
-        "strict": 1732,
-        "total": 3167
-      }
+      "html": { "identical": 2639, "strict": 2485, "total": 3167 },
+      "md": { "identical": 2368, "strict": 1731, "total": 3167 }
     },
     "rs": {
-      "html": {
-        "identical": 2590,
-        "strict": 2441,
-        "total": 3167
-      },
-      "md": {
-        "identical": 2408,
-        "strict": 2100,
-        "total": 3167
-      }
+      "html": { "identical": 2593, "strict": 2444, "total": 3167 },
+      "md": { "identical": 2405, "strict": 2101, "total": 3167 }
     }
   }
 }

@@ -6,37 +6,15 @@
     "bad-option-value": []
   },
   "php": {
-    "unknown-option": [
-      "status-1",
-      "category-missing"
-    ],
-    "invalid-ast-json": [
-      "status-1",
-      "category-missing"
-    ],
-    "unreadable-input": [
-      "status-1",
-      "category-missing"
-    ],
-    "bad-option-value": [
-      "category-missing"
-    ]
+    "unknown-option": [],
+    "invalid-ast-json": [],
+    "unreadable-input": [],
+    "bad-option-value": []
   },
   "rust": {
-    "unknown-option": [
-      "status-1",
-      "category-missing"
-    ],
-    "invalid-ast-json": [
-      "status-1",
-      "category-missing"
-    ],
-    "unreadable-input": [
-      "status-1",
-      "category-missing"
-    ],
-    "bad-option-value": [
-      "category-missing"
-    ]
+    "unknown-option": [],
+    "invalid-ast-json": [],
+    "unreadable-input": [],
+    "bad-option-value": []
   }
 }

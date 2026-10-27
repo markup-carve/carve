@@ -24,6 +24,7 @@ import {
 import { phpDir, rustBinary, rustDir } from './lib/engine-locations.mjs'
 import { comparisonGateHasFailures } from './lib/comparison-gate.mjs'
 import { comparisonRevisions, printComparisonRevisions } from './lib/comparison-revisions.mjs'
+import { parseTargetDrift, targetDriftKey } from './lib/target-drift.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -1300,6 +1301,11 @@ const fmtLayout = corpusName === 'core'
   : { entries: new Map(), failures: [] }
 const fmtLayoutOutputs = new Map()
 let declaredFmtLayout = 0
+const targetDrift = corpusName === 'core'
+  ? parseTargetDrift(join(root, 'resources/engine-target-drift.txt'))
+  : new Map()
+const seenTargetDrift = new Set()
+const usedTargetDrift = new Set()
 const offeredCases = availableCaseCount()
 const selectedCases = Number.isFinite(limit) ? Math.min(limit, offeredCases) : offeredCases
 const expectedShardCases = selectedCases <= shardIndex
@@ -1578,6 +1584,20 @@ for (const pair of pairs) {
     // real divergences.
 
     const unique = new Set(outputs.map(([, out]) => out))
+    if (outputs.length === 3 && outputs.every(([, out]) => !out.startsWith('ERROR:'))) {
+      for (const [engine] of outputs) {
+        const key = `${target}/${engine}/${pair.slug}`
+        if (targetDrift.has(key)) seenTargetDrift.add(key)
+      }
+    }
+    const declaredTarget = unique.size > 1
+      ? targetDriftKey(target, pair.slug, outputs, targetDrift)
+      : null
+    if (declaredTarget !== null) {
+      usedTargetDrift.add(declaredTarget)
+      console.log(`DECLARED [${target}] ${pair.slug} (${pair.feature}): ${agreementPartition(outputs)} - ${declaredTarget}`)
+      continue
+    }
     if (unique.size > 1 && target === 'carve' && judgeFmtLayout(pair.slug, outputs, fmtLayout.entries).excused) {
       declaredFmtLayout++
       console.log(
@@ -1741,6 +1761,17 @@ console.log(`cross_impl_diffs=${crossImplDiffs}`)
 const fmtLayoutBlocker = fmtLayout.entries.size > 0
   ? fmtLayoutStaleBlocker(revisions, JSON.parse(readFileSync(process.env.CARVE_ENGINE_PINS_FILE ?? join(root, 'resources/engine-pins.json'), 'utf8')).engines)
   : null
+const targetDriftBlocker = targetDrift.size > 0
+  ? fmtLayoutStaleBlocker(revisions, JSON.parse(readFileSync(process.env.CARVE_ENGINE_PINS_FILE ?? join(root, 'resources/engine-pins.json'), 'utf8')).engines)
+  : null
+const staleTargetDrift = targetDriftBlocker === null
+  ? [...seenTargetDrift].filter((key) => !usedTargetDrift.has(key))
+  : []
+if (targetDrift.size > 0) {
+  console.log(`target_drift_declared=${usedTargetDrift.size} target_drift_stale=${staleTargetDrift.length}`)
+  if (targetDriftBlocker !== null) console.log(`  target drift lines not judged stale: ${targetDriftBlocker}`)
+  for (const key of staleTargetDrift) console.log(`  STALE target drift ${key}`)
+}
 const fmtLayoutStale = [
   ...fmtLayout.failures,
   ...staleFmtLayout(
@@ -2003,6 +2034,10 @@ if (failOnDiff) {
   const mismatches = roundtrip
     ? 0
     : active.reduce((total, impl) => total + stats[impl.name].mismatch, 0)
+  if (staleTargetDrift.length > 0) {
+    console.error(`${staleTargetDrift.length} declared target difference(s) are stale; delete their ledger rows.`)
+    process.exit(1)
+  }
   if (staleUnreachable.length > 0) {
     console.error(
       `\n${staleUnreachable.length} UNREACHABLE_REASONS entr(ies) describe nothing any more: ` +

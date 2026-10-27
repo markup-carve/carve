@@ -2,71 +2,71 @@
     "full-unchanged": {
         "carve": "Text with *bold* and a [link](/a).",
         "profile": "full",
-        "html": "<p>Text with <strong>bold</strong> and a <a href=\"/a\">link</a>.</p>\n"
+        "html": "<p>Text with <strong>bold</strong> and a <a href=\"/a\">link</a>.</p>"
     },
     "article-raw-denied": {
         "carve": "Para.\n\n```=html\n<b>x</b>\n```\n",
         "profile": "article",
-        "html": "<p>Para.</p>\n<pre><code class=\"language-html\">&lt;b&gt;x&lt;/b&gt;\n</code></pre>\n"
+        "html": "<p>Para.</p>\n<pre><code class=\"language-html\">&lt;b&gt;x&lt;/b&gt;\n</code></pre>"
     },
     "article-raw-inline": {
         "carve": "A `<b>x</b>`{=html} end.",
         "profile": "article",
-        "html": "<p>A &lt;b&gt;x&lt;/b&gt; end.</p>\n"
+        "html": "<p>A &lt;b&gt;x&lt;/b&gt; end.</p>"
     },
     "comment-heading": {
         "carve": "# Heading\n\nBody text.",
         "profile": "comment",
-        "html": "<p># Heading</p>\n<p>Body text.</p>\n"
+        "html": "<p># Heading</p>\n<p>Body text.</p>"
     },
     "comment-image": {
         "carve": "See ![alt text](/pic.png) here.",
         "profile": "comment",
-        "html": "<p>See [img: alt text] here.</p>\n"
+        "html": "<p>See [img: alt text] here.</p>"
     },
     "comment-table": {
         "carve": "| a | b |\n| c | d |\n",
         "profile": "comment",
-        "html": "<p>a | b<br>\nc | d</p>\n"
+        "html": "<p>a | b<br>\nc | d</p>"
     },
     "comment-link-rel": {
         "carve": "A [site](https://example.com) link.",
         "profile": "comment",
-        "html": "<p>A <a href=\"https://example.com\" rel=\"nofollow ugc\">site</a> link.</p>\n"
+        "html": "<p>A <a href=\"https://example.com\" rel=\"nofollow ugc\">site</a> link.</p>"
     },
     "comment-basic-fmt": {
         "carve": "*Bold*, _em_, `code`, ~~del~~.",
         "profile": "comment",
-        "html": "<p><strong>Bold</strong>, <u>em</u>, <code>code</code>, ~~del~~.</p>\n"
+        "html": "<p><strong>Bold</strong>, <u>em</u>, <code>code</code>, ~~del~~.</p>"
     },
     "minimal-link-denied": {
         "carve": "A [site](https://example.com) link.",
         "profile": "minimal",
-        "html": "<p>A site link.</p>\n"
+        "html": "<p>A site link.</p>"
     },
     "minimal-heading": {
         "carve": "# H\n\nText.",
         "profile": "minimal",
-        "html": "<p># H</p>\n<p>Text.</p>\n"
+        "html": "<p># H</p>\n<p>Text.</p>"
     },
     "minimal-list": {
         "carve": "- one\n- two\n",
         "profile": "minimal",
-        "html": "<ul>\n  <li>one</li>\n  <li>two</li>\n</ul>\n"
+        "html": "<ul>\n  <li>one</li>\n  <li>two</li>\n</ul>"
     },
     "full-unmapped-type": {
         "carve": "Body with a {~old~>new~} substitution and a :smile: symbol.\n",
         "profile": "full",
-        "html": "<p>Body with a <del>old</del><ins>new</ins> substitution and a :smile: symbol.</p>\n"
+        "html": "<p>Body with a <del>old</del><ins>new</ins> substitution and a :smile: symbol.</p>"
     },
     "full-smart-typography": {
         "carve": "A \"quoted\" phrase -- an en dash --- and an em dash.\n",
         "profile": "full",
-        "html": "<p>A \u201cquoted\u201d phrase \u2013 an en dash \u2014 and an em dash.</p>\n"
+        "html": "<p>A \u201cquoted\u201d phrase \u2013 an en dash \u2014 and an em dash.</p>"
     },
     "comment-substitution-degraded": {
         "carve": "Body with a {~old~>new~} substitution.\n",
         "profile": "comment",
-        "html": "<p>Body with a oldnew substitution.</p>\n"
+        "html": "<p>Body with a oldnew substitution.</p>"
     }
 }

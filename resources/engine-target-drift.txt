@@ -1,0 +1,9 @@
+# Temporary cross-engine target differences awaiting a ruling. A line names the
+# one engine whose output differs from the other two for one corpus row and
+# target. The comparison gate accepts only that exact shape and rejects a line
+# that no longer differs at the pinned engine revisions.
+# Format: target/engine/slug  owner/repo#issue and reason
+plain/php/352-a-bracketed-construct-s-identifiers-stay-on-one-line  markup-carve/carve-php#4091: malformed multiline reference soft break.
+ansi/php/352-a-bracketed-construct-s-identifiers-stay-on-one-line  markup-carve/carve-php#4091: malformed multiline reference soft break.
+plain/php/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3  markup-carve/carve-php#4091: malformed multiline image reference soft break.
+ansi/php/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3  markup-carve/carve-php#4091: malformed multiline image reference soft break.
