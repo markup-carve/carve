@@ -9818,6 +9818,12 @@ EOF = (* end of file *) ;
 
         [a [b] c](/u)      ->  [a \[b\] c](/u)
 
+      An angle run inside a link label does not exempt its closing bracket
+      from M1. The exporter must escape that bracket so the emitted Markdown
+      remains a link, for example `[</#x\]>](u)`. On Markdown import, the
+      unescaped `[</#x]>](u)` is literal text under CommonMark, not a link.
+      Corpus 605 rows 9 and 12 pin the Carve link shapes that need this escape.
+
       `_` TAKES ITS SECOND CONDITION OVER THE INLINE CONTENT IT IS EMITTED IN
       (a paragraph, heading or table cell, across its line breaks), by
       CommonMark 6.2 read for the underscore. A run that flanks on both sides
