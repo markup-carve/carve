@@ -52,3 +52,84 @@ para
   <li>c</li>
 </ul>
 ```
+
+````
+- a
++
+{.x}
+```
+- x
+code
+```
+.
+<ul>
+  <li>a
+    <pre class="x"><code>- x
+code
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+:: t
+: d
++
+{.x}
+```
+: x
+```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <pre class="x"><code>: x
+</code></pre>
+  </dd>
+</dl>
+````
+
+````
+- a
+  - b
+  +
+  {.x}
+  ```
+  code
+  ```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre class="x"><code>code
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- a
++
+{table .x}
+```csv
+a,b
+1,2
+```
+.
+<ul>
+  <li>a
+    <table class="x">
+      <thead>
+        <tr><th scope="col">a</th><th scope="col">b</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>2</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+````

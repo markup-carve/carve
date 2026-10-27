@@ -5442,7 +5442,11 @@ function fencedBlockEnd(lines, start) {
  *  not. The caller hands lines[start..end) to parseBlocks, which owns the actual
  *  block classification. */
 function oneBlockEnd(lines, start, endsBlock) {
-  const fenced = fencedBlockEnd(lines, start)
+  // A fence after a leading attribute run is still the attached block (carve#1238).
+  let opener = start
+  const column = indentCols(lines[start] ?? '').col
+  for (let attrs; (attrs = tryAttrLine(dedentedWindow(lines, opener, column), 0)); ) opener += attrs.next
+  const fenced = fencedBlockEnd(lines, opener)
   if (fenced !== -1) return fenced + 1
   let end = start
   while (end < lines.length && !endsBlock(end)) end++

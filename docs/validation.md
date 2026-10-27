@@ -199,9 +199,7 @@ the command-line and editor behavior stay aligned.
 | `colon-fence-length-mismatch` | a bare colon run plausibly intended to close the innermost container has a different width; reports both widths, the opener location, and whether the line actually opens a nested container or remains text |
 | `fence-title-syntax` | invalid fence metadata; a recognized fence/type prefix keeps the container and its children while dropping metadata, and an unrecognized prefix remains paragraph text |
 | `footnote-labels-differ-only-in-whitespace` | two footnote definitions whose labels normalize to the same ASCII-whitespace key; the first definition wins, the later definition is ignored, and the diagnostic identifies the collision |
-| `table-cell-attribute-before-marker` | a table cell whose `{...}` block is written directly before a `<`, `>` or `~`, which is the order PART 9 §5 T10 retired; the block still attaches to the cell, but the marker is now literal content and the cell is not aligned. Reported and not rewritten: the retired order and the current one render different documents, so only the author can say which was meant |
-| `table-marker-run-padding` | a table cell's marker run with no terminating space - the kind marker `=`, the alignment run, the attribute block, or any glued combination of them, as in `|=a `, `|>text ` or `|=<{.x}value `. PART 9 §5 T11 makes the whole run one thing with one terminator, so without the space there is no run and every character of it is content: `|=a |` is a data cell whose text is `=a`, not a header cell holding `a`. `fmt --migrate` inserts the required space. Specified replacement for `table-alignment-run-padding`; the measured engines still emit the older id |
-| `table-alignment-run-padding` | An alignment run at the start of a table cell lacks its terminating space, for example `|>text |`. Currently emitted by all three measured engines. `table-marker-run-padding` specifies the broader replacement; keep accepting this id until the engines implement that replacement |
+| `table-marker-run-padding` | a table cell's marker run with no terminating space - the kind marker `=`, the alignment run, the attribute block, or any glued combination of them, as in `|=a `, `|>text ` or `|=<{.x}value `. PART 9 §5 T11 makes the whole run one thing with one terminator, so without the space there is no run and every character of it is content: `|=a |` is a data cell whose text is `=a`, not a header cell holding `a`. `fmt --migrate` inserts the required space. A block written before its alignment marker (`|{#x}< `, the order PART 9 §5 T10 retired) is reported under this id and not rewritten, because the two orders render different documents. This id replaces `table-alignment-run-padding` and `table-cell-attribute-before-marker` |
 | `table-column-arity` | an `aligns`, `valigns`, or `widths` list shorter than the widest row; the unset tail is valid but often accidental. More entries than columns is a parse error rather than a lint |
 | `table-column-overlap` | a field supplied both by an in-table column marker and by a table attribute list; the in-table spelling wins |
 | `delimited-table-malformed` | malformed quoting in a marked `csv` or `tsv` fence, or in a `{table}`-marked `csv` or `tsv` `@code` include when lint is given an include root (CARVE-P6-001 I16); the fence or include remains code |
@@ -676,11 +674,11 @@ not establish correctness for every possible input.
 
 | implementation | measured coverage |
 |---|---|
-| carve-js | 43 default triggers; `unattached-block-attribute`; Djot and Markdown migration checks; opt-in platform checks |
-| carve-php | 41 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; opt-in platform checks |
-| carve-rs | 41 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; no platform checks |
+| carve-js | 45 default triggers; `unattached-block-attribute`; Djot and Markdown migration checks; opt-in platform checks |
+| carve-php | 45 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; opt-in platform checks |
+| carve-rs | 45 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; no platform checks |
 
-`bibliography-placement-in-container` and `table-marker-run-padding` are
+`bibliography-placement-in-container` is
 specified but absent from these builds, and none of them reports
 `unresolved-reference-link` for a reference image yet. `consumed-key-near-miss`
 is in carve-js; carve-php and carve-rs port it next (markup-carve/carve#3340).
@@ -688,8 +686,7 @@ is in carve-js; carve-php and carve-rs port it next (markup-carve/carve#3340).
 specified ahead of the engines (markup-carve/carve#3439). Their default triggers
 are declared missing in `resources/lint-parity-drift.txt` until the pins carry
 them. `unclosed-code-fence` and `continuation-marker-refused` are in carve-js;
-carve-php and carve-rs still owe them (markup-carve/carve#3407). The engines
-still emit `table-alignment-run-padding`. The broader Djot migration checks
+carve-php and carve-rs still owe them (markup-carve/carve#3407). The broader Djot migration checks
 remain specific to carve-js. Diagnostic message wording is engine-specific;
 compare the rule id and source location.
 

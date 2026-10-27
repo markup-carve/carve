@@ -19496,6 +19496,126 @@ attribute line produced:
 
 :::
 
+A fenced block after the attribute line is the third target, and the one where
+the fence body is at risk. The attribute line does not end the run the marker
+opened, so the fence is still the attached block, and its body is code: a body
+line that looks like a list item is not a sibling of `- a` (carve#1238):
+
+::: compare
+
+````carve
+- a
++
+{.x}
+```
+- x
+code
+```
+````
+
+```html
+<ul>
+  <li>a
+    <pre class="x"><code>- x
+code
+</code></pre>
+  </li>
+</ul>
+```
+
+:::
+
+The same holds under a definition. A `: x` body line is code, not a second
+description:
+
+::: compare
+
+````carve
+:: t
+: d
++
+{.x}
+```
+: x
+```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <pre class="x"><code>: x
+</code></pre>
+  </dd>
+</dl>
+```
+
+:::
+
+A marker written at a nested item's marker column continues that item
+(carve#3421), and the attribute line does not move the owner. The fence lands
+in the inner `li` with the class on it:
+
+::: compare
+
+````carve
+- a
+  - b
+  +
+  {.x}
+  ```
+  code
+  ```
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre class="x"><code>code
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+A `{table}` attribute line turns the `csv` fence after it into a table, and the
+other attributes in the line go on that table:
+
+::: compare
+
+````carve
+- a
++
+{table .x}
+```csv
+a,b
+1,2
+```
+````
+
+```html
+<ul>
+  <li>a
+    <table class="x">
+      <thead>
+        <tr><th scope="col">a</th><th scope="col">b</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>2</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+```
+
+:::
+
 ## A column-0 line after a container's last block, when that block left no paragraph open
 
 PART 1 S4's *NO OPEN PARAGRAPH, NO LAZY LINE* is pinned above for an empty
