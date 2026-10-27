@@ -566,6 +566,12 @@
       `start`, both structural and both already written. An `<ol>` carrying
       both names says one thing twice, so `data-marker` rides a `<ul>` only.
 
+      THE ABBREVIATION CARRIER PRESERVES EVERY AUTHORED DECLARATION. Its
+      template text holds the definitions in source order, including every
+      superseded definition. A reader takes duplicate carrier lines in that
+      order, so the last definition for a term is effective for rendering
+      (PART 9R R3). Neither export nor import deduplicates the source lines.
+
       A CARRIER IS STRUCTURAL (§1 R1). It sits after the element's other
       structural attributes (`type`, `start`, `data-delim`, `href`, `src`,
       `alt`, `title`; §16 R1) and before the first attribute the author wrote, and

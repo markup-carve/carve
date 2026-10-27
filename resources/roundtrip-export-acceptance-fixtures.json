@@ -416,6 +416,50 @@
       }
     },
     {
+      "id": "duplicate-abbreviation-definitions",
+      "source": "*[A]: a\n*[A]: b\n\nA\n",
+      "carriers": {
+        "data-carve-abbreviations": null
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "abbreviation_def",
+          "abbr": "A",
+          "expansion": "b"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-abbreviations",
+          "element": "template"
+        }
+      ],
+      "carrierText": {
+        "data-carve-abbreviations": [
+          "*[A]: a\n*[A]: b",
+          "*[A]: a\n*[A]: b\n"
+        ]
+      },
+      "exportedHtml": "<p><abbr title=\"b\">A</abbr></p>\n<template data-carve-abbreviations>*[A]: a\n*[A]: b</template>",
+      "returnedSourceFragments": [
+        "*[A]: a",
+        "*[A]: b"
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "exported html matches fixture",
+          "data-carve-abbreviations",
+          "*[A]: a"
+        ]
+      }
+    },
+    {
       "id": "table-separator-widths",
       "source": "| a | bb |\n|:-----|---:|\n| 1 | 2 |\n",
       "carriers": {
