@@ -139,6 +139,9 @@ export function authoredDocuments() {
  * unresolved reference taking the caption line into the paragraph with it
  * (carve#1784).
  *
+ * The citation definition sample in docs/migrate-from-markdown.md#8 is now
+ * answered as core text rather than refused (carve#3773): 120 -> 121.
+ *
  * Pinned EXACTLY and in both directions, which is the whole point of writing
  * them down. A floor would let the population shrink - a docs rewrite that
  * dropped twenty samples would read as a pass - and a ceiling alone would let a
@@ -152,4 +155,4 @@ export function authoredDocuments() {
  * is "look up how this file works" is a red gate that gets deleted.
  */
 export const AUTHORED_POPULATION = 121
-export const AUTHORED_ANSWERED = 120
+export const AUTHORED_ANSWERED = 121
