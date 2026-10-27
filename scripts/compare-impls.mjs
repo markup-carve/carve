@@ -315,6 +315,8 @@ const PLAIN_EXTENSION_FEATURES = {
  * (carve#535).
  */
 const UNREACHABLE_REASONS = {
+  'profile-comment': 'The cross-engine harness has no profile selection adapter; the pinned JS package is checked by the optional corpus runner.',
+  'profile-minimal': 'The cross-engine harness has no profile selection adapter; the pinned JS package is checked by the optional corpus runner.',
 }
 
 // Optional features selected through carve-rs's repeatable registry-key flag.

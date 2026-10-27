@@ -20,7 +20,7 @@ The count-only run covers 3,118 core documents and their 194 target sidecars.
 The run scores 3,312 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: two, then `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-5`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-6`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-7`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-8`.
+Corpus added since this run: two, then `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-5`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-6`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-7`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-8`, `209-an-unresolved-reference-image-takes-no-caption-2`, `209-an-unresolved-reference-image-takes-no-caption-3`.
 
 Sidecars added since this run: one Markdown target.
 
@@ -113,7 +113,7 @@ than rely on the ceilings agreeing, because §25 says they will not.
 
 ## Optional Tier-2 Profile
 
-Optional corpus added since this run: `99-citations-definition-space-run`, `100-toc-body-keeps-placement-scope`.
+Optional corpus added since this run: `99-citations-definition-space-run`, `100-toc-body-keeps-placement-scope`, `101-profile-denied-cross-reference`, `102-profile-denied-code-block`.
 
 The optional profile was measured on 2026-10-25 CET with the same engine commits as
 the core snapshot. It enables a shared adapter per feature where each
