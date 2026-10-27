@@ -1210,6 +1210,7 @@ index: examples/edge-cases/index.md
   heading-index-plain-text-covers-visible-leaves-and-rejects-an-empty-key
   a-heading-comment-preserves-code-span-content
   which-inline-content-a-heading-id-is-derived-from
+  raw-inline-content-in-heading-ids
   02-headings-5
   02-headings-6
   47-numbered-cross-references-6
