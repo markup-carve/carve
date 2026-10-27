@@ -1,0 +1,15 @@
+Combined emphasis finds a later nonempty closer
+
+```
+/**/ /**/
+.
+<p><strong><em>*/ /*</em></strong></p>
+```
+
+```
+/**/
+/**/
+.
+<p><strong><em>*/
+/*</em></strong></p>
+```

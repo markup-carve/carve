@@ -66643,3 +66643,83 @@ A heading made only of raw inline content uses the empty id fallback:
 ```
 
 :::
+
+## Citation-shaped lines remain core text
+
+::: compare
+
+```carve
+[@a]
+```
+
+```html
+<p>[<span class="mention"><strong>@a</strong></span>]</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[@key]: entry
+```
+
+```html
+<p>[<span class="mention"><strong>@key</strong></span>]: entry</p>
+```
+
+:::
+
+## A lone brace stays inside forced emphasis
+
+::: compare
+
+```carve
+{^}^}
+```
+
+```html
+<p><sup>}</sup></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{*}*}
+```
+
+```html
+<p><strong>}</strong></p>
+```
+
+:::
+
+## Combined emphasis finds a later nonempty closer
+
+::: compare
+
+```carve
+/**/ /**/
+```
+
+```html
+<p><strong><em>*/ /*</em></strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+/**/
+/**/
+```
+
+```html
+<p><strong><em>*/
+/*</em></strong></p>
+```
+
+:::

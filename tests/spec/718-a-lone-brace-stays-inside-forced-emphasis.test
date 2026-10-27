@@ -1,0 +1,13 @@
+A lone brace stays inside forced emphasis
+
+```
+{^}^}
+.
+<p><sup>}</sup></p>
+```
+
+```
+{*}*}
+.
+<p><strong>}</strong></p>
+```

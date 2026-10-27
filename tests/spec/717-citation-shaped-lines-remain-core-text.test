@@ -1,0 +1,13 @@
+Citation-shaped lines remain core text
+
+```
+[@a]
+.
+<p>[<span class="mention"><strong>@a</strong></span>]</p>
+```
+
+```
+[@key]: entry
+.
+<p>[<span class="mention"><strong>@key</strong></span>]: entry</p>
+```

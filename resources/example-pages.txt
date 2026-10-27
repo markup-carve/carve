@@ -951,6 +951,8 @@ index: examples/edge-cases/index.md
   quotes-open-after-an-unresolved-symbol
 
   a-non-ascii-letter-does-not-block-a-bare-delimiter
+  a-lone-brace-stays-inside-forced-emphasis
+  combined-emphasis-finds-a-later-nonempty-closer
 [edge-links] Links, images and references
 > Destinations, titles, reference and collapsed forms, autolinks and where a definition may live.
 out: examples/edge-cases/links.md
@@ -1018,6 +1020,7 @@ index: examples/edge-cases/index.md
   a-reference-definition-needs-a-separator-before-its-destination
   an-invalid-attribute-block-leaves-a-definition-as-prose
   a-bang-before-a-link-is-escaped
+  citation-shaped-lines-remain-core-text
 
 [edge-footnotes] Footnotes
 > Bodies as blocks, the body content column, collection inside containers and placement of the rendered list.
