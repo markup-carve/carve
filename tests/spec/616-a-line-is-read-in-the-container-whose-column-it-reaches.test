@@ -28,9 +28,9 @@ x
   <li>
     <blockquote><p>para
 more</p></blockquote>
-    x
   </li>
 </ul>
+<p>x</p>
 ```
 
 ```
@@ -136,8 +136,7 @@ x
 <ul>
   <li>
     <blockquote><p>a
-b
-[r]: /u</p></blockquote>
+b</p></blockquote>
   </li>
 </ul>
 ```
@@ -164,13 +163,11 @@ b
   <li>
     <dl>
       <dt>t</dt>
-      <dd>
-        <p>para</p>
-        <pre><code></code></pre>
-      </dd>
+      <dd>para</dd>
     </dl>
   </li>
 </ul>
+<pre><code></code></pre>
 ````
 
 ```
@@ -182,11 +179,10 @@ x
 <ul>
   <li>
     <blockquote><p>a
-b
-[r]: /u
-x</p></blockquote>
+b</p></blockquote>
   </li>
 </ul>
+<p>x</p>
 ```
 
 ```
@@ -223,14 +219,12 @@ x
   <li>
     <dl>
       <dt>t</dt>
-      <dd>
-        <p>para</p>
-        <pre><code></code></pre>
-      </dd>
+      <dd>para</dd>
     </dl>
   </li>
 </ol>
-<p>x</p>
+<pre><code>x
+</code></pre>
 ````
 
 ```
@@ -241,10 +235,12 @@ x
 <dl>
   <dt>t</dt>
   <dd>
-    <blockquote><p>para
-# H</p></blockquote>
+    <blockquote><p>para</p></blockquote>
   </dd>
 </dl>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ```
@@ -254,9 +250,11 @@ x
 .
 <dl>
   <dt>t</dt>
-  <dd>para
-# H</dd>
+  <dd>para</dd>
 </dl>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ```
@@ -266,9 +264,9 @@ x
 .
 <dl>
   <dt>t</dt>
-  <dd>para
-—</dd>
+  <dd>para</dd>
 </dl>
+<hr>
 ```
 
 ```
@@ -278,9 +276,13 @@ x
 .
 <dl>
   <dt>t</dt>
-  <dd>para
-| a |</dd>
+  <dd>para</dd>
 </dl>
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
 ```
 
 ```
@@ -337,11 +339,10 @@ x
 x
 .
 <ul>
-  <li>para
-    <pre><code></code></pre>
-  </li>
+  <li>para</li>
 </ul>
-<p>x</p>
+<pre><code>x
+</code></pre>
 ````
 
 ````
@@ -354,10 +355,10 @@ x
   <li>
     <aside class="admonition note" aria-label="Note">
       <p>more</p>
-      <pre><code></code></pre>
     </aside>
   </li>
 </ul>
+<pre><code></code></pre>
 ````
 
 ````
@@ -371,10 +372,10 @@ x
   <li>
     <blockquote><p>para
 more</p></blockquote>
-    <pre><code></code></pre>
   </li>
 </ul>
-<p>x</p>
+<pre><code>x
+</code></pre>
 ````
 
 ````
@@ -386,13 +387,12 @@ more</p></blockquote>
   y
 .
 <ul>
-  <li>para
-    <pre><code>x
-
-y
-</code></pre>
-  </li>
+  <li>para</li>
 </ul>
+<pre><code>  x
+
+  y
+</code></pre>
 ````
 
 ````
@@ -406,9 +406,9 @@ y
   <li>
     <blockquote><p>para
 more</p></blockquote>
-    <pre><code></code></pre>
   </li>
 </ul>
+<pre><code></code></pre>
 ````
 
 ```

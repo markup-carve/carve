@@ -12,8 +12,8 @@ A definition marker line keeps a straddling tab's residual columns
     <p>b</p>
     <dl>
       <dt>t</dt>
+      <dd>zq</dd>
     </dl>
-    <p>: zq</p>
   </dd>
 </dl>
 ```

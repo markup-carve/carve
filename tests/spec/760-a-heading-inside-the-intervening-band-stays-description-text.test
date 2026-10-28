@@ -11,7 +11,7 @@ A heading inside the intervening band stays description text
     <ul>
       <li></li>
     </ul>
-    <p># H</p>
+    <h1 id="H">H</h1>
   </dd>
 </dl>
 ```

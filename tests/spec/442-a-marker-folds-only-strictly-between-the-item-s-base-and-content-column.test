@@ -20,10 +20,10 @@ See [t][].
 See [t][].
 .
 <ul>
-  <li>lead
-- [t]: /t</li>
+  <li>lead</li>
+  <li></li>
 </ul>
-<p>See [t][].</p>
+<p>See <a href="/t">t</a>.</p>
 ```
 
 ```
@@ -62,10 +62,10 @@ See [t][].
 See [t][].
 .
 <ul>
-  <li>lead
-- [t]: /t</li>
+  <li>lead</li>
+  <li></li>
 </ul>
-<p>See [t][].</p>
+<p>See <a href="/t">t</a>.</p>
 ```
 
 ```
@@ -75,10 +75,10 @@ See [t][].
 See [t][].
 .
 <ul>
-  <li>lead
-- [t]: /t</li>
+  <li>lead</li>
+  <li></li>
 </ul>
-<p>See [t][].</p>
+<p>See <a href="/t">t</a>.</p>
 ```
 
 ```
@@ -120,9 +120,9 @@ See [t][].
 See [t][].
 .
 <ul>
-  <li>lead
-- prose
-- [t]: /t</li>
+  <li>lead</li>
+  <li>prose</li>
+  <li></li>
 </ul>
-<p>See [t][].</p>
+<p>See <a href="/t">t</a>.</p>
 ```

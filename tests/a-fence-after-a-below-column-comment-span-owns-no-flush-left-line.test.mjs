@@ -14,14 +14,14 @@ const source = (depth, fence, column, closed, tail) => {
 
 for (const depth of [0, 1, 2]) {
   for (const character of ['`', '~']) {
-    // Column 0 is the list's own column, where a matched span ends the item (PART 0 X1).
+    // A span below the item's content column closes the item, as one at the list's own column does.
     for (const column of [1]) {
       for (const closed of [false, true]) {
         for (const [kind, tail] of [['text', 'tail'], ['marker', '- tail'], ['blank then text', '\ntail']]) {
           test(`quote depth ${depth}, ${character} fence, span column ${column}, ${closed ? 'closed' : 'unclosed'}, ${kind}`, () => {
             const fence = character.repeat(3)
             assert.equal(html(source(depth, fence, column, closed, tail)),
-              html(source(depth, fence, 2, closed, tail)))
+              html(source(depth, fence, 0, closed, tail)))
           })
         }
       }
@@ -31,5 +31,5 @@ for (const depth of [0, 1, 2]) {
 
 test('513-a-comment-span-opened-below-every-content-column-is-located-there-8 leaves tail at document level', () => {
   assert.equal(html('- item\n %%%\n hidden\n  %%%\n  ```\ntail\n'),
-    '<ul>\n  <li>item\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>tail</p>')
+    '<ul>\n  <li>item</li>\n</ul>\n<pre><code>tail\n</code></pre>')
 })

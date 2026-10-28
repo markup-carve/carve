@@ -32,6 +32,12 @@
       §5's unconditional quote escapes reparse as `escaped_text`, so both §1
       and §4's optional comparison use this equality.
 
+      A DASH NODE EQUALS ITS GLYPH. A `smart_punctuation` node of kind
+      `em_dash` or `en_dash` compares EQUAL to a text node holding `—` or `–`,
+      inside the same adjacent run. CARVE-P11-077 writes a dash that way where
+      its source run would open a thematic break; the rendered result is the
+      same character.
+
       What escaping still MUST preserve is the rendered result: the escape is
       authoring syntax, so `to_html(fmt(x)) == to_html(x)` admits no such
       latitude, and neither does idempotence.

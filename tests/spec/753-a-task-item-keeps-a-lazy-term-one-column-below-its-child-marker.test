@@ -12,12 +12,14 @@ A task item keeps a lazy term one column below its child marker
       <li>
         <dl>
           <dt>t
-: a
-:: sibling
-tail</dt>
+: a</dt>
         </dl>
       </li>
     </ul>
+    <dl>
+      <dt>sibling
+tail</dt>
+    </dl>
   </li>
 </ul>
 ```

@@ -73,10 +73,10 @@ see[^f]
 <blockquote>
   <p>a</p>
   <aside class="admonition note" aria-label="Note">
-    <p>[r]: /url</p>
+
   </aside>
 </blockquote>
-<p>[r][]</p>
+<p><a href="/url">r</a></p>
 ```
 
 ```
@@ -154,9 +154,9 @@ first</p></blockquote>
 
 [r][]
 .
-<blockquote><p>a
-::: note
-[r]: /url
-:::</p></blockquote>
-<p>[r][]</p>
+<blockquote><p>a</p></blockquote>
+<aside class="admonition note" aria-label="Note">
+
+</aside>
+<p><a href="/url">r</a></p>
 ```

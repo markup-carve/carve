@@ -38,8 +38,8 @@ Under-indented definition attaches, over-indented definition folds
 <ul>
   <li>one
     <dl>
-      <dt>term
- :  def</dt>
+      <dt>term</dt>
+      <dd>def</dd>
     </dl>
   </li>
 </ul>

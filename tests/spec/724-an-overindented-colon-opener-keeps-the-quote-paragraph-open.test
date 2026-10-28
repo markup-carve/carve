@@ -4,6 +4,10 @@ An overindented colon opener keeps the quote paragraph open
 >  ::: |
 x
 .
-<blockquote><p>::: |
-x</p></blockquote>
+<blockquote>
+  <div class="line-block">
+
+  </div>
+</blockquote>
+<p>x</p>
 ```

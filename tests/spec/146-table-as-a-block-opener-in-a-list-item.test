@@ -25,8 +25,14 @@ Table as a block opener in a list item
  | x |
 .
 <ul>
-  <li>one
-|= H |
-| x |</li>
+  <li>one</li>
 </ul>
+<table>
+  <thead>
+    <tr><th scope="col">H</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>x</td></tr>
+  </tbody>
+</table>
 ```

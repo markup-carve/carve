@@ -5,8 +5,7 @@ Indented reference and footnote definitions stay literal
 
  [x]: /intro "T"
 .
-<p>Read [intro][x].</p>
-<p>[x]: /intro “T”</p>
+<p>Read <a href="/intro" title="T">intro</a>.</p>
 ```
 
 ```
@@ -14,6 +13,13 @@ Indented reference and footnote definitions stay literal
 
  [^fn]: body.
 .
-<p>Note[^fn].</p>
-<p>[^fn]: body.</p>
+<p>Note<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>body.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```

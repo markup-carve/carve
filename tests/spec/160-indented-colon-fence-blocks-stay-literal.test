@@ -5,9 +5,9 @@ Indented colon-fence blocks stay literal
  A box.
  :::
 .
-<p>:::
-A box.
-:::</p>
+<div>
+  <p>A box.</p>
+</div>
 ```
 
 ```
@@ -16,10 +16,10 @@ A box.
  Violets.
  :::
 .
-<p>::: |
-Roses,
-Violets.
-:::</p>
+<div class="line-block">
+  <p>Roses,<br>
+Violets.</p>
+</div>
 ```
 
 ```
@@ -27,9 +27,9 @@ Violets.
  Body.
  :::
 .
-<p>::: note
-Body.
-:::</p>
+<aside class="admonition note" aria-label="Note">
+  <p>Body.</p>
+</aside>
 ```
 
 ```

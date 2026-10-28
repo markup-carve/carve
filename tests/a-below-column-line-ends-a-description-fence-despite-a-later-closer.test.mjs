@@ -5,15 +5,20 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = source => renderDoc(parse(source)).replace(/\n[ \t]*(?=<)/g, '').trim()
 
-for (const below of [' y', ' > y', ' > > +', ' > > z']) {
-  test(`a closer past a below-column line still opens the description fence: ${below}`, () => {
+for (const [below, expected] of [
+  [' y', /<dd><p>body<\/p><pre><code><\/code><\/pre><\/dd><\/dl><p>y<code>\nnext<\/code><\/p>$/],
+  [' > y', /<dd>body<code><\/code><\/dd><\/dl><blockquote><p>y<code>\nnext<\/code><\/p><\/blockquote>$/],
+  [' > > +', /<dd>body<code><\/code><\/dd><\/dl><blockquote><blockquote><p>\+<code>\nnext<\/code><\/p><\/blockquote><\/blockquote>$/],
+  [' > > z', /<dd>body<code><\/code><\/dd><\/dl><blockquote><blockquote><p>z<code>\nnext<\/code><\/p><\/blockquote><\/blockquote>$/],
+]) {
+  test(`a below-column line decides whether the description fence opens: ${below}`, () => {
     const out = html([':: term', ': body', '  ```', below, '  ```', 'next'].join('\n'))
-    assert.match(out, /<dd><p>body<\/p><pre><code><\/code><\/pre><\/dd><\/dl>/)
+    assert.match(out, expected)
     assert.doesNotMatch(out, /<pre><code>[^<]+<\/code><\/pre>/)
   })
 }
 
 test('the below-column quote is read outside the description', () => {
   assert.equal(html(':: term\n: body\n  ```\n > y\n  ```\nnext'),
-    '<dl><dt>term</dt><dd><p>body</p><pre><code></code></pre></dd></dl><p>&gt; y<code>\nnext</code></p>')
+    '<dl><dt>term</dt><dd>body<code></code></dd></dl><blockquote><p>y<code>\nnext</code></p></blockquote>')
 })

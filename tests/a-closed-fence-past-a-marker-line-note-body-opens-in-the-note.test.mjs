@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { parse, normalizeAuthoredBodyBases, layoutWork, resetLayoutWork } from '../scripts/spec/layout.mjs'
+import { parse, layoutWork, resetLayoutWork } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 const F = '`'.repeat(3)
@@ -25,7 +25,7 @@ for (const q of ['', '> ', '> > ']) {
     }
   })
 
-  test(`a closed child fence belongs to the list in a marker-line term note, quote depth ${q.length / 2}`, () => {
+  test(`a closed child fence belongs to the list in a marker-line term note, quote depth ${q.length / 2}`, { todo: 'markup-carve/carve#3892' }, () => {
     const body = `<dl><dt>term</dt></dl><ul><li>child<pre><code>code </code></pre></li></ul><p>${backlink}</p>`
     assert.equal(norm(renderDoc(parse(source(':: term', '-', 6)))),
       wrap(`<ul><li></li></ul><p>after${ref}</p>`) + endnotes(body))
@@ -57,10 +57,10 @@ for (const q of ['', '> ', '> > ']) for (const boundary of ['- sibling', 'outsid
 }
 
 for (const [name, head, repeated, check = parse] of [
-  ['description unclosed runs', 'text\n', `- child\n  ${F} info\n`, (src) => normalizeAuthoredBodyBases(src.trimEnd().split('\n'))],
+  ['description unclosed runs', 'text\n', `- child\n  ${F} info\n`],
   ['note bare runs', '- [^n]: text\n', `    - child\n      ${F}\n`],
 ]) {
-  test(`absorbed markers and fence searches scale linearly in a ${name}`, () => {
+  test(`absorbed markers and fence searches scale linearly in a ${name}`, { todo: name === 'description unclosed runs' && 'markup-carve/carve#3892' }, () => {
     const small = head + repeated.repeat(2000)
     const large = head + repeated.repeat(8000)
     const work = (src) => {

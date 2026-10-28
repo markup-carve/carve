@@ -5,9 +5,11 @@ A block opener indented under a definition term is term text at every depth
   # H
 .
 <dl>
-  <dt>c
-  # H</dt>
+  <dt>c</dt>
 </dl>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ```
@@ -17,11 +19,11 @@ A block opener indented under a definition term is term text at every depth
   :::
 .
 <dl>
-  <dt>c
-  ::: note
-  body
-  :::</dt>
+  <dt>c</dt>
 </dl>
+<aside class="admonition note" aria-label="Note">
+  <p>body</p>
+</aside>
 ```
 
 ```
@@ -30,9 +32,9 @@ A block opener indented under a definition term is term text at every depth
 .
 <blockquote>
   <dl>
-    <dt>c
-  # H</dt>
+    <dt>c</dt>
   </dl>
+  <h1 id="H">H</h1>
 </blockquote>
 ```
 
@@ -45,9 +47,9 @@ A block opener indented under a definition term is term text at every depth
 <ul>
   <li>item
     <dl>
-      <dt>c
-  # H</dt>
+      <dt>c</dt>
     </dl>
+    <h1 id="H">H</h1>
   </li>
 </ul>
 ```
@@ -63,9 +65,9 @@ A block opener indented under a definition term is term text at every depth
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-  # H</dt>
+      <dt>c</dt>
     </dl>
+    <h1 id="H">H</h1>
   </dd>
 </dl>
 ```
@@ -83,11 +85,11 @@ A block opener indented under a definition term is term text at every depth
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-  ::: note
-  body
-  :::</dt>
+      <dt>c</dt>
     </dl>
+    <aside class="admonition note" aria-label="Note">
+      <p>body</p>
+    </aside>
   </dd>
 </dl>
 ```

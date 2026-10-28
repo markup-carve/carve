@@ -3,11 +3,15 @@ Heading marker column zero
 ```
    # H
 .
-<p># H</p>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ```
   ## H
 .
-<p>## H</p>
+<section id="H">
+  <h2>H</h2>
+</section>
 ```

@@ -46,17 +46,15 @@ const LINE = '%% z'
 
 const item = (payload, column) => `- x\n${' '.repeat(column)}${payload}\ny\n`
 
-const INSIDE = '<ul> <li>x y </li> </ul>'
 const OUTSIDE = '<ul> <li>x</li> </ul> <p>y</p>'
 
 /*
- * `- x` has content column 2. Column 1 is below it, where the comment leaves
- * the item open and `y` reaches it; 2 and past are at or above it, where the
- * comment ends the paragraph under it and `y` lands outside. Column 0 is not
- * here -- it is the open question below.
+ * `- x` has content column 2. Column 1 is below it, where the comment closes
+ * the item (#3885); 2 and past are at or above it, where the comment ends the
+ * paragraph under it. Either way `y` lands outside. Column 0 is below.
  */
 const BAND = [
-  [1, INSIDE],
+  [1, OUTSIDE],
   [2, OUTSIDE],
   [3, OUTSIDE],
   [4, OUTSIDE],
@@ -128,14 +126,14 @@ test('an ordinary indented line still folds into the item', () => {
  * is a comment BLOCK at the document's own opener column and the other is not a
  * block at all.
  */
-test('at column 0 the line form keeps the follower in the item', () => {
-  assert.equal(oracle(item(LINE, 0)), INSIDE)
+test('at column 0 the line form closes the item', () => {
+  assert.equal(oracle(item(LINE, 0)), OUTSIDE)
 })
 
 for (const fence of FENCES) {
   test(`at column 0 an unterminated ${JSON.stringify(fence)} answers as the line form does -- carve#1903`, () => {
     assert.equal(oracle(item(fence, 0)), oracle(item(LINE, 0)))
-    assert.equal(oracle(item(fence, 0)), INSIDE)
+    assert.equal(oracle(item(fence, 0)), OUTSIDE)
   })
 }
 

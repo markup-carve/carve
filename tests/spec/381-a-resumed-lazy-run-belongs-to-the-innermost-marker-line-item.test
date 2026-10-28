@@ -56,12 +56,11 @@ A resumed lazy run belongs to the innermost marker-line item
 <ul>
   <li>
     <ul>
-      <li>u
-        :
-      </li>
+      <li>u</li>
     </ul>
   </li>
 </ul>
+<p>:</p>
 ```
 
 ```

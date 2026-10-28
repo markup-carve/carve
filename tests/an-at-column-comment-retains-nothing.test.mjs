@@ -28,9 +28,8 @@ for (const depth of [0, 1, 2]) for (const nested of [0, 1, 2]) {
         const source = [...parents, ...head, ...comment, ' '.repeat(column - 1) + 'FOLLOW']
           .map(line => '> '.repeat(depth) + line).join('\n') + '\n'
         const body = leaf(parse(source).blocks)
-        // A matched span in the ancestor's body belongs to that ancestor (CARVE-P9-053).
-        const retained = offset === -1 && !(host === 'item' && kind === 'fenced' && nested > 0)
-        assert.equal(JSON.stringify(body).includes('FOLLOW'), retained, html(source))
+        // A span below the body's column closes the body, so nothing is retained at any offset.
+        assert.equal(JSON.stringify(body).includes('FOLLOW'), false, html(source))
         assert.ok(html(source).includes('FOLLOW'), html(source))
         assert.ok(!html(source).includes('HIDDEN'), html(source))
       })
@@ -75,11 +74,12 @@ for (const depth of [0, 1, 2]) for (const column of [2, 3]) {
 }
 
 for (const depth of [0, 1, 2]) for (const nested of [1, 2]) {
-  test(`a span below every item column preserves the child paragraph: depth ${depth}, item depth ${nested}`, () => {
+  test(`a span below every item column closes the items: depth ${depth}, item depth ${nested}`, () => {
     const parents = Array.from({length: nested}, (_, n) => ' '.repeat(n * 2) + '- outer')
     const source = [...parents, ' '.repeat(nested * 2) + '- HEAD', ' %%%', ' HIDDEN', ' %%%', ' '.repeat(nested * 2 + 1) + 'FOLLOW']
       .map(line => '> '.repeat(depth) + line).join('\n') + '\n'
-    assert.ok(JSON.stringify(leaf(parse(source).blocks)).includes('FOLLOW'), html(source))
+    assert.deepEqual(leaf(parse(source).blocks), [{t: 'para', lines: ['HEAD']}], html(source))
+    assert.ok(html(source).includes('<p>FOLLOW</p>'), html(source))
     assert.ok(!html(source).includes('HIDDEN'), html(source))
   })
 }

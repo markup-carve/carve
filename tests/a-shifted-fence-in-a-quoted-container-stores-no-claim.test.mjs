@@ -31,16 +31,16 @@ for (const depth of [1, 2]) for (const nested of [false, true]) {
 }
 
 for (const depth of [1, 2]) {
-  // Retention decides the owner only: the fence opens a code block in the
-  // retained item (carve#3285), and its unprefixed payload leaves that item.
-  test(`a below-column comment retains a fence run as a code block: depth ${depth}`, () => {
+  // The comment below the inner item's column closes that item (carve#3885),
+  // so the fence opens in the box and the unprefixed `- tail` starts a new list.
+  test(`a below-column comment closes the item and the fence run opens in the box: depth ${depth}`, () => {
     const prefix = '> '.repeat(depth)
     const source = ['- ::: box', '  - inner', '  %% c', '   ```', '   code']
       .map(line => prefix + line).join('\n') + '\n- tail\n'
     const doc = parse(source)
     const out = renderDoc(doc)
-    assert.equal(doc.blocks.length, 1, out)
-    assert.ok(out.includes('<li>inner\n') && out.includes('<pre><code></code></pre>'), out)
-    assert.ok(out.includes('code\n- tail'), out)
+    assert.equal(doc.blocks.length, 2, out)
+    assert.ok(out.includes('<li>inner</li>') && out.includes('<pre><code>code\n</code></pre>'), out)
+    assert.ok(out.endsWith('<ul>\n  <li>tail</li>\n</ul>'), out)
   })
 }

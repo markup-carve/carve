@@ -63,9 +63,9 @@ for (const entry of emptyDestinationCases.cases.filter((item) => item.kind && !i
   })
 }
 
-test('a nonzero below-column comment retains its existing item ownership', () => {
+test('a nonzero below-column comment closes the item', () => {
   assert.equal(oracleHtml('- intro\n  %% a\n %% b\n  tail\n'),
-    '<ul>\n  <li>intro\n    tail\n  </li>\n</ul>')
+    '<ul>\n  <li>intro</li>\n</ul>\n<p>tail</p>')
 })
 
 test('over-column list block groups match their exact-column spelling', () => {

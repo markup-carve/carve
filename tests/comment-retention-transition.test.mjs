@@ -17,7 +17,7 @@ const transitions = [
   ['opaque payload', { inCommentSpan: true }, false, true],
   ['delimiter inside an opaque span', { inCommentSpan: true, comment: true }, false, true],
   ['at-column comment clears retention', { comment: true }, false, false],
-  ['below-column line comment or unmatched fence', { comment: true, belowComment: true }, true, true],
+  ['below-column line comment or unmatched fence', { comment: true, belowComment: true }, false, false],
   ['blank', { blank: true }, false, true],
   ['ordinary content', {}, false, false],
 ]

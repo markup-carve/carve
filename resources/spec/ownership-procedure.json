@@ -4,10 +4,7 @@
   "qualifications": [
     "CARVE-P9-051",
     "CARVE-P9-052",
-    "CARVE-P9-053",
-    "CARVE-P9-033",
-    "CARVE-P9-067",
-    "CARVE-P2-028"
+    "CARVE-P9-067"
   ],
   "phases": [
     {
@@ -32,82 +29,94 @@
         "CARVE-P0-024"
       ],
       "checkerHelpers": [
-        "parse"
+        "parse",
+        "ownLines"
       ],
-      "constraint": "Identify blanks before O1. After matching an opaque host, opaque payload wins; comments are classified at O1 after prefix decoding. Visible forms are recognized after O2 in the selected owner's coordinates."
+      "constraint": "Each line runs S1 to S5 once, in order and without backtracking; T applies at each boundary."
     },
     {
-      "id": "strip",
-      "step": "O1",
-      "title": "O1 Strip prefixes",
+      "id": "payload",
+      "step": "S1",
+      "title": "S1 Payload",
       "rules": [
-        "CARVE-P0-005",
-        "CARVE-P0-013",
-        "CARVE-P0-019"
+        "CARVE-P0-005"
       ],
       "checkerHelpers": [
-        "indentCols",
-        "dedentMeasured",
-        "quotePrefixSummary",
         "bodyHasOpenCodeFence",
         "classifyLayoutComment",
-        "commentFenceOpensSpan"
+        "commentFenceOpensSpan",
+        "hasCloser"
       ],
-      "constraint": "Prefixes are consumed outward-in. An opaque body takes its line before any other step, and comments are classified before an owner is selected."
+      "constraint": "An open fence tests its closer first. Comments are classified before S3, and remain ordinary lines for ownership."
     },
     {
       "id": "owner",
-      "step": "O2",
-      "title": "O2 Select the owner",
+      "step": "S2",
+      "title": "S2 Owner",
       "rules": [
-        "CARVE-P0-010",
-        "CARVE-P0-020"
+        "CARVE-P0-019",
+        "CARVE-P0-020",
+        "CARVE-P9-083"
       ],
       "checkerHelpers": [
+        "ownLines",
+        "indentCols",
+        "quotePrefixSummary",
+        "dedentMeasured",
         "parseListRun"
       ],
-      "constraint": "The innermost frame whose prefix the line supplied owns it. A line below a content column did not supply that prefix."
+      "constraint": "Walk frames outside in; the owner is the deepest frame whose content column the line reaches. A lone `+` reaches only a marker column."
     },
     {
-      "id": "fold",
-      "step": "O3",
-      "title": "O3 Fold into the open paragraph",
+      "id": "form",
+      "step": "S3",
+      "title": "S3 Form",
+      "rules": [
+        "CARVE-P0-008",
+        "CARVE-P0-010",
+        "CARVE-P0-011"
+      ],
+      "checkerHelpers": [
+        "parseBlocks",
+        "startsVisibleBlock",
+        "firstBlockEnd",
+        "attachedBlockEnd"
+      ],
+      "constraint": "Classify in the owner's coordinates. An opener past the content column opens in the owner and its lines move left by its indentation, at every level."
+    },
+    {
+      "id": "lazy",
+      "step": "S4",
+      "title": "S4 Lazy",
       "rules": [
         "CARVE-P0-006",
-        "CARVE-P0-007",
-        "CARVE-P0-009",
-        "CARVE-P0-014",
-        "CARVE-P0-015",
-        "CARVE-P9-084",
-        "CARVE-P0-017",
-        "CARVE-P9-083"
+        "CARVE-P0-012",
+        "CARVE-P0-015"
       ],
       "checkerHelpers": [
         "opensParagraph",
         "bodyLeavesParagraphOpen",
-        "startsParagraphBlock",
-        "hasCloser"
+        "startsParagraphBlock"
       ],
-      "constraint": "A noninterrupting line folds only into the deepest leaf’s open paragraph with its continuation claim. Recognition uses the selected owner’s coordinates and scope. A fold closes nothing."
+      "constraint": "A line that missed a frame folds into the deepest open paragraph unless its form interrupts. One test at every depth and in every family; a fold closes nothing."
     },
     {
-      "id": "classify",
-      "step": "O4",
-      "title": "O4 Classify in the owner",
+      "id": "apply",
+      "step": "S5",
+      "title": "S5 Apply",
       "rules": [
-        "CARVE-P0-004",
-        "CARVE-P0-008",
-        "CARVE-P0-011",
-        "CARVE-P0-012"
+        "CARVE-P0-007",
+        "CARVE-P0-013",
+        "CARVE-P0-014",
+        "CARVE-P0-017",
+        "CARVE-P9-084"
       ],
       "checkerHelpers": [
         "parseBlocks",
-        "normalizeAuthoredBodyBases",
-        "authoredBlockEnd",
-        "firstBlockEnd",
-        "attachedBlockEnd"
+        "oneBlockEnd",
+        "fencedBlockEnd"
       ],
-      "constraint": "Frames deeper than the owner close. An indentation frame reads an opener at or past its content column on its authored base; the document and a quote need the exact column."
+      "constraint": "Otherwise close every missed frame and apply the form in the owner. A closed block leaves no open paragraph."
     },
     {
       "id": "transition",
@@ -120,20 +129,6 @@
         "ownershipTransition"
       ],
       "constraint": "Container survival and paragraph openness are separate facts, set by the boundary the line formed."
-    },
-    {
-      "id": "exceptions",
-      "step": "X1-X3",
-      "title": "X1 to X3 Named exceptions",
-      "rules": [
-        "CARVE-P0-021",
-        "CARVE-P0-022"
-      ],
-      "checkerHelpers": [
-        "afterCommentTransition",
-        "markerCarriesContinuation"
-      ],
-      "constraint": "Comment retention keeps a container with no paragraph open. The quote band and the opaque marker-line quote fold lines the host would otherwise read."
     }
   ],
   "evidence": {

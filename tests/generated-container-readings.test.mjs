@@ -7,7 +7,7 @@ const rows = [
   {
     "id": "gen-224",
     "source": ">  ::: |\n :::",
-    "html": "<blockquote><p>::: |\n:::</p></blockquote>\n"
+    "html": "<blockquote>\n  <div class=\"line-block\">\n\n  </div>\n</blockquote>\n<div>\n\n</div>\n"
   },
   {
     "id": "gen-249",

@@ -10,15 +10,14 @@ A fence closer outside the child folds and leaves the child open
     tail
 .
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
-      <li><p>head
+      <li>head
 <code>
 a
-</code></p>
-        <p>tail</p>
-      </li>
+</code></li>
     </ul>
+    <p>tail</p>
   </li>
 </ul>
 ````
@@ -129,15 +128,14 @@ a
     tail
 .
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
-      <li><p>head
+      <li>head
 ~~~
 a
-~~~</p>
-        <p>tail</p>
-      </li>
+~~~</li>
     </ul>
+    <p>tail</p>
   </li>
 </ul>
 ```
@@ -174,16 +172,16 @@ a
   tail
 .
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
 <code>
 a
 </code></li>
     </ul>
-    <p>tail</p>
   </li>
 </ul>
+<p>tail</p>
 ````
 
 ````

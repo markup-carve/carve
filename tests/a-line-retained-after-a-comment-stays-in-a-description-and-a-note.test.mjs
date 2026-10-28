@@ -30,7 +30,7 @@ for (const depth of [0, 1]) {
   for (const column of [0, 1, 2]) {
     const pad = host => ' '.repeat(Math.min(column, host.column - 1))
     const cases = [
-      ['a low comment retains a plain follower', host => [`${pad(host)}%% c`, ' follower'], true],
+      ['a low comment closes the body before a plain follower', host => [`${pad(host)}%% c`, ' follower'], false],
       ['a blank clears retention', host => [`${pad(host)}%% c`, '', ' follower'], false],
       ['a comment at the body column grants none', host => [
         `${' '.repeat(host.column)}%% c`, 'follower'], false],
@@ -38,9 +38,9 @@ for (const depth of [0, 1]) {
         `${' '.repeat(host.column + 1)}%% c`, 'follower'], false],
       ['an interrupting opener leaves the body', host => [`${pad(host)}%% c`, '# follower'], false],
       ['a sibling marker is recognized first', host => [`${pad(host)}%% c`, host.sibling], false],
-      ['an unmatched run is a line comment', host => [`${pad(host)}%%%`, ' follower'], true],
+      ['an unmatched run is a line comment', host => [`${pad(host)}%%%`, ' follower'], false],
       ['a matched span hides its payload', host => [
-        `${pad(host)}%%%`, 'SECRET_PAYLOAD', `${pad(host)}%%%`, ' follower'], column !== 0],
+        `${pad(host)}%%%`, 'SECRET_PAYLOAD', `${pad(host)}%%%`, ' follower'], false],
     ]
     for (const [limit, body, expected] of cases) {
       test(`${limit}, comment column ${column}, quote depth ${depth}`, () => {
@@ -61,23 +61,23 @@ for (const depth of [0, 1]) {
   }
 }
 
-test('a description retains text after a low comment', () => {
+test('a low comment closes a description before its text', () => {
   assert.equal(html(':: t\n: d\n %% c\n text\n'),
-    '<dl>\n  <dt>t</dt>\n  <dd>\n    <p>d</p>\n    <p>text</p>\n  </dd>\n</dl>')
+    '<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>\n<p>text</p>')
 })
 
-test('a note retains text after a low comment', () => {
+test('a low comment closes a note before its text', () => {
   assert.equal(html('[^n]: body\n %% c\n text\n\n[^n]\n'),
-    '<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>\n' +
+    '<p>text</p>\n<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>\n' +
     '<section role="doc-endnotes" aria-label="Footnotes">\n  <hr>\n  <ol>\n' +
-    '    <li id="fn1">\n      <p>body</p>\n      <p>text<a href="#fnref1" ' +
+    '    <li id="fn1">\n      <p>body<a href="#fnref1" ' +
     'role="doc-backlink" aria-label="Back to reference">↩</a></p>\n    </li>\n  </ol>\n</section>')
 })
 
-test('a retained list marker is paragraph text in all three hosts', () => {
-  assert.ok(!html('[^n]: x\n %% c\n - follower\n\n[^n]\n').includes('<ul>'))
-  assert.ok(!html(':: t\n: x\n %% c\n - follower\n').includes('<ul>'))
-  assert.equal((html('- x\n %% c\n - follower\n').match(/<ul>/g) ?? []).length, 1)
+test('a list marker after a low comment opens a list outside all three hosts', () => {
+  assert.ok(html('[^n]: x\n %% c\n - follower\n\n[^n]\n').startsWith('<ul>\n  <li>follower</li>\n</ul>\n'))
+  assert.ok(html(':: t\n: x\n %% c\n - follower\n').endsWith('</dl>\n<ul>\n  <li>follower</li>\n</ul>'))
+  assert.equal(html('- x\n %% c\n - follower\n'), '<ul>\n  <li>x</li>\n  <li>follower</li>\n</ul>')
 })
 
 test('retention does not rescan the body it has already collected', () => {

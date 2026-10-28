@@ -17,6 +17,6 @@ for (const [name, block] of [
 
     assert.equal(carveToCarve(source), expected)
     assert.equal(html(expected), html(source))
-    assert.notEqual(html(attached), html(source))
+    assert.equal(html(attached), html(source))
   })
 }

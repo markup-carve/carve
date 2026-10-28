@@ -15,7 +15,8 @@ for (const marker of markers) for (const letter of ['q', 'z']) {
   })
   test(`a quoted note closes the description's lazy claim: ${marker.trim()}, ${letter}`, () => {
     const out = html([marker + 'h0', '  1. h1', '    :: term', '    :  detail', '       > quote', '       > [^n]: note', '       >   more', '    ' + letter].join('\n'))
-    assert.match(out, new RegExp(`<\\/dl>\\s*${letter}<\\/li>`))
+    // An indented `1.` is a sibling of `1. h0`, so the term below it ends the list.
+    assert.match(out, new RegExp(marker === '1. ' ? `<\\/ol><dl>[^]*<\\/dl><p>${letter}<\\/p>$` : `<\\/dl>\\s*${letter}<\\/li>`))
     assert.doesNotMatch(out, new RegExp(`<dd>[^]*<p>${letter}<\\/p><\\/dd>`))
   })
 }

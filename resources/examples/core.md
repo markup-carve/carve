@@ -722,8 +722,8 @@ An ordered child *below* the content column does not nest: an ordered marker doe
 
 ```html
 <ol>
-  <li>outer
-1. inner</li>
+  <li>outer</li>
+  <li>inner</li>
 </ol>
 ```
 
@@ -763,7 +763,7 @@ After a blank line the **same content-column rule** applies: a continuation belo
 <ol>
   <li>one</li>
 </ol>
-<p>&gt; q</p>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::
@@ -2023,9 +2023,8 @@ A fenced-code **delimiter sits exactly at its container's content column** — a
 ````
 
 ```html
-<p><code>
-code
-</code></p>
+<pre><code>code
+</code></pre>
 ```
 
 :::

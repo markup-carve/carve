@@ -347,3 +347,15 @@ inside it. A delimited comment `{% %}` is the same kind of opaque span: it
 hides an insertion closer, and the bracket scan skips it everywhere except an
 image alt, which is a literal slot where `{%` opens nothing. Corpus category
 605 pins the three inputs and their siblings.
+
+## One block-structure rule
+
+On 2026-10-28 the maintainer ruled in markup-carve/carve#3885 that one column
+rule decides block ownership in every container. PART 0 now states it as five
+steps (CARVE-P0-024). Four behaviors went with it, and their rule ids are
+retired: the authored block base (CARVE-P0-004), term ownership
+(CARVE-P2-028), a `+` at an intervening column (CARVE-P9-031 to CARVE-P9-033),
+and the depth- and family-specific lazy rules (CARVE-P0-009, CARVE-P0-021,
+CARVE-P0-022, CARVE-P9-053). An opener indented past its owner's content column
+now opens there, a comment below a container's column closes it, and sibling
+items group by the container they open in.

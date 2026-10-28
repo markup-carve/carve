@@ -55,13 +55,14 @@ for (const depth of [1, 2]) for (const payload of ['%%%', '```', '- marker']) {
 }
 
 for (const depth of [1, 2]) {
-  test(`an overindented bare run does not close a hosted paragraph at depth ${depth}`, () => {
+  test(`an overindented bare run closes a hosted div at depth ${depth}`, () => {
     const quote = '> '.repeat(depth)
     const document = parse(`${quote}- ::: box\n${quote}  a\n${quote}    :::\n- tail\n`)
-    assert.equal(document.blocks.length, 1)
+    assert.equal(document.blocks.length, 2)
     let owner = document.blocks[0]
     for (let n = 0; n < depth; n++) owner = owner.children[0]
-    assert.deepEqual(owner.items[0].blocks[0].children, [{t: 'para', lines: ['a', ':::', '- tail']}])
+    assert.deepEqual(owner.items[0].blocks[0].children, [{t: 'para', lines: ['a']}])
+    assert.deepEqual(document.blocks[1], parse('- tail\n').blocks[0])
   })
   test(`an overindented bare run and following lazy line stay line-block payload at depth ${depth}`, () => {
     const quote = '> '.repeat(depth)
@@ -149,12 +150,12 @@ test('absorbed bare colon runs retain the paragraph owner', () => {
   assert.equal(doc.blocks[0].t, 'quote')
 })
 
-for (const [first, next] of [['9.', '10.'], ['-', '1.']]) {
+for (const [first, next, count] of [['9.', '10.', 2], ['-', '1.', 1]]) {
   test(`a wider sibling marker ends the preceding colon host: ${first} to ${next}`, () => {
     const pad = ' '.repeat(first.length + 1)
     const prefix = `> ${first} ::: box\n> ${pad}text\n> ${next} sib\n> ${pad}::: other\n`
     const blocks = parse(prefix + '- tail\n').blocks
-    assert.equal(blocks.length, 1)
+    assert.equal(blocks.length, count)
     assert.equal(blocks[0].t, 'quote')
   })
 }

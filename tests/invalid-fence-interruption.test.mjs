@@ -93,29 +93,29 @@ for (const run of ['```', '~~~']) test(`valid ${run} metadata retains its title 
 for (const run of ['```', '~~~']) for (const info of ['raw html', '=html "title"']) {
   for (const comment of [' %% hidden', ' %%%\n hidden\n %%%']) {
     const lines = [run + info, 'payload', run]
-    const paragraphs = [{ t: 'para', lines: ['lead'] }, { t: 'para', lines }]
-    test(`invalid ${JSON.stringify(run + info)} is retained in an item after ${JSON.stringify(comment)}`, () => {
+    const tail = { t: 'para', lines }
+    const tailHtml = () => carveToHtml(lines.join('\n') + '\n').trim()
+    test(`invalid ${JSON.stringify(run + info)} leaves an item after ${JSON.stringify(comment)}`, () => {
       const source = ['- lead', comment, ...lines].join('\n') + '\n'
       assert.deepEqual(parse(source).blocks, [{
         t: 'list', task: false, bullet: '-', ord: null, tight: true,
-        items: [{ blocks: paragraphs }],
-      }])
-      assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
+        items: [{ blocks: [{ t: 'para', lines: ['lead'] }] }],
+      }, tail])
+      assert.equal(renderDoc(parse(source)).trim(), '<ul>\n  <li>lead</li>\n</ul>\n' + tailHtml())
     })
-    test(`invalid ${JSON.stringify(run + info)} is retained in a description after ${JSON.stringify(comment)}`, () => {
+    test(`invalid ${JSON.stringify(run + info)} leaves a description after ${JSON.stringify(comment)}`, () => {
       const source = [':: t', ': lead', comment, ...lines].join('\n') + '\n'
       assert.deepEqual(parse(source).blocks, [{
-        t: 'deflist', items: [{ dt: 't' }, { ddBlocks: paragraphs }],
-      }])
-      assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
+        t: 'deflist', items: [{ dt: 't' }, { ddBlocks: [{ t: 'para', lines: ['lead'] }] }],
+      }, tail])
+      assert.equal(renderDoc(parse(source)).trim(),
+        '<dl>\n  <dt>t</dt>\n  <dd>lead</dd>\n</dl>\n' + tailHtml())
     })
-    test(`invalid ${JSON.stringify(run + info)} is retained in a note after ${JSON.stringify(comment)}`, () => {
+    test(`invalid ${JSON.stringify(run + info)} leaves a note after ${JSON.stringify(comment)}`, () => {
       const source = ['[^n]: lead', comment, ...lines].join('\n') + '\n'
       const doc = parse(source)
-      assert.deepEqual(doc.footnoteDefs.get('n'), [
-        { t: 'para', lines: ['lead'] }, { t: 'para', lines: [run + info, 'payload', run] },
-      ])
-      assert.deepEqual(doc.blocks, [])
+      assert.deepEqual(doc.footnoteDefs.get('n'), [{ t: 'para', lines: ['lead'] }])
+      assert.deepEqual(doc.blocks, [tail])
     })
   }
 }

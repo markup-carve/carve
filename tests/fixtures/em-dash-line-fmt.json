@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "clause": "CARVE-P11-077",
+  "rows": [
+    {
+      "id": "paragraph",
+      "source": "foo\n—\nbar\n",
+      "fmt": "foo\n—\nbar\n",
+      "hyphenSpelling": "foo\n ---\nbar\n"
+    },
+    {
+      "id": "list-item",
+      "source": "- foo\n  —\n  bar\n",
+      "fmt": "- foo\n  —\n  bar\n",
+      "hyphenSpelling": "- foo\n   ---\n  bar\n"
+    },
+    {
+      "id": "quote",
+      "source": "> foo\n> —\n> bar\n",
+      "fmt": "> foo\n> —\n> bar\n",
+      "hyphenSpelling": "> foo\n>  ---\n> bar\n"
+    },
+    {
+      "id": "footnote",
+      "source": "x[^1]\n\n[^1]: foo\n  —\n  bar\n",
+      "fmt": "x[^1]\n\n[^1]: foo\n  —\n  bar\n",
+      "hyphenSpelling": "x[^1]\n\n[^1]: foo\n   ---\n  bar\n"
+    },
+    {
+      "id": "en-dash-pair",
+      "source": "foo\n––\nbar\n",
+      "fmt": "foo\n––\nbar\n",
+      "hyphenSpelling": "foo\n ----\nbar\n"
+    },
+    {
+      "id": "tight-em-dash",
+      "source": "a---b\n",
+      "fmt": "a---b\n"
+    },
+    {
+      "id": "spaced-em-dash",
+      "source": "a --- b\n",
+      "fmt": "a --- b\n"
+    }
+  ]
+}

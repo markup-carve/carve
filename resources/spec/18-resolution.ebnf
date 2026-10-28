@@ -132,11 +132,11 @@
       An unused definition is dropped by R2, so its headings are not targets.
    R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS --
       NORMATIVE [CARVE-P9R-002]. A
-      definition line that PART 0's O3 folds into an OPEN PARAGRAPH yields no
+      definition line that PART 0's S4 folds into an OPEN PARAGRAPH yields no
       entry in ANY symbol table -- linkDefs or footnoteDefs. It is
       paragraph text, it renders as the text the author typed, and nothing on it
       defines anything. The container makes no difference: the document level, a
-      quote and a div are one rule, because PART 0 O3 asks only whether a paragraph is
+      quote and a div are one rule, because PART 0 S4 asks only whether a paragraph is
       open and which container holds it.
 
       HOW AN ENGINE MAY DECIDE IT. Collection is a pre-pass over lines, so the

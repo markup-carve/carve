@@ -3,8 +3,8 @@
  * folds into it (PART 9 §10 I2) and opens no item, so a line past the body's
  * column is read in the body: a definition registers (CARVE-P0-020, ruled on
  * carve#3279) and a heading or attribute line opens on its authored base
- * (CARVE-P0-004). A block quote does not rebase, so a definition one column
- * past its marker is text (carve#3280).
+ * (CARVE-P0-004). A definition one column past a quote marker opens in the
+ * quote and registers (carve#3885).
  */
 
 import { test } from 'node:test'
@@ -25,11 +25,11 @@ const CASES = [
   ['an attribute line after a folded bullet', ':: t\n: d\n  - para\n    {#k}\nx\n',
     '<dl><dt>t</dt><dd>d - para</dd></dl><p>x</p>'],
   ['an over-indented definition in a quoted item', '- > para\n  >  [r]: /u\ntail\n\n[r][]\n',
-    '<ul><li><blockquote><p>para [r]: /u tail</p></blockquote></li></ul><p>[r][]</p>'],
+    `<ul><li><blockquote><p>para</p></blockquote></li></ul><p>tail</p>${link}`],
   ['an over-indented footnote definition in a quoted item', '- > para\n  >  [^f]: n\ntail\n',
-    '<ul><li><blockquote><p>para [^f]: n tail</p></blockquote></li></ul>'],
+    '<ul><li><blockquote><p>para</p></blockquote></li></ul><p>tail</p>'],
   ['an over-indented definition in a quoted item in a quote', '> - > para\n>   >  [r]: /u\ntail\n\n[r][]\n',
-    '<blockquote><ul><li><blockquote><p>para [r]: /u tail</p></blockquote></li></ul></blockquote><p>[r][]</p>'],
+    `<blockquote><ul><li><blockquote><p>para</p></blockquote></li></ul></blockquote><p>tail</p>${link}`],
 ]
 
 for (const [what, src, expected] of CASES) {

@@ -10,11 +10,10 @@ for (const [name, body, tail] of [
   ['ordered item with below-column attribute text', '1. para\n   {#x}', 'tail'],
   ['quote with an explicit second line', '> para\n  > more\n  >     {#x}', 'tail'],
   ['quote followed by an unclosed fence', '> para\n    {#x}', '```\nx'],
-]) test(`${name} keeps the next line in the nested paragraph`, () => {
+]) test(`${name} closes the nested paragraph and the next line leaves the description`, () => {
   const html = render(`${body}\n${tail}`)
-  assert.match(html, /\{<span class="tag"><strong>#x<\/strong><\/span>\}/)
-  assert.doesNotMatch(html, /<\/dl>\n<p>tail<\/p>/)
-  assert.doesNotMatch(html, /<\/dl>\n<pre>/)
+  assert.doesNotMatch(html, /\{<span class="tag"><strong>#x<\/strong><\/span>\}/)
+  assert.match(html, tail === 'tail' ? /<\/dl>\n<p>tail<\/p>/ : /<\/dl>\n<pre>/)
 })
 
 test('an attribute at the description body column closes the quote', () => {

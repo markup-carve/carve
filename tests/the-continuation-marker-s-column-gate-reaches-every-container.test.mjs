@@ -54,13 +54,19 @@ const retainedNote =
   '<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1">' +
   '<p>intro</p><p>more<a href="#fnref1" role="doc-backlink" ' +
   'aria-label="Back to reference">↩</a></p></li></ol></section>'
-const retainedDescription = '<dl><dt>term</dt><dd><p>intro</p><p>more</p></dd></dl>'
+// A comment below the body's column closes the body, so the follower leaves it (carve#3885).
+const closedNote =
+  '<p>more</p><p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>' +
+  '<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1">' +
+  '<p>intro<a href="#fnref1" role="doc-backlink" ' +
+  'aria-label="Back to reference">↩</a></p></li></ol></section>'
+const closedDescription = '<dl><dt>term</dt><dd>intro</dd></dl><p>more</p>'
 
 const BAND = [
-  ['a footnote body, below its minimum column', '[^a]: intro\n@\n more\n\nsee[^a]\n', retainedNote],
+  ['a footnote body, below its minimum column', '[^a]: intro\n@\n more\n\nsee[^a]\n', closedNote],
   ['a footnote body, at its minimum column', '[^a]: intro\n@\n  more\n\nsee[^a]\n', retainedNote],
-  ['a description, below its content column', ':: term\n:  intro\n@\n  more\n', retainedDescription],
-  ['a description, one column further below', ':: term\n:  intro\n@\n more\n', retainedDescription],
+  ['a description, below its content column', ':: term\n:  intro\n@\n  more\n', closedDescription],
+  ['a description, one column further below', ':: term\n:  intro\n@\n more\n', closedDescription],
   ['a block quote, with the quoted paragraph closed', '> intro\n>\n@\n  more\n'],
   ['a list item, the container that always held the gate', '- intro\n@\n  more\n'],
 ]
@@ -68,7 +74,7 @@ const BAND = [
 for (const [what, src, retained] of BAND) {
   test(retained === undefined
     ? `a refused marker renders as text in ${what}`
-    : `a low comment retains the follower beyond the marker gate in ${what}`, () => {
+    : `a low comment reads the follower differently from the marker in ${what}`, () => {
     if (retained !== undefined) {
       assert.equal(html(comment(src)), retained)
       assert.notEqual(html(marker(src)), html(comment(src)))

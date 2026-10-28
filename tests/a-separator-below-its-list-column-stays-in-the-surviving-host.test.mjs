@@ -106,7 +106,7 @@ test('a document quote ends a description before a later fence closer', () => {
 
 test('a document definition ends a description before a later fence closer', () => {
   const html = renderDoc(parse(':: term\n: detail\n  ```\n  code\n[r]: /url\n  ```\nafter\n'))
-  assert.doesNotMatch(html, /<pre><code>/)
+  assert.match(html, /<\/dl>\n<pre><code>after\n<\/code><\/pre>$/)
   assert.match(html, /<\/dl>/)
 })
 

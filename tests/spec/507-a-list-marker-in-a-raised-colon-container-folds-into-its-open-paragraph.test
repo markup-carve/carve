@@ -44,10 +44,10 @@ A list marker in a raised colon container folds into its open paragraph
 <ul>
   <li>head
     <div>
-      <p>a
-- second</p>
+      <p>a</p>
     </div>
   </li>
+  <li>second</li>
 </ul>
 ```
 
@@ -61,10 +61,10 @@ A list marker in a raised colon container folds into its open paragraph
 <ul>
   <li>head
     <aside class="admonition note" aria-label="Note">
-      <p>a
-- second</p>
+      <p>a</p>
     </aside>
   </li>
+  <li>second</li>
 </ul>
 ```
 
@@ -277,13 +277,11 @@ A list marker in a raised colon container folds into its open paragraph
  - second
 .
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <p>a</p>
     </div>
   </li>
-</ul>
-<ul>
-  <li>second</li>
+  <li><p>second</p></li>
 </ul>
 ```

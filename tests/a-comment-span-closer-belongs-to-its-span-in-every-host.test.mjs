@@ -203,7 +203,7 @@ test('GUARD: a `%%` line below the column is unmoved in every host', () => {
   // carve#618's rule, the one the fence form was brought into line with. It is
   // not a fence, so it opens and closes nothing and no span can be open at it.
   assert.equal(html(':: t\n:  head\n%%\n'), '<dl>\n  <dt>t</dt>\n  <dd>head</dd>\n</dl>')
-  assert.equal(html('- head\n%% c\ntail\n'), '<ul>\n  <li>head\n    tail\n  </li>\n</ul>')
+  assert.equal(html('- head\n%% c\ntail\n'), '<ul>\n  <li>head</li>\n</ul>\n<p>tail</p>')
 })
 
 test('GUARD: a code fence and a colon fence in the same geometry are untouched', () => {

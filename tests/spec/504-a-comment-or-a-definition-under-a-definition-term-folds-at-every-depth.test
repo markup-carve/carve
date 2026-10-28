@@ -6,10 +6,9 @@ A comment or a definition under a definition term folds at every depth
   more
 .
 <dl>
-  <dt>c
-
-  more</dt>
+  <dt>c</dt>
 </dl>
+<p>more</p>
 ```
 
 ```
@@ -19,10 +18,9 @@ A comment or a definition under a definition term folds at every depth
 .
 <blockquote>
   <dl>
-    <dt>c
-
-  more</dt>
+    <dt>c</dt>
   </dl>
+  <p>more</p>
 </blockquote>
 ```
 
@@ -36,10 +34,9 @@ A comment or a definition under a definition term folds at every depth
 <ul>
   <li>item
     <dl>
-      <dt>c
-
-  more</dt>
+      <dt>c</dt>
     </dl>
+    more
   </li>
 </ul>
 ```
@@ -56,10 +53,9 @@ A comment or a definition under a definition term folds at every depth
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-
-  more</dt>
+      <dt>c</dt>
     </dl>
+    <p>more</p>
   </dd>
 </dl>
 ```
@@ -72,10 +68,9 @@ A comment or a definition under a definition term folds at every depth
   more
 .
 <dl>
-  <dt>c
-
-  more</dt>
+  <dt>c</dt>
 </dl>
+<p>more</p>
 ```
 
 ```
@@ -87,10 +82,9 @@ A comment or a definition under a definition term folds at every depth
 .
 <blockquote>
   <dl>
-    <dt>c
-
-  more</dt>
+    <dt>c</dt>
   </dl>
+  <p>more</p>
 </blockquote>
 ```
 
@@ -106,10 +100,9 @@ A comment or a definition under a definition term folds at every depth
 <ul>
   <li>item
     <dl>
-      <dt>c
-
-  more</dt>
+      <dt>c</dt>
     </dl>
+    more
   </li>
 </ul>
 ```
@@ -128,10 +121,9 @@ A comment or a definition under a definition term folds at every depth
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-
-  more</dt>
+      <dt>c</dt>
     </dl>
+    <p>more</p>
   </dd>
 </dl>
 ```
@@ -142,10 +134,9 @@ A comment or a definition under a definition term folds at every depth
 :: c
   [r]: /u
 .
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <dl>
-  <dt>c
-  [r]: /u</dt>
+  <dt>c</dt>
 </dl>
 ```
 
@@ -155,11 +146,10 @@ A comment or a definition under a definition term folds at every depth
 > :: c
 >   [r]: /u
 .
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <blockquote>
   <dl>
-    <dt>c
-  [r]: /u</dt>
+    <dt>c</dt>
   </dl>
 </blockquote>
 ```
@@ -172,12 +162,11 @@ A comment or a definition under a definition term folds at every depth
   :: c
     [r]: /u
 .
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <ul>
   <li>item
     <dl>
-      <dt>c
-  [r]: /u</dt>
+      <dt>c</dt>
     </dl>
   </li>
 </ul>
@@ -191,14 +180,13 @@ A comment or a definition under a definition term folds at every depth
   :: c
     [r]: /u
 .
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <dl>
   <dt>a</dt>
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-  [r]: /u</dt>
+      <dt>c</dt>
     </dl>
   </dd>
 </dl>
@@ -210,11 +198,18 @@ x[^n]
 :: c
   [^n]: y
 .
-<p>x[^n]</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <dl>
-  <dt>c
-  [^n]: y</dt>
+  <dt>c</dt>
 </dl>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ```
@@ -223,13 +218,20 @@ x[^n]
 > :: c
 >   [^n]: y
 .
-<p>x[^n]</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <blockquote>
   <dl>
-    <dt>c
-  [^n]: y</dt>
+    <dt>c</dt>
   </dl>
 </blockquote>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ```
@@ -240,15 +242,22 @@ x[^n]
   :: c
     [^n]: y
 .
-<p>x[^n]</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <ul>
   <li>item
     <dl>
-      <dt>c
-  [^n]: y</dt>
+      <dt>c</dt>
     </dl>
   </li>
 </ul>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ```
@@ -259,17 +268,24 @@ x[^n]
   :: c
     [^n]: y
 .
-<p>x[^n]</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <dl>
   <dt>a</dt>
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-  [^n]: y</dt>
+      <dt>c</dt>
     </dl>
   </dd>
 </dl>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ```
@@ -377,15 +393,13 @@ x[^n]
     %%%
     [r]: /u
 .
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <dl>
   <dt>a</dt>
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-
-  [r]: /u</dt>
+      <dt>c</dt>
     </dl>
   </dd>
 </dl>
@@ -398,9 +412,9 @@ x[^n]
 <ul>
   <li>
     <dl>
-      <dt>c
-  # H</dt>
+      <dt>c</dt>
     </dl>
+    <h1 id="H">H</h1>
   </li>
 </ul>
 ```
@@ -412,16 +426,22 @@ x[^n]
     %% note
     [^n]: y
 .
-<p>x[^n]</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <ul>
   <li>
     <dl>
-      <dt>c
-
-  [^n]: y</dt>
+      <dt>c</dt>
     </dl>
   </li>
 </ul>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ```
@@ -433,16 +453,15 @@ x[^n]
     > text
     [r]: /u
 .
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <dl>
   <dt>a</dt>
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-  &gt; text
-  [r]: /u</dt>
+      <dt>c</dt>
     </dl>
+    <blockquote><p>text</p></blockquote>
   </dd>
 </dl>
 ```

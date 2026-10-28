@@ -41,3 +41,6 @@ rust/620-generated-container-documents-16  markup-carve/carve-rs#3383, footnote 
 rust/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
+js/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  markup-carve/carve-js#3874, the pinned writer drops indentation that rule A now reads
+php/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  markup-carve/carve#3885, rule A rollout pending in carve-php
+rust/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  markup-carve/carve#3885, rule A rollout pending in carve-rs

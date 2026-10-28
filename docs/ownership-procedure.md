@@ -4,18 +4,17 @@ description: Read Carve 0.1 container ownership as one procedure, with the claus
 
 # Container ownership procedure
 
-PART 0 of the grammar states container ownership as one procedure: four steps,
-a transition table and three named exceptions. This page follows that order and
-names the clauses each step decides. It adds no rule. The source clauses in
+PART 0 of the grammar states container ownership as one procedure: five steps,
+S1 to S5, and a transition table. This page follows that order and names the
+clauses each step decides. It adds no rule. The source clauses in
 `resources/spec/01-layout.ebnf` are authoritative, and the
 [machine-readable map](https://github.com/markup-carve/carve/blob/main/resources/spec/ownership-procedure.json)
 lists the Part 0 rule IDs with the checker helpers that implement each step.
 Those helpers are implementation entry points, not a public parser API.
 
-Some examples and historical material cite the earlier step names: S1 is O1,
-S2 is O1's opaque-body rule, S3 is O4 on a line that supplied every prefix,
-S4 is O2 to O4 on a line that did not, and S5 is O4's push. The layout grammar
-uses O1 to O4.
+Older examples cite the retired step names O1 to O4 and the exceptions X1 to
+X3. Ruling [#3885](https://github.com/markup-carve/carve/issues/3885) removed the
+exceptions; the steps map to S1 to S5 below.
 
 ## Normalize source
 
@@ -25,59 +24,61 @@ result. Rules: CARVE-P0-001, CARVE-P0-002 and CARVE-P0-023.
 
 ## Block structure decision order
 
-CARVE-P0-024 gives the order for each line: identify blanks, match prefixes,
-let an opaque body take its payload, then classify comments. For a visible
-line, select an owner, recognize its form in that owner's coordinates and
-decide interruption or lazy continuation. If it does not fold, close missed
-frames and classify it in the owner. The `parse` entry point runs these
-decisions. Rule: CARVE-P0-024.
+CARVE-P0-024 states the rule: a container's content column is fixed by the line
+that opens it, a later line belongs to the deepest open container whose content
+column it reaches, and otherwise it continues an open paragraph lazily or closes
+containers. Each line runs S1 to S5 once, in order, and T applies at each
+boundary. No family, depth or marker adds a second way to belong. The `parse`
+entry point runs these decisions and `ownLines` walks the frames.
+Rule: CARVE-P0-024.
 
-## O1 Strip prefixes
+## S1 Payload
 
-Walk the open containers from the document inward and consume each one's prefix:
-a `>` for a quote, indentation to the content column for a list item, a
-definition body or a footnote body. Stop at the first prefix the line does not
-supply. Indentation never supplies a quote marker, and a quote marker written
-after a blank does not inherit the columns of a quote that ended.
+An open code, raw or comment fence tests the line against its closer first. A
+nonblank line that misses the fence's owner ends the fence. Comments are then
+classified before S3 reads the visible residue, but a comment is still an
+ordinary line for ownership: below a container's content column it closes that
+container. Rule: CARVE-P0-005.
 
-An opaque body (code, raw, a matched comment span) takes its line before any
-other step. If the line misses the prefix of the body's host, the body does not
-get it. Comments are then classified as layout-transparent tokens, before an
-owner is selected. Rules: CARVE-P0-005, CARVE-P0-013 and CARVE-P0-019.
+## S2 Owner
 
-## O2 Select the owner
+Walk the open frames from the outside in. A quote consumes its marker; any other
+frame consumes indentation up to its content column. The owner is the deepest
+frame the line reaches. Indentation never supplies a quote marker, a blank ends
+an unmarked quote, and a later quote marker does not inherit the columns of a
+quote that ended. A lone `+` reaches only the marker column of an open list
+item, quote, definition body or footnote body (CARVE-P9-067). Marker bodies take
+their content column from CARVE-P9-083. Rules: CARVE-P0-019, CARVE-P0-020 and
+CARVE-P9-083.
 
-The innermost frame whose prefix the line supplied owns it. A line at or past
-an indentation container's content column supplied the prefix. A line below it
-did not: its owner is the nearest surviving ancestor whose content column it
-reaches. A definition registers in the deepest container whose content column
-it reaches, and a container it does not reach neither owns nor withholds it.
-Rules: CARVE-P0-010 and CARVE-P0-020.
+## S3 Form
 
-## O3 Fold into the open paragraph
+Classify the rest of the line in the owner's coordinates. An opener past the
+owner's content column opens in the owner at every level, the document and
+quotes included, and every line the new block owns moves left by the opener's
+indentation. A block at the content column ends the paragraph above it and
+leaves the container open, a definition registers only in the owner S2 selected,
+and marker-attached attributes add no width to the content column. A term has no
+ownership of its own. Rules: CARVE-P0-008, CARVE-P0-010 and CARVE-P0-011.
 
-Follow the last child container to its deepest leaf. If that leaf has an open
-paragraph and its continuation claim, a noninterrupting line folds into it
-whatever prefixes it missed. T supplies the paragraph state; an ancestor's
-earlier paragraph cannot supply a missing claim. Recognition uses O2's owner,
-coordinates and scope, including the fence's valid metadata and closer guard.
-A new paragraph at an enclosing list item's content column stores its own
-claim after an ended descendant; it can take the next lazy line.
-A fold closes nothing. Definition-term continuation follows CARVE-P2-028.
-Rules: CARVE-P0-006, CARVE-P0-007, CARVE-P0-009, CARVE-P0-014, CARVE-P0-015,
-CARVE-P9-084, CARVE-P0-017 and CARVE-P9-083.
+## S4 Lazy
 
-## O4 Classify in the owner
+A line that missed a frame folds into the deepest open paragraph, found by
+following the last child container to its leaf, when the line is not blank and
+its form does not interrupt. The test is the same at every depth and in every
+family. Comments, attributes and definitions interrupt, so a below-column
+invisible line closes the container (CARVE-P9-051, CARVE-P9-052). A heading
+leaves no paragraph open. A fold closes nothing. Rules: CARVE-P0-006,
+CARVE-P0-012 and CARVE-P0-015.
 
-Otherwise the frames deeper than the owner close and the line is read in the
-owner: a blank, a block opener, a list marker or a new paragraph. A list item,
-a definition body and a footnote body read a recognized opener at or past their
-content column, on the base it was written at. The document and a quote need
-the exact column. A block at the content column ends the paragraph above it and
-leaves the container open. Marker-attached attributes add no width to the
-content column. The `+` continuation marker attaches one complete block under
-CARVE-P9-033 and CARVE-P9-067. Rules: CARVE-P0-004, CARVE-P0-008, CARVE-P0-011
-and CARVE-P0-012.
+## S5 Apply
+
+Otherwise close every missed frame and apply the form in the owner. A container
+opener pushes a frame, a leaf opener starts a new leaf, and ordinary text starts
+or extends a paragraph. Marker-line content is the container's first block. A
+fenced body is not a paragraph, and neither fence kind nor container kind
+changes reach. Colon fences share one frame (CARVE-P9-084). Rules:
+CARVE-P0-007, CARVE-P0-013, CARVE-P0-014, CARVE-P0-017 and CARVE-P9-084.
 
 ## T Apply the transition
 
@@ -85,29 +86,8 @@ Once the line has an owner, the boundary it formed sets two separate facts in
 every frame that contains it: whether the frame stays open, and whether a
 paragraph is open. An ordinary line opens or continues a paragraph. Rows marked
 `deepest P` or `deepest attached P` forward the corresponding leaf's state; an
-empty or closed container supplies no open leaf. The rows that close a paragraph
-leave no continuation claim. A surviving container alone cannot admit a lazy
-line. Rule: CARVE-P0-003.
-
-## X1 to X3 Named exceptions
-
-X1, comment retention: a line comment or matched comment span consumed below
-the content column can retain a list item, definition body or footnote body
-when a claim or earlier retention admits it. A blank or an at/above-column
-comment clears retention. A noninterrupting follower uses the retained owner
-to start a paragraph; retention itself supplies no paragraph claim. X1 defines
-the limits, including sibling markers and enclosing-context comment fences.
-CARVE-P9-053 links comment visibility to X1; CARVE-P9-051 and CARVE-P9-052
-cover the other invisible lines.
-
-X2, the quote band: under a quote holding an open paragraph, a line supplying
-no `>` folds if it is a list marker at any column, or a code/raw fence, heading,
-thematic break or table row away from the host's content column.
-Rule: CARVE-P0-021.
-
-X3, the opaque marker-line quote: when a code or raw fence opens in a quote on
-an item's marker line, an over-indented follower stays text while that fence is
-open or is the quote's last block. Rule: CARVE-P0-022.
+empty or closed container supplies no open leaf. A surviving container alone
+cannot admit a lazy line. Rule: CARVE-P0-003.
 
 ## Evidence
 

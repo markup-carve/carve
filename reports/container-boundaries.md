@@ -6,11 +6,11 @@ The follow-up resolves the structural and continuation-marker disagreements from
 
 The expected results follow the written rules, with 89 shared regression fixtures in [container-boundaries.json](../tests/fixtures/container-boundaries.json).
 
-- A list at the start of a quote carries its first block's continuation state. A heading, table, comment, or definition leaves no ordinary-line claim for an unmarked follower. The follower belongs outside the quote. An explicit quote marker and a list marker folded into an existing paragraph are controls. This follows PART 0 S4 and CARVE-P0-007/009.
+- A list at the start of a quote carries its first block's continuation state. A heading, table, comment, or definition leaves no ordinary-line claim for an unmarked follower. The follower belongs outside the quote. An explicit quote marker and a list marker folded into an existing paragraph are controls. This follows PART 0 S4 and CARVE-P0-007.
 - A fence at the start of a nested quote leaves no paragraph open. Its unmarked follower closes the unmatched containers. Marker-line lists retain their separate term and fence folding rules; the fixtures include those controls.
 - List markers continue an open description paragraph under §10 I2 and the `definition_body` production. The spec and Rust had treated the executable spec's marker exclusion as an additional ownership rule. That exclusion has been removed. A blank before the marker still ends the body.
-- A heading, table, or thematic break on an ordered item's marker line leaves no paragraph to continue below its content column. Rust now applies the same collection floor as the other engines, following CARVE-P0-007/009.
-- A rejected `+` attachment contributes no synthetic blank to a preceding fence. A successful attachment begins a separate block in the host, after any unfinished code or raw fence. A marker at the fence's content column is payload. CARVE-P9-033 now states this boundary explicitly.
+- A heading, table, or thematic break on an ordered item's marker line leaves no paragraph to continue below its content column. Rust now applies the same collection floor as the other engines, following CARVE-P0-007.
+- A rejected `+` attachment contributes no synthetic blank to a preceding fence. A successful attachment begins a separate block in the host, after any unfinished code or raw fence. A marker at the fence's content column is payload. PART 9 §17 L3 states this boundary.
 
 The last decision corrects one existing spec regression expectation that placed an attached paragraph inside code. Rust's three description-marker expectations and JavaScript's quoted-table description expectation were also updated to match the written rules.
 

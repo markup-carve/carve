@@ -658,12 +658,9 @@
 
       (b) A MARKER KEPT IN A LIST ITEM KEEPS ITS COLUMN. A region marker that
           is a list item's child, adjacent under (a) to the paragraph or block
-          image above it in that item (or to a marker this rule placed), and
-          whose recorded start column is at or left of the item's own start
-          column, is written at the item's MARKER column, not its content
-          column. PART 0 X1 reads it back into the same item: the paragraph's
-          claim admits it, and the retention it sets admits the next such
-          marker.
+          image above it in that item (or to a marker this rule placed),
+          is written at the item's content column: at its marker column it
+          would close the item (PART 0 S2, S5).
 
       (c) A HOISTED DEFINITION DOES NOT CROSS A MARKER. A link reference or
           footnote definition with a region marker anywhere below its source
@@ -696,6 +693,34 @@
       necessarily the column it was authored at, and a marker in a footnote
       body keeps the body's column. Neither moves the marker out of its
       container, so neither changes which lines lie between the markers.
+
+   7g. A PARAGRAPH LINE OF DASHES ALONE IS WRITTEN WITH THE GLYPH --
+      NORMATIVE [CARVE-P11-077]. A dash `smart_punctuation` node (`em_dash`,
+      `en_dash`) is written as its source run (§5), except on one line. When
+      a line of paragraph text, after its container prefix, would consist only
+      of dash nodes whose runs together read as a `thematic_break` (PART 2),
+      the writer writes every dash node on that line as its glyph: `—` for an
+      em dash, `–` for an en dash. The tree is unchanged, because §1 compares
+      a dash node equal to a text node holding its glyph.
+
+      INDENTATION IS NOT AN ESCAPE FOR THIS LINE. Under PART 0 S3 an opener
+      indented past its owner's content column still opens, so ` ---` is a
+      thematic break at any indentation, and `\---` reads as an escaped hyphen
+      followed by an en dash. No hyphen spelling keeps the line a paragraph
+      line, so the glyph is the smallest departure CARVE-P11-002 permits.
+
+      A paragraph holding `foo`, a line of one em dash and `bar`, in any
+      container, is written
+
+        foo
+        —
+        bar
+
+      THE RULE READS THE EMITTED LINE, NOT THE NODE. A dash run beside other
+      characters on its line opens no break and keeps the author's spelling:
+      `a---b` and `a --- b` are written as authored, and so is `-- --`. A line
+      block reads no thematic break (PART 9 §23), so a line block's `---` line is
+      written `---`. `tests/fixtures/em-dash-line-fmt.json` pins the rows.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It answers to a Markdown

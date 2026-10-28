@@ -8,11 +8,10 @@ See [r][].
 .
 <blockquote>
   <ul>
-    <li>x
-[r]: /url</li>
+    <li>x</li>
   </ul>
 </blockquote>
-<p>See [r][].</p>
+<p>See <a href="/url">r</a>.</p>
 ```
 
 ```
@@ -39,9 +38,8 @@ See [r][].
 
 See [r][].
 .
-<blockquote><p>x
-[r]: /url</p></blockquote>
-<p>See [r][].</p>
+<blockquote><p>x</p></blockquote>
+<p>See <a href="/url">r</a>.</p>
 ```
 
 ```
