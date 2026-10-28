@@ -644,6 +644,16 @@
    alias for this rule: enabling or suppressing it selects `heading-level-skip`,
    and every finding reports `heading-level-skip`. Remove the alias at the next
    minor release; two findings for one jump are never emitted.
+   PROPOSED CONTINUATION LINT AID (NON-NORMATIVE). A visually lone
+   off-column `+` near an open marker host may report its tab-expanded column
+   and the host marker column. Offer explicit alignment of the marker and its
+   follower, or escaping the `+` as text. Alignment must preview a
+   whole-document parse and HTML change and require an intentional action.
+   For a recognized refusal, `continuation-marker-refused` should name the
+   first failed gate: blank, end, sibling or follower column, with the eligible
+   column. Fence payload and harmless literals without a plausible host are
+   quiet.
+
    AUTHORING LINT SUPPRESSION. A recognized Carve line comment whose content
    begins with `carve-lint-disable-line`, optionally followed by rule ids
    suppresses those ids on that physical source line. `carve-lint-disable-next-line`

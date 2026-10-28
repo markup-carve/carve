@@ -4926,6 +4926,16 @@ EOF = (* end of file *) ;
    alias for this rule: enabling or suppressing it selects `heading-level-skip`,
    and every finding reports `heading-level-skip`. Remove the alias at the next
    minor release; two findings for one jump are never emitted.
+   PROPOSED CONTINUATION LINT AID (NON-NORMATIVE). A visually lone
+   off-column `+` near an open marker host may report its tab-expanded column
+   and the host marker column. Offer explicit alignment of the marker and its
+   follower, or escaping the `+` as text. Alignment must preview a
+   whole-document parse and HTML change and require an intentional action.
+   For a recognized refusal, `continuation-marker-refused` should name the
+   first failed gate: blank, end, sibling or follower column, with the eligible
+   column. Fence payload and harmless literals without a plausible host are
+   quiet.
+
    AUTHORING LINT SUPPRESSION. A recognized Carve line comment whose content
    begins with `carve-lint-disable-line`, optionally followed by rule ids
    suppresses those ids on that physical source line. `carve-lint-disable-next-line`
@@ -5960,67 +5970,18 @@ EOF = (* end of file *) ;
          unchanged -- only the tight/loose RENDERING differs (djot renders
          these loose). Pinned by corpus compact-list-blocks.
       L3 CONTINUATION MARKER `+` -- Carve addition.
-         A lone `+` at an open container's marker column attaches one following
-         block that starts at that same column. A lone `+` directly after one
-         or more quote prefixes is a marker for that quote level. Each `>`
-         takes one space, as on every quote line: `> +` and `> > +` are
-         markers, while `>+`, `>>+` and `>> +` are not quote lines and read
-         as text, and `> >+` is a quote holding the text `>+`. Check the `+`
-         before closing containers by column, and let it interrupt an open
-         paragraph. For a separate-line marker, a follower at another column
-         refuses attachment and follows ordinary column rules; text left of
-         the column may still fold lazily into an open paragraph. A `+` at no open marker column
-         is ordinary text at its own column, or payload when an open fence
-         claims it.
-         At an open list item's marker column, a `+` followed by a list item
-         at that column attaches nothing: that item is a sibling and the `+`
-         is ordinary text at its own column.
-         A refused separate-line `+` is never dropped. It folds into the
-         item's open paragraph when that
-         paragraph can continue. Otherwise, including after a blank line, a
-         fence, or a closed block, it forms its own one-line paragraph.
-         A following list item may interrupt that paragraph. This is the only
-         exception to the rule that list items cannot interrupt paragraphs.
-         The `continuation-marker-refused` lint reports every refusal.
-         An unprefixed `+` left of a quote's marker column cannot reach into
-         that quote.
-         Measure columns after tab expansion under PART 7.
-         A lone `+` after a table row in an item follows this marker rule;
-         `+ text` remains a table continuation row under §5 T6.
-         An ordered item has no task marker, so `1. [ ] +` holds the text
-         `[ ] +` and opens no first-block continuation.
-         A nested task item's marker column is its bullet column, not the
-         checkbox column (CARVE-P0-008).
-         With several openers on one line (`- - +`, `- - [ ] +`, `- > +`,
-         `> - +`, `1. - +`), a non-list block at document column 0 or that
-         line's column enters the innermost container opened there.
-
          CONTINUATION-MARKER REACHES ITS OWN COLUMN -- NORMATIVE [CARVE-P9-031].
-         A marker attaches one block starting at its own marker column.
-         For a separate-line marker, a block at another column follows
-         ordinary column ownership.
-         A marker at a nested item's column can end that item's open fence;
-         a `+` at the fence content column remains payload.
+         A lone `+` at an open container's marker column gives it the next
+         block starting at that column. Quote prefixes select their quote level
+         (`> +`, not `>+`). An opener-line `+` gives the innermost new container
+         its first block under L4. Expand tabs before comparing columns; fence
+         payload stays payload.
 
          ONE IS A COUNT AND THE BOUNDARY IS NOT -- NORMATIVE [CARVE-P9-032].
-         The blank line, sibling marker or further `+` above is the EXTENT of
-         that single block, which may be many lines long -- a list, a quote,
-         a fenced block. It is not a run boundary, and the marker does not
-         attach everything up to it. So
-
-             - a
-             +
-             para
-             > q
-
-         attaches `para` and leaves the quote OUTSIDE the item, and a second
-         attached block takes a second marker:
-
-             - a
-             +
-             para
-             +
-             > q
+         An accepted marker interrupts an open paragraph. Its grant ends at the
+         attached block's boundary, even when that block spans several lines.
+         A sibling list item cannot be attached. A refused `+` follows ordinary
+         host, column and paragraph ownership.
 
          THE MARKER IS ONE OPERATION IN EVERY CONTAINER -- NORMATIVE [CARVE-P9-033].
          The clause above is the WHOLE definition of `+`:
@@ -6055,62 +6016,25 @@ EOF = (* end of file *) ;
            is a quote holding a paragraph and an inner quote.
 
          EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM --
-         NORMATIVE [CARVE-P9-067]. The four containers above take the second
-         marker place in L3: `- +`, `: +`, `> +` and `[^a]: +` open a body whose
-         content is one following block, as everywhere else in L3. For a
-         list item's `- +`, the next block in the item's ownership is that one
-         attachment wherever it starts, including the item's content column.
-         Its own starting column sets its extent; the item ends at that block's
-         boundary (CARVE-P9-032). A line in an enclosing item's column still
-         belongs to that enclosing item. A later quote, heading, or thematic
-         break begins outside the attached item. A sibling list item stays a
-         sibling. For a first-block quote on a line
-         of stacked openers, the line's own column is its first marker's
-         column, so a block at an inner list opener's column (column 2 below
-         `- - > +`) is at an intervening column: the `+` is refused and reads
-         like a letter there. The column of the quote that owns the `+`
-         stays eligible at every stacking depth, next to column 0 and the
-         line's own column: `- > +` / `  b` and `- - > +` / `    b` both attach
-         `b` to the quote. The columns are raw line columns, so below
-         `- > > +` a `> q` at column 0 attaches and, being a quote, nests in
-         the innermost quote, while `  > q` at column 2 is at an intervening
-         column and `q` folds into the refused `+`. The first-block pull takes
-         precedence over a host quote ending at an unprefixed line (§10 I5):
-         below `> - > +` a heading or a table row at column 0 attaches to the
-         inner quote, as a paragraph line does (CARVE-P9-033). A list item at
-         a column owned by an open list is always a sibling; the first-block
-         form pulls only non-list blocks from column 0. Stacked openers on one
-         line keep the innermost owner.
+         NORMATIVE [CARVE-P9-067]. `- +`, `: +`, `> +` and `[^a]: +` each
+         offer one block to the innermost new container. The marker and rendered
+         element differ; the attachment operation does not. A list item takes
+         its next owned block, including one at its content column, and ends
+         at that block's boundary. A block in an enclosing item's column stays
+         with that item. A sibling list item stays a sibling. Other first-block
+         hosts accept a non-list block at document column zero or their own
+         marker column; an intervening column refuses the marker. The pull
+         precedes an unprefixed line's ordinary closure of a host quote (§10 I5).
 
-         With no eligible block after it (the end of the input, a blank line,
-         or for a column-bound host a line at an ineligible column), the `+` is
-         refused. In a list
-         item's first-block form, that refused `+` leaves the item empty and is
-         not text; the lint still reports it.
-         In a list item or definition description it adds no block, and a
-         follower at another column follows ordinary column rules. Ordinary
-         ownership decides where its text lands: an open code or raw fence
-         claims `+` at its content column as payload, and a `+` at another
-         column remains text. In a block
-         quote and a footnote body a first-block `+` is ordinary text, while a
-         `+` later in the body with nothing after it is also text (L3):
-         `> +` is a quote holding the paragraph `+`, `[^a]: +` is a note holding
-         the text `+`, and a line at another column lands wherever the
-         ordinary column rules put it. So
-
-             > +
-             flush
-
-         is a quote holding the paragraph `flush`, and
-
-             [^a]: +
-             flush
-
-         is a note holding the paragraph `flush`. Over a column-2 line the note
-         holds the single paragraph `+ flush` instead: that line is at the
-         body's own column and folds into the paragraph the `+` opened. A nested
-         quote needs no rule of its own, because in `> > +` the inner quote's
-         first line is the lone `+`.
+         With no eligible block, a first-block `+` is refused. In a list item
+         or description it leaves that body empty; in a quote or footnote body
+         it remains text. A separate-line refusal folds into an open paragraph
+         when that paragraph can continue, or forms its own one-line paragraph.
+         A following list item may interrupt that paragraph (§10 I2). The
+         `continuation-marker-refused` lint reports a recognized refusal.
+         A marker at its host column ends an open code, raw or colon fence;
+         a `+` at the fence content column stays payload. A table `+ text` row
+         follows §5 T6, rather than this container rule.
 
       L5 NOT CONTINUATION CONTAINERS (a lone `+` keeps its plain meaning):
          - fenced containers (admonition / generic div / line block) --
@@ -9769,6 +9693,13 @@ EOF = (* end of file *) ;
       item's content column that keeps it in that item. No blank line is
       added. For `- foo` followed by `  1. +`, an outer quote starts at
       column 3 (`   > b`): column 2 attaches it to `1.`.
+
+   PROPOSED FORMATTER AID (NON-NORMATIVE). Keep each separate-line marker
+      at its owner's marker column, including the selected quote prefix level.
+      Preserve `- +` unless a simpler spelling passes the whole-document parse,
+      render and idempotence checks in §1. Keep an off-column literal `+` as
+      text; escape it if moving it would turn it into a marker. Ordinary `fmt`
+      does not perform a meaning-changing alignment.
 
    7e2. A FENCE A DEDENT ENDED IN A NESTED CHILD IS WRITTEN CLOSED -- NORMATIVE [CARVE-P11-074].
       A fenced code block that ended because a line below its nested list

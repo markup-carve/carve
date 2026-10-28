@@ -600,6 +600,13 @@
       added. For `- foo` followed by `  1. +`, an outer quote starts at
       column 3 (`   > b`): column 2 attaches it to `1.`.
 
+   PROPOSED FORMATTER AID (NON-NORMATIVE). Keep each separate-line marker
+      at its owner's marker column, including the selected quote prefix level.
+      Preserve `- +` unless a simpler spelling passes the whole-document parse,
+      render and idempotence checks in §1. Keep an off-column literal `+` as
+      text; escape it if moving it would turn it into a marker. Ordinary `fmt`
+      does not perform a meaning-changing alignment.
+
    7e2. A FENCE A DEDENT ENDED IN A NESTED CHILD IS WRITTEN CLOSED -- NORMATIVE [CARVE-P11-074].
       A fenced code block that ended because a line below its nested list
       item's column closed that item is written with its closer at the
