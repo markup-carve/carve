@@ -1359,6 +1359,7 @@ index: examples/edge-cases/index.md
   invalid-body-row-metadata-leaves-one-table-body
   a-heading-inside-the-intervening-band-stays-description-text
   a-below-column-term-stays-in-the-footnote-paragraph
+  a-closed-footnote-child-releases-a-flush-line
 
 [edge-footnote-heading-index] Visible footnote headings
 > Used footnote headings enter reference lookup; unused definitions do not.

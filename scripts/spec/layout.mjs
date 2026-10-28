@@ -1138,7 +1138,11 @@ function paragraphOpenSince(bodyLines, from) {
   const tail = commentTailSince(bodyLines, from)
   let last = tail.length - 1
   while (last >= 0 && tail[last].trim() === '') last--
-  return last >= 0 && bodyLeavesParagraphOpen(tail)
+  return last >= 0 && noteBodyParagraphOpen(tail)
+}
+
+function noteBodyParagraphOpen(bodyLines) {
+  return bodyLeavesParagraphOpen(normalizeAuthoredBodyBases(bodyLines, {}, true))
 }
 
 function commentTailSince(bodyLines, from) {
@@ -3759,10 +3763,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           afterComment = afterCommentTransition(false, {})
           const content = dedent(lines[i], FOOTNOTE_BODY_COLUMN)
           bodyLines.push(content)
-          // Keep the claim state on the line just consumed. Rechecking every
-          // earlier body line after each continuation would rescan long notes.
-          lazyParagraphOpen = endsWithAuthoredInterrupter(content)
-            ? false : foldablePlainLine(content) ? true : null
+          // The body reader can rebase this line before recognizing its block.
+          // Check the claim only when a below-column follower asks for it.
+          lazyParagraphOpen = null
           pullPending = false
           i++
         } else if (isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {
@@ -6420,7 +6423,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           return false
         }
       }
-      return body.at(-1)?.trim() !== '' && bodyLeavesParagraphOpen(body)
+      return body.at(-1)?.trim() !== '' && noteBodyParagraphOpen(body)
     }
     // §11 N1's hard boundary fired: this item is the list's last. Set where the
     // run is measured, acted on after the item is pushed.
