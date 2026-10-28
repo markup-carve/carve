@@ -3928,7 +3928,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // is dropped before the soft break (PART 2, NO TRAILING WHITESPACE,
             // which names a definition term). Leading over-indent is a separate
             // question and is preserved by the branch above.
-            dt += '\n' + cc.replace(/[ \t]+$/, '')
+            const sourceIndent = sourceColumns && descriptionOwnerColumn !== null &&
+              !cur.startsWith(LAZY) && sourceColumn > sourceTermCol
+              ? Math.max(0, sourceColumn - sourceTermCol - indentCols(cc).col) : 0
+            dt += '\n' + ' '.repeat(sourceIndent) + cc.replace(/[ \t]+$/, '')
             i++
           }
           node.items.push({ dt })
