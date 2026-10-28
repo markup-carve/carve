@@ -29,7 +29,7 @@
 # later strengthened to MUST fails the row and forces the gap to be closed here.
 #
 #   <page> :: <clause | UNSTATED | WEAKER <clause>> :: <anchor | -> :: <opening words>
-docs/includes.md :: PART 6 I1 :: MUTUALLY EXCLUSIVE :: The three selection mechanisms are mutually exclusive: a single
+docs/includes.md :: PART 6 I1 :: MUTUALLY EXCLUSIVE :: The four selection mechanisms are mutually exclusive: a single
 docs/includes.md :: PART 6 I2 :: inline-only content :: An inline include is constrained to inline-only content: the
 docs/includes.md :: PART 6 I9 :: is ordinary LITERAL text and is NEVER resolved :: Because recognition is grammar-level, a processor MUST NOT
 docs/includes.md :: PART 6 I9a :: CONTIGUOUS RUN of inline nodes :: A processor MUST therefore recognize a directive over a
