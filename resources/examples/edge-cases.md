@@ -1487,9 +1487,11 @@ from the marker rather than assumed.
 
 ```html
 <ul>
-  <li>item
-# H</li>
+  <li>item</li>
 </ul>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 :::
@@ -3635,7 +3637,9 @@ A heading marker must sit at column 0; an indented `#`-line is paragraph text �
 ```
 
 ```html
-<p># H</p>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 :::
@@ -3649,7 +3653,9 @@ An indented marker with more hashes is likewise paragraph text, not a heading.
 ```
 
 ```html
-<p>## H</p>
+<section id="H">
+  <h2>H</h2>
+</section>
 ```
 
 :::
@@ -5030,7 +5036,7 @@ An indented `***` run is a paragraph, not a break.
 ```
 
 ```html
-<p>***</p>
+<hr>
 ```
 
 :::
@@ -5428,7 +5434,7 @@ Below the content column, after a blank line, the block opener ends the item and
 <ul>
   <li>one</li>
 </ul>
-<p>&gt; q</p>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::
@@ -5484,9 +5490,9 @@ With no blank line, a line below the content column lazily continues the open it
 
 ```html
 <ul>
-  <li>one
-&gt; q</li>
+  <li>one</li>
 </ul>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::
@@ -5669,10 +5675,12 @@ Below the content column but not at column 0, it folds in as lazy item text.
 
 ```html
 <ul>
-  <li>one
-:: term
-:  def</li>
+  <li>one</li>
 </ul>
+<dl>
+  <dt>term</dt>
+  <dd>def</dd>
+</dl>
 ```
 
 :::
@@ -5740,10 +5748,16 @@ A `|`-delimited table row is a block opener under the same content-column rule: 
 
 ```html
 <ul>
-  <li>one
-|= H |
-| x |</li>
+  <li>one</li>
 </ul>
+<table>
+  <thead>
+    <tr><th scope="col">H</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>x</td></tr>
+  </tbody>
+</table>
 ```
 
 :::
@@ -5779,11 +5793,11 @@ A `:::` colon-fence (admonition / div) is a block opener like every other (§24 
 
 ```html
 <ul>
-  <li>one
-::: note
-b
-:::</li>
+  <li>one</li>
 </ul>
+<aside class="admonition note" aria-label="Note">
+  <p>b</p>
+</aside>
 ```
 
 ::::
@@ -5886,9 +5900,13 @@ The content column of a list item includes the marker's own leading indentation 
 
 ```html
 <ol>
-  <li>y
-| x |</li>
+  <li>y</li>
 </ol>
+<table>
+  <tbody>
+    <tr><td>x</td></tr>
+  </tbody>
+</table>
 ```
 
 :::
@@ -6030,8 +6048,8 @@ Over-indented (above the term): the line folds into the term, preserving its ove
 <ul>
   <li>one
     <dl>
-      <dt>term
- :  def</dt>
+      <dt>term</dt>
+      <dd>def</dd>
     </dl>
   </li>
 </ul>
@@ -6138,8 +6156,7 @@ An indented `{…}` above a paragraph stays literal.
 ```
 
 ```html
-<p>{.note}
-This paragraph.</p>
+<p class="note">This paragraph.</p>
 ```
 
 :::
@@ -6156,9 +6173,10 @@ is one literal paragraph and the bullet lines never open a list.
 ```
 
 ```html
-<p>{.todo}
-- one
-- two</p>
+<ul class="todo">
+  <li>one</li>
+  <li>two</li>
+</ul>
 ```
 
 :::
@@ -6194,8 +6212,10 @@ still in the text.
 ```
 
 ```html
-<p><img src="a.jpg" alt="Apollo">
-^ Figure 1: moon</p>
+<figure>
+  <img src="a.jpg" alt="Apollo">
+  <figcaption>Figure 1: moon</figcaption>
+</figure>
 ```
 
 :::
@@ -6212,9 +6232,10 @@ literal; all three lines join as one paragraph.
 ```
 
 ```html
-<p>{.gallery}
-<img src="a.jpg" alt="Apollo">
-^ Figure 1: moon</p>
+<figure class="gallery">
+  <img src="a.jpg" alt="Apollo">
+  <figcaption>Figure 1: moon</figcaption>
+</figure>
 ```
 
 :::
@@ -6255,8 +6276,7 @@ An indented reference definition does not register; the link stays unresolved.
 ```
 
 ```html
-<p>Read [intro][x].</p>
-<p>[x]: /intro “T”</p>
+<p>Read <a href="/intro" title="T">intro</a>.</p>
 ```
 
 :::
@@ -6273,8 +6293,15 @@ literal.
 ```
 
 ```html
-<p>Note[^fn].</p>
-<p>[^fn]: body.</p>
+<p>Note<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>body.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 :::
@@ -6297,9 +6324,9 @@ An indented bare `:::` div stays literal.
 ```
 
 ```html
-<p>:::
-A box.
-:::</p>
+<div>
+  <p>A box.</p>
+</div>
 ```
 
 ::::
@@ -6316,10 +6343,10 @@ An indented `::: |` line block stays literal.
 ```
 
 ```html
-<p>::: |
-Roses,
-Violets.
-:::</p>
+<div class="line-block">
+  <p>Roses,<br>
+Violets.</p>
+</div>
 ```
 
 ::::
@@ -6335,9 +6362,9 @@ An indented `::: note` admonition stays literal.
 ```
 
 ```html
-<p>::: note
-Body.
-:::</p>
+<aside class="admonition note" aria-label="Note">
+  <p>Body.</p>
+</aside>
 ```
 
 ::::
@@ -6385,8 +6412,6 @@ of the reading it used to pin.
 
     </aside>
   </li>
-</ul>
-<ul>
   <li>para text
 :::</li>
 </ul>
@@ -7194,10 +7219,10 @@ item's - so it opens nothing and folds as text, marker and all.
 <ul>
   <li>
     <ul>
-      <li>a
-- b</li>
+      <li>a</li>
     </ul>
   </li>
+  <li>b</li>
 </ul>
 ```
 
@@ -7219,11 +7244,13 @@ fold is about reaching no column at all.
 <ul>
   <li>x
     <ul>
-      <li>a
-# H</li>
+      <li>a</li>
     </ul>
   </li>
 </ul>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 :::
@@ -7246,10 +7273,10 @@ folds, exactly as it does one column in.
 <ul>
   <li>x
     <ul>
-      <li>a
-- b</li>
+      <li>a</li>
     </ul>
   </li>
+  <li>b</li>
 </ul>
 ```
 
@@ -7969,10 +7996,9 @@ b
 
 ```html
 <ul>
-  <li>a
-    b
-  </li>
+  <li>a</li>
 </ul>
+<p>b</p>
 ```
 
 :::
@@ -7993,8 +8019,7 @@ A definition is not block-shaped, but §24 C3's "every other line" covers it too
 <ul>
   <li>
     <ul>
-      <li>a
-[^f]: x</li>
+      <li>a</li>
     </ul>
   </li>
 </ul>
@@ -8101,10 +8126,9 @@ An invisible line on its own is still not a second paragraph, so the item stays 
 
 ```html
 <ul>
-  <li>a
-    tail
-  </li>
+  <li>a</li>
 </ul>
+<p>tail</p>
 ```
 
 :::
@@ -8147,12 +8171,11 @@ A comment renders nothing, so it cannot decide which item the line after it belo
 <ul>
   <li>
     <ul>
-      <li>a
-        b
-      </li>
+      <li>a</li>
     </ul>
   </li>
 </ul>
+<p>b</p>
 ```
 
 :::
@@ -8220,12 +8243,11 @@ The fence form behaves as the `%%` line does: it is invisible, it leaves the ite
 <ul>
   <li>
     <ul>
-      <li>a
-        b
-      </li>
+      <li>a</li>
     </ul>
   </li>
 </ul>
+<p>b</p>
 ```
 
 :::
@@ -8370,8 +8392,10 @@ An indented `>` that reaches no content column is not a container at all: the li
 ```
 
 ```html
-<p>[x][r] here.</p>
-<p>&gt; [r]: /u</p>
+<p><a href="/u">x</a> here.</p>
+<blockquote>
+
+</blockquote>
 ```
 
 :::
@@ -8921,10 +8945,9 @@ b
 
 ```html
 <ul>
-  <li>a
-    b
-  </li>
+  <li>a</li>
 </ul>
+<p>b</p>
 ```
 
 :::
@@ -9037,13 +9060,12 @@ see[^a] and [t][r]
 ```
 
 ```html
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and [t][r]</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and <a href="/u">t</a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>note
-[r]: /u<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -14177,8 +14199,6 @@ a separate list.
 ```html
 <ul>
   <li>a</li>
-</ul>
-<ul>
   <li>s</li>
 </ul>
 ```
@@ -14224,7 +14244,9 @@ A heading-shaped line below the content column is also paragraph text:
 <ul>
   <li>a</li>
 </ul>
-<p># h</p>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 :::
@@ -14245,8 +14267,8 @@ document inverts its answer.
 ```html
 <ul>
   <li>a
-b
-- s</li>
+b</li>
+  <li>s</li>
 </ul>
 ```
 
@@ -14267,9 +14289,9 @@ answer purely on whether a paragraph is open:
 ```html
 <ul>
   <li>a
-    <blockquote><p>q
-- s</p></blockquote>
+    <blockquote><p>q</p></blockquote>
   </li>
+  <li>s</li>
 </ul>
 ```
 
@@ -15821,8 +15843,7 @@ after[^f]
 
 ```html
 <ol>
-  <li>x
-[r]: /u</li>
+  <li>x</li>
 </ol>
 ```
 
@@ -15981,10 +16002,8 @@ keeps one space more on each list than the one before it (PART 11 §1;
 
 ```html
 <ol>
-  <li>a</li>
-</ol>
-<ol>
-  <li>b</li>
+  <li><p>a</p></li>
+  <li><p>b</p></li>
 </ol>
 ```
 
@@ -16005,13 +16024,9 @@ put it back in the second list's column.
 
 ```html
 <ol>
-  <li>a</li>
-</ol>
-<ol>
-  <li>b</li>
-</ol>
-<ol>
-  <li>c</li>
+  <li><p>a</p></li>
+  <li><p>b</p></li>
+  <li><p>c</p></li>
 </ol>
 ```
 
@@ -22644,11 +22659,10 @@ tail
 
 ```html
 <ul>
-  <li>a
-[r]: /u
-tail</li>
+  <li>a</li>
 </ul>
-<p>[r][]</p>
+<p>tail</p>
+<p><a href="/u">r</a></p>
 ```
 
 :::
@@ -24915,11 +24929,10 @@ See [r][].
 ```html
 <blockquote>
   <ul>
-    <li>x
-[r]: /url</li>
+    <li>x</li>
   </ul>
 </blockquote>
-<p>See [r][].</p>
+<p>See <a href="/url">r</a>.</p>
 ```
 
 :::
@@ -24967,9 +24980,8 @@ See [r][].
 ```
 
 ```html
-<blockquote><p>x
-[r]: /url</p></blockquote>
-<p>See [r][].</p>
+<blockquote><p>x</p></blockquote>
+<p>See <a href="/url">r</a>.</p>
 ```
 
 :::
@@ -25430,7 +25442,9 @@ following below-column fence-shaped line then lies outside the item.
 <ul>
   <li></li>
 </ul>
-<p>:::</p>
+<div>
+
+</div>
 ```
 
 ::::
@@ -25546,12 +25560,11 @@ paragraph.
 <ul>
   <li>
     <ul>
-      <li>u
-        :
-      </li>
+      <li>u</li>
     </ul>
   </li>
 </ul>
+<p>:</p>
 ```
 
 ::::
@@ -26683,8 +26696,10 @@ plain (b) text
 ```
 
 ```html
-<p>## H</p>
-<p>plain (b) text</p>
+<section id="H">
+  <h2>H</h2>
+  <p>plain (b) text</p>
+</section>
 ```
 
 :::
@@ -27059,8 +27074,7 @@ HTML - is what measures the occurrence.
 ```
 
 ```html
-<p>{.note}
-This paragraph.</p>
+<p class="note">This paragraph.</p>
 ```
 
 :::
@@ -28240,7 +28254,9 @@ does open a paragraph, so the same below-column line lazily continues it.
 <ul>
   <li id="k"></li>
 </ul>
-<p># h</p>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 :::
@@ -28254,9 +28270,11 @@ does open a paragraph, so the same below-column line lazily continues it.
 
 ```html
 <ul>
-  <li id="k">text
-# h</li>
+  <li id="k">text</li>
 </ul>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 :::
@@ -28272,7 +28290,9 @@ does open a paragraph, so the same below-column line lazily continues it.
 <ol>
   <li id="k"></li>
 </ol>
-<p># h</p>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 :::
@@ -28288,7 +28308,9 @@ does open a paragraph, so the same below-column line lazily continues it.
 <ul class="task-list">
   <li data-task-state="x" id="k"><input type="checkbox" checked disabled> </li>
 </ul>
-<p># h</p>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 :::
@@ -28985,8 +29007,10 @@ intro
 ```
 
 ```html
-<p>intro
-# heading</p>
+<p>intro</p>
+<section id="heading">
+  <h1>heading</h1>
+</section>
 ```
 
 :::
@@ -29010,9 +29034,9 @@ a `>` one column in opens nothing and folds into the body's paragraph as text
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition
-&gt; quote</dd>
+  <dd>definition</dd>
 </dl>
+<blockquote><p>quote</p></blockquote>
 ```
 
 :::
@@ -29616,9 +29640,9 @@ text, exactly as under a list item (carve#3295).
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition
-&gt; quote</dd>
+  <dd>definition</dd>
 </dl>
+<blockquote><p>quote</p></blockquote>
 ```
 
 :::
@@ -29634,9 +29658,11 @@ text, exactly as under a list item (carve#3295).
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition
-# H</dd>
+  <dd>definition</dd>
 </dl>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 :::
@@ -30037,11 +30063,10 @@ See [text][r].
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-[r]: /u
-tail</dd>
+  <dd>d</dd>
 </dl>
-<p>See [text][r].</p>
+<p>tail</p>
+<p>See <a href="/u">text</a>.</p>
 ```
 
 :::
@@ -30063,11 +30088,18 @@ See[^f]
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-[^f]: n
-tail</dd>
+  <dd>d</dd>
 </dl>
-<p>See[^f]</p>
+<p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n
+tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 :::
@@ -30089,10 +30121,9 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-{.k}
-tail</dd>
+  <dd>d</dd>
 </dl>
+<p class="k">tail</p>
 ```
 
 :::
@@ -30160,10 +30191,9 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-[r]: /u
-tail</dd>
+  <dd>d</dd>
 </dl>
+<p>tail</p>
 ```
 
 :::
@@ -30522,13 +30552,13 @@ see[^a]
 ```
 
 ```html
+<p>more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro</p>
-      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -30666,11 +30696,9 @@ comment spelling retains the line in the `dd`:
 ```html
 <dl>
   <dt>term</dt>
-  <dd>
-    <p>intro</p>
-    <p>more</p>
-  </dd>
+  <dd>intro</dd>
 </dl>
+<p>more</p>
 ```
 
 :::
@@ -31750,10 +31778,10 @@ See [t][].
 
 ```html
 <ul>
-  <li>lead
-- [t]: /t</li>
+  <li>lead</li>
+  <li></li>
 </ul>
-<p>See [t][].</p>
+<p>See <a href="/t">t</a>.</p>
 ```
 
 :::
@@ -31818,10 +31846,10 @@ See [t][].
 
 ```html
 <ul>
-  <li>lead
-- [t]: /t</li>
+  <li>lead</li>
+  <li></li>
 </ul>
-<p>See [t][].</p>
+<p>See <a href="/t">t</a>.</p>
 ```
 
 :::
@@ -31840,10 +31868,10 @@ See [t][].
 
 ```html
 <ul>
-  <li>lead
-- [t]: /t</li>
+  <li>lead</li>
+  <li></li>
 </ul>
-<p>See [t][].</p>
+<p>See <a href="/t">t</a>.</p>
 ```
 
 :::
@@ -31913,11 +31941,11 @@ See [t][].
 
 ```html
 <ul>
-  <li>lead
-- prose
-- [t]: /t</li>
+  <li>lead</li>
+  <li>prose</li>
+  <li></li>
 </ul>
-<p>See [t][].</p>
+<p>See <a href="/t">t</a>.</p>
 ```
 
 :::
@@ -32513,7 +32541,6 @@ paragraph that band folds into.
     <h1 id="H">H</h1>
   </dd>
 </dl>
-<p>[r]: /url</p>
 ```
 
 :::
@@ -32538,7 +32565,6 @@ equal.
     <h1 id="H">H</h1>
   </dd>
 </dl>
-<p>[r]: /url</p>
 ```
 
 :::
@@ -32570,10 +32596,9 @@ y
 
 ```html
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 :::
@@ -32591,10 +32616,9 @@ y
 
 ```html
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 :::
@@ -32635,10 +32659,9 @@ y
 
 ```html
 <ol>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ol>
+<p>y</p>
 ```
 
 :::
@@ -32656,10 +32679,9 @@ y
 
 ```html
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 :::
@@ -32680,10 +32702,9 @@ inner item's degraded comment.
 <ul>
   <li>
     <ul>
-      <li>x
-        y
-      </li>
+      <li>x</li>
     </ul>
+    y
   </li>
 </ul>
 ```
@@ -32703,10 +32724,9 @@ y
 
 ```html
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 :::
@@ -32725,10 +32745,9 @@ y
 
 ```html
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 :::
@@ -32772,6 +32791,8 @@ new list.
 ```html
 <ul>
   <li>x</li>
+</ul>
+<ul>
   <li>y</li>
 </ul>
 ```
@@ -33500,10 +33521,9 @@ See [r][].
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-[r]: /url</dd>
+  <dd>d</dd>
 </dl>
-<p>See [r][].</p>
+<p>See <a href="/url">r</a>.</p>
 ```
 
 :::
@@ -34072,12 +34092,10 @@ z
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>y
-z</p>
-  </dd>
+  <dd>x</dd>
 </dl>
+<p>y
+z</p>
 ```
 
 :::
@@ -34097,11 +34115,9 @@ z
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>z</p>
-  </dd>
+  <dd>x</dd>
 </dl>
+<p>z</p>
 ```
 
 :::
@@ -34244,11 +34260,9 @@ z
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>z</p>
-  </dd>
+  <dd>x</dd>
 </dl>
+<p>z</p>
 ```
 
 :::
@@ -34269,11 +34283,9 @@ z
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>z</p>
-  </dd>
+  <dd>x</dd>
 </dl>
+<p>z</p>
 ```
 
 :::
@@ -34553,10 +34565,10 @@ quote's column 0, so the line past it has no authored base, as at top level.
 <blockquote>
   <p>a</p>
   <aside class="admonition note" aria-label="Note">
-    <p>[r]: /url</p>
+
   </aside>
 </blockquote>
-<p>[r][]</p>
+<p><a href="/url">r</a></p>
 ```
 
 :::
@@ -34681,11 +34693,11 @@ open one. Without this row the others read as "any host at any indent".
 ```
 
 ```html
-<blockquote><p>a
-::: note
-[r]: /url
-:::</p></blockquote>
-<p>[r][]</p>
+<blockquote><p>a</p></blockquote>
+<aside class="admonition note" aria-label="Note">
+
+</aside>
+<p><a href="/url">r</a></p>
 ```
 
 ::::
@@ -37447,7 +37459,9 @@ z
   </li>
 </ul>
 <p>y</p>
-<p>:::</p>
+<div>
+
+</div>
 ```
 
 :::::
@@ -39238,9 +39252,11 @@ column the line folds into the term, whatever it would open.
 
 ```html
 <dl>
-  <dt>c
-  # H</dt>
+  <dt>c</dt>
 </dl>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ::::::
@@ -39256,11 +39272,11 @@ column the line folds into the term, whatever it would open.
 
 ```html
 <dl>
-  <dt>c
-  ::: note
-  body
-  :::</dt>
+  <dt>c</dt>
 </dl>
+<aside class="admonition note" aria-label="Note">
+  <p>body</p>
+</aside>
 ```
 
 ::::::
@@ -39277,9 +39293,9 @@ Inside a quote the column is the one after the quote marker.
 ```html
 <blockquote>
   <dl>
-    <dt>c
-  # H</dt>
+    <dt>c</dt>
   </dl>
+  <h1 id="H">H</h1>
 </blockquote>
 ```
 
@@ -39301,9 +39317,9 @@ is past it.
 <ul>
   <li>item
     <dl>
-      <dt>c
-  # H</dt>
+      <dt>c</dt>
     </dl>
+    <h1 id="H">H</h1>
   </li>
 </ul>
 ```
@@ -39327,9 +39343,9 @@ Inside a description it is the description's column.
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-  # H</dt>
+      <dt>c</dt>
     </dl>
+    <h1 id="H">H</h1>
   </dd>
 </dl>
 ```
@@ -39353,11 +39369,11 @@ Inside a description it is the description's column.
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-  ::: note
-  body
-  :::</dt>
+      <dt>c</dt>
     </dl>
+    <aside class="admonition note" aria-label="Note">
+      <p>body</p>
+    </aside>
   </dd>
 </dl>
 ```
@@ -39474,10 +39490,9 @@ stays a comment and the term goes on after it; a `%%%` fence keeps its body.
 
 ```html
 <dl>
-  <dt>c
-
-  more</dt>
+  <dt>c</dt>
 </dl>
+<p>more</p>
 ```
 
 ::::::
@@ -39493,10 +39508,9 @@ stays a comment and the term goes on after it; a `%%%` fence keeps its body.
 ```html
 <blockquote>
   <dl>
-    <dt>c
-
-  more</dt>
+    <dt>c</dt>
   </dl>
+  <p>more</p>
 </blockquote>
 ```
 
@@ -39516,10 +39530,9 @@ stays a comment and the term goes on after it; a `%%%` fence keeps its body.
 <ul>
   <li>item
     <dl>
-      <dt>c
-
-  more</dt>
+      <dt>c</dt>
     </dl>
+    more
   </li>
 </ul>
 ```
@@ -39542,10 +39555,9 @@ stays a comment and the term goes on after it; a `%%%` fence keeps its body.
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-
-  more</dt>
+      <dt>c</dt>
     </dl>
+    <p>more</p>
   </dd>
 </dl>
 ```
@@ -39566,10 +39578,9 @@ A comment fence keeps its body and closer, and the term goes on after it.
 
 ```html
 <dl>
-  <dt>c
-
-  more</dt>
+  <dt>c</dt>
 </dl>
+<p>more</p>
 ```
 
 ::::::
@@ -39587,10 +39598,9 @@ A comment fence keeps its body and closer, and the term goes on after it.
 ```html
 <blockquote>
   <dl>
-    <dt>c
-
-  more</dt>
+    <dt>c</dt>
   </dl>
+  <p>more</p>
 </blockquote>
 ```
 
@@ -39612,10 +39622,9 @@ A comment fence keeps its body and closer, and the term goes on after it.
 <ul>
   <li>item
     <dl>
-      <dt>c
-
-  more</dt>
+      <dt>c</dt>
     </dl>
+    more
   </li>
 </ul>
 ```
@@ -39640,10 +39649,9 @@ A comment fence keeps its body and closer, and the term goes on after it.
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-
-  more</dt>
+      <dt>c</dt>
     </dl>
+    <p>more</p>
   </dd>
 </dl>
 ```
@@ -39663,10 +39671,9 @@ stays unresolved.
 ```
 
 ```html
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <dl>
-  <dt>c
-  [r]: /u</dt>
+  <dt>c</dt>
 </dl>
 ```
 
@@ -39682,11 +39689,10 @@ stays unresolved.
 ```
 
 ```html
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <blockquote>
   <dl>
-    <dt>c
-  [r]: /u</dt>
+    <dt>c</dt>
   </dl>
 </blockquote>
 ```
@@ -39705,12 +39711,11 @@ stays unresolved.
 ```
 
 ```html
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <ul>
   <li>item
     <dl>
-      <dt>c
-  [r]: /u</dt>
+      <dt>c</dt>
     </dl>
   </li>
 </ul>
@@ -39730,14 +39735,13 @@ stays unresolved.
 ```
 
 ```html
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <dl>
   <dt>a</dt>
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-  [r]: /u</dt>
+      <dt>c</dt>
     </dl>
   </dd>
 </dl>
@@ -39757,11 +39761,18 @@ x[^n]
 ```
 
 ```html
-<p>x[^n]</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <dl>
-  <dt>c
-  [^n]: y</dt>
+  <dt>c</dt>
 </dl>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ::::::
@@ -39776,13 +39787,20 @@ x[^n]
 ```
 
 ```html
-<p>x[^n]</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <blockquote>
   <dl>
-    <dt>c
-  [^n]: y</dt>
+    <dt>c</dt>
   </dl>
 </blockquote>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ::::::
@@ -39799,15 +39817,22 @@ x[^n]
 ```
 
 ```html
-<p>x[^n]</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <ul>
   <li>item
     <dl>
-      <dt>c
-  [^n]: y</dt>
+      <dt>c</dt>
     </dl>
   </li>
 </ul>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ::::::
@@ -39824,17 +39849,24 @@ x[^n]
 ```
 
 ```html
-<p>x[^n]</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <dl>
   <dt>a</dt>
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-  [^n]: y</dt>
+      <dt>c</dt>
     </dl>
   </dd>
 </dl>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ::::::
@@ -39987,15 +40019,13 @@ A blank line inside a folded comment fence does not end the term.
 ```
 
 ```html
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <dl>
   <dt>a</dt>
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-
-  [r]: /u</dt>
+      <dt>c</dt>
     </dl>
   </dd>
 </dl>
@@ -40016,9 +40046,9 @@ A term on a list marker line is measured against the item's content column.
 <ul>
   <li>
     <dl>
-      <dt>c
-  # H</dt>
+      <dt>c</dt>
     </dl>
+    <h1 id="H">H</h1>
   </li>
 </ul>
 ```
@@ -40036,16 +40066,22 @@ x[^n]
 ```
 
 ```html
-<p>x[^n]</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <ul>
   <li>
     <dl>
-      <dt>c
-
-  [^n]: y</dt>
+      <dt>c</dt>
     </dl>
   </li>
 </ul>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ::::::
@@ -40065,16 +40101,15 @@ A `>` past the column is term text, so the term stays open under it.
 ```
 
 ```html
-<p>[t][r]</p>
+<p><a href="/u">t</a></p>
 <dl>
   <dt>a</dt>
   <dd>
     <p>b</p>
     <dl>
-      <dt>c
-  &gt; text
-  [r]: /u</dt>
+      <dt>c</dt>
     </dl>
+    <blockquote><p>text</p></blockquote>
   </dd>
 </dl>
 ```
@@ -40235,10 +40270,9 @@ tail
 
 ```html
 <ul>
-  <li>intro
-    tail
-  </li>
+  <li>intro</li>
 </ul>
+<p>tail</p>
 ```
 
 :::
@@ -40290,6 +40324,8 @@ c
 ```html
 <ul>
   <li>intro</li>
+</ul>
+<ul>
   <li>next</li>
 </ul>
 ```
@@ -40440,10 +40476,10 @@ markers to the host. The final cases cover those boundaries and a code fence.
 <ul>
   <li>head
     <div>
-      <p>a
-- second</p>
+      <p>a</p>
     </div>
   </li>
+  <li>second</li>
 </ul>
 `````
 
@@ -40463,10 +40499,10 @@ markers to the host. The final cases cover those boundaries and a code fence.
 <ul>
   <li>head
     <aside class="admonition note" aria-label="Note">
-      <p>a
-- second</p>
+      <p>a</p>
     </aside>
   </li>
+  <li>second</li>
 </ul>
 `````
 
@@ -40751,14 +40787,12 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <p>a</p>
     </div>
   </li>
-</ul>
-<ul>
-  <li>second</li>
+  <li><p>second</p></li>
 </ul>
 `````
 
@@ -40995,8 +41029,9 @@ keeps it.
     </ul>
   </li>
 </ul>
-<p><code></code></p>
-<p>tail</p>
+<pre><code>
+   tail
+</code></pre>
 `````
 
 :::
@@ -41174,8 +41209,9 @@ p
     </ul>
   </li>
 </ul>
-<p>~~~</p>
-<p>tail</p>
+<pre><code>
+   tail
+</code></pre>
 `````
 
 :::
@@ -41916,10 +41952,9 @@ tail
 
 `````html
 <ul>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ul>
+<p>tail</p>
 `````
 
 :::
@@ -41936,10 +41971,9 @@ tail
 
 `````html
 <ul>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ul>
+<p>tail</p>
 `````
 
 :::
@@ -41956,10 +41990,9 @@ tail
 
 `````html
 <ul>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ul>
+<p>tail</p>
 `````
 
 :::
@@ -41976,10 +42009,9 @@ tail
 
 `````html
 <ol>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ol>
+<p>tail</p>
 `````
 
 :::
@@ -41999,12 +42031,11 @@ tail
 <ul>
   <li>a
     <ul>
-      <li>item
-        tail
-      </li>
+      <li>item</li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 `````
 
 :::
@@ -42021,10 +42052,9 @@ tail
 
 `````html
 <ul>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ul>
+<p>tail</p>
 `````
 
 :::
@@ -42039,10 +42069,9 @@ tail
 
 `````html
 <ul>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ul>
+<p>tail</p>
 `````
 
 :::
@@ -42060,11 +42089,10 @@ tail
 
 `````html
 <ul>
-  <li>item
-    <pre><code></code></pre>
-  </li>
+  <li>item</li>
 </ul>
-<p>tail</p>
+<pre><code>tail
+</code></pre>
 `````
 
 :::
@@ -42353,10 +42381,10 @@ flush
 `````html
 <blockquote>
   <p>:  a</p>
-  <p><code>
-x
-flush</code></p>
+  <pre><code>x
+</code></pre>
 </blockquote>
+<p>flush</p>
 `````
 
 :::
@@ -42761,13 +42789,9 @@ the last row's below-column marker starts a separate list.
 
 ````html
 <ul>
-  <li>t</li>
-</ul>
-<ul>
-  <li>b</li>
-</ul>
-<ul>
-  <li>s</li>
+  <li><p>t</p></li>
+  <li><p>b</p></li>
+  <li><p>s</p></li>
 </ul>
 ````
 
@@ -44607,12 +44631,11 @@ gone (carve#2607).
 ````html
 <ul>
   <li>a
-    <blockquote><p>q
-<code>js
-c
-</code></p></blockquote>
+    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
+<pre><code class="language-js">c
+</code></pre>
 ````
 
 :::
@@ -44630,10 +44653,9 @@ c
 ````html
 <ul>
   <li>a
-    <blockquote><p>q
-<code>js
-c
-</code></p></blockquote>
+    <blockquote><p>q</p></blockquote>
+    <pre><code class="language-js">c
+</code></pre>
   </li>
 </ul>
 ````
@@ -44653,10 +44675,9 @@ c
 ````html
 <ul>
   <li>a
-    <blockquote><p>q
-<code>js
-c
-</code></p></blockquote>
+    <blockquote><p>q</p></blockquote>
+    <pre><code class="language-js">c
+</code></pre>
   </li>
 </ul>
 ````
@@ -44676,10 +44697,9 @@ c
 ````html
 <ul>
   <li>a
-    <blockquote><p>q
-<code>js
-c
-</code></p></blockquote>
+    <blockquote><p>q</p></blockquote>
+    <pre><code class="language-js">c
+</code></pre>
   </li>
 </ul>
 ````
@@ -44697,8 +44717,8 @@ c
 ````html
 <ul>
   <li>a
-    <blockquote><p>q
-# h</p></blockquote>
+    <blockquote><p>q</p></blockquote>
+    <h1 id="h">h</h1>
   </li>
 </ul>
 ````
@@ -44716,8 +44736,8 @@ c
 ````html
 <ul>
   <li>a
-    <blockquote><p>q
-—</p></blockquote>
+    <blockquote><p>q</p></blockquote>
+    <hr>
   </li>
 </ul>
 ````
@@ -44737,10 +44757,15 @@ c
 ````html
 <ul>
   <li>a
-    <blockquote><p>q
-| c |
-|—|
-| 1 |</p></blockquote>
+    <blockquote><p>q</p></blockquote>
+    <table>
+      <thead>
+        <tr><th scope="col">c</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td></tr>
+      </tbody>
+    </table>
   </li>
 </ul>
 ````
@@ -44760,10 +44785,7 @@ c
 ````html
 <ul>
   <li>a
-    <blockquote><p>q
-<code>=latex
-\r
-</code></p></blockquote>
+    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
 ````
@@ -44783,10 +44805,8 @@ c
 ````html
 <ul>
   <li>a
-    <blockquote><p>q
-<code>=html
-&lt;b&gt;r&lt;/b&gt;
-</code></p></blockquote>
+    <blockquote><p>q</p></blockquote>
+    <b>r</b>
   </li>
 </ul>
 ````
@@ -44810,10 +44830,9 @@ x[^1]
   <hr>
   <ol>
     <li id="fn1">
-      <blockquote><p>q
-<code>js
-c
-</code></p></blockquote>
+      <blockquote><p>q</p></blockquote>
+      <pre><code class="language-js">c
+</code></pre>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
@@ -44839,10 +44858,7 @@ x[^1]
   <hr>
   <ol>
     <li id="fn1">
-      <blockquote><p>q
-<code>=latex
-\r
-</code></p></blockquote>
+      <blockquote><p>q</p></blockquote>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
@@ -44865,10 +44881,9 @@ x[^1]
 <dl>
   <dt>t</dt>
   <dd>
-    <blockquote><p>q
-<code>js
-c
-</code></p></blockquote>
+    <blockquote><p>q</p></blockquote>
+    <pre><code class="language-js">c
+</code></pre>
   </dd>
 </dl>
 ````
@@ -45316,11 +45331,8 @@ y
   <li>
     <blockquote>
       <pre><code>x
+y
 </code></pre>
-    </blockquote>
-    &gt; y
-    <blockquote>
-      <pre><code></code></pre>
     </blockquote>
   </li>
 </ul>
@@ -45416,8 +45428,8 @@ y
     <blockquote>
       <pre><code>x
 </code></pre>
+      <p>y</p>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 `````
@@ -45509,11 +45521,8 @@ y
   <li>
     <blockquote>
       <pre><code>x
+y
 </code></pre>
-    </blockquote>
-    &gt; y
-    <blockquote>
-      <pre><code></code></pre>
     </blockquote>
   </li>
 </ul>
@@ -45609,8 +45618,8 @@ y
     <blockquote>
       <pre><code>x
 </code></pre>
+      <p>y</p>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 `````
@@ -45701,10 +45710,7 @@ y
   <li>
     <blockquote>
       x
-    </blockquote>
-    &gt; y
-    <blockquote>
-      <pre><code></code></pre>
+y
     </blockquote>
   </li>
 </ul>
@@ -45796,8 +45802,8 @@ y
   <li>
     <blockquote>
       x
+      <p>y</p>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 `````
@@ -46006,8 +46012,8 @@ y
         <pre><code>x
 </code></pre>
       </blockquote>
+      <p>y</p>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 `````
@@ -46030,8 +46036,8 @@ y
         <pre><code>x
 </code></pre>
       </blockquote>
+      <p>y</p>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 `````
@@ -46097,9 +46103,9 @@ y
       <pre><code>x
 </code></pre>
       <pre><code>z
+y
 </code></pre>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 `````
@@ -48105,8 +48111,6 @@ item.
 <blockquote>
   <ul>
     <li>a</li>
-  </ul>
-  <ul>
     <li>b
       <ul>
         <li>c
@@ -48135,8 +48139,6 @@ item.
 <blockquote>
   <ul>
     <li>a</li>
-  </ul>
-  <ul>
     <li>b
       <ul>
         <li>c</li>
@@ -49050,7 +49052,7 @@ the lines after it read as they do in the content-column spelling.
       <div class="line-block">
         <p>&nbsp;&nbsp;<code>
 :::
-&nbsp;&nbsp;</code></p>
+</code></p>
       </div>
       :::bad
 :::
@@ -49076,12 +49078,12 @@ tail
     <div class="line-block">
       <p>&nbsp;&nbsp;<code>
 :::
-&nbsp;&nbsp;</code></p>
+</code></p>
     </div>
     para
-tail
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::
@@ -50425,7 +50427,6 @@ when that line is plain text. A `:::` inside an open code fence is code text.
           </li>
         </ul>
         <pre><code>:::bad
-:::
 </code></pre>
       </div>
     </li>
@@ -50503,11 +50504,10 @@ x
             </div>
           </li>
         </ul>
-        <pre><code>:::
-:::bad
-:::
-</code></pre>
+        <pre><code></code></pre>
       </div>
+      :::bad
+:::
     </li>
   </ul>
 </blockquote>
@@ -50654,7 +50654,6 @@ after</code></li>
           </li>
         </ul>
         <pre><code>:::bad
-:::
 </code></pre>
       </div>
     </li>
@@ -50693,11 +50692,10 @@ after</code></li>
             </div>
           </li>
         </ul>
-        <pre><code>:::
-:::bad
-:::
-</code></pre>
+        <pre><code></code></pre>
       </div>
+      :::bad
+:::
     </li>
   </ul>
 </blockquote>
@@ -50724,7 +50722,6 @@ after</code></li>
     <li>
       <div class="box">
         <pre><code>:::bad
-:::
 </code></pre>
       </div>
     </li>
@@ -54432,17 +54429,18 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <ol start="10">
-    <li>para
-| t |
-<code>
-code</code></li>
+    <li>para</li>
   </ol>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <table>
+    <tbody>
+      <tr><td>t</td></tr>
+    </tbody>
+  </table>
+  <pre><code>code
+::::
+</code></pre>
 </aside>
+<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -55108,12 +55106,11 @@ tail
 ```html
 <ul>
   <li>
-    <blockquote><p>para
-[r]: /u
-tail</p></blockquote>
+    <blockquote><p>para</p></blockquote>
   </li>
 </ul>
-<p>[r][]</p>
+<p>tail</p>
+<p><a href="/u">r</a></p>
 ```
 
 ::::::
@@ -55130,11 +55127,10 @@ tail
 ```html
 <ul>
   <li>
-    <blockquote><p>para
-[^f]: n
-tail</p></blockquote>
+    <blockquote><p>para</p></blockquote>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 ::::::
@@ -55151,11 +55147,10 @@ tail
 ```html
 <ul>
   <li>
-    <blockquote><p>para
-{<span class="tag"><strong>#x</strong></span>}
-tail</p></blockquote>
+    <blockquote><p>para</p></blockquote>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 ::::::
@@ -55175,13 +55170,12 @@ tail
 <blockquote>
   <ul>
     <li>
-      <blockquote><p>para
-[r]: /u
-tail</p></blockquote>
+      <blockquote><p>para</p></blockquote>
     </li>
   </ul>
 </blockquote>
-<p>[r][]</p>
+<p>tail</p>
+<p><a href="/u">r</a></p>
 ```
 
 ::::::
@@ -55298,9 +55292,9 @@ x
   <li>
     <blockquote><p>para
 more</p></blockquote>
-    x
   </li>
 </ul>
+<p>x</p>
 ```
 
 ::::::
@@ -55448,8 +55442,7 @@ A lazy quoted continuation keeps its existing claim (CARVE-P0-010).
 <ul>
   <li>
     <blockquote><p>a
-b
-[r]: /u</p></blockquote>
+b</p></blockquote>
   </li>
 </ul>
 ```
@@ -55490,13 +55483,11 @@ A retained description reads the next unclosed fence as a code block (CARVE-P0-0
   <li>
     <dl>
       <dt>t</dt>
-      <dd>
-        <p>para</p>
-        <pre><code></code></pre>
-      </dd>
+      <dd>para</dd>
     </dl>
   </li>
 </ul>
+<pre><code></code></pre>
 ```
 
 ::::::
@@ -55515,11 +55506,10 @@ x
 <ul>
   <li>
     <blockquote><p>a
-b
-[r]: /u
-x</p></blockquote>
+b</p></blockquote>
   </li>
 </ul>
+<p>x</p>
 ```
 
 ::::::
@@ -55570,14 +55560,12 @@ x
   <li>
     <dl>
       <dt>t</dt>
-      <dd>
-        <p>para</p>
-        <pre><code></code></pre>
-      </dd>
+      <dd>para</dd>
     </dl>
   </li>
 </ol>
-<p>x</p>
+<pre><code>x
+</code></pre>
 ```
 
 ::::::
@@ -55595,10 +55583,12 @@ An opener below a description body's column folds into a quote held there; only 
 <dl>
   <dt>t</dt>
   <dd>
-    <blockquote><p>para
-# H</p></blockquote>
+    <blockquote><p>para</p></blockquote>
   </dd>
 </dl>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ::::::
@@ -55615,9 +55605,11 @@ A heading below a description body's column folds into its paragraph, as under a
 ```html
 <dl>
   <dt>t</dt>
-  <dd>para
-# H</dd>
+  <dd>para</dd>
 </dl>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ::::::
@@ -55634,9 +55626,9 @@ A thematic break below a description body's column folds into its paragraph (car
 ```html
 <dl>
   <dt>t</dt>
-  <dd>para
-—</dd>
+  <dd>para</dd>
 </dl>
+<hr>
 ```
 
 ::::::
@@ -55653,9 +55645,13 @@ A table row below a description body's column folds into its paragraph (carve#32
 ```html
 <dl>
   <dt>t</dt>
-  <dd>para
-| a |</dd>
+  <dd>para</dd>
 </dl>
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
 ```
 
 ::::::
@@ -55740,11 +55736,10 @@ x
 
 ```html
 <ul>
-  <li>para
-    <pre><code></code></pre>
-  </li>
+  <li>para</li>
 </ul>
-<p>x</p>
+<pre><code>x
+</code></pre>
 ```
 
 ::::::
@@ -55764,10 +55759,10 @@ A note in a comment-retained list item reads an unclosed fence as a code block t
   <li>
     <aside class="admonition note" aria-label="Note">
       <p>more</p>
-      <pre><code></code></pre>
     </aside>
   </li>
 </ul>
+<pre><code></code></pre>
 ```
 
 ::::::
@@ -55788,10 +55783,10 @@ x
   <li>
     <blockquote><p>para
 more</p></blockquote>
-    <pre><code></code></pre>
   </li>
 </ul>
-<p>x</p>
+<pre><code>x
+</code></pre>
 ```
 
 ::::::
@@ -55810,13 +55805,12 @@ A blank line inside a retained code block does not loosen the item (carve#3285).
 
 ```html
 <ul>
-  <li>para
-    <pre><code>x
-
-y
-</code></pre>
-  </li>
+  <li>para</li>
 </ul>
+<pre><code>  x
+
+  y
+</code></pre>
 ```
 
 ::::::
@@ -55837,9 +55831,9 @@ After a marked quote line, a matched comment fence below the item column retains
   <li>
     <blockquote><p>para
 more</p></blockquote>
-    <pre><code></code></pre>
   </li>
 </ul>
+<pre><code></code></pre>
 ```
 
 ::::::
@@ -57624,9 +57618,8 @@ tail
     </blockquote>
   </li>
 </ul>
-<blockquote><p>: d
-[^f]: n
-tail</p></blockquote>
+<blockquote><p>: d</p></blockquote>
+<p>tail</p>
 ```
 
 :::::::
@@ -57643,10 +57636,12 @@ gen-134
 ```html
 <blockquote>
   <dl>
-    <dt>c
-# H</dt>
+    <dt>c</dt>
   </dl>
 </blockquote>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 :::::::
@@ -57685,11 +57680,11 @@ gen-162
 
 ```html
 <ul>
-  <li>para
-    <pre><code></code></pre>
-  </li>
-  <li>a</li>
+  <li>para</li>
 </ul>
+<pre><code>- a
+  [^f]: t
+</code></pre>
 ```
 
 :::::::
@@ -57767,8 +57762,14 @@ gen-224
 ``````
 
 ```html
-<blockquote><p>::: |
-:::</p></blockquote>
+<blockquote>
+  <div class="line-block">
+
+  </div>
+</blockquote>
+<div>
+
+</div>
 ```
 
 :::::::
@@ -57788,12 +57789,11 @@ tail
 <ul>
   <li>
     <ul>
-      <li>item
-        tail
-      </li>
+      <li>item</li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -57942,7 +57942,9 @@ gen-305
   </li>
 </ul>
 <blockquote>
-  <blockquote><p>[^f]: n</p></blockquote>
+  <blockquote>
+
+  </blockquote>
 </blockquote>
 ```
 
@@ -58072,8 +58074,8 @@ gen-355
       </blockquote>
     </li>
   </ul>
+  <p>y</p>
 </blockquote>
-<p>&gt; y</p>
 ```
 
 :::::::
@@ -58813,15 +58815,14 @@ a
 
 ```html
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
-      <li><p>head
+      <li>head
 <code>
 a
-</code></p>
-        <p>tail</p>
-      </li>
+</code></li>
     </ul>
+    <p>tail</p>
   </li>
 </ul>
 ```
@@ -58962,15 +58963,14 @@ a
 
 ```html
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
-      <li><p>head
+      <li>head
 ~~~
 a
-~~~</p>
-        <p>tail</p>
-      </li>
+~~~</li>
     </ul>
+    <p>tail</p>
   </li>
 </ul>
 ```
@@ -59019,16 +59019,16 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
 <code>
 a
 </code></li>
     </ul>
-    <p>tail</p>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -59964,8 +59964,7 @@ q
 `````
 
 ```html
-<p>&gt; +
-q</p>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::::::
@@ -61134,11 +61133,12 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
     </ul>
   </li>
 </ul>
-<p>&gt; b</p>
 ```
 
 :::
@@ -61221,11 +61221,12 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled> </li>
+      <li><input type="checkbox" disabled> 
+        <blockquote><p>b</p></blockquote>
+      </li>
     </ul>
   </li>
 </ul>
-<p>&gt; b</p>
 ```
 
 :::
@@ -61308,11 +61309,12 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ol>
-      <li></li>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
     </ol>
   </li>
 </ul>
-<p>&gt; b</p>
 ```
 
 :::
@@ -61351,9 +61353,10 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ol>
-      <li></li>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
     </ol>
-    <blockquote><p>b</p></blockquote>
   </li>
 </ul>
 ```
@@ -61399,13 +61402,13 @@ x
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
     </ul>
   </li>
 </ul>
-<p><code>
-x
-</code></p>
 ```
 
 :::
@@ -61499,13 +61502,13 @@ x
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled> </li>
+      <li><input type="checkbox" disabled> 
+        <pre><code>x
+</code></pre>
+      </li>
     </ul>
   </li>
 </ul>
-<p><code>
-x
-</code></p>
 ```
 
 :::
@@ -61599,13 +61602,13 @@ x
 <ul>
   <li>foo
     <ol>
-      <li></li>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
     </ol>
   </li>
 </ul>
-<p><code>
-x
-</code></p>
 ```
 
 :::
@@ -61649,10 +61652,11 @@ x
 <ul>
   <li>foo
     <ol>
-      <li></li>
-    </ol>
-    <pre><code>x
+      <li>
+        <pre><code>x
 </code></pre>
+      </li>
+    </ol>
   </li>
 </ul>
 ```
@@ -62767,13 +62771,13 @@ Q
 
 ```html
 <ol>
-  <li>ordered
-&gt; &gt; quote
-+</li>
+  <li>ordered</li>
 </ol>
-<ul>
-  <li>item</li>
-</ul>
+<blockquote>
+  <blockquote><p>quote
++
+- item</p></blockquote>
+</blockquote>
 ```
 
 :::::::
@@ -62789,13 +62793,13 @@ Q
 
 ```html
 <ol>
-  <li>ordered
-&gt; &gt; quote
-Q</li>
+  <li>ordered</li>
 </ol>
-<ul>
-  <li>item</li>
-</ul>
+<blockquote>
+  <blockquote><p>quote
+Q
+- item</p></blockquote>
+</blockquote>
 ```
 
 :::::::
@@ -62929,11 +62933,10 @@ e
 `````html
 <dl>
   <dt>m</dt>
-  <dd>
-    <p>l</p>
-    <pre><code>e
-</code></pre>
-  </dd>
+  <dd>l
+<code>
+e
+</code></dd>
 </dl>
 `````
 
@@ -63355,13 +63358,12 @@ x
   <dt>t</dt>
   <dd>
     <ol>
-      <li>para
-        <pre><code></code></pre>
-      </li>
+      <li>para</li>
     </ol>
   </dd>
 </dl>
-<p>x</p>
+<pre><code>x
+</code></pre>
 `````
 
 :::::::
@@ -63385,13 +63387,12 @@ x
   <dt>t</dt>
   <dd>
     <ol>
-      <li>para
-        <pre><code></code></pre>
-      </li>
+      <li>para</li>
     </ol>
   </dd>
 </dl>
-<p>x</p>
+<pre><code>x
+</code></pre>
 `````
 
 :::::::
@@ -63853,8 +63854,7 @@ An indented quote line below a nested quote's first-block `+` is lazy text
 
 `````html
 <blockquote>
-  <blockquote><p>+
-&gt; q</p></blockquote>
+  <blockquote><p>q</p></blockquote>
 </blockquote>
 `````
 
@@ -63875,7 +63875,7 @@ The same lines inside a list item
   <li>a
     <blockquote>
       <blockquote><p>+
-&gt; q</p></blockquote>
+q</p></blockquote>
     </blockquote>
   </li>
 </ul>
@@ -64702,8 +64702,8 @@ PART 9 §24 C5 strips a container's indent by columns and, on a list-marker line
     <p>b</p>
     <dl>
       <dt>t</dt>
+      <dd>zq</dd>
     </dl>
-    <p>: zq</p>
   </dd>
 </dl>
 ```
@@ -65638,11 +65638,10 @@ x
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-<code>
-x
-</code></dd>
+  <dd>d</dd>
 </dl>
+<pre><code>x
+</code></pre>
 ```
 
 :::
@@ -65694,9 +65693,9 @@ A body row must start at the table base.
   </thead>
   <tbody>
     <tr><td>b</td></tr>
+    <tr><td>c</td></tr>
   </tbody>
 </table>
-<p>|c|</p>
 ```
 
 :::
@@ -66112,10 +66111,8 @@ A line-final tab is dropped before the list marker is read. The blank and the re
   <dt>term</dt>
   <dd>
     <ul>
-      <li>a</li>
-    </ul>
-    <ul>
-      <li>c</li>
+      <li><p>a</p></li>
+      <li><p>c</p></li>
     </ul>
   </dd>
 </dl>
@@ -66424,8 +66421,10 @@ A new quote after the blank does not inherit the list item from the earlier quot
     <li>x</li>
   </ul>
 </blockquote>
-<blockquote><p>[r]: /u</p></blockquote>
-<blockquote><p>[r][]</p></blockquote>
+<blockquote>
+
+</blockquote>
+<blockquote><p><a href="/u">r</a></p></blockquote>
 ```
 
 ::::
@@ -66803,8 +66802,12 @@ x
 ```
 
 ```html
-<blockquote><p>::: |
-x</p></blockquote>
+<blockquote>
+  <div class="line-block">
+
+  </div>
+</blockquote>
+<p>x</p>
 ```
 
 :::
@@ -67871,7 +67874,7 @@ tail</dt>
       : a
       <dl>
         <dt>sibling
-tail</dt>
+ tail</dt>
       </dl>
     </li>
   </ul>
@@ -67939,7 +67942,7 @@ tail</dt>
     : a
     <dl>
       <dt>sibling
-tail</dt>
+    tail</dt>
     </dl>
   </li>
 </ul>
@@ -68240,7 +68243,7 @@ s</p></blockquote>
     </ul>
     <dl>
       <dt>sibling
-tail</dt>
+     tail</dt>
     </dl>
   </li>
 </ul>
@@ -68267,12 +68270,14 @@ tail</dt>
       <li>
         <dl>
           <dt>t
-: a
-:: sibling
-tail</dt>
+: a</dt>
         </dl>
       </li>
     </ul>
+    <dl>
+      <dt>sibling
+   tail</dt>
+    </dl>
   </li>
 </ul>
 ```
@@ -68364,7 +68369,9 @@ tail</li>
     </ul>
   </dd>
 </dl>
-<p># H</p>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ::::
@@ -68385,14 +68392,15 @@ see[^n]
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+    <h1 id="h">h</h1>
+  </li>
 </ul>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <h1 id="h">h</h1>
       <h1 id="h-2">h</h1>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
@@ -68440,7 +68448,7 @@ see[^n]
     <ul>
       <li></li>
     </ul>
-    <p># H</p>
+    <h1 id="H">H</h1>
   </dd>
 </dl>
 ```
@@ -68463,13 +68471,15 @@ See[^f]
 ```
 
 ```html
+<dl>
+  <dt>term</dt>
+</dl>
 <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>alpha
-:: term<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>alpha<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

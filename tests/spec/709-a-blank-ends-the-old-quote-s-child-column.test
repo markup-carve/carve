@@ -12,6 +12,8 @@ A blank ends the old quote's child column
     <li>x</li>
   </ul>
 </blockquote>
-<blockquote><p>[r]: /u</p></blockquote>
-<blockquote><p>[r][]</p></blockquote>
+<blockquote>
+
+</blockquote>
+<blockquote><p><a href="/u">r</a></p></blockquote>
 ```

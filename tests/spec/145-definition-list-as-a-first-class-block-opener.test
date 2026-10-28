@@ -35,10 +35,12 @@ Definition list as a first-class block opener
  :  def
 .
 <ul>
-  <li>one
-:: term
-:  def</li>
+  <li>one</li>
 </ul>
+<dl>
+  <dt>term</dt>
+  <dd>def</dd>
+</dl>
 ```
 
 ```

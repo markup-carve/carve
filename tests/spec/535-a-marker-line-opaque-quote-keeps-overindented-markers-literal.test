@@ -27,11 +27,8 @@ y
   <li>
     <blockquote>
       <pre><code>x
+y
 </code></pre>
-    </blockquote>
-    &gt; y
-    <blockquote>
-      <pre><code></code></pre>
     </blockquote>
   </li>
 </ul>
@@ -103,8 +100,8 @@ y
     <blockquote>
       <pre><code>x
 </code></pre>
+      <p>y</p>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 ````
@@ -172,11 +169,8 @@ y
   <li>
     <blockquote>
       <pre><code>x
+y
 </code></pre>
-    </blockquote>
-    &gt; y
-    <blockquote>
-      <pre><code></code></pre>
     </blockquote>
   </li>
 </ul>
@@ -248,8 +242,8 @@ y
     <blockquote>
       <pre><code>x
 </code></pre>
+      <p>y</p>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 ```
@@ -316,10 +310,7 @@ y
   <li>
     <blockquote>
       x
-    </blockquote>
-    &gt; y
-    <blockquote>
-      <pre><code></code></pre>
+y
     </blockquote>
   </li>
 </ul>
@@ -387,8 +378,8 @@ y
   <li>
     <blockquote>
       x
+      <p>y</p>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 ````
@@ -543,8 +534,8 @@ y
         <pre><code>x
 </code></pre>
       </blockquote>
+      <p>y</p>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 ````
@@ -561,8 +552,8 @@ y
         <pre><code>x
 </code></pre>
       </blockquote>
+      <p>y</p>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 ````
@@ -610,9 +601,9 @@ y
       <pre><code>x
 </code></pre>
       <pre><code>z
+y
 </code></pre>
     </blockquote>
-    &gt; y
   </li>
 </ul>
 ````

@@ -8,8 +8,7 @@ A comment fence is a comment at any column too
  tail
 .
 <ul>
-  <li>a
-    tail
-  </li>
+  <li>a</li>
 </ul>
+<p>tail</p>
 ```

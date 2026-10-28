@@ -16,7 +16,7 @@ A line-block payload span pairs past the content column
       <div class="line-block">
         <p>&nbsp;&nbsp;<code>
 :::
-&nbsp;&nbsp;</code></p>
+</code></p>
       </div>
       :::bad
 :::
@@ -40,12 +40,12 @@ tail
     <div class="line-block">
       <p>&nbsp;&nbsp;<code>
 :::
-&nbsp;&nbsp;</code></p>
+</code></p>
     </div>
     para
-tail
   </li>
 </ul>
+<p>tail</p>
 ````
 
 ````

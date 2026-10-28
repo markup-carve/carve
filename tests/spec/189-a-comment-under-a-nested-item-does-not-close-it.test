@@ -8,10 +8,9 @@ A comment under a nested item does not close it
 <ul>
   <li>
     <ul>
-      <li>a
-        b
-      </li>
+      <li>a</li>
     </ul>
   </li>
 </ul>
+<p>b</p>
 ```

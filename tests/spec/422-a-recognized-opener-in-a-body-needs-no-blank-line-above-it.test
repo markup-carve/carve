@@ -100,8 +100,10 @@ see[^n]
 intro
    # heading
 .
-<p>intro
-# heading</p>
+<p>intro</p>
+<section id="heading">
+  <h1>heading</h1>
+</section>
 ```
 
 ```
@@ -111,9 +113,9 @@ intro
 .
 <dl>
   <dt>term</dt>
-  <dd>definition
-&gt; quote</dd>
+  <dd>definition</dd>
 </dl>
+<blockquote><p>quote</p></blockquote>
 ```
 
 ```

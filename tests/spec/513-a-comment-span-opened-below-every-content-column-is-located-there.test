@@ -8,10 +8,9 @@ A comment span opened below every content column is located there
 tail
 .
 <ul>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -22,10 +21,9 @@ tail
 tail
 .
 <ul>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -36,10 +34,9 @@ tail
 tail
 .
 <ul>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -50,10 +47,9 @@ tail
 tail
 .
 <ol>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ol>
+<p>tail</p>
 ```
 
 ```
@@ -67,12 +63,11 @@ tail
 <ul>
   <li>a
     <ul>
-      <li>item
-        tail
-      </li>
+      <li>item</li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -83,10 +78,9 @@ tail
 tail
 .
 <ul>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -95,10 +89,9 @@ tail
 tail
 .
 <ul>
-  <li>item
-    tail
-  </li>
+  <li>item</li>
 </ul>
+<p>tail</p>
 ```
 
 ````
@@ -110,9 +103,8 @@ tail
 tail
 .
 <ul>
-  <li>item
-    <pre><code></code></pre>
-  </li>
+  <li>item</li>
 </ul>
-<p>tail</p>
+<pre><code>tail
+</code></pre>
 ````

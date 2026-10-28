@@ -10,11 +10,10 @@ See [text][r].
 .
 <dl>
   <dt>t</dt>
-  <dd>d
-[r]: /u
-tail</dd>
+  <dd>d</dd>
 </dl>
-<p>See [text][r].</p>
+<p>tail</p>
+<p>See <a href="/u">text</a>.</p>
 ```
 
 ```
@@ -27,11 +26,18 @@ See[^f]
 .
 <dl>
   <dt>t</dt>
-  <dd>d
-[^f]: n
-tail</dd>
+  <dd>d</dd>
 </dl>
-<p>See[^f]</p>
+<p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n
+tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ```
@@ -42,10 +48,9 @@ tail
 .
 <dl>
   <dt>t</dt>
-  <dd>d
-{.k}
-tail</dd>
+  <dd>d</dd>
 </dl>
+<p class="k">tail</p>
 ```
 
 ```
@@ -81,8 +86,7 @@ tail
 .
 <dl>
   <dt>t</dt>
-  <dd>d
-[r]: /u
-tail</dd>
+  <dd>d</dd>
 </dl>
+<p>tail</p>
 ```

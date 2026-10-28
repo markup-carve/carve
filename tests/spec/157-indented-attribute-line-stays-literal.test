@@ -4,8 +4,7 @@ Indented attribute line stays literal
  {.note}
  This paragraph.
 .
-<p>{.note}
-This paragraph.</p>
+<p class="note">This paragraph.</p>
 ```
 
 ```
@@ -13,9 +12,10 @@ This paragraph.</p>
  - one
  - two
 .
-<p>{.todo}
-- one
-- two</p>
+<ul class="todo">
+  <li>one</li>
+  <li>two</li>
+</ul>
 ```
 
 ```

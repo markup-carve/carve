@@ -202,10 +202,10 @@ flush
 .
 <blockquote>
   <p>:  a</p>
-  <p><code>
-x
-flush</code></p>
+  <pre><code>x
+</code></pre>
 </blockquote>
+<p>flush</p>
 ````
 
 ````

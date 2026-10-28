@@ -90,8 +90,8 @@ not a list</p>
   1. inner
 .
 <ol>
-  <li>outer
-1. inner</li>
+  <li>outer</li>
+  <li>inner</li>
 </ol>
 ```
 
@@ -115,7 +115,7 @@ not a list</p>
 <ol>
   <li>one</li>
 </ol>
-<p>&gt; q</p>
+<blockquote><p>q</p></blockquote>
 ```
 
 ```

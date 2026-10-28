@@ -19,8 +19,7 @@ b
 b
 .
 <ul>
-  <li>a
-    b
-  </li>
+  <li>a</li>
 </ul>
+<p>b</p>
 ```

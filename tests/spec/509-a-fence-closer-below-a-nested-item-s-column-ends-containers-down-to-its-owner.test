@@ -45,8 +45,9 @@ A fence closer below a nested item's column ends containers down to its owner
     </ul>
   </li>
 </ul>
-<p><code></code></p>
-<p>tail</p>
+<pre><code>
+   tail
+</code></pre>
 ````
 
 ````
@@ -188,8 +189,9 @@ p
     </ul>
   </li>
 </ul>
-<p>~~~</p>
-<p>tail</p>
+<pre><code>
+   tail
+</code></pre>
 ```
 
 ````

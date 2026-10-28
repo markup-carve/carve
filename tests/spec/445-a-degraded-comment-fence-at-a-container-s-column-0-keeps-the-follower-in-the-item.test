@@ -6,10 +6,9 @@ A degraded comment fence at a container's column 0 keeps the follower in the ite
 y
 .
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 ```
@@ -18,10 +17,9 @@ y
 y
 .
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 ```
@@ -42,10 +40,9 @@ y
 y
 .
 <ol>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ol>
+<p>y</p>
 ```
 
 ```
@@ -54,10 +51,9 @@ y
 y
 .
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 ```
@@ -68,10 +64,9 @@ y
 <ul>
   <li>
     <ul>
-      <li>x
-        y
-      </li>
+      <li>x</li>
     </ul>
+    y
   </li>
 </ul>
 ```
@@ -82,10 +77,9 @@ y
 y
 .
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 ```
@@ -95,10 +89,9 @@ y
 y
 .
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 ```
@@ -121,6 +114,8 @@ z
 .
 <ul>
   <li>x</li>
+</ul>
+<ul>
   <li>y</li>
 </ul>
 ```

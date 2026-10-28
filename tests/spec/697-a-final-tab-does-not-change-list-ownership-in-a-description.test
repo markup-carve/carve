@@ -10,10 +10,8 @@ A final tab does not change list ownership in a description
   <dt>term</dt>
   <dd>
     <ul>
-      <li>a</li>
-    </ul>
-    <ul>
-      <li>c</li>
+      <li><p>a</p></li>
+      <li><p>c</p></li>
     </ul>
   </dd>
 </dl>

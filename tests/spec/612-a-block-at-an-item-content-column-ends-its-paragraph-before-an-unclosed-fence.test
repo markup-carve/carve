@@ -180,15 +180,16 @@ after *b*
 .
 <aside class="admonition note" aria-label="Note">
   <ol start="10">
-    <li>para
-| t |
-<code>
-code</code></li>
+    <li>para</li>
   </ol>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <table>
+    <tbody>
+      <tr><td>t</td></tr>
+    </tbody>
+  </table>
+  <pre><code>code
+::::
+</code></pre>
 </aside>
+<p>after <strong>b</strong></p>
 ````

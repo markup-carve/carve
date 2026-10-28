@@ -121,11 +121,12 @@ A first-block marker on an indented opener reads two columns
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
     </ul>
   </li>
 </ul>
-<p>&gt; b</p>
 ```
 
 ```
@@ -184,11 +185,12 @@ A first-block marker on an indented opener reads two columns
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled> </li>
+      <li><input type="checkbox" disabled> 
+        <blockquote><p>b</p></blockquote>
+      </li>
     </ul>
   </li>
 </ul>
-<p>&gt; b</p>
 ```
 
 ```
@@ -247,11 +249,12 @@ A first-block marker on an indented opener reads two columns
 <ul>
   <li>foo
     <ol>
-      <li></li>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
     </ol>
   </li>
 </ul>
-<p>&gt; b</p>
 ```
 
 ```
@@ -278,9 +281,10 @@ A first-block marker on an indented opener reads two columns
 <ul>
   <li>foo
     <ol>
-      <li></li>
+      <li>
+        <blockquote><p>b</p></blockquote>
+      </li>
     </ol>
-    <blockquote><p>b</p></blockquote>
   </li>
 </ul>
 ```
@@ -314,13 +318,13 @@ x
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
     </ul>
   </li>
 </ul>
-<p><code>
-x
-</code></p>
 ````
 
 ````
@@ -390,13 +394,13 @@ x
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled> </li>
+      <li><input type="checkbox" disabled> 
+        <pre><code>x
+</code></pre>
+      </li>
     </ul>
   </li>
 </ul>
-<p><code>
-x
-</code></p>
 ````
 
 ````
@@ -466,13 +470,13 @@ x
 <ul>
   <li>foo
     <ol>
-      <li></li>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
     </ol>
   </li>
 </ul>
-<p><code>
-x
-</code></p>
 ````
 
 ````
@@ -504,10 +508,11 @@ x
 <ul>
   <li>foo
     <ol>
-      <li></li>
-    </ol>
-    <pre><code>x
+      <li>
+        <pre><code>x
 </code></pre>
+      </li>
+    </ol>
   </li>
 </ul>
 ````

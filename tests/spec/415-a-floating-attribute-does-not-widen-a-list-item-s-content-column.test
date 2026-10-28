@@ -40,7 +40,9 @@ A floating attribute does not widen a list item's content column
 <ul>
   <li id="k"></li>
 </ul>
-<p># h</p>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 ```
@@ -48,9 +50,11 @@ A floating attribute does not widen a list item's content column
  # h
 .
 <ul>
-  <li id="k">text
-# h</li>
+  <li id="k">text</li>
 </ul>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 ```
@@ -60,7 +64,9 @@ A floating attribute does not widen a list item's content column
 <ol>
   <li id="k"></li>
 </ol>
-<p># h</p>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 ```
@@ -70,5 +76,7 @@ A floating attribute does not widen a list item's content column
 <ul class="task-list">
   <li data-task-state="x" id="k"><input type="checkbox" checked disabled> </li>
 </ul>
-<p># h</p>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```

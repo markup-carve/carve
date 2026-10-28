@@ -42,9 +42,8 @@ tail
     </blockquote>
   </li>
 </ul>
-<blockquote><p>: d
-[^f]: n
-tail</p></blockquote>
+<blockquote><p>: d</p></blockquote>
+<p>tail</p>
 ```
 
 ```
@@ -53,10 +52,12 @@ tail</p></blockquote>
 .
 <blockquote>
   <dl>
-    <dt>c
-# H</dt>
+    <dt>c</dt>
   </dl>
 </blockquote>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ```
@@ -79,11 +80,11 @@ tail</p></blockquote>
   [^f]: t
 .
 <ul>
-  <li>para
-    <pre><code></code></pre>
-  </li>
-  <li>a</li>
+  <li>para</li>
 </ul>
+<pre><code>- a
+  [^f]: t
+</code></pre>
 ````
 
 ```
@@ -129,8 +130,14 @@ X
 >  ::: |
  :::
 .
-<blockquote><p>::: |
-:::</p></blockquote>
+<blockquote>
+  <div class="line-block">
+
+  </div>
+</blockquote>
+<div>
+
+</div>
 ```
 
 ```
@@ -142,12 +149,11 @@ tail
 <ul>
   <li>
     <ul>
-      <li>item
-        tail
-      </li>
+      <li>item</li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -248,7 +254,9 @@ tail
   </li>
 </ul>
 <blockquote>
-  <blockquote><p>[^f]: n</p></blockquote>
+  <blockquote>
+
+  </blockquote>
 </blockquote>
 ```
 
@@ -338,8 +346,8 @@ tail</p>
       </blockquote>
     </li>
   </ul>
+  <p>y</p>
 </blockquote>
-<p>&gt; y</p>
 ```
 
 ```

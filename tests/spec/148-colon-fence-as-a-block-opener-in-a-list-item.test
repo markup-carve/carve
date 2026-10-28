@@ -7,11 +7,11 @@ Colon-fence as a block opener in a list item
  :::
 .
 <ul>
-  <li>one
-::: note
-b
-:::</li>
+  <li>one</li>
 </ul>
+<aside class="admonition note" aria-label="Note">
+  <p>b</p>
+</aside>
 ```
 
 ```

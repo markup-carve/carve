@@ -22,7 +22,6 @@ A fence that leaves a closed nested item opens in the host it lands in
           </li>
         </ul>
         <pre><code>:::bad
-:::
 </code></pre>
       </div>
     </li>
@@ -88,11 +87,10 @@ x
             </div>
           </li>
         </ul>
-        <pre><code>:::
-:::bad
-:::
-</code></pre>
+        <pre><code></code></pre>
       </div>
+      :::bad
+:::
     </li>
   </ul>
 </blockquote>
@@ -209,7 +207,6 @@ after</code></li>
           </li>
         </ul>
         <pre><code>:::bad
-:::
 </code></pre>
       </div>
     </li>
@@ -242,11 +239,10 @@ after</code></li>
             </div>
           </li>
         </ul>
-        <pre><code>:::
-:::bad
-:::
-</code></pre>
+        <pre><code></code></pre>
       </div>
+      :::bad
+:::
     </li>
   </ul>
 </blockquote>
@@ -267,7 +263,6 @@ after</code></li>
     <li>
       <div class="box">
         <pre><code>:::bad
-:::
 </code></pre>
       </div>
     </li>

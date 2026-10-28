@@ -6,10 +6,9 @@ Comment columns and surviving list items
 tail
 .
 <ul>
-  <li>intro
-    tail
-  </li>
+  <li>intro</li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -43,6 +42,8 @@ c
 .
 <ul>
   <li>intro</li>
+</ul>
+<ul>
   <li>next</li>
 </ul>
 ```

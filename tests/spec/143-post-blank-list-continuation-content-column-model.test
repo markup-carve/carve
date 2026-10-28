@@ -8,7 +8,7 @@ Post-blank list continuation (content-column model)
 <ul>
   <li>one</li>
 </ul>
-<p>&gt; q</p>
+<blockquote><p>q</p></blockquote>
 ```
 
 ```
@@ -40,9 +40,9 @@ Post-blank list continuation (content-column model)
  > q
 .
 <ul>
-  <li>one
-&gt; q</li>
+  <li>one</li>
 </ul>
+<blockquote><p>q</p></blockquote>
 ```
 
 ````

@@ -39,13 +39,13 @@ Q
 - item
 .
 <ol>
-  <li>ordered
-&gt; &gt; quote
-+</li>
+  <li>ordered</li>
 </ol>
-<ul>
-  <li>item</li>
-</ul>
+<blockquote>
+  <blockquote><p>quote
++
+- item</p></blockquote>
+</blockquote>
 ```
 
 ```
@@ -55,11 +55,11 @@ Q
 - item
 .
 <ol>
-  <li>ordered
-&gt; &gt; quote
-Q</li>
+  <li>ordered</li>
 </ol>
-<ul>
-  <li>item</li>
-</ul>
+<blockquote>
+  <blockquote><p>quote
+Q
+- item</p></blockquote>
+</blockquote>
 ```

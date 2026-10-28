@@ -12,7 +12,7 @@ An indented line after a table is a paragraph
   </thead>
   <tbody>
     <tr><td>b</td></tr>
+    <tr><td>c</td></tr>
   </tbody>
 </table>
-<p>|c|</p>
 ```

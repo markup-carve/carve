@@ -9,8 +9,6 @@ A below-column marker after a comment, where no paragraph is open
 .
 <ul>
   <li>a</li>
-</ul>
-<ul>
   <li>s</li>
 </ul>
 ```
@@ -40,7 +38,9 @@ A below-column marker after a comment, where no paragraph is open
 <ul>
   <li>a</li>
 </ul>
-<p># h</p>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 ```
@@ -50,8 +50,8 @@ A below-column marker after a comment, where no paragraph is open
 .
 <ul>
   <li>a
-b
-- s</li>
+b</li>
+  <li>s</li>
 </ul>
 ```
 
@@ -62,8 +62,8 @@ b
 .
 <ul>
   <li>a
-    <blockquote><p>q
-- s</p></blockquote>
+    <blockquote><p>q</p></blockquote>
   </li>
+  <li>s</li>
 </ul>
 ```

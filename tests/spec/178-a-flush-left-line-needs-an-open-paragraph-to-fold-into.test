@@ -61,10 +61,10 @@ b</li>
 <ul>
   <li>
     <ul>
-      <li>a
-- b</li>
+      <li>a</li>
     </ul>
   </li>
+  <li>b</li>
 </ul>
 ```
 
@@ -76,11 +76,13 @@ b</li>
 <ul>
   <li>x
     <ul>
-      <li>a
-# H</li>
+      <li>a</li>
     </ul>
   </li>
 </ul>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ```
@@ -91,9 +93,9 @@ b</li>
 <ul>
   <li>x
     <ul>
-      <li>a
-- b</li>
+      <li>a</li>
     </ul>
   </li>
+  <li>b</li>
 </ul>
 ```
