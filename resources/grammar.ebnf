@@ -2937,6 +2937,12 @@ extension_content = {character - ']'} ;
 (* The content runs up to the FIRST `]`; a nested `]` closes the extension
    early and the remainder is literal: `:foo[a [b] c]` ->
    `<span class="ext-foo">a [b</span> c]`. *)
+(* GENERIC EXTENSION CONTENT IS INLINE CONTENT -- NORMATIVE [CARVE-P3-026].
+   Parse the captured run as inline content, including nested inline elements;
+   do not render its markup as literal characters. Thus `:code[*b*]` renders
+   `<span class="ext-code"><strong>b</strong></span>`. An empty captured run
+   is permitted and renders an empty generic span: `:code[]` renders
+   `<span class="ext-code"></span>`. *)
 
 (* --- Editorial Markup (CriticMarkup-inspired) --- *)
 editorial_markup = addition | deletion | substitution | editorial_comment ;
@@ -2997,6 +3003,12 @@ tag = '#', tag_name ;
 tag_name = dotted_name ;
 
 (* A mention and a tag spell the same name; only the sigil differs. *)
+(* AN INERT MENTION OR TAG RENDERS ITS FULL SPELLING IN STRONG -- NORMATIVE
+   [CARVE-P3-027]. With no URL template configured (PART 10 §8), the strong
+   child contains the sigil and name together inside the inert span:
+   `@ann` renders
+   `<span class="mention"><strong>@ann</strong></span>` and `#tag` renders
+   `<span class="tag"><strong>#tag</strong></span>`. *)
 dotted_name = name_word, {'.', name_word} ;
 name_word = (letter | digit | '_' | '-')+ ;
 (* Dots are INTERIOR-only by construction: a dot followed by another name
@@ -7924,7 +7936,10 @@ EOF = (* end of file *) ;
         </table>
 
    8. STABLE STRINGS. Mentions and tags render as inert `<span>`s (no link)
-      when no URL template is configured; a configured template links to them. The footnote
+      when no URL template is configured; a configured template links to them.
+      The visible sigil and name form one `<strong>` child inside the span
+      (PART 3, CARVE-P3-027): `<span class="mention"><strong>@ann</strong></span>`
+      and `<span class="tag"><strong>#tag</strong></span>`. The footnote
       backlink glyph is `↩` (CARVE-P9-025). Math wraps content in `\(…\)` /
       `\[…\]` inside `<span class="math inline|display">` (CARVE-P9-036).
 

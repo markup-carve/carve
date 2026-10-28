@@ -1,0 +1,19 @@
+A generic extension parses its captured content as inline content
+
+```
+:code[*b*] :foo[]
+.
+<p><span class="ext-code"><strong>b</strong></span> <span class="ext-foo"></span></p>
+```
+
+```
+:foo[/a *b*/]
+.
+<p><span class="ext-foo"><em>a <strong>b</strong></em></span></p>
+```
+
+```
+> :foo[*b*] and @ann
+.
+<blockquote><p><span class="ext-foo"><strong>b</strong></span> and <span class="mention"><strong>@ann</strong></span></p></blockquote>
+```

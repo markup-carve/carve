@@ -2093,6 +2093,18 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P3-026",
+      "part": "3",
+      "title": "GENERIC EXTENSION CONTENT IS INLINE CONTENT",
+      "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P3-027",
+      "part": "3",
+      "title": "AN INERT MENTION OR TAG RENDERS ITS FULL SPELLING IN STRONG",
+      "scope": "resolution-rendering"
+    },
+    {
       "id": "CARVE-P9-080",
       "part": "9",
       "title": "A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE",

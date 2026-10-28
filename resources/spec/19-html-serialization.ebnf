@@ -217,7 +217,10 @@
         </table>
 
    8. STABLE STRINGS. Mentions and tags render as inert `<span>`s (no link)
-      when no URL template is configured; a configured template links to them. The footnote
+      when no URL template is configured; a configured template links to them.
+      The visible sigil and name form one `<strong>` child inside the span
+      (PART 3, CARVE-P3-027): `<span class="mention"><strong>@ann</strong></span>`
+      and `<span class="tag"><strong>#tag</strong></span>`. The footnote
       backlink glyph is `↩` (CARVE-P9-025). Math wraps content in `\(…\)` /
       `\[…\]` inside `<span class="math inline|display">` (CARVE-P9-036).
 
