@@ -3517,10 +3517,11 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       line ending does not begin a further line, so an empty file has no
       lines, and neither has a file holding only its leading U+FEFF, which
       is not content (I1c). The three
-      SELECTION mechanisms are MUTUALLY EXCLUSIVE: a directive MUST use at
+      SELECTION mechanisms, including `@rows:N-M` (I1d), are MUTUALLY EXCLUSIVE: a directive MUST use at
       most one; a directive carrying two is an ERROR (Warning + literal,
       per I7). TRANSFORM options reshape already-selected content and are
-      orthogonal to selection: `@shift:N` shifts every included heading's
+      orthogonal to selection: `@cols` (I1d) projects delimited table columns;
+      `@shift:N` shifts every included heading's
       level by the SIGNED integer N (I8). `@shift` MAY accompany `#section`,
       a line-range, a region, or neither. `@shift` takes EITHER a signed integer OR
       the literal value `auto` (context-relative, computed by the processor
@@ -3603,7 +3604,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    I1c CODE INCLUDE (`@code`, `@code:lang`). A MODE option (I1): the selected
       content becomes ONE code block instead of being read as Carve.
       PAYLOAD. The block's content is the selected source -- the whole file,
-      an `@lines` range or an `@region` region -- unparsed: no Carve
+      an `@lines` range, an `@region` region, or records selected by `@rows`
+      on a delimited table (I1d) -- unparsed as Carve: no Carve
       construct is recognized in it, so a `{{ ... }}` in it is never
       expanded (I9) and a fence line in it is content. Lines are split on
       `newline` as PART 0 defines it, a leading U+FEFF of the file is not
@@ -3633,8 +3635,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       applies to the code block exactly as it applies to an authored fence:
       classes, an id, `title` and every other key, and an extension that
       reads a code block (callouts, diff presentation) reads this one.
-      SELECTION. `@code` composes with `@lines`, with `@region` (I1b (b)) or
-      with neither. `#section` selects Carve structure and is NOT available:
+      SELECTION. `@code` composes with `@lines`, with `@region` (I1b (b)),
+      with `@rows` on a delimited table (I1d), or with neither.
+      `#section` selects Carve structure and is NOT available:
       `#section` with `@code` is an ERROR (`include-selection-conflict`,
       Warning + literal). `@shift` has no effect, since the payload holds no
       headings (I8).
@@ -3650,6 +3653,49 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       Every other rule is unchanged: resolution and containment (I3, I10),
       cycles, depth and the byte budget (I6), errors (I7) and dependency
       reporting (I11).
+
+   I1d DELIMITED TABLE INCLUDE SELECTION. `@rows:N-M` is a SELECTION on a
+      block `@code:csv` or `@code:tsv` include with a `{table}` attribute.
+      It counts parsed records from 1, including header records, after
+      the leading U+FEFF is removed and the whole file is decoded. A quoted
+      field containing newlines is one record. N and M follow the `@lines`
+      decimal rules in I1: no zero or leading zero, and N no greater than M.
+      Invalid values give `include-rows-invalid`; a start past the last
+      record gives `include-rows-out-of-range`. The end may pass the last
+      record and is clipped. `@rows` is exclusive with `#section`, `@lines`
+      and `@region`; a combination gives `include-selection-conflict`.
+      The file remains an I11 dependency on every Warning + literal path.
+
+      `@cols:"Name,Other"` is a TRANSFORM on the same table include. It
+      The name form is double-quoted. It selects columns by exact header
+      name and writes them in the given
+      order, so it may reorder columns. A backslash quotes a comma or a
+      double quote inside a name, following `quoted_value`; an unescaped
+      comma separates names. A name absent from the first header record,
+      an empty header name, or an ambiguous duplicate header name gives
+      `include-cols-invalid`, Warning + literal under I7. Naming one column twice gives
+      `include-cols-duplicate`, also Warning + literal. With
+      `{table header-rows=0}` only, unquoted `@cols:N-M` selects the inclusive
+      1-based numeric column range using the same value rules as `@rows`.
+      A malformed or out-of-bounds numeric range gives `include-cols-invalid`.
+      `@cols` can accompany any valid selection or no selection. Either
+      option outside this table include context gives its `include-rows-invalid`
+      or `include-cols-invalid` Warning + literal.
+
+      The first `header-rows` records of the whole file (default one) form
+      the header, projected to the chosen columns. A selection chooses only
+      body records. A header record inside its range is not repeated.
+      `header-rows=0` disables the header and makes every selected record a
+      body record. Selected cells keep their positions in the included file;
+      projection never rebases them to the directive or a filtered table.
+      `@lines` remains valid and counts physical file lines;
+      on this table include a linter also emits
+      `include-lines-table-rows-hint` (Hint) suggesting `@rows`.
+      The directive's caption slot attaches to the resulting table (I1c).
+      If delimited quoting is malformed, the include falls back to a code
+      block holding the full source with `delimited-table-malformed` as usual. Markdown
+      export writes the selected cells in order as a plain GFM pipe table;
+      a caption becomes a following paragraph.
 
    I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
       include: the resolved content merges as BLOCKS at the directive

@@ -9,7 +9,7 @@ export function delimitedRowCount(raw) {
 
 // Convert a verbatim csv/tsv fence payload into table rows. A quoted field may
 // contain a record break. Invalid quoting leaves the original code block intact.
-export function delimitedRows(source, separator) {
+export function delimitedRecords(source, separator) {
   if (source === '') return []
   const rows = []
   let row = []
@@ -17,6 +17,8 @@ export function delimitedRows(source, separator) {
   let quoted = false
   let closed = false
   let atStart = true
+  let line = 1
+  let recordLine = 1
   const finishField = () => {
     row.push(field)
     field = ''
@@ -26,8 +28,9 @@ export function delimitedRows(source, separator) {
   }
   const finishRow = () => {
     finishField()
-    rows.push(row)
+    rows.push({ cells: row, line: recordLine, endLine: line })
     row = []
+    recordLine = line + 1
   }
   for (let i = 0; i < source.length; i++) {
     const ch = source[i]
@@ -41,12 +44,14 @@ export function delimitedRows(source, separator) {
           closed = true
         }
       } else field += ch
+      if (ch === '\n') line++
       continue
     }
     if (ch === separator) {
       finishField()
     } else if (ch === '\n') {
       finishRow()
+      line++
     } else if (ch === '"') {
       if (!atStart || closed) return null
       quoted = true
@@ -60,4 +65,8 @@ export function delimitedRows(source, separator) {
   if (quoted) return null
   if (source.at(-1) !== '\n') finishRow()
   return rows
+}
+
+export function delimitedRows(source, separator) {
+  return delimitedRecords(source, separator)?.map(record => record.cells) ?? null
 }

@@ -92,11 +92,11 @@ function readValue(inner, at) {
   if (inner[at] === '"' || inner[at] === "'") {
     const end = quotedRunEnd(inner, at)
     if (end === -1) return null
-    return { value: unescape(inner.slice(at + 1, end)), next: end + 1 }
+    return { value: unescape(inner.slice(at + 1, end)), raw: inner.slice(at + 1, end), quote: inner[at], next: end + 1 }
   }
   const m = UNQUOTED_VALUE.exec(inner.slice(at))
   if (!m) return null
-  return { value: m[0], next: at + m[0].length }
+  return { value: m[0], raw: m[0], quote: null, next: at + m[0].length }
 }
 
 /*
@@ -151,7 +151,7 @@ export function scanDirective(text, open) {
     }
     const value = readValue(inner, k + 1)
     if (!value) return null
-    options.push([key[0], value.value])
+    options.push(key[0] === 'cols' ? [key[0], value.raw, value.quote] : [key[0], value.value])
     i = value.next
   }
 

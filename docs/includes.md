@@ -138,24 +138,26 @@ directive as the literal text the [Errors](#errors) rules describe.
 Directive options fall into two disjoint kinds:
 
 - **Selection options** choose *which* content is pulled in: `#section`
-  (semantic - a heading's section or one block), a line-range `@lines:N-M`,
-  or a named region `@region:name` (both physical source lines).
+  (semantic, a heading's section or one block), a line range `@lines:N-M`,
+  a named region `@region:name` (both physical source lines), or
+  `@rows:N-M` (parsed CSV or TSV records on a table include).
 - **Transform options** reshape content that has already been selected:
-  `@shift:N` (heading-level shift). Future transform options join this kind.
+  `@shift:N` (heading-level shift) and `@cols` (table column projection).
 - **The mode option** `@code` decides what the selected content becomes: one
   code block, instead of Carve.
 
-The three **selection** mechanisms are **mutually exclusive**: a single
-directive MUST use at most one of `#section`, `@lines`, and `@region`.
+The four **selection** mechanisms are **mutually exclusive**: a single
+directive MUST use at most one of `#section`, `@lines`, `@rows`, and `@region`.
 Combining them is an **error**: the processor emits a Warning and leaves
 the directive **literal**, exactly like the other error cases (see
 [Errors](#errors)).
 
-**Transform** options are orthogonal to selection. `@shift` is **not** a
-selection option: it MAY accompany `#section`, a line-range, a region, or neither, and it
-composes with whichever selection (if any) the directive uses.
+**Transform** options are orthogonal to selection. `@shift` may accompany
+`#section`, `@lines`, `@region`, or no selection. `@cols` applies only to
+table includes and may accompany any valid selection.
 
-`@code` composes with `@lines`, with `@region`, or with neither. It does not
+`@code` composes with `@lines`, with `@rows` on a delimited table, with
+`@region`, or with neither. It does not
 compose with `#section`, which selects Carve structure that a code include never
 parses: that combination is an `include-selection-conflict` error.
 
@@ -316,6 +318,17 @@ server.listen(3000)
   fence. Given an include root, `carve lint` reports the `delimited-table-*`
   diagnostics for included data too (see
   [Linting included content](#linting-included-content)).
+- **Table rows and columns.** On a `{table}` CSV or TSV code include,
+  `@rows:2-4` selects parsed records, including records with quoted newlines.
+  The header still comes from the top of the file and is not repeated in the
+  body. `@cols:"Seats,Plan"` selects header names in that order. Escape a
+  comma or double quote within a name with a backslash. For a file without
+  headers, `{table header-rows=0}` allows numeric `@cols:1-3` instead.
+  `@rows` is exclusive with `#section`, `@lines`, and `@region`; `@cols`
+  can accompany any one selection. `@lines` still selects physical file lines,
+  and lint suggests `@rows` when it appears on a delimited table include.
+  Markdown export writes the selected cells as a GFM pipe table, with a
+  caption as a paragraph after it.
 - **Block only.** A code block is block structure, so `@code` inside a sentence
   is an `include-block-in-inline` error. `@shift` has no effect, since the code
   holds no headings.
@@ -590,6 +603,8 @@ What runs:
   the attribute line above the directive applies to it. Today those are
   `delimited-table-malformed` and `delimited-table-wide-row` on a
   `{table}`-marked `csv` or `tsv` code include.
+- A `{table}` CSV or TSV code include with `@lines` gets a Hint recommending
+  `@rows` for record selection.
 
 A finding in included content names the included file and a line and column in
 that file, plus the include chain that reached it, top-level directive first. A
@@ -1027,10 +1042,13 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 | Unreadable / missing path | `include-unresolved` Warning + literal directive |
 | Binary / non-text content | `include-non-text` Warning + literal directive |
 | A `#section` that selects nothing | `include-section` Warning + literal directive; a case-only mismatch names the exact id |
-| More than one of `#section`, `@lines` and `@region`, or `#section` with `@code` | `include-selection-conflict` Warning + literal directive |
+| More than one of `#section`, `@lines`, `@rows` and `@region`, or `#section` with `@code` | `include-selection-conflict` Warning + literal directive |
 | Invalid or missing named region | `include-region-invalid` Warning + literal directive |
 | An invalid `@lines` value, including zero, a reversed range, or a leading zero | `include-lines-invalid` Warning + literal directive; file remains a resolved dependency |
 | An `@lines` range that starts past the file's last line | `include-lines-out-of-range` Warning + literal directive |
+| An invalid `@rows` value or context, or a range starting past the last record | `include-rows-invalid` or `include-rows-out-of-range` Warning + literal directive |
+| A missing, empty, or ambiguous `@cols` header name, or an invalid range or context | `include-cols-invalid` Warning + literal directive |
+| A column named twice in `@cols` | `include-cols-duplicate` Warning + literal directive |
 | The same option key given twice | `include-duplicate-option` Warning + literal directive |
 | Block-structured content in inline position (inline include) | `include-block-in-inline` Warning + literal directive |
 | Inclusion cycle | `include-cycle` Warning + literal directive |

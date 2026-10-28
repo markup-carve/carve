@@ -19,7 +19,7 @@
 
 import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd } from './render.mjs'
 import { labelKey } from './label-key.mjs'
-import { delimitedRowCount, delimitedRows } from './delimited-table.mjs'
+import { delimitedRowCount, delimitedRows, delimitedRecords } from './delimited-table.mjs'
 import { scanDirective } from './include-directive.mjs'
 
 function standaloneCodeInclude(line) {
@@ -29,6 +29,73 @@ function standaloneCodeInclude(line) {
   if (!directive || line.slice(directive.end).trim() !== '') return null
   const code = directive.options.find(([key]) => key === 'code')
   return code ? { directive, lang: code[1] ?? '' } : null
+}
+
+function includeRange(raw) {
+  const match = /^([1-9][0-9]*)-([1-9][0-9]*)$/.exec(raw ?? '')
+  if (!match || BigInt(match[1]) > BigInt(match[2])) return null
+  return [BigInt(match[1]), BigInt(match[2])]
+}
+
+function includeColumns(raw, quote, rows, headerRows) {
+  if (raw === undefined) return null
+  if (raw === null) return false
+  if (headerRows === 0 && quote === null && /^\d+-\d+$/.test(raw)) {
+    const range = includeRange(raw)
+    if (!range || range[1] > BigInt(rows.reduce((max, row) => Math.max(max, row.length), 0))) return false
+    return Array.from({ length: Number(range[1] - range[0] + 1n) }, (_, i) => Number(range[0]) - 1 + i)
+  }
+  if (headerRows === 0 || quote !== '"' || raw === '') return false
+  const names = []
+  let name = ''
+  for (let i = 0; i < raw.length; i++) {
+    if (raw[i] === '\\' && i + 1 < raw.length) name += raw[++i]
+    else if (raw[i] === ',') { names.push(name); name = '' }
+    else name += raw[i]
+  }
+  names.push(name)
+  const header = rows[0] ?? []
+  const seen = new Set()
+  const columns = []
+  for (const name of names) {
+    if (!name) return false
+    const index = header.indexOf(name)
+    if (index < 0 || header.indexOf(name, index + 1) >= 0 || seen.has(index)) return false
+    seen.add(index)
+    columns.push(index)
+  }
+  return columns
+}
+
+function includeRegion(lines, selected) {
+  if (!/^[A-Za-z_][A-Za-z0-9_-]*$/.test(selected ?? '')) return null
+  const seen = new Set()
+  const stack = []
+  let range = null
+  for (const [index, sourceLine] of lines.entries()) {
+    const line = sourceLine.replace(/^[ \t]*/, '')
+    let body = line
+    let closer = ''
+    if (line.startsWith('%%') && !line.startsWith('%%%')) body = line.slice(2)
+    else if (line.startsWith('//') || line.startsWith('--')) body = line.slice(2)
+    else if (line.startsWith('/*')) { body = line.slice(2); closer = '\\*/' }
+    else if (line.startsWith('<!--')) { body = line.slice(4); closer = '-->' }
+    body = body.replace(/^[ \t]*/, '')
+    if (!/^#(?:end)?region(?![A-Za-z0-9_])/.test(body)) continue
+    const marker = new RegExp(`^#(end)?region(?:[ \\t]+([A-Za-z_][\\w-]*))?[ \\t]*${closer}[ \\t]*$`).exec(body)
+    if (!marker) return null
+    const name = marker[2]
+    if (marker[1]) {
+      const open = stack.pop()
+      if (!open || (name !== undefined && name !== open.name)) return null
+      if (open.name === selected) range = [open.line + 2, index]
+    } else {
+      if (!name || seen.has(name)) return null
+      seen.add(name)
+      stack.push({ name, line: index })
+    }
+  }
+  return stack.length === 0 ? range : null
 }
 import layoutTransitions from '../../resources/spec/layout-transitions.json' with { type: 'json' }
 
@@ -3409,14 +3476,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   const push = (node) => {
     const attrs = pending.flat()
     const tableFlag = attrs.some((a) => a[1] === 'table' && (a[0] === 'bool' || (a[0] === 'kv' && a[2] === '')))
-    if (tableFlag && node.t === 'code' && (node.lang === 'csv' || node.lang === 'tsv')) {
-      const rows = delimitedRows(node.text, node.lang === 'csv' ? ',' : '\t')
+    if (tableFlag && node.t === 'code' && !node.forceCode && (node.lang === 'csv' || node.lang === 'tsv')) {
+      const rows = node.tableRows ?? delimitedRows(node.text, node.lang === 'csv' ? ',' : '\t')
       if (rows !== null) {
         const width = rows.reduce((width, row) => Math.max(width, row.length), 0)
         const headerAttr = attrs.findLast((a) => a[1] === 'header-rows' && (a[0] === 'kv' || a[0] === 'bool'))
         const footerAttr = attrs.findLast((a) => a[1] === 'footer-rows' && (a[0] === 'kv' || a[0] === 'bool'))
         const footerRows = delimitedRowCount(footerAttr?.[0] === 'bool' ? '' : footerAttr?.[2]) ?? 0
-        const headerRows = delimitedRowCount(headerAttr?.[0] === 'bool' ? '' : headerAttr?.[2])
+        const headerRows = node.tableHeaderRows ?? delimitedRowCount(headerAttr?.[0] === 'bool' ? '' : headerAttr?.[2])
           ?? Math.min(1, Math.max(0, rows.length - footerRows))
         node = {
           t: 'table', sourceFormat: node.lang, caption: node.caption,
@@ -3435,6 +3502,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
       }
     }
+    if (node.forceCode) delete node.forceCode
     blocks.push(flushAttrs(node))
   }
 
@@ -3540,16 +3608,71 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const file = state.includeFiles instanceof Map
         ? state.includeFiles.get(directive.path)
         : state.includeFiles?.[directive.path]
-      if (typeof file === 'string' && !directive.section) {
+      const options = new Map(directive.options)
+      const attrs = pending.flat()
+      const tableFlag = attrs.some(a => a[1] === 'table' && (a[0] === 'bool' || (a[0] === 'kv' && a[2] === '')))
+      const tableInclude = tableFlag && (lang === 'csv' || lang === 'tsv')
+      const range = options.has('rows') ? includeRange(options.get('rows')) : null
+      const linesRange = options.has('lines') ? includeRange(options.get('lines')) : null
+      const selections = Number(Boolean(directive.section)) + Number(options.has('rows'))
+        + Number(options.has('lines')) + Number(options.has('region'))
+      const invalid = selections > 1 || (options.has('rows') && (!tableInclude || !range))
+        || (options.has('cols') && !tableInclude)
+        || (options.has('lines') && !linesRange)
+        || (options.has('shift') && options.get('shift') !== 'auto' && !/^[+-]?\d+$/.test(options.get('shift') ?? ''))
+        || directive.options.length !== options.size
+        || [...options.keys()].some(key => !['code', 'rows', 'cols', 'lines', 'region', 'shift'].includes(key))
+      if (typeof file === 'string' && !directive.section && !invalid) {
         const content = file.replace(/^\uFEFF/, '').replace(/\r\n?|\n/g, '\n')
-        const node = { t: 'code', lang, text: content === '' ? '' : content.endsWith('\n') ? content : `${content}\n` }
-        i++
-        const cap = captionSlot(i)
-        if (cap) {
-          node.caption = cap.text
-          i = cap.next
+        const physicalLines = content === '' ? [] : content.endsWith('\n') ? content.slice(0, -1).split('\n') : content.split('\n')
+        const regionRange = options.has('region') ? includeRegion(physicalLines, options.get('region')) : undefined
+        const selectedLines = linesRange
+          ? physicalLines.slice(Number(linesRange[0] - 1n), Number(linesRange[1]))
+          : regionRange ? physicalLines.slice(regionRange[0] - 1, regionRange[1]) : physicalLines
+        const selectedText = linesRange || regionRange ? selectedLines.map(value => `${value}\n`).join('') : content
+        const node = { t: 'code', lang, text: selectedText === '' ? '' : selectedText.endsWith('\n') ? selectedText : `${selectedText}\n` }
+        let valid = (!linesRange || linesRange[0] <= BigInt(physicalLines.length)) && (!options.has('region') || regionRange !== null)
+        if (tableInclude && valid) {
+          const separator = lang === 'csv' ? ',' : '\t'
+          const records = delimitedRecords(content, separator)
+          const selectedRecords = linesRange || regionRange ? delimitedRecords(selectedText, separator) : records
+          const headerAttr = attrs.findLast(a => a[1] === 'header-rows' && (a[0] === 'kv' || a[0] === 'bool'))
+          const headerRows = delimitedRowCount(headerAttr?.[0] === 'bool' ? '' : headerAttr?.[2]) ?? 1
+          const allRows = records?.map(record => record.cells) ?? null
+          if (records && selectedRecords) {
+            valid = valid && (!range || range[0] <= BigInt(records.length))
+            if (linesRange && records.some(record =>
+              record.line <= Number(linesRange[1]) && record.endLine >= Number(linesRange[0]) &&
+              (record.line < Number(linesRange[0]) || record.endLine > Number(linesRange[1])))) node.forceCode = true
+            const columns = includeColumns(options.get('cols'), directive.options.find(([key]) => key === 'cols')?.[2] ?? null, allRows, headerRows)
+            valid = valid && columns !== false
+            if (valid && !node.forceCode) {
+              const body = records.filter((record, index) => index >= headerRows && (
+                range ? BigInt(index + 1) >= range[0] && BigInt(index + 1) <= range[1]
+                  : linesRange ? record.line >= Number(linesRange[0]) && record.line <= Number(linesRange[1])
+                    : true
+              )).map(record => record.cells)
+              const header = allRows.slice(0, headerRows)
+              const project = row => columns === null ? row : columns.map(column => row[column] ?? '')
+              node.tableRows = [...header, ...(regionRange ? selectedRecords.map(record => record.cells) : body)].map(project)
+              node.tableHeaderRows = header.length
+            }
+          } else if (options.has('rows') || options.has('cols')) {
+            // Malformed delimited data retains the ordinary code fallback.
+          }
         }
-        push(node)
+        i++
+        if (valid) {
+          const cap = captionSlot(i)
+          if (cap) {
+            node.caption = cap.text
+            i = cap.next
+          }
+          push(node)
+        }
+        else push(top
+          ? { t: 'includeLiteral', text: line.trim(), quotedPath: directive.quoted }
+          : { t: 'para', lines: [line.trim()] })
       } else {
         i++
         push(top
