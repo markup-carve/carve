@@ -3860,9 +3860,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i++
         } else if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN &&
             (lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) &&
-            !startsVisibleBlock(measured.rest) && !isTableRow(measured.rest) &&
-            !isColonBlockOpener(measured.rest) && !COLON_CLOSER.test(measured.rest) &&
-            !(FENCE.test(measured.rest) && hasCloser(lines, i)) &&
+            !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
+            !isColonBlockOpener(lines[i]) && !COLON_CLOSER.test(lines[i]) &&
+            !(FENCE.test(lines[i]) && hasCloser(lines, i)) &&
             !(measured.col === 0 && commentFenceOpensSpan(lines, i)) &&
             !(measured.col === 0 && (isDefinitionOrAttributeLine(measured.rest) ||
               tryAttrLine(lines, i)))) {
@@ -7678,6 +7678,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           else absorbedNoteFence = true
         }
         const inNoteBody = i <= noteFenceEnd || absorbedNoteFence
+        const noteClaimsBelow = defBodyIndent !== null && noteBodyBoundary !== null &&
+          col < noteBodyBoundary && noteClaimsLazyLine(i)
         const mayOpenAuthoredBlock = !inNoteBody && !foldsIntoLeadTerm && !descendantOwned &&
           !foldedChildFence &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest)
@@ -7799,7 +7801,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           !FOOTNOTE_DEF.test(dedented) &&
           !isLinkDef(dedented) &&
           !(noteBodyBoundary !== null && col >= noteBodyBoundary) &&
-          !(defBodyIndent !== null && noteBodyBoundary !== null && col < noteBodyBoundary && noteClaimsLazyLine(i)) &&
+          !noteClaimsBelow &&
           parseAttrList(trimLineEnd(dedented)) === null
         ) {
           // §17 L1b: a second paragraph, still blank-line-separated.

@@ -27,3 +27,20 @@ test('a blank ends the footnote paragraph claim before a below-column follower',
   assert.equal(doc.blocks[0].tight, false)
   assert.match(renderDoc(doc), /<li><p>body<\/p>\n    <p>tail<\/p>/)
 })
+
+for (const [host, source] of [
+  ['document', '[^f]: alpha\n :: term\n\nSee[^f]\n'],
+  ['quote', '> [^f]: alpha\n>  :: term\n>\n> See[^f]\n'],
+  ['div', '::: note\n[^f]: alpha\n :: term\n\nSee[^f]\n:::\n'],
+]) {
+  test(`${host} keeps a below-column term in the open footnote paragraph`, () => {
+    const doc = parse(source)
+    assert.deepEqual(doc.footnoteDefs.get('f'), [{ t: 'para', lines: ['alpha', ':: term'] }])
+  })
+}
+
+test('a list host gives its own authored term the intervening column', () => {
+  const doc = parse('- host\n  [^f]: alpha\n   :: term\n\n  See[^f]\n')
+  assert.deepEqual(doc.footnoteDefs.get('f'), [{ t: 'para', lines: ['alpha'] }])
+  assert.equal(doc.blocks[0].items[0].blocks[1].t, 'deflist')
+})

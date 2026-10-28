@@ -52,3 +52,4 @@
 757-an-intervening-column-refuses-a-description-hosted-first-block  Pinned JavaScript retains the refused follower in the description; markup-carve/carve-js#3833.
 758-a-hosted-footnote-keeps-a-heading-at-its-body-floor  Pinned JavaScript returns the first-block heading to the host item; markup-carve/carve-js#3832.
 759-invalid-body-row-metadata-leaves-one-table-body  Pinned JavaScript infers a head after invalid body metadata; markup-carve/carve-js#3811.
+761-a-below-column-term-stays-in-the-footnote-paragraph  The pinned JavaScript parser releases a term one column below an open footnote paragraph; markup-carve/carve#3874.
