@@ -168,7 +168,12 @@ the command-line and editor behavior stay aligned.
 | `unclosed-inline-emphasis` | a strong or emphasis opener with no closer in its paragraph |
 | `link-gap-before-destination` | whitespace between `]` and `(` prevents an intended inline link from forming |
 | `markdown-italic-underline` | `_word_` renders underline; use `/word/` for italic. This default hint can be suppressed per document |
-| `heading-level-skip` | a heading jumps over a level; default-on hint |
+| `heading-level-skip` | a heading jumps over a level; default-on hint. `a11y/heading-jump` is a deprecated input alias through the next minor and reports under this id |
+| `unused-link-reference-definition` | a winning link reference definition has no rendered link or image use; default-on |
+| `empty-link-destination` | a parsed inline link has an empty destination; default-on |
+| `duplicate-reference-url` | two distinct reference definitions have the same normalized URL; opt-in |
+| `non-descriptive-link-text` | a link is labeled `here`, `click here`, or `read more` without a more specific accessible name; opt-in |
+| `emphasis-as-heading` | a paragraph consists only of emphasis or strong text; opt-in |
 | `bare-html-tag` | an HTML-like tag in prose renders as escaped text; default-on hint |
 | `markdown-definition-paragraph` | `term` followed by `: definition` remains a paragraph; Carve needs `:: term` |
 | `github-alert-marker` | `[!NOTE]` or `[!WARNING]` in a blockquote stays literal text |
@@ -764,11 +769,47 @@ lines and bodies inside containers. The same visibility rule applies to the
 other authoring checks. Source safety checks such as `bidi-control-in-source`
 still inspect hidden comment text.
 
+### Suppressing lint findings
+
+A Carve line comment can suppress named rules. Each directive begins with
+`%% carve-lint-` and never renders. Separate multiple rule ids with spaces or
+commas; omitting ids selects every rule. For example:
+
+```carve
+# One
+
+### Three %% carve-lint-disable-line heading-level-skip
+
+Text %% carve-lint-disable-next-line empty-link-destination
+[x]()
+
+%% carve-lint-disable markdown-italic-underline
+
+This _word_ is intentional.
+
+%% carve-lint-enable markdown-italic-underline
+```
+
+`disable-line` applies to its own physical source line, and `disable-next-line`
+to the next physical line. `disable` starts at its own line and lasts until a
+matching `enable` or end of the document. A later `enable` does not cancel a
+line-scoped directive. Source scopes stay within the file that contains the
+comment, including when that file is included elsewhere. Directives in code,
+raw content, inline comments, and fenced comment bodies are inert. The caller
+can supply an exact file-id ignore list; an ignored file emits no findings.
+Ignoring one file does not suppress findings from other files it includes.
+
+The two new reference checks `unused-link-reference-definition` and
+`empty-link-destination` are on by default. `duplicate-reference-url`,
+`non-descriptive-link-text`, and `emphasis-as-heading` require opt-in. The
+existing zero-findings gate for correct documents still applies.
+
 ### Accessibility checks
 
-carve-js and carve-rs expose an initial AST-based accessibility pass with two
-stable ids: `a11y/image-alt` for missing or blank image alternatives and
-`a11y/heading-jump` for skipped heading levels. These checks catch focused
+carve-js and carve-rs expose an initial AST-based accessibility pass.
+`a11y/image-alt` covers missing or blank image alternatives. Skipped heading
+levels report as `heading-level-skip`; `a11y/heading-jump` is an input alias
+that will be removed in the next minor release. These checks catch focused
 document-structure problems; they are not a claim of WCAG conformance or a
 replacement for testing the rendered page with accessibility tools.
 

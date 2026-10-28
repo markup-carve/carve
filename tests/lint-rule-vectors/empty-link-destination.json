@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "rule": "empty-link-destination",
+  "vectors": [
+    {
+      "name": "empty-top",
+      "description": "An inline link with an empty URL is reported.",
+      "source": "[x]()\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "empty"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "spaces",
+      "description": "Whitespace does not supply a destination.",
+      "source": "[x](  )\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "empty"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "empty-quote",
+      "description": "A link in a quote is checked.",
+      "source": "> [x]()\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "empty"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "nonempty-list",
+      "description": "A link with a destination is quiet.",
+      "source": "- [x](/u)\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "empty-definition",
+      "description": "A definition uses its own existing rule.",
+      "source": "[r]:\n\n[x][r]\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "code",
+      "description": "Code is not an inline link.",
+      "source": "`[x]()`\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "tab-is-not-padding",
+      "description": "A tab is not empty destination padding.",
+      "source": "[x](\t)\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

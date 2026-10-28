@@ -640,7 +640,48 @@
    `/word/` renders italic. It is on by default and can be disabled per
    document. Escaped underscores and code spans are quiet.
    `heading-level-skip` hints when a heading jumps over one or more levels.
-   A next-level heading is quiet.
+   A next-level heading is quiet. `a11y/heading-jump` is a deprecated input
+   alias for this rule: enabling or suppressing it selects `heading-level-skip`,
+   and every finding reports `heading-level-skip`. Remove the alias at the next
+   minor release; two findings for one jump are never emitted.
+   AUTHORING LINT SUPPRESSION. A recognized Carve line comment whose content
+   begins with `carve-lint-disable-line`, optionally followed by rule ids
+   suppresses those ids on that physical source line. `carve-lint-disable-next-line`
+   suppresses them on the immediately following physical source line, even
+   across a container boundary. `carve-lint-disable` suppresses them from the
+   directive's line through the rest of the document; `carve-lint-enable`
+   ends that document scope from its own line. A comma or ASCII space may
+   separate ids; an absent id means all rules. The directive begins after the
+   `%%` comment opener, with one ASCII space. It is itself a Carve comment and
+   never renders. A directive in code, raw content, an inline comment, or a
+   fenced comment body is inert. A later enable does not undo a line or
+   next-line suppression. For included files, source-line scopes use the
+   included file's own lines and document scopes do not cross file boundaries.
+   Suppression applies by the finding's reported source line; for any rule id,
+   the last document-scope directive selecting it wins. A caller may also
+   supply a per-file ignore list of exact file ids; an ignored
+   file emits no lint findings, including findings from its included content
+   only when that included file id is itself ignored. An ignore list does not
+   change parsing, rendering, or other files' findings.
+   `unused-link-reference-definition` reports a link reference definition
+   whose winning definition is never used by a rendered reference link or
+   image. An unresolved or discarded reference use does not count; duplicate
+   definitions are diagnosed separately. A used definition is quiet.
+   `empty-link-destination` reports a parsed inline link with an empty
+   destination, including whitespace-only `()`. An empty reference definition
+   remains under `empty-reference-definition`; literal bracket text and an
+   escaped parenthesis are quiet.
+   `duplicate-reference-url` is opt-in. It reports the later of two distinct
+   link reference definitions whose parsed destination strings are identical
+   after Carve escape decoding. Repeated use of one definition is quiet.
+   `non-descriptive-link-text` is opt-in. It reports a link whose visible text,
+   after ASCII whitespace folding and case folding, is `here`, `click here`,
+   or `read more`. A nonempty `aria-label` with different, specific text makes
+   the link quiet; image alternatives and literal unresolved references are
+   outside this rule.
+   `emphasis-as-heading` is opt-in. It reports a paragraph whose only visible
+   content is one emphasis or strong span, a likely heading substitute. A
+   heading, or a paragraph with surrounding visible prose, is quiet.
    `bare-html-tag` hints that an HTML-like tag in text is escaped. A tag in
    code or raw HTML is quiet.
    `markdown-definition-paragraph` reports `term` followed by `: definition`

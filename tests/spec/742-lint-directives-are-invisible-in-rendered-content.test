@@ -1,0 +1,42 @@
+Lint directives are invisible in rendered content
+
+```
+%% carve-lint-disable empty-link-destination
+
+[x]()
+.
+<p><a href="">x</a></p>
+```
+
+```
+# One
+
+### Three %% carve-lint-disable-line heading-level-skip
+.
+<section id="One">
+  <h1>One</h1>
+  <section id="Three">
+    <h3>Three</h3>
+  </section>
+</section>
+```
+
+```
+::: >
+%% carve-lint-disable empty-link-destination
+
+[x]()
+:::
+.
+<blockquote><p><a href="">x</a></p></blockquote>
+```
+
+```
+%% carve-lint-disable unused-link-reference-definition
+
+body
+
+[r]: /u
+.
+<p>body</p>
+```

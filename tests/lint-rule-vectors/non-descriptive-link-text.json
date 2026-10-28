@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "rule": "non-descriptive-link-text",
+  "vectors": [
+    {
+      "name": "click-here",
+      "description": "A generic link label is reported.",
+      "source": "[click here](/u)\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "descriptive"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "read-more-quote",
+      "description": "Nested links are checked.",
+      "source": "> [read more](/u)\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "descriptive"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "here-list",
+      "description": "Links in list items are checked.",
+      "source": "- [here](/u)\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "descriptive"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "specific",
+      "description": "Specific link text is quiet.",
+      "source": "[Read the guide](/u)\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "literal",
+      "description": "Literal bracket text is quiet.",
+      "source": "[click here][missing]\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "aria-label",
+      "description": "A specific accessible name is quiet.",
+      "source": "[here](/u){aria-label=\"Documentation\"}\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

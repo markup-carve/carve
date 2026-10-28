@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "rule": "unused-link-reference-definition",
+  "vectors": [
+    {
+      "name": "unused-top",
+      "description": "An unused definition is omitted.",
+      "source": "[r]: /u\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "unused"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "used-top",
+      "description": "A rendered use counts.",
+      "source": "[r]: /u\n\n[x][r]\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "unused-quote",
+      "description": "Definitions in quotes are checked.",
+      "source": "> [r]: /u\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "unused"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "used-list",
+      "description": "A use in a list counts.",
+      "source": "[r]: /u\n\n- [x][r]\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "unused-in-code",
+      "description": "Code is not a definition.",
+      "source": "```carve\n[r]: /u\n```\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

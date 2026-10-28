@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "rule": "heading-level-skip",
+  "file": "doc.crv",
+  "vectors": [
+    {
+      "name": "same-line",
+      "source": "# One\n\n### Three %% carve-lint-disable-line heading-level-skip\n",
+      "expected": []
+    },
+    {
+      "name": "legacy-heading-alias",
+      "source": "# One\n\n### Three %% carve-lint-disable-line a11y/heading-jump\n",
+      "expected": []
+    },
+    {
+      "name": "same-line-does-not-reach-next",
+      "source": "# One %% carve-lint-disable-line heading-level-skip\n\n### Three\n",
+      "expected": [
+        [
+          "heading-level-skip",
+          3
+        ]
+      ]
+    },
+    {
+      "name": "next-line",
+      "source": "# One\n%% carve-lint-disable-next-line heading-level-skip\n### Three\n",
+      "expected": []
+    },
+    {
+      "name": "next-line-stops-at-blank",
+      "source": "# One\n%% carve-lint-disable-next-line heading-level-skip\n\n### Three\n",
+      "expected": [
+        [
+          "heading-level-skip",
+          4
+        ]
+      ]
+    },
+    {
+      "name": "document-until-enable",
+      "source": "# One\n%% carve-lint-disable heading-level-skip\n### Three\n%% carve-lint-enable heading-level-skip\n##### Five\n",
+      "expected": [
+        [
+          "heading-level-skip",
+          5
+        ]
+      ]
+    },
+    {
+      "name": "all-rules",
+      "source": "# One\n%% carve-lint-disable\n### Three\n",
+      "expected": []
+    },
+    {
+      "name": "container-source-line",
+      "source": "# One\n> %% carve-lint-disable-next-line heading-level-skip\n> ### Three\n",
+      "expected": []
+    },
+    {
+      "name": "in-code-is-inert",
+      "source": "# One\n```carve\n%% carve-lint-disable heading-level-skip\n```\n### Three\n",
+      "expected": [
+        [
+          "heading-level-skip",
+          5
+        ]
+      ]
+    },
+    {
+      "name": "in-fenced-comment-is-inert",
+      "source": "# One\n%%%\n%% carve-lint-disable heading-level-skip\n%%%\n### Three\n",
+      "expected": [
+        [
+          "heading-level-skip",
+          5
+        ]
+      ]
+    },
+    {
+      "name": "ignore-current-file",
+      "source": "# One\n### Three\n",
+      "expected": [],
+      "ignoredFiles": [
+        "doc.crv"
+      ]
+    },
+    {
+      "name": "other-file-not-ignored",
+      "source": "# One\n### Three\n",
+      "expected": [
+        [
+          "heading-level-skip",
+          2
+        ]
+      ],
+      "ignoredFiles": [
+        "other.crv"
+      ]
+    }
+  ]
+}

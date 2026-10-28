@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "rule": "emphasis-as-heading",
+  "vectors": [
+    {
+      "name": "bold-paragraph",
+      "description": "A paragraph made only of strong text is reported.",
+      "source": "*Title*\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "emphasis-quote",
+      "description": "A quote paragraph is checked.",
+      "source": "> /Title/\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "emphasis-list",
+      "description": "A list paragraph is checked.",
+      "source": "- /Title/\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "real-heading",
+      "description": "A heading is quiet.",
+      "source": "# Title\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "with-prose",
+      "description": "Visible surrounding prose is quiet.",
+      "source": "Read /Title/ now.\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

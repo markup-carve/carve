@@ -114,6 +114,11 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
+  ['unused-link-reference-definition', 'specified by the #3808 ruling; engine rollout follows'],
+  ['empty-link-destination', 'specified by the #3808 ruling; engine rollout follows'],
+  ['duplicate-reference-url', 'specified by the #3808 ruling; engine rollout follows'],
+  ['non-descriptive-link-text', 'specified by the #3808 ruling; engine rollout follows'],
+  ['emphasis-as-heading', 'specified by the #3808 ruling; engine rollout follows'],
   [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',

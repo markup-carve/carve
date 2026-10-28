@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "rule": "duplicate-reference-url",
+  "vectors": [
+    {
+      "name": "same-url",
+      "description": "A later distinct definition repeats a URL.",
+      "source": "[a]: /u\n[b]: /u\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "URL"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "same-url-quote",
+      "description": "A definition in a quote uses the same URL namespace.",
+      "source": "[a]: /u\n> [b]: /u\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "URL"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "different-url",
+      "description": "Different URLs are quiet.",
+      "source": "[a]: /u\n[b]: /v\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "same-label",
+      "description": "A duplicate label belongs to its own rule.",
+      "source": "[a]: /u\n[a]: /u\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "code",
+      "description": "Code has no reference definition.",
+      "source": "[a]: /u\n```carve\n[b]: /u\n```\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

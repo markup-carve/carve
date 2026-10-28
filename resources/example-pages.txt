@@ -1346,3 +1346,9 @@ index: examples/edge-cases/index.md
 out: examples/edge-cases/visible-footnote-headings.md
 index: examples/edge-cases/index.md
   visible-footnote-headings
+
+[edge-lint-directives] Lint directives are invisible in rendered content
+> Carve lint comments control findings without changing the document's HTML.
+out: examples/edge-cases/lint-directives-are-invisible-in-rendered-content.md
+index: examples/edge-cases/index.md
+  lint-directives-are-invisible-in-rendered-content
