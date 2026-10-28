@@ -1335,7 +1335,7 @@ index: examples/edge-cases/index.md
   invalid-table-metadata-keeps-the-table
 
 [edge-model-followups] Model source boundaries
-> Opaque references, inline bounds, and lazy quote ownership.
+> Source columns, table headers, footnotes, and image attributes.
 out: examples/edge-cases/model-source-boundaries.md
 index: examples/edge-cases/index.md
   opaque-reference-and-inline-bounds
@@ -1343,6 +1343,17 @@ index: examples/edge-cases/index.md
   a-later-term-after-a-shifted-separator-opens-in-the-outer-item
   a-task-item-uses-the-ordered-item-column-rule
   the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes
+  a-native-header-continues-a-promoted-gfm-header-run
+  a-table-ends-a-footnote-paragraph-claim
+  a-footnote-heading-does-not-loosen-its-host-item
+  a-dangling-continuation-marker-leaves-an-attached-item
+  a-below-column-line-returns-to-its-definition-body
+  a-lazy-line-keeps-its-plus-through-three-quote-levels
+  a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker
+  a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker
+  a-promoted-image-merges-block-attributes-before-inline-attributes
+  a-content-tab-does-not-hide-a-description-boundary
+  a-description-keeps-a-list-marker-below-its-hosted-footnote
 
 [edge-footnote-heading-index] Visible footnote headings
 > Used footnote headings enter reference lookup; unused definitions do not.

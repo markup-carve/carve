@@ -12,8 +12,12 @@ for (const marker of markers) for (const note of [true, false]) {
     if (note) lines.push('  [^n]: note')
     lines.push('  ' + marker + 'a', '   :: u', '   :  e')
     const out = html(lines.join('\n'))
-    if (note) assert.equal(out, '<dl><dt>t</dt><dd><p>d</p><dl><dt>u</dt><dd>e</dd></dl></dd></dl>')
-    else assert.match(out, /<p>d\n(?:-|1\.|- \[ \]) a<\/p><dl><dt>u<\/dt><dd>e<\/dd><\/dl><\/dd><\/dl>$/)
+    if (note) {
+      const list = marker === '1. ' ? '<ol><li>a</li></ol>'
+        : marker === '- [ ] ' ? '<ul class="task-list"><li><input type="checkbox" disabled aria-label="a"> a</li></ul>'
+          : '<ul><li>a</li></ul>'
+      assert.equal(out, `<dl><dt>t</dt><dd><p>d</p>${list}<dl><dt>u</dt><dd>e</dd></dl></dd></dl>`)
+    } else assert.match(out, /<p>d\n(?:-|1\.|- \[ \]) a<\/p><dl><dt>u<\/dt><dd>e<\/dd><\/dl><\/dd><\/dl>$/)
   })
 }
 
