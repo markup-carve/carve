@@ -25,7 +25,7 @@ for (const q of ['', '> ', '> > ']) {
     }
   })
 
-  test(`a closed child fence belongs to the list in a marker-line term note, quote depth ${q.length / 2}`, { todo: 'markup-carve/carve#3892' }, () => {
+  test(`a closed child fence belongs to the list in a marker-line term note, quote depth ${q.length / 2}`, () => {
     const body = `<dl><dt>term</dt></dl><ul><li>child<pre><code>code </code></pre></li></ul><p>${backlink}</p>`
     assert.equal(norm(renderDoc(parse(source(':: term', '-', 6)))),
       wrap(`<ul><li></li></ul><p>after${ref}</p>`) + endnotes(body))
@@ -56,17 +56,20 @@ for (const q of ['', '> ', '> > ']) for (const boundary of ['- sibling', 'outsid
   })
 }
 
-for (const [name, head, repeated, check = parse] of [
-  ['description unclosed runs', 'text\n', `- child\n  ${F} info\n`],
+// Under rule A the first row is one paragraph, so it runs no closer search; its
+// cost is the line walk plus the caption-host check on the growing paragraph (carve#3892).
+const forwardSearch = () => layoutWork.forwardSearch
+for (const [name, head, repeated, check = parse, counter = forwardSearch] of [
+  ['description unclosed runs', 'text\n', `- child\n  ${F} info\n`, parse, () => layoutWork.lineVisits + layoutWork.captionHost],
   ['note bare runs', '- [^n]: text\n', `    - child\n      ${F}\n`],
 ]) {
-  test(`absorbed markers and fence searches scale linearly in a ${name}`, { todo: name === 'description unclosed runs' && 'markup-carve/carve#3892' }, () => {
+  test(`absorbed markers and fence searches scale linearly in a ${name}`, () => {
     const small = head + repeated.repeat(2000)
     const large = head + repeated.repeat(8000)
     const work = (src) => {
       resetLayoutWork()
       check(src)
-      return layoutWork.forwardSearch
+      return counter()
     }
     const baseline = work(small)
     const scaled = work(large)

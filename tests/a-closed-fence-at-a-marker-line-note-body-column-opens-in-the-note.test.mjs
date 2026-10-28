@@ -38,7 +38,7 @@ test('a column-three fence stays in the outer item', () => {
 })
 
 for (const depth of [0, 1, 2]) for (const marker of ['-', '*', '1.', '1)', '- [ ]', '- [x]']) {
-  for (const run of ['```', '~~~']) test(`note fence ownership: ${marker}, ${run}, quote depth ${depth}`, { todo: marker.startsWith('- [') && 'markup-carve/carve#3892' }, () => {
+  for (const run of ['```', '~~~']) test(`note fence ownership: ${marker}, ${run}, quote depth ${depth}`, () => {
     const body = marker.length + 3
     for (const offset of [0, 1]) for (const blank of [false, true]) {
       const src = source(marker, body + offset, run, depth, { blank })

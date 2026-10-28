@@ -311,8 +311,9 @@ test('a description body hosts a fence only while its term survives', () => {
     'quote[p(:  a), code], p(flush)')
   assert.equal(host(`> :: t\n> :  d\n>\n>    ${F}\n>    x\nflush\n`),
     'quote[deflist], p(flush)')
+  // The marker after a term opens a list in the walk too, so the fence opens at block start (carve#3892).
   assert.equal(host(`> :: t\n>   - a\n> : d\n>\n>   ${F}\nflush\n`),
-    `quote[deflist, list[item[p(a|: d)]], p(${F}|flush)]`)
+    'quote[deflist, list[item[p(a|: d)]], code], p(flush)')
 })
 
 test('a closed fence past a description body\'s column opens a code block at every quote depth', () => {

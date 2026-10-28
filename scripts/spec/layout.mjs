@@ -161,7 +161,7 @@ const MAX_NESTING_DEPTH = 200
 /// scan per opener is quadratic on a body of fenced bodies, which is carve#2509,
 /// so the answer comes from an index built once per depth and this counts the
 /// lines that index reads.
-export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0 }
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
@@ -173,6 +173,7 @@ export function resetLayoutWork() {
   layoutWork.forwardSearch = 0
   layoutWork.commentTail = 0
   layoutWork.ownership = 0
+  layoutWork.captionHost = 0
 }
 
 /**
@@ -442,6 +443,7 @@ function isCaptionableParagraph(para) {
   // literal text, where all three engines leave both lines as prose - the
   // tail patterns admit a newline inside `[...]` and `(...)` because they
   // never had to exclude one.
+  layoutWork.captionHost += para.length
   const line = para.map(trimLineEnd).join('\n')
   if (line.startsWith('$$`')) {
     const close = line.indexOf('`', 3)
@@ -2849,7 +2851,8 @@ function ownLines(lines) {
     if (note && FOOTNOTE_DEF.test(rest)) return { kind: 'note', width: FOOTNOTE_BODY_COLUMN, head: note[0].length, interrupts: true }
     const marker = matchMarkerAt({ col: 0, rest })
     // §10 I2: under an open paragraph a marker opens only in a list item.
-    if (marker && owner.para && owner.kind !== 'item') return { kind: 'text', interrupts: false }
+    // A term is not a paragraph a marker continues.
+    if (marker && owner.para && owner.kind !== 'item' && owner.last !== 'term') return { kind: 'text', interrupts: false }
     if (marker) {
       return { kind: 'item', width: marker.markerWidth, head: rest.length - marker.text.length, interrupts: false,
         axes: marker.isOrdered ? `${marker.delim}` : marker.bullet }
@@ -3746,9 +3749,20 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (CONT_MARKER.test(m[2]) && i < n && !isBlank(lines[i]) &&
           !matchMarkerAt(ind(i)) && attachesFlushLeft(ind(i), sourceDefCol)) {
         const attached = takeOneBlock(lines, i, state, ind(i), sourceDefCol)
+        // An attached paragraph ends at an opener that reaches the body column: that line is the body's.
+        let next = attached.next
+        if (foldablePlainLine(ind(i).rest)) {
+          for (let k = i + 1; k < next; k++) {
+            const measured = ind(k)
+            if ((measured.L?.col ?? measured.col) >= sourceDefCol + FOOTNOTE_BODY_COLUMN && startsParagraphBlock(measured.rest, false)) {
+              next = k
+              break
+            }
+          }
+        }
         bodyLines[0] = ''
-        bodyLines.push(...attached.rawMarker, '')
-        i = attached.next
+        bodyLines.push(...lines.slice(i, next), '')
+        i = next
       }
       // `pullPending` is set by a `+` marker: the NEXT flush-left line begins a
       // pulled-in block (SS17 L4). It is a distinct signal from an empty body
@@ -5604,7 +5618,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // form went unpinned until the canonical writer stopped force-escaping a
       // line-initial caret and `oracle(fmt(x))` parted from `oracle(x)` on a
       // document every engine agreed about (carve#1046).
-      if (isCaptionableParagraph(para) && CAPTION.test(lines[i])) break
+      if (CAPTION.test(lines[i]) && isCaptionableParagraph(para)) break
       if (lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5
       if (ind(i).rest.startsWith('%%')) break // SS10 I5 (comment line or fence)
       if (inItem && para.length > 0 && matchMarkerAt(ind(i))) break // SS24 C3
@@ -7628,6 +7642,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           const frame = noteFrames.at(-1)
           if (frame.firstBlockPending && (col === frame.marker || col === 0) &&
               !matchMarkerAt(lm)) break
+          // A lazy line continues the note's open paragraph and keeps the note open.
+          if (openPara && foldablePlainLine(lm.rest)) break
           noteFrames.pop()
         }
       }
@@ -7805,6 +7821,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // Rebase a marker-line child at its source column after the task box.
         const localBase = head.task !== undefined && headSubMarker && openerBase !== null ? openerBase : head.task !== undefined && headSubMarker && col >= contentCol + TASK_MARKER_SOURCE_WIDTH &&
           !insideFence() ? authoredBlockBase ?? contentCol + TASK_MARKER_SOURCE_WIDTH
+          // A marker-line note after a task box reads its body from its own source column.
+          : head.task !== undefined && markerNoteEligible && !descendantOwned && col >= markerNoteBodyColumn
+          ? markerNoteBodyColumn - FOOTNOTE_BODY_COLUMN
           : descendantOwned && noteFrames.length && col >= noteFrames.at(-1).body
           ? contentCol
           : noteFrames.length && col >= noteFrames.at(-1).body

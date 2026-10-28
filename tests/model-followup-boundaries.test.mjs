@@ -18,7 +18,7 @@ test('a refused document-column follower leaves the description', () => {
   assert.deepEqual(doc.blocks[1], { t: 'para', lines: ['x'] })
 })
 
-test('a later heading at the footnote body floor remains a block', { todo: 'markup-carve/carve#3892' }, () => {
+test('a later heading at the footnote body floor remains a block', () => {
   const source = '- see[^n]\n  [^n]: +\n  x\n    # z\n\nsee[^n]\n'
   const html = renderDoc(parse(source))
   assert.match(html, /<li id="fn1">\n      <p>x<\/p>\n      <h1 id="z">z<\/h1>/)
