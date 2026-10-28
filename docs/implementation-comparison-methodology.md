@@ -16,8 +16,8 @@ implementation exposes.
 
 ## Core fixture counts (2026-10-26 CET, with 2026-10-28 additions)
 
-This record covers 3,125 core documents and their 194 target sidecars.
-It scores 3,319 fixtures per engine. The five pairs in corpus 764 and 765
+The count-only run covers 3,125 core documents and their 194 target sidecars.
+The run scores 3,319 fixtures per engine. The five pairs in corpus 764 and 765
 were checked against the current engine pins on 2026-10-28 and added to the
 dated run's counts. The comparison checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
