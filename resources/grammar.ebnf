@@ -9503,7 +9503,7 @@ EOF = (* end of file *) ;
           is a list item's child, adjacent under (a) to the paragraph or block
           image above it in that item (or to a marker this rule placed),
           is written at the item's content column: at its marker column it
-          would close the item (PART 0 S1, S5).
+          would close the item (PART 0 S2, S5).
 
       (c) A HOISTED DEFINITION DOES NOT CROSS A MARKER. A link reference or
           footnote definition with a region marker anywhere below its source
