@@ -7669,6 +7669,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // descendant the deepest frame - corpus 513-...-5 keeps `tail` in an
         // item whose paragraph the span never closed.
         if (!belowCloser && !inCommentSpan) {
+          if (nm && nm.indent >= contentCol && !inDefBody &&
+              !fence.opaque && !nestedOpaque && !wasNested && !inPayload &&
+              descendantQ1.col >= 0 && nm.indent < descendantQ1.col) {
+            seedDescendantQ1(nm.indent + nm.markerWidth, nm.text, prefixMemo(state, lines, i).paragraph)
+          }
           if (descendantOwned) {
             if (descendantQ1.col < 0) seedDescendantQ1(subCol >= 0 ? subCol : headSubCol, '')
             // A line that opens, carries or closes an opaque descendant body is
