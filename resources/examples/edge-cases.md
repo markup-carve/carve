@@ -68343,3 +68343,106 @@ tail</li>
 ```
 
 ::::
+
+
+## An intervening column refuses a description hosted first block
+
+:::: compare
+
+```carve
+:: t
+: - +
+ # H
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li></li>
+    </ul>
+  </dd>
+</dl>
+<p># H</p>
+```
+
+::::
+
+
+## A hosted footnote keeps a heading at its body floor
+
+:::: compare
+
+```carve
+- a
+  [^n]: +
+  # h
+    # h
+
+see[^n]
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <h1 id="h">h</h1>
+      <h1 id="h-2">h</h1>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::
+
+
+## Invalid body row metadata leaves one table body
+
+:::: compare
+
+```carve
+{body-rows=x}
+|= A |
+```
+
+```html
+<table body-rows="x">
+  <tbody>
+    <tr><th scope="row">A</th></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+
+## A heading inside the intervening band stays description text
+
+:::: compare
+
+```carve
+:: t
+: - +
+   # H
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li></li>
+    </ul>
+    <p># H</p>
+  </dd>
+</dl>
+```
+
+::::

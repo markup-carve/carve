@@ -1183,7 +1183,8 @@ function renderTable(node, depth, ctx) {
   const rows = node.rows
   const hasBody = ['body-rows', 'body-header-rows', 'body-header-cols'].some(key => tableKeys.has(key))
   const groups = hasBody ? tableBodyGroups(tableKeys, rows.length) : null
-  if (hasBody && groups === null) {
+  const invalidBodyPartition = hasBody && groups === null
+  if (invalidBodyPartition) {
     const rowKeys = new Set(['header-rows', 'footer-rows', 'body-rows', 'body-header-rows', 'body-header-cols'])
     ordinaryAttrs.length = 0
     for (const list of node.battrs ?? []) {
@@ -1284,7 +1285,7 @@ function renderTable(node, depth, ctx) {
     if (!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value))) return null
     return Number(value)
   }
-  const explicitPartition = tableKeys.has('header-rows') || tableKeys.has('footer-rows')
+  const explicitPartition = invalidBodyPartition || tableKeys.has('header-rows') || tableKeys.has('footer-rows')
   let headCount = groups?.head ?? rowCount('header-rows')
   let footCount = groups?.foot ?? rowCount('footer-rows')
   if (headCount === null || footCount === null || headCount + footCount > rows.length) {
@@ -1305,7 +1306,9 @@ function renderTable(node, depth, ctx) {
   const bodyRanges = []
   const contexts = rows.map((_, row) => ({ header: row < headCount, columns: 0 }))
   let bodyStart = headCount
-  for (const body of groups?.bodies ?? (footStart > headCount ? [{ headRows: 0, bodyRows: footStart - headCount, rowHeadColumns: 0 }] : [])) {
+  for (const body of groups?.bodies ?? (invalidBodyPartition
+    ? [{ headRows: 0, bodyRows: rows.length, rowHeadColumns: 0 }]
+    : footStart > headCount ? [{ headRows: 0, bodyRows: footStart - headCount, rowHeadColumns: 0 }] : [])) {
     const end = bodyStart + body.headRows + body.bodyRows
     bodyRanges.push([bodyStart, end])
     for (let row = bodyStart; row < end; row++) contexts[row] = { header: row < bodyStart + body.headRows, columns: body.rowHeadColumns }

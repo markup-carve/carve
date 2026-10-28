@@ -49,3 +49,6 @@
 751-a-lazy-line-keeps-its-plus-through-three-quote-levels  Pinned JavaScript reads the quoted plus at the wrong owner; markup-carve/carve-js#3813.
 752-a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker  Pinned JavaScript uses the wrong task child base; markup-carve/carve-js#3814.
 753-a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker  Pinned JavaScript uses the wrong task child base; markup-carve/carve-js#3814.
+757-an-intervening-column-refuses-a-description-hosted-first-block  Pinned JavaScript retains the refused follower in the description; markup-carve/carve-js#3833.
+758-a-hosted-footnote-keeps-a-heading-at-its-body-floor  Pinned JavaScript returns the first-block heading to the host item; markup-carve/carve-js#3832.
+759-invalid-body-row-metadata-leaves-one-table-body  Pinned JavaScript infers a head after invalid body metadata; markup-carve/carve-js#3811.

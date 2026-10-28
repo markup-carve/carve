@@ -4202,6 +4202,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // This is a distinct signal from an empty definition body, so an empty
           // `:  ` never swallows the following flush-left block.
           let pullPending = CONT_MARKER.test(trimWs(dm[2]))
+          const nestedFirstBlock = markerCarriesContinuation(dm[2].trim(), new Map())
           if (!pullPending) {
             pushBody(stripIndent(dm[2]).replace(/[ \t]+$/, ''), i - 1)
           }
@@ -4232,6 +4233,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               continue
             }
             if (entryAtOwner(i)) break
+            const followerColumn = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
+            if (nestedFirstBlock && bodyLines.length === 1 &&
+                followerColumn < sourceBodyColumn &&
+                !isBlank(cur)) break
             if (isBlank(cur)) {
               afterComment = false
               // The whole blank run belongs to a continuation at the body column.
@@ -4521,9 +4526,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const firstMarker = matchMarkerAt(indentCols(bodyLines[0]))
             const firstContentColumn = sourceBodyColumn + (firstMarker?.markerWidth ?? 0)
             const follower = bodySourceColumns[1]
-            if (follower > 0 && follower < firstContentColumn && bodyLines[1] !== '') {
+            if (follower > 0 && follower < firstContentColumn && bodyLines[1] !== '' &&
+                !matchMarkerAt(indentCols(bodyLines[1]))) {
               bodyLines.splice(1, 0, '')
               bodySourceColumns.splice(1, 0, follower)
+              if (follower > sourceBodyColumn) bodyLines[2] = lazyFrame(stripIndent(bodyLines[2]))
             }
           }
           const normalizedBody = state.authoredBodyBases
@@ -7549,7 +7556,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         headSubActive = false
       }
       if (lm.rest !== '') {
-        while (noteFrames.length && col < noteFrames.at(-1).body) noteFrames.pop()
+        while (noteFrames.length && col < noteFrames.at(-1).body) {
+          const frame = noteFrames.at(-1)
+          if (frame.firstBlockPending && (col === frame.marker || col === 0) &&
+              !matchMarkerAt(lm)) break
+          noteFrames.pop()
+        }
       }
       // A note's later list leaves no item paragraph for a below-column tail.
       if (noteTailList && col < contentCol && lm.rest !== '' && !insideFence()) break
@@ -7696,8 +7708,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const insideAuthoredBlock = pendingAuthoredBlock !== null ||
           (authoredBlockLimit !== null && i < authoredBlockLimit)
         if (leadTerm && !foldsIntoLeadTerm && !insideFence() && !foldablePlainLine(lm.rest)) leadTerm = false
+        const noteFrame = noteFrames.at(-1)
+        const firstNoteBlock = noteFrame?.firstBlockPending &&
+          (col === noteFrame.marker || col === 0) && lm.rest !== '' &&
+          !matchMarkerAt(lm)
+        if (firstNoteBlock) noteFrame.firstBlockPending = false
         const outsideNoteBody = noteBodyBoundary !== null && col < noteBodyBoundary
-        const openerBase = (!insideAuthoredBlock || inOpenColonOnly || outsideNoteBody) && mayOpenAuthoredBlock
+        const openerBase = !firstNoteBlock &&
+          (!insideAuthoredBlock || inOpenColonOnly || outsideNoteBody) && mayOpenAuthoredBlock
           ? col
           : null
         // A LINE THAT OPENS ITS OWN BASE IS MEASURED AT ITS OWN COLUMN. The
@@ -7719,8 +7737,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           !insideFence() ? authoredBlockBase ?? contentCol + TASK_MARKER_SOURCE_WIDTH
           : descendantOwned && noteFrames.length && col >= noteFrames.at(-1).body
           ? contentCol
-          : noteFrames.length && col >= noteFrames.at(-1).body &&
-          (noteFrames.at(-1).ownerBase !== null || FOOTNOTE_DEF.test(lm.rest))
+          : noteFrames.length && col >= noteFrames.at(-1).body
           ? noteFrames.at(-1).ownerBase ?? noteFrames.at(-1).marker
           : markerNoteCommentSeen && markerNoteEligible && col >= markerNoteBodyColumn &&
           (i <= noteFenceEnd || i <= markerNoteCommentEnd || COMMENT_LINE.test(lm.rest)) ? contentCol
@@ -7835,7 +7852,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // above knows whether an interior blank is fence content.
         if (openerBase !== null && !termAttributes) {
           authoredBlockBase = openerBase
-          if (!FOOTNOTE_DEF.test(dedented)) noteBodyBoundary = null
+          if (!FOOTNOTE_DEF.test(dedented) &&
+              (noteBodyBoundary === null || col < noteBodyBoundary)) noteBodyBoundary = null
           authoredContainer = DEFLIST_TERM.test(dedented) || QUOTE.test(dedented)
           if (openerBase === contentCol) pendingAuthoredBlock = i
           else authoredBlockLimit = authoredBlockEnd(lines, i, openerBase, state)
@@ -8088,7 +8106,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             noteBodyBoundary = col + FOOTNOTE_BODY_COLUMN
             const outerNote = noteFrames.at(-1)
             if (outerNote) outerNote.ownerBase = outerNote.marker
-            noteFrames.push({ marker: col, body: noteBodyBoundary, ownerBase: outerNote?.marker ?? null })
+            noteFrames.push({ marker: col, body: noteBodyBoundary, ownerBase: outerNote?.marker ?? null,
+              firstBlockPending: CONT_MARKER.test(FOOTNOTE_DEF.exec(lm.rest)?.[2] ?? '') })
           }
         }
         /*

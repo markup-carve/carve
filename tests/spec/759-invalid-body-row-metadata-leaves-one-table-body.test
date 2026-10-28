@@ -1,0 +1,12 @@
+Invalid body row metadata leaves one table body
+
+```
+{body-rows=x}
+|= A |
+.
+<table body-rows="x">
+  <tbody>
+    <tr><th scope="row">A</th></tr>
+  </tbody>
+</table>
+```

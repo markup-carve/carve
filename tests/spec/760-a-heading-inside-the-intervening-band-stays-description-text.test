@@ -1,0 +1,17 @@
+A heading inside the intervening band stays description text
+
+```
+:: t
+: - +
+   # H
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li></li>
+    </ul>
+    <p># H</p>
+  </dd>
+</dl>
+```
