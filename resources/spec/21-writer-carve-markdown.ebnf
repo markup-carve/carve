@@ -182,13 +182,14 @@
       cell and contributes to that grid column's width; it does not divide its
       width among columns.
 
-      A separator line (CARVE-P11-066) has no cell content segment. Measure each
-      separator segment by its authored dash run and alignment colons. It
-      contributes to the column width. Add only trailing spaces to reach that
-      width: do not change its dash count or colon placement, which the tree
-      records. An extra separator entry beyond the last header cell contributes
-      to its own grid column. The same rule applies when a delimiter separator
-      is required to preserve a header containing span markers.
+      A separator line (CARVE-P11-066) has no cell content segment. When a
+      header's spans require one, measure each generated separator segment by
+      its dash run and alignment colons. The roundtrip writer instead measures
+      each authored separator segment by its recorded dash run and alignment
+      colons. Each segment contributes to the column width. Add only trailing
+      spaces to reach that width: do not change its dash count or colon
+      placement. An extra authored separator entry beyond the last header cell
+      contributes to its own grid column.
 
       A `+` continuation line participates as a physical row line. Preserve
       the line split and position recorded by `cell_wrap.row`, `.line`, `.col`
@@ -255,24 +256,30 @@
       Every state but `x`/`X` renders an unchecked box (PART 2 `task_state`).
       The authored character also survives a format cycle.
 
-   6h. A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE -- NORMATIVE
+   6h. THE ROUNDTRIP WRITER PRESERVES A TABLE'S SEPARATOR ROW -- NORMATIVE
       [CARVE-P11-066]. A header row has two spellings, `|= cell |` and a plain
       row above a `|---|` separator, and they parse to the same rows and the
       same alignments. The AST records which one the author wrote, in
-      `table.separatorWidths` (PART 12 §3), and the writer reproduces it: with
-      the field, a separator row; without it, `|=` header cells.
+      `table.separatorWidths` (PART 12 §3). The `--roundtrip` writer reproduces
+      that spelling: with the field, a separator row; without it, `|=` header
+      cells. The canonical `fmt` writer ignores the field when choosing a
+      spelling. Where the native header form can express the row, it writes
+      `|=` header cells and no separator row. Each header cell retains its
+      alignment as `|=<`, `|=~`, or `|=>`; a cell with no alignment uses `|=`.
+      A header with spans that cannot be spelled in native form still uses a
+      generated separator under §6. GFM separator form remains valid input.
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,
-      but a separator would promote those cells under PART 9 T7.1. The source
-      writer does not change a cell's meaning to preserve the field's spelling.
+      but a separator would promote those cells under PART 9 T7.1. The
+      roundtrip writer does not change a cell's meaning to preserve the field's spelling.
       A source-conversion API that refuses unspellable fields refuses this
       combination with its typed source-unspellable error. A producer providing
       a lossy fallback keeps the native form and omits `separatorWidths`,
       reporting `field-unspellable`, node `table`, field `separatorWidths`,
       through the conversion-diagnostics channel of CARVE-P11-046 [CARVE-P11-046].
 
-      ALIGNMENT IS WRITTEN ONCE. In a separator form, a header cell with a
+      ALIGNMENT IS WRITTEN ONCE. In the roundtrip separator form, a header cell with a
       separator entry uses that entry's colon spelling and carries no native
       alignment marker. A header cell past the last entry keeps its native
       alignment marker, having no separator slot. No column is given both a
@@ -280,14 +287,14 @@
 
       THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING (§6).
 
-      THE WIDTHS ARE WRITTEN AS RECORDED, one entry per separator cell, each a
+      THE ROUNDTRIP WIDTHS ARE WRITTEN AS RECORDED, one entry per separator cell, each a
       run of that many `-` characters. An alignment colon is NOT one of them:
       it is written from the cell's own alignment, `:` leading for left, `:`
       trailing for right, both for center, and `[5, 3]` on a left-and-right
       table comes back as `|:-----|---:|`. On an unvalidated in-memory tree,
       a width below 1 is written as 1, since a separator cell needs a character.
 
-      THE FIELD DECIDES THE CELL COUNT, AND THE WRITER NEITHER PADS TO NOR
+      THE FIELD DECIDES THE ROUNDTRIP SEPARATOR'S CELL COUNT, AND THE WRITER NEITHER PADS TO NOR
       TRUNCATES AT THE HEADER'S WIDTH. The count is the number of ENTRIES, and
       the header row does not enter it. A separator cell the author did not
       write is a cell, and one the author wrote and the writer dropped is a

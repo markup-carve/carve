@@ -1141,7 +1141,7 @@
     {
       "id": "CARVE-P11-005",
       "part": "11",
-      "title": "WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT",
+      "title": "WRAPPER LOSS IS THE ONLY STRUCTURAL EQUALITY CARVE-OUT",
       "scope": "canonical-writing"
     },
     {
@@ -1465,7 +1465,7 @@
     {
       "id": "CARVE-P11-066",
       "part": "11",
-      "title": "A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE",
+      "title": "THE ROUNDTRIP WRITER PRESERVES A TABLE'S SEPARATOR ROW",
       "scope": "canonical-writing"
     },
     {

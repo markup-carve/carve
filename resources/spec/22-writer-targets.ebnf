@@ -391,11 +391,18 @@
       empty cell: adding one changes both the re-parsed tree and the rendered
       table, so CARVE-P11-002 makes rectangular alignment yield.
 
-      A SEPARATOR ROW IS WRITTEN ONLY WHERE THE TREE RECORDS ONE. Its cell
-      count is the entry count of `table.separatorWidths` (CARVE-P11-066),
-      neither the header row's width nor the table's. Without the field the
-      header is written with native `=` markers, including when a later body
-      row is wider.
+      THE CANONICAL WRITER USES NATIVE HEADER CELLS WHEN THEY CAN SPELL THE ROW.
+      It emits `|=` on each first-row header cell and carries its alignment
+      into the marker, including when `table.separatorWidths` records a GFM
+      separator. It emits no authored separator row. A header whose spans need
+      a generated separator follows PART 11 §6; its separator is independent
+      of `table.separatorWidths`. A later, wider body row does not add header
+      cells.
+
+      THE ROUNDTRIP WRITER PRESERVES A RECORDED SEPARATOR ROW. Its cell count
+      is the entry count of `table.separatorWidths` (CARVE-P11-066), neither
+      the header row's width nor the table's. Without the field the header is
+      written with native `=` markers, including when a later body row is wider.
 
   10c. ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER --
        NORMATIVE [CARVE-P11-030]. In a tight list item, deciding whether to retain `+` is a

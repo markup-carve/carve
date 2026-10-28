@@ -17,6 +17,12 @@
       forbids growth -- a value that gains an escape per pass violates it,
       which is how over-escaping is usually first noticed.
 
+      FOR `fmt`, EQUALITY ALSO IGNORES `table.separatorWidths`. That
+      author-choice field records a separator spelling,
+      not table meaning. The canonical writer drops that spelling under §6h;
+      the roundtrip writer preserves it. All table rows, cell roles and
+      alignments still compare equal.
+
       EQUALITY IS MODULO ESCAPING -- NORMATIVE [CARVE-P11-001]. `escaped_text` and `text`
       compare EQUAL, and an adjacent run of them compares as the single text
       node holding the same characters in the same order. `a\-b` and `a-b`
@@ -229,7 +235,7 @@
       diagnostics. Markdown export follows its own target contract
       (CARVE-P11-045); this clause does not widen that syntax.
 
-      WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT -- NORMATIVE [CARVE-P11-005].
+      WRAPPER LOSS IS THE ONLY STRUCTURAL EQUALITY CARVE-OUT -- NORMATIVE [CARVE-P11-005].
       The paragraph above says what this clause forgives. This
       says what it does NOT, because a checker asserting `parse(fmt(x)) ==
       parse(x)` has to encode both halves.
