@@ -963,6 +963,8 @@ index: examples/edge-cases/index.md
   a-non-ascii-letter-does-not-block-a-bare-delimiter
   a-lone-brace-stays-inside-forced-emphasis
   combined-emphasis-finds-a-later-nonempty-closer
+  a-mention-or-tag-keeps-its-full-spelling-in-a-strong-child
+  a-generic-extension-parses-its-captured-content-as-inline-content
 [edge-links] Links, images and references
 > Destinations, titles, reference and collapsed forms, autolinks and where a definition may live.
 out: examples/edge-cases/links.md

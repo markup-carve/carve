@@ -14,10 +14,12 @@ same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
 adapter coverage, rough CLI timing, and the extension hook surface each
 implementation exposes.
 
-## Core fixture counts (2026-10-26 CET)
+## Core fixture counts (2026-10-26 CET, with 2026-10-28 additions)
 
-The count-only run covers 3,120 core documents and their 194 target sidecars.
-The run scores 3,314 fixtures per engine. It checks expected output on
+This record covers 3,125 core documents and their 194 target sidecars.
+It scores 3,319 fixtures per engine. The five pairs in corpus 764 and 765
+were checked against the current engine pins on 2026-10-28 and added to the
+dated run's counts. The comparison checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
 Corpus added since this run: two, then `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-5`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-6`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-7`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-8`, `209-an-unresolved-reference-image-takes-no-caption-2`, `209-an-unresolved-reference-image-takes-no-caption-3`, `713-a-description-continues-after-any-blank-run`, `715-invalid-include-line-ranges-remain-literal-in-core`, `716-url-sinks-reject-schemes-after-emitted-value-normalization`, `717-citation-shaped-lines-remain-core-text`, `718-a-lone-brace-stays-inside-forced-emphasis`, `719-combined-emphasis-finds-a-later-nonempty-closer`, `720-raw-inline-image-bytes-stay-inside-a-paragraph`, `721-an-unclosed-nested-fence-keeps-blanks-before-outer-text`, `722-unresolved-footnote-literal-escapes-html-text`, `723-a-contentless-description-marker-folds-under-a-quoted-term`, `724-an-overindented-colon-opener-keeps-the-quote-paragraph-open`, `725-a-quoted-include-with-no-resolver-parses-inline-content`, `726-a-second-plus-starts-its-own-paragraph-after-attachment`, `727-an-enclosing-closer-ends-a-tag-name`, `728-a-first-block-item-takes-the-next-owned-block`, `729-compact-single-paragraph-quote`, `730-multiple-footnote-backlinks-follow-inline-content`, `731-loose-list-starts-directly-on-its-first-paragraph`, `732-paired-german-quotes-leave-no-quote-in-a-heading-id`, `733-consecutive-continuation-markers-in-a-div-hosted-quote`, `734-a-nested-first-block-item-releases-the-next-root-block`, `735-invalid-line-range-includes-within-paragraphs-stay-literal`, `736-model-syntax-boundaries-and-ownership`, `737-model-inline-frames-and-html-attributes`, `738-invalid-table-metadata-keeps-the-table`, `739-opaque-reference-and-inline-bounds`, `740-lazy-quote-owners`, `741-visible-footnote-headings`, `742-lint-directives-are-invisible-in-rendered-content`, `743-a-later-term-after-a-shifted-separator-opens-in-the-outer-item`, `744-a-task-item-uses-the-ordered-item-column-rule`, `745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes`, `746-a-native-header-continues-a-promoted-gfm-header-run`, `747-a-table-ends-a-footnote-paragraph-claim`, `748-a-footnote-heading-does-not-loosen-its-host-item`, `749-a-promoted-gfm-header-keeps-following-native-headers-before-the-body`, `750-a-below-column-line-returns-to-its-definition-body`, `751-a-lazy-line-keeps-its-plus-through-three-quote-levels`, `752-a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker`, `753-a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker`, `754-a-promoted-image-merges-block-attributes-before-inline-attributes`, `755-a-content-tab-does-not-hide-a-description-boundary`, `756-a-description-keeps-a-list-marker-below-its-hosted-footnote`, `757-an-intervening-column-refuses-a-description-hosted-first-block`, `758-a-hosted-footnote-keeps-a-heading-at-its-body-floor`, `759-invalid-body-row-metadata-leaves-one-table-body`, `760-a-heading-inside-the-intervening-band-stays-description-text`, `761-a-below-column-term-stays-in-the-footnote-paragraph`, `762-a-closed-footnote-child-releases-a-flush-line`, `763-a-note-claimed-fence-line-keeps-the-item-loose`.
@@ -36,15 +38,15 @@ including the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>3117 / 3120</strong>
+    <strong>3122 / 3125</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3120 / 3120</strong>
+    <strong>3125 / 3125</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3120 / 3120</strong>
+    <strong>3125 / 3125</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -53,11 +55,11 @@ including the
   </div>
 </div>
 
-| Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
+| Implementation | Dated run commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `fc0f31c78` | `3117 / 3120` | `3311 / 3314` | `3` | `0` |
-| JS | `4a10e5eae` | `3120 / 3120` | `3314 / 3314` | `0` | `0` |
-| PHP | `6280573be` | `3120 / 3120` | `3314 / 3314` | `0` | `0` |
+| Rust | `fc0f31c78` | `3122 / 3125` | `3316 / 3319` | `3` | `0` |
+| JS | `4a10e5eae` | `3125 / 3125` | `3319 / 3319` | `0` | `0` |
+| PHP | `6280573be` | `3125 / 3125` | `3319 / 3319` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
@@ -487,15 +489,15 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3120 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=3311/3314 mismatch=3 error=0 skipped=0 runs=3314
+profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3125 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=3316/3319 mismatch=3 error=0 skipped=0 runs=3319
   mismatch: html 699-a-quoted-link-definition-in-a-footnote-body-registers-globally
   mismatch: html 700-a-marker-line-sublist-stays-open-in-a-description-body
   mismatch: html 708-invisible-content-and-image-promotion
   mismatching documents: 3
-js: pass=3314/3314 mismatch=0 error=0 skipped=0 runs=3314
+js: pass=3319/3319 mismatch=0 error=0 skipped=0 runs=3319
   mismatching documents: 0
-php: pass=3314/3314 mismatch=0 error=0 skipped=0 runs=3314
+php: pass=3319/3319 mismatch=0 error=0 skipped=0 runs=3319
   mismatching documents: 0
 cross_impl_diffs=3
 
