@@ -1343,7 +1343,7 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
     // The combined token holds an italic and a bold, so §9 E3 keeps it from
     // opening while either is open (carve#3234); `pairGuarded` splits it.
     if (t.combinedAt !== undefined) {
-      t.nested = openers.some((oi) => toks[oi].ch === '/' || toks[oi].ch === '*')
+      t.guardOpeners = openers.slice()
       continue
     }
     if (t.k !== 'd') continue
@@ -1372,6 +1372,16 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
       continue
     }
     // E1 / E5 literal: candidate left unpaired (rendered as its literal char).
+  }
+  // A guarded delimiter after an unmatched prefix remains literal. It does
+  // not enclose the combined token, even if it was tentatively on the stack.
+  for (const t of toks) {
+    if (t.combinedAt === undefined) continue
+    t.nested = t.guardOpeners.some((oi) => {
+      const opener = toks[oi]
+      return (opener.ch === '/' || opener.ch === '*') &&
+        (!guardedBy(opener.ch, src[opener.at - 1]) || openMap.has(oi))
+    })
   }
   return openMap
 }

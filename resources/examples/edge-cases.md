@@ -67503,3 +67503,170 @@ y</p>
 ```
 
 ::::
+
+
+## Opaque reference and inline bounds
+
+:::: compare
+
+```carve
+[x][m]
+*[m]: y
+```
+
+```html
+<p>[x][m]</p>
+```
+
+::::
+
+:::: compare
+
+```carve
+![x][m]
+*[m]: y
+```
+
+```html
+<p>![x][m]</p>
+```
+
+::::
+
+:::: compare
+
+```carve
+see [m] here
+*[m]: y
+```
+
+```html
+<p>see [<abbr title="y">m</abbr>] here</p>
+```
+
+::::
+
+:::: compare
+
+```carve
+|\|	
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>|</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{+`{#+}#}
+```
+
+```html
+<p><ins><code>{#</code></ins>#}</p>
+```
+
+::::
+
+:::: compare
+
+```carve
+_*x
+/*b*/
+```
+
+```html
+<p>_*x
+<strong><em>b</em></strong></p>
+```
+
+::::
+
+:::: compare
+
+```carve
+>  
+```
+
+```html
+<blockquote><p> </p></blockquote>
+```
+
+::::
+
+:::: compare
+
+```carve
+>  
+```
+
+```html
+<blockquote><p> </p></blockquote>
+```
+
+::::
+
+:::: compare
+
+```carve
+$$`x
+^ p
+```
+
+```html
+<figure>
+  <p><span class="math display" role="math">\[x\]</span></p>
+  <figcaption>p</figcaption>
+</figure>
+```
+
+::::
+
+
+## Lazy quote owners
+
+:::: compare
+
+```carve
+>  {c
+> }
+a
+```
+
+```html
+<blockquote><p>{c
+}
+a</p></blockquote>
+```
+
+::::
+
+:::: compare
+
+```carve
+> - > +
+> - > +
+ s
+```
+
+```html
+<blockquote>
+  <ul>
+    <li>
+      <blockquote><p>+</p></blockquote>
+    </li>
+    <li>
+      <blockquote><p>+
+s</p></blockquote>
+    </li>
+  </ul>
+</blockquote>
+```
+
+::::

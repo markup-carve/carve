@@ -208,7 +208,9 @@
       because PART 9 §14 renders that run's content. The rule is not about
       brackets; it is about whether the text reached the reader.
    R3 ABBREVIATIONS. Each abbrDefs term matches in rendered text at WORD
-      BOUNDARIES only and emits <abbr>. Expansion follows PART 9 §25 RESOURCE BOUNDS.
+      BOUNDARIES only and emits <abbr>. Literal source text emitted for an
+      unresolved link or image reference (R1) is not scanned for abbreviations;
+      ordinary bracket text remains eligible. Expansion follows PART 9 §25 RESOURCE BOUNDS.
    R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
       spelling of an id resolves; corpus 15-heading-ids), then captionIds for numbered captions and

@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -1398,7 +1398,7 @@ function resolveImageRef(parsed, ctx, literal) {
   // LITERAL means what the author typed, HTML-escaped like any other text
   // node (PART 10 SS2): `&`/`<`/`>` and a no-break space all need it, the
   // same as every other piece of content this renderer emits.
-  if (!def) return `![${escapeHtml(alt)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}`
+  if (!def) return refFrame({ opaque: true, literal: `![${escapeHtml(alt)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}` })
   const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
   const a = def.attrs?.length
     ? renderBlockAttrs([def.attrs, attrList ?? []], 'src')
@@ -1431,6 +1431,7 @@ function resolveRefsOnce(html, ctx) {
     } catch {
       return _
     }
+    if (parsed.opaque) return _
     const { label, text, source, attrList, img, attrSrc, flat } = parsed
     if (img) return resolveImageRef(parsed, ctx, _)
     if (typeof text !== 'string') return _
@@ -1473,7 +1474,7 @@ function resolveRefsOnce(html, ctx) {
       // consumed. All three engines emit the source; nothing pinned it because
       // no corpus case paired an unresolved reference with a decorated label.
       // Same PART 10 SS2 escaping as the image-reference literal above.
-      return `[${escapeHtml(source ?? text)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}`
+      return refFrame({ opaque: true, literal: `[${escapeHtml(source ?? text)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}` })
     }
     if (flat) return text
     const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
@@ -1813,11 +1814,18 @@ function resolveCrossrefs(html, ctx) {
 
 // --- PART 9R R3: abbreviations ----------------------------------------------
 function applyAbbreviations(html, ctx) {
-  if (ctx.abbrDefs.size === 0) return html
   // transform only text segments outside tags and outside code/pre
   const parts = html.split(/(<[^>]*>)/)
   let inCode = 0
   let inAbbr = 0
+  const expand = (text) => {
+    let result = text
+    for (const [term, expansion] of ctx.abbrDefs) {
+      const re = new RegExp(`(^|[^\\p{L}\\p{N}])(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\p{L}\\p{N}])`, 'gu')
+      result = result.replace(re, (_, pre, hit) => `${pre}<abbr title="${escapeAttr(expansion)}">${hit}</abbr>`)
+    }
+    return result
+  }
   for (let i = 0; i < parts.length; i++) {
     const p = parts[i]
     if (p.startsWith('<')) {
@@ -1827,13 +1835,18 @@ function applyAbbreviations(html, ctx) {
       else if (/^<\/abbr>/.test(p)) inAbbr--
       continue
     }
-    if (inCode > 0 || inAbbr > 0 || p === '') continue
-    let s = p
-    for (const [term, expansion] of ctx.abbrDefs) {
-      const re = new RegExp(`(^|[^\\p{L}\\p{N}])(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\p{L}\\p{N}])`, 'gu')
-      s = s.replace(re, (_, pre, hit) => `${pre}<abbr title="${escapeAttr(expansion)}">${hit}</abbr>`)
+    if (p === '') continue
+    let result = ''
+    let at = 0
+    for (const frame of p.matchAll(REF_FRAME)) {
+      result += inCode > 0 || inAbbr > 0 ? p.slice(at, frame.index) : expand(p.slice(at, frame.index))
+      let parsed
+      try { parsed = JSON.parse(frame[1]) } catch { parsed = null }
+      result += parsed?.opaque ? parsed.literal : frame[0]
+      at = frame.index + frame[0].length
     }
-    parts[i] = s
+    result += inCode > 0 || inAbbr > 0 ? p.slice(at) : expand(p.slice(at))
+    parts[i] = result
   }
   return parts.join('')
 }

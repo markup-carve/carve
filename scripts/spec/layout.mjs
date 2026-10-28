@@ -152,7 +152,7 @@ const HEADING = /^(#{1,6}) +(?=.*[^ \t\n\r\f])(.*)$/
 const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
 const FENCE = /^(`{3,}|~{3,})(.*)$/
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/
-const QUOTE_LINE = /^>(?: (.*)|[ \t]*$)/
+const QUOTE_LINE = /^>(?: ([^\r\n]*)|[ \t]*$)/
 const QUOTE = {
   exec(line) {
     return QUOTE_LINE.exec(line)
@@ -377,6 +377,7 @@ function isCaptionableParagraph(para) {
   const line = para.map(trimLineEnd).join('\n')
   if (line.startsWith('$$`')) {
     const close = line.indexOf('`', 3)
+    if (close < 0) return 'math'
     const tail = close < 0 ? null : line.slice(close + 1)
     if (tail === '' || (tail !== null && parseAttrBlock(tail) !== null)) return 'math'
   }
@@ -772,7 +773,7 @@ function splitRow(line, openRun = 0, openRunAt = 0) {
    * closer itself, so `| a | b` is prose exactly as before.
    */
   if (cur.trimEnd().endsWith('\\|')) {
-    cells.push(cur)
+    cells.push(cur.trimEnd())
     cur = ''
   }
   // T2: a row CLOSES with a pipe (`standard_row` ends in `'|'`). A line-initial
@@ -1809,7 +1810,7 @@ function bodyEndsWrappedAttr(bodyLines, depth = 0) {
   // Without this the predicate rescans the whole trailing paragraph for every
   // lazy line, which is quadratic on a long plain quote (carve#1956).
   if (!bodyLines[last].trimEnd().endsWith('}')) return false
-  if (trailingWrappedAttr(bodyLines, last, true)) return true
+  if (trailingWrappedAttr(bodyLines, last, true, true)) return true
   if (!QUOTE.test(bodyLines[last]) || depth >= MAX_NESTING_DEPTH) return false
   let first = last
   while (first > 0 && QUOTE.test(bodyLines[first - 1])) first--
@@ -1817,10 +1818,20 @@ function bodyEndsWrappedAttr(bodyLines, depth = 0) {
   return bodyEndsWrappedAttr(inner, depth + 1)
 }
 
-function trailingWrappedAttr(lines, last, wrappedOnly = false) {
+function trailingWrappedAttr(lines, last, wrappedOnly = false, requireHost = false) {
+  const hostColumnBefore = []
+  if (requireHost) {
+    let firstHostColumn = Infinity
+    for (let j = 0; j <= last; j++) {
+      hostColumnBefore[j] = firstHostColumn
+      const marker = matchMarkerAt(indentCols(lines[j]))
+      if (marker) firstHostColumn = Math.min(firstHostColumn, marker.indent + marker.markerWidth)
+    }
+  }
   for (let k = last; k >= 0 && lines[k].trim() !== ''; k--) {
     const opener = indentCols(lines[k])
     if (!opener.rest.startsWith('{')) continue
+    if (requireHost && opener.col > 0 && hostColumnBefore[k] > opener.col) continue
     const window = lines.slice(k, last + 1).map((line) =>
       dedentMeasured(indentCols(line), line, opener.col).text)
     const attr = tryAttrLine(window, 0)
@@ -5243,7 +5254,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const unmarked = stripLazy(lines[i] ?? '')
         // X2: every open quote depth keeps its claim on an unmarked marker.
         const nestedMarkerFold = !qTermOpen && qNestedPara.some(Boolean) && !!matchMarkerAt(indentCols(unmarked))
-        if (lines[i] !== undefined && (qOpenPara || qTermOpen || foldedColon) &&
+        if (lines[i] !== undefined && (qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&
             !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
             !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(unmarked) ||
               QUOTE.test(stripIndent(unmarked)) ||

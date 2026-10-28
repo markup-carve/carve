@@ -1,0 +1,68 @@
+Opaque reference and inline bounds
+
+```
+[x][m]
+*[m]: y
+.
+<p>[x][m]</p>
+```
+
+```
+![x][m]
+*[m]: y
+.
+<p>![x][m]</p>
+```
+
+```
+see [m] here
+*[m]: y
+.
+<p>see [<abbr title="y">m</abbr>] here</p>
+```
+
+```
+|\|	
+.
+<table>
+  <tbody>
+    <tr><td>|</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{+`{#+}#}
+.
+<p><ins><code>{#</code></ins>#}</p>
+```
+
+```
+_*x
+/*b*/
+.
+<p>_*x
+<strong><em>b</em></strong></p>
+```
+
+```
+>  
+.
+<blockquote><p> </p></blockquote>
+```
+
+```
+>  
+.
+<blockquote><p> </p></blockquote>
+```
+
+```
+$$`x
+^ p
+.
+<figure>
+  <p><span class="math display" role="math">\[x\]</span></p>
+  <figcaption>p</figcaption>
+</figure>
+```

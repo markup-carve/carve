@@ -71,6 +71,9 @@ const INVENTORY = [
   { base: '716-url-sinks-reject-schemes-after-emitted-value-normalization', crv: ['RLO'], html: ['RLO'] },
   // The space after the colon is the contentless-marker spelling this row tests.
   { base: '723-a-contentless-description-marker-folds-under-a-quoted-term', crv: ['trailing-WS'], html: [] },
+  { base: '739-opaque-reference-and-inline-bounds-4', crv: ['trailing-WS', 'trailing-TAB'], html: [] },
+  { base: '739-opaque-reference-and-inline-bounds-7', crv: ['PS'], html: ['PS'] },
+  { base: '739-opaque-reference-and-inline-bounds-8', crv: ['LS'], html: ['LS'] },
   {
     base: '119-trojan-source-heading-ids-are-nfc-normalized-and-strip-invisible-controls-3',
     crv: ['RLO', 'ZWSP'],

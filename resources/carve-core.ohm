@@ -368,13 +368,13 @@ CarveCore {
   editorial  = edSub | edIns | edDel | edComment
   // Like a forced opener, an editorial or comment opener needs a whole
   // delimiter (CARVE-P3-025): `{+` before a grapheme extender is text.
-  edIns      = "{+" ~graphemeExt (~"+}" edScan)+ "+}" attrRun?
+  edIns      = "{+" ~graphemeExt (~"+}" edScan<"+">)+ "+}" attrRun?
   // Every editorial form needs CONTENT (`+`, not `*`), like the forced spans
   // above: an opener meeting its own closer is not the construct (carve#1447).
   // The one string the empty deletion spelled is `{--}`, and that is the braced
   // en dash below. `edSub` is deliberately NOT widened: a half-empty
   // substitution is a real edit (`{~a~>~}` deletes `a`).
-  edDel      = "{-" ~graphemeExt (~"-}" edScan)+ "-}" attrRun?
+  edDel      = "{-" ~graphemeExt (~"-}" edScan<"-">)+ "-}" attrRun?
   // The `~>` and `~}` a substitution needs are TOP-LEVEL: the search skips
   // verbatim content, so a pair whose only `~>` sits in code is a forced
   // strikethrough (PART 9 SS22, carve#2083). An unclosed run ends at `~}`.
@@ -403,7 +403,8 @@ CarveCore {
   // editorial comment is opaque (E2a), so a `+}` or `-}` inside one is its
   // content (ruled 2026-10-15). Bodies only, as in `brContent`: an attribute
   // block after any of them is still scanned.
-  edScan     = escape | codeClosed | backtickRun | crossref | autolinkBody | edCommentBody | bracedComment | nested | any
+  edScan<d>  = escape | codeClosed | edCodeU<d> | crossref | autolinkBody | edCommentBody | bracedComment | nested | any
+  edCodeU<d> = ~codeClosed backtickRun (~(d "}") any)*
   backtickRun = "\u0060"+
 
   // raw inline passthrough: a code span whose trailing block is EXACTLY
