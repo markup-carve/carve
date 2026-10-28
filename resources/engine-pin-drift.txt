@@ -26,22 +26,9 @@
 # Format: <slug><space><space><reason>
 454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 750-a-below-column-line-returns-to-its-definition-body  Regression since carve-js 9dbd64a8 (markup-carve/carve-js#3826): the pinned parser folds the below-column line into the empty `- +` item instead of returning it to the description body.
-461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-620-generated-container-documents-16  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-744-a-task-item-uses-the-ordered-item-column-rule  Task ownership differs in pinned engines; markup-carve/carve-js#3801 and markup-carve/carve-rs#3407.
-745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes  O3 lazy quote ownership differs in pinned engines; markup-carve/carve-js#3800 and markup-carve/carve-rs#3406.
-745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes-3  O3 lazy quote ownership differs in pinned engines; markup-carve/carve-js#3800 and markup-carve/carve-rs#3406.
-751-a-lazy-line-keeps-its-plus-through-three-quote-levels  Pinned JavaScript reads the quoted plus at the wrong owner; markup-carve/carve-js#3813.
-752-a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker  Pinned JavaScript uses the wrong task child base; markup-carve/carve-js#3814.
 753-a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker  Pinned JavaScript uses the wrong task child base; markup-carve/carve-js#3814.
 757-an-intervening-column-refuses-a-description-hosted-first-block  Pinned JavaScript retains the refused follower in the description; markup-carve/carve-js#3833.
-759-invalid-body-row-metadata-leaves-one-table-body  Pinned JavaScript infers a head after invalid body metadata; markup-carve/carve-js#3811.
 761-a-below-column-term-stays-in-the-footnote-paragraph  The pinned JavaScript parser releases a term one column below an open footnote paragraph; markup-carve/carve#3874.
-763-a-note-claimed-fence-line-keeps-the-item-loose  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
-763-a-note-claimed-fence-line-keeps-the-item-loose-2  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
-763-a-note-claimed-fence-line-keeps-the-item-loose-3  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
 05-lists-10  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 05-lists-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 103-heading-marker-column-zero  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
@@ -247,3 +234,5 @@
 724-an-overindented-colon-opener-keeps-the-quote-paragraph-open  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 75-list-nesting-and-looseness-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 760-a-heading-inside-the-intervening-band-stays-description-text  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+758-a-hosted-footnote-keeps-a-heading-at-its-body-floor  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
