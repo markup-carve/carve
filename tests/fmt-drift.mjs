@@ -61,3 +61,7 @@ export function loadDeclaredFmtDrift(testsDir) {
 export function loadWriterOnlyDrift(testsDir) {
   return new Set(parseDriftFile(resolve(testsDir, '..', 'resources', 'engine-fmt-drift.txt')))
 }
+
+export function loadCanonicalDrift(testsDir) {
+  return new Set(parseDriftFile(resolve(testsDir, '..', 'resources', 'engine-canonical-drift.txt')))
+}

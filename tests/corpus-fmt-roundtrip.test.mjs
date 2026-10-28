@@ -74,7 +74,7 @@ import {
 } from '@markup-carve/carve'
 import { parse as parseSpec } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
-import { loadDeclaredFmtDrift, loadWriterOnlyDrift } from './fmt-drift.mjs'
+import { loadCanonicalDrift, loadDeclaredFmtDrift, loadWriterOnlyDrift } from './fmt-drift.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus')
@@ -94,6 +94,7 @@ const documents = readdirSync(corpusDir)
   .map((f) => ({ slug: f.replace(/\.crv$/, ''), source: readFileSync(resolve(corpusDir, f), 'utf8') }))
 
 const declaredDrift = loadDeclaredFmtDrift(here)
+const canonicalDrift = loadCanonicalDrift(here)
 
 const TARGET_WRITERS = { md: carveToMarkdown, txt: carveToPlainText, ansi: carveToAnsi }
 
@@ -730,11 +731,29 @@ test('a .fmt fixture is read, so it can fail', () => {
 test('fmt(x) matches every .fmt fixture (PART 11 §2)', () => {
   const wrong = []
   for (const { slug, source, expected } of pinned) {
-    if (declaredDrift.has(slug)) continue
+    if (declaredDrift.has(slug) || canonicalDrift.has(slug)) continue
     const actual = carveToCarve(source)
     if (actual !== expected) wrong.push(`${slug}\n    expected: ${JSON.stringify(expected)}\n      actual: ${JSON.stringify(actual)}`)
   }
   assert.deepEqual(wrong, [], `the writer disagrees with its pinned canonical form:\n  ${wrong.join('\n  ')}`)
+})
+
+test('canonical drift names only faithful fixtures the pinned writer cannot yet emit', () => {
+  const fixtures = new Map(pinned.map(({ slug, source, expected }) => [slug, { source, expected }]))
+  const wrong = []
+  for (const slug of canonicalDrift) {
+    const fixture = fixtures.get(slug)
+    if (!fixture) {
+      wrong.push(`${slug}: no .fmt fixture`)
+      continue
+    }
+    if (declaredDrift.has(slug)) wrong.push(`${slug}: also listed as semantic drift`)
+    if (carveToCarve(fixture.source) === fixture.expected) wrong.push(`${slug}: pin already writes canonical bytes`)
+    if (renderDoc(parseSpec(fixture.expected)) !== renderDoc(parseSpec(fixture.source))) {
+      wrong.push(`${slug}: canonical bytes change rendering`)
+    }
+  }
+  assert.deepEqual(wrong, [])
 })
 
 // A .fmt fixture the pin cannot produce still has to be a FAITHFUL
