@@ -2836,7 +2836,8 @@ function ownLines(lines) {
         const c = PURE_FENCE.exec(r)
         return !!(c && c[1][0] === run[0] && c[1].length >= run.length)
       }
-      const reachable = (closerRuns().widest[run[0]][at + 1] ?? 0) >= run.length
+      // A closer below the owner's column never matches (CARVE-P0-014).
+      const reachable = (widestFrom(run[0], owner.col)[at + 1] ?? 0) >= run.length
       if (owner.para && !reachable) return { kind: 'text', interrupts: false }
       return { kind: 'fence', interrupts: reachable, closes }
     }
@@ -2888,9 +2889,31 @@ function ownLines(lines) {
   }
 
   function quotedRest(line) {
-    let rest = walkIndent(line).rest
-    while (QUOTE.test(rest)) rest = walkIndent(QUOTE.exec(rest)[1] ?? '').rest
-    return rest
+    return quotedMeasure(line).rest
+  }
+
+  function quotedMeasure(line) {
+    let m = walkIndent(line)
+    while (QUOTE.test(m.rest)) m = walkIndent(QUOTE.exec(m.rest)[1] ?? '')
+    return m
+  }
+
+  // The widest closer run of `char` at or after every line, counting only
+  // closers written at `col` or deeper. One pass per column asked.
+  function widestFrom(char, col) {
+    const key = `${char}${col}`
+    const cached = (runs ??= closerRuns()).byColumn?.get(key)
+    if (cached) return cached
+    const widest = new Array(lines.length + 1).fill(0)
+    for (let j = lines.length - 1; j >= 0; j--) {
+      widest[j] = widest[j + 1]
+      const m = quotedMeasure(lines[j])
+      if (m.col < col) continue
+      const c = PURE_FENCE.exec(m.rest)
+      if (c && c[1][0] === char) widest[j] = Math.max(widest[j], c[1].length)
+    }
+    ;(runs.byColumn ??= new Map()).set(key, widest)
+    return widest
   }
 }
 

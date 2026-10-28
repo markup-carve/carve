@@ -58810,14 +58810,15 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
-      <li>head
+      <li><p>head
 <code>
 a
-</code></li>
+</code></p>
+        <p>tail</p>
+      </li>
     </ul>
-    <p>tail</p>
   </li>
 </ul>
 ```
@@ -58958,14 +58959,15 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
-      <li>head
+      <li><p>head
 ~~~
 a
-~~~</li>
+~~~</p>
+        <p>tail</p>
+      </li>
     </ul>
-    <p>tail</p>
   </li>
 </ul>
 ```
@@ -59014,16 +59016,16 @@ a
 
 ```html
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
       <li>head
 <code>
 a
 </code></li>
     </ul>
+    <p>tail</p>
   </li>
 </ul>
-<p>tail</p>
 ```
 
 :::::::
