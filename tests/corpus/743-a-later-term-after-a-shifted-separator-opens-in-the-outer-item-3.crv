@@ -1,0 +1,6 @@
+::: box
+- * :: t
+  : a
+    :: sibling
+    tail
+:::

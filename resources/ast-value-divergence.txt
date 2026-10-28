@@ -40,3 +40,4 @@
 # agreed on every scalar the last run compared. It does not say they agree on
 # fields no corpus document reaches.
 link.href  2  markup-carve/carve-php#4119, markup-carve/carve-js#3775, and markup-carve/carve-rs#3385 track visible and unused footnote heading links.
+text.value  1  Pinned Rust and PHP retain indentation in the task separator text; markup-carve/carve#3845 and markup-carve/carve-rs#3407 track its owner.

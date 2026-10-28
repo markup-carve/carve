@@ -67810,3 +67810,235 @@ body
 ```
 
 ::::
+
+## A later term after a shifted separator opens in the outer item
+
+:::: compare
+
+```carve
+- * :: t
+  : a
+    :: sibling
+    tail
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <dl>
+          <dt>t</dt>
+        </dl>
+      </li>
+    </ul>
+    : a
+    <dl>
+      <dt>sibling
+tail</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+::::
+
+:::: compare
+
+```carve
+> - * :: t
+>   : a
+>      :: sibling
+>      tail
+```
+
+```html
+<blockquote>
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <dl>
+            <dt>t</dt>
+          </dl>
+        </li>
+      </ul>
+      : a
+      <dl>
+        <dt>sibling
+tail</dt>
+      </dl>
+    </li>
+  </ul>
+</blockquote>
+```
+
+::::
+
+:::: compare
+
+```carve
+::: box
+- * :: t
+  : a
+    :: sibling
+    tail
+:::
+```
+
+```html
+<div class="box">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <dl>
+            <dt>t</dt>
+          </dl>
+        </li>
+      </ul>
+      : a
+      <dl>
+        <dt>sibling
+tail</dt>
+      </dl>
+    </li>
+  </ul>
+</div>
+```
+
+::::
+
+
+## A task item uses the ordered item column rule
+
+:::: compare
+
+```carve
+* [ ] - :: t
+      : a
+      :: sibling
+      tail
+```
+
+```html
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <ul>
+      <li>
+        <dl>
+          <dt>t</dt>
+        </dl>
+      </li>
+    </ul>
+    : a
+    <dl>
+      <dt>sibling
+tail</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+::::
+
+:::: compare
+
+```carve
+1000. - :: t
+      : a
+      :: sibling
+      tail
+```
+
+```html
+<ol start="1000">
+  <li>
+    <ul>
+      <li>
+        <dl>
+          <dt>t</dt>
+        </dl>
+      </li>
+    </ul>
+    : a
+    <dl>
+      <dt>sibling
+tail</dt>
+    </dl>
+  </li>
+</ol>
+```
+
+::::
+
+
+## The deepest quoted paragraph takes a lazy line across missed prefixes
+
+:::: compare
+
+```carve
+> > - > +
+> > - > +
+>  s
+```
+
+```html
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>
+        <blockquote><p>+</p></blockquote>
+      </li>
+      <li>
+        <blockquote><p>+
+s</p></blockquote>
+      </li>
+    </ul>
+  </blockquote>
+</blockquote>
+```
+
+::::
+
+:::: compare
+
+```carve
+> > a
+> b
+```
+
+```html
+<blockquote>
+  <blockquote><p>a
+b</p></blockquote>
+</blockquote>
+```
+
+::::
+
+:::: compare
+
+```carve
+> > * > +
+> > * > +
+>  tail
+```
+
+```html
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>
+        <blockquote><p>+</p></blockquote>
+      </li>
+      <li>
+        <blockquote><p>+
+tail</p></blockquote>
+      </li>
+    </ul>
+  </blockquote>
+</blockquote>
+```
+
+::::

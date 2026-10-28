@@ -23,5 +23,5 @@
 # enclosing footnote, and it left the ledger when carve-js and carve-rs shipped
 # the fix rather than by being named here.
 
-list (extent)@3: corpus 503-9, 636 and 697 - the engines start the list at different columns inside the line's leading indentation, which a container may do (markup-carve/carve#1928).
-list_item (extent)@4: corpus 245, 503-9, 636 and 697 - the engines start the item at different columns inside the line's leading indentation, which a container may do (markup-carve/carve#1928).
+list (extent)@4: corpus 503-9, 636 and 697 differ inside leading indentation under markup-carve/carve#1928; corpus 744 adds tracked task ownership drift at markup-carve/carve#3845.
+list_item (extent)@5: corpus 245, 503-9, 636 and 697 differ inside leading indentation under markup-carve/carve#1928; corpus 744 adds tracked task ownership drift at markup-carve/carve#3845.

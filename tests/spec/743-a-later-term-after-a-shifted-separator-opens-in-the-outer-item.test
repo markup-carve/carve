@@ -1,0 +1,79 @@
+A later term after a shifted separator opens in the outer item
+
+```
+- * :: t
+  : a
+    :: sibling
+    tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <dl>
+          <dt>t</dt>
+        </dl>
+      </li>
+    </ul>
+    : a
+    <dl>
+      <dt>sibling
+tail</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+> - * :: t
+>   : a
+>      :: sibling
+>      tail
+.
+<blockquote>
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <dl>
+            <dt>t</dt>
+          </dl>
+        </li>
+      </ul>
+      : a
+      <dl>
+        <dt>sibling
+tail</dt>
+      </dl>
+    </li>
+  </ul>
+</blockquote>
+```
+
+```
+::: box
+- * :: t
+  : a
+    :: sibling
+    tail
+:::
+.
+<div class="box">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <dl>
+            <dt>t</dt>
+          </dl>
+        </li>
+      </ul>
+      : a
+      <dl>
+        <dt>sibling
+tail</dt>
+      </dl>
+    </li>
+  </ul>
+</div>
+```

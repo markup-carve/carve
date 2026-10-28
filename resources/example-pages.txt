@@ -1340,6 +1340,9 @@ out: examples/edge-cases/model-source-boundaries.md
 index: examples/edge-cases/index.md
   opaque-reference-and-inline-bounds
   lazy-quote-owners
+  a-later-term-after-a-shifted-separator-opens-in-the-outer-item
+  a-task-item-uses-the-ordered-item-column-rule
+  the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes
 
 [edge-footnote-heading-index] Visible footnote headings
 > Used footnote headings enter reference lookup; unused definitions do not.

@@ -407,6 +407,7 @@ function isCaptionableParagraph(para) {
 const ATTR_PAYLOAD = /(?:[^}'"\\]|\\.|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")*/.source
 const ATTR_BLOCK = `\\{${ATTR_PAYLOAD}\\}`
 const BULLET = new RegExp(`^([ \\t]*)([-*])(${ATTR_BLOCK})?( +)(?:\\[([ xX_>/!?-])\\] )?(.+)$`)
+const TASK_MARKER_SOURCE_WIDTH = 4 // `[x] ` is content on the marker line.
 // The value is optional before a `.`: a bare `. ` is a decimal marker
 // counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
 // marker, so the empty alternative is guarded by a lookahead at the dot.
@@ -5813,20 +5814,24 @@ function authoredBlockEnd(lines, start, base, state) {
   const comment = classifyLayoutComment(lines, start)
   if (comment) return comment.end
   // An attribute line ends at its closing brace; it cannot own the next block.
-  const attributes = tryAttrLine(lines.slice(start).map((line) => dedent(line, base)), 0)
+  const attributes = tryAttrLine(dedentedWindow(lines, start, base), 0)
   if (attributes) return start + attributes.next
   if (state.measuringAuthoredBlock) return start + 1
-  const candidate = lines.slice(start).map((source) => {
-    if (isBlank(source)) return source
-    const measured = indentCols(source)
-    return measured.col < base ? source : dedentMeasured(measured, source, base).text
-  })
-  const invisibleEnd = FOOTNOTE_DEF.test(candidate[0] ?? '') ? null : invisibleAuthoredEnd(candidate, 0, candidate.length)
-  if (invisibleEnd !== null) return start + invisibleEnd
-  return start + firstBlockEnd(candidate, 0, candidate.length, {
-    ...state,
-    measuringAuthoredBlock: true,
-  })
+  // The first block normally ends close to its opener. Measure a small window
+  // first and extend it only when the block reaches the window's edge.
+  for (let end = Math.min(lines.length, start + 16); ; end = Math.min(lines.length, start + 2 * (end - start))) {
+    const candidate = lines.slice(start, end).map((source) => {
+      if (isBlank(source)) return source
+      const measured = indentCols(source)
+      return measured.col < base ? source : dedentMeasured(measured, source, base).text
+    })
+    const invisibleEnd = FOOTNOTE_DEF.test(candidate[0] ?? '') ? null : invisibleAuthoredEnd(candidate, 0, candidate.length)
+    const blockEnd = invisibleEnd ?? firstBlockEnd(candidate, 0, candidate.length, {
+      ...state,
+      measuringAuthoredBlock: true,
+    })
+    if (start + blockEnd < end || end === lines.length) return start + blockEnd
+  }
 }
 // The quote column of a `- > +` item head, keyed by the item's line array.
 const markerLineQuoteColumns = new WeakMap()
@@ -6263,8 +6268,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     const headSubMarker = matchMarkerAt(indentCols(head.text))
     if (headSubMarker) separatorMarkerColumns.set(itemLines,
       new Map([[0, authoredMarkerCol + head.markerWidth]]))
+    // A marker after a task box starts four source columns past the item's content column.
     const headSubCol = headSubMarker
-      ? contentCol + headSubMarker.indent + headSubMarker.markerWidth
+      ? contentCol + (head.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH) + headSubMarker.indent + headSubMarker.markerWidth
       : -1
     // The marker-line child owns this column until an outer authored block opens.
     let headSubActive = headSubCol >= 0
@@ -7219,7 +7225,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             i = j
             continue
           }
-          if (headSubActive && jm.col < headSubCol && opensAuthoredBase(jm.rest) && !COMMENT_LINE.test(jm.rest)) headSubActive = false
+          if (headSubActive && jm.col < headSubCol &&
+              (opensAuthoredBase(jm.rest) || jm.col >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(jm.rest)) &&
+              !COMMENT_LINE.test(jm.rest)) headSubActive = false
           if ((subCol >= 0 && col >= subCol) || (headSubActive && col >= headSubCol)) {
             // Content at or past the first sub-list's content column belongs to
             // the SUB-LIST, not this item -- a blank inside the sub-list must
@@ -7375,7 +7383,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (!descendantParagraphBefore) foldedChildParagraph = false
       const foldedChildFence = markerLineFence === null && !isBlank(priorContent) && !nestedVerbatim() && descendantParagraphBefore && col < childCol && FENCE.test(lm.rest) &&
         !fenceCloserFollows(i, dedentMeasured(lm, lines[i], col).text, col)
-      if (headSubActive && col < headSubCol && opensAuthoredBase(lm.rest) && !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
+      if (headSubActive && col < headSubCol &&
+          (opensAuthoredBase(lm.rest) || col >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(lm.rest)) &&
+          !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
         headSubActive = false
       }
       if (lm.rest !== '') {
@@ -7544,7 +7554,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // base at the item's content column then held it over a quote written
         // one column deeper, which arrived at body column 1 instead of 0 and
         // stopped being an opener at all (carve#1772, corpus 422-8).
-        const localBase = descendantOwned && noteFrames.length && col >= noteFrames.at(-1).body
+        // Rebase a marker-line child at its source column after the task box.
+        const localBase = head.task !== undefined && headSubMarker && col >= contentCol + TASK_MARKER_SOURCE_WIDTH &&
+          !insideFence() ? contentCol + TASK_MARKER_SOURCE_WIDTH
+          : descendantOwned && noteFrames.length && col >= noteFrames.at(-1).body
           ? contentCol
           : noteFrames.length && col >= noteFrames.at(-1).body &&
           (noteFrames.at(-1).ownerBase !== null || FOOTNOTE_DEF.test(lm.rest))
@@ -8059,6 +8072,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         break // sibling or outer list
       }
       // CARVE-P2-028: the authored column keeps a folded separator inside its live term.
+      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
           lastListBlock === 'term' && (lm.L?.col ?? col) < lastTermSourceCol) break
       if (nm && columnOwner(nm.indent) === 'below' && deepestParagraphOpen() && itemLines.length > 0) {

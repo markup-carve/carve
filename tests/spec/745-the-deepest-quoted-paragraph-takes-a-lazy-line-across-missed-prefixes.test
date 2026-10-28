@@ -1,0 +1,51 @@
+The deepest quoted paragraph takes a lazy line across missed prefixes
+
+```
+> > - > +
+> > - > +
+>  s
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>
+        <blockquote><p>+</p></blockquote>
+      </li>
+      <li>
+        <blockquote><p>+
+s</p></blockquote>
+      </li>
+    </ul>
+  </blockquote>
+</blockquote>
+```
+
+```
+> > a
+> b
+.
+<blockquote>
+  <blockquote><p>a
+b</p></blockquote>
+</blockquote>
+```
+
+```
+> > * > +
+> > * > +
+>  tail
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>
+        <blockquote><p>+</p></blockquote>
+      </li>
+      <li>
+        <blockquote><p>+
+tail</p></blockquote>
+      </li>
+    </ul>
+  </blockquote>
+</blockquote>
+```

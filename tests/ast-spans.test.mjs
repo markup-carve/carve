@@ -330,8 +330,12 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // adds one document to each extent count.
 // Re-measured after the engine pin advance: the definition extents now agree.
 const LAST_MEASURED = new Map([
-  ['list (extent)', 3],
-  ['list_item (extent)', 4],
+  ['list (extent)', 4],
+  ['list_item (extent)', 5],
+  ['definition_list (extent)', 1],
+  ['definition_term (extent)', 1],
+  ['text (extent)', 1],
+  ['soft_break (extent)', 1],
 ])
 
 const asMeasured = (counts) =>
