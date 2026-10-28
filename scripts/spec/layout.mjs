@@ -3743,10 +3743,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       while (i < n) {
         const measured = ind(i)
         if (measured.col === 0 && FOOTNOTE_DEF.test(measured.rest)) break
-        // In an item, a marker that reaches the item but not this note's
-        // body belongs to the item. It opens a child there instead of lazily
-        // extending the note's paragraph.
-        if (inItem && measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured)) break
+        // A marker short of the note body floor returns to a surviving item
+        // or description owner, where it opens a list instead of extending
+        // the note's paragraph.
+        if ((inItem || descriptionOwnerColumn !== null) &&
+            measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured)) break
         if (CONT_MARKER.test(m[2]) && bodyLines.length === 1 &&
             measured.col === 0 && matchMarkerAt(measured)) break
         if (isBlank(lines[i])) afterComment = false

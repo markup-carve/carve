@@ -1,0 +1,18 @@
+A description keeps a list marker below its hosted footnote
+
+```
+:: t
+:  [^q]: note
+    * child
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>child
+tail</li>
+    </ul>
+  </dd>
+</dl>
+```
