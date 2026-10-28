@@ -35019,9 +35019,9 @@ after
 
 :::
 
-A line that opens NOTHING is the control: `prose` one column past the
-definition is an ordinary paragraph in the item, and the item is loose because a
-blank line separates it from `body`. This is the answer that does not move.
+A line that opens nothing is the control. `prose` is below the note's body
+column, but its open paragraph claims the line lazily. It adds no second
+paragraph to the item, which stays tight.
 
 ::: compare
 
@@ -35036,7 +35036,7 @@ after
 
 ```html
 <ul>
-  <li><p>body</p></li>
+  <li>body</li>
 </ul>
 <p>after</p>
 ```

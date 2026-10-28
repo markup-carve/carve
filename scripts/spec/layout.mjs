@@ -6402,6 +6402,26 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // A blank line was seen, and only invisible lines have followed it so far
     // (§17 L1b). The next PARAGRAPH closes the separation and loosens.
     let pendingSeparation = false
+    let noteOpenerLine = null
+    const noteClaimsLazyLine = (at) => {
+      if (noteOpenerLine === null || noteBodyBoundary === null) return false
+      const opener = FOOTNOTE_DEF.exec(ind(noteOpenerLine).rest)
+      if (!opener) return false
+      const body = [opener[2]]
+      for (let k = noteOpenerLine + 1; k < at; k++) {
+        const measured = ind(k)
+        if (measured.rest === '') {
+          body.push('')
+        } else if (measured.col >= noteBodyBoundary) {
+          body.push(dedentMeasured(measured, lines[k], noteBodyBoundary).text)
+        } else if (body.at(-1) !== '' && foldablePlainLine(measured.rest)) {
+          body.push(measured.rest)
+        } else {
+          return false
+        }
+      }
+      return body.at(-1)?.trim() !== '' && bodyLeavesParagraphOpen(body)
+    }
     // §11 N1's hard boundary fired: this item is the list's last. Set where the
     // run is measured, acted on after the item is pushed.
     let hardListBoundary = false
@@ -7779,6 +7799,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           !FOOTNOTE_DEF.test(dedented) &&
           !isLinkDef(dedented) &&
           !(noteBodyBoundary !== null && col >= noteBodyBoundary) &&
+          !(defBodyIndent !== null && noteBodyBoundary !== null && col < noteBodyBoundary && noteClaimsLazyLine(i)) &&
           parseAttrList(trimLineEnd(dedented)) === null
         ) {
           // §17 L1b: a second paragraph, still blank-line-separated.
@@ -8104,6 +8125,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           if (FOOTNOTE_DEF.test(lm.rest)) {
             defBodyIndent = dmeas.col
             noteBodyBoundary = col + FOOTNOTE_BODY_COLUMN
+            noteOpenerLine = i
             const outerNote = noteFrames.at(-1)
             if (outerNote) outerNote.ownerBase = outerNote.marker
             noteFrames.push({ marker: col, body: noteBodyBoundary, ownerBase: outerNote?.marker ?? null,
