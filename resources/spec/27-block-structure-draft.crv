@@ -65,7 +65,7 @@ This section replaces PART 0 O1 to O4 and X1 to X3, PART 9 §10 I1 to I7, §17 L
 |= Removed behavior                     |= Retired ids                                                                   |= What replaces it                                                                                                     |
 | Authored block base                   | `CARVE-P0-004`                                                                 | Step 3: an opener past the content column opens in the owner; its lines are measured from the owner's content column. |
 | Term ownership                        | `CARVE-P2-028`                                                                 | The term row: a term continues by the paragraph test and has no ownership of its own.                                 |
-| `+` as a second way to belong         | `CARVE-P9-031`, `CARVE-P9-032`, `CARVE-P9-033`, `CARVE-P9-034`, `CARVE-P9-067` | The `+` row: a marker only at the marker column of the container step 2 selected.                                     |
+| `+` as a second way to belong         | `CARVE-P9-031`, `CARVE-P9-032`, `CARVE-P9-033`, `CARVE-P9-034`, `CARVE-P9-067` | The `+` row: a marker only at the marker column of the deepest open list item or quote.                               |
 | Depth- and family-specific lazy rules | `CARVE-P0-009`, `CARVE-P0-021`, `CARVE-P0-022`, `CARVE-P9-053`                 | Step 4: one lazy test at every depth.                                                                                 |
 
 Every other id in the old clauses keeps its number and moves into the step or row named in the mapping of [#3877](https://github.com/markup-carve/carve/pull/3877).
