@@ -79,6 +79,15 @@
               "properties": { "severity": { "const": "info" }, "fidelity": { "const": "normalized" }, "confidence": { "const": "inferred" }, "path": { "type": "string", "pattern": "^link:[^#]*#.+$" }, "message": { "type": "string", "pattern": "^Rewrote link fragment #.+ to #.+, the one heading id it matches without regard to case\\.$" } }
             }
           }
+        ,
+          {
+            "$comment": "CARVE-P2-033: a GitHub alert blockquote imported as an admonition of the mapped type, located at the quote's first line.",
+            "if": { "properties": { "code": { "const": "markdown-github-alert" } }, "required": ["code"] },
+            "then": {
+              "required": ["path"],
+              "properties": { "severity": { "const": "info" }, "fidelity": { "const": "normalized" }, "confidence": { "const": "exact" }, "path": { "type": "string", "pattern": "^line:[1-9][0-9]*$" } }
+            }
+          }
         ]
       }
     }
@@ -115,6 +124,7 @@
                           "markdown-entity",
                           "markdown-escape",
                           "markdown-fenced-code",
+                          "markdown-github-alert",
                           "markdown-hard-break",
                           "markdown-image",
                           "markdown-indented-code",

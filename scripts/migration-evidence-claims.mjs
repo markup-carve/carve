@@ -55,6 +55,7 @@ const classes = new Map([
   ...inventory.constructs.map(row => [row.code, row]),
   ['bbcode-quote-field-dropped', { severity: 'warning', fidelity: 'dropped', confidence: 'exact' }],
   ['link-fragment-case-rewritten', { severity: 'info', fidelity: 'normalized', confidence: 'inferred', path: /^link:[^#]*#.+$/ }],
+  ['markdown-github-alert', { severity: 'info', fidelity: 'normalized', confidence: 'exact' }],
 ])
 // Rows whose ruled report the pinned engines do not write yet. `pinned` is what they
 // write instead, compared exactly; once an engine writes the ruled report the row fails

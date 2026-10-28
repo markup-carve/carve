@@ -1091,6 +1091,45 @@ lazy_continuation_line = inline_content, newline ;
 (* SEMANTIC CONSTRAINT: matches only while a paragraph is open at the deepest
    frame (CARVE-P0-009), and only a line CARVE-P2-008 admits. *)
 
+(* A GITHUB ALERT IMPORTS AS AN ADMONITION -- NORMATIVE [CARVE-P2-033]. A
+   Markdown importer writes a GitHub alert as a Carve admonition. An alert is a
+   blockquote that is a direct child of the document and whose first line,
+   after the `>` marker and any spaces, is exactly one alert label: `[!`, one
+   of the type names below in upper case, and `]`. A space or tab after the
+   label that does not form a hard break is ignored. The type selects the
+   admonition:
+
+       NOTE       note
+       TIP        tip
+       IMPORTANT  info
+       WARNING    warning
+       CAUTION    danger
+
+   The importer drops the label line and imports the rest of the quote, lazy
+   continuation lines included, as the admonition's body. It writes no title:
+   the type carries the meaning. The migration report records each conversion
+   as `markdown-github-alert` with `normalized` fidelity. So
+
+       > [!WARNING]
+       > Back up first.
+
+   imports as
+
+       ::: warning
+       Back up first.
+       :::
+
+   Every other blockquote stays a blockquote, its label kept as text:
+     - a label line that carries more text, a hard break, or an escaped
+       bracket (`\[!NOTE]`);
+     - a label in lower or mixed case (`[!note]`, `[!Note]`);
+     - a bracketed label outside the five (`[!DANGER]`, `[! NOTE]`);
+     - a label that is not on the quote's first line;
+     - a label with nothing after it, blank quote lines not counting as a body;
+     - a quote nested in a list item, a footnote, another blockquote or an
+       alert's body.
+   `github-alert-marker` keeps reporting the label in those quotes. *)
+
 (* --- Lists --- *)
 list = unordered_list | ordered_list | definition_list ;
 

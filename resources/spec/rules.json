@@ -209,6 +209,12 @@
       "scope": "imports-security-extensions"
     },
     {
+      "id": "CARVE-P2-033",
+      "part": "2",
+      "title": "A GITHUB ALERT IMPORTS AS AN ADMONITION",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P2-006",
       "part": "2",
       "title": "COLUMN-EXACT DELIMITERS",

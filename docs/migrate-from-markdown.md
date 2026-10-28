@@ -103,7 +103,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Images | `![alt](src)` | same | |
 | Inline code | `` `code` `` | same | |
 | Fenced code | `` `code fence` `` with a language | same | Write the language next to the fence; a space is also accepted |
-| Blockquotes | `> text` | same | Carve adds captions (see below) |
+| Blockquotes | `> text` | same | Carve adds captions (see below). A GitHub alert (`> [!NOTE]`) imports as an admonition (see [Admonitions](#admonitions)) |
 | Unordered lists | `- item` or `* item` | same | Carve bullets are `-`/`*`; a Markdown `+` bullet is not a Carve bullet |
 | Ordered lists | `1. item` | `1. item` or `. item` | Numbered markers work in both languages; `. ` asks Carve to number the list from 1. Right-aligned Markdown numbers (` 9.` above `10.`) are one list there; the importer writes them left-aligned so they stay one list |
 | Task lists | `- [ ] todo` / `- [x] done` | Same, plus `[_]` (open alias), `[/]` (progress), `[!]` (blocked), `[-]` (dropped), `[>]` (deferred), and `[?]` (uncertain) | |
@@ -236,6 +236,42 @@ The built-in callout names are `note`, `tip`, `warning`, `danger`, `info`,
 `success`, `example`, and `quote`. They render as `<aside>` elements. Another
 `:::` name, such as `important`, renders as a `<div>` with that class unless an
 enabled extension handles the name.
+
+GitHub alerts become admonitions on import. A top-level blockquote whose first
+line is only an alert label converts to the matching type, and the rest of the
+quote becomes its body:
+
+| GitHub alert | Carve admonition |
+|---|---|
+| `> [!NOTE]` | `::: note` |
+| `> [!TIP]` | `::: tip` |
+| `> [!IMPORTANT]` | `::: info` |
+| `> [!WARNING]` | `::: warning` |
+| `> [!CAUTION]` | `::: danger` |
+
+::: code-group
+
+```md [Markdown]
+> [!WARNING]
+> Back up first.
+```
+
+```carve [Carve]
+::: warning
+Back up first.
+:::
+```
+
+:::
+
+The importer writes no title; the type carries the meaning. The migration
+report records each conversion as `markdown-github-alert`. The label must be
+upper case and alone on the quote's first line. A quote stays a quote, label
+and all, when the label is in lower or mixed case, is escaped, or shares its
+line with text or a hard break; when nothing follows the label; when the label
+is not on the first line or is not one of the five; and when the quote sits
+inside a list item, a footnote, another quote or an alert. `carve lint` reports
+such a leftover label as `github-alert-marker`.
 
 A custom title goes in **straight double quotes** after the type:
 

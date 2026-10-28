@@ -205,3 +205,33 @@
 #
 # The run named exactly these two lines as STALE and failed the converter gate
 # on nothing else. Both declarations were removed.
+
+# CARVE-P2-033, ruled 2026-10-28: a top-level GitHub alert blockquote imports
+# as an admonition of the mapped type. Cases 88 to 92 and 100 are ahead of
+# every engine; cases 93 to 99 (the label stays quote text) already pass.
+#
+# carve-php `1b970674` was run over all thirteen cases and keeps every alert as a
+# quote. carve-js was measured at this repo's pin `572e7b72` through
+# tests/corpus-convert.test.mjs (PINNED_DRIFT carries the same six). carve-rs
+# `4fb56b98c` was not built for this: its src/ has no alert handling outside
+# lint, so its six lines are an inference the next scheduled run confirms or
+# reports STALE. carve-js is being changed in parallel; its lines go in the
+# commit that proves it matches.
+js/88-markdown-a-note-alert-is-a-note-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+js/89-markdown-a-tip-alert-is-a-tip-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+js/90-markdown-an-important-alert-is-an-info-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+js/91-markdown-a-warning-alert-is-a-warning-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+js/92-markdown-a-caution-alert-is-a-danger-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+js/100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote  CARVE-P2-033: keeps a GitHub alert as a blockquote
+php/88-markdown-a-note-alert-is-a-note-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+php/89-markdown-a-tip-alert-is-a-tip-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+php/90-markdown-an-important-alert-is-an-info-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+php/91-markdown-a-warning-alert-is-a-warning-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+php/92-markdown-a-caution-alert-is-a-danger-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+php/100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote  CARVE-P2-033: keeps a GitHub alert as a blockquote
+rust/88-markdown-a-note-alert-is-a-note-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+rust/89-markdown-a-tip-alert-is-a-tip-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+rust/90-markdown-an-important-alert-is-an-info-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+rust/91-markdown-a-warning-alert-is-a-warning-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+rust/92-markdown-a-caution-alert-is-a-danger-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
+rust/100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote  CARVE-P2-033: keeps a GitHub alert as a blockquote

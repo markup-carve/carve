@@ -323,7 +323,9 @@ prove complete assessment. Empty diagnostics require complete assessment.
 Keeping reference definitions or inlining their resolved destinations both use
 `normalized` when labels, destinations and titles retain their meaning. Pointy
 autolinks and explicit links follow the same rule. A GFM bare URL imports as a
-link, `normalized` and `exact`. Splitting an inline raw HTML
+link, `normalized` and `exact`. A GitHub alert blockquote imported as an
+admonition ([`CARVE-P2-033`](./rules/imports-security-extensions)) uses
+`markdown-github-alert`, `normalized` and `exact`, at the quote's first line. Splitting an inline raw HTML
 run into several raw spans is permitted when their combined HTML retains the
 same content. Native HTML may use `<s>` for strikethrough and add accessible labels to task
 checkboxes. Diagnostic order may follow parser traversal; paths identify the
