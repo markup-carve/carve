@@ -6004,7 +6004,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // block, and the blank a blank-line branch pushes, which ends the run.
     let tableOpen = false
     let lastListBlock = DEFLIST_TERM.test(head.text) ? 'term' : 'item'
-    let lastTermSourceCol = DEFLIST_TERM.test(head.text) ? contentCol : null
+    let lastTermSourceCol = DEFLIST_TERM.test(head.text) ? authoredMarkerCol + head.markerWidth : null
     const pushLine = (text, m = null, row = i) => {
       itemLines.push(text)
       itemMeas.push(m)
