@@ -22,7 +22,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToAnsi, carveToCarve, carveToMarkdown, carveToPlainText } from '@markup-carve/carve'
 import { shortfall } from '../scripts/spec/participants.mjs'
-import { loadDeclaredFmtDrift } from './fmt-drift.mjs'
+import { loadCanonicalDrift, loadDeclaredFmtDrift } from './fmt-drift.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus')
@@ -35,6 +35,7 @@ const RENDERERS = {
 }
 
 const declared = loadDeclaredFmtDrift(here)
+const canonicalDrift = loadCanonicalDrift(here)
 
 const sidecars = readdirSync(corpusDir)
   .filter((name) => /^\d+-.*\.(md|txt|ansi|fmt)$/.test(name))
@@ -67,7 +68,8 @@ for (const name of sidecars) {
   // `engine-fmt-drift.txt` by corpus-fmt-cross-read.test.mjs; a slug listed for
   // a read divergence need not diverge on every target, so asserting that it
   // still mismatches would fail for the wrong reason.
-  test(`${target}: ${slug}`, { skip: declared.has(slug) ? 'declared drift' : false }, () => {
+  const aheadOfPin = target === 'fmt' && canonicalDrift.has(slug)
+  test(`${target}: ${slug}`, { skip: declared.has(slug) || aheadOfPin ? 'declared drift' : false }, () => {
     const source = resolve(corpusDir, `${slug}.crv`)
     assert.ok(existsSync(source), `missing ${slug}.crv pair`)
     assert.equal(
