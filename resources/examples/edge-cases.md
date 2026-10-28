@@ -67736,7 +67736,7 @@ x[^n]
 The `carve-lint` line comments control diagnostics for their source lines. They
 leave the parsed document and HTML unchanged.
 
-::: compare
+:::: compare
 
 ```carve
 %% carve-lint-disable empty-link-destination
@@ -67748,9 +67748,9 @@ leave the parsed document and HTML unchanged.
 <p><a href="">x</a></p>
 ```
 
-:::
+::::
 
-::: compare
+:::: compare
 
 ```carve
 # One
@@ -67767,9 +67767,9 @@ leave the parsed document and HTML unchanged.
 </section>
 ```
 
-:::
+::::
 
-::: compare
+:::: compare
 
 ```carve
 ::: >
@@ -67783,9 +67783,9 @@ leave the parsed document and HTML unchanged.
 <blockquote><p><a href="">x</a></p></blockquote>
 ```
 
-:::
+::::
 
-::: compare
+:::: compare
 
 ```carve
 %% carve-lint-disable unused-link-reference-definition
@@ -67799,4 +67799,4 @@ body
 <p>body</p>
 ```
 
-:::
+::::

@@ -154,5 +154,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 121
-export const AUTHORED_ANSWERED = 121
+export const AUTHORED_POPULATION = 122
+export const AUTHORED_ANSWERED = 122
