@@ -25,6 +25,8 @@ const engineDir = process.env.CARVE_JS_DIR
   : resolve(root, 'node_modules/@markup-carve/carve')
 const { lintCarve } = await import(pathToFileURL(resolve(engineDir, 'dist/index.js')).href)
 const lintSource = readFileSync(resolve(engineDir, 'dist/lint.js'), 'utf8')
+// docs/validation.md: these authoring rules require opt-in.
+const OPT_IN = new Set(['duplicate-reference-url', 'non-descriptive-link-text', 'emphasis-as-heading'])
 const ahead = JSON.parse(readFileSync(resolve(root, 'resources/lint-vector-ahead-of-pin.json'), 'utf8'))
 
 test('the vector directory is not empty', () => {
@@ -67,7 +69,8 @@ for (const file of files) {
   test(`${file}: carve-js`, { skip: carried ? false : `${engineDir} does not carry ${data.rule}` }, () => {
     for (const v of data.vectors) {
       const actual = lintCarve(v.source, data.rule === 'caption-looking-paragraph'
-        ? { captionLookingParagraph: true } : {}).filter((w) => w.rule === data.rule)
+        ? { captionLookingParagraph: true }
+        : OPT_IN.has(data.rule) ? { enabledRules: [data.rule] } : {}).filter((w) => w.rule === data.rule)
       const pinned = data.rule === 'continuation-marker-refused' ? ahead[v.name] : undefined
       const expected = v.expected.findings.map((f) => [f.line, f.column])
       if (pinned?.actual) assert.notDeepEqual(pinned.actual, expected, `${v.name}: stale pin declaration`)

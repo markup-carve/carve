@@ -1,1 +1,6 @@
-{}
+{
+  "footnote-body": {
+    "actual": [],
+    "issue": "markup-carve/carve-js#3860"
+  }
+}

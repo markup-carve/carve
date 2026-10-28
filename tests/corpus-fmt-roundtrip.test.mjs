@@ -246,6 +246,8 @@ const canonicalAst = (value, inAttrs = false) => {
     const out = {}
     for (const key of Object.keys(value).sort()) {
       if (!inAttrs && (key === 'pos' || key === 'srcByteLength')) continue
+      // PART 11 §1: "FOR `fmt`, EQUALITY ALSO IGNORES `table.separatorWidths`."
+      if (!inAttrs && key === 'separatorWidths' && value.type === 'table') continue
       out[key] = canonicalAst(value[key], inAttrs || key === 'attrs')
     }
     if (!inAttrs && out.type === 'escaped_text') out.type = 'text'
