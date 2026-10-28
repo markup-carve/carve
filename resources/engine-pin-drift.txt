@@ -238,9 +238,6 @@
 620-generated-container-documents-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 620-generated-container-documents-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 620-generated-container-documents-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-10  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 633-a-first-block-marker-on-an-indented-opener-reads-two-columns-12  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 633-a-first-block-marker-on-an-indented-opener-reads-two-columns-16  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
