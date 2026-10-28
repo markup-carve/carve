@@ -1,0 +1,6 @@
+:: term
+: item
+  [^c]: para
+   ```
+
+  See[^c]

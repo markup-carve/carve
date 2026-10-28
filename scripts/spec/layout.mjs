@@ -7916,7 +7916,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (!inPayload) nestedOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody)
         if ((absorbedFenceSeen && !fence.opaque) || foldedChildFence) (residueFence.foldedFences ??= new Set()).add(itemLines.length - 1)
         if (opens && !absorbedFenceSeen && !foldedChildFence) fenceOpensAt.add(itemLines.length - 1)
-        if (!belowCloser && !inNestedComment && (!absorbedFenceSeen || fence.opaque) && !foldedChildFence) trackFence(dedented, opens, i)
+        // A line the note paragraph claims is note text; it opens no fence here.
+        if (!belowCloser && !inNestedComment && (!absorbedFenceSeen || fence.opaque) && !foldedChildFence &&
+            (fence.opaque || !noteClaimsBelow)) trackFence(dedented, opens, i)
         // ADVANCE. One line the descendant takes, in the descendant's own
         // coordinates, which is what makes the state readable at its column.
         // A COMMENT SPAN WRITTEN BELOW THIS COLUMN IS NOT THE DESCENDANT'S. Its

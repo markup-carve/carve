@@ -1360,6 +1360,7 @@ index: examples/edge-cases/index.md
   a-heading-inside-the-intervening-band-stays-description-text
   a-below-column-term-stays-in-the-footnote-paragraph
   a-closed-footnote-child-releases-a-flush-line
+  a-note-claimed-fence-line-keeps-the-item-loose
 
 [edge-footnote-heading-index] Visible footnote headings
 > Used footnote headings enter reference lookup; unused definitions do not.

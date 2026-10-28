@@ -68565,3 +68565,102 @@ tail
 ```
 
 :::
+
+## A note-claimed fence line keeps the item loose
+
+An unclosed fence-shaped line below a footnote body folds into the note paragraph. It opens no fence in the item, so the blank before the item's second paragraph still makes the list loose.
+
+::: compare
+
+````carve
+- item
+  [^c]: [^d]: para
+          more
+   ~~~
+
+  See[^c][^d]
+````
+
+```html
+<ul>
+  <li><p>item</p>
+    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a><a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+  </li>
+</ul>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>para
+more
+~~~<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+````carve
+1. item
+   [^c]: para
+    ~~~~
+
+   See[^c]
+````
+
+```html
+<ol>
+  <li><p>item</p>
+    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+  </li>
+</ol>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>para
+~~~~<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+````carve
+:: term
+: item
+  [^c]: para
+   ```
+
+  See[^c]
+````
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>item</p>
+    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+  </dd>
+</dl>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>para
+<code></code><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

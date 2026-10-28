@@ -53,3 +53,6 @@
 758-a-hosted-footnote-keeps-a-heading-at-its-body-floor  Pinned JavaScript returns the first-block heading to the host item; markup-carve/carve-js#3832.
 759-invalid-body-row-metadata-leaves-one-table-body  Pinned JavaScript infers a head after invalid body metadata; markup-carve/carve-js#3811.
 761-a-below-column-term-stays-in-the-footnote-paragraph  The pinned JavaScript parser releases a term one column below an open footnote paragraph; markup-carve/carve#3874.
+763-a-note-claimed-fence-line-keeps-the-item-loose  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
+763-a-note-claimed-fence-line-keeps-the-item-loose-2  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
+763-a-note-claimed-fence-line-keeps-the-item-loose-3  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
