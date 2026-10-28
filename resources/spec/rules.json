@@ -1529,6 +1529,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-077",
+      "part": "11",
+      "title": "A PARAGRAPH LINE OF DASHES ALONE IS WRITTEN WITH THE GLYPH",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P12-001",
       "part": "12",
       "title": "AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY",
