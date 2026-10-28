@@ -26,8 +26,8 @@ for (const marker of ['- ', '1. ', '- [ ] ']) {
           ...opener.split('\n').map(line => ' '.repeat(column + 2) + line)]
         const source = quoted(lines.join('\n'), depth) + '\n'
         const item = itemAt(source, depth)
-        assert.deepEqual(item.blocks.map(block => block.t), ['para', 'para', kind])
-        assert.deepEqual(item.blocks[1].lines, ['q'])
+        assert.deepEqual(item.blocks.map(block => block.t), ['para', kind])
+        assert.deepEqual(parse(source).footnoteDefs.get('n')[0].lines, ['note', 'q'])
         assert.equal(renderDoc(parse(source)).includes('&gt; quote'), false)
       })
     }

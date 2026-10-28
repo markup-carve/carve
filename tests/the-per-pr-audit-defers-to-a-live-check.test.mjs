@@ -129,10 +129,12 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       ['resources/ast-span-divergence.txt', 'owed', 'declared'],
       ['resources/ast-value-divergence.txt', 'owed', 'declared'],
       ['resources/converter-drift.txt', 'owed', 'declared'],
+      ['resources/engine-cross-read-drift.txt', 'owed', 'declared'],
       ['resources/engine-fmt-drift.txt', 'owed', 'declared'],
       ['tests/ast-spans.test.mjs', 'owed', 'manual'],
       ['tests/ast-values.test.mjs', 'owed', 'manual'],
       ['resources/engine-pin-drift.txt', 'owed', 'declared'],
+      ['resources/engine-target-drift.txt', 'owed', 'declared'],
       ['resources/html-import-pin-drift.txt', 'owed', 'declared'],
       // A spec PR adds a fixture row ahead of the pin by design; the pin bump drops the flag.
       ['resources/roundtrip-export-acceptance-fixtures.json', 'owed', 'declared'],

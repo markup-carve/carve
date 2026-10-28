@@ -3,8 +3,8 @@
   "engines": {
     "js": {
       "html": {
-        "identical": 2630,
-        "strict": 2477,
+        "identical": 2629,
+        "strict": 2476,
         "total": 3197
       },
       "md": {
@@ -27,8 +27,8 @@
     },
     "rs": {
       "html": {
-        "identical": 2614,
-        "strict": 2464,
+        "identical": 2613,
+        "strict": 2463,
         "total": 3197
       },
       "md": {

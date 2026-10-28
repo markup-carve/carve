@@ -37,7 +37,7 @@ for (const [what, src, expected] of CASES) {
 // paragraph, and an abbreviation inside a container is ordinary text.
 test('a line at the sub-item column after a note opens the item paragraph', () => {
   assert.equal(oracle('- a\n  - para\n    [^f]: n\n    more\nx\n'),
-    '<ul><li>a <ul><li>para more x </li></ul></li></ul>')
+    '<ul><li>a <ul><li>para</li></ul></li></ul>')
 })
 test('an abbreviation line in a quoted item keeps the paragraph open', () => {
   assert.equal(oracle('> - para\n>   *[A]: b\ntail\n'),

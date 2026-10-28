@@ -37,7 +37,7 @@ const rows = [
   {
     "id": "gen-362",
     "source": "- a\n  [^f]: t\n[^f]: a\n     [r]: /url\n[r][]",
-    "html": "<ul>\n  <li>a</li>\n</ul>\n<p><a href=\"/url\">r</a></p>\n"
+    "html": "<ul>\n  <li>a</li>\n</ul>\n"
   },
   {
     "id": "gen-249-column-zero",

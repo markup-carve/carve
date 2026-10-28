@@ -62,18 +62,23 @@ test('a closed fence below the child opens in the note body', () => {
         const lines = [head, ' '.repeat(bodyColumn) + marker + ' child',
           ' '.repeat(column) + run, ' '.repeat(column) + 'code', ' '.repeat(column) + run]
         const src = lines.flatMap(line => line.split('\n')).map(line => q + line).join('\n') + '\nafter [^n]\n'
-        const html = render(src)
-        const note = html.slice(html.indexOf('<li id="fn1">'))
-        assert.match(note, /<\/(?:ul|ol)>\s*<pre><code>code\n/, src)
-        assert.match(note, /<li>child<\/li>/, src)
-        assert.ok(html.includes(q ? '</blockquote>\n<p>after' : '</ul>\n<p>after') || shape !== 'marker' && html.startsWith('<p>after'), src)
+        const note = parse(src).footnoteDefs.get('n')
+        assert.ok(note, src)
+        const listIndex = note.findIndex(block => block.t === 'list')
+        assert.ok(listIndex >= 0, src)
+        assert.deepEqual(note[listIndex].items[0].blocks[0].lines, ['child'], src)
+        assert.equal(note[listIndex + 1].t, 'code', src)
+        assert.equal(note[listIndex + 1].text, 'code\n', src)
       }
     }
   }
 })
 
-test('a fence below the note body keeps its original ownership', () => {
-  assert.equal(render("[^n]: %% c\n  - child\n ```\n code\n ```\nafter [^n]\n"), "<p><code>\ncode\n</code>\nafter <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <ul>\n        <li>child</li>\n      </ul>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>")
+test('a fence below the note body folds into its open child paragraph', () => {
+  const doc = parse("[^n]: %% c\n  - child\n ```\n code\n ```\nafter [^n]\n")
+  assert.deepEqual(doc.blocks, [])
+  assert.deepEqual(doc.footnoteDefs.get('n')[0].items[0].blocks[0].lines,
+    ['child', '```', 'code', '```', 'after [^n]'])
 })
 
 test('a run at the marker-line note body column opens in the note', () => {

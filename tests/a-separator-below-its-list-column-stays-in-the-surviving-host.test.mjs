@@ -94,7 +94,7 @@ for (const quoteDepth of [1, 2]) {
 test('a folded separator leaves the item paragraph interruptible', () => {
   const html = renderDoc(parse('- a\n   :: term\n  :  detail\n    :: term\n    :  detail\n      [^n]: note\n       q\n1. ordered\n'))
   assert.match(html, /<dt>term<\/dt>\n\s*<dd>detail<\/dd>/)
-  assert.match(html, /<\/dl>\n\s*q\n\s*<\/li>/)
+  assert.match(html, /<\/dl>\n\s*<\/li>/)
   assert.doesNotMatch(html, /\[\^n\]: note/)
 })
 

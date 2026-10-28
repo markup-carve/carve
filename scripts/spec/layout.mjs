@@ -3692,6 +3692,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             !startsVisibleBlock(measured.rest) && !isTableRow(measured.rest) &&
             !isColonBlockOpener(measured.rest) && !COLON_CLOSER.test(measured.rest) &&
             !(FENCE.test(measured.rest) && hasCloser(lines, i)) &&
+            !(measured.col === 0 && commentFenceOpensSpan(lines, i)) &&
             !(measured.col === 0 && (isDefinitionOrAttributeLine(measured.rest) ||
               tryAttrLine(lines, i)))) {
           bodyLines.push(lazyFrame(measured.rest))

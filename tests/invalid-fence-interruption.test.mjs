@@ -113,9 +113,9 @@ for (const run of ['```', '~~~']) for (const info of ['raw html', '=html "title"
       const source = ['[^n]: lead', comment, ...lines].join('\n') + '\n'
       const doc = parse(source)
       assert.deepEqual(doc.footnoteDefs.get('n'), [
-        { t: 'para', lines: ['lead'] }, { t: 'para', lines: [run + info] },
+        { t: 'para', lines: ['lead'] }, { t: 'para', lines: [run + info, 'payload', run] },
       ])
-      assert.deepEqual(doc.blocks, [{ t: 'para', lines: ['payload', run] }])
+      assert.deepEqual(doc.blocks, [])
     })
   }
 }

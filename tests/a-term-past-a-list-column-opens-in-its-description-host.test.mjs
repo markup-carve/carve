@@ -12,11 +12,11 @@ for (const marker of markers) for (const note of [true, false]) {
     if (note) lines.push('  [^n]: note')
     lines.push('  ' + marker + 'a', '   :: u', '   :  e')
     const out = html(lines.join('\n'))
-    if (note) assert.match(out, /<\/li><\/ul><dl><dt>u<\/dt><dd>e<\/dd><\/dl><\/dd><\/dl>$|<\/li><\/ol><dl><dt>u<\/dt><dd>e<\/dd><\/dl><\/dd><\/dl>$/)
+    if (note) assert.equal(out, '<dl><dt>t</dt><dd><p>d</p><dl><dt>u</dt><dd>e</dd></dl></dd></dl>')
     else assert.match(out, /<p>d\n(?:-|1\.|- \[ \]) a<\/p><dl><dt>u<\/dt><dd>e<\/dd><\/dl><\/dd><\/dl>$/)
   })
 }
 
 test('the same ownership holds when the description sits in an item', () => {
-  assert.match(html('- h0\n  :: t\n  : d\n    [^n]: note\n    - a\n     :: u\n     :  e'), /<\/ul><dl><dt>u<\/dt><dd>e<\/dd><\/dl><\/dd><\/dl>/)
+  assert.match(html('- h0\n  :: t\n  : d\n    [^n]: note\n    - a\n     :: u\n     :  e'), /<dl><dt>u<\/dt><dd>e<\/dd><\/dl>/)
 })

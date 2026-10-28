@@ -39,7 +39,7 @@ for (const host of hosts) {
   for (const row of lines) {
     test(`${host.name}: ${row.name} preserves the boundary and registration`, () => {
       const doc = parse(host.source(row.line))
-      const tail = row.prose ? '' :
+      const tail = row.prose || row.name === 'footnote' && host.name !== 'item marker content' ? '' :
         host.attrAttachesToTail && row.name === 'attribute'
           ? '\n<p class="marked">tail</p>' : '\n<p>tail</p>'
       assert.equal(renderDoc(doc), host.html(row.line, row.prose) + tail)
