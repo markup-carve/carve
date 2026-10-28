@@ -39,13 +39,8 @@
 435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 620-generated-container-documents-16  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-620-generated-container-documents-23  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-637-definition-body-note-and-fence-owner-boundaries-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-699-a-quoted-link-definition-in-a-footnote-body-registers-globally  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine

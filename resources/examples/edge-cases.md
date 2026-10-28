@@ -35060,7 +35060,11 @@ after
 
 ```html
 <ul>
-  <li>body</li>
+  <li>body
+    <ul>
+      <li>item</li>
+    </ul>
+  </li>
 </ul>
 <p>after</p>
 ```
@@ -54967,14 +54971,14 @@ x
 ````
 
 ```html
+<p>x</p>
 <p><a href="/u">r</a> <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>d
-- para</p>
-      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+- para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -58085,6 +58089,7 @@ gen-362
 <ul>
   <li>a</li>
 </ul>
+<p><a href="/url">r</a></p>
 ```
 
 :::::::
@@ -62894,7 +62899,11 @@ A marker below the invisible footnote body belongs to the list item
 
 `````html
 <ol>
-  <li>d</li>
+  <li>d
+    <ul>
+      <li>a</li>
+    </ul>
+  </li>
 </ol>
 `````
 
@@ -66138,7 +66147,7 @@ A term past the div opener still opens a definition list. The flush-left descrip
 
 ## A quoted link definition in a footnote body registers globally
 
-The first paragraph references the note. Its quoted link definition registers globally. The later unmarked link line lazily continues the open note paragraph under §24 C3 and resolves through that definition.
+The first paragraph references the note. Its quoted link definition registers globally and closes the note paragraph. The later unmarked link line starts a document paragraph and resolves through that definition.
 
 :::: compare
 
@@ -66153,6 +66162,7 @@ see[^n]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p><a href="/x">x</a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
@@ -66161,7 +66171,7 @@ see[^n]
       <blockquote>
 
       </blockquote>
-      <p><a href="/x">x</a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

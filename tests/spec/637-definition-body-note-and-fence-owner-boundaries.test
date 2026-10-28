@@ -45,7 +45,11 @@ Definition body, note, and fence owner boundaries
     - a
 .
 <ol>
-  <li>d</li>
+  <li>d
+    <ul>
+      <li>a</li>
+    </ul>
+  </li>
 </ol>
 ```
 

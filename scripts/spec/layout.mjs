@@ -1700,6 +1700,18 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
  * body's only line is prose and holds an open paragraph; the same line under a
  * table row is that table's last row and holds none.
  */
+function endsWithAuthoredInterrupter(line) {
+  if (line.startsWith(LAZY)) return false
+  let leaf = indentCols(line).rest
+  let depth = 0
+  while (depth < MAX_NESTING_DEPTH && QUOTE.test(leaf)) {
+    leaf = indentCols(QUOTE.exec(leaf)[1] ?? '').rest
+    depth++
+  }
+  if (QUOTE.test(leaf)) return false
+  return isDefinitionOrAttributeLine(leaf)
+}
+
 function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   let last = -1
   for (let k = bodyLines.length - 1; k >= 0; k--) {
@@ -1727,6 +1739,10 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
     }
   }
   if (trailingWrappedAttr(bodyLines, last)) return false
+
+  // A definition at the body or a marked quote's block position closes the
+  // deepest paragraph even when authored indentation obscures its opener.
+  if (endsWithAuthoredInterrupter(bodyLines[last])) return false
 
   /*
    * A QUOTE'S OWN BODY ANSWERS, AND THE PEEL HAPPENS HERE -- PART 1 S4
@@ -3580,6 +3596,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       while (i < n) {
         const measured = ind(i)
         if (measured.col === 0 && FOOTNOTE_DEF.test(measured.rest)) break
+        // In an item, a marker that reaches the item but not this note's
+        // body belongs to the item. It opens a child there instead of lazily
+        // extending the note's paragraph.
+        if (inItem && measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured)) break
         if (CONT_MARKER.test(m[2]) && bodyLines.length === 1 &&
             measured.col === 0 && matchMarkerAt(measured)) break
         if (isBlank(lines[i])) afterComment = false
@@ -3591,7 +3611,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           afterComment = afterCommentTransition(false, {})
           const content = dedent(lines[i], FOOTNOTE_BODY_COLUMN)
           bodyLines.push(content)
-          if (foldablePlainLine(content)) lazyParagraphOpen = true
+          // Keep the claim state on the line just consumed. Rechecking every
+          // earlier body line after each continuation would rescan long notes.
+          lazyParagraphOpen = endsWithAuthoredInterrupter(content)
+            ? false : foldablePlainLine(content) ? true : null
           pullPending = false
           i++
         } else if (isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {

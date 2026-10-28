@@ -55,7 +55,11 @@ after
 after
 .
 <ul>
-  <li>body</li>
+  <li>body
+    <ul>
+      <li>item</li>
+    </ul>
+  </li>
 </ul>
 <p>after</p>
 ```
