@@ -145,14 +145,7 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {
-  '88-markdown-a-note-alert-is-a-note-admonition': 'CARVE-P2-033, ruled 2026-10-28: the pinned carve-js keeps a GitHub alert as a quote',
-  '89-markdown-a-tip-alert-is-a-tip-admonition': 'CARVE-P2-033, ruled 2026-10-28: the pinned carve-js keeps a GitHub alert as a quote',
-  '90-markdown-an-important-alert-is-an-info-admonition': 'CARVE-P2-033, ruled 2026-10-28: the pinned carve-js keeps a GitHub alert as a quote',
-  '91-markdown-a-warning-alert-is-a-warning-admonition': 'CARVE-P2-033, ruled 2026-10-28: the pinned carve-js keeps a GitHub alert as a quote',
-  '92-markdown-a-caution-alert-is-a-danger-admonition': 'CARVE-P2-033, ruled 2026-10-28: the pinned carve-js keeps a GitHub alert as a quote',
-  '100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote': 'CARVE-P2-033, ruled 2026-10-28: the pinned carve-js keeps a GitHub alert as a quote',
-}
+const PINNED_DRIFT = {}
 const PINNED_SOURCE_DRIFT = {}
 
 /**

@@ -29,6 +29,11 @@
  * At PHP a562b167 (carve-php#3855), Markdown export escapes the literal
  * description line in corpus 657 and 657-4. Reimport keeps escaped_text
  * instead of text, moving PHP/md strict from 1656 to 1654.
+ * At JS d8cf5cc1, corpus 739-7, 739-8 and 741-2 parse as their expected HTML
+ * says (a quote holding U+2029 or U+2028, an unresolved footnote-heading
+ * reference). Markdown import drops the separator-only paragraph and reads the
+ * escaped reference as text. With 352 and 352-3 gained, JS/md identical
+ * moves 2472 to 2471.
  */
 import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'

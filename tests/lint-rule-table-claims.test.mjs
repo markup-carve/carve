@@ -78,6 +78,14 @@ const TRIGGERS = {
     source: 'Intro [@a].\n\n> ::: references\n> :::\n\n[@a]: Author. Title. 2020.\n',
     options: { extensions: [citations()] },
   },
+  'unused-link-reference-definition': '[a]: /u\n',
+  'empty-link-destination': '[x]()\n',
+  'duplicate-reference-url': {
+    source: '[a]: /u\n[b]: /u\n\n[a] [b]\n',
+    options: { enabledRules: ['duplicate-reference-url'] },
+  },
+  'non-descriptive-link-text': { source: '[here](/x)\n', options: { enabledRules: ['non-descriptive-link-text'] } },
+  'emphasis-as-heading': { source: '*Bold*\n', options: { enabledRules: ['emphasis-as-heading'] } },
 }
 
 /*
@@ -114,11 +122,6 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  ['unused-link-reference-definition', 'specified by the #3808 ruling; engine rollout follows'],
-  ['empty-link-destination', 'specified by the #3808 ruling; engine rollout follows'],
-  ['duplicate-reference-url', 'specified by the #3808 ruling; engine rollout follows'],
-  ['non-descriptive-link-text', 'specified by the #3808 ruling; engine rollout follows'],
-  ['emphasis-as-heading', 'specified by the #3808 ruling; engine rollout follows'],
   [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',
@@ -139,6 +142,7 @@ const INCLUDE_FILES = {
   'deep2.crv': 'x\n',
   'bin.dat': new Uint8Array([0, 159, 146, 150, 0, 255]),
   'big.crv': `${'y'.repeat(50)}\n`,
+  'd.csv': 'a,b\n1,2\n3,4\n',
 }
 function withIncludes(source, limits = {}) {
   const resolve = (path) => (path in INCLUDE_FILES ? { source: INCLUDE_FILES[path], id: path } : null)
@@ -159,6 +163,7 @@ const INCLUDE_TRIGGERS = {
   'include-depth': withIncludes('{{ deep.crv }}\n', { maxDepth: 1 }),
   'include-budget': withIncludes('{{ big.crv }}\n', { maxBytes: 10 }),
   'include-call-limit': withIncludes('{{ a.crv }}\n\n{{ a.crv }}\n', { maxResolverCalls: 1 }),
+  'include-lines-table-rows-hint': withIncludes('{table}\n{{ d.csv @code:csv @lines:1-2 }}\n'),
 }
 
 /** The rules this map calls with options, i.e. the ones that are not default-on. */
@@ -291,7 +296,9 @@ test('an opt-in rule reports nothing until it is asked for', () => {
 // The three include-* ids are render warnings lint skips by name: CARVE-P6-001
 // I16 says renames and heading clamps are not lint findings.
 // `wrong-column` and `fence-payload` are refusal reasons that pick the
-// continuation-marker-refused message (carve-js#3338).
+// continuation-marker-refused message (carve-js#3338). `aria-label` is the
+// attribute non-descriptive-link-text reads; `disable-next-line` is a
+// suppression directive kind.
 const NOT_A_RULE = new Set([
   'definition-list',
   'footnote-definition',
@@ -301,6 +308,8 @@ const NOT_A_RULE = new Set([
   'include-heading-clamp',
   'wrong-column',
   'fence-payload',
+  'aria-label',
+  'disable-next-line',
 ])
 
 function ruleIdsInBuild() {

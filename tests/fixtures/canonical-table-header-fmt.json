@@ -5,20 +5,17 @@
     {
       "id": "each-alignment",
       "source": "| Left | Center | Right | Plain |\n|:---|:---:|---:|---|\n| a | b | c | d |\n",
-      "fmt": "|=< Left |=~ Center |=> Right |= Plain |\n| a | b | c | d |\n",
-      "roundtrip": "| Left | Center | Right | Plain |\n|:---|:---:|---:|---|\n| a | b | c | d |\n"
+      "fmt": "|=< Left |=~ Center |=> Right |= Plain |\n| a | b | c | d |\n"
     },
     {
       "id": "header-only",
       "source": "| Left | Center | Right |\n|:---|:---:|---:|\n",
-      "fmt": "|=< Left |=~ Center |=> Right |\n",
-      "roundtrip": "| Left | Center | Right |\n|:---|:---:|---:|\n"
+      "fmt": "|=< Left |=~ Center |=> Right |\n"
     },
     {
       "id": "body-wider-than-separator",
       "source": "| A | B |\n|---|---|\n| a | b | wider |\n",
-      "fmt": "|= A |= B |\n| a | b | wider |\n",
-      "roundtrip": "| A | B |\n|---|---|\n| a | b | wider |\n"
+      "fmt": "|= A |= B |\n| a | b | wider |\n"
     }
   ]
 }

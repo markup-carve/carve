@@ -20,5 +20,6 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-14  markup-carve/carve-js#3769 tracks the pinned formatter output read differently by the unified marker-body model.
+752-a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker  The pin reads this as specified since markup-carve/carve-js#3814, but its writer moves `: a` to column 4, where the oracle reads a description and the pin still reads term text.
+753-a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker  The pin reads this as specified since markup-carve/carve-js#3814, but its writer moves the lazy term lines to column 4, where the oracle reads a description and a sibling term.
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  The pinned writer drops indentation that rule A (markup-carve/carve#3885) now reads; markup-carve/carve-js#3874.

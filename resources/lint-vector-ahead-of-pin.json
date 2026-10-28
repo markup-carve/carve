@@ -1,1 +1,6 @@
-{}
+{
+  "footnote-body": {
+    "actual": [],
+    "reason": "Since carve-js 5c0a55b4 (markup-carve/carve-js#3779) the lone plus folds lazily into the footnote paragraph and the pinned linter no longer reports it."
+  }
+}
