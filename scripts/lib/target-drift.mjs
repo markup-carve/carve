@@ -39,12 +39,17 @@ export function targetDriftKey(target, slug, outputs, entries) {
   return null
 }
 
-// Two engines can share the same wrong result while the third matches the
-// corpus. Declare both lagging engines; a declaration for just one cannot
-// excuse the pair. The HTML fixture decides which side is right when present.
+// A fixture can identify two lagging engines against a third, or all three
+// engines against its own output. Require one declaration per lagging engine.
 export function targetDriftKeys(target, slug, outputs, entries, expected = null) {
   if (outputs.length !== 3 || outputs.some(([, value]) => value.startsWith('ERROR:'))) return null
-  if (new Set(outputs.map(([, value]) => value)).size !== 2) return null
+  const unique = new Set(outputs.map(([, value]) => value))
+  if (unique.size === 1) {
+    if (expected === null || unique.has(expected)) return null
+    const keys = outputs.map(([engine]) => `${target}/${engine}/${slug}`)
+    return keys.every(key => entries.has(key)) ? keys : null
+  }
+  if (unique.size !== 2) return null
   const lone = targetDriftKey(target, slug, outputs, entries)
   if (lone !== null) {
     const peerValue = outputs.find(([name]) => name !== lone.split('/')[1])?.[1]

@@ -1,7 +1,7 @@
-# Temporary cross-engine target differences awaiting an engine fix or pin update. A line names the
-# one engine whose output differs from the other two for one corpus row and
-# target. The comparison gate accepts only that exact shape and rejects a line
-# that no longer differs at the pinned engine revisions.
+# Temporary target differences awaiting an engine fix or pin update. A line names the
+# engine whose output differs from the fixture or the other engines for one
+# corpus row and target. A unanimous engine difference needs an expected fixture
+# and a declaration for each engine. The gate rejects any stale declaration.
 # Format: target/engine/slug  owner/repo#issue and reason
 html/js/739-opaque-reference-and-inline-bounds-7  markup-carve/carve-js#3764, pinned JS drops the quoted body
 html/js/739-opaque-reference-and-inline-bounds-8  markup-carve/carve-js#3764, pinned JS drops the quoted body
@@ -27,3 +27,69 @@ plain/rust/741-visible-footnote-headings-2  markup-carve/carve-rs#3385, unused-n
 ansi/php/741-visible-footnote-headings  markup-carve/carve-php#4119, used-note implicit heading reference pending
 ansi/js/741-visible-footnote-headings-2  markup-carve/carve-js#3775, unused-note heading incorrectly indexed
 ansi/rust/741-visible-footnote-headings-2  markup-carve/carve-rs#3385, unused-note heading incorrectly indexed
+html/js/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/358-what-a-content-column-block-does-not-reach-2  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/358-what-a-content-column-block-does-not-reach-2  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/358-what-a-content-column-block-does-not-reach-2  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/374-a-collected-definition-closes-the-item-paragraph-3  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/374-a-collected-definition-closes-the-item-paragraph-3  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/374-a-collected-definition-closes-the-item-paragraph-3  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-4  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-4  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-4  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-3  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-3  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-3  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/620-generated-container-documents-16  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/620-generated-container-documents-16  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/620-generated-container-documents-16  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/620-generated-container-documents-23  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/620-generated-container-documents-23  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/620-generated-container-documents-23  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/637-definition-body-note-and-fence-owner-boundaries-4  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/637-definition-body-note-and-fence-owner-boundaries-4  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/637-definition-body-note-and-fence-owner-boundaries-4  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/699-a-quoted-link-definition-in-a-footnote-body-registers-globally  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
+html/php/699-a-quoted-link-definition-in-a-footnote-body-registers-globally  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
+html/rust/699-a-quoted-link-definition-in-a-footnote-body-registers-globally  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
+html/js/741-visible-footnote-headings-4  markup-carve/carve-js#3775, engine HTML differs from the normative corpus fixture
+html/php/741-visible-footnote-headings-4  markup-carve/carve-php#4119, engine HTML differs from the normative corpus fixture
+html/rust/741-visible-footnote-headings-4  markup-carve/carve-rs#3385, engine HTML differs from the normative corpus fixture

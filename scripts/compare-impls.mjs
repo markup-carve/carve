@@ -1595,7 +1595,7 @@ for (const pair of pairs) {
         if (targetDrift.has(key)) seenTargetDrift.add(key)
       }
     }
-    const declaredTargets = unique.size > 1
+    const declaredTargets = unique.size > 1 || expected !== null
       ? targetDriftKeys(target, pair.slug, outputs, targetDrift, expected)
       : null
     if (declaredTargets !== null) {
