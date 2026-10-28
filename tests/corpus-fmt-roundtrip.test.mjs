@@ -245,7 +245,8 @@ const canonicalAst = (value, inAttrs = false) => {
   if (value !== null && typeof value === 'object') {
     const out = {}
     for (const key of Object.keys(value).sort()) {
-      if (!inAttrs && (key === 'pos' || key === 'srcByteLength')) continue
+      // CARVE-P11-066: canonical fmt writes native header cells and drops the separator spelling.
+      if (!inAttrs && (key === 'pos' || key === 'srcByteLength' || key === 'separatorWidths')) continue
       out[key] = canonicalAst(value[key], inAttrs || key === 'attrs')
     }
     if (!inAttrs && out.type === 'escaped_text') out.type = 'text'

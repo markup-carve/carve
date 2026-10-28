@@ -11,6 +11,8 @@ const here = dirname(fileURLToPath(import.meta.url))
 const wasmDir = resolve(here, '../docs/.vitepress/carve-wasm')
 
 const TABLE = '| Name | Qty |\n|:--|--:|\n| apple | 3 |\n| fig | 12 |\n'
+// The vendored carve-rs writer keeps a GFM separator row that carve-js now writes as native headers.
+const NATIVE_TABLE = '|=< Name |=> Qty |\n| apple | 3 |\n| fig | 12 |\n'
 
 async function vendoredWasm() {
   const mod = await import(resolve(wasmDir, 'carve_wasm.js'))
@@ -35,10 +37,10 @@ test('the vendored WASM build exports the writer, so Rust mode formats natively'
   const wasmFormat = wasmWriter(await vendoredWasm())
   assert.notEqual(wasmFormat, null, 'rebuild with `npm run sync-carve-wasm`: the bundle lacks toCarveWithOptions')
   for (const alignTables of [true, false]) {
-    const result = formatCarve(TABLE, { engine: 'rust', alignTables, jsFormat: carveToCarve, wasmFormat })
+    const result = formatCarve(NATIVE_TABLE, { engine: 'rust', alignTables, jsFormat: carveToCarve, wasmFormat })
     assert.equal(result.engine, 'rust')
     assert.equal(result.fellBack, false)
-    assert.equal(result.text, carveToCarve(TABLE, { alignTables }))
+    assert.equal(result.text, carveToCarve(NATIVE_TABLE, { alignTables }))
   }
 })
 

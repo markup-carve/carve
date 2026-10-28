@@ -145,6 +145,8 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       // like the ledgers above: its declaration names the issue that retires
       // it, so it is tracked work that leaves when the engines' pin moves.
       ['tests/an-element-less-container-is-carried-in-a-comment.test.mjs', 'owed', 'declared'],
+      // The note-owner window (carve-js#3848), the same kind of engine-pin window.
+      ['tests/a-ended-definition-or-child-leaves-the-next-opener-in-its-item.test.mjs', 'owed', 'declared'],
       // The TWO-EXITS window of CARVE-P9-043 (carve#2877), same rule again: the
       // pinned parser cannot read a ruled same-kind tree back out of
       // expected.crv, so the fixture's two exits cannot agree until the pin

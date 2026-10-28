@@ -24,35 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-739-opaque-reference-and-inline-bounds-7  The pinned JS renderer drops a U+2029 quote body; tracked at markup-carve/carve-js#3764.
-739-opaque-reference-and-inline-bounds-8  The pinned JS renderer drops a U+2028 quote body; tracked at markup-carve/carve-js#3764.
-741-visible-footnote-headings-2  The pinned JS renderer indexes a heading in an unused footnote; tracked at markup-carve/carve-js#3775.
-741-visible-footnote-headings-4  The pinned JS renderer resolves an unused footnote heading crossref; tracked at markup-carve/carve-js#3775.
-212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-358-what-a-content-column-block-does-not-reach-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-374-a-collected-definition-closes-the-item-paragraph-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-620-generated-container-documents-16  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-744-a-task-item-uses-the-ordered-item-column-rule  Task ownership differs in pinned engines; markup-carve/carve-js#3801 and markup-carve/carve-rs#3407.
-745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes  O3 lazy quote ownership differs in pinned engines; markup-carve/carve-js#3800 and markup-carve/carve-rs#3406.
-745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes-3  O3 lazy quote ownership differs in pinned engines; markup-carve/carve-js#3800 and markup-carve/carve-rs#3406.
-751-a-lazy-line-keeps-its-plus-through-three-quote-levels  Pinned JavaScript reads the quoted plus at the wrong owner; markup-carve/carve-js#3813.
-752-a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker  Pinned JavaScript uses the wrong task child base; markup-carve/carve-js#3814.
-753-a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker  Pinned JavaScript uses the wrong task child base; markup-carve/carve-js#3814.
-757-an-intervening-column-refuses-a-description-hosted-first-block  Pinned JavaScript retains the refused follower in the description; markup-carve/carve-js#3833.
-758-a-hosted-footnote-keeps-a-heading-at-its-body-floor  Pinned JavaScript returns the first-block heading to the host item; markup-carve/carve-js#3832.
-759-invalid-body-row-metadata-leaves-one-table-body  Pinned JavaScript infers a head after invalid body metadata; markup-carve/carve-js#3811.
-761-a-below-column-term-stays-in-the-footnote-paragraph  The pinned JavaScript parser releases a term one column below an open footnote paragraph; markup-carve/carve#3874.
-763-a-note-claimed-fence-line-keeps-the-item-loose  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
-763-a-note-claimed-fence-line-keeps-the-item-loose-2  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
-763-a-note-claimed-fence-line-keeps-the-item-loose-3  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
+750-a-below-column-line-returns-to-its-definition-body  Regression since carve-js 9dbd64a8 (markup-carve/carve-js#3826): the pinned parser folds the below-column line into the empty `- +` item instead of returning it to the description body.
