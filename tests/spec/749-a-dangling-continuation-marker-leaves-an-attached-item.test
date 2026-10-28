@@ -1,0 +1,15 @@
+A dangling continuation marker leaves an attached item
+
+```
+- q
++
+x
++
+.
+<ul>
+  <li>q
+    x
+  </li>
+</ul>
+<p>+</p>
+```

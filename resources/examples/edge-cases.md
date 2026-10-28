@@ -68042,3 +68042,270 @@ tail</p></blockquote>
 ```
 
 ::::
+
+## A native header continues a promoted GFM header run
+
+:::: compare
+
+```carve
+| a |
+|---|
+|= b |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">a</th></tr>
+    <tr><th scope="col">b</th></tr>
+  </thead>
+</table>
+```
+
+::::
+
+
+## A table ends a footnote paragraph claim
+
+:::: compare
+
+```carve
+see[^n]
+
+[^n]: a
+  | a |
+end
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p>end</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a</p>
+      <table>
+        <tbody>
+          <tr><td>a</td></tr>
+        </tbody>
+      </table>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::
+
+
+## A footnote heading does not loosen its host item
+
+:::: compare
+
+```carve
+- see[^n]
+
+  [^n]: a
+    # h
+```
+
+```html
+<ul>
+  <li>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></li>
+</ul>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a</p>
+      <h1 id="h">h</h1>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::
+
+
+## A dangling continuation marker leaves an attached item
+
+:::: compare
+
+```carve
+- q
++
+x
++
+```
+
+```html
+<ul>
+  <li>q
+    x
+  </li>
+</ul>
+<p>+</p>
+```
+
+::::
+
+
+## A below-column line returns to its definition body
+
+:::: compare
+
+```carve
+:: t
+: - +
+  x
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li></li>
+    </ul>
+    <p>x</p>
+  </dd>
+</dl>
+```
+
+::::
+
+
+## A lazy line keeps its plus through three quote levels
+
+:::: compare
+
+```carve
+> > > - > +
+> > > - > +
+>  s
+```
+
+```html
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <ul>
+        <li>
+          <blockquote><p>+</p></blockquote>
+        </li>
+        <li>
+          <blockquote><p>+
+s</p></blockquote>
+        </li>
+      </ul>
+    </blockquote>
+  </blockquote>
+</blockquote>
+```
+
+::::
+
+
+## A task item uses its authored term base one column past a child marker
+
+:::: compare
+
+```carve
+* [ ] - :: t
+       : a
+       :: sibling
+       tail
+```
+
+```html
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <ul>
+      <li>
+        <dl>
+          <dt>t
+: a</dt>
+        </dl>
+      </li>
+    </ul>
+    <dl>
+      <dt>sibling
+tail</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+::::
+
+
+## A task item keeps a lazy term one column below its child marker
+
+:::: compare
+
+```carve
+* [ ] - :: t
+     : a
+     :: sibling
+     tail
+```
+
+```html
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <ul>
+      <li>
+        <dl>
+          <dt>t
+: a
+:: sibling
+tail</dt>
+        </dl>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+::::
+
+
+## A promoted image merges block attributes before inline attributes
+
+:::: compare
+
+```carve
+{.outer k=one}
+![a](b){.inner k=two}
+```
+
+```html
+<img src="b" alt="a" class="outer inner" k="two">
+```
+
+::::
+
+
+## A content tab does not hide a description boundary
+
+:::: compare
+
+```carve
+- :: t
+: 	text
+```
+
+```html
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+    </dl>
+  </li>
+</ul>
+<p>: 	text</p>
+```
+
+::::

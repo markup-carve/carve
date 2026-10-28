@@ -48,9 +48,10 @@
 # and neither engine has a row to answer for. The document arrived with
 # markup-carve/carve#2426.
 
-list (extent)  4  corpus 503-9, 636, 697, and 744: the first three differ within leading indentation under markup-carve/carve#1928; task ownership in 744 is tracked by markup-carve/carve#3845.
-list_item (extent)  5  the list rows above, plus corpus 245: the prior rows differ within leading indentation under markup-carve/carve#1928; task ownership in 744 is tracked by markup-carve/carve#3845.
-definition_list (extent)  1  Corpus 744 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
-definition_term (extent)  1  Corpus 744 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
-text (extent)  1  Corpus 744 task separator text differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
-soft_break (extent)  1  Corpus 744 task separator break differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
+list (extent)  6  corpus 503-9, 636, 697, 744, 749, and 753: the first three differ within leading indentation under markup-carve/carve#1928; the later ownership differences are tracked by markup-carve/carve#3845 and markup-carve/carve-js#3816.
+list_item (extent)  7  the list rows above, plus corpus 245: the prior rows differ within leading indentation under markup-carve/carve#1928; task and continuation ownership are tracked by markup-carve/carve#3845 and markup-carve/carve-js#3816.
+definition_list (extent)  2  Corpus 744 and 753 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
+definition_term (extent)  2  Corpus 744 and 753 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
+text (extent)  2  Corpus 744 and 753 task separator text differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
+soft_break (extent)  2  Corpus 744 and 753 task separator break differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
+paragraph (extent)  1  Corpus 749 dangling continuation differs at the pinned JavaScript revision; markup-carve/carve-js#3816.

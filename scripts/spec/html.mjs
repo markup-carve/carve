@@ -376,7 +376,7 @@ function renderBlock(b, depth, ctx) {
       // the answer instead of re-deriving it by rendering and testing the result.
       if (b.blockImage) {
         // a standalone image paragraph renders as a bare <img> (PART 10)
-        const image = withBlockImageAttrs(b.blockImageHtml, b.caption === undefined ? ba : '')
+        const image = b.blockImageHtml
         if (b.caption !== undefined) {
           const id = / id="([^"]*)"/.exec(ba)?.[1]
           const cap = numberCaption(b.caption, ctx, id)
@@ -846,7 +846,8 @@ export function promoteBlockImages(doc, ctx) {
     if (node.t === 'para') {
       // Recomputed rather than trusted, so rendering one parse result twice
       // cannot carry markup built under one context into another.
-      const image = standaloneImage(node.lines.join('\n'), ctx)
+      const image = standaloneImage(node.lines.join('\n'), ctx,
+        node.captionSlot === undefined && node.caption === undefined ? node.battrs : null)
       if (image === null) {
         delete node.blockImage
         delete node.blockImageHtml
@@ -880,7 +881,7 @@ export function promoteBlockImages(doc, ctx) {
  * content does not resolve to a single image. THE SEMANTIC PREDICATE, and the
  * promotion phase above is its only caller -- the renderers read `blockImage`.
  */
-function standaloneImage(line, ctx) {
+function standaloneImage(line, ctx, blockAttrs = null) {
   // Resolve reference images before paragraph serialization, so PART 10's
   // standalone-image shape is a block decision rather than a final HTML rewrite.
   // The alt run is scanned, not matched: the close is balanced and a
@@ -906,16 +907,26 @@ function standaloneImage(line, ctx) {
       label: ref[1] === '' ? null : ref[1],
       attrList,
       attrSrc,
-    }, ctx, '')
+    }, ctx, '', blockAttrs)
     return IMG_ONLY.test(image) ? image : null
   }
 
   const html = renderInline(line)
-  return IMG_ONLY.test(html) && IMG_ONLY.test(renderInlineWithoutRaw(line)) ? html : null
-}
-
-function withBlockImageAttrs(image, attrs) {
-  return attrs ? image.replace(/>$/, `${attrs}>`) : image
+  if (!IMG_ONLY.test(html) || !IMG_ONLY.test(renderInlineWithoutRaw(line))) return null
+  if (!blockAttrs?.length) return html
+  let imageSource = line
+  let inlineAttrs = []
+  for (let at = line.lastIndexOf('{'); at >= 0; at = line.lastIndexOf('{', at - 1)) {
+    const parsed = parseAttrList(line.slice(at))
+    if (parsed === null) continue
+    imageSource = line.slice(0, at)
+    inlineAttrs = parsed
+    break
+  }
+  const structural = imageSource === line ? html : renderInline(imageSource)
+  if (!IMG_ONLY.test(structural)) return null
+  const attrs = renderBlockAttrs([...blockAttrs, inlineAttrs], 'src')
+  return structural.replace(/>$/, `${attrs}>`)
 }
 
 function renderList(list, depth, ctx) {
@@ -1256,14 +1267,12 @@ function renderTable(node, depth, ctx) {
   // The native head-row run: a row is a header row when it owns a cell and
   // every cell it owns is a header cell; a span placeholder belongs to the cell
   // covering it (PART 11, carve#3048).
-  if (!rows[0]?.gfmHead) {
-    let run = true
-    for (let r = 0; r < rows.length; r++) {
-      run = run &&
-        rows[r].cells.some((_, c) => !consumed.has(key(r, c))) &&
-        rows[r].cells.every((cell, c) => (consumed.has(key(r, c)) ? cover.get(key(r, c)) : cell).header === true)
-      rows[r].isHead = run
-    }
+  let run = true
+  for (let r = 0; r < rows.length; r++) {
+    run = run &&
+      rows[r].cells.some((_, c) => !consumed.has(key(r, c))) &&
+      rows[r].cells.every((cell, c) => (consumed.has(key(r, c)) ? cover.get(key(r, c)) : cell).header === true)
+    rows[r].isHead = run
   }
   // column alignment: the last explicit marker in the head rows wins
   const colAlign = [...attrAlign]
@@ -1403,7 +1412,7 @@ function renderTable(node, depth, ctx) {
  * it. An unresolved image reference stays literal source, matching the link
  * side (PART 12 §3a keeps the construct rather than discarding it).
  */
-function resolveImageRef(parsed, ctx, literal) {
+function resolveImageRef(parsed, ctx, literal, blockAttrs = null) {
   const { label, alt, attrList, attrSrc } = parsed
   if (typeof alt !== 'string') return literal
   // Explicit and collapsed image references share the normalized label key
@@ -1421,9 +1430,11 @@ function resolveImageRef(parsed, ctx, literal) {
   // same as every other piece of content this renderer emits.
   if (!def) return refFrame({ opaque: true, literal: `![${escapeHtml(alt)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}` })
   const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
-  const a = def.attrs?.length
-    ? renderBlockAttrs([def.attrs, attrList ?? []], 'src')
-    : renderAttrs(attrList ?? [], 'src')
+  const a = blockAttrs?.length
+    ? renderBlockAttrs([...blockAttrs, def.attrs ?? [], attrList ?? []], 'src')
+    : def.attrs?.length
+      ? renderBlockAttrs([def.attrs, attrList ?? []], 'src')
+      : renderAttrs(attrList ?? [], 'src')
   return `<img src="${escapeUrlAttr(def.url)}" alt="${escapeAttr(alt.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
 }
 

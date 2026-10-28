@@ -1,0 +1,14 @@
+A native header continues a promoted GFM header run
+
+```
+| a |
+|---|
+|= b |
+.
+<table>
+  <thead>
+    <tr><th scope="col">a</th></tr>
+    <tr><th scope="col">b</th></tr>
+  </thead>
+</table>
+```

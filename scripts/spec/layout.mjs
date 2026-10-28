@@ -1487,7 +1487,7 @@ function isBlank(line) {
 // Without the `\S`, `:: ` was a paragraph and `::··` a definition list -
 // stripping one trailing space changed the structure (carve#512).
 const DEFLIST_TERM = /^:: (?=[ \t]*[^ \t\n\r])/
-const DEFLIST_SEPARATOR = /^: +(?=[^ \t])/
+const DEFLIST_SEPARATOR = /^: +[ \t]*(?=[^ \t\n\r])/
 // A nested marker on its parent's first line has no physical-column entry in
 // the continuation-marker cache. Keep that column for separator ownership.
 const separatorMarkerColumns = new WeakMap()
@@ -1502,7 +1502,7 @@ function isCodeBlockOpener(line) {
 }
 
 function foldablePlainLine(cur) {
-  return !isBlank(cur) && !startsVisibleBlock(cur) && !isLinkDef(cur) &&
+  return !isBlank(cur) && !startsVisibleBlock(cur) && !isTableRow(cur) && !isLinkDef(cur) &&
     !FOOTNOTE_DEF.test(cur) && !BULLET.test(trimLineEnd(cur)) && !isOrderedMarkerLine(cur) &&
     !isCodeBlockOpener(cur) && !isColonBlockOpener(cur) &&
     !CAPTION.test(cur) && !COMMENT_LINE.test(cur) &&
@@ -3013,7 +3013,9 @@ export function parse(src, { authoredBodyBases = true, stateSink = null, include
   }
   const sourceHasLonePlus = sourceLines.some(line =>
     /^[ \t]*(?:>[ \t]*)*\+[ \t]*$/.test(line) ||
-    /^[ \t]*(?:(?:[-*]|\d+[.)])[ \t]+)+(?:\[[ xX_-]\][ \t]+)?\+[ \t]*$/.test(line))
+    /^[ \t]*(?:(?:[-*]|\d+[.)])[ \t]+)+(?:\[[ xX_-]\][ \t]+)?\+[ \t]*$/.test(line) ||
+    (line.includes('>') && /\+[ \t]*$/.test(line) &&
+      markerCarriesContinuation(indentCols(line).rest, new Map())))
   const quotePathBefore = []
   const sourceFenceBefore = []
   let liveQuoteDepth = 0
@@ -3127,6 +3129,25 @@ export function parse(src, { authoredBodyBases = true, stateSink = null, include
     const measured = indentCols(line)
     const barePlus = CONT_MARKER.test(measured.rest)
     const quoted = quoteLeaf(line)
+    if (quoted.depth > 0 && index + 1 < sourceLines.length) {
+      let tail = quoted.leaf
+      for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+        const marker = matchMarkerAt(indentCols(tail))
+        if (!marker) break
+        tail = marker.text
+      }
+      const innerQuote = quoteLeaf(tail)
+      const follower = quoteLeaf(sourceLines[index + 1])
+      const followerColumn = sourceLines[index + 1].length - follower.leaf.length
+      const innerQuoteColumn = line.lastIndexOf('>')
+      if (innerQuote.depth > 0 && CONT_MARKER.test(innerQuote.leaf) &&
+          follower.depth > 0 && follower.depth < quoted.depth &&
+          followerColumn < innerQuoteColumn) {
+        refusedPlusLines.push(index)
+        hasOrdinaryPlus = true
+        return line.replace(/\+(?=[ \t]*$)/, sentinel)
+      }
+    }
     if (quoted.depth > 0) {
       quoteColumn = measured.col
       const stack = quotedMarkerColumns.get(quoted.depth) ?? []
@@ -4160,7 +4181,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               if (openBodyTermColumn === null || bodyLine.col <= openBodyTermColumn) openBodyTermColumn = bodyLine.col
             } else if (isBlank(raw) || matchMarkerAt(bodyLine) ||
                 openBodyTermColumn !== null && bodyLine.col <= openBodyTermColumn &&
-                (startsVisibleBlock(bodyLine.rest) || /^: +\S/.test(bodyLine.rest) ||
+                (startsVisibleBlock(bodyLine.rest) || DEFLIST_SEPARATOR.test(bodyLine.rest) ||
                  isDefinitionOrAttributeLine(bodyLine.rest) || COMMENT_LINE.test(bodyLine.rest))) {
               openBodyTermColumn = null
             }
@@ -4495,6 +4516,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             break
           }
+          if (bodyLines.length > 1 && markerCarriesContinuation(bodyLines[0], new Map())) {
+            const firstMarker = matchMarkerAt(indentCols(bodyLines[0]))
+            const firstContentColumn = sourceBodyColumn + (firstMarker?.markerWidth ?? 0)
+            const follower = bodySourceColumns[1]
+            if (follower > 0 && follower < firstContentColumn && bodyLines[1] !== '') {
+              bodyLines.splice(1, 0, '')
+              bodySourceColumns.splice(1, 0, follower)
+            }
+          }
           const normalizedBody = state.authoredBodyBases
             ? normalizeAuthoredBodyBases(bodyLines, state, FOOTNOTE_DEF.test(bodyLines[0] ?? ''))
             : bodyLines
@@ -4717,11 +4747,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         i++
       }
       // native header section: the leading run of all-header rows
-      if (node.rows.length && !node.rows[0].isHead) {
-        for (const row of node.rows) {
-          if (row.cells.every((c) => c.header)) row.isHead = true
-          else break
-        }
+      for (const row of node.rows) {
+        if (row.cells.every((c) => c.header)) row.isHead = true
+        else break
       }
       // caption (SS4; one blank line allowed)
       const cap = captionSlot(i)
@@ -6979,6 +7007,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       attachNext = true
       closePara()
     }
+    let attachedBlockEndAt = -1
     const attachFlushLeft = () => {
       const attachmentCol = attachNext ? (ind(headIndex).L?.col ?? ind(headIndex).col) : sourceMarkerCol
       const follower = ind(i)
@@ -7016,6 +7045,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // sibling marker to the shared one (carve#1782).
       let end = attachedBlockEnd(lines, i, state, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
+        (lines[idx] === state.ordinaryPlusSentinel && idx + 1 >= lines.length) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i), blockColumn)
       const attached = lines.slice(i, end)
       const codeMatch = FENCE.exec(attached[0] ?? '')
@@ -7033,6 +7063,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       }
       if (!unclosedAttached) pushLine('', BLANK_MEAS)
       closePara()
+      attachedBlockEndAt = i
       return true
     }
     // ONE block (SS17 L3, carve#1290). When the first-block form has taken its
@@ -7071,6 +7102,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const line = lines[i]
       // `+` at the item's marker column attaches one block there (SS17 L3/L4).
       const lm = ind(i)
+      if (i === attachedBlockEndAt && lm.col === baseIndent &&
+          lm.rest === state.ordinaryPlusSentinel) break
       // Measure a descendant's first attached block before the ordinary
       // content-column branch collects it. Otherwise only a later root block
       // reaches the below-column attachment branch and becomes the candidate.
@@ -7504,6 +7537,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       }
       const descendantParagraphBefore = descLive && deepestParagraphOpen()
       if (!descendantParagraphBefore) foldedChildParagraph = false
+      if (head.task !== undefined && headSubMarker && descendantParagraphBefore &&
+          col >= contentCol && col < contentCol + TASK_MARKER_SOURCE_WIDTH &&
+          lm.rest !== '' && !insideFence()) {
+        pushLine(lazyFrame(lm.rest), LAZY_MEAS(lm.rest))
+        i++
+        continue
+      }
       const foldedChildFence = markerLineFence === null && !isBlank(priorContent) && !nestedVerbatim() && descendantParagraphBefore && col < childCol && FENCE.test(lm.rest) &&
         !fenceCloserFollows(i, dedentMeasured(lm, lines[i], col).text, col)
       if (headSubActive && col < headSubCol &&
@@ -7678,8 +7718,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // one column deeper, which arrived at body column 1 instead of 0 and
         // stopped being an opener at all (carve#1772, corpus 422-8).
         // Rebase a marker-line child at its source column after the task box.
-        const localBase = head.task !== undefined && headSubMarker && col >= contentCol + TASK_MARKER_SOURCE_WIDTH &&
-          !insideFence() ? contentCol + TASK_MARKER_SOURCE_WIDTH
+        const localBase = head.task !== undefined && headSubMarker && openerBase !== null ? openerBase : head.task !== undefined && headSubMarker && col >= contentCol + TASK_MARKER_SOURCE_WIDTH &&
+          !insideFence() ? authoredBlockBase ?? contentCol + TASK_MARKER_SOURCE_WIDTH
           : descendantOwned && noteFrames.length && col >= noteFrames.at(-1).body
           ? contentCol
           : noteFrames.length && col >= noteFrames.at(-1).body &&
@@ -7724,6 +7764,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           !dmeas.rest.startsWith('%%') &&
           !FOOTNOTE_DEF.test(dedented) &&
           !isLinkDef(dedented) &&
+          !(noteBodyBoundary !== null && col >= noteBodyBoundary) &&
           parseAttrList(trimLineEnd(dedented)) === null
         ) {
           // §17 L1b: a second paragraph, still blank-line-separated.
@@ -8362,7 +8403,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // Document column zero remains owned by the document.
       // Q1 (or a frame surviving a comment, which Q3 answers), Q3, then Q2 at
       // the frame's own column 0 - the anchor the raw line carries.
-      if (!nm && (deepestParagraphOpen() || (lastListBlock === 'term' && lm.col > baseIndent && lm.col < contentCol && /^: +\S/.test(lm.rest)) || (DEFLIST_TERM.test(head.text.replace(/^> ?/, '')) && itemLines.slice(1).every((l) => l.startsWith(LAZY)) && isCodeBlockOpener(lm.rest) && !hasCloser(lines, i)) || (afterComment && (!atFrameColumn(lm.col) || markedQuoteCommentClaim))) &&
+      if (!nm && (deepestParagraphOpen() || (lastListBlock === 'term' && lm.col > baseIndent && lm.col < contentCol && DEFLIST_SEPARATOR.test(lm.rest)) || (DEFLIST_TERM.test(head.text.replace(/^> ?/, '')) && itemLines.slice(1).every((l) => l.startsWith(LAZY)) && isCodeBlockOpener(lm.rest) && !hasCloser(lines, i)) || (afterComment && (!atFrameColumn(lm.col) || markedQuoteCommentClaim))) &&
           itemLines.length > 0 && !opensBlockAt(line, i)) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/

@@ -1,0 +1,23 @@
+A task item keeps a lazy term one column below its child marker
+
+```
+* [ ] - :: t
+     : a
+     :: sibling
+     tail
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <ul>
+      <li>
+        <dl>
+          <dt>t
+: a
+:: sibling
+tail</dt>
+        </dl>
+      </li>
+    </ul>
+  </li>
+</ul>
+```

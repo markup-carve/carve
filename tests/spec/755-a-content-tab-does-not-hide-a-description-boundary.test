@@ -1,0 +1,15 @@
+A content tab does not hide a description boundary
+
+```
+- :: t
+: 	text
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+    </dl>
+  </li>
+</ul>
+<p>: 	text</p>
+```

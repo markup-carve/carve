@@ -1,0 +1,8 @@
+A promoted image merges block attributes before inline attributes
+
+```
+{.outer k=one}
+![a](b){.inner k=two}
+.
+<img src="b" alt="a" class="outer inner" k="two">
+```
