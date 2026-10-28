@@ -275,11 +275,6 @@
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
   },
   {
-    "name": "n:footnote/desc-7237",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: :: t\n      : para\n%%%\nc\n%%%\n\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
     "name": "n:footnote/desc-7260",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: :: t\n      : para\n  | a |\ntail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
@@ -292,11 +287,6 @@
   {
     "name": "n:footnote/desc-7370",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: :: t\n      : para\n%% c\n```\nx\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "n:footnote/desc-7371",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: :: t\n      : para\n%%%\nc\n%%%\n```\nx\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
@@ -317,11 +307,6 @@
   {
     "name": "n:footnote/footnote-3972",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: [^d]: para\n   [r]: /u\n```\nx\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "n:footnote/footnote-4229",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: [^d]: para\n        more\n%%%\nc\n%%%\n        tail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
@@ -380,18 +365,8 @@
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
   },
   {
-    "name": "n:footnote/footnote-5392",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: [^d]: para\n        more\n%%%\nc\n%%%\n\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
     "name": "n:footnote/footnote-5614",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: [^d]: para\n        more\n            [r]: /u\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "n:footnote/footnote-5779",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: [^d]: para\n        more\n  %%%\n  c\n  %%%\ntail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
@@ -780,11 +755,6 @@
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
-    "name": "n:footnote/item-8203",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: - para\n%%%\nc\n%%%\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
     "name": "n:footnote/item-8229",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: - para\n        more\n            [r]: /u\n```\nx\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
@@ -895,11 +865,6 @@
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
   },
   {
-    "name": "n:footnote/note-6880",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: ::: note\n      para\n%%%\nc\n%%%\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
     "name": "n:footnote/note-6910",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: ::: note\n      para\n     [r]: /u\n```\nx\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
@@ -988,11 +953,6 @@
     "name": "n:footnote/ordered-3949",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: 1. para\n         [^p]: n\n         tail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
-  },
-  {
-    "name": "n:footnote/ordered-4008",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: 1. para\n         more\n%%%\nc\n%%%\n::::\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
     "name": "n:footnote/ordered-4032",
@@ -1140,11 +1100,6 @@
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
-    "name": "n:footnote/ordered-7541",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: 1. para\n         more\n%%%\nc\n%%%\n         tail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
     "name": "n:footnote/ordered-7542",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: 1. para\n          [r]: /u\ntail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
@@ -1232,11 +1187,6 @@
   {
     "name": "n:footnote/quote-4070",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: > para\n    more\n%% c\n```\nx\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "n:footnote/quote-4071",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: > para\n    more\n%%%\nc\n%%%\n```\nx\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
@@ -1333,11 +1283,6 @@
     "name": "n:footnote/quote-5135",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: > para\n    more\n    ^ cap\ntail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
-  },
-  {
-    "name": "n:footnote/quote-5276",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: > para\n%%%\nc\n%%%\n::::\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
     "name": "n:footnote/quote-5278",
@@ -1440,11 +1385,6 @@
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
   },
   {
-    "name": "n:footnote/quote-7330",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: > para\n%%%\nc\n%%%\n    tail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
     "name": "n:footnote/quote-7372",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: > para\n        [^p]: n\ntail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
@@ -1543,16 +1483,6 @@
     "name": "n:item/footnote-7364",
     "source": "[r][] [^p] [^c] [^d]\n\n- [^c]: para\n  ^ cap\n    tail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
-  },
-  {
-    "name": "n:item/footnote-7486",
-    "source": "[r][] [^p] [^c] [^d]\n\n- [^c]: para\n    more\n   %%%\n   c\n   %%%\n::::\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "n:item/footnote-7708",
-    "source": "[r][] [^p] [^c] [^d]\n\n- [^c]: para\n  %%%\n  c\n  %%%\n    tail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
     "name": "n:item/item-7582",
@@ -1735,11 +1665,6 @@
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
-    "name": "n:note/footnote-7114",
-    "source": "[r][] [^p] [^c] [^d]\n\n::: note\n[^c]: para\n%%%\nc\n%%%\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
     "name": "n:note/footnote-7186",
     "source": "[r][] [^p] [^c] [^d]\n\n::: note\n[^c]: para\n  more\n   | a |\ntail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
@@ -1830,11 +1755,6 @@
     "issue": "markup-carve/carve-rs#3388"
   },
   {
-    "name": "n:ordered/footnote-4739",
-    "source": "[r][] [^p] [^c] [^d]\n\n1. [^c]: para\n     more\n   %%%\n   c\n   %%%\n\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
     "name": "n:ordered/footnote-5073",
     "source": "[r][] [^p] [^c] [^d]\n\n1. [^c]: para\n   - li\n::::\ntail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
@@ -1852,11 +1772,6 @@
   {
     "name": "n:ordered/footnote-6686",
     "source": "[r][] [^p] [^c] [^d]\n\n1. [^c]: para\n     more\n[^p]: n\n```\nx\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "n:ordered/footnote-6837",
-    "source": "[r][] [^p] [^c] [^d]\n\n1. [^c]: para\n   %%%\n   c\n   %%%\n     tail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
@@ -1985,11 +1900,6 @@
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
-    "name": "n:quote/footnote-4146",
-    "source": "[r][] [^p] [^c] [^d]\n\n> [^c]: para\n> %%%\n> c\n> %%%\n```\nx\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
     "name": "n:quote/footnote-4171",
     "source": "[r][] [^p] [^c] [^d]\n\n> [^c]: para\n     > q\n::::\ntail\n",
     "issue": "markup-carve/carve-rs#3388"
@@ -2018,11 +1928,6 @@
     "name": "n:quote/footnote-5757",
     "source": "[r][] [^p] [^c] [^d]\n\n> [^c]: para\n>  ---\n\ntail\n",
     "issue": "markup-carve/carve-rs#3388"
-  },
-  {
-    "name": "n:quote/footnote-6177",
-    "source": "[r][] [^p] [^c] [^d]\n\n> [^c]: para\n>   more\n> %%%\n> c\n> %%%\n\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
     "name": "n:quote/footnote-6267",
@@ -2625,31 +2530,6 @@
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
-    "name": "s:footnote-3544",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n%%%\nc\n%%%\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "s:footnote-3545",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n%%%\nc\n%%%\n\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "s:footnote-3546",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n%%%\nc\n%%%\n```\nx\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "s:footnote-3547",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n%%%\nc\n%%%\n::::\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "s:footnote-3548",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n%%%\nc\n%%%\n  tail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
     "name": "s:footnote-3551",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n %%%\n c\n %%%\n```\nx\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
@@ -3192,31 +3072,6 @@
   {
     "name": "s:footnote-3816",
     "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n  more\n      - li\n```\nx\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "s:footnote-3819",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n  more\n%%%\nc\n%%%\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "s:footnote-3820",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n  more\n%%%\nc\n%%%\n\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "s:footnote-3821",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n  more\n%%%\nc\n%%%\n```\nx\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "s:footnote-3822",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n  more\n%%%\nc\n%%%\n::::\ntail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "s:footnote-3823",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n  more\n%%%\nc\n%%%\n  tail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
   },
   {
