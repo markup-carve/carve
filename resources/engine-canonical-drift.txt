@@ -2,7 +2,3 @@
 # Each row must differ from the pinned writer's bytes and preserve the input's rendering.
 # Remove a row when the JavaScript pin reaches the native header ruling.
 # Format: <slug><two spaces><reason>
-284-a-ragged-table-keeps-each-row-s-cell-count-2  PART 11 section 6h requires native headers; the pinned writer still emits a separator row.
-284-a-ragged-table-keeps-each-row-s-cell-count-3  PART 11 section 6h requires native headers; the pinned writer still emits a separator row.
-285-adjacent-block-openers-in-an-attached-run-stay-separate-2  PART 11 section 6h requires native headers; the pinned writer still emits separator rows.
-99-table-cell-attributes  PART 11 section 6h requires native headers; the pinned writer still emits a separator row.

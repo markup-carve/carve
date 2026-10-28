@@ -1,14 +1,204 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-10-27",
-    "spec": "2a176573ab324f6e85891d903dafdcdfa8c2febb",
-    "js": "c79692da8ba38d0978cbdb52c7424c3e024160a1",
-    "php": "268a96a5249c406ce509e039ab2a75ebd5b661c3",
-    "rust": "6de2ed4cc1f39f3f0a07fb2c6d979b4f0dca21f5",
-    "documents": 3284
+    "date": "2026-10-28",
+    "spec": "aa9891837ecda72c754147e119789a9e25126d9e",
+    "js": "4ac522eb02a5d6a208c9d784b028817f6d14b383",
+    "php": "1b97067403b52f99196b44614724beb276ec91ba",
+    "rust": "b56b66f59f807a290f27a05dd005f31360d3ad90",
+    "documents": 3345
   },
   "differences": [
+    {
+      "file": "tests/corpus/108-security-hardening-2.crv",
+      "reason": "The measured engines disagree on `bare-html-tag` diagnostics (carve-js is the odd one out on `bare-html-tag`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3862",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "bare-html-tag",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "bare-html-tag",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/12-inline-code-6.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/142-table-row-closing-pipe-3.crv",
+      "reason": "The measured engines disagree on `table-shaped-paragraph` diagnostics (carve-rs is the odd one out on `table-shaped-paragraph`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3469",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "table-shaped-paragraph",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/16-reference-link-8.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-rs is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3471",
+      "diagnostics": {
+        "js": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/16-reference-link-9.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-rs is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3471",
+      "diagnostics": {
+        "js": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/207-a-reference-image-takes-a-caption.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-rs is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3471",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            4,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/209-an-unresolved-reference-image-takes-no-caption-3.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-rs is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3471",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            5,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [
+          [
+            "unresolved-reference-link",
+            4,
+            13
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            2,
+            7
+          ],
+          [
+            "unresolved-reference-link",
+            4,
+            13
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            2,
+            7
+          ],
+          [
+            "unresolved-reference-link",
+            4,
+            13
+          ]
+        ]
+      }
+    },
     {
       "file": "tests/corpus/246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-2.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
@@ -48,21 +238,312 @@
       }
     },
     {
-      "file": "tests/corpus/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3.crv",
-      "reason": "PHP omits the unresolved-reference-link warning on malformed multiline reference syntax.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/4091",
+      "file": "tests/corpus/262-a-link-title-takes-exactly-one-space-4.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-rs is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3470",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/266-a-reference-definition-is-anchored-at-end-of-line-14.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
       "diagnostics": {
         "js": [
           [
-            "unresolved-reference-link",
+            "unused-link-reference-definition",
+            2,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            2,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/288-heading-index-plain-text-covers-visible-leaves-and-rejects-an-empty-key-2.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            3,
+            11
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            3,
+            11
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/316-an-image-s-alt-text-closes-where-a-link-s-text-closes-2.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            11
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            11
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/316-an-image-s-alt-text-closes-where-a-link-s-text-closes-4.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            11
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            11
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/316-an-image-s-alt-text-closes-where-a-link-s-text-closes-5.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            12
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            12
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/316-an-image-s-alt-text-closes-where-a-link-s-text-closes-7.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-rs is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3471",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            4,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/317-an-editorial-comment-s-bracket-is-content-not-the-close-4.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            16
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            16
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/323-a-block-attached-after-an-invisible-line-leaves-the-item-tight-3.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/351-a-bracketed-construct-spanning-a-line-boundary-4.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-rs is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3470",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            2,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/374-a-collected-definition-closes-the-item-paragraph-2.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            2,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            2,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/374-a-collected-definition-closes-the-item-paragraph.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            2,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            2,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/379-a-reference-definition-cannot-take-its-destination-from-the-next-line-2.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
             1,
             1
           ]
         ],
-        "php": [],
         "rust": [
           [
-            "unresolved-reference-link",
+            "empty-reference-definition",
+            1,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
             1,
             1
           ]
@@ -70,21 +551,212 @@
       }
     },
     {
-      "file": "tests/corpus/352-a-bracketed-construct-s-identifiers-stay-on-one-line.crv",
-      "reason": "PHP omits the unresolved-reference-link warning on malformed multiline reference syntax.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/4091",
+      "file": "tests/corpus/379-a-reference-definition-cannot-take-its-destination-from-the-next-line-3.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
       "diagnostics": {
         "js": [
           [
-            "unresolved-reference-link",
+            "list-item-body-detached",
+            2,
+            2
+          ],
+          [
+            "unused-link-reference-definition",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "list-item-body-detached",
+            2,
+            2
+          ],
+          [
+            "unused-link-reference-definition",
             1,
             1
           ]
         ],
-        "php": [],
         "rust": [
           [
-            "unresolved-reference-link",
+            "list-item-body-detached",
+            2,
+            2
+          ],
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/379-a-reference-definition-cannot-take-its-destination-from-the-next-line.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ],
+          [
+            "list-item-body-detached",
+            2,
+            2
+          ],
+          [
+            "unused-link-reference-definition",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ],
+          [
+            "list-item-body-detached",
+            2,
+            2
+          ],
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "empty-reference-definition",
+            1,
+            1
+          ],
+          [
+            "list-item-body-detached",
+            2,
+            2
+          ],
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-5.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-6.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-7.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-8.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
             1,
             1
           ]
@@ -124,6 +796,66 @@
       }
     },
     {
+      "file": "tests/corpus/429-an-invisible-line-before-the-blank-does-not-cancel-the-separation-2.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            2,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            2,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/434-an-unresolved-image-gives-its-whole-caption-slot-back-at-any-depth-2.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-rs is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3471",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            5,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/434-an-unresolved-image-gives-its-whole-caption-slot-back-at-any-depth-4.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-rs is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3471",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            4,
+            1
+          ]
+        ]
+      }
+    },
+    {
       "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-11.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -143,6 +875,977 @@
             1
           ]
         ]
+      }
+    },
+    {
+      "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-2.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-js is the odd one out on `continuation-marker-refused`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3863",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-4.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-js is the odd one out on `continuation-marker-refused`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3863",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph-2.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            3,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            3,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3.crv",
+      "reason": "The measured engines disagree on `list-marker-without-blank-line` diagnostics (carve-php is the odd one out on `list-marker-without-blank-line`).",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4176",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-footnote-definition",
+            2,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            6
+          ],
+          [
+            "unused-footnote-definition",
+            2,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "unused-footnote-definition",
+            2,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling.crv",
+      "reason": "The measured engines disagree on `list-marker-without-blank-line` diagnostics (carve-php is the odd one out on `list-marker-without-blank-line`).",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4176",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-footnote-definition",
+            2,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            6
+          ],
+          [
+            "unused-footnote-definition",
+            2,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "unused-footnote-definition",
+            2,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/523-a-link-title-crosses-a-soft-wrap-and-an-attribute-value-does-not-2.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/523-a-link-title-crosses-a-soft-wrap-and-an-attribute-value-does-not-3.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-php is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4202",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            6
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/523-a-link-title-crosses-a-soft-wrap-and-an-attribute-value-does-not-4.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/523-a-link-title-crosses-a-soft-wrap-and-an-attribute-value-does-not.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/525-a-link-inside-a-span-s-label-keeps-its-destination-5.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/525-a-link-inside-a-span-s-label-keeps-its-destination-9.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-php is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4202",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            7
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/526-a-quoted-value-and-a-quoted-title-escape-different-sets-10.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-rs is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3470",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/595-a-bare-closer-does-not-reach-inside-a-cross-reference-2.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [
+          [
+            "broken-crossref",
+            1,
+            6
+          ],
+          [
+            "unclosed-inline-emphasis",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "broken-crossref",
+            1,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "broken-crossref",
+            1,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/595-a-bare-closer-does-not-reach-inside-a-cross-reference.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-inline-emphasis",
+            4,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-6.crv",
+      "reason": "The measured engines disagree on `list-marker-without-blank-line` diagnostics (carve-rs is the odd one out on `list-marker-without-blank-line`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3468",
+      "diagnostics": {
+        "js": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "list-marker-without-blank-line",
+            3,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-7.crv",
+      "reason": "The measured engines disagree on `list-marker-without-blank-line` diagnostics (carve-rs is the odd one out on `list-marker-without-blank-line`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3468",
+      "diagnostics": {
+        "js": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "list-marker-without-blank-line",
+            3,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence-3.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence-4.crv",
+      "reason": "The measured engines disagree on `table-shaped-paragraph` diagnostics (carve-rs is the odd one out on `table-shaped-paragraph`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3469",
+      "diagnostics": {
+        "js": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "table-shaped-paragraph",
+            3,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-3.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            4,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            5,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            4,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            5,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            4,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-11.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            2,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            2,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ],
+          [
+            "unused-link-reference-definition",
+            3,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ],
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ],
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence-3.crv",
+      "reason": "The measured engines disagree on `list-marker-without-blank-line` diagnostics (carve-rs is the odd one out on `list-marker-without-blank-line`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3468",
+      "diagnostics": {
+        "js": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "colon-fence-length-mismatch",
+            6,
+            1
+          ],
+          [
+            "colon-fence-length-mismatch",
+            7,
+            1
+          ],
+          [
+            "list-marker-without-blank-line",
+            3,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            6,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            7,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-12.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            3,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-3.crv",
+      "reason": "The measured engines disagree on `list-marker-without-blank-line` diagnostics (carve-php is the odd one out on `list-marker-without-blank-line`).",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4176",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "list-marker-without-blank-line",
+            2,
+            3
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/616-a-line-is-read-in-the-container-whose-column-it-reaches-12.crv",
+      "reason": "The measured engines disagree on `list-marker-without-blank-line` diagnostics (carve-php is the odd one out on `list-marker-without-blank-line`).",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4176",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            7
+          ]
+        ],
+        "rust": []
       }
     },
     {
@@ -272,6 +1975,66 @@
       }
     },
     {
+      "file": "tests/corpus/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-js is the odd one out on `continuation-marker-refused`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3863",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "continuation-marker-refused",
+            4,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            4,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-js is the odd one out on `continuation-marker-refused`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3863",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-footnote-definition",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "continuation-marker-refused",
+            2,
+            3
+          ],
+          [
+            "unused-footnote-definition",
+            1,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            2,
+            3
+          ],
+          [
+            "unused-footnote-definition",
+            1,
+            3
+          ]
+        ]
+      }
+    },
+    {
       "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-36.crv",
       "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -360,14 +2123,25 @@
     },
     {
       "file": "tests/corpus/635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics. Also tracked in markup-carve/carve-js#3863.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
-        "js": [],
+        "js": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            5
+          ]
+        ],
         "php": [
           [
             "continuation-marker-refused",
             2,
+            5
+          ],
+          [
+            "list-marker-without-blank-line",
+            3,
             5
           ]
         ],
@@ -376,6 +2150,44 @@
             "continuation-marker-refused",
             2,
             5
+          ],
+          [
+            "list-marker-without-blank-line",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/637-definition-body-note-and-fence-owner-boundaries-3.crv",
+      "reason": "The measured engines disagree on `list-marker-without-blank-line` diagnostics (carve-php is the odd one out on `list-marker-without-blank-line`).",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4176",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-footnote-definition",
+            2,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            6
+          ],
+          [
+            "unused-footnote-definition",
+            2,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "unused-footnote-definition",
+            2,
+            4
           ]
         ]
       }
@@ -442,15 +2254,26 @@
     },
     {
       "file": "tests/corpus/652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics. Also tracked in markup-carve/carve-js#3863.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
-        "js": [],
+        "js": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            7
+          ]
+        ],
         "php": [
           [
             "continuation-marker-refused",
             2,
             9
+          ],
+          [
+            "list-marker-without-blank-line",
+            3,
+            7
           ]
         ],
         "rust": [
@@ -458,52 +2281,73 @@
             "continuation-marker-refused",
             2,
             9
+          ],
+          [
+            "list-marker-without-blank-line",
+            3,
+            7
           ]
         ]
       }
     },
     {
-      "file": "tests/corpus/719-combined-emphasis-finds-a-later-nonempty-closer-2.crv",
-      "reason": "Rust omits the markdown-strong-double-star warning on combined-emphasis source.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/3366",
+      "file": "tests/corpus/673-link-titles-accept-trailing-ascii-padding-with-either-destination-2.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
       "diagnostics": {
-        "js": [
-          [
-            "markdown-strong-double-star",
-            1,
-            2
-          ]
-        ],
+        "js": [],
         "php": [
           [
-            "markdown-strong-double-star",
+            "unclosed-inline-emphasis",
             1,
-            2
+            25
           ]
         ],
-        "rust": []
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            25
+          ]
+        ]
       }
     },
     {
-      "file": "tests/corpus/719-combined-emphasis-finds-a-later-nonempty-closer.crv",
-      "reason": "Rust omits the markdown-strong-double-star warning on combined-emphasis source.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/3366",
+      "file": "tests/corpus/705-unicode-whitespace-ends-a-link-destination.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-php is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4202",
       "diagnostics": {
         "js": [
           [
-            "markdown-strong-double-star",
-            1,
-            2
+            "unclosed-inline-emphasis",
+            5,
+            20
+          ],
+          [
+            "unresolved-reference-link",
+            6,
+            1
           ]
         ],
         "php": [
           [
-            "markdown-strong-double-star",
-            1,
-            2
+            "unresolved-reference-link",
+            6,
+            1
           ]
         ],
-        "rust": []
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            5,
+            20
+          ],
+          [
+            "unresolved-reference-link",
+            6,
+            1
+          ]
+        ]
       }
     },
     {
@@ -608,6 +2452,400 @@
           ]
         ],
         "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/740-lazy-quote-owners-2.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-rs is the odd one out on `continuation-marker-refused`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3467",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "continuation-marker-refused",
+            2,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            7
+          ],
+          [
+            "continuation-marker-refused",
+            2,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/741-visible-footnote-headings-4.crv",
+      "reason": "The measured engines disagree on `broken-crossref` diagnostics (carve-rs is the odd one out on `broken-crossref`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3462",
+      "diagnostics": {
+        "js": [
+          [
+            "broken-crossref",
+            3,
+            1
+          ],
+          [
+            "unused-footnote-definition",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "broken-crossref",
+            3,
+            1
+          ],
+          [
+            "unused-footnote-definition",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-footnote-definition",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes-3.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-js is the odd one out on `continuation-marker-refused`, carve-php is the odd one out on `continuation-marker-refused`, carve-rs is the odd one out on `continuation-marker-refused`). Also tracked in markup-carve/carve-php#4201, markup-carve/carve-rs#3467.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3863",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            9
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-js is the odd one out on `continuation-marker-refused`, carve-php is the odd one out on `continuation-marker-refused`, carve-rs is the odd one out on `continuation-marker-refused`). Also tracked in markup-carve/carve-php#4201, markup-carve/carve-rs#3467.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3863",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            9
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/750-a-below-column-line-returns-to-its-definition-body.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-js is the odd one out on `continuation-marker-refused`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3863",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/751-a-lazy-line-keeps-its-plus-through-three-quote-levels.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-js is the odd one out on `continuation-marker-refused`, carve-php is the odd one out on `continuation-marker-refused`, carve-rs is the odd one out on `continuation-marker-refused`). Also tracked in markup-carve/carve-php#4201, markup-carve/carve-rs#3467.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3863",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            11
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            11
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/753-a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker.crv",
+      "reason": "The measured engines disagree on `list-item-block-overindented` diagnostics (carve-php is the odd one out on `list-item-block-overindented`).",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4181",
+      "diagnostics": {
+        "js": [
+          [
+            "description-separator-below-content-column",
+            2,
+            6
+          ],
+          [
+            "description-separator-below-content-column",
+            3,
+            6
+          ]
+        ],
+        "php": [
+          [
+            "description-separator-below-content-column",
+            2,
+            6
+          ],
+          [
+            "description-separator-below-content-column",
+            3,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "description-separator-below-content-column",
+            2,
+            6
+          ],
+          [
+            "description-separator-below-content-column",
+            3,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/757-an-intervening-column-refuses-a-description-hosted-first-block.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-rs is the odd one out on `continuation-marker-refused`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3467",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/758-a-hosted-footnote-keeps-a-heading-at-its-body-floor.crv",
+      "reason": "The measured engines disagree on `duplicate-heading-id`, `list-item-block-overindented` diagnostics (carve-js is the odd one out on `duplicate-heading-id`, carve-js is the odd one out on `list-item-block-overindented`). Also tracked in markup-carve/carve-js#3865.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3864",
+      "diagnostics": {
+        "js": [
+          [
+            "duplicate-heading-id",
+            3,
+            3
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "duplicate-heading-id",
+            4,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "duplicate-heading-id",
+            4,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/760-a-heading-inside-the-intervening-band-stays-description-text.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics (carve-rs is the odd one out on `continuation-marker-refused`).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3467",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ],
+          [
+            "list-item-body-detached",
+            3,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "continuation-marker-refused",
+            2,
+            5
+          ],
+          [
+            "list-item-body-detached",
+            3,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-body-detached",
+            3,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/80-trailing-attribute-block-edge-cases-2.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/80-trailing-attribute-block-edge-cases-3.crv",
+      "reason": "The measured engines disagree on `unclosed-inline-emphasis` diagnostics (carve-js is the odd one out on `unclosed-inline-emphasis`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3866",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-inline-emphasis",
+            1,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/82-blockquote-lazy-continuation-6.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/87-compact-list-blocks-5.crv",
+      "reason": "The measured engines disagree on `unused-link-reference-definition` diagnostics (carve-js is the odd one out on `unused-link-reference-definition`).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3867",
+      "diagnostics": {
+        "js": [
+          [
+            "unused-link-reference-definition",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unused-link-reference-definition",
+            3,
+            1
+          ]
+        ]
       }
     },
     {

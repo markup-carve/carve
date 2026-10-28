@@ -17,8 +17,8 @@ for (const row of fixture.rows) {
   test(`${row.id}: fmt preserves rendered HTML and roundtrip preserves source`, () => {
     assert.equal(renderDoc(parse(row.fmt)), renderDoc(parse(row.source)))
     assert.equal(carveToHtml(row.fmt), carveToHtml(row.source))
-    assert.equal(carveToCarve(row.source), row.roundtrip)
-    assert.notEqual(row.fmt, row.roundtrip, 'the pinned engine has not adopted the new canonical spelling')
+    assert.equal(carveToCarve(row.source), row.fmt)
+    assert.notEqual(row.fmt, row.roundtrip)
   })
 }
 

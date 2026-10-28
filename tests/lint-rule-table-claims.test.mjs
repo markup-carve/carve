@@ -60,6 +60,11 @@ const pinnedDefaultTriggers =
   JSON.parse(readFileSync(resolve(root, 'resources/lint-default-triggers.json'), 'utf8'))
 const TRIGGERS = {
   ...pinnedDefaultTriggers,
+  'unused-link-reference-definition': '[r]: /u\n',
+  'empty-link-destination': '[x]()\n',
+  'duplicate-reference-url': { source: '[a]: /u\n[b]: /u\n', options: { enabledRules: ['duplicate-reference-url'] } },
+  'non-descriptive-link-text': { source: '[click here](/u)\n', options: { enabledRules: ['non-descriptive-link-text'] } },
+  'emphasis-as-heading': { source: '*Title*\n', options: { enabledRules: ['emphasis-as-heading'] } },
   'delimited-table-malformed': '{table}\n```csv\n"bad\n```\n',
   'delimited-table-wide-row': '{table}\n```csv\na,b\n1\n2,3,4\n```\n',
   'region-marker-renders-as-text': '// #region demo\nBody.\n// #endregion demo\n',
@@ -114,11 +119,6 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  ['unused-link-reference-definition', 'specified by the #3808 ruling; engine rollout follows'],
-  ['empty-link-destination', 'specified by the #3808 ruling; engine rollout follows'],
-  ['duplicate-reference-url', 'specified by the #3808 ruling; engine rollout follows'],
-  ['non-descriptive-link-text', 'specified by the #3808 ruling; engine rollout follows'],
-  ['emphasis-as-heading', 'specified by the #3808 ruling; engine rollout follows'],
   [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',
@@ -139,6 +139,7 @@ const INCLUDE_FILES = {
   'deep2.crv': 'x\n',
   'bin.dat': new Uint8Array([0, 159, 146, 150, 0, 255]),
   'big.crv': `${'y'.repeat(50)}\n`,
+  't.csv': 'a,b\n1,2\n',
 }
 function withIncludes(source, limits = {}) {
   const resolve = (path) => (path in INCLUDE_FILES ? { source: INCLUDE_FILES[path], id: path } : null)
@@ -152,6 +153,7 @@ const INCLUDE_TRIGGERS = {
   'include-selection-conflict': withIncludes('{{ a.crv #a @lines:1-2 }}\n'),
   'include-unknown-option': withIncludes('{{ a.crv @bogus:1 }}\n'),
   'include-lines-out-of-range': withIncludes('{{ a.crv @lines:9-9 }}\n'),
+  'include-lines-table-rows-hint': withIncludes('{table}\n{{ t.csv @code:csv @lines:1-2 }}\n'),
   'include-lines-invalid': withIncludes('{{ a.crv @lines:2-1 }}\n'),
   'include-duplicate-option': withIncludes('{{ a.crv @shift:1 @shift:2 }}\n'),
   'include-block-in-inline': withIncludes('See {{ para.crv }} here.\n'),
@@ -293,6 +295,8 @@ test('an opt-in rule reports nothing until it is asked for', () => {
 // `wrong-column` and `fence-payload` are refusal reasons that pick the
 // continuation-marker-refused message (carve-js#3338).
 const NOT_A_RULE = new Set([
+  'aria-label',
+  'disable-next-line',
   'definition-list',
   'footnote-definition',
   'semantic-span',
