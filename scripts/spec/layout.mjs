@@ -2806,6 +2806,8 @@ function ownLines(lines) {
   return result
 
   function classify(rest, owner, at) {
+    // Line-final whitespace is trimmed before a line is read, so heads are measured without it.
+    rest = trimLineEnd(rest)
     if (rest === '') return { kind: 'blank', interrupts: true }
     if (QUOTE.test(rest)) return { kind: 'quote', interrupts: true }
     const colon = COLON_FENCE.exec(rest)
@@ -3756,6 +3758,25 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let commentScanFrom = 0
       let retainedParagraph = false
       let lazyParagraphOpen = null
+      let openFence = -1
+      const endsNoteAt = (at) => (ind(at)?.col === 0 && FOOTNOTE_DEF.test(ind(at).rest)) ||
+        (isBlank(lines[at]) && footnoteBlankRunEnd(lines, at, n) === -1)
+      // Lazy lines open no fence and only shorten the closer search, so a
+      // "no open fence" answer holds until a non-lazy line joins the body.
+      let fenceKnownShut = 0
+      let fenceSeen = false
+      const noteOpenFence = (at) => {
+        for (; fenceKnownShut < bodyLines.length; fenceKnownShut++) {
+          const l = bodyLines[fenceKnownShut]
+          if (l.startsWith(LAZY)) continue
+          if (FENCE.test(l)) fenceSeen = true
+          if (fenceSeen) break
+        }
+        if (fenceKnownShut === bodyLines.length) return -1
+        const k = descriptionOpenFenceAt(bodyLines, lines, at, FOOTNOTE_BODY_COLUMN, endsNoteAt)
+        if (k === -1) fenceKnownShut = bodyLines.length
+        return k
+      }
       // Indented continuation: the line's leading run must reach COLUMN 2
       // (PART 9 SS24 C1 column arithmetic), not two literal space characters.
       // A tab from column 0 already reaches column 4, so a bare tab or a
@@ -3855,20 +3876,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lazyParagraphOpen = false
           pullPending = false
           i++
-        } else if (measured.col < FOOTNOTE_BODY_COLUMN &&
-            COMMENT_LINE.test(measured.rest) &&
-            (afterComment || retainedParagraph || paragraphOpenSince(bodyLines, commentScanFrom)) &&
-            !(measured.col === 0 && commentFenceOpensSpan(lines, i))) {
-          const comment = classifyLayoutComment(lines, i)
-          bodyLines.push(keptCommentDelimiter(lines[i]))
-          if (comment?.kind === 'fenced_comment') {
-            for (let k = i + 1; k < comment.end; k++) bodyLines.push(lines[k])
-            i = comment.end
-          } else i++
-          commentScanFrom = bodyLines.length
-          lazyParagraphOpen = false
-          retainedParagraph = false
-          afterComment = afterCommentTransition(afterComment, { comment: true, belowComment: measured.col < FOOTNOTE_BODY_COLUMN })
+        } else if (measured.col < FOOTNOTE_BODY_COLUMN && COMMENT_LINE.test(measured.rest)) {
+          // Rule A: a comment is an ordinary line, so below the body column it ends the body.
+          break
         } else if (afterComment &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !(FENCE.test(lines[i]) && hasCloser(lines, i))) {
@@ -3878,6 +3888,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lazyParagraphOpen = true
           retainedParagraph = true
           i++
+        } else if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN &&
+            (openFence = noteOpenFence(i)) !== -1) {
+          // Rule A: a payload line below the body column ends the fence and the body.
+          break
         } else if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN &&
             (lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
@@ -3891,6 +3905,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i++
         } else break
       }
+      if (openFence !== -1) (state.fenceOpensAt ??= new WeakMap()).set(bodyLines, new Set([openFence]))
       const key = labelKey(label)
       if (!state.footnoteDefs.has(key)) {
         // FIRST definition wins (PART 9R state)
@@ -4431,20 +4446,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // shape first so ordinary long descriptions avoid a backward scan.
             if (authoredCol < bodyColumn && FOOTNOTE_DEF.test(bodyLines[0] ?? '') &&
                 descriptionBodyEndsInAbsorbedNote(bodyLines)) break
-            if (classifyLayoutComment(lines, i) !== null) {
-              if (authoredCol === 0 && commentFenceOpensSpan(lines, i)) break
-              if (!afterComment && !retainedParagraph && !bodyLeavesParagraphOpen(sinceComment())) break
-              const comment = classifyLayoutComment(lines, i)
-              pushBody(keptCommentDelimiter(cur))
-              if (comment.kind === 'fenced_comment') {
-                for (let k = i + 1; k < comment.end; k++) pushBody(lines[k], k)
-                i = comment.end
-              } else i++
-              ddScanFrom = bodyLines.length
-              retainedParagraph = false
-              afterComment = afterCommentTransition(afterComment, { comment: true, belowComment: authoredCol < bodyColumn })
-              continue
-            }
+            // Rule A: a comment is an ordinary line, so below the body column it ends the body.
+            if (classifyLayoutComment(lines, i) !== null) break
             if (afterComment && !startsVisibleBlock(cur) &&
                 !isTableRow(cur) && !isColonBlockOpener(cur) &&
                 !(FENCE.test(cur) && hasCloser(lines, i))) {

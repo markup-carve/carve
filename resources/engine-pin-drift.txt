@@ -98,6 +98,7 @@
 350-a-definition-at-a-container-s-content-column-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+379-a-reference-definition-cannot-take-its-destination-from-the-next-line  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 379-a-reference-definition-cannot-take-its-destination-from-the-next-line-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 396-an-idle-escape-does-not-spread-from-the-block-that-needed-one  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
@@ -115,6 +116,7 @@
 430-below-a-definition-body-s-column-an-invisible-line-folds-as-text-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 430-below-a-definition-body-s-column-an-invisible-line-folds-as-text-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 435-the-continuation-marker-s-column-gate-reaches-every-container  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+435-the-continuation-marker-s-column-gate-reaches-every-container-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 435-the-continuation-marker-s-column-gate-reaches-every-container-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
@@ -132,8 +134,11 @@
 447-the-host-does-not-change-which-column-a-definition-reaches-17  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 449-a-comment-below-a-description-body-s-column-ends-the-body-11  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 449-a-comment-below-a-description-body-s-column-ends-the-body-12  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+449-a-comment-below-a-description-body-s-column-ends-the-body-13  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 449-a-comment-below-a-description-body-s-column-ends-the-body-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 449-a-comment-below-a-description-body-s-column-ends-the-body-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+449-a-comment-below-a-description-body-s-column-ends-the-body-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+449-a-comment-below-a-description-body-s-column-ends-the-body-9  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column-9  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.

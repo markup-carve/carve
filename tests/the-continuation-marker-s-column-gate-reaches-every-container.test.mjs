@@ -49,11 +49,6 @@ const comment = (src) => src.replace('@', '%% c')
 // A refused `+` is text, so it renders as a letter at its column would (carve#3421).
 const letter = (src) => html(src.replace('@', 'Z')).replaceAll('Z', '+')
 
-const retainedNote =
-  '<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>' +
-  '<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1">' +
-  '<p>intro</p><p>more<a href="#fnref1" role="doc-backlink" ' +
-  'aria-label="Back to reference">↩</a></p></li></ol></section>'
 // A comment below the body's column closes the body, so the follower leaves it (carve#3885).
 const closedNote =
   '<p>more</p><p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>' +
@@ -64,7 +59,7 @@ const closedDescription = '<dl><dt>term</dt><dd>intro</dd></dl><p>more</p>'
 
 const BAND = [
   ['a footnote body, below its minimum column', '[^a]: intro\n@\n more\n\nsee[^a]\n', closedNote],
-  ['a footnote body, at its minimum column', '[^a]: intro\n@\n  more\n\nsee[^a]\n', retainedNote],
+  ['a footnote body, at its minimum column', '[^a]: intro\n@\n  more\n\nsee[^a]\n', closedNote],
   ['a description, below its content column', ':: term\n:  intro\n@\n  more\n', closedDescription],
   ['a description, one column further below', ':: term\n:  intro\n@\n more\n', closedDescription],
   ['a block quote, with the quoted paragraph closed', '> intro\n>\n@\n  more\n'],

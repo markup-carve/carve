@@ -25405,7 +25405,9 @@ next line as a URL.
 <ul>
   <li></li>
 </ul>
-<p>:::</p>
+<div>
+
+</div>
 ```
 
 ::::
@@ -30599,8 +30601,9 @@ The body's OWN minimum column is not column 0 either, so it is refused for the
 same reason - the marker names one column, not a range reaching down to the
 container's floor. An indented comment at that column is a different document
 and stays inside the body, which is pinned above under "A comment in a footnote
-body is invisible in both spellings". The comment where the marker was retains
-the line; the marker does not.
+body is invisible in both spellings". The comment where the marker was is an
+ordinary line below the body column, so it closes the body (rule A,
+carve#3885) and the follower is a document paragraph.
 
 ::: compare
 
@@ -30613,13 +30616,13 @@ see[^a]
 ```
 
 ```html
+<p>more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro</p>
-      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -33992,10 +33995,11 @@ run below it makes it a comment BLOCK, and the line between the two delimiters
 renders nothing (markup-carve/carve#1930). A list item answers the same way
 (PART 0 X1, corpus 214).
 
-Every other comment below the body's column is consumed by the body and retains
-the line after it as a new paragraph, as in a list item (PART 0 X1, ruled on
-markup-carve/carve#2978): the `%%` line form, a `%%%` with no closer ahead, and
-a matched span written past column 0. The rows below pin both halves.
+Every other comment below the body's column ends the body as well: a comment is
+an ordinary line for ownership (rule A, carve#3885, which replaced the
+retention reading of markup-carve/carve#2978), so the line after it is not taken
+back into the body. That holds for the `%%` line form, a `%%%` with no closer
+ahead, and a matched span written past column 0, as in a list item.
 
 TERMINATED IS WHAT MAKES IT A BLOCK, and the degraded control below is why that
 has to be said: §28's degradation is total, so an opener with no exact-width
@@ -34168,9 +34172,10 @@ b
 
 :::
 
-A FOLLOWER AT THE BODY'S OWN COLUMN after a line comment below it stays in the
-body as a new paragraph: the comment closed the paragraph, not the body. The
-`%%` line form first.
+A FOLLOWER AT THE BODY'S OWN COLUMN after a line comment below it is a
+document paragraph: a comment is an ordinary line for ownership (rule A,
+carve#3885), so below the column it closes the body, and a closed body takes no
+later line back. The `%%` line form first.
 
 ::: compare
 
@@ -34184,11 +34189,9 @@ body as a new paragraph: the comment closed the paragraph, not the body. The
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x</dd>
 </dl>
+<p>more</p>
 ```
 
 :::
@@ -34207,17 +34210,15 @@ The DEGRADED fence, same answer: with no closer ahead it is a line comment.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x</dd>
 </dl>
+<p>more</p>
 ```
 
 :::
 
-And the terminated fence at column 0, which does end the body, so the same
-follower is a document paragraph.
+The terminated fence at column 0 ends the body too, so the same follower is a
+document paragraph.
 
 ::: compare
 
@@ -34289,7 +34290,7 @@ z
 :::
 
 And the line form one column in, with a follower back at the body's column,
-which stays in the body.
+which the closed body does not take back.
 
 ::: compare
 
@@ -34303,11 +34304,9 @@ which stays in the body.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x</dd>
 </dl>
+<p>more</p>
 ```
 
 :::

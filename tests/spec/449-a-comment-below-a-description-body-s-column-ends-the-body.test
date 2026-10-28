@@ -111,11 +111,9 @@ b
 .
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x</dd>
 </dl>
+<p>more</p>
 ```
 
 ```
@@ -126,11 +124,9 @@ b
 .
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x</dd>
 </dl>
+<p>more</p>
 ```
 
 ```
@@ -186,9 +182,7 @@ z
 .
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x</dd>
 </dl>
+<p>more</p>
 ```

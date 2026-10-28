@@ -7,7 +7,9 @@ A reference definition cannot take its destination from the next line
 <ul>
   <li></li>
 </ul>
-<p>:::</p>
+<div>
+
+</div>
 ```
 
 ```
