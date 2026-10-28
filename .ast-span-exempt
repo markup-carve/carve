@@ -23,5 +23,5 @@
 # enclosing footnote, and it left the ledger when carve-js and carve-rs shipped
 # the fix rather than by being named here.
 
-list (extent)@6: corpus 503-9, 636 and 697 differ inside leading indentation under markup-carve/carve#1928; corpus 744 and 753 add tracked task ownership drift at markup-carve/carve#3845, and corpus 749 adds continuation drift at markup-carve/carve-js#3816.
-list_item (extent)@7: corpus 245, 503-9, 636 and 697 differ inside leading indentation under markup-carve/carve#1928; corpus 744 and 753 add tracked task ownership drift at markup-carve/carve#3845, and corpus 749 adds continuation drift at markup-carve/carve-js#3816.
+list (extent)@5: corpus 503-9, 636 and 697 differ inside leading indentation under markup-carve/carve#1928; corpus 744 and 753 add tracked task ownership drift at markup-carve/carve#3845.
+list_item (extent)@6: corpus 245, 503-9, 636 and 697 differ inside leading indentation under markup-carve/carve#1928; corpus 744 and 753 add tracked task ownership drift at markup-carve/carve#3845.

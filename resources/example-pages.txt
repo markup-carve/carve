@@ -1346,7 +1346,7 @@ index: examples/edge-cases/index.md
   a-native-header-continues-a-promoted-gfm-header-run
   a-table-ends-a-footnote-paragraph-claim
   a-footnote-heading-does-not-loosen-its-host-item
-  a-dangling-continuation-marker-leaves-an-attached-item
+  a-promoted-gfm-header-keeps-following-native-headers-before-the-body
   a-below-column-line-returns-to-its-definition-body
   a-lazy-line-keeps-its-plus-through-three-quote-levels
   a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker

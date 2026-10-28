@@ -46,7 +46,6 @@
 744-a-task-item-uses-the-ordered-item-column-rule  Task ownership differs in pinned engines; markup-carve/carve-js#3801 and markup-carve/carve-rs#3407.
 745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes  O3 lazy quote ownership differs in pinned engines; markup-carve/carve-js#3800 and markup-carve/carve-rs#3406.
 745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes-3  O3 lazy quote ownership differs in pinned engines; markup-carve/carve-js#3800 and markup-carve/carve-rs#3406.
-749-a-dangling-continuation-marker-leaves-an-attached-item  Pinned JavaScript drops the returned marker; markup-carve/carve-js#3816.
 751-a-lazy-line-keeps-its-plus-through-three-quote-levels  Pinned JavaScript reads the quoted plus at the wrong owner; markup-carve/carve-js#3813.
 752-a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker  Pinned JavaScript uses the wrong task child base; markup-carve/carve-js#3814.
 753-a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker  Pinned JavaScript uses the wrong task child base; markup-carve/carve-js#3814.

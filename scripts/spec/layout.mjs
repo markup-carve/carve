@@ -7008,7 +7008,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       attachNext = true
       closePara()
     }
-    let attachedBlockEndAt = -1
     const attachFlushLeft = () => {
       const attachmentCol = attachNext ? (ind(headIndex).L?.col ?? ind(headIndex).col) : sourceMarkerCol
       const follower = ind(i)
@@ -7046,7 +7045,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // sibling marker to the shared one (carve#1782).
       let end = attachedBlockEnd(lines, i, state, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-        (lines[idx] === state.ordinaryPlusSentinel && idx + 1 >= lines.length) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i), blockColumn)
       const attached = lines.slice(i, end)
       const codeMatch = FENCE.exec(attached[0] ?? '')
@@ -7064,7 +7062,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       }
       if (!unclosedAttached) pushLine('', BLANK_MEAS)
       closePara()
-      attachedBlockEndAt = i
       return true
     }
     // ONE block (SS17 L3, carve#1290). When the first-block form has taken its
@@ -7103,8 +7100,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const line = lines[i]
       // `+` at the item's marker column attaches one block there (SS17 L3/L4).
       const lm = ind(i)
-      if (i === attachedBlockEndAt && lm.col === baseIndent &&
-          lm.rest === state.ordinaryPlusSentinel) break
       // Measure a descendant's first attached block before the ordinary
       // content-column branch collects it. Otherwise only a later root block
       // reaches the below-column attachment branch and becomes the candidate.
