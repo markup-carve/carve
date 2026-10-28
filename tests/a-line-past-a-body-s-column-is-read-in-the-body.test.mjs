@@ -41,7 +41,7 @@ for (const [what, src, expected] of CASES) {
 test('a footnote body reads a definition past its column after a folded bullet', () => {
   const ast = parse('[^n]: d\n  - para\n    [r]: /u\nx\n\n[^n]\n')
   assert.equal(ast.linkDefs.get('r')?.url, '/u')
-  assert.match(oracle('[^n]: d\n  - para\n    [r]: /u\nx\n\n[^n]\n'), /<li id="fn1"><p>d - para<\/p><p>x/)
+  assert.match(oracle('[^n]: d\n  - para\n    [r]: /u\nx\n\n[^n]\n'), /^<p>x<\/p><p>/)
 })
 
 // Controls: a definition past a quoted item's column still registers there

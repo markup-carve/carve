@@ -1705,7 +1705,9 @@ function endsWithAuthoredInterrupter(line) {
   let leaf = indentCols(line).rest
   let depth = 0
   while (depth < MAX_NESTING_DEPTH && QUOTE.test(leaf)) {
-    leaf = indentCols(QUOTE.exec(leaf)[1] ?? '').rest
+    const content = indentCols(QUOTE.exec(leaf)[1] ?? '')
+    if (content.col > 0) return false
+    leaf = content.rest
     depth++
   }
   if (QUOTE.test(leaf)) return false
