@@ -17,8 +17,11 @@ test('contentless description markers fold under a quoted term', () => {
   }
 })
 
-test('literal colon openers leave the quoted paragraph open', () => {
-  for (const opener of ['::: |', '::: note']) {
-    assert.equal(html(`>  ${opener}\nx\n`), `<blockquote><p>${opener}\nx</p></blockquote>`)
+test('over-indented colon openers open in the quote', () => {
+  for (const [opener, block] of [
+    ['::: |', '<div class="line-block">\n\n  </div>'],
+    ['::: note', '<aside class="admonition note" aria-label="Note">\n\n  </aside>'],
+  ]) {
+    assert.equal(html(`>  ${opener}\nx\n`), `<blockquote>\n  ${block}\n</blockquote>\n<p>x</p>`)
   }
 })

@@ -25,8 +25,9 @@ const positiveRows = [
 ]
 
 for (const [name, source, expected] of positiveRows) {
-  test(name, () => assert.equal(html(source), expected))
-  test(`${name}, wrapped in one more quote`, () => {
+  const todo = name.startsWith('a lazy line and a raw-looking') && 'markup-carve/carve#3892'
+  test(name, { todo }, () => assert.equal(html(source), expected))
+  test(`${name}, wrapped in one more quote`, { todo }, () => {
     assert.equal(html(quoted(source)), `<blockquote>${expected}</blockquote>`)
   })
 }

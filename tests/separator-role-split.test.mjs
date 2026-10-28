@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToHtml } from '@markup-carve/carve'
-import { normalizeAuthoredBodyBases, parse } from '../scripts/spec/layout.mjs'
+import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -1709,13 +1709,15 @@ test('tabs establish the same definition and footnote authored bases by visual c
 })
 
 test('authored body bases preserve payload indentation beyond the opener', () => {
-  assert.deepEqual(
-    normalizeAuthoredBodyBases(['   ```', '     two', '   ```']),
-    ['```', '  two', '```'],
+  // The fence opens three columns past the body and its lines shift left by
+  // that indent only (carve#3885).
+  assert.match(
+    authoredBaseHtml(':: term\n:  lead\n\n      ```\n        two\n      ```\n', true),
+    /<p>lead<\/p>\n    <pre><code>  two\n<\/code><\/pre>/,
   )
 })
 
-test('the authored-body experiment keeps the released reading behind its switch', () => {
+test('the retired authored-body switch no longer changes the reading', () => {
   const source = ':: term\n:  body\n     > quote\n'
-  assert.notEqual(authoredBaseHtml(source, false), authoredBaseHtml(source, true))
+  assert.equal(authoredBaseHtml(source, false), authoredBaseHtml(source, true))
 })

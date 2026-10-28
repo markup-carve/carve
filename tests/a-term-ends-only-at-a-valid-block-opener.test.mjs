@@ -41,12 +41,12 @@ for (const prefix of ['', '> ', '> > ']) {
       assert.equal(all.filter(node => node.t === (info === '=html' ? 'raw' : 'code')).length, 1)
     })
   }
-  test(`a div past the term column remains term text: ${prefix}`, () => {
+  test(`a div past the term column ends the term: ${prefix}`, () => {
     const source = ['- :: term', '    ::: box', '    inside', '    :::']
       .map(line => prefix + line).join('\n') + '\n'
     const all = nodes(parse(source).blocks)
-    assert.equal(all.filter(node => node.t === 'colon-div').length, 0)
-    assert.match(renderDoc(parse(source)), /<dt>term/)
+    assert.equal(all.filter(node => node.t === 'colon-div').length, 1)
+    assert.match(renderDoc(parse(source)), /<dt>term<\/dt>/)
   })
 }
 
@@ -59,12 +59,12 @@ for (const run of ['```', '~~~']) {
       assert.equal(document.blocks[0].items[0].dt, `term\n${run}${info}\na`)
     })
   }
-  test(`a CODE opener past the term column folds as term text: ${run}`, () => {
+  test(`a CODE opener past the term column ends the term: ${run}`, () => {
     const document = parse(`- :: term\n    ${run}\n    code\n    ${run}\n`)
     const all = nodes(document.blocks)
-    assert.equal(all.filter(node => node.t === 'code').length, 0)
+    assert.equal(all.filter(node => node.t === 'code').length, 1)
     assert.equal(all.find(node => node.t === 'deflist').items[0].dt,
-      `term\n  ${run}\n  code\n  ${run}`)
+      'term')
   })
 }
 

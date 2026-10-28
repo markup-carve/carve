@@ -26,8 +26,8 @@ const cases = [
   [
     'a fence after a closed nested line block opens in its box',
     '> - ::: box\n>   - ::: |\n>     ```\n>     :::\n>    ```\n>    :::bad\n>    :::\n- tail\n',
-    '<blockquote><ul><li><div class="box"><ul><li><div class="line-block"><p><code></code></p></div></li></ul><pre><code>:::bad :::</code></pre></div></li></ul></blockquote><ul><li>tail</li></ul>',
-    ':::bad\n:::\n',
+    '<blockquote><ul><li><div class="box"><ul><li><div class="line-block"><p><code></code></p></div></li></ul><pre><code>:::bad</code></pre></div></li></ul></blockquote><ul><li>tail</li></ul>',
+    ':::bad\n',
   ],
   [
     'a closed payload fence stays with the line block',
@@ -42,8 +42,8 @@ const cases = [
   [
     'a fence after a wider nested item opens in its box',
     '> - ::: box\n>   -   ::: |\n>       ```\n>       :::\n>     ```\n>     :::\n>     :::bad\n>     :::\n- tail\n',
-    '<blockquote><ul><li><div class="box"><ul><li><div class="line-block"><p><code></code></p></div></li></ul><pre><code>::: :::bad :::</code></pre></div></li></ul></blockquote><ul><li>tail</li></ul>',
-    ':::\n:::bad\n:::\n',
+    '<blockquote><ul><li><div class="box"><ul><li><div class="line-block"><p><code></code></p></div></li></ul><pre><code></code></pre></div>:::bad :::</li></ul></blockquote><ul><li>tail</li></ul>',
+    '',
   ],
   [
     'unclosed fences at block start leave the quote after their hosts close',
@@ -66,9 +66,9 @@ const cases = [
     '<blockquote><ul><li>a<ul><li>child after</li></ul></li></ul></blockquote>',
   ],
   [
-    'a bare closer past a box column stays text',
+    'a bare closer past a box column closes the box',
     '- ::: box\n  text\n   :::\nafter\n',
-    '<ul><li><div class="box"><p>text ::: after</p></div></li></ul>',
+    '<ul><li><div class="box"><p>text</p></div></li></ul><p>after</p>',
   ],
   [
     'an unclosed fence at a note block start ends at its closer',
@@ -88,19 +88,19 @@ const cases = [
   [
     'a later fence cannot close a prior list payload',
     '- ::: |\n  ```\n  :::\n\n  y\n- b\n\npara\n\n  ```\n',
-    '<ul><li><div class="line-block"><p><code></code></p></div><p>y</p></li><li><p>b</p></li></ul><p>para</p><p><code></code></p>',
+    '<ul><li><div class="line-block"><p><code></code></p></div><p>y</p></li><li><p>b</p></li></ul><p>para</p><pre><code></code></pre>',
   ],
   [
-    'a bare closer beyond the box column is code content',
+    'a bare closer beyond the box column ends the unclosed code and the box',
     '- ::: box\n   ```\n   :::bad\n   :::\n',
-    '<ul><li><div class="box"><pre><code>:::bad :::</code></pre></div></li></ul>',
-    ':::bad\n:::\n',
+    '<ul><li><div class="box"><pre><code>:::bad</code></pre></div></li></ul>',
+    ':::bad\n',
   ],
   [
-    'a quoted bare closer beyond the box column is code content',
+    'a quoted bare closer beyond the box column ends the unclosed code and the box',
     '> - ::: box\n>    ```\n>    :::bad\n>    :::\n',
-    '<blockquote><ul><li><div class="box"><pre><code>:::bad :::</code></pre></div></li></ul></blockquote>',
-    ':::bad\n:::\n',
+    '<blockquote><ul><li><div class="box"><pre><code>:::bad</code></pre></div></li></ul></blockquote>',
+    ':::bad\n',
   ],
   [
     'a bare closer at the box column closes the box',
@@ -109,10 +109,10 @@ const cases = [
     'x\n',
   ],
   [
-    'a deeper code closer stays inside the box',
+    'a deeper bare run closes the box and its unclosed code',
     '- ::: box\n    ```\n    :::\n  :::\n',
-    '<ul><li><div class="box"><pre><code>:::</code></pre></div></li></ul>',
-    ':::\n',
+    '<ul><li><div class="box"><pre><code></code></pre></div><div></div></li></ul>',
+    '',
   ],
 ]
 

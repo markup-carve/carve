@@ -9,31 +9,31 @@ description: "Document-wide resolution, core semantic behavior, and HTML seriali
 
 Document-wide resolution, core semantic behavior, and HTML serialization.
 
-This view contains 53 of 351 active rules. Every rule remains mandatory where applicable.
+This view contains 53 of 342 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
 | Rule | Part | Clause |
 |---|---:|---|
-| [`CARVE-P2-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L554) | 2 | THE TASK BOX CARRIES AN ACCESSIBLE NAME |
+| [`CARVE-P2-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L544) | 2 | THE TASK BOX CARRIES AN ACCESSIBLE NAME |
 | [`CARVE-P3-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L410) | 3 | AN IMAGE REFERENCE RESOLVES THE SAME ENTRY |
 | [`CARVE-P3-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L471) | 3 | AN AUTOLINK DISPLAYS ITS RAW SOURCE BODY |
 | [`CARVE-P4-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L33) | 4 | AUTHORED ATTRIBUTES RENDER IN SOURCE ORDER |
 | [`CARVE-P9-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L62) | 9 | A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION |
 | [`CARVE-P9-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L407) | 9 | T9 A HEADER CELL STATES WHAT IT HEADS |
 | [`CARVE-P9-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L503) | 9 | SMART TYPOGRAPHY RUNS BY DEFAULT |
-| [`CARVE-P9-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L268) | 9 | BLOCK RENDERING |
-| [`CARVE-P9-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L401) | 9 | AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME |
-| [`CARVE-P9-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L431) | 9 | A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES |
-| [`CARVE-P9-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L487) | 9 | HEADING SECTION WRAPPING |
+| [`CARVE-P9-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L253) | 9 | BLOCK RENDERING |
+| [`CARVE-P9-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L386) | 9 | AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME |
+| [`CARVE-P9-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L416) | 9 | A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES |
+| [`CARVE-P9-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L472) | 9 | HEADING SECTION WRAPPING |
 | [`CARVE-P9-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L2) | 9 | FOOTNOTES |
 | [`CARVE-P9-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L41) | 9 | THE BACKLINK CARRIES AN ACCESSIBLE NAME |
 | [`CARVE-P9-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L51) | 9 | THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME |
 | [`CARVE-P9-075`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L61) | 9 | A TOP-LEVEL `::: footnotes` THAT PLACES THE ENDNOTES SECTION |
 | [`CARVE-P9-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L75) | 9 | DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL |
-| [`CARVE-P9-067`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L281) | 9 | EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM |
-| [`CARVE-P9-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L705) | 9 | A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT |
-| [`CARVE-P9-078`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L716) | 9 | THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP |
+| [`CARVE-P9-067`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L266) | 9 | EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM |
+| [`CARVE-P9-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L623) | 9 | A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT |
+| [`CARVE-P9-078`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L634) | 9 | THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP |
 | [`CARVE-P9-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L2) | 9 | MATH |
 | [`CARVE-P9-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L24) | 9 | A MATH SPAN CARRIES ROLE MATH |
 | [`CARVE-P9-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L86) | 9 | RAW PASSTHROUGH |

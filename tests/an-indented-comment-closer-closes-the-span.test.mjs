@@ -124,5 +124,5 @@ test('GUARD: the code and colon fences are untouched by this change', () => {
   assert.equal(looseness(`- head\n\n  ${code}\n  a\n  ${code}\n\n  tail\n`), 'loose')
   assert.equal(looseness(`- head\n\n  ${code}\n  a\n    ${code}\n\n  tail\n`), 'tight')
   assert.equal(looseness('- head\n\n  ::: note\n  a\n  :::\n\n  tail\n'), 'loose')
-  assert.equal(looseness('- head\n\n  ::: note\n  a\n    :::\n\n  tail\n'), 'tight')
+  assert.equal(looseness('- head\n\n  ::: note\n  a\n    :::\n\n  tail\n'), 'loose')
 })

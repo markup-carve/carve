@@ -343,7 +343,7 @@
 
          A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN -- NORMATIVE [CARVE-P9-003].
          A container's last block remains a table after a continuation row.
-         Under CARVE-P0-009, a following flush-left line ends the container and becomes
+         Under PART 0 S4, a following flush-left line ends the container and becomes
          a document paragraph, as after a standard row. This applies to lists,
          quotes and definition bodies.
 
@@ -351,12 +351,12 @@
          is prose, opens a paragraph and a following flush-left line folds lazily
          (corpus 326-...-26 and -28).
 
-         A QUOTE IS ASKED ITS OWN BODY. Apply CARVE-P0-009 to the quote's entire body,
+         A QUOTE IS ASKED ITS OWN BODY. Apply PART 0 S4 to the quote's entire body,
          rather than peeling one physical line. Its last block determines
          whether a paragraph remains open.
 
          A QUOTE INSIDE A QUOTE IS ASKED THE SAME QUESTION. Follow the last
-         child quote recursively to its own last block (CARVE-P0-009).
+         child quote recursively to its own last block (PART 0 S4).
       T7 GFM DELIMITER ROW -- NORMATIVE [CARVE-P9-004]. delimiter_row(R) := R is EXACTLY
          the SECOND row of the table AND every cell matches delimiter_cell
          (optional ws, optional `:`, one or more `-`, optional `:`,

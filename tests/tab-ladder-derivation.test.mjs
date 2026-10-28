@@ -123,10 +123,9 @@ for (const source of [
   '- x\n  \t:: t\n\t: zq\n',
   '- x\n  - y\n  \t:: t\n     : zq\n',
 ]) {
-  test(`the description stays in the term at its item-relative column: ${JSON.stringify(source)}`, () => {
+  test(`the description opens at its item-relative column: ${JSON.stringify(source)}`, () => {
     const html = renderDoc(parse(source))
-    assert.match(html, /<dt>t\n: zq<\/dt>/)
-    assert.doesNotMatch(html, /<dd>/)
+    assert.match(html, /<dt>t<\/dt>\n\s*<dd>zq<\/dd>/)
   })
 }
 

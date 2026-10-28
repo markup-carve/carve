@@ -262,7 +262,7 @@ admonition = admonition_open, newline,
    of a list item's marker line opens its container whatever the next line
    is. In `- ::: d` / `tail` the item holds an empty `d` container, which
    leaves no paragraph open, and `tail` is a document paragraph
-   (CARVE-P0-009, CARVE-P9-084).
+   (PART 0 S5, CARVE-P9-084).
 
    OPAQUE SPANS. `{block - admonition_close}` is a BLOCK sequence. In a
    colon body, recognize a code, raw or matched comment opener before

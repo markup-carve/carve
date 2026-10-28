@@ -12,7 +12,7 @@ const rules = new Set(JSON.parse(read('resources/spec/rules.json')).rules.map(ru
 
 test('the ownership map covers the complete Part 0 inventory and live qualifications', () => {
   const required = [...layout.matchAll(/NORMATIVE\s*\[(CARVE-P0-\d+)\]/g)].map(match => match[1])
-  assert.equal(miscount({ label: 'Part 0 rules', actual: required.length, expected: 22 }), null)
+  assert.equal(miscount({ label: 'Part 0 rules', actual: required.length, expected: 18 }), null)
   const mapped = map.phases.flatMap(phase => phase.rules)
   assert.equal(mapped.length, new Set(mapped).size, 'Each Part 0 rule needs one primary phase')
   assert.deepEqual([...new Set(mapped.filter(id => id.startsWith('CARVE-P0-')))].sort(), [...required].sort())
@@ -24,11 +24,11 @@ test('the ownership map covers the complete Part 0 inventory and live qualificat
 
 test('the map preserves decision order and points to existing collector helpers', () => {
   assert.deepEqual(map.phases.map(phase => phase.id), [
-    'normalize', 'order', 'strip', 'owner', 'fold', 'classify', 'transition', 'exceptions',
+    'normalize', 'order', 'payload', 'owner', 'form', 'lazy', 'apply', 'transition',
   ])
   // Every step PART 0 names is a phase of the map, in the order the clause gives.
-  assert.deepEqual(map.phases.map(phase => phase.step), ['INPUT', 'ORDER', 'O1', 'O2', 'O3', 'O4', 'T', 'X1-X3'])
-  for (const step of ['O1', 'O2', 'O3', 'O4', 'X1', 'X2', 'X3']) {
+  assert.deepEqual(map.phases.map(phase => phase.step), ['INPUT', 'ORDER', 'S1', 'S2', 'S3', 'S4', 'S5', 'T'])
+  for (const step of ['S1', 'S2', 'S3', 'S4', 'S5']) {
     assert.ok(new RegExp(`^ {5}${step} [A-Z]`, 'm').test(layout), `PART 0 no longer names step ${step}`)
   }
   assert.match(layout, /^ {11}T {2}TRANSITIONS\./m)

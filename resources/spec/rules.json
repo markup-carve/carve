@@ -59,12 +59,6 @@
       "scope": "parsing"
     },
     {
-      "id": "CARVE-P0-004",
-      "part": "0",
-      "title": "ONE AUTHORED BLOCK BASE",
-      "scope": "parsing"
-    },
-    {
       "id": "CARVE-P0-005",
       "part": "0",
       "title": "COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP",
@@ -86,12 +80,6 @@
       "id": "CARVE-P0-008",
       "part": "0",
       "title": "A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P0-009",
-      "part": "0",
-      "title": "A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE",
       "scope": "parsing"
     },
     {
@@ -146,12 +134,6 @@
       "id": "CARVE-P0-020",
       "part": "0",
       "title": "AT OR PAST MEANS THE DEEPEST COLUMN THE LINE REACHES",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P0-021",
-      "part": "0",
-      "title": "A BLOCK OPENER IN THE BAND FOLDS ON THE SAME TERMS",
       "scope": "parsing"
     },
     {
@@ -248,12 +230,6 @@
       "id": "CARVE-P2-027",
       "part": "2",
       "title": "WHICH CHARACTERS THE CONTENT TEST IGNORES",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P2-028",
-      "part": "2",
-      "title": "A TERM HAS NO CONTENT COLUMN",
       "scope": "parsing"
     },
     {
@@ -767,24 +743,6 @@
       "scope": "parsing"
     },
     {
-      "id": "CARVE-P9-031",
-      "part": "9",
-      "title": "CONTINUATION-MARKER REACHES ITS OWN COLUMN",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P9-032",
-      "part": "9",
-      "title": "ONE IS A COUNT AND THE BOUNDARY IS NOT",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P9-033",
-      "part": "9",
-      "title": "THE MARKER IS ONE OPERATION IN EVERY CONTAINER",
-      "scope": "parsing"
-    },
-    {
       "id": "CARVE-P9-067",
       "part": "9",
       "title": "EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM",
@@ -913,13 +871,7 @@
     {
       "id": "CARVE-P9-052",
       "part": "9",
-      "title": "AN INVISIBLE LINE FOLDS LIKE ANY OTHER",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P9-053",
-      "part": "9",
-      "title": "A COMMENT IS THE ONE EXCEPTION",
+      "title": "AN INVISIBLE LINE BELOW THE COLUMN INTERRUPTS",
       "scope": "parsing"
     },
     {
@@ -2015,12 +1967,6 @@
       "scope": "resolution-rendering"
     },
     {
-      "id": "CARVE-P0-022",
-      "part": "0",
-      "title": "AN OPAQUE MARKER-LINE QUOTE PRESERVES THE BAND AS TEXT",
-      "scope": "parsing"
-    },
-    {
       "id": "CARVE-P10-013",
       "part": "10",
       "title": "AN ESCAPED RAW BLOCK IS WRITTEN AS CODE",
@@ -2195,6 +2141,60 @@
       "part": "3",
       "title": "INDENTATION IS COLUMNS, NOT CHARACTERS",
       "replacement": "CARVE-P9-083"
+    },
+    {
+      "id": "CARVE-P0-004",
+      "part": "0",
+      "title": "ONE AUTHORED BLOCK BASE",
+      "replacement": "CARVE-P0-024"
+    },
+    {
+      "id": "CARVE-P0-009",
+      "part": "0",
+      "title": "A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE",
+      "replacement": "CARVE-P0-024"
+    },
+    {
+      "id": "CARVE-P0-021",
+      "part": "0",
+      "title": "A BLOCK OPENER IN THE BAND FOLDS ON THE SAME TERMS",
+      "replacement": "CARVE-P0-024"
+    },
+    {
+      "id": "CARVE-P0-022",
+      "part": "0",
+      "title": "AN OPAQUE MARKER-LINE QUOTE PRESERVES THE BAND AS TEXT",
+      "replacement": "CARVE-P0-024"
+    },
+    {
+      "id": "CARVE-P2-028",
+      "part": "2",
+      "title": "A TERM HAS NO CONTENT COLUMN",
+      "replacement": "CARVE-P0-024"
+    },
+    {
+      "id": "CARVE-P9-031",
+      "part": "9",
+      "title": "CONTINUATION-MARKER REACHES ITS OWN COLUMN",
+      "replacement": "CARVE-P0-024"
+    },
+    {
+      "id": "CARVE-P9-032",
+      "part": "9",
+      "title": "ONE IS A COUNT AND THE BOUNDARY IS NOT",
+      "replacement": "CARVE-P0-024"
+    },
+    {
+      "id": "CARVE-P9-033",
+      "part": "9",
+      "title": "THE MARKER IS ONE OPERATION IN EVERY CONTAINER",
+      "replacement": "CARVE-P0-024"
+    },
+    {
+      "id": "CARVE-P9-053",
+      "part": "9",
+      "title": "A COMMENT IS THE ONE EXCEPTION",
+      "replacement": "CARVE-P0-024"
     }
   ]
 }

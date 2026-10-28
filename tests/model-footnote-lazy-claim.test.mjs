@@ -33,9 +33,9 @@ for (const [host, source] of [
   ['quote', '> [^f]: alpha\n>  :: term\n>\n> See[^f]\n'],
   ['div', '::: note\n[^f]: alpha\n :: term\n\nSee[^f]\n:::\n'],
 ]) {
-  test(`${host} keeps a below-column term in the open footnote paragraph`, () => {
+  test(`${host} ends the footnote paragraph at a below-column term, as in every container`, () => {
     const doc = parse(source)
-    assert.deepEqual(doc.footnoteDefs.get('f'), [{ t: 'para', lines: ['alpha', ':: term'] }])
+    assert.deepEqual(doc.footnoteDefs.get('f'), [{ t: 'para', lines: ['alpha'] }])
   })
 }
 

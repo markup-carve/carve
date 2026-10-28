@@ -161,7 +161,7 @@ const MAX_NESTING_DEPTH = 200
 /// scan per opener is quadratic on a body of fenced bodies, which is carve#2509,
 /// so the answer comes from an index built once per depth and this counts the
 /// lines that index reads.
-export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0 }
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
@@ -172,6 +172,7 @@ export function resetLayoutWork() {
   layoutWork.fenceCloserLookahead = 0
   layoutWork.forwardSearch = 0
   layoutWork.commentTail = 0
+  layoutWork.ownership = 0
 }
 
 /**
@@ -2601,6 +2602,20 @@ function cachedForwardSearch(cache, key, from, length, visit) {
   return result
 }
 
+// The ownership walk's one linear pass, counted apart from `scan` so the
+// rescan guards still measure only the block readers.
+function walkIndent(line) {
+  let col = 0
+  let i = 0
+  for (; i < line.length; i++) {
+    if (line[i] === ' ') col += 1
+    else if (line[i] === '\t') col = (Math.floor(col / 4) + 1) * 4
+    else break
+  }
+  layoutWork.ownership += i
+  return { col, rest: i === 0 ? line : line.slice(i) }
+}
+
 /*
  * Block ownership, rule A (carve#3885). One walk decides the owner of every
  * line: a line belongs to the deepest open container whose content column it
@@ -2630,12 +2645,15 @@ function ownLines(lines) {
   for (let at = start; at < lines.length; at++) {
     let src = lines[at]
     let out = ''
-    let m = indentCols(src)
+    let m = walkIndent(src)
     // The leading run of the current segment, written at `col`.
-    const lead = (target) => {
-      // Ownership only ever removes indentation.
+    const lead = (target, spaces = false) => {
+      // Ownership only ever removes indentation. `spaces` writes a leading tab
+      // as the columns it reaches, so a term and its body read alike in both
+      // spellings; a post-marker tab stays as written.
       const col = Math.min(target, m.col)
-      out += col === m.col ? src.slice(0, src.length - m.rest.length) : ' '.repeat(col)
+      const authored = src.slice(0, src.length - m.rest.length)
+      out += col === m.col && !(spaces && out === '' && authored.includes('\t')) ? authored : ' '.repeat(col)
       src = m.rest
     }
     const take = (count) => {
@@ -2656,7 +2674,7 @@ function ownLines(lines) {
         if (!QUOTE.test(m.rest)) break
         lead(frames[k - 1].canon)
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
-        m = indentCols(src)
+        m = walkIndent(src)
         reached = k
         continue
       }
@@ -2679,9 +2697,19 @@ function ownLines(lines) {
     if (inner.kind === 'fence' && !missed) {
       // Step 1: an open payload tests its closer first.
       lead(Math.max(m.col - inner.cut, inner.canon))
-      if (m.rest !== '' && inner.closes(m.rest)) {
+      if (m.rest !== '' && inner.span) {
+        const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
+        if (c && c[1][0] === inner.span[0] &&
+            (inner.span[0] === '%' ? c[1].length === inner.span.length : c[1].length >= inner.span.length)) inner.span = null
+      } else if (m.rest !== '' && inner.closes(m.rest)) {
         frames.pop()
         top().last = 'block'
+      } else if (inner.lineBlock) {
+        // A span in a line-block payload pairs past the column too (carve-php#3137).
+        const f = FENCE.exec(m.rest)
+        const comment = COMMENT_FENCE_BODY.exec(m.rest)
+        if (f && parseFenceInfo(f[2]) !== null && (closerRuns().widest[f[1][0]][at + 1] ?? 0) >= f[1].length) inner.span = f[1]
+        else if (comment && (closerRuns().lastComment.get(comment[1].length) ?? -1) > at) inner.span = comment[1]
       }
       result.push(out + src)
       continue
@@ -2713,11 +2741,13 @@ function ownLines(lines) {
     } else if (form.kind === 'text') {
       // A new paragraph starts at the owner's column, never inside a frame
       // that line did not reach.
-      lead(owner.para || !closedColumn || plusFollower ? Math.max(m.col - owner.cut, owner.canon) : owner.canon)
+      // A term's continuation moves with the term, so a later `:` body still follows it.
+      const term = owner.para && owner.last === 'term'
+      lead(owner.para || !closedColumn || plusFollower ? Math.max(m.col - (term ? owner.termCut : owner.cut), owner.canon) : owner.canon, term)
       owner.para = true
-      owner.last = 'para'
+      if (!term) owner.last = 'para'
     } else {
-      lead(owner.canon)
+      lead(owner.canon, form.kind === 'term' || form.kind === 'dd')
       apply(owner, m.col, form)
     }
     result.push(out + src)
@@ -2726,17 +2756,20 @@ function ownLines(lines) {
     function apply(owner, col, form, canon = owner.canon) {
       owner.para = false
       owner.last = form.kind
-      if (form.kind === 'term') owner.para = true
+      if (form.kind === 'term') {
+        owner.para = true
+        owner.termCut = col - canon
+      }
       if (form.kind === 'fence' || form.kind === 'colon') {
         frames.push({ kind: form.kind, col: owner.col, canon: owner.canon, cut: col - canon,
-          closes: form.closes, run: form.run, para: false, last: null })
+          closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null })
         return
       }
       if (form.kind === 'quote') {
         const quote = { kind: 'quote', col: 0, canon: 0, cut: 0, para: false, last: null, markerCol: col, markerCanon: canon }
         frames.push(quote)
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
-        m = indentCols(src)
+        m = walkIndent(src)
         return content(quote, 0, 0)
       }
       if (form.kind === 'item' || form.kind === 'note' || form.kind === 'dd') {
@@ -2744,7 +2777,7 @@ function ownLines(lines) {
           cut: col - canon, para: false, last: null, markerCol: col, markerCanon: canon, axes: form.axes }
         frames.push(frame)
         take(form.head)
-        m = indentCols(src)
+        m = walkIndent(src)
         return content(frame, col + form.head, canon + form.head)
       }
     }
@@ -2777,8 +2810,10 @@ function ownLines(lines) {
     if (QUOTE.test(rest)) return { kind: 'quote', interrupts: true }
     const colon = COLON_FENCE.exec(rest)
     if (colon && COLON_CLOSER.test(rest)) {
-      for (let k = reach; k > 0; k--) {
-        if (frames[k].kind === 'colon' && frames[k].run === colon[1].length) return { kind: 'colon-close', frame: k, interrupts: true }
+      // A closer is read in its owner: only a colon body at the reached depth,
+      // or holding it directly, can take it.
+      for (let k = reach; k > 0 && frames[k].kind === 'colon'; k--) {
+        if (frames[k].run === colon[1].length) return { kind: 'colon-close', frame: k, interrupts: true }
       }
     }
     if (colon && parseColonOpener(colon[2]) !== null) {
@@ -2786,7 +2821,7 @@ function ownLines(lines) {
       const interrupts = isColonParagraphInterrupt(rest)
       if (owner.para && !interrupts) return { kind: 'text', interrupts: false }
       if (parseColonOpener(colon[2]).mode === 'line-block') {
-        return { kind: 'fence', interrupts, closes: (r) => COLON_CLOSER.exec(r)?.[1].length === run }
+        return { kind: 'fence', interrupts, lineBlock: true, closes: (r) => COLON_CLOSER.exec(r)?.[1].length === run }
       }
       return { kind: 'colon', run, interrupts }
     }
@@ -2848,8 +2883,8 @@ function ownLines(lines) {
   }
 
   function quotedRest(line) {
-    let rest = indentCols(line).rest
-    while (QUOTE.test(rest)) rest = indentCols(QUOTE.exec(rest)[1] ?? '').rest
+    let rest = walkIndent(line).rest
+    while (QUOTE.test(rest)) rest = walkIndent(QUOTE.exec(rest)[1] ?? '').rest
     return rest
   }
 }
@@ -6125,10 +6160,44 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     return count
   }
   const baseIndent = matchMarkerAt(ind(i)).indent
+  const commentsBeforeSibling = (at) => {
+    if (at >= n || !COMMENT_LINE.test(ind(at).rest)) return at
+    // Three consecutive blanks end the list; a comment line breaks the run.
+    let run = 0
+    for (let k = at - 1; k >= 0 && ind(k).rest === ''; k--) run++
+    let blanks = run
+    let longest = run
+    let k = at
+    while (k < n && (ind(k).rest === '' || COMMENT_LINE.test(ind(k).rest))) {
+      if (ind(k).rest === '') {
+        blanks++
+        longest = Math.max(longest, ++run)
+        k++
+        continue
+      }
+      run = 0
+      const fence = COMMENT_FENCE_BODY.exec(ind(k).rest)?.[1]
+      let end = k
+      if (fence) {
+        for (let j = k + 1; j < n; j++) {
+          if (COMMENT_FENCE_BODY.exec(ind(j).rest)?.[1] === fence) { end = j; break }
+        }
+      }
+      k = end + 1
+    }
+    if (k >= n || longest >= 3) return at
+    const next = matchMarkerAt(ind(k))
+    if (!next || next.indent !== baseIndent || !sameAxes(list, next)) return at
+    if (blanks > 0) list.tight = false
+    return k
+  }
   const sourceMarkerCol = (state.sourceHasLonePlus ? state.markerLineColumns.get(lines)?.get(i) : undefined) ??
     ind(i).L?.col ?? ind(i).col
   const authoredMarkerCol = separatorMarkerColumns.get(lines)?.get(i) ?? sourceMarkerCol
   while (i < n) {
+    // Siblings group by their container, and a comment is invisible, so a
+    // comment that closed the item above does not end the list (carve#3885).
+    if (list.items.length > 0) i = commentsBeforeSibling(i)
     const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
     if (head.text.startsWith('\t') && !/^%{3}/.test(head.text.slice(1))) {

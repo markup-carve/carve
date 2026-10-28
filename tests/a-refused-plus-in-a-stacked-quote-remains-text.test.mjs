@@ -5,9 +5,9 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = source => renderDoc(parse(source)).replace(/\n[ \t]*(?=<)/g, '').trim()
 
-test('a refused plus remains in the inner quote after an outer inline code span', () => {
+test('a closed fence below the quote column ends the quote and holds the stacked plus as code', () => {
   assert.equal(html('> quote\n  ```\n> > +\n  ```\nnext'),
-    '<blockquote><p>quote<code></code></p><blockquote><p>+<code>\nnext</code></p></blockquote></blockquote>')
+    '<blockquote><p>quote</p></blockquote><pre><code>&gt; &gt; +</code></pre><p>next</p>')
 })
 
 for (const letter of ['+', 'z']) {

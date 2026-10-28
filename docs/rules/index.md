@@ -11,13 +11,13 @@ Carve has one normative language contract. These views filter that contract by i
 
 | View | Rules | Responsibility |
 |---|---:|---|
-| [Parsing](./parsing) | 121 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
+| [Parsing](./parsing) | 112 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
 | [Resolution and rendering](./resolution-rendering) | 53 | Document-wide resolution, core semantic behavior, and HTML serialization. |
 | [AST interchange](./ast-interchange) | 60 | The core serialized tree shape, source positions, and cross-implementation AST guarantees. |
 | [Canonical writing](./canonical-writing) | 78 | Canonical Carve source, Markdown and plain-text targets, round trips, and escaping. |
 | [Imports, security, and extensions](./imports-security-extensions) | 39 | Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces. |
 
-Together the views cover all 351 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
+Together the views cover all 342 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
 
 ## Retired rule IDs
 
@@ -31,7 +31,16 @@ Retired IDs are never reused. Their replacement points to the document that now 
 | `CARVE-PRE-003` | A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-P9-079` | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT | [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L503) |
 | `CARVE-P12-003` | TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION | [`CARVE-P12-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L16) |
-| `CARVE-P0-016` | A REAL DIV IS A CONTAINER LIKE ANY OTHER | [`CARVE-P9-084`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L272) |
+| `CARVE-P0-016` | A REAL DIV IS A CONTAINER LIKE ANY OTHER | [`CARVE-P9-084`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L257) |
 | `CARVE-P0-018` | DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L364) |
 | `CARVE-P2-017` | BELOW THE BODY'S COLUMN THE BODY ENDS | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L364) |
 | `CARVE-P3-015` | INDENTATION IS COLUMNS, NOT CHARACTERS | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L364) |
+| `CARVE-P0-004` | ONE AUTHORED BLOCK BASE | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
+| `CARVE-P0-009` | A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
+| `CARVE-P0-021` | A BLOCK OPENER IN THE BAND FOLDS ON THE SAME TERMS | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
+| `CARVE-P0-022` | AN OPAQUE MARKER-LINE QUOTE PRESERVES THE BAND AS TEXT | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
+| `CARVE-P2-028` | A TERM HAS NO CONTENT COLUMN | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
+| `CARVE-P9-031` | CONTINUATION-MARKER REACHES ITS OWN COLUMN | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
+| `CARVE-P9-032` | ONE IS A COUNT AND THE BOUNDARY IS NOT | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
+| `CARVE-P9-033` | THE MARKER IS ONE OPERATION IN EVERY CONTAINER | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
+| `CARVE-P9-053` | A COMMENT IS THE ONE EXCEPTION | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |

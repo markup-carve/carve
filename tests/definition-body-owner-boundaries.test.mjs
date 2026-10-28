@@ -29,8 +29,7 @@ const cases = [
   {
     name: 'definition fence with payload and a closer at its authored base',
     source: ':: m\n: l\n     ```\ne\n     ```\n',
-    owner: ['deflist', 'dd', 'code'],
-    code: 'e\n',
+    owner: ['deflist', 'dd', 'para'],
   },
   {
     name: 'definition fence with a closer outside its body',

@@ -44,7 +44,7 @@ test('an indented opener below an item is a block, not the item s lazy text', ()
 test('a floating attribute leaves the content column where Q3 reads it', () => {
   // Q3 alone: the attribute block does not widen the item, so the next line
   // sits at the content column of an item that holds no open paragraph.
-  assert.equal(render('-{#k} {#h}\n # h\n'), '<ul>\n  <li id="k"></li>\n</ul>\n<p># h</p>')
+  assert.equal(render('-{#k} {#h}\n # h\n'), '<ul>\n  <li id="k"></li>\n</ul>\n<section id="h">\n  <h1>h</h1>\n</section>')
 })
 
 /*

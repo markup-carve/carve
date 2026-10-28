@@ -34,8 +34,8 @@ for (const depth of [0, 1, 2]) {
       assert.match(renderDoc(parse(prefix + 'tail\n')), /<dt>term\ntail<\/dt>/)
     }
   })
-  test(`comment before heading matches a heading without comment at depth ${depth}`, () => {
-    assert.equal(renderDoc(parse(wrap(shapes[2][1]) + 'tail\n')), renderDoc(parse(wrap('- - intro\n    # h') + 'tail\n')))
+  test(`comment before heading matches a heading at the outer item column at depth ${depth}`, () => {
+    assert.equal(renderDoc(parse(wrap(shapes[2][1]) + 'tail\n')), renderDoc(parse(wrap('- - intro\n  # h') + 'tail\n')))
   })
   test(`quoted nested note matches a marker-line note at depth ${depth}`, () => {
     for (const prefix of [wrap(shapes[3][1]), wrap('- [^f]: note')]) {

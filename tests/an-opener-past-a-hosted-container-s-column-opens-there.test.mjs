@@ -36,16 +36,17 @@ for (const host of ['marker', 'continuation']) for (const depth of [0, 1, 2]) {
 }
 
 const rootText = {
-  colon: '<p>:::: innerx::::</p>', line: '<p>::: |x:::</p>',
-  backtick: '<p><code>x</code></p>', tilde: '<p>~~~x~~~</p>',
-  heading: '<p># h</p>', quote: '<p>&gt; x</p>', break: '<p>\u2014</p>', table: '<p>| x |</p>',
+  colon: '<div class="inner"><p>x</p></div>', line: '<div class="line-block"><p>x</p></div>',
+  backtick: '<pre><code>x</code></pre>', tilde: '<pre><code>x</code></pre>',
+  heading: '<h1 id="h">h</h1>', quote: '<blockquote><p>x</p></blockquote>', break: '<hr>', table: '<table><tbody><tr><td>x</td></tr></tbody></table>',
 }
+const docText = {...rootText, heading: '<section id="h"><h1>h</h1></section>'}
 for (const [kind, [lines]] of Object.entries(kinds)) for (const offset of [1, 2, 4]) {
   const body = lines.map(line => ' '.repeat(offset) + line).join('\n') + '\n'
-  test(`document root keeps shifted ${kind} at offset ${offset} as text`, () => {
-    assert.equal(compact(body), rootText[kind])
+  test(`document root opens shifted ${kind} at offset ${offset}`, () => {
+    assert.equal(compact(body), docText[kind])
   })
-  test(`a root box keeps shifted ${kind} at offset ${offset} as text`, () => {
+  test(`a root box opens shifted ${kind} at offset ${offset}`, () => {
     assert.equal(compact('::: box\n' + body + ':::\n'), '<div class="box">' + rootText[kind] + '</div>')
   })
 }

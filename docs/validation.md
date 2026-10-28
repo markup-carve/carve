@@ -244,7 +244,7 @@ the command-line and editor behavior stay aligned.
 | `bibliography-placement-in-container` | a `::: bibliography` marker inside a block-level container when a processor feature supplies a document-wide region under that marker. The marker renders the `<div class="bibliography">` floor and the region keeps its default position (`CARVE-P9-073`) |
 | `references-placement-in-container` | a `::: references` marker inside a block-level container when a citation extension supplies a document-wide reference list. The marker renders the `<div class="references">` floor and the list keeps its default position (`CARVE-P9-073`) |
 | `quote-fence-ends-the-quote-above` | a `::: >` opener at the column of the quote directly above it. It is a block opener, so it ends that quote and starts a sibling one, and the two render as adjacent blockquotes rather than the nesting the indentation suggests. Nothing is malformed and lint otherwise exits 0, which is why this container kind needs a rule of its own: write `> ::: >` to nest it, or leave a blank line to make two quotes deliberate |
-| `definition-term-block-folded` | a block opener indented under a `:: ` term, past the column of the container that holds the list. A term has no content column (`CARVE-P2-028`), so the line folds into the term as text rather than opening its block. Reported once per term, on the first such line; lines inside a code, math, raw or literal span are content and are not reported. Dedent the line to the container's content column to open the block, or move it into the term's `: ` description |
+| `definition-term-block-folded` | a block opener indented under a `:: ` term, past the column of the container that holds the list. Since markup-carve/carve#3885 a term has no ownership of its own, so the opener opens in the enclosing container (PART 0 S3) and the rule has nothing left to report; it retires as each engine adopts the ruling. Move the line into the term's `: ` description to keep it with the term |
 
 ### Consumed key near misses
 
@@ -457,33 +457,20 @@ not rewrite source. Shared positive and negative cases are in
 
 ### Ordered lists split by indentation
 
-`ordered-list-split-by-indent` reports adjacent sibling ordered lists when
-the second list continues the first list's numbering, both use the same
-numbering style and delimiter, and their first markers start at different
-source columns. Blank lines between the lists do not prevent the report.
+`ordered-list-split-by-indent` reported adjacent sibling ordered lists whose
+first markers started at different source columns. Since
+markup-carve/carve#3885, sibling items group by the container they open in,
+not by the column they are written at, so this document is one list:
 
 ```carve
  9. nine
 10. ten
 ```
 
-This renders two ordered lists: one starting at 9 and one starting at 10.
-The finding sits on the `1` of `10.`. Start both markers at the same column.
-For decimal lists, `{start=9}` above an auto-numbered `.` list avoids both
-this split and the content-column trap. Carve keeps the strict column model;
-sibling markers are not aligned by their delimiter (markup-carve/carve#3439).
-
-```txt
-doc.crv:2:1 ordered-list-split-by-indent — This ordered list continues the numbering of the list above (9, then 10), but its marker starts at column 0 and the list above starts at column 1, so they are two lists. Start the markers at the same column, or write {start=9} on the line above and use the auto-numbered . marker.
-```
-
-Not reported:
-
-- a restart, a numbering gap, or a different style or delimiter;
-- markers in the same column or lists separated by another block;
-- either list using the auto-numbered `.` marker.
-
-The shared vectors are in
+It renders one ordered list starting at 9, as Djot does. Both markers open at
+the document's content column, so there is no second list to report. The rule
+retires as each engine adopts the ruling; until then an engine may still
+report it. The shared vectors are in
 [`tests/lint-rule-vectors/ordered-list-split-by-indent.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/ordered-list-split-by-indent.json).
 
 ### Declaring a target version

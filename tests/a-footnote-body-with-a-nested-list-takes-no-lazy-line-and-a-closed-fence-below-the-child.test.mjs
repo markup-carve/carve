@@ -74,11 +74,14 @@ test('a closed fence below the child opens in the note body', () => {
   }
 })
 
-test('a fence below the note body folds into its open child paragraph', () => {
+test('a closed fence below the note body interrupts the child paragraph and opens in the document', () => {
   const doc = parse("[^n]: %% c\n  - child\n ```\n code\n ```\nafter [^n]\n")
-  assert.deepEqual(doc.blocks, [])
+  assert.deepEqual(doc.blocks, [
+    { t: 'code', lang: '', title: null, text: 'code\n' },
+    { t: 'para', lines: ['after [^n]'] },
+  ])
   assert.deepEqual(doc.footnoteDefs.get('n')[0].items[0].blocks[0].lines,
-    ['child', '```', 'code', '```', 'after [^n]'])
+    ['child'])
 })
 
 test('a run at the marker-line note body column opens in the note', () => {

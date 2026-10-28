@@ -339,8 +339,9 @@ disambiguation rule and PART 9 §9.
   (nothing is lost); a closer's trailing text is dropped
 
 **Container ownership:** An unmatched `%%%` opener is a line comment for both
-visibility and ownership. In this example it is below the item's content
-column, so the following plain line stays in the item:
+visibility and ownership. A comment is an ordinary line for ownership, so
+below the item's content column it closes the item, and the following plain
+line is a document paragraph:
 
 ```text
 - x
@@ -350,18 +351,14 @@ y
 
 ```html
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 Replacing `%%%` with `%% z` gives the same result. At the item's content
-column, a comment clears retention, so a following unindented line starts a
-document paragraph. A matched comment fence at the enclosing context's opener
-column also ends the item. Comment visibility alone does not decide ownership;
-see [X1 in the ownership procedure](./ownership-procedure#x1-to-x3-named-exceptions)
-for the claim, column and follower conditions.
+column a comment stays in the item and ends its paragraph. See
+[S2 in the ownership procedure](./ownership-procedure#s2-owner).
 
 **Provenance marker (tool-written):**
 - Tooling such as `carve fmt --stamp` writes a trailing comment recording the

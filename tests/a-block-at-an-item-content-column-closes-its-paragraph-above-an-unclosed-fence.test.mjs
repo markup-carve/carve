@@ -31,11 +31,11 @@ for (const [name, lines] of [
   assert.match(render(lines).trim(), endsAtCloser)
 })
 
-for (const [name, lines] of [
-  ['definition below the column', ['- para', ' [r]: /u']],
-  ['definition below the column of an item with trailing spaces', ['- para  ', ' [r]: /u']],
-  ['table row below the column', ['10. para', '   | t |']],
-  ['item prose after a table row', ['- para', '  | t |', '  more']],
-]) test(`control: ${name} leaves a paragraph open, so the fence is paragraph text`, () => {
-  assert.match(render(lines), runsOn)
+for (const [name, lines, expected] of [
+  ['definition below the column', ['- para', ' [r]: /u'], endsAtCloser],
+  ['definition below the column of an item with trailing spaces', ['- para  ', ' [r]: /u'], endsAtCloser],
+  ['table row below the column', ['10. para', '   | t |'], endsAtCloser],
+  ['item prose after a table row', ['- para', '  | t |', '  more'], runsOn],
+]) test(`control: ${name} ${expected === runsOn ? 'leaves a paragraph open, so the fence is paragraph text' : 'closes the item, so the fence ends at the closer'}`, () => {
+  assert.match(render(lines).trim(), expected)
 })

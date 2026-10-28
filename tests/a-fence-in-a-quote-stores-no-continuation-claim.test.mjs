@@ -200,11 +200,11 @@ test('the column gate is what decides it, and it can refuse', () => {
   // Without this control the clause above would pass on a tracker that read
   // every indented run as a fence.
   assert.equal(host(`> - a\n>\n>  ${F}\n>  x\nflush\n`),
-    `quote[list[item[p(a)]], p(${F}|x|flush)]`)
+    'quote[list[item[p(a)]], code], p(flush)')
   // And the quote's OWN level stays strict at column 0 (§10 I1 spelling aside,
   // this is the `- a` control with no container to reach).
   assert.equal(host(`> a\n>\n>   ${F}\n>   x\nflush\n`),
-    `quote[p(a), p(${F}|x|flush)]`)
+    'quote[p(a), code], p(flush)')
 })
 
 test('§10 I4 is asked at the container column too', () => {
@@ -275,7 +275,7 @@ test('a container this line opened puts the fence at its block start', () => {
 
 test('refused fence runs stay paragraph text at shifted columns', () => {
   assert.equal(host(`> - a\n>     ${F}\n>\n>    ${F}\n>   a\nflush\n`),
-    `quote[list[item[p(a|${F}), p(${F}|a|flush)]]]`)
+    'quote[list[item[p(a), code, p(a|flush)]]]')
   assert.equal(host(`> - a\n>   ${F}\n>   x\n>     ${F}\n>   a\nflush\n`),
     `quote[list[item[p(a|${F}|x|${F}|a|flush)]]]`)
   assert.equal(host(`> - a\n>\n>     ${F}\n>     x\nflush\n`),
@@ -308,7 +308,7 @@ test('a description body hosts a fence only while its term survives', () => {
   // A description needs an open term; a bare colon and a colon folded into an
   // item's paragraph open no body and retain their previous answers.
   assert.equal(host(`> :  a\n>\n>    ${F}\n>    x\nflush\n`),
-    `quote[p(:  a), p(${F}|x|flush)]`)
+    'quote[p(:  a), code], p(flush)')
   assert.equal(host(`> :: t\n> :  d\n>\n>    ${F}\n>    x\nflush\n`),
     'quote[deflist], p(flush)')
   assert.equal(host(`> :: t\n>   - a\n> : d\n>\n>   ${F}\nflush\n`),
@@ -389,7 +389,7 @@ test('an over-indented run inside a container leaves a closer, not an opener', (
   // so a run further in opened nothing and the run at 0 below it is a real
   // opener. Holding a closer for it suppressed that opener.
   assert.equal(host(`>   ${T}\n> # H\n> ${T}\n> x\nflush\n`),
-    `quote[p(${T}), heading, code], p(flush)`)
+    'quote[code, p(x|flush)]')
 })
 
 test('the nesting cap counts the host containers too', () => {
@@ -428,25 +428,25 @@ test('shifted code and raw fences release unmarked lines at every quote depth', 
   }
 })
 
-test('intermediate and deeper fence runs stay opaque to quote ownership', () => {
+test('an intermediate fence run closes the fence and a deeper one stays opaque to quote ownership', () => {
   for (const opener of [F, T, F + '=html', T + '=html']) {
-    for (const col of [3, 5]) {
+    for (const [col, last, line] of [[3, 'quote', '</blockquote>'], [5, 'para', '<p>flush</p>']]) {
       const source = `> - a\n>\n>     ${opener}\n>     x\n> ${' '.repeat(col)}${opener.slice(0, 3)}\n>   after\nflush\n`
-      assert.equal(parse(source).blocks.at(-1).t, 'para', source)
-      assert.equal(renderDoc(parse(source)).split('\n').at(-1), '<p>flush</p>', source)
+      assert.equal(parse(source).blocks.at(-1).t, last, source)
+      assert.equal(renderDoc(parse(source)).split('\n').at(-1), line, source)
     }
   }
 })
 
 
-test('a refused run at the content column keeps a shifted pair in the paragraph', () => {
+test('a refused run at the content column leaves a shifted pair to open code', () => {
   for (const depth of [1, 2, 3]) {
     const q = '> '.repeat(depth)
     for (const lead of ['- a', '- a\n- a']) {
       const body = `${lead}\n  ${T}\n   ${F}\n   y\n   ${F}\n`
       const source = body.trimEnd().split('\n').map(line => q + line).join('\n') + '\nflush\n'
-      assert.notEqual(parse(source).blocks.at(-1).t, 'para', source)
-      assert.match(renderDoc(parse(source)), /flush<\/li>/, source)
+      assert.equal(parse(source).blocks.at(-1).t, 'para', source)
+      assert.match(renderDoc(parse(source)), /<pre><code>y\n<\/code><\/pre>[\s\S]*<p>flush<\/p>$/, source)
     }
   }
 })

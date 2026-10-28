@@ -11,29 +11,29 @@ const cases = [
     "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<dl>\n<dt>t</dt>\n<dd></dd>\n</dl>\n<p>tail</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p>para</p>\n<blockquote><p>q</p></blockquote>\n<p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n</li>\n</ol>\n</section>"
   ],
   [
-    "a matched comment fence after a marked quote line retains the item",
+    "a matched comment fence below the item column closes the item",
     "- > para\n  > more\n %%%\n %%%\n```\n",
-    "<ul>\n<li>\n<blockquote><p>para\nmore</p></blockquote>\n<pre><code></code></pre>\n</li>\n</ul>"
+    "<ul>\n<li>\n<blockquote><p>para\nmore</p></blockquote>\n</li>\n</ul>\n<pre><code></code></pre>"
   ],
   [
-    "a blank line inside a retained code block does not loosen the item",
+    "a comment at column 0 closes the item, so the code block opens in the document",
     "- para\n%% c\n```\n  x\n\n  y\n",
-    "<ul>\n<li>para\n<pre><code>x\ny\n</code></pre>\n</li>\n</ul>"
+    "<ul>\n<li>para</li>\n</ul>\n<pre><code>  x\ny\n</code></pre>"
   ],
   [
-    "after a quoted paragraph, the retained code block still leaves no paragraph, so x reaches the document",
+    "after a quoted paragraph, a column-0 comment closes the item and the unclosed fence takes x",
     "- > para\n  > more\n%% c\n```\nx\n",
-    "<ul>\n<li>\n<blockquote><p>para\nmore</p></blockquote>\n<pre><code></code></pre>\n</li>\n</ul>\n<p>x</p>"
+    "<ul>\n<li>\n<blockquote><p>para\nmore</p></blockquote>\n</li>\n</ul>\n<pre><code>x\n</code></pre>"
   ],
   [
-    "a note in a comment-retained list item reads an unclosed fence as a code block too",
+    "a comment below the item column closes the note and item, and the unclosed fence opens in the document",
     "- ::: note\n  more\n %% c\n```\n",
-    "<ul>\n<li>\n<aside class=\"admonition note\" aria-label=\"Note\">\n<p>more</p>\n<pre><code></code></pre>\n</aside>\n</li>\n</ul>"
+    "<ul>\n<li>\n<aside class=\"admonition note\" aria-label=\"Note\">\n<p>more</p>\n</aside>\n</li>\n</ul>\n<pre><code></code></pre>"
   ],
   [
-    "a comment-retained list item reads an unclosed fence as a code block, and its unprefixed payload leaves the item",
+    "a column-0 comment closes the item, and the unclosed fence takes its payload in the document",
     "- para\n%% c\n```\nx\n",
-    "<ul>\n<li>para\n<pre><code></code></pre>\n</li>\n</ul>\n<p>x</p>"
+    "<ul>\n<li>para</li>\n</ul>\n<pre><code>x\n</code></pre>"
   ],
   [
     "a caption line below a description body's column folds into a quoted paragraph there as text, as under a list item",
@@ -51,29 +51,29 @@ const cases = [
     "<ul>\n<li>\n<dl>\n<dt>term</dt>\n<dd>\n<p>body</p>\n<p>before</p>\n</dd>\n</dl>\n<blockquote><p>nested</p></blockquote>\n</li>\n</ul>"
   ],
   [
-    "a table row below a description body's column folds into its paragraph",
+    "a table row below a description body's column closes the body",
     ":: t\n: para\n | a |\n",
-    "<dl>\n<dt>t</dt>\n<dd>para\n| a |</dd>\n</dl>"
+    "<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n<table>\n<tbody>\n<tr><td>a</td></tr>\n</tbody>\n</table>"
   ],
   [
-    "a thematic break below a description body's column folds into its paragraph",
+    "a thematic break below a description body's column closes the body",
     ":: t\n: para\n ---\n",
-    "<dl>\n<dt>t</dt>\n<dd>para\n—</dd>\n</dl>"
+    "<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n<hr>"
   ],
   [
-    "a heading below a description body's column folds into its paragraph, as under a list item",
+    "a heading below a description body's column closes the body, as under a list item",
     ":: t\n: para\n # H\n",
-    "<dl>\n<dt>t</dt>\n<dd>para\n# H</dd>\n</dl>"
+    "<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n<section id=\"H\">\n<h1>H</h1>\n</section>"
   ],
   [
-    "an opener below a description column folds into its quote",
+    "an opener below a description column closes its quote",
     ":: t\n: > para\n # H\n",
-    "<dl>\n<dt>t</dt>\n<dd>\n<blockquote><p>para\n# H</p></blockquote>\n</dd>\n</dl>"
+    "<dl>\n<dt>t</dt>\n<dd>\n<blockquote><p>para</p></blockquote>\n</dd>\n</dl>\n<section id=\"H\">\n<h1>H</h1>\n</section>"
   ],
   [
-    "a retained code block leaves no paragraph for a column-0 line",
+    "a column-0 comment closes the item, and the unclosed fence takes the column-0 line",
     "1. :: t\n   : para\n%% c\n```\nx\n",
-    "<ol>\n<li>\n<dl>\n<dt>t</dt>\n<dd>\n<p>para</p>\n<pre><code></code></pre>\n</dd>\n</dl>\n</li>\n</ol>\n<p>x</p>"
+    "<ol>\n<li>\n<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n</li>\n</ol>\n<pre><code>x\n</code></pre>"
   ],
   [
     "a marker at the item column opens a list under a nested description",
@@ -81,14 +81,14 @@ const cases = [
     "<ul>\n<li>\n<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n<ul>\n<li>li</li>\n</ul>\n</li>\n</ul>"
   ],
   [
-    "a marked quote continuation keeps its claim in an item",
+    "a column-0 comment closes the item after a marked quote continuation",
     "- > para\n  > more\n%% c\nx\n",
-    "<ul>\n<li>\n<blockquote><p>para\nmore</p></blockquote>\nx\n</li>\n</ul>"
+    "<ul>\n<li>\n<blockquote><p>para\nmore</p></blockquote>\n</li>\n</ul>\n<p>x</p>"
   ],
   [
-    "a lazy line keeps the quoted paragraph open for the next line",
+    "a definition below the item column closes the quote and the item",
     "- > a\n  > b\n [r]: /u\nx\n",
-    "<ul>\n<li>\n<blockquote><p>a\nb\n[r]: /u\nx</p></blockquote>\n</li>\n</ul>"
+    "<ul>\n<li>\n<blockquote><p>a\nb</p></blockquote>\n</li>\n</ul>\n<p>x</p>"
   ],
   [
     "a footnote body in a quote takes no lazy line",
@@ -121,9 +121,9 @@ const cases = [
     "<blockquote>\n<dl>\n<dt>t\n<code></code></dt>\n</dl>\n</blockquote>"
   ],
   [
-    "a retained unclosed fence opens a code block in a nested dd",
+    "a comment below the item column closes the nested dd, and the unclosed fence opens in the document",
     "- :: t\n  : para\n %% c\n```\n",
-    "<ul>\n<li>\n<dl>\n<dt>t</dt>\n<dd>\n<p>para</p>\n<pre><code></code></pre>\n</dd>\n</dl>\n</li>\n</ul>"
+    "<ul>\n<li>\n<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n</li>\n</ul>\n<pre><code></code></pre>"
   ],
   [
     "a marker past the item column below its description opens a sibling list (CARVE-P2-017)",
@@ -133,7 +133,7 @@ const cases = [
   [
     "control: unchanged",
     "- > a\n  b\n [r]: /u\n",
-    "<ul>\n<li>\n<blockquote><p>a\nb\n[r]: /u</p></blockquote>\n</li>\n</ul>"
+    "<ul>\n<li>\n<blockquote><p>a\nb</p></blockquote>\n</li>\n</ul>"
   ]
 ]
 

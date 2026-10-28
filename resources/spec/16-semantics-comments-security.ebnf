@@ -382,16 +382,14 @@
          that column. A blank run without such a follower ends the body before
          the next line. The list-only three-blank sibling boundary in §11 N1a
          decides list grouping, not body ownership. A line below the column
-         follows PART 0 O2 to O4: it may continue the deepest open paragraph
-         lazily when §10 permits, and otherwise closes the body by column and
-         is read in the nearest surviving owner. This applies to footnotes as
-         it does to list items, including flush-left ordinary text without a
-         blank. A line at the surrounding owner's opener column that is an
-         invisible definition or attribute is an interrupter under §10 I5.
-         A lone `+` at the live marker column, including the opener's sole
-         first-block content, uses §17 L3 and L4 to attach one eligible block;
-         refusal keeps the marker as text. These decisions are independent of
-         the marker spelling and the rendered element.
+         follows PART 0 S4 and S5 (CARVE-P0-024): it may continue the deepest
+         open paragraph lazily when §10 permits, and otherwise closes the body
+         and is read in the nearest surviving owner. This applies to footnotes
+         as it does to list items, including flush-left ordinary text without
+         a blank. A lone `+` at the live marker column, including the opener's
+         sole first-block content, uses §17 L3 and L4 to attach one eligible
+         block; refusal keeps the marker as text. These decisions are
+         independent of the marker spelling and the rendered element.
 
          A child -- a LIST MARKER (bullet `-`/`*`,
          task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
@@ -403,116 +401,37 @@
          look-ahead the top level uses, and only the `:: ` TERM line opens the
          block). None of these is special-cased: a def-list or table interrupts
          at column 0 and nests at content_column exactly as a quote or heading
-         does. A definition TERM opens no content column of its own, so an
-         opener or definition past content_column under an open term is term
-         text, and a comment there leaves the term open, as at the top level
-         (PART 2 [CARVE-P2-028]). The content_column is
+         does. A definition term is a leaf with no ownership of its own (PART 0
+         FAMILIES). The content_column is
          the item body's CANONICAL COLUMN 0 and its minimum containment column.
          This one rule holds whether or not a blank line precedes the child;
          the blank only decides tight vs loose (§17), and there is no relaxed
          `base_column + 2` channel.
-           - BELOW content_column: the line is outside the item body. A list
-             marker folds as lazy item text (markers never interrupt, §10 I2);
-             every other line, likewise, never nests -- with no blank it
-             lazily continues the open item paragraph (§10 I2), and after a
-             blank it ends the item and parses in the nearest surviving
-             owner (PART 0 O2). That owner is the document only when no
-             enclosing container's content column is reached.
-             A description opener below the content column with no open paragraph ends the host like any other line.
-
-             A definition at DOCUMENT column 0 is the I5 interrupter, not the
-             lazy-text branch: column 0 is the surrounding document's own
-             opener column, so it closes the item and registers there. A
-             definition at a nonzero column below content_column reaches no
-             opener column and follows the lazy-text rule above. This boundary
-             is what distinguishes corpus 286's columns 0 and 1.
+           - BELOW content_column: the line is outside the item body and
+             never nests. It folds into the deepest open paragraph when its
+             form does not interrupt (PART 0 S4), and otherwise ends the item
+             and is read in the nearest surviving owner (S5). That owner is the
+             document only when no enclosing container's content column is
+             reached.
 
              THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE [CARVE-P9-051].
-             "Folds as lazy item text" names an OPERATION, and lazy
-             continuation continues an open paragraph (§10 I2). Where none is
-             open the branch does not decide the line: it is classified in the
-             context that SURVIVES. After a BLANK LINE the item is already
-             ended by the clause above. After a line COMMENT consumed below
-             the content column the item is retained for a noninterrupting
-             follower: that retention, its sibling-marker and column
-             qualifications and what clears it are PART 0's exception X1
-             (COMMENT RETENTION) and are not restated here. It holds for bullet, ordered, task
-             and attributed markers alike (corpus 506).
+             A fold continues an open paragraph. Where none is open the line
+             is classified in the owner that SURVIVES: after a blank line the
+             item has ended, and a comment below the content column closes the
+             item like any other interrupter (PART 0 S1, S5). It holds for
+             bullet, ordered, task and attributed markers alike.
 
-             AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE [CARVE-P9-052]. "Every other
-             line" includes the ones that are not block-SHAPED. This is the
-             BELOW-COLUMN half of §10 I5's first exception (AN INVISIBLE LINE IS
-             ONE CLASSIFICATION): below the column the comment is still exempt
-             and every other member of the class is not a member here at all --
-             it folds as TEXT and registers nothing. It is text, so a `[^f]`
-             elsewhere in the document stays literal; half-folding it -- text
-             on the page, definition in the tables -- is not an option the
-             rule offers.
-
-            A BLOCK-ATTRIBUTE LINE FOLDS THE SAME WAY, and for the same
-            reason: it is on I5's interrupter list with the definitions, and
-            below the column it reaches no opener column either. So it is text
-            -- the authored braces render as characters -- and it attaches
-            nothing. Half-folding an attribute is the same unavailable option
-            one construct over: an attribute recognized below the column has no
-            visible block left in the container to attach to, so §15 A4
-            discards it and the author's characters reach neither the page nor
-            any table.
-
-            THE FOLD IS INTO THE CONTAINER, in every host. "Folds as TEXT" and
-            I5's "lazy paragraph text" name one operation on one open
-            paragraph, and that paragraph belongs to the container whose
-            content column the line fell below. Ending the container and
-            emitting the characters at document level satisfies neither
-            sentence.
-
-              - - a
-               [^f]: x
-
-            renders `a` and the literal `[^f]: x` inside the inner item.
-
-            A COMMENT IS THE ONE EXCEPTION -- NORMATIVE [CARVE-P9-053]. The first of the two
-            exceptions to §10 I5's classification, and it is a question of
-            MEMBERSHIP: it decides which lines are invisible below a column,
-            not how an invisible line behaves. A comment is recognized at ANY
-            column, above the content column, at it, or below it, and stays
-            invisible. BOTH SPELLINGS: the `%%` line form
-            and the `%%%` fence form, whose body and closer travel with its
-            opener (corpus 186). Folding it would make the comment
-            VISIBLE, which is the one outcome a comment may never have, and an
-            indented comment at the top level is already invisible for the same
-            reason. Visibility at every column does not imply ownership at
-            every column: which comment retains the item for the line after
-            it is PART 0's exception X1 (COMMENT RETENTION).
-
-            AND THE OWNERSHIP HALF REACHES A DEGRADED FENCE.
-            "The `%%%` fence form, whose body and closer travel with its
-            opener" names a fence that HAS a closer. §28 substitutes for the
-            one that does not: an opener with no matching closer AHEAD opens no
-            block and IS one `comment_line`, so at this clause it is the LINE
-            form and every sentence above reaches it unchanged. Thus
-
-                - x
-                %%%
-                y
-
-            keeps `y` in the item, exactly as `%% z` in its place does, at
-            every container's own column 0 and at every depth. The substitution
-            is a CLASSIFICATION and not a visibility rule; a line that were a
-            `comment_line` for rendering and a `comment_block_open` for
-            ownership would be two constructs at once, which no clause here
-            offers.
-
-            The TERMINATED fence at that column is a different line and is not
-            what this settles. Corpus 214 pins it as ENDING the item and every
-            reader agrees; what separates the two is that one of them is a
-            comment BLOCK written at the enclosing context's own opener column
-            and the other is not a block at all.
+             AN INVISIBLE LINE BELOW THE COLUMN INTERRUPTS -- NORMATIVE [CARVE-P9-052].
+             Below the column an invisible line keeps its class (§10 I5): a
+             comment, link or footnote definition or block-attribute line
+             interrupts, closes the item and is read in the surviving owner,
+             where a definition registers (CARVE-P0-010) and an attribute line
+             is pending (§15 A2). An abbreviation definition below document
+             level is text (CARVE-P12-026).
            - AT OR PAST content_column: a block opener nests and a list marker
-             opens a sublist. Recognized non-list blocks apply PART 0's ONE
-             AUTHORED BLOCK BASE; this item clause defines only containment and
-             adds no second rebase rule. A sublist marker keeps its existing
-             at-or-past containment rule rather than being rebased.
+             opens a sublist. A non-list opener past the column opens in the
+             item, measured from its own line (PART 0 S3); a sublist marker
+             keeps its at-or-past containment rule.
              A processor with lint diagnostics SHOULD report this ambiguous
              compatibility spelling and name both author choices: dedent to
              content_column for the canonical structural spelling, or escape
@@ -524,8 +443,7 @@
              intention for the author while migrating an older spelling.
          This is intentionally SIMILAR TO DJOT'S LENIENCY inside list items:
          any authored column at or beyond Carve's minimum content_column may
-         open the block. Top-level block openers remain column-strict, and a
-         line below content_column is unchanged (docs/divergence-from-djot.md).
+         open the block (docs/divergence-from-djot.md).
       C4 RULE B (TOP LEVEL, ANY INDENT). A bullet (`-`/`*` + space +
          content) opens a list at ANY indentation at the TOP LEVEL -- no
          column-0 restriction (unlike CommonMark, `    - x` is a list, not

@@ -216,9 +216,9 @@ footnote_indent = whitespace, {whitespace} ;
    read.
 
    THE BODY'S OWN COLUMN IS TWO -- NOT the first continuation line's actual
-   indent. A reader first consumes that minimum and then applies PART 0's ONE
-   AUTHORED BLOCK BASE. Two is a floor for the body, not a ceiling for its
-   blocks; this construct adds no second rebase rule. *)
+   indent. An opener past it opens in the body, measured from its own line
+   (PART 0 S3, CARVE-P0-024). Two is a floor for the body, not a ceiling for
+   its blocks. *)
 
 (* --- Citations (Tier-2 extension) --- *)
 (* TIER-2, OFF BY DEFAULT. A `[...]` whose content contains a `@key` and which

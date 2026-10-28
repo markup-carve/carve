@@ -75,13 +75,12 @@
       a line L ends an OPEN paragraph P with NO blank line between, at the
       document top level AND inside nested content (list item, block quote,
       admonition/div body). L interrupts -> L is parsed as its block and P
-      ends on the preceding line. PART 0 O1 handles opaque payloads and
-      comment tokens first; O2 selects the owner; O3 and O4 use the same
-      recognition result in that owner's coordinates and permitted scope.
+      ends on the preceding line. PART 0 S1 handles opaque payloads and
+      comment tokens first; S2 selects the owner; S3 and S4 use the same
+      recognition result in that owner's coordinates (CARVE-P0-024).
       I1 to I7 specify interruption policy, not a second block recognizer.
       A recognized opener need not interrupt: list markers follow I2, fence
-      guards follow I4, and caption attachment follows I7. PART 0 X1 to X3
-      retain their ownership and folding exceptions.
+      guards follow I4, and caption attachment follows I7.
       I1 VISIBLE OPENERS interrupt. interrupts(L, P) holds when L begins:
          - a heading (`#`..`######` + space);
          - a thematic break (a lone `---` / `***` / `___` line);
@@ -153,41 +152,27 @@
          that states an action, a pipeline ORDER, a source-map overlap or column
          ARITHMETIC is not, and stays where it is.
 
-         PROPERTY 3 DOES NOT SAY WHICH OWNER. PART 0 O2 to O4 select it;
-         X1 alone specifies retained ownership after a below-column comment
-         (CARVE-P9-053). Corpus 189 and 192 pin the list-item cases.
-         The exemptions below decide membership, not the follower's owner.
+         PROPERTY 3 DOES NOT SAY WHICH OWNER. PART 0 S2 selects it.
 
-         THE CLASSIFICATION HAS EXACTLY TWO EXCEPTIONS, and both are about
-         MEMBERSHIP -- which lines are in the class at all -- never about a
-         member behaving differently:
+         THE CLASSIFICATION HAS ONE EXCEPTION, and it is about MEMBERSHIP,
+         never about a member behaving differently: AN ABBREVIATION
+         DEFINITION IS DOCUMENT-LEVEL ONLY (CARVE-P12-026). Anywhere else it
+         is paragraph text, it is VISIBLE, and it folds like any other plain
+         line. Every other member keeps its class below a container's content
+         column: it interrupts, closes the missed containers and is read in
+         the surviving owner (PART 0 S4, S5).
 
-           - A COMMENT IS COLUMN-EXEMPT (A COMMENT IS THE ONE EXCEPTION, §24
-             C3). Below a container's content column a comment is still
-             invisible and still closes the paragraph. The other four kinds are
-             ordinary text there, and they fold into the container that holds
-             the open paragraph, in every host (AN INVISIBLE LINE FOLDS LIKE ANY
-             OTHER; WHICH CONTAINER, NOT ONLY THAT IT IS TEXT; corpus 430).
-           - AN ABBREVIATION DEFINITION IS DOCUMENT-LEVEL ONLY (CARVE-P12-026).
-             Anywhere else it is not an invisible line at all: it is paragraph
-             text, it is VISIBLE, and it folds like any other plain line. That
-             is a line OUTSIDE the class, not a third band inside it.
-
-         Comments in this list are the layout-transparent tokens classified in
-         PART 0 before visible ownership. They close the paragraph without
-         choosing or extending an owner; their AST/source extent is retained.
-
-         Below-column placement and ownership follow §24 C3 (CARVE-P9-052,
-         CARVE-P9-053).
+         Comments in this list are classified in PART 0 S1, before S3
+         classifies the visible residue; their AST/source extent is retained
+         (CARVE-P0-005).
 
          A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
          PARAGRAPH (CARVE-P0-010). The next nonblank line therefore stays in
          the item only if it reaches content_column and opens item prose. A
          footnote definition's own extent is CARVE-P0-012; a line one column
-         short of its body is item prose. The comment exception above does not
-         extend to definitions. The bare decimal-dot marker `. ` claims one
-         marker column and one separator column, so its content_column is the
-         same as `- `. Pinned by corpus 374.
+         short of its body is item prose. The bare decimal-dot marker `. `
+         claims one marker column and one separator column, so its
+         content_column is the same as `- `. Pinned by corpus 374.
       I6 SCOPE. The relation applies to EVERY open
          paragraph, including a blockquote's lazy continuation: "> quoted
          \n - item" folds into ONE quote whose paragraph is
@@ -272,7 +257,7 @@
       ONE COLON-FENCE FRAME -- NORMATIVE [CARVE-P9-084]. A div, admonition,
       line block, local hard-break block, figure group, fenced quote and block
       directive use the same `:::` frame. An opener has at least three colons;
-      an exact-length colon closer at the frame's authored base ends it. A
+      an exact-length colon closer read in the frame's owner ends it. A
       longer or shorter line is not its closer. A frame without its closer
       ends at its host boundary. Resolve the closer before classifying its
       body line. A nested opener starts a child frame when the kind permits
@@ -335,8 +320,8 @@
       `:::note` has no separator, so it opens nothing and is absorbed, and the
       QUOTED `> :::` under it would be absorbed on the same terms. The `:::`
       above supplies no `>` prefix: it is a PARTIAL match, and it could reach
-      that paragraph only through PART 0 O3's lazy fold. The strict column-0
-      rule decides it instead -- a flush-left fence-shaped line interrupts, the
+      that paragraph only through PART 0 S4's lazy fold. S4 decides it
+      instead -- a flush-left fence-shaped line interrupts, the
       quote closes, and the line is re-classified at top level, where it opens
       a div of its own. Change one line to `> :::` and the answer inverts,
       because then it IS one of the paragraph's lines.
@@ -710,7 +695,7 @@
          `unattached-block-attribute` (docs/validation.md), while producing no
          output for the attribute.
 
-         CARVE-P0-009 decides container closure: the attribute leaves no open paragraph,
+         PART 0 S4 decides container closure: the attribute leaves no open paragraph,
          so `> {.k}` / `tail` ends the quote and A4 drops the attribute.
          This clause does not decide how an empty container renders.
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
@@ -718,7 +703,7 @@
          ends the attempt -- the text is then literal, not a
          block_attributes. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
-         follows PART 4 `block_attributes` and CARVE-P0-009.
+         follows PART 4 `block_attributes` and PART 0 S4.
       A6 NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE. A `{…}` line whose
          braces do not parse as an attribute list is ordinary paragraph
          content under normal inline rules (a `{#a #}` line is an editorial

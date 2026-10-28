@@ -51,12 +51,12 @@ test('the OUTER item content column reaches column 0 for the inner collector', (
   assert.ok(!out.includes('[^f]: x'), 'the definition line must not render as text')
 })
 
-test('BELOW every open content column still folds as text', () => {
-  // The boundary the fix must not move, and the one shape all four already
-  // agreed on (corpus 183): one column in, below both content columns.
+test('BELOW every open content column the definition closes the items and registers', () => {
+  // One column in, below both content columns: a definition interrupts, so the
+  // line closes both items and opens in the document (carve#3885).
   const out = html('- - a\n [^f]: x\n\nsee[^f]\n')
-  assert.ok(out.includes('[^f]: x'), `expected the line to stay as text, got: ${out}`)
-  assert.ok(!collected(out), 'nothing may be registered from a folded line')
+  assert.ok(!out.includes('[^f]: x'), `expected the definition to be collected, got: ${out}`)
+  assert.ok(collected(out), 'the definition must be registered')
 })
 
 test('an abbreviation definition at column 0 still folds as text', () => {

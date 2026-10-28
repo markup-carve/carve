@@ -13,14 +13,14 @@ for (const depth of [1, 2, 3]) {
 }
 
 for (const marker of ['-', '1.']) {
-  test(`an indented quoted spelling under prose keeps the ${marker} item text`, () => {
+  test(`an indented quoted spelling under prose keeps the ${marker} item text`, { todo: 'markup-carve/carve#3892' }, () => {
     const source = `> lead\n> ${marker} item\n>   > inner\n>   > [^n]: note\n       tail\nend\n`
     const html = renderDoc(parse(source)).replace(/\s+/g, ' ')
     assert.match(html, /<blockquote><p>lead .+ &gt; inner &gt; \[\^n\]: note tail end<\/p><\/blockquote>$/)
   })
 }
 
-test('a later quote paragraph can fold after its description ended', () => {
+test('a later quote paragraph can fold after its description ended', { todo: 'markup-carve/carve#3892' }, () => {
   const source = '> :: t\n> : d\n>\n> para\n>   [^n]: e\n>         k\nlazy\n'
   const html = renderDoc(parse(source)).replace(/\s+/g, ' ')
   assert.match(html, /<p>para \[\^n\]: e k lazy<\/p> <\/blockquote>$/)

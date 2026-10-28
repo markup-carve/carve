@@ -209,7 +209,7 @@
 
          are both LOOSE, and so are the same documents with the closer
          written. The state of the container above the blank does not enter
-         this question either, which is the same property PART 0 O2 already
+         this question either, which is the same property PART 0 S2 already
          states for where the item ENDS.
 
          An INTERIOR fence blank does not loosen the list: content follows it
@@ -232,29 +232,14 @@
          the block, so recognition and the uniformity principle are
          unchanged -- only the tight/loose RENDERING differs (djot renders
          these loose). Pinned by corpus compact-list-blocks.
-      L3 CONTINUATION MARKER `+` -- Carve addition.
-         CONTINUATION-MARKER REACHES ITS OWN COLUMN -- NORMATIVE [CARVE-P9-031].
-         A lone `+` at an open container's marker column gives it the next
-         block starting at that column. Quote prefixes select their quote level
-         (`> +`, not `>+`). An opener-line `+` gives the innermost new container
-         its first block under L4. Expand tabs before comparing columns; fence
-         payload stays payload.
-
-         ONE IS A COUNT AND THE BOUNDARY IS NOT -- NORMATIVE [CARVE-P9-032].
-         An accepted marker interrupts an open paragraph. Its grant ends at the
-         attached block's boundary, even when that block spans several lines.
-         A sibling list item cannot be attached. A refused `+` follows ordinary
-         host, column and paragraph ownership.
-
-         THE MARKER IS ONE OPERATION IN EVERY CONTAINER -- NORMATIVE [CARVE-P9-033].
-         The clause above is the WHOLE definition of `+`:
-         ownership of the next block at its marker column passes to the
-         container, and
-         that block is then parsed like any other. A container may not answer
-         differently because of WHAT it is attaching, and there is no second
-         ATTACHMENT rule for a quote, a list, a fence, a caption or a definition
-         under the marker. L4 decides where a refused first-block marker lands.
-         The one-block count and boundary hold in every L4 container.
+      L3 CONTINUATION MARKER `+` -- Carve addition. PART 0 S2 and its `+`
+         family entry define it (CARVE-P0-024): a lone `+` at the marker column
+         of an open list item, quote, definition body or footnote body gives
+         that container its next block, parsed like any other. No other column
+         reaches. Quote prefixes select their quote level (`> +`, not `>+`).
+         An accepted marker interrupts an open paragraph, its grant ends at the
+         attached block's boundary, and a sibling list item cannot be attached.
+         A refused `+` is ordinary text in the owner S2 selected.
 
          A marker at a container's marker column is outside its code,
          raw or colon fence. That fence ends before the attached block begins.

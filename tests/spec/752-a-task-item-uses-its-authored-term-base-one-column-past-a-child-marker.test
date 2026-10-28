@@ -18,7 +18,7 @@ A task item uses its authored term base one column past a child marker
     </ul>
     <dl>
       <dt>sibling
-     tail</dt>
+tail</dt>
     </dl>
   </li>
 </ul>

@@ -93,7 +93,7 @@ test('measuring marker CODE preserves literal rows without changing the unrebase
   const ast = parse(source)
   assert.equal(leaves(ast.blocks)[0].text, '[r]: /in\n')
   assert.deepEqual(ast.blocks, parse(source, { authoredBodyBases: false }).blocks)
-  assert.equal(ast.linkDefs.size, 0)
+  assert.deepEqual([...ast.linkDefs.keys()], ['s'])
 })
 
 test('literal definition payload measurement has a linear counted work bound', () => {

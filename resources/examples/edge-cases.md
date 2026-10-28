@@ -32791,8 +32791,6 @@ new list.
 ```html
 <ul>
   <li>x</li>
-</ul>
-<ul>
   <li>y</li>
 </ul>
 ```
@@ -40324,8 +40322,6 @@ c
 ```html
 <ul>
   <li>intro</li>
-</ul>
-<ul>
   <li>next</li>
 </ul>
 ```
@@ -49052,7 +49048,7 @@ the lines after it read as they do in the content-column spelling.
       <div class="line-block">
         <p>&nbsp;&nbsp;<code>
 :::
-</code></p>
+&nbsp;&nbsp;</code></p>
       </div>
       :::bad
 :::
@@ -49078,12 +49074,12 @@ tail
     <div class="line-block">
       <p>&nbsp;&nbsp;<code>
 :::
-</code></p>
+&nbsp;&nbsp;</code></p>
     </div>
     para
+tail
   </li>
 </ul>
-<p>tail</p>
 ```
 
 :::::
@@ -67874,7 +67870,7 @@ tail</dt>
       : a
       <dl>
         <dt>sibling
- tail</dt>
+tail</dt>
       </dl>
     </li>
   </ul>
@@ -67942,7 +67938,7 @@ tail</dt>
     : a
     <dl>
       <dt>sibling
-    tail</dt>
+tail</dt>
     </dl>
   </li>
 </ul>
@@ -68243,7 +68239,7 @@ s</p></blockquote>
     </ul>
     <dl>
       <dt>sibling
-     tail</dt>
+tail</dt>
     </dl>
   </li>
 </ul>
@@ -68276,7 +68272,7 @@ s</p></blockquote>
     </ul>
     <dl>
       <dt>sibling
-   tail</dt>
+tail</dt>
     </dl>
   </li>
 </ul>
