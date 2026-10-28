@@ -3910,7 +3910,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               dt += '\n' + TERM_COMMENT
               continue
             }
-            if (!foldablePlain(cur) && !/^: +[ \t]*$/.test(cur)) break
+            const sourceColumn = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
+            const pastColumnDefinition = sourceColumn > (descriptionOwnerColumn ?? sourceTermCol) &&
+              (isLinkDef(indentCols(cur).rest) || FOOTNOTE_DEF.test(indentCols(cur).rest))
+            if (!foldablePlain(cur) && !pastColumnDefinition && !/^: +[ \t]*$/.test(cur)) break
             if (isTableRow(cur) || colonFenceInterrupts(cur, [dt]) || (cur[0] === '{' && tryAttrLine(lines, i))) break
             // A line folded into an item BELOW its content column arrives here
             // LAZY-prefixed (the item-fold pass at C3). Strip that framing marker
