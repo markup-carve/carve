@@ -1,0 +1,57 @@
+Visible footnote headings
+
+```
+x[^n]
+
+[^n]: # H
+
+[H][]
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p><a href="#H">H</a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <h1 id="H">H</h1>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^n]: # H
+
+[H][]
+.
+<p>[H][]</p>
+```
+
+```
+x[^n]
+
+[^n]: # H
+
+</#H>
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p><a href="#H">H</a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <h1 id="H">H</h1>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^n]: # H
+
+</#H>
+.
+<p>&lt;/#H&gt;</p>
+```

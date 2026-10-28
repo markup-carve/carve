@@ -127,6 +127,9 @@
       make such a heading unreachable -- it is still slugged, still
       deduped in the one namespace, and still a `</#id>` crossref
       target (R4), which addresses it by id rather than by wording.
+      A heading in a footnote definition enters this index and the R4
+      cross-reference index only when the footnote is used and rendered.
+      An unused definition is dropped by R2, so its headings are not targets.
    R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS --
       NORMATIVE [CARVE-P9R-002]. A
       definition line that PART 0's O3 folds into an OPEN PARAGRAPH yields no

@@ -172,10 +172,23 @@ function renderDocPass(doc, footnoteProbe) {
   // A placed title takes an adm id before its authored children. Check whether
   // a note actually resolves first, so a fallback div consumes no id. Only
   // documents with a titled top-level marker need this extra pass.
-  const hasResolvedNotes = !footnoteProbe && doc.blocks.some((b) =>
-    b.t === 'footnotes-placement' && b.title !== null)
-    ? renderDocPass(doc, true).hasResolvedNotes
-    : null
+  const hasNoteHeading = !footnoteProbe && [...doc.footnoteDefs.values()].some((body) => {
+    const pending = [...body]
+    const seen = new WeakSet()
+    while (pending.length) {
+      const block = pending.pop()
+      if (!block || typeof block !== 'object' || seen.has(block)) continue
+      seen.add(block)
+      if (block?.t === 'heading') return true
+      if (Array.isArray(block)) pending.push(...block)
+      else pending.push(...Object.values(block))
+    }
+    return false
+  })
+  const needsProbe = !footnoteProbe && (hasNoteHeading || doc.blocks.some((b) =>
+    b.t === 'footnotes-placement' && b.title !== null))
+  const probe = needsProbe ? renderDocPass(doc, true) : null
+  const hasResolvedNotes = probe?.hasResolvedNotes ?? null
   const reserved = reserveHeadingIds(doc)
   const ctx = {
     headingIdByBlock: reserved.byHeading,
@@ -259,6 +272,12 @@ function renderDocPass(doc, footnoteProbe) {
   }
 
   let html = out.join('\n')
+  // A used footnote body is rendered after reference resolution. Its visible
+  // headings must enter the fallback index before that resolution starts.
+  // The probe applies the same liveness rules as the final footnote pass.
+  if (probe && hasNoteHeading) for (const [key, id] of probe.headingRefs) {
+    if (!ctx.headingRefs.has(key)) ctx.headingRefs.set(key, id)
+  }
   // REFERENCES FIRST. A reference tail carries its link text through a JSON
   // payload, and JSON.stringify escapes U+0002 as a control character - so a
   // noteref sitting in that payload was invisible to the footnote pass and
@@ -273,7 +292,9 @@ function renderDocPass(doc, footnoteProbe) {
   html = resolveFootnotes(html, ctx)
   html = resolveCrossrefs(html, ctx)
   html = applyAbbreviations(html, ctx)
-  return footnoteProbe ? { hasResolvedNotes: ctx.resolvedFootnoteCount > 0 } : html
+  return footnoteProbe
+    ? { hasResolvedNotes: ctx.resolvedFootnoteCount > 0, headingRefs: ctx.headingRefs }
+    : html
 }
 
 /**
