@@ -3974,6 +3974,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (bodyOrigins) measurement.origins.set(bodyLines, bodyOrigins)
           // X2: lazy prose keeps the quote's claim until a block closes it.
           let quoteParagraphClaim = false
+          let openBodyTermColumn = null
           let noteBodyReach = null
           let noteBodyQuoted = false
           const pushBody = (text, row = i) => {
@@ -3990,6 +3991,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             const quotedContent = indentCols(quoted)
             const sourceContentCol = source.col + quoteWidth + quotedContent.col
+            const bodyLine = indentCols(raw)
+            const quoteIsTermText = openBodyTermColumn !== null &&
+              bodyLine.col > openBodyTermColumn
             if (!text.startsWith(LAZY) && FOOTNOTE_DEF.test(quotedContent.rest)) {
               noteBodyReach = (row === descriptionStart ? sourceBodyColumn : sourceContentCol) + FOOTNOTE_BODY_COLUMN
               noteBodyQuoted = quoteWidth > 0
@@ -3999,9 +4003,18 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               noteBodyReach = null
               noteBodyQuoted = false
             }
-            if (QUOTE.test(stripIndent(raw)) && noteBodyReach === null) quoteParagraphClaim = bodyLeavesParagraphOpen(asRead(bodyLines))
+            if (QUOTE.test(stripIndent(raw)) && noteBodyReach === null && !quoteIsTermText) quoteParagraphClaim = bodyLeavesParagraphOpen(asRead(bodyLines))
             else if (isBlank(raw) || !text.startsWith(LAZY) &&
                 (startsVisibleBlock(raw) || isDefinitionOrAttributeLine(raw))) quoteParagraphClaim = false
+            // A quote folded into a term has no paragraph claim of its own.
+            if (DEFLIST_TERM.test(bodyLine.rest)) {
+              if (openBodyTermColumn === null || bodyLine.col <= openBodyTermColumn) openBodyTermColumn = bodyLine.col
+            } else if (isBlank(raw) || matchMarkerAt(bodyLine) ||
+                openBodyTermColumn !== null && bodyLine.col <= openBodyTermColumn &&
+                (startsVisibleBlock(bodyLine.rest) || /^: +\S/.test(bodyLine.rest) ||
+                 isDefinitionOrAttributeLine(bodyLine.rest) || COMMENT_LINE.test(bodyLine.rest))) {
+              openBodyTermColumn = null
+            }
             // Rebasing can expose an indented fence. Keep the full scan for
             // any candidate, but skip it for bodies containing none.
             if (!bodyHasFenceCandidate && FENCE.test(stripIndent(text))) bodyHasFenceCandidate = true
