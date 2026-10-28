@@ -6,10 +6,11 @@
       collection inside containers, unresolved references and unreferenced
       definitions are PART 9R R2 and CARVE-P9-034; the rendering rules below stay
       normative here.
-      - A body is the def line plus any following lines indented to column 2
-        or more (PART 9 §24 C1 column arithmetic -- a tab reaching column 2
-        qualifies the same as two spaces; single blank lines allowed between
-        chunks), parsed as blocks.
+      - The `[^label]: ` marker opens a marker body under §24 C3
+        (CARVE-P9-083), with its content column two columns past the authored
+        marker column. Its children are parsed as blocks. The body's distinct
+        result is an endnote entry; its extent, blank runs, lazy continuation
+        and `+` forms are the shared marker-body rules.
       - An unresolved reference keeps no trailing `{attrs}` in round trips.
       - Rendering (djot-compatible roles):
           reference -> <a id="{refId}" href="#fn{n}" role="doc-noteref"><sup>{n}</sup></a>
@@ -311,16 +312,11 @@
          A `+` inside the fence's own content column remains literal payload.
 
       L4 CONTAINERS THAT TAKE THE MARKER:
-         - LIST ITEM (pinned by corpus list-continuation-marker): a separate
-           `+` at an item's marker column attaches a block to that item.
-           FIRST-BLOCK form: `- +` or a stacked opener ending in `+` opens
-           an item whose body is the next block in that item's ownership,
-           wherever that block starts, with no inline lead; a sibling list
-           item remains a sibling;
-           `- + text` keeps `+ text` as literal text.
-           A task-item opener `- [ ] ` or `- [x] ` followed by `+` has
-           the same first-block form, while `- [ ] + text` is a task item
-           whose text starts with `+`.
+         - MARKER BODIES: list items (`- +`, `1. +`, and task forms),
+           definition bodies (`: +`) and footnote bodies (`[^a]: +`) use
+           §24 C3 (CARVE-P9-083). The marker and rendered element differ;
+           the attachment and first-block operation do not. A sibling list
+           item remains a sibling, and `- + text` keeps `+ text` as text.
          - BLOCK QUOTE: a separate `+` at the quote's marker column immediately
            after a blockquote line
            attaches the following block at that column to the quote -- the
@@ -329,14 +325,7 @@
            real <ul> (not a lazily-folded paragraph, cf. §10 I6). A blank
            line after the quote still ends it. An attached block that is
            ITSELF a quote NESTS, like every other kind: `> a` / `+` / `> q`
-           is a quote holding a paragraph and an inner quote. The marker
-         - FOOTNOTE DEFINITION body: `+` at the definition's marker column
-           attaches the following
-           block at that column to the note, the alternative to indenting it to
-           the body's column (pinned by corpus
-           footnote-with-multiple-blocks).
-         - DEFINITION DESCRIPTION: the same marker, the same reach, for a
-           `<dd>` (`definition_body` carries `continuation_marker_block`).
+           is a quote holding a paragraph and an inner quote.
 
          EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM --
          NORMATIVE [CARVE-P9-067]. The four containers above take the second

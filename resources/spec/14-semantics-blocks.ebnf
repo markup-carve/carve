@@ -267,7 +267,25 @@
 
    12. FENCED ":::" BLOCK RENDERING -- NORMATIVE [CARVE-P9-015] (governs `admonition`
       and `div` in PART 2; cross-references syntax.md §4.20 "Block
-      Extensions"). A TYPED `::: word` block renders by a TWO-TIER rule
+      Extensions").
+
+      ONE COLON-FENCE FRAME -- NORMATIVE [CARVE-P9-084]. A div, admonition,
+      line block, local hard-break block, figure group, fenced quote and block
+      directive use the same `:::` frame. An opener has at least three colons;
+      an exact-length colon closer at the frame's authored base ends it. A
+      longer or shorter line is not its closer. A frame without its closer
+      ends at its host boundary. Resolve the closer before classifying its
+      body line. A nested opener starts a child frame when the kind permits
+      nesting; the same extent and column rule applies at every depth.
+      The selected kind changes only the body mode, its output, and any
+      placement or nesting restriction stated by that kind. In block mode,
+      parse body lines as blocks in the frame. The `::: |` line-payload mode
+      preserves verse lines and recognizes no nested block opener. Figure
+      groups retain their panel and nonnesting policy; document-wide placement
+      directives retain their scope gate. No kind gets a separate fence
+      closer or host-boundary rule.
+
+      A TYPED `::: word` block renders by a TWO-TIER rule
       on the type identifier (below). A BARE `:::` opener with NO type
       word is a GENERIC DIV: a plain `<div>` (no class added), i.e. djot's
       generic container. An EMPTY one closes on the next line --
@@ -279,9 +297,8 @@
       which floats onto the block (§15): `{.x #id}` then `::: note` yields
       `<aside class="admonition note x" id="id" aria-label="Note">`.
 
-      FENCE LENGTH, NESTING, DIRECTION AND AN UNCLOSED OPENER are stated once,
-      in PART 2 at `colon_fence_close` and under `admonition`, for admonitions
-      and generic divs alike (corpus
+      Fence length and an unclosed opener follow the shared frame above and
+      PART 2's `colon_fence_close` production (corpus
       271-the-flush-left-line-after-a-container-a-quoted-line-opened).
 
       A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH

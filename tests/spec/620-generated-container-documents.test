@@ -228,7 +228,6 @@ tail
     <ul>
       <li>body</li>
     </ul>
-    <p>prose</p>
   </li>
 </ul>
 ```
@@ -353,5 +352,4 @@ tail</p>
 <ul>
   <li>a</li>
 </ul>
-<p><a href="/url">r</a></p>
 ```

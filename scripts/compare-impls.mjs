@@ -24,7 +24,8 @@ import {
 import { phpDir, rustBinary, rustDir } from './lib/engine-locations.mjs'
 import { comparisonGateHasFailures } from './lib/comparison-gate.mjs'
 import { comparisonRevisions, printComparisonRevisions } from './lib/comparison-revisions.mjs'
-import { parseTargetDrift, targetDriftKey } from './lib/target-drift.mjs'
+import { parseTargetDrift, targetDriftKeys } from './lib/target-drift.mjs'
+import { parseDriftLedger } from './lib/drift-ledger.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -1304,6 +1305,10 @@ let declaredFmtLayout = 0
 const targetDrift = corpusName === 'core'
   ? parseTargetDrift(join(root, 'resources/engine-target-drift.txt'))
   : new Map()
+const crossReadDrift = corpusName === 'core' && roundtrip
+  ? parseDriftLedger(join(root, 'resources/engine-cross-read-drift.txt'))
+  : new Map()
+const usedCrossReadDrift = new Set()
 const seenTargetDrift = new Set()
 const usedTargetDrift = new Set()
 const offeredCases = availableCaseCount()
@@ -1590,22 +1595,21 @@ for (const pair of pairs) {
         if (targetDrift.has(key)) seenTargetDrift.add(key)
       }
     }
-    const declaredTarget = unique.size > 1
-      ? targetDriftKey(target, pair.slug, outputs, targetDrift)
+    const declaredTargets = unique.size > 1
+      ? targetDriftKeys(target, pair.slug, outputs, targetDrift, expected)
       : null
-    const declaredOutlier = declaredTarget?.split('/')[1]
-    const fixtureAgreesWithPeers = expected === null || outputs
-      .filter(([engine]) => engine !== declaredOutlier)
-      .every(([, output]) => output === expected)
-    if (declaredTarget !== null && fixtureAgreesWithPeers) {
-      if (expected !== null) {
-        const score = stats[declaredOutlier]
-        score.mismatch--
-        score.declared++
-        score.mismatched = score.mismatched.filter((item) => item !== `${target} ${pair.slug}`)
+    if (declaredTargets !== null) {
+      for (const declaredTarget of declaredTargets) {
+        const engine = declaredTarget.split('/')[1]
+        if (expected !== null) {
+          const score = stats[engine]
+          score.mismatch--
+          score.declared++
+          score.mismatched = score.mismatched.filter((item) => item !== `${target} ${pair.slug}`)
+        }
+        usedTargetDrift.add(declaredTarget)
       }
-      usedTargetDrift.add(declaredTarget)
-      console.log(`DECLARED [${target}] ${pair.slug} (${pair.feature}): ${agreementPartition(outputs)} - ${declaredTarget}`)
+      console.log(`DECLARED [${target}] ${pair.slug} (${pair.feature}): ${agreementPartition(outputs)} - ${declaredTargets.join(', ')}`)
       continue
     }
     if (unique.size > 1 && target === 'carve' && judgeFmtLayout(pair.slug, outputs, fmtLayout.entries).excused) {
@@ -1704,8 +1708,14 @@ if (roundtrip) {
         if (!oracleOfSource.startsWith('REFUSED') && !oracleOfSource.startsWith('ORACLE-ERROR')) {
           const oracleOfFormatted = oracleHtml(raw)
           if (oracleOfFormatted !== oracleOfSource) {
-            crossReadFailures++
-            console.log(`CROSS-READ oracle(fmt(x)) != oracle(x) [${impl.name}] ${pair.slug}`)
+            const key = `${impl.name}/${pair.slug}`
+            if (crossReadDrift.has(key)) {
+              usedCrossReadDrift.add(key)
+              console.log(`DECLARED CROSS-READ oracle(fmt(x)) != oracle(x) [${impl.name}] ${pair.slug}`)
+            } else {
+              crossReadFailures++
+              console.log(`CROSS-READ oracle(fmt(x)) != oracle(x) [${impl.name}] ${pair.slug}`)
+            }
           }
         }
         if (htmlOfFormatted.ok) rendered.push([impl.name, htmlOfFormatted.stdout])
@@ -1714,9 +1724,9 @@ if (roundtrip) {
       if (rendered.length < 2) continue
       roundtripCompared++
       if (new Set(rendered.map(([, out]) => out)).size > 1) {
-        const declared = targetDriftKey('html', pair.slug, rendered, targetDrift)
-        if (declared !== null && usedTargetDrift.has(declared)) {
-          console.log(`DECLARED ROUNDTRIP ${pair.slug} (${pair.feature}): ${declared}`)
+        const declared = targetDriftKeys('html', pair.slug, rendered, targetDrift)
+        if (declared !== null && declared.every(key => usedTargetDrift.has(key))) {
+          console.log(`DECLARED ROUNDTRIP ${pair.slug} (${pair.feature}): ${declared.join(', ')}`)
         } else {
           roundtripDiffs++
           console.log(
@@ -1729,6 +1739,12 @@ if (roundtrip) {
     rmSync(tmp, { recursive: true, force: true })
   }
 }
+
+const staleCrossReadDrift = corpusName === 'core' && roundtrip && !Number.isFinite(limit) &&
+  shardTotal === 1 && !corpusOverride &&
+  ['js', 'php', 'rust'].every(name => active.some(impl => impl.name === name))
+  ? [...crossReadDrift.keys()].filter(key => !usedCrossReadDrift.has(key))
+  : []
 
 console.log('\nImplementation summary')
 const profile = corpusName === 'optional' ? 'optional/opt-in' : 'default/no-opt-in'
@@ -1809,6 +1825,9 @@ if (roundtrip) {
   console.log(
     `roundtrip_compared=${roundtripCompared} roundtrip_diffs=${roundtripDiffs} semantic_failures=${semanticFailures} idempotence_failures=${idempotenceFailures} cross_read_failures=${crossReadFailures}`,
   )
+  console.log(`cross_read_drift_declared=${usedCrossReadDrift.size}`)
+  console.log(`cross_read_drift_stale=${staleCrossReadDrift.length}`)
+  for (const key of staleCrossReadDrift) console.log(`  STALE CROSS-READ ${key}`)
 }
 
 // The per-target agreement block is the substance of the published snapshot, and
@@ -2051,6 +2070,10 @@ if (failOnDiff) {
     : active.reduce((total, impl) => total + stats[impl.name].mismatch, 0)
   if (staleTargetDrift.length > 0) {
     console.error(`${staleTargetDrift.length} declared target difference(s) are stale; delete their ledger rows.`)
+    process.exit(1)
+  }
+  if (staleCrossReadDrift.length > 0) {
+    console.error(`${staleCrossReadDrift.length} declared cross-read difference(s) are stale; delete their ledger rows.`)
     process.exit(1)
   }
   if (staleUnreachable.length > 0) {

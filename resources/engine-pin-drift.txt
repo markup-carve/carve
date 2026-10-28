@@ -28,3 +28,24 @@
 739-opaque-reference-and-inline-bounds-8  The pinned JS renderer drops a U+2028 quote body; tracked at markup-carve/carve-js#3764.
 741-visible-footnote-headings-2  The pinned JS renderer indexes a heading in an unused footnote; tracked at markup-carve/carve-js#3775.
 741-visible-footnote-headings-4  The pinned JS renderer resolves an unused footnote heading crossref; tracked at markup-carve/carve-js#3775.
+212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+358-what-a-content-column-block-does-not-reach-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+374-a-collected-definition-closes-the-item-paragraph-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+620-generated-container-documents-16  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+620-generated-container-documents-23  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+637-definition-body-note-and-fence-owner-boundaries-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+699-a-quoted-link-definition-in-a-footnote-body-registers-globally  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine

@@ -168,8 +168,9 @@
              list item      indentation to content_column (PART 9 §24 C3)
              definition     indentation to the body column its separator
                body         sets (CARVE-P2-016)
-             footnote def   indentation >= 2 spaces; the prefix CONSUMED is
-                            exactly 2, content_column := 2 (PART 9 §16)
+             footnote def   marker-body content column two past its authored
+                            marker column; exactly two columns consumed
+                            (PART 9 §24 C3)
              opaque body    (code / raw / matched comment span) -- no
                             per-line prefix; verbatim up to its where-guarded
                             closer
@@ -405,7 +406,7 @@
         measured from that base. This includes every recognized block opener,
         including `::: |` and an opener in a colon body hosted by an
         indentation container. That opener closes a paragraph of the colon
-        body open above it (CARVE-P2-017). Under `- a` / `  ::: box`, a code
+        body open above it (CARVE-P9-083). Under `- a` / `  ::: box`, a code
         fence at column 4 opens in the box. The next block returns to the
         body's minimum column, as does canonical output. Ordinary
         over-indented text establishes no block base.
@@ -620,11 +621,11 @@
         remains its second paragraph. A line at a nonzero column below it
         stays only by O3 or X1.
 
-        DEFINITION EXTENT. A footnote definition's extent is its marker line,
-        the continuation lines reaching its body column (two columns past the
-        column the definition is written at) and the blanks between its
-        blocks; no lazy line continues into it. `- a` / `  [^f]: t` / blank /
-        `    more` / `tail` ends the item and gives the note two blocks. A link
+        DEFINITION EXTENT. A footnote definition is a marker body under
+        PART 9 §24 C3 (CARVE-P9-083). Its marker line, reaching continuation
+        lines, blank runs, lazy text and close by column use that one rule.
+        `- a` / `  [^f]: t` / blank / `    more` / `tail` ends the item and
+        gives the note two blocks. A link
         reference definition is one line: a blank after it is outside the
         definition, following indented prose opens the container's second
         paragraph, and a flush-left line folds into it. Nested definition
@@ -680,32 +681,10 @@
         no block opens, and ` y` and the run fold as paragraph text. A blank
         closes the paragraph; a terminated fence leaves no paragraph open.
 
-        A REAL DIV IS A CONTAINER LIKE ANY OTHER -- NORMATIVE [CARVE-P0-016].
-        Apply CARVE-P0-013's open-paragraph test to a colon div:
-        `- item` / `  ::: note` / `  body` / `tail` folds.
-        Omitting `body` leaves an empty div and no paragraph to continue, so
-        `tail` is top-level. Closing the div also closes its paragraph and
-        leaves `tail` at top level.
-
         CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-017].
         Apply CARVE-P0-013's test in quotes. `> quote` / `> ::: note` / `tail` ends
         the quote, as does the form with `> body` / `> :::` before `tail`.
         An empty or closed colon container leaves no open paragraph.
-
-        DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE -- NORMATIVE [CARVE-P0-018].
-        Apply CARVE-P0-013 to a definition body. Its canonical prefix reaches
-        column 2. In
-
-            :: t
-            : ```
-            body
-            ```
-
-        `body` misses that prefix. O1 stops at the definition entry; the
-        opaque-body rule does not apply and O3 finds no open paragraph. The
-        body closes with an empty code block, and `body` and the trailing run
-        are reclassified at document level, as for the list-item form
-        (CARVE-P0-013).
 
         The hosts agree on an unfinished fence on a NESTED marker line too. In
 
@@ -1389,84 +1368,20 @@ definition_separator = space, {space} ;
    document says. *)
 definition_continuation = (definition_indent, inline_content, newline) ;
 definition_indent = whitespace, {whitespace} ;
-(* INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE [CARVE-P2-016]. A tab has a column
-   value (PART 9 §24 C1, to the next multiple of 4), and a definition body's
-   continuation counts columns exactly as a footnote body (`footnote_indent`)
-   and a list item (`list_continuation`'s `indent`) do.
+(* DEFINITION SEPARATOR SETS THE BODY COLUMN -- NORMATIVE [CARVE-P2-016].
+   The required `: ` marker may have a wider run of separator spaces. Its
+   content column is the marker column plus one colon and that run's visual
+   width. A formatter narrowing the run moves continuation indentation by
+   the same number of columns to preserve ownership. C1 measures tabs and
+   C3 (CARVE-P9-083) applies the shared reach and extent tests.
 
-   `definition_indent` is any whitespace run REACHING THE BODY'S AUTHORED
-   CONTENT COLUMN -- the column its separator width establishes. For canonical
-   `: x`, two spaces reach column 2; for accepted `:  x`, three spaces reach
-   column 3. A bare tab reaches column 4 and qualifies for either. This is
-   INDENTATION, not a marker SEPARATOR: it does not change the separator run
-   after the `:` marker (CARVE-P7-002).
-
-   BELOW THE BODY'S COLUMN THE BODY ENDS -- NORMATIVE [CARVE-P2-017]. The three
-   bands, in column order, so the rule can be read off once:
-
-     - BELOW the body's content column, the body ENDS and the line is
-       classified in the surviving context. Column 0 is not a special case of
-       this, it is the ordinary case: "below the content column" means the
-       same thing here as it does for a list item and for a footnote body.
-
-       THE BAND IS ABOUT OPENERS, AND A NON-OPENER STILL FOLDS. What ends the
-       body is a line the surviving context can OPEN A BLOCK with; a line that
-       opens nothing has an open paragraph above it and PART 9 §10 I2's lazy
-       continuation still reaches it, which is why the plain-line row folds
-       from every column in this band. The five invisible-line
-       kinds resolve HERE, not in this bullet: a comment is invisible at any
-       column (CARVE-P9-053), and a definition or
-       attribute line at a nonzero column below the column is lazy paragraph
-       text of THIS body (CARVE-P9-052). At
-       DOCUMENT column 0 they are interrupters and the body does end. An INFO
-       STRING decides nothing here. When the deepest frame holds an open
-       paragraph, a flush-left fence line without a closer is paragraph
-       content, with or without a language. A closed nested fence leaves no
-       paragraph open, so the body ends and the surviving context reads the
-       run as a block opener for either spelling (CARVE-P0-009).
-
-     - AT the column, the line is the body's own block content, so a block
-       opener opens inside the `dd`.
-     - PAST the column, a recognized block opener establishes its authored
-       column as that block's local base; ordinary text keeps the existing
-       paragraph-continuation behavior.
-
-   AN OPENER IN THE TWO UPPER BANDS CLOSES THE BODY'S PARAGRAPH.
-   The two bands answer that question ALIKE, because the opener is the body's
-   own block content in both: at the column it opens at the body's column 0,
-   past it at the authored base `AUTHORED BLOCK BASES` gives it, and the
-   paragraph above it survives neither reading. PART 9 §10 I1 closes it for a visible
-   opener - a heading, a thematic break, a table row - and PART 9 §10 I5 closes it for
-   a definition, a footnote definition or an attribute block, which interrupt
-   at the body's own column 0 exactly as they do at the document's.
-
-   That is what the first band's `A NON-OPENER STILL FOLDS` is conditioned on.
-   The open paragraph it names is not a given: with the paragraph closed a
-   flush-left non-opener has nothing left to reach, so the body ENDS at the
-   opener and the line below is classified in the surviving context.
-
-   AN OPENER THAT LEAVES A PARAGRAPH OPEN IS NOT COVERED, and must not be read
-   into it: what ends the body is a CLOSED PARAGRAPH, never the presence of an
-   opener. A block quote is the case to keep in view -
-
-       :: t
-       :  d
-           > q
-       tail
-
-   opens the quote inside the `dd`, the quote's own paragraph is still open,
-   and `tail` lazily continues THE QUOTE.
-
-   `definition_indent` states the floor as column arithmetic; this states what
-   happens on the other side of it.
-
-   THE SURVIVING CONTEXT IS WHATEVER HOLDS THE LIST. At the top level an opener
-   must be written at column 0, so a `>` one or two columns in opens nothing and
-   stays paragraph text. Inside a list item the same line is measured against
-   the ITEM's content column, and reaching it opens the block there -- as a
-   sibling of the definition list, not inside the `dd`. The base a block
-   establishes governs THAT BLOCK; it never carries over to the next opener
-   written below it.
+   The definition body's `: ` marker selects the shared marker-body rule in
+   PART 9 §24 C3 (CARVE-P9-083). Its separator width sets the content column;
+   its child blocks, blank runs, lazy paragraph lines, `+` attachment and
+   closing by column follow the list-item procedure. The `::` term remains an
+   inline leaf, not another marker body. A recognized opener at or past the
+   body's column begins a child there. A line below it is classified by the
+   same owner and interruption tests as a line below an item column.
 
    AUTHORED BLOCK BASES -- NORMATIVE [CARVE-P2-018]. Definition
    bodies apply PART 0's ONE AUTHORED BLOCK BASE at the content column fixed by
@@ -1504,15 +1419,9 @@ definition_indent = whitespace, {whitespace} ;
    single colon, but `::` keeps the term marker distinct from the `:::` div
    fence and from a stray `:` in prose.)
 
-   A definition body CONTINUES like a list item (PART 9 §17): a blank line
-   followed by an indented block folds in (so a `<dd>` may hold multiple
-   paragraphs -- FORM A); a lone `+` attaches the following block at the container's marker column (`continuation_marker_block` -- FORM B, the un-prefixed
-   analogue of the list-item and block-quote `+` forms); and a flush-left line
-   with no blank before it that does not start an interrupting block lazily
-   continues the open paragraph (`lazy_continuation_line`, the same rule as list
-   items and block quotes, matching djot). A blank line that is NOT followed by
-   an indented continuation ends the body: the single-blank entry separator
-   before the next `:: term` is preserved. *)
+   The body uses PART 9 §24 C3 (CARVE-P9-083). Its distinct syntax is the
+   `: ` marker and its distinct output is `<dd>`. The `::` term and entry
+   separator remain governed by this definition-list production. *)
 (* --- Tables --- *)
 table = pipe_table | delimited_table ;
 pipe_table = standard_row, [delimiter_row], {table_row}, [caption_slot] ;
@@ -1777,7 +1686,7 @@ admonition = admonition_open, newline,
    of a list item's marker line opens its container whatever the next line
    is. In `- ::: d` / `tail` the item holds an empty `d` container, which
    leaves no paragraph open, and `tail` is a document paragraph
-   (CARVE-P0-009, CARVE-P0-016).
+   (CARVE-P0-009, CARVE-P9-084).
 
    OPAQUE SPANS. `{block - admonition_close}` is a BLOCK sequence. In a
    colon body, recognize a code, raw or matched comment opener before
@@ -2894,23 +2803,15 @@ inline_footnote = "^[", inline_content, ']', [attribute_run] ;
    it skips; footnote recognition is DISABLED inside the content *)
 
 footnote_definition = "[^", footnote_label, "]:", space+, inline_content, newline,
-                      {footnote_continuation | continuation_marker_block} ;
+                      {footnote_continuation | continuation_marker_block
+                      | lazy_continuation_line} ;
 footnote_continuation = (footnote_indent, inline_content, newline) | blank_line ;
 footnote_indent = whitespace, {whitespace} ;
-(* the body extends to following lines indented by >= 2 spaces -- PART 9 §16.
-   A lone `+` at the definition's marker column also attaches a block there (`continuation_marker_block`,
-   PART 9 §17), the same continuation marker lists, block quotes and definition
-   bodies use.
-
-   INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE [CARVE-P3-015]. Any
-   whitespace run REACHING COLUMN 2 indents the body: a bare tab (column 0 ->
-   4) or a space then a tab (column 1 -> 4) qualify exactly as two literal
-   spaces do; a single space (column 1) does not. PART 9 §24 C1 gives a tab its
-   column value (to the next multiple of 4). This is INDENTATION, not a marker
-   SEPARATOR -- it does not touch the literal `space` the def line's own `]:`
-   separator requires (unchanged, PART 9 §24 C2's sibling rule for markers).
-   `footnote_indent` above is therefore deliberately loose; the column-2 floor
-   is column arithmetic, not a character-by-character encoding.
+(* A footnote definition has the `[^label]: ` marker and renders as an endnote.
+   Its body follows PART 9 §24 C3 (CARVE-P9-083), including column arithmetic,
+   blank runs, lazy paragraph text, `+` attachment and closing by column.
+   `footnote_indent` spells a whitespace run; the shared column rule decides
+   whether that run reaches the body's two-column floor.
 
    `inline_content` above describes THE SHAPE OF A LINE that belongs to the
    body, not how the collected body is parsed. The body is parsed AS BLOCKS
@@ -5304,7 +5205,25 @@ EOF = (* end of file *) ;
 
    12. FENCED ":::" BLOCK RENDERING -- NORMATIVE [CARVE-P9-015] (governs `admonition`
       and `div` in PART 2; cross-references syntax.md §4.20 "Block
-      Extensions"). A TYPED `::: word` block renders by a TWO-TIER rule
+      Extensions").
+
+      ONE COLON-FENCE FRAME -- NORMATIVE [CARVE-P9-084]. A div, admonition,
+      line block, local hard-break block, figure group, fenced quote and block
+      directive use the same `:::` frame. An opener has at least three colons;
+      an exact-length colon closer at the frame's authored base ends it. A
+      longer or shorter line is not its closer. A frame without its closer
+      ends at its host boundary. Resolve the closer before classifying its
+      body line. A nested opener starts a child frame when the kind permits
+      nesting; the same extent and column rule applies at every depth.
+      The selected kind changes only the body mode, its output, and any
+      placement or nesting restriction stated by that kind. In block mode,
+      parse body lines as blocks in the frame. The `::: |` line-payload mode
+      preserves verse lines and recognizes no nested block opener. Figure
+      groups retain their panel and nonnesting policy; document-wide placement
+      directives retain their scope gate. No kind gets a separate fence
+      closer or host-boundary rule.
+
+      A TYPED `::: word` block renders by a TWO-TIER rule
       on the type identifier (below). A BARE `:::` opener with NO type
       word is a GENERIC DIV: a plain `<div>` (no class added), i.e. djot's
       generic container. An EMPTY one closes on the next line --
@@ -5316,9 +5235,8 @@ EOF = (* end of file *) ;
       which floats onto the block (§15): `{.x #id}` then `::: note` yields
       `<aside class="admonition note x" id="id" aria-label="Note">`.
 
-      FENCE LENGTH, NESTING, DIRECTION AND AN UNCLOSED OPENER are stated once,
-      in PART 2 at `colon_fence_close` and under `admonition`, for admonitions
-      and generic divs alike (corpus
+      Fence length and an unclosed opener follow the shared frame above and
+      PART 2's `colon_fence_close` production (corpus
       271-the-flush-left-line-after-a-container-a-quoted-line-opened).
 
       A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH
@@ -5774,10 +5692,11 @@ EOF = (* end of file *) ;
       collection inside containers, unresolved references and unreferenced
       definitions are PART 9R R2 and CARVE-P9-034; the rendering rules below stay
       normative here.
-      - A body is the def line plus any following lines indented to column 2
-        or more (PART 9 §24 C1 column arithmetic -- a tab reaching column 2
-        qualifies the same as two spaces; single blank lines allowed between
-        chunks), parsed as blocks.
+      - The `[^label]: ` marker opens a marker body under §24 C3
+        (CARVE-P9-083), with its content column two columns past the authored
+        marker column. Its children are parsed as blocks. The body's distinct
+        result is an endnote entry; its extent, blank runs, lazy continuation
+        and `+` forms are the shared marker-body rules.
       - An unresolved reference keeps no trailing `{attrs}` in round trips.
       - Rendering (djot-compatible roles):
           reference -> <a id="{refId}" href="#fn{n}" role="doc-noteref"><sup>{n}</sup></a>
@@ -6079,16 +5998,11 @@ EOF = (* end of file *) ;
          A `+` inside the fence's own content column remains literal payload.
 
       L4 CONTAINERS THAT TAKE THE MARKER:
-         - LIST ITEM (pinned by corpus list-continuation-marker): a separate
-           `+` at an item's marker column attaches a block to that item.
-           FIRST-BLOCK form: `- +` or a stacked opener ending in `+` opens
-           an item whose body is the next block in that item's ownership,
-           wherever that block starts, with no inline lead; a sibling list
-           item remains a sibling;
-           `- + text` keeps `+ text` as literal text.
-           A task-item opener `- [ ] ` or `- [x] ` followed by `+` has
-           the same first-block form, while `- [ ] + text` is a task item
-           whose text starts with `+`.
+         - MARKER BODIES: list items (`- +`, `1. +`, and task forms),
+           definition bodies (`: +`) and footnote bodies (`[^a]: +`) use
+           §24 C3 (CARVE-P9-083). The marker and rendered element differ;
+           the attachment and first-block operation do not. A sibling list
+           item remains a sibling, and `- + text` keeps `+ text` as text.
          - BLOCK QUOTE: a separate `+` at the quote's marker column immediately
            after a blockquote line
            attaches the following block at that column to the quote -- the
@@ -6097,14 +6011,7 @@ EOF = (* end of file *) ;
            real <ul> (not a lazily-folded paragraph, cf. §10 I6). A blank
            line after the quote still ends it. An attached block that is
            ITSELF a quote NESTS, like every other kind: `> a` / `+` / `> q`
-           is a quote holding a paragraph and an inner quote. The marker
-         - FOOTNOTE DEFINITION body: `+` at the definition's marker column
-           attaches the following
-           block at that column to the note, the alternative to indenting it to
-           the body's column (pinned by corpus
-           footnote-with-multiple-blocks).
-         - DEFINITION DESCRIPTION: the same marker, the same reach, for a
-           `<dd>` (`definition_body` carries `continuation_marker_block`).
+           is a quote holding a paragraph and an inner quote.
 
          EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM --
          NORMATIVE [CARVE-P9-067]. The four containers above take the second
@@ -6710,13 +6617,39 @@ EOF = (* end of file *) ;
       C2 MARKER SEPARATOR IS A SPACE. The required separator after a list
          marker is a single SPACE character -- a syntax delimiter, not
          indentation. `-<TAB>a` is NOT a list item (paragraph text).
-      C3 CONTENT COLUMN. content_column(item) := the visual column where
-         the item's content starts (marker width + separator: `- ` -> 2,
+      C3 MARKER-BODY COLUMN AND EXTENT -- NORMATIVE [CARVE-P9-083]. A list
+         item, a definition body and a footnote definition body use this one
+         rule set. The content column is the visual column where the marker's
+         body starts. For a list item it is marker width plus separator
+         (`- ` -> 2,
          `1. ` -> 3, `10. ` -> 4). A marker-attached attribute block (§15 A8)
          is metadata and contributes ZERO: `-{.x} ` -> 2 and `1.{.x} ` -> 3,
          irrespective of the block's spelling, length or Unicode encoding. A
          task checkbox is content and contributes zero for the same coordinate:
-         `-{.x} [x] ` -> 2. A child -- a LIST MARKER (bullet `-`/`*`,
+         `-{.x} [x] ` -> 2. A definition body's own `: ` separator sets its
+         content column, including every extra separator space. A footnote
+         body adds two columns to its marker's authored column and consumes
+         exactly two columns of prefix. All comparisons use C1; no marker
+         family has its own reach test.
+
+         A nonblank line at or past the content column belongs to the body.
+         A recognized block opener there begins a child block. A blank run of
+         any length remains in the body when the next nonblank line reaches
+         that column. A blank run without such a follower ends the body before
+         the next line. The list-only three-blank sibling boundary in §11 N1a
+         decides list grouping, not body ownership. A line below the column
+         follows PART 0 O2 to O4: it may continue the deepest open paragraph
+         lazily when §10 permits, and otherwise closes the body by column and
+         is read in the nearest surviving owner. This applies to footnotes as
+         it does to list items, including flush-left ordinary text without a
+         blank. A line at the surrounding owner's opener column that is an
+         invisible definition or attribute is an interrupter under §10 I5.
+         A lone `+` at the live marker column, including the opener's sole
+         first-block content, uses §17 L3 and L4 to attach one eligible block;
+         refusal keeps the marker as text. These decisions are independent of
+         the marker spelling and the rendered element.
+
+         A child -- a LIST MARKER (bullet `-`/`*`,
          task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
          opener -- must reach AT LEAST the parent item's content_column to belong
          to the item. The block-opener set is UNIFORM and closed: block quote (`>` or

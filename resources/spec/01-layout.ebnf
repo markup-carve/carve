@@ -51,8 +51,9 @@
              list item      indentation to content_column (PART 9 §24 C3)
              definition     indentation to the body column its separator
                body         sets (CARVE-P2-016)
-             footnote def   indentation >= 2 spaces; the prefix CONSUMED is
-                            exactly 2, content_column := 2 (PART 9 §16)
+             footnote def   marker-body content column two past its authored
+                            marker column; exactly two columns consumed
+                            (PART 9 §24 C3)
              opaque body    (code / raw / matched comment span) -- no
                             per-line prefix; verbatim up to its where-guarded
                             closer
@@ -288,7 +289,7 @@
         measured from that base. This includes every recognized block opener,
         including `::: |` and an opener in a colon body hosted by an
         indentation container. That opener closes a paragraph of the colon
-        body open above it (CARVE-P2-017). Under `- a` / `  ::: box`, a code
+        body open above it (CARVE-P9-083). Under `- a` / `  ::: box`, a code
         fence at column 4 opens in the box. The next block returns to the
         body's minimum column, as does canonical output. Ordinary
         over-indented text establishes no block base.
@@ -503,11 +504,11 @@
         remains its second paragraph. A line at a nonzero column below it
         stays only by O3 or X1.
 
-        DEFINITION EXTENT. A footnote definition's extent is its marker line,
-        the continuation lines reaching its body column (two columns past the
-        column the definition is written at) and the blanks between its
-        blocks; no lazy line continues into it. `- a` / `  [^f]: t` / blank /
-        `    more` / `tail` ends the item and gives the note two blocks. A link
+        DEFINITION EXTENT. A footnote definition is a marker body under
+        PART 9 §24 C3 (CARVE-P9-083). Its marker line, reaching continuation
+        lines, blank runs, lazy text and close by column use that one rule.
+        `- a` / `  [^f]: t` / blank / `    more` / `tail` ends the item and
+        gives the note two blocks. A link
         reference definition is one line: a blank after it is outside the
         definition, following indented prose opens the container's second
         paragraph, and a flush-left line folds into it. Nested definition
@@ -563,32 +564,10 @@
         no block opens, and ` y` and the run fold as paragraph text. A blank
         closes the paragraph; a terminated fence leaves no paragraph open.
 
-        A REAL DIV IS A CONTAINER LIKE ANY OTHER -- NORMATIVE [CARVE-P0-016].
-        Apply CARVE-P0-013's open-paragraph test to a colon div:
-        `- item` / `  ::: note` / `  body` / `tail` folds.
-        Omitting `body` leaves an empty div and no paragraph to continue, so
-        `tail` is top-level. Closing the div also closes its paragraph and
-        leaves `tail` at top level.
-
         CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-017].
         Apply CARVE-P0-013's test in quotes. `> quote` / `> ::: note` / `tail` ends
         the quote, as does the form with `> body` / `> :::` before `tail`.
         An empty or closed colon container leaves no open paragraph.
-
-        DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE -- NORMATIVE [CARVE-P0-018].
-        Apply CARVE-P0-013 to a definition body. Its canonical prefix reaches
-        column 2. In
-
-            :: t
-            : ```
-            body
-            ```
-
-        `body` misses that prefix. O1 stops at the definition entry; the
-        opaque-body rule does not apply and O3 finds no open paragraph. The
-        body closes with an empty code block, and `body` and the trailing run
-        are reclassified at document level, as for the list-item form
-        (CARVE-P0-013).
 
         The hosts agree on an unfinished fence on a NESTED marker line too. In
 

@@ -1,5 +1,29 @@
-# Temporary cross-engine target differences awaiting a ruling. A line names the
+# Temporary cross-engine target differences awaiting an engine fix or pin update. A line names the
 # one engine whose output differs from the other two for one corpus row and
 # target. The comparison gate accepts only that exact shape and rejects a line
 # that no longer differs at the pinned engine revisions.
 # Format: target/engine/slug  owner/repo#issue and reason
+html/js/739-opaque-reference-and-inline-bounds-7  markup-carve/carve-js#3764, pinned JS drops the quoted body
+html/js/739-opaque-reference-and-inline-bounds-8  markup-carve/carve-js#3764, pinned JS drops the quoted body
+markdown/js/739-opaque-reference-and-inline-bounds-7  markup-carve/carve-js#3764, pinned JS drops the quoted body
+markdown/js/739-opaque-reference-and-inline-bounds-8  markup-carve/carve-js#3764, pinned JS drops the quoted body
+plain/js/739-opaque-reference-and-inline-bounds-7  markup-carve/carve-js#3764, pinned JS drops the quoted body
+plain/js/739-opaque-reference-and-inline-bounds-8  markup-carve/carve-js#3764, pinned JS drops the quoted body
+ansi/js/739-opaque-reference-and-inline-bounds-7  markup-carve/carve-js#3764, pinned JS drops the quoted body
+ansi/js/739-opaque-reference-and-inline-bounds-8  markup-carve/carve-js#3764, pinned JS drops the quoted body
+html/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
+markdown/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
+carve/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
+ansi/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
+html/php/741-visible-footnote-headings  markup-carve/carve-php#4119, used-note implicit heading reference pending
+html/js/741-visible-footnote-headings-2  markup-carve/carve-js#3775, unused-note heading incorrectly indexed
+html/rust/741-visible-footnote-headings-2  markup-carve/carve-rs#3385, unused-note heading incorrectly indexed
+markdown/php/741-visible-footnote-headings  markup-carve/carve-php#4119, used-note implicit heading reference pending
+markdown/js/741-visible-footnote-headings-2  markup-carve/carve-js#3775, unused-note heading incorrectly indexed
+markdown/rust/741-visible-footnote-headings-2  markup-carve/carve-rs#3385, unused-note heading incorrectly indexed
+plain/php/741-visible-footnote-headings  markup-carve/carve-php#4119, used-note implicit heading reference pending
+plain/js/741-visible-footnote-headings-2  markup-carve/carve-js#3775, unused-note heading incorrectly indexed
+plain/rust/741-visible-footnote-headings-2  markup-carve/carve-rs#3385, unused-note heading incorrectly indexed
+ansi/php/741-visible-footnote-headings  markup-carve/carve-php#4119, used-note implicit heading reference pending
+ansi/js/741-visible-footnote-headings-2  markup-carve/carve-js#3775, unused-note heading incorrectly indexed
+ansi/rust/741-visible-footnote-headings-2  markup-carve/carve-rs#3385, unused-note heading incorrectly indexed

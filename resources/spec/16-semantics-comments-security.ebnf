@@ -361,13 +361,39 @@
       C2 MARKER SEPARATOR IS A SPACE. The required separator after a list
          marker is a single SPACE character -- a syntax delimiter, not
          indentation. `-<TAB>a` is NOT a list item (paragraph text).
-      C3 CONTENT COLUMN. content_column(item) := the visual column where
-         the item's content starts (marker width + separator: `- ` -> 2,
+      C3 MARKER-BODY COLUMN AND EXTENT -- NORMATIVE [CARVE-P9-083]. A list
+         item, a definition body and a footnote definition body use this one
+         rule set. The content column is the visual column where the marker's
+         body starts. For a list item it is marker width plus separator
+         (`- ` -> 2,
          `1. ` -> 3, `10. ` -> 4). A marker-attached attribute block (§15 A8)
          is metadata and contributes ZERO: `-{.x} ` -> 2 and `1.{.x} ` -> 3,
          irrespective of the block's spelling, length or Unicode encoding. A
          task checkbox is content and contributes zero for the same coordinate:
-         `-{.x} [x] ` -> 2. A child -- a LIST MARKER (bullet `-`/`*`,
+         `-{.x} [x] ` -> 2. A definition body's own `: ` separator sets its
+         content column, including every extra separator space. A footnote
+         body adds two columns to its marker's authored column and consumes
+         exactly two columns of prefix. All comparisons use C1; no marker
+         family has its own reach test.
+
+         A nonblank line at or past the content column belongs to the body.
+         A recognized block opener there begins a child block. A blank run of
+         any length remains in the body when the next nonblank line reaches
+         that column. A blank run without such a follower ends the body before
+         the next line. The list-only three-blank sibling boundary in §11 N1a
+         decides list grouping, not body ownership. A line below the column
+         follows PART 0 O2 to O4: it may continue the deepest open paragraph
+         lazily when §10 permits, and otherwise closes the body by column and
+         is read in the nearest surviving owner. This applies to footnotes as
+         it does to list items, including flush-left ordinary text without a
+         blank. A line at the surrounding owner's opener column that is an
+         invisible definition or attribute is an interrupter under §10 I5.
+         A lone `+` at the live marker column, including the opener's sole
+         first-block content, uses §17 L3 and L4 to attach one eligible block;
+         refusal keeps the marker as text. These decisions are independent of
+         the marker spelling and the rendered element.
+
+         A child -- a LIST MARKER (bullet `-`/`*`,
          task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
          opener -- must reach AT LEAST the parent item's content_column to belong
          to the item. The block-opener set is UNIFORM and closed: block quote (`>` or

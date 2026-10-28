@@ -20,9 +20,9 @@ const cases = [
     owner: ['list', 'item', 'para'],
   },
   {
-    name: 'nested marker below the invisible note body column',
+    name: 'nested marker below the note body column lazily continues it',
     source: '. d\n   [^n]: e\n    - a\n',
-    owner: ['list', 'item', 'list'],
+    owner: ['list', 'item', 'para'],
   },
   {
     name: 'definition fence with payload and a closer at its authored base',
@@ -45,9 +45,9 @@ for (const { name, source, owner, code } of cases) {
     assert.equal(block.t, owner[0])
     assert.equal(child.t, owner[2])
     if (code !== undefined) assert.equal(child.text, code)
-    if (name.includes('invisible note')) {
+    if (name.includes('note body column')) {
       const noteLines = doc.footnoteDefs.get('n')[0].lines
-      assert.deepEqual(noteLines, name.includes('at the invisible') ? ['e', '- a'] : ['e'])
+      assert.deepEqual(noteLines, ['e', '- a'])
     }
   })
 }

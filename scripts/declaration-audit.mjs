@@ -191,6 +191,8 @@ const MANIFEST = [
   // BOTH modes, because the ruling accepts them for the release too. A row must
   // cite an owner/repo#N, and compare:impls fails a row that stopped differing.
   { repo: 'spec', path: 'resources/engine-fmt-layout.txt', kind: 'txt', policy: 'declared', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'scripts/lib/drift-ledger.mjs', staleness: 'now write the same bytes - delete the STALE line', owner: 'npm run compare:impls' },
+  { repo: 'spec', path: 'resources/engine-cross-read-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'scripts/compare-impls.mjs', staleness: 'declared cross-read difference(s) are stale', owner: 'npm run compare:impls -- --roundtrip --fail-on-diff' },
+  { repo: 'spec', path: 'resources/engine-target-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'scripts/compare-impls.mjs', staleness: 'declared target difference(s) are stale', owner: 'npm run compare:impls -- --roundtrip --fail-on-diff' },
   { repo: 'spec', path: 'resources/converter-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'scripts/lib/drift-ledger.mjs', staleness: 'and the engine now matches - delete the STALE line', owner: 'npm run compare:convert' },
   // ANOTHER ENGINE-LAG ENTRY, AND THE ONE THE RULE WAS WRITTEN FOR. All
   // are owed before a tag and declared inside a pull request: see the

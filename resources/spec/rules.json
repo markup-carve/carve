@@ -131,21 +131,9 @@
       "scope": "parsing"
     },
     {
-      "id": "CARVE-P0-016",
-      "part": "0",
-      "title": "A REAL DIV IS A CONTAINER LIKE ANY OTHER",
-      "scope": "parsing"
-    },
-    {
       "id": "CARVE-P0-017",
       "part": "0",
       "title": "CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P0-018",
-      "part": "0",
-      "title": "DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE",
       "scope": "parsing"
     },
     {
@@ -301,13 +289,7 @@
     {
       "id": "CARVE-P2-016",
       "part": "2",
-      "title": "INDENTATION IS COLUMNS, NOT CHARACTERS",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P2-017",
-      "part": "2",
-      "title": "BELOW THE BODY'S COLUMN THE BODY ENDS",
+      "title": "DEFINITION SEPARATOR SETS THE BODY COLUMN",
       "scope": "parsing"
     },
     {
@@ -440,12 +422,6 @@
       "id": "CARVE-P3-014",
       "part": "3",
       "title": "AN EMPTY BRACE PAIR IS NOT A CONSTRUCT",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P3-015",
-      "part": "3",
-      "title": "INDENTATION IS COLUMNS, NOT CHARACTERS",
       "scope": "parsing"
     },
     {
@@ -2127,6 +2103,18 @@
       "part": "9",
       "title": "A CELL SLOT IS COUNTED, NOT WEIGHED",
       "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P9-083",
+      "part": "9",
+      "title": "C3 MARKER-BODY COLUMN AND EXTENT",
+      "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P9-084",
+      "part": "9",
+      "title": "ONE COLON-FENCE FRAME",
+      "scope": "parsing"
     }
   ],
   "retired": [
@@ -2165,6 +2153,30 @@
       "part": "12",
       "title": "TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION",
       "replacement": "CARVE-P12-002"
+    },
+    {
+      "id": "CARVE-P0-016",
+      "part": "0",
+      "title": "A REAL DIV IS A CONTAINER LIKE ANY OTHER",
+      "replacement": "CARVE-P9-084"
+    },
+    {
+      "id": "CARVE-P0-018",
+      "part": "0",
+      "title": "DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE",
+      "replacement": "CARVE-P9-083"
+    },
+    {
+      "id": "CARVE-P2-017",
+      "part": "2",
+      "title": "BELOW THE BODY'S COLUMN THE BODY ENDS",
+      "replacement": "CARVE-P9-083"
+    },
+    {
+      "id": "CARVE-P3-015",
+      "part": "3",
+      "title": "INDENTATION IS COLUMNS, NOT CHARACTERS",
+      "replacement": "CARVE-P9-083"
     }
   ]
 }

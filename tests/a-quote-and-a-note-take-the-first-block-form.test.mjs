@@ -57,7 +57,7 @@ test('a note keeps + at end of input or before a blank', () => {
 test('non-flush-left lines retain their quote and note ownership', () => {
   assert.equal(html('> +\n flush'), '<blockquote><p>+\nflush</p></blockquote>')
   assert.equal(html('> +\n  flush'), '<blockquote><p>+\nflush</p></blockquote>')
-  assert.equal(html('[^a]: +\n flush\n\nsee[^a]'), '<p>flush</p>' + see + note('<p>+' + back + '</p>'))
+  assert.equal(html('[^a]: +\n flush\n\nsee[^a]'), see + note('<p>+\nflush' + back + '</p>'))
   assert.equal(html('[^a]: +\n  flush\n\nsee[^a]'), see + note('<p>+\nflush' + back + '</p>'))
 })
 

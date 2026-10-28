@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 
-const TARGETS = new Set(['html', 'markdown', 'plain', 'ansi'])
+const TARGETS = new Set(['html', 'markdown', 'plain', 'ansi', 'carve'])
 const ENGINES = new Set(['js', 'php', 'rust'])
 
 export function parseTargetDrift(path) {
@@ -37,4 +37,23 @@ export function targetDriftKey(target, slug, outputs, entries) {
     }
   }
   return null
+}
+
+// Two engines can share the same wrong result while the third matches the
+// corpus. Declare both lagging engines; a declaration for just one cannot
+// excuse the pair. The HTML fixture decides which side is right when present.
+export function targetDriftKeys(target, slug, outputs, entries, expected = null) {
+  if (outputs.length !== 3 || outputs.some(([, value]) => value.startsWith('ERROR:'))) return null
+  if (new Set(outputs.map(([, value]) => value)).size !== 2) return null
+  const lone = targetDriftKey(target, slug, outputs, entries)
+  if (lone !== null) {
+    const peerValue = outputs.find(([name]) => name !== lone.split('/')[1])?.[1]
+    if (expected === null || peerValue === expected) return [lone]
+  }
+  const pair = outputs.filter(([, value]) => outputs.filter(([, other]) => other === value).length === 2)
+  if (pair.length !== 2) return null
+  const singleton = outputs.find(([, value]) => value !== pair[0][1])
+  if (expected !== null && singleton?.[1] !== expected) return null
+  const keys = pair.map(([engine]) => `${target}/${engine}/${slug}`)
+  return keys.every(key => entries.has(key)) ? keys : null
 }

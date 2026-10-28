@@ -421,6 +421,7 @@ const CONT_MARKER = /^\+[ \t]*$/
 // Until that line existed a source holding a NUL could forge the frame - the
 // same collision shape as markup-carve/carve-rs#1217 (carve#1523).
 export const LAZY = '\u0000L\u0000'
+const lazyFrame = text => text.startsWith(LAZY) ? text : LAZY + text
 
 /// A body line with the internal LAZY frame removed.
 ///
@@ -447,7 +448,7 @@ export const rawPayload = (bodyLines, terminated = true) =>
 // line is re-materialized behind the LAZY frame, whose first character is not
 // whitespace, so it stands at column 0 and IS its own content.
 const BLANK_MEAS = { col: 0, rest: '', tabs: false }
-const LAZY_MEAS = (rest) => ({ col: 0, rest: LAZY + rest, tabs: false })
+const LAZY_MEAS = (rest) => ({ col: 0, rest: lazyFrame(rest), tabs: false })
 
 // The leading whitespace run, removed. `line.replace(/^[ \t]+/, '')` spells the
 // same thing without being counted, and this is a walk over indentation like
@@ -570,10 +571,31 @@ const FOOTNOTE_BODY_COLUMN = 2
 // REACHING column 2, not by starting with two literal space characters. A
 // bare tab (column 0 -> 4) and a space-then-tab (column 1 -> 4) both
 // qualify; a single space (column 1) does not.
+function markerBodyPolicy(contentColumn, markerColumn = 0) {
+  return {
+    contentColumn,
+    markerColumn,
+    reaches(line, measured) {
+      if (line === undefined) return false
+      const { col, rest } = measured ?? indentCols(line)
+      return col >= contentColumn && rest !== ''
+    },
+    blankRunEnd(lines, at, end) {
+      while (at < end && isBlank(lines[at])) at++
+      return at
+    },
+    attaches(measured) {
+      return !!measured && (measured.L ? measured.L.col : measured.col) === markerColumn
+    },
+  }
+}
+
+function reachesMarkerBody(line, column, measured = undefined) {
+  return markerBodyPolicy(column).reaches(line, measured)
+}
+
 function isFootnoteContinuationLine(line) {
-  if (line === undefined) return false
-  const { col, rest } = indentCols(line)
-  return col >= FOOTNOTE_BODY_COLUMN && rest !== ''
+  return reachesMarkerBody(line, FOOTNOTE_BODY_COLUMN)
 }
 
 /*
@@ -585,9 +607,9 @@ function isFootnoteContinuationLine(line) {
  * recurring shape catalogued in carve#755.
  */
 function footnoteBlankRunEnd(lines, i, n) {
-  let k = i
-  while (k < n && isBlank(lines[k])) k++
-  return isFootnoteContinuationLine(lines[k]) ? k : -1
+  const body = markerBodyPolicy(FOOTNOTE_BODY_COLUMN)
+  const k = body.blankRunEnd(lines, i, n)
+  return body.reaches(lines[k]) ? k : -1
 }
 
 // A definition body's column is the one its OWN marker establishes: `:` plus
@@ -612,9 +634,7 @@ const DEFINITION_BODY_COLUMN = 3
 // definition-body loop below - two tests plus the dedent - and a fix reaching
 // only some of them is the recurring shape catalogued in carve#755.
 function isDefinitionContinuationLine(line, column = DEFINITION_BODY_COLUMN, measured = undefined) {
-  if (line === undefined) return false
-  const { col, rest } = measured ?? indentCols(line)
-  return col >= column && rest !== ''
+  return reachesMarkerBody(line, column, measured)
 }
 
 // Roman numeral helpers for the SS11 N2/N3 ordered dialects.
@@ -1048,7 +1068,9 @@ function lineBlockSpanEnd(lines, idx) {
 // body kept can hold it open; scanning from there keeps collection linear.
 function paragraphOpenSince(bodyLines, from) {
   const tail = commentTailSince(bodyLines, from)
-  return tail.some((line) => line.trim() !== '') && bodyLeavesParagraphOpen(tail)
+  let last = tail.length - 1
+  while (last >= 0 && tail[last].trim() === '') last--
+  return last >= 0 && bodyLeavesParagraphOpen(tail)
 }
 
 function commentTailSince(bodyLines, from) {
@@ -2144,7 +2166,7 @@ function hostColonStep(h, inner, commentCloses = () => false, markerLine = false
   // host claims it. Its apparent colon opener cannot end that paragraph.
   if (!top && h.columns.length === 1 && inner.col > base) return false
   // An opener past a hosted container establishes its own base and may
-  // interrupt its paragraph (CARVE-P0-004, CARVE-P2-017).
+  // interrupt its paragraph (CARVE-P0-004, CARVE-P9-083).
   if (top && base === top.base && inner.col > top.column &&
       !(!bare && opensHostedColonBlock(inner.rest))) return false
   if (top && bare && inner.col !== top.base && inner.col !== top.column) return false
@@ -2600,7 +2622,7 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
       continue
     }
     // §10 I4: a code fence under an open paragraph with no closer at the
-    // body's column or its own is that paragraph's text (CARVE-P2-017).
+    // body's column or its own is that paragraph's text (CARVE-P9-083).
     const run = paragraphOpen && FENCE.exec(measured.rest)
     const unclosedFenceText = !!run && !(closerAfter(0, run[1], index) ||
       (measured.col > 0 && closerAfter(measured.col, run[1], index)))
@@ -3549,6 +3571,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let afterComment = false
       let commentScanFrom = 0
       let retainedParagraph = false
+      let lazyParagraphOpen = null
       // Indented continuation: the line's leading run must reach COLUMN 2
       // (PART 9 SS24 C1 column arithmetic), not two literal space characters.
       // A tab from column 0 already reaches column 4, so a bare tab or a
@@ -3560,10 +3583,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (CONT_MARKER.test(m[2]) && bodyLines.length === 1 &&
             measured.col === 0 && matchMarkerAt(measured)) break
         if (isBlank(lines[i])) afterComment = false
-        if (measured.col >= FOOTNOTE_BODY_COLUMN || isBlank(lines[i])) retainedParagraph = false
+        if (measured.col >= FOOTNOTE_BODY_COLUMN || isBlank(lines[i])) {
+          retainedParagraph = false
+          lazyParagraphOpen = null
+        }
         if (isFootnoteContinuationLine(lines[i])) {
           afterComment = afterCommentTransition(false, {})
-          bodyLines.push(dedent(lines[i], FOOTNOTE_BODY_COLUMN))
+          const content = dedent(lines[i], FOOTNOTE_BODY_COLUMN)
+          bodyLines.push(content)
+          if (foldablePlainLine(content)) lazyParagraphOpen = true
           pullPending = false
           i++
         } else if (isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {
@@ -3590,6 +3618,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // measured inside the body like anywhere else.
           const end = footnoteBlankRunEnd(lines, i, n)
           for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
+          lazyParagraphOpen = false
           i = end
         } else if (CONT_MARKER.test(lines[i] ?? '')) {
           // A `+` pull-left block joins the note (SS17 L4): the following
@@ -3615,11 +3644,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i++
           if (!attachesFlushLeft(ind(i), sourceDefCol)) break
           bodyLines.push('')
+          lazyParagraphOpen = false
           pullPending = true
         } else if (pullPending && !isBlank(lines[i] ?? '')) {
           // the whole flush-left block pulled in by the preceding `+` marker
           const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i), sourceDefCol)
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
+          lazyParagraphOpen = null
           pullPending = false
           i = end
         } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom))) {
@@ -3630,11 +3661,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // REACHING column 2, and it did not at column 0 or 1, which is the
           // band this covers.
           bodyLines.push(keptCommentDelimiter(lines[i]))
+          lazyParagraphOpen = false
           pullPending = false
           i++
         } else if (measured.col < FOOTNOTE_BODY_COLUMN &&
-            (afterComment || retainedParagraph || paragraphOpenSince(bodyLines, commentScanFrom)) &&
             COMMENT_LINE.test(measured.rest) &&
+            (afterComment || retainedParagraph || paragraphOpenSince(bodyLines, commentScanFrom)) &&
             !(measured.col === 0 && commentFenceOpensSpan(lines, i))) {
           const comment = classifyLayoutComment(lines, i)
           bodyLines.push(keptCommentDelimiter(lines[i]))
@@ -3643,24 +3675,29 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             i = comment.end
           } else i++
           commentScanFrom = bodyLines.length
+          lazyParagraphOpen = false
           retainedParagraph = false
           afterComment = afterCommentTransition(afterComment, { comment: true, belowComment: measured.col < FOOTNOTE_BODY_COLUMN })
         } else if (afterComment &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !(FENCE.test(lines[i]) && hasCloser(lines, i))) {
           // A retained marker is paragraph text and opens no list (PART 0 X1).
-          bodyLines.push(BULLET.test(trimLineEnd(measured.rest)) || isOrderedMarkerLine(measured.rest) ? LAZY + measured.rest : measured.rest)
+          bodyLines.push(BULLET.test(trimLineEnd(measured.rest)) || isOrderedMarkerLine(measured.rest) ? lazyFrame(measured.rest) : measured.rest)
           afterComment = afterCommentTransition(afterComment, {})
+          lazyParagraphOpen = true
           retainedParagraph = true
           i++
+        } else if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN &&
+            (lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) &&
+            !startsVisibleBlock(measured.rest) && !isTableRow(measured.rest) &&
+            !isColonBlockOpener(measured.rest) && !COLON_CLOSER.test(measured.rest) &&
+            !(FENCE.test(measured.rest) && hasCloser(lines, i)) &&
+            !(measured.col === 0 && (isDefinitionOrAttributeLine(measured.rest) ||
+              tryAttrLine(lines, i)))) {
+          bodyLines.push(lazyFrame(measured.rest))
+          lazyParagraphOpen = true
+          i++
         } else break
-        // NO LAZY CONTINUATION. A branch here used to fold any flush-left
-        // non-blank line into the note body, citing SS16 - but SS16 grants no
-        // such thing: the body is "the def line plus any following lines
-        // indented by >= 2 spaces", and SS17 L4's `+` marker is the explicit
-        // way to attach a flush-left block. None of the three engines folds it
-        // either. The branch silently moved a document paragraph into the note
-        // (and, when the note was unreferenced, deleted it outright).
       }
       const key = labelKey(label)
       if (!state.footnoteDefs.has(key)) {
@@ -3907,8 +3944,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const blankRunEnds = new Map()
           const afterBlankRun = (at) => {
             if (blankRunEnds.has(at)) return blankRunEnds.get(at)
-            let end = at
-            while (end < n && isBlank(lines[end])) end++
+            const end = markerBodyPolicy(sourceBodyColumn, sourceDescriptionCol).blankRunEnd(lines, at, n)
             for (let row = at; row < end; row++) blankRunEnds.set(row, end)
             return end
           }
@@ -4159,7 +4195,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // it ends the paragraph there and cannot fold into the description.
             if (inItem && authoredCol > 0 && tryAttrLine([dedented], 0)) break
             if (authoredCol === 0 && (isDefinitionOrAttributeLine(dedented) || !!tryAttrLine(lines, i))) break
-            // CARVE-P2-017: a surviving description can own a marker below this nested body.
+            // CARVE-P9-083: a surviving description can own a marker below this nested body.
             if ((inItem || descriptionOwnerColumn !== null &&
                 (sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) >= descriptionOwnerColumn) &&
                 !reachesBody(i) &&
@@ -4200,7 +4236,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (afterComment && !startsVisibleBlock(cur) &&
                 !isTableRow(cur) && !isColonBlockOpener(cur) &&
                 !(FENCE.test(cur) && hasCloser(lines, i))) {
-              pushBody(BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented) ? LAZY + dedented : dedented)
+              pushBody(BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented) ? lazyFrame(dedented) : dedented)
               afterComment = afterCommentTransition(afterComment, {})
               retainedParagraph = true
               i++
@@ -4235,7 +4271,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 bodyLeavesParagraphOpen(asRead(bodyLines)) &&
                 (HEADING.test(dedented) || HR.test(dedented) || isTableRow(dedented) ||
                  QUOTE.test(dedented) || (QUOTE.test(lastBlock) && isCodeBlockOpener(dedented)))) {
-              pushBody(LAZY + dedented)
+              pushBody(lazyFrame(dedented))
               i++
               continue
             }
@@ -4245,7 +4281,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 !startsVisibleBlock(dedented) &&
                 (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented) ||
                  ABBR_DEF.test(dedented) || tryAttrLine([dedented], 0) !== null)) {
-              pushBody(LAZY + dedented)
+              pushBody(lazyFrame(dedented))
               i++
               continue
             }
@@ -4284,7 +4320,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               const leadItem = matchMarkerAt(indentCols(bodyLines[0] ?? ''))
               const belowLeadItem = leadItem && authoredCol > 0 && authoredCol < bodyColumn + leadItem.markerWidth &&
                 matchMarkerAt(indentCols(dedented))
-              pushBody(lazyFence || belowLeadItem || CAPTION.test(dedented) ? LAZY + dedented : dedented)
+              pushBody(lazyFence || belowLeadItem || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
               i++
               continue
             }
@@ -5209,7 +5245,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
           // §17 L3: a refused `+` is never dropped; it folds into the open paragraph.
           if (qOpenPara) {
-            inner.push(LAZY + ind(i - 1).rest)
+            inner.push(lazyFrame(ind(i - 1).rest))
             continue
           }
           i--
@@ -5230,7 +5266,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (plusCol < sourceQuoteCol || !qOpenPara || qItemPara && plusCol === sourceQuoteCol) break
           // Right of the `>`, an unprefixed `+` reaches no marker column, so it folds (§17 L3).
           if (qItemPara) {
-            inner.push(LAZY + ind(i).rest)
+            inner.push(lazyFrame(ind(i).rest))
             i++
             continue
           }
@@ -5287,7 +5323,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // A line that reached HERE already framed came from an outer
           // collector's own fold; framing it twice leaks the sentinel into the
           // rendered text, which the paragraph collector strips only once.
-          inner.push(lines[i].startsWith(LAZY) ? lines[i] : LAZY + ind(i).rest)
+          inner.push(lines[i].startsWith(LAZY) ? lines[i] : lazyFrame(ind(i).rest))
           recordLazyFollower(inner, lines[i].startsWith(LAZY) ? lazyFollowerEligible.get(lines)?.[i] : (ind(i).L?.col ?? ind(i).col) === 0)
           i++
           continue
@@ -5715,7 +5751,7 @@ function foldedDefinitionEnd(lines, start, end, seen) {
 
 // A marker takes one block at its source marker column (markup-carve/carve#3421).
 const attachesFlushLeft = (firstMeas, column = 0) =>
-  !!firstMeas && (firstMeas.L ? firstMeas.L.col : firstMeas.col) === column
+  markerBodyPolicy(column, column).attaches(firstMeas)
 
 function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas, column = 0) {
   if (!attachesFlushLeft(firstMeas, column)) return start
@@ -5911,7 +5947,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
     if (head.text.startsWith('\t') && !/^%{3}/.test(head.text.slice(1))) {
-      head.text = LAZY + head.text.slice(1)
+      head.text = lazyFrame(head.text.slice(1))
     }
     const sourceQuoteCol = (i === 0 ? markerLineQuoteColumns.get(lines) : undefined) ??
       firstBlockQuoteColumn(ind(i).L?.src ?? lines[i])
@@ -5920,7 +5956,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const heads = new Set(head.dialects.map((d) => d.dialect))
       list.ord.dialects = list.ord.dialects.filter((d) => heads.has(d.dialect))
     }
-    let contentCol = head.indent + head.markerWidth
+    const itemBody = markerBodyPolicy(head.indent + head.markerWidth, authoredMarkerCol)
+    let contentCol = itemBody.contentColumn
     const itemLines = []
     const captionGaps = []
     const residueFence = { index: 0, opaque: null }
@@ -6135,7 +6172,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           ? dedentMeasured(lm2, raw, blockBase).text
           : lm2.col >= contentCol
             ? dedentMeasured(lm2, raw, contentCol).text
-            : LAZY + lm2.rest)
+            : lazyFrame(lm2.rest))
       }
       return hasCloser(body, 0)
     }
@@ -6934,7 +6971,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // §17 L3: a refused `+` is never dropped; it folds into the open paragraph.
         if (paragraphIsOpen()) {
           i = plusRow
-          pushLine(LAZY + '+', LAZY_MEAS('+'))
+          pushLine(lazyFrame('+'), LAZY_MEAS('+'))
           i++
         }
         if (i < n && !isBlank(lines[i]) && (ind(i).L?.col ?? ind(i).col) < sourceMarkerCol) break
@@ -7348,7 +7385,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const foldsIntoLeadTerm = leadTerm && col > contentCol && !nm
         // A colon container is not opaque: an opener past the column inside one
         // takes its authored base and may interrupt a paragraph
-        // (CARVE-P0-004, CARVE-P2-017).
+        // (CARVE-P0-004, CARVE-P9-083).
         const retainedAfterComment = afterComment && subCol > col && !opensBlockAt(line, i)
         const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 &&
           col > contentCol && !descendantOwned && !COLON_CLOSER.test(lm.rest) && !inPayload && !retainedAfterComment && opensHostedColonBlock(lm.rest)
@@ -7359,7 +7396,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           noteListChildColumn = nm.indent + nm.markerWidth
         }
         // An opener at or past the note body column opens in the note
-        // (CARVE-P2-017); no line below that column continues it.
+        // (CARVE-P9-083); no line below that column continues it.
         if (markerNoteEligible && i > noteFenceEnd && col >= markerNoteBodyColumn && !nm &&
             !descendantOwned && !insideFence() && !foldsIntoLeadTerm &&
             opensAuthoredBase(lm.rest) && !FENCE.test(lm.rest) &&
@@ -7413,7 +7450,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         }
         // A definition list on the marker line is a block at the content
         // column like one written below it, so its description keeps what
-        // reaches the body column (CARVE-P0-018, CARVE-P2-028).
+        // reaches the body column (CARVE-P9-083, CARVE-P2-028).
         if (pendingHeadTerm !== null && mayOpenAuthoredBlock) {
           measureHeadTerm()
         }
@@ -7568,7 +7605,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const codeColonText = fence.colon.length && fence.opaque?.kind === 'code' &&
           col > colonBases.at(-1) &&
           col === authoredBlockBase && COLON_CLOSER.test(lm.rest)
-        pushLine(codeColonText ? LAZY + dedented : dedented, dmeas)
+        pushLine(codeColonText ? lazyFrame(dedented) : dedented, dmeas)
         if (nm && lm.rest.includes('+') && markerCarriesContinuation(lm.rest.trim(),
             prefixMemo(state, lines, i).continuation ??= new Map())) {
           const columns = state.markerLineColumns.get(itemLines) ?? new Map()
@@ -7978,7 +8015,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // a marker BELOW the content column folds as lazy item text
         // (PART 9 SS24 C3; list markers never interrupt, SS10 I2)
         belowSpanClosed = false
-        pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
+        pushLine(lazyFrame(lm.rest), LAZY_MEAS(lm.rest))
         i++
         continue
       }
@@ -7986,7 +8023,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (nm && columnOwner(nm.indent) === 'below' && !deepestParagraphOpen() &&
           afterComment && itemLines.length > 0) {
         belowSpanClosed = false
-        pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
+        pushLine(lazyFrame(lm.rest), LAZY_MEAS(lm.rest))
         startPara()
         i++
         continue
@@ -8180,7 +8217,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           deepestIsDescendant = false
         }
         belowSpanClosed = false
-        pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
+        pushLine(lazyFrame(lm.rest), LAZY_MEAS(lm.rest))
         if (bodyQuote.at === i - 1 && bodyQuote.open) bodyQuote.at = i
         i++
         continue

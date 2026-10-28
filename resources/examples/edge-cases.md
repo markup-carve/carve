@@ -8840,7 +8840,7 @@ reference resolves or not:
 
 ## A flush-left line after a footnote definition belongs to the document
 
-A note body starts on its definition line and continues through lines indented by at least two spaces (§16). A `+` at the note's marker column attaches the next block at that column (§17 L4, markup-carve/carve#3421).
+The fixture name predates the shared marker-body ruling. With an open paragraph and no blank, `b` lazily continues the footnote body under §24 C3. A `+` at the note's marker column still attaches one block (§17 L4).
 
 ::: compare
 
@@ -8854,13 +8854,13 @@ see[^f]
 
 ```html
 <p>a</p>
-<p>b</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note
+b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9025,7 +9025,7 @@ see[^a]
 
 ## A definition below a footnote body's column is the document's own text
 
-One space is not a continuation - §16 wants two - so the line leaves the note and is the document's next block. It is not a definition either: the production starts at the opening bracket and allows no leading indent, so the reference below stays literal. The line is VISIBLE and INERT, and those two halves have to be pinned together: carve-js and carve-php rendered it AND defined from it, so a reader saw the definition as prose while a reference silently resolved through the same line (carve#701, carve-js#681, carve-php#825).
+The fixture name predates the shared marker-body ruling. The one-space line misses the footnote content column but lazily continues its open paragraph under §24 C3. It remains literal text inside the note and registers no reference definition. The later document reference is unresolved.
 
 ::: compare
 
@@ -9037,13 +9037,13 @@ see[^a] and [t][r]
 ```
 
 ```html
-<p>[r]: /u</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and [t][r]</p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note
+[r]: /u<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9505,7 +9505,7 @@ see[^f]
 
 ## A line at a footnote definition's own column, followed by non-blank text, forms its own tight block
 
-A footnote definition on a list item's own content column renders no trace (above), and none of the three reference engines loosens the item on account of it - agreed already. What was not settled is what a plain line right after the definition, with no blank line anywhere, does to the item. §10 I5 already answers half of it: an invisible construct interrupts an open paragraph exactly like a visible one, so the line after the definition starts a NEW block rather than folding back into the paragraph the definition ended. §17 L1/L2 answer the rest: nothing here is a blank line, so the item never loosens, and a tight item's paragraphs are ALL bare - the new block included, not only the first one. The item ends up holding two paragraph blocks with no blank between them, both unwrapped (carve#668; §17 L6).
+The fixture name records the earlier reading. The footnote definition is invisible in the item, but its own open paragraph can take a below-column lazy line under §24 C3. That line is note text rather than a second item paragraph. The item stays tight because it has no blank-separated second paragraph.
 
 ::: compare
 
@@ -9519,16 +9519,15 @@ see[^f]
 
 ```html
 <ul>
-  <li>a
-    more
-  </li>
+  <li>a</li>
 </ul>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>x
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -14551,7 +14550,6 @@ b
   <p>q</p>
   <div>
     <p>a</p>
-    <p>b</p>
   </div>
 </blockquote>
 ```
@@ -15810,15 +15808,6 @@ after[^f]
 <ul>
   <li>a</li>
 </ul>
-<p>after<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 :::
@@ -23821,9 +23810,7 @@ x[^f]
 
 ```html
 <ul>
-  <li>a
-    b
-  </li>
+  <li>a</li>
 </ul>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
@@ -23831,7 +23818,8 @@ x[^f]
   <ol>
     <li id="fn1">
       <p>t
-more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+more
+b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -24477,7 +24465,7 @@ tail
 
 The line below the content column. The opener has opened an empty container,
 which holds no paragraph, so `tail` has nothing to fold into and is a document
-paragraph (`CARVE-P0-009`, `CARVE-P0-016`).
+paragraph (`CARVE-P0-009`, `CARVE-P9-084`).
 
 ::: compare
 
@@ -25186,10 +25174,7 @@ tail
 
 ```html
 <ol>
-  <li>a
-    more
-tail
-  </li>
+  <li>a</li>
 </ol>
 ```
 
@@ -30565,14 +30550,14 @@ see[^a]
 ```
 
 ```html
-<p>+
-more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro
++
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -30623,14 +30608,14 @@ see[^a]
 ```
 
 ```html
-<p>+
-more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro
++
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -31162,13 +31147,13 @@ see[^a]
 ```
 
 ```html
-<p>flush</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>+
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -34459,7 +34444,7 @@ nothing.
 
 A definition past the container's content column opens on its authored base and is
 consumed, in a list item as under a definition or footnote body (CARVE-P0-004,
-CARVE-P0-011, CARVE-P2-017).
+CARVE-P0-011, CARVE-P9-083).
 
 :::: compare
 
@@ -34986,13 +34971,7 @@ An empty cell carrying an alignment run:
 
 ## A block opener past a nested footnote definition opens in the item
 
-A footnote definition is INVISIBLE - it leaves no paragraph open on the page.
-Its body reaches two columns past the definition, so a line ONE column past it
-is not body residue; it is the enclosing item's next block. A block opener there
-opens its block, and the item stays tight, exactly as it would with no
-definition between. The oracle used to demote the opener to paragraph text and
-turn the item loose - `<p># h</p>` for a heading visible in the source and
-absent from the render - which no engine does (markup-carve/carve#1949).
+A footnote definition is invisible at its authored location. Its body reaches two columns past the marker, while a below-column line may continue an open note paragraph under §24 C3. The fixture name preserves the former owner reading; the new output follows the shared marker-body rule.
 
 ::: compare
 
@@ -35057,9 +35036,7 @@ after
 
 ```html
 <ul>
-  <li><p>body</p>
-    <p>prose</p>
-  </li>
+  <li><p>body</p></li>
 </ul>
 <p>after</p>
 ```
@@ -35083,11 +35060,7 @@ after
 
 ```html
 <ul>
-  <li>body
-    <ul>
-      <li>item</li>
-    </ul>
-  </li>
+  <li>body</li>
 </ul>
 <p>after</p>
 ```
@@ -35097,7 +35070,7 @@ after
 ## An unterminated fence on a nested lead in a description body owns its body
 
 A flush-left line leaves the description body and its nested fence.
-CARVE-P0-013 and CARVE-P0-018 give both hosts the same boundary
+CARVE-P0-013 and CARVE-P9-083 give both hosts the same boundary
 (markup-carve/carve#2973).
 
 ::: compare
@@ -35711,7 +35684,7 @@ there always is.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>tail</dd>
+  <dd></dd>
 </dl>
 ```
 
@@ -35733,12 +35706,7 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <ul>
-      <li>nested
-tail</li>
-    </ul>
-  </dd>
+  <dd></dd>
 </dl>
 ```
 
@@ -37023,7 +36991,7 @@ b
 A bare `:::` is closer-shaped, but in a definition body that closes nothing it
 opens a container, as a typed `::: d` does: a `:::` opener is not guarded (§10
 I4). An empty container leaves no paragraph open, so a line below the body's
-column closes it (CARVE-P0-016, and *An empty unterminated container ends at a
+column closes it (CARVE-P9-084, and *An empty unterminated container ends at a
 flush-left line* for the typed spelling). The list-host spelling is a separate
 question and is not decided here (markup-carve/carve#2147).
 
@@ -37599,7 +37567,7 @@ y
 A `::` line with nothing after it but whitespace is not a term: a marker needs
 content, trailing whitespace is dropped and is not content (CARVE-P2-025), and
 `::` and `:: ` are one line. It opens no block, so below the body's column it
-folds into the open paragraph like any other plain line (CARVE-P2-017). The
+folds into the open paragraph like any other plain line (CARVE-P9-083). The
 third line of the first document is `::` and one space, of the second `::` and
 two (markup-carve/carve-js#1891).
 
@@ -46746,7 +46714,7 @@ c
 
 ## A description body whose own block is a fence keeps no line below its column
 
-CARVE-P2-017 ends the body below its content column, and its `A NON-OPENER
+CARVE-P9-083 ends the body below its content column, and its `A NON-OPENER
 STILL FOLDS` arm is conditioned on a paragraph being open above the line. A
 body whose own block is a fence leaves none, so a flush-left non-opener has
 nothing to reach and the body ends at the opener. The fence holds nothing and
@@ -48652,7 +48620,7 @@ tail
 :::
 
 Under a paragraph of the box the same opener closes the paragraph and
-establishes its own base (`CARVE-P2-017`, `CARVE-P0-004`).
+establishes its own base (`CARVE-P9-083`, `CARVE-P0-004`).
 
 :::: compare
 
@@ -48847,7 +48815,7 @@ see [t][a]
 
 A list item whose marker line is a definition term. A block that reaches the
 description body's column stays in the description, after a blank and without
-one, exactly as it does when ordinary text leads the item (`CARVE-P0-018`,
+one, exactly as it does when ordinary text leads the item (`CARVE-P9-083`,
 `CARVE-P2-028`, ruled on markup-carve/carve-php#3174). The description ends on
 that block and holds no paragraph, so the line below leaves the list
 (`CARVE-P0-009`).
@@ -49450,7 +49418,7 @@ a </#no	pe> b
 
 A recognized block opener past the content column of a colon container that a
 list item hosts takes its authored column as the base of that one block
-(`CARVE-P0-004`, `CARVE-P2-017`, ruled on
+(`CARVE-P0-004`, `CARVE-P9-083`, ruled on
 markup-carve/carve#2973). The line-block spelling, a code fence and a heading
 open like a named container does, with the container on the marker line or
 below it, quoted or not.
@@ -49523,7 +49491,7 @@ tail
 ::::
 
 Under a paragraph of the container the same opener closes the paragraph
-and opens its block (`CARVE-P2-017`, `CARVE-P0-004`).
+and opens its block (`CARVE-P9-083`, `CARVE-P0-004`).
 
 :::: compare
 
@@ -49881,7 +49849,7 @@ tail
 ## An opener past a hosted container's column interrupts its open paragraph
 
 A recognized opener past an item-hosted colon body's column interrupts its
-open paragraph as it does in an item (`CARVE-P2-017`, `CARVE-P0-004`).
+open paragraph as it does in an item (`CARVE-P9-083`, `CARVE-P0-004`).
 
 :::: compare
 
@@ -50143,7 +50111,7 @@ A[^1].
 
 A closed fence at the note's body column belongs to the note, even after a
 child list. A fence below that column belongs to the outer item (PART 0
-DEFINITION EXTENT, CARVE-P2-017).
+DEFINITION EXTENT, CARVE-P9-083).
 
 :::: compare
 
@@ -50323,7 +50291,7 @@ row in `<thead>` (CARVE-P9-006).
 
 A quote or a definition term at the note's body column opens inside the note,
 and no lazy line continues it. One below that column belongs to the outer item
-(PART 0 DEFINITION EXTENT, CARVE-P2-017).
+(PART 0 DEFINITION EXTENT, CARVE-P9-083).
 
 :::: compare
 
@@ -50764,7 +50732,7 @@ after</code></li>
 
 A footnote definition past a colon body's content column is a block on its
 authored base, so it is hoisted like one at the box's own column (CARVE-P0-004,
-CARVE-P2-017).
+CARVE-P9-083).
 
 :::: compare
 
@@ -50799,7 +50767,7 @@ ref[^n]
 
 ## A comment between a heading and a colon fence leaves the fence an opener
 
-Comments leave block ownership unchanged (CARVE-P0-005, CARVE-P9-053). The colon fence after the heading opens an empty div on its authored base (CARVE-P0-004, CARVE-P0-016).
+Comments leave block ownership unchanged (CARVE-P0-005, CARVE-P9-053). The colon fence after the heading opens an empty div on its authored base (CARVE-P0-004, CARVE-P9-084).
 
 :::: compare
 
@@ -51034,7 +51002,7 @@ more</p>
 
 ## A link definition or an attribute line past a box's column opens on its authored base
 
-A link definition or attribute line past a box's content column opens on its authored base (CARVE-P0-004, CARVE-P0-011, CARVE-P2-017), as a footnote definition there is hoisted (corpus 582).
+A link definition or attribute line past a box's content column opens on its authored base (CARVE-P0-004, CARVE-P0-011, CARVE-P9-083), as a footnote definition there is hoisted (corpus 582).
 
 :::: compare
 
@@ -54999,14 +54967,14 @@ x
 ````
 
 ```html
-<p>x</p>
 <p><a href="/u">r</a> <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>d
-- para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+- para</p>
+      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -55433,7 +55401,7 @@ An opener past the note body and below the item opens in the note (CARVE-P0-004)
 
 ::::::
 
-A marker below the description body column opens a sibling list when it reaches the item's content column (CARVE-P2-017).
+A marker below the description body column opens a sibling list when it reaches the item's content column (CARVE-P9-083).
 :::::: compare
 
 ````carve
@@ -57937,7 +57905,6 @@ gen-304
     <ul>
       <li>body</li>
     </ul>
-    <p>prose</p>
   </li>
 </ul>
 ```
@@ -58118,7 +58085,6 @@ gen-362
 <ul>
   <li>a</li>
 </ul>
-<p><a href="/url">r</a></p>
 ```
 
 :::::::
@@ -59695,13 +59661,13 @@ para
 
 ```html
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<p>+</p>
 <p>para</p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note
++<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -59772,7 +59738,9 @@ para
 ````
 
 ```html
-<blockquote><p>+</p></blockquote>
+<blockquote>
+
+</blockquote>
 <p>para</p>
 ```
 
@@ -62926,11 +62894,7 @@ A marker below the invisible footnote body belongs to the list item
 
 `````html
 <ol>
-  <li>d
-    <ul>
-      <li>a</li>
-    </ul>
-  </li>
+  <li>d</li>
 </ol>
 `````
 
@@ -64598,7 +64562,7 @@ Below stacked quote openers the innermost quote owns the `+`, so a follower at i
 A `:` separator one column in, below the content column of the list item that
 holds the definition list, opens nothing in the surviving context. It is not a
 separator but plain text, and lazy continuation folds it into the innermost open
-paragraph, the definition body (CARVE-P2-017, PART 9 §10 I2; carve#3547).
+paragraph, the definition body (CARVE-P9-083, PART 9 §10 I2; carve#3547).
 
 ::: compare
 
@@ -66174,11 +66138,13 @@ A term past the div opener still opens a definition list. The flush-left descrip
 
 ## A quoted link definition in a footnote body registers globally
 
-The quote opens at the footnote body's column. Its definition enters the document's symbol table.
+The first paragraph references the note. Its quoted link definition registers globally. The later unmarked link line lazily continues the open note paragraph under §24 C3 and resolves through that definition.
 
 :::: compare
 
 ```carve
+see[^n]
+
 [^n]: a
 
     > [r]: /x
@@ -66186,7 +66152,19 @@ The quote opens at the footnote body's column. Its definition enters the documen
 ```
 
 ```html
-<p><a href="/x">x</a></p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a</p>
+      <blockquote>
+
+      </blockquote>
+      <p><a href="/x">x</a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ::::

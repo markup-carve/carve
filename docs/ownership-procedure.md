@@ -65,7 +65,7 @@ A new paragraph at an enclosing list item's content column stores its own
 claim after an ended descendant; it can take the next lazy line.
 A fold closes nothing. Definition-term continuation follows CARVE-P2-028.
 Rules: CARVE-P0-006, CARVE-P0-007, CARVE-P0-009, CARVE-P0-014, CARVE-P0-015,
-CARVE-P0-016, CARVE-P0-017 and CARVE-P0-018.
+CARVE-P9-084, CARVE-P0-017 and CARVE-P9-083.
 
 ## O4 Classify in the owner
 

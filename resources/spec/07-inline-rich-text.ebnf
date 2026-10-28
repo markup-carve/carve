@@ -199,23 +199,15 @@ inline_footnote = "^[", inline_content, ']', [attribute_run] ;
    it skips; footnote recognition is DISABLED inside the content *)
 
 footnote_definition = "[^", footnote_label, "]:", space+, inline_content, newline,
-                      {footnote_continuation | continuation_marker_block} ;
+                      {footnote_continuation | continuation_marker_block
+                      | lazy_continuation_line} ;
 footnote_continuation = (footnote_indent, inline_content, newline) | blank_line ;
 footnote_indent = whitespace, {whitespace} ;
-(* the body extends to following lines indented by >= 2 spaces -- PART 9 §16.
-   A lone `+` at the definition's marker column also attaches a block there (`continuation_marker_block`,
-   PART 9 §17), the same continuation marker lists, block quotes and definition
-   bodies use.
-
-   INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE [CARVE-P3-015]. Any
-   whitespace run REACHING COLUMN 2 indents the body: a bare tab (column 0 ->
-   4) or a space then a tab (column 1 -> 4) qualify exactly as two literal
-   spaces do; a single space (column 1) does not. PART 9 §24 C1 gives a tab its
-   column value (to the next multiple of 4). This is INDENTATION, not a marker
-   SEPARATOR -- it does not touch the literal `space` the def line's own `]:`
-   separator requires (unchanged, PART 9 §24 C2's sibling rule for markers).
-   `footnote_indent` above is therefore deliberately loose; the column-2 floor
-   is column arithmetic, not a character-by-character encoding.
+(* A footnote definition has the `[^label]: ` marker and renders as an endnote.
+   Its body follows PART 9 §24 C3 (CARVE-P9-083), including column arithmetic,
+   blank runs, lazy paragraph text, `+` attachment and closing by column.
+   `footnote_indent` spells a whitespace run; the shared column rule decides
+   whether that run reaches the body's two-column floor.
 
    `inline_content` above describes THE SHAPE OF A LINE that belongs to the
    body, not how the collected body is parsed. The body is parsed AS BLOCKS
