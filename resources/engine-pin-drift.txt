@@ -40,10 +40,13 @@
 437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 620-generated-container-documents-16  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 744-a-task-item-uses-the-ordered-item-column-rule  Task ownership differs in pinned engines; markup-carve/carve-js#3801 and markup-carve/carve-rs#3407.
 745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes  O3 lazy quote ownership differs in pinned engines; markup-carve/carve-js#3800 and markup-carve/carve-rs#3406.
 745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes-3  O3 lazy quote ownership differs in pinned engines; markup-carve/carve-js#3800 and markup-carve/carve-rs#3406.
+749-a-dangling-continuation-marker-leaves-an-attached-item  Pinned JavaScript drops the returned marker; markup-carve/carve-js#3816.
+751-a-lazy-line-keeps-its-plus-through-three-quote-levels  Pinned JavaScript reads the quoted plus at the wrong owner; markup-carve/carve-js#3813.
+752-a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker  Pinned JavaScript uses the wrong task child base; markup-carve/carve-js#3814.
+753-a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker  Pinned JavaScript uses the wrong task child base; markup-carve/carve-js#3814.

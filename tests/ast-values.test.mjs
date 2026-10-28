@@ -147,7 +147,7 @@ const shippedDeclaration = () =>
  * Run 36552218597, on the next head, fails the same step again.
  */
 // Re-measured at the pinned engines: the German heading ID differs in one document.
-const LAST_MEASURED = new Map([['link.href', 2], ['text.value', 1]])
+const LAST_MEASURED = new Map([['link.href', 2], ['text.value', 2]])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>

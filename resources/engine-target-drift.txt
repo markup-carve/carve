@@ -63,9 +63,6 @@ html/rust/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item
 html/js/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
-html/php/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
-html/rust/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
 html/js/620-generated-container-documents-16  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/620-generated-container-documents-16  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/620-generated-container-documents-16  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
