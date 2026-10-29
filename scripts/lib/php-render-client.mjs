@@ -34,9 +34,10 @@ child.stdout.on('data', (chunk) => {
 child.on('exit', (code, signal) => reply({ exit: code ?? signal }))
 child.stdin.on('error', () => {})
 parentPort.on('message', (message) => {
-  if (message.port) port = message.port
-  else if (message.kill) child.kill('SIGKILL')
-  else child.stdin.write(message.line + '\\n')
+  if (message.port) {
+    port = message.port
+    reply({ pid: child.pid })
+  } else child.stdin.write(message.line + '\\n')
 })
 `
 
@@ -52,9 +53,17 @@ export function phpRenderer(phpDir) {
     return { worker, port: port1, flag: new Int32Array(shared) }
   }
 
+  // Killed from here, by pid: a worker being terminated may never run a kill request.
   const stop = () => {
     if (!server) return
-    server.worker.postMessage({ kill: true })
+    for (let m; (m = receiveMessageOnPort(server.port)); ) server.pid ??= m.message.pid
+    if (server.pid) {
+      try {
+        process.kill(server.pid, 'SIGKILL')
+      } catch {
+        // already gone
+      }
+    }
     server.worker.terminate()
     server = null
   }
@@ -68,6 +77,10 @@ export function phpRenderer(phpDir) {
     const deadline = Date.now() + timeoutMs
     for (;;) {
       const received = receiveMessageOnPort(port)
+      if (received?.message.pid) {
+        server.pid = received.message.pid
+        continue
+      }
       if (received) {
         const { line } = received.message
         try {

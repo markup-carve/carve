@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { chmodSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -10,6 +10,7 @@ import {
   agreementPattern, agrees, dateSeed, fence, firstWhere, groupFindings, issueBody, issueTitle,
   mutate, plan, reduce, restrictPattern, rng, shape, signature, signaturesIn,
 } from '../scripts/lib/mutation-fuzz.mjs'
+import { phpRenderer } from '../scripts/lib/php-render-client.mjs'
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -174,4 +175,43 @@ test('the runner goes red, not green, when an engine is missing', () => {
   })
   assert.equal(run.status, 2)
   assert.match(run.stderr, /missing engine\(s\): carve-js/)
+})
+
+const hasPhp = spawnSync('php', ['-v']).status === 0
+
+// A stand-in checkout whose autoloader runs `body` instead of loading carve-php.
+const fakeCheckout = (body) => {
+  const dir = mkdtempSync(join(tmpdir(), 'fuzz-php-'))
+  mkdirSync(join(dir, 'vendor'))
+  writeFileSync(join(dir, 'vendor/autoload.php'), `<?php ${body}`)
+  return dir
+}
+// Running, as opposed to gone or a zombie nobody has reaped yet (Linux /proc).
+const alive = (pid) => {
+  try {
+    return !/^\d+ \(.*\) Z/.test(readFileSync(`/proc/${pid}/stat`, 'utf8'))
+  } catch {
+    return false
+  }
+}
+
+test('a php render server that hangs yields null and is killed', { skip: (!hasPhp || process.platform !== 'linux') && 'needs php on linux' }, () => {
+  const checkout = fakeCheckout('file_put_contents(__DIR__ . "/pid", getmypid()); sleep(60);')
+  assert.equal(phpRenderer(checkout).render(['a'], 1500), null)
+  const pid = Number(readFileSync(join(checkout, 'vendor/pid'), 'utf8'))
+  for (let i = 0; i < 20 && alive(pid); i++) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50)
+  assert.ok(!alive(pid), `php ${pid} still running`)
+})
+
+test('a php render server that dies yields null', { skip: !hasPhp && 'no php' }, () => {
+  const renderer = phpRenderer(fakeCheckout('exit(3);'))
+  assert.equal(renderer.render(['a'], 10_000), null)
+})
+
+test('a php render server answers batch after batch', { skip: !hasPhp && 'no php' }, () => {
+  const checkout = fakeCheckout('namespace MarkupCarve\\Carve; class CarveConverter { function convert($s) { return strtoupper($s); } }')
+  const renderer = phpRenderer(checkout)
+  assert.deepEqual(renderer.render(['a', 'b']), ['A', 'B'])
+  assert.deepEqual(renderer.render(['c']), ['C'])
+  renderer.close()
 })
