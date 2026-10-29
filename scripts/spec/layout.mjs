@@ -6269,9 +6269,22 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
   let measuredLines = lines.slice(start, limit)
   if (readColumn > 0) {
     const read = []
+    // A code fence the block opens takes no lazy line: S4 folds into a paragraph only.
+    let fence = null
     for (const line of measuredLines) {
       const measured = indentCols(line)
-      if (measured.rest === '' || measured.col >= readColumn) read.push(dedentParts(line, readColumn).text)
+      if (measured.rest === '' || measured.col >= readColumn) {
+        const text = dedentParts(line, readColumn).text
+        const at = indentCols(text)
+        if (read.length === 0) {
+          const open = FENCE.exec(at.rest)
+          if (open && parseFenceInfo(open[2]) !== null) fence = { run: open[1], col: at.col }
+        } else if (fence && at.col === fence.col) {
+          const close = PURE_FENCE.exec(at.rest)
+          if (close && close[1][0] === fence.run[0] && close[1].length >= fence.run.length) fence = null
+        }
+        read.push(text)
+      } else if (fence) break
       else if (measured.rest[0] === '{' && tryAttrLine([measured.rest], 0)) break
       // A description marker with no term opens nothing, so it folds (PART 0 S4).
       else if (foldablePlainLine(measured.rest) || DESCRIPTION_TEXT.test(measured.rest)) read.push(lazyFrame(measured.rest))
@@ -7414,8 +7427,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // this whole branch rests on, applied to the body itself. Without it
         // the state outlived its container and `- a` / `  - b` / blank /
         // `    ``` ` / `    p` / `  x` / `y` closed the outer item's paragraph
-        // and put `y` outside the list.
-        if (dmeas.col < open.col) return null
+        // and put `y` outside the list. The line that ends it is read afresh:
+        // a sibling's marker-line fence opens a body of its own.
+        if (dmeas.col < open.col) return trackNestedFence(null, dmeas, sourceCol, idx, descendantOwned)
         const c = dmeas.col === open.col ? PURE_FENCE.exec(dmeas.rest) : null
         return c && c[1][0] === open.run[0] && c[1].length >= open.run.length ? null : open
       }
