@@ -121,8 +121,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "        if (!para || closerAhead(run)) return true\n",
-          "replace": "        if (false) return true\n"
+          "find": "    if (closer === -1) return true\n",
+          "replace": "    if (false) return true\n"
         }
       ]
     },
@@ -131,8 +131,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "const reachable = closerAhead(run, at, owner.col, col)",
-          "replace": "const reachable = true"
+          "find": "      return { kind: 'fence', family: 'code', interrupts: true, closes }",
+          "replace": "      return { kind: 'fence', family: 'code', interrupts: false, closes }"
         }
       ]
     },

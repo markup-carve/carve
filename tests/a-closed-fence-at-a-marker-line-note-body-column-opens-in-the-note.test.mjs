@@ -52,7 +52,8 @@ for (const depth of [0, 1, 2]) for (const marker of ['-', '*', '1.', '1)', '- [ 
       assert.doesNotMatch(html.slice(html.indexOf('<li id="fn1">')), /<pre>/, src)
     }
     const unclosed = source(marker, body, run, depth, { closed: false })
-    assert.equal(render(unclosed), render(unclosed.replace(run, run === '```' ? '`' : '\\~~~')), unclosed)
+    // carve#4018: an unclosed fence interrupts too and ends at the line that misses the note.
+    assert.equal(render(unclosed), render(source(marker, body, run, depth)), unclosed)
   })
 }
 

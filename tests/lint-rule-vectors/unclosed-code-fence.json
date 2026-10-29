@@ -71,6 +71,57 @@
       }
     },
     {
+      "name": "under-a-paragraph",
+      "description": "An opener under an open paragraph interrupts it whether or not a closer follows.",
+      "source": "Text\n```\ncode\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "```",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "under-an-item-paragraph",
+      "description": "Under an item's paragraph the fence runs to the end of the item.",
+      "source": "- item\n  ```\n  code\nafter\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "```",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "under-a-quote-paragraph",
+      "description": "Under a quoted paragraph the unmarked line ends the fence and the quote.",
+      "source": "> q\n> ```\ntail\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "```",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "eof-in-item",
       "description": "The input ends while the item and the fence are open.",
       "source": "- ```\n  x\n",
@@ -122,8 +173,8 @@
       }
     },
     {
-      "name": "container-div",
-      "description": "The div's closer ends the fence inside it.",
+      "name": "div-closer-is-payload",
+      "description": "A colon closer inside an unclosed fence is payload, so the fence runs on past it.",
       "source": "::: note\n```\nx\n:::\n",
       "expected": {
         "findings": [
@@ -132,7 +183,7 @@
             "column": 1,
             "includes": [
               "```",
-              "end of its container"
+              "end of the document"
             ]
           }
         ]
@@ -213,11 +264,28 @@
       }
     },
     {
-      "name": "folded-opener-is-not-a-fence",
-      "description": "An indented opener folds into the paragraph as text and opens no code block.",
-      "source": "para\n  ```\n",
+      "name": "invalid-opener-is-text",
+      "description": "A line whose info string is invalid is not an opener and opens nothing.",
+      "source": "Text\n```js title=\"x\"\ncode\n",
       "expected": {
         "findings": []
+      }
+    },
+    {
+      "name": "indented-opener-under-a-paragraph",
+      "description": "An indented opener interrupts the paragraph and opens a code block.",
+      "source": "para\n  ```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "```",
+              "end of the document"
+            ]
+          }
+        ]
       }
     },
     {

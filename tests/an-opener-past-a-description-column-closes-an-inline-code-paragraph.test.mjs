@@ -6,22 +6,21 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (source) => renderDoc(parse(source)).replace(/\s+/g, ' ').replace(/ ?(<[^>]+>) ?/g, '$1')
 const quoted = (source) => source.split('\n').slice(0, -1).map((line) => '> ' + line).join('\n') + '\n'
 const description = (term, body) => `<ul><li><dl><dt>${term}</dt><dd>${body}</dd></dl></li></ul>`
-const table = '<table><tbody><tr><td>a</td></tr></tbody></table>'
-const paragraph = '<p>p<code></code></p>'
+const paragraph = '<p>p</p>'
 
-// CARVE-P2-017 and PART 9 §10 I1/I4: an unclosed fence establishes no body base;
-// a block opener past the description column closes the inline-code paragraph.
+// CARVE-P2-017 and PART 9 §10 I1/I4 with carve#4018: a fence opener interrupts the
+// description paragraph without a closer; a line below the body column ends it.
 const positiveRows = [
-  ['a fence run at the description column before a table', [
+  ['a fence run below the description column before a table', [
     '- :: t', '  :   p', '      ```', '    ```', '        | a |', '',
-  ].join('\n'), description('t', paragraph + table)],
-  ['an open inline code span before a table', [
+  ].join('\n'), '<ul><li><dl><dt>t</dt><dd><p>p</p><pre><code></code></pre></dd></dl><pre><code>| a |</code></pre></li></ul>'],
+  ['an unclosed fence before a table', [
     '- :: t', '  :   p', '      ```', '        | a |', '',
-  ].join('\n'), description('t', paragraph + table)],
-  ['a lazy line and a raw-looking inline code span before a div', [
+  ].join('\n'), description('t', paragraph + '<pre><code>| a |</code></pre>')],
+  ['a lazy line and an unclosed raw fence before a div', [
     '> - :: term', '>   : payload', '   code', '>       ```=html',
     '>         :::', '>  :: t2', '',
-  ].join('\n'), '<blockquote>' + description('term', '<p>payload code<code>=html</code></p><div></div>') + '<dl><dt>t2</dt></dl></blockquote>'],
+  ].join('\n'), '<blockquote>' + description('term', '<p>payload code</p>:::') + '<dl><dt>t2</dt></dl></blockquote>'],
 ]
 
 for (const [name, source, expected] of positiveRows) {
@@ -32,30 +31,30 @@ for (const [name, source, expected] of positiveRows) {
 }
 
 for (const [name, opener, block] of [
-  ['heading', '# h', '<h1 id="h">h</h1>'],
-  ['thematic break', '***', '<hr>'],
-  ['blockquote', '> q', '<blockquote><p>q</p></blockquote>'],
-  ['note', '::: note', '<aside class="admonition note" aria-label="Note"></aside>'],
+  ['heading', '# h', '# h'],
+  ['thematic break', '***', '***'],
+  ['blockquote', '> q', '&gt; q'],
+  ['note', '::: note', '::: note'],
 ]) {
-  test(`an open inline code span before a ${name}`, () => {
+  test(`an unclosed fence takes a ${name} as payload`, () => {
     const source = ['- :: t', '  :   p', '      ```', '        ' + opener, ''].join('\n')
-    assert.equal(html(source), description('t', paragraph + block))
+    assert.equal(html(source), description('t', paragraph + `<pre><code>${block}</code></pre>`))
   })
 }
 
 for (const [name, source, expected] of [
-  ['plain text past the column folds into inline code', [
+  ['plain text past the column is fence payload', [
     '- :: a', '  : p', '    ```', '      x', '',
-  ].join('\n'), description('a', 'p<code>x</code>')],
+  ].join('\n'), description('a', '<p>p</p><pre><code>x</code></pre>')],
   ['a fence closed at its own column keeps its code block', [
     '- :: term', '  : desc', '      ```', '      code', '      ```', 'after', '',
   ].join('\n'), description('term', '<p>desc</p><pre><code>code</code></pre>') + '<p>after</p>'],
   ['a fence closed at the description column keeps its code block', [
     '- :: term', '  : payload', '      ```', '      code', '    ```', 'after', '',
   ].join('\n'), description('term', '<p>payload</p><pre><code>code</code></pre>') + '<p>after</p>'],
-  ['a later fence run at neither closing column stays paragraph text', [
+  ['a later fence run past the opener is payload', [
     '- :: term', '  : payload', '    ```', '    code', '      ```', 'after', '',
-  ].join('\n'), description('term', 'payload<code>code</code>after')],
+  ].join('\n'), description('term', '<p>payload</p><pre><code>code ```</code></pre>') + '<p>after</p>'],
 ]) {
   test(name, () => assert.equal(html(source), expected))
 }

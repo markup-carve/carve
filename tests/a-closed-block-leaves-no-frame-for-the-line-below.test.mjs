@@ -18,14 +18,16 @@ for (const depth of [0, 1, 2]) for (const lead of ['    ```', '  ```', '    ~~~~
   for (const [name, mid] of Object.entries(between)) for (const tail of ['TAIL', '1. TAIL']) {
     const fence = lead.includes('~') ? '```' : '~~~'
     const body = ['- a', lead, ...(blank ? [''] : []), ...mid, '  ' + fence, '  code', '  ' + fence]
-    test(`no paragraph resumes after a closed block under a failed opener: depth ${depth}, ${JSON.stringify(lead)}, blank ${blank}, ${name}, ${tail}`, () => {
+    test(`no paragraph resumes after a closed block under an unclosed opener: depth ${depth}, ${JSON.stringify(lead)}, blank ${blank}, ${name}, ${tail}`, () => {
       assert.ok(outside(html(quoted(depth, body) + tail + '\n'), depth))
     })
     // A marker at document column 0 opens a list beside an unquoted one, so
     // only the quoted spellings fold it.
-    if (tail === 'TAIL' || depth > 0) test(`an open paragraph after that block still takes the line: depth ${depth}, ${JSON.stringify(lead)}, blank ${blank}, ${name}, ${tail}`, () => {
+    // The opener interrupts `a` and its payload runs to the end of the item (CARVE-P0-013).
+    if (tail === 'TAIL' || depth > 0) test(`a content line after that block stays in the unclosed fence: depth ${depth}, ${JSON.stringify(lead)}, blank ${blank}, ${name}, ${tail}`, () => {
       const out = html(quoted(depth, [...body, '  more']) + tail + '\n')
-      assert.match(out, /more\n?(1\. )?TAIL<\/li><\/ul>/)
+      assert.match(out, /more<\/code><\/pre><\/li><\/ul>/)
+      assert.ok(outside(out, depth))
     })
   }
 }

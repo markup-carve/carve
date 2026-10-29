@@ -23,7 +23,7 @@ test("a closed below-description ``` opens in the item, column 5, quote False", 
   assert.equal(renderDoc(parse("- :: t\n  :   p\n     ```\n  ```\n")), "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n      <dd>p</dd>\n    </dl>\n    <pre><code></code></pre>\n  </li>\n</ul>")
 })
 
-test("CONTROL: a below-description run without a closer stays inline", () => {
-  assert.equal(renderDoc(parse("- :: t\n  :   p\n    ```\n")), "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n      <dd>p\n<code></code></dd>\n    </dl>\n  </li>\n</ul>")
+test("CONTROL: a below-description run without a closer opens in the item too", () => {
+  assert.equal(renderDoc(parse("- :: t\n  :   p\n    ```\n")), "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n      <dd>p</dd>\n    </dl>\n    <pre><code></code></pre>\n  </li>\n</ul>")
 })
 

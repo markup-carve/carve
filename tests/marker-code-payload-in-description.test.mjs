@@ -68,10 +68,13 @@ for (const priorParagraph of [false, true]) {
 test('does not treat a marker-shaped paragraph as an opaque list fence', () => {
   const source = ':: term\n: para\n  - [ ] ~~~\n        ``` js\n       [r]: /in\n  +\n     [s]: /s\n'
   const ast = parse(source)
-  assert.equal(leaves(ast.blocks).length, 0)
-  // A definition past the body's column registers there (CARVE-P0-020, carve#3279).
-  assert.deepEqual(ast.blocks[0].items[1].ddBlocks, [{ t: 'para', lines: ['para', '- [ ] ~~~', '``` js'] }, { t: 'para', lines: ['+'] }])
-  assert.deepEqual([...ast.linkDefs.keys()], ['r', 's'])
+  assert.equal(leaves(ast.blocks).length, 1)
+  // The `- [ ] ~~~` line stays paragraph text; the ``` js line interrupts it (carve#4018), so the definitions are payload.
+  assert.deepEqual(ast.blocks[0].items[1].ddBlocks, [
+    { t: 'para', lines: ['para', '- [ ] ~~~'] },
+    { t: 'code', lang: 'js', title: null, text: '[r]: /in\n+\n[s]: /s\n' },
+  ])
+  assert.deepEqual([...ast.linkDefs.keys()], [])
 })
 
 test('keeps a below-authored-base definition outside the measured marker fence', () => {

@@ -16,42 +16,44 @@ for (const run of [F, '~~~']) {
   })
 }
 
-// The fence line is paragraph text; the later unclosed opener opens on its own.
+// The fence line interrupts the paragraph (carve#4018); the later run past it is payload.
 for (const [host, pad, close] of [['', '', ''], ['- ', '  ', '</li>\n</ul>'], ['> ', '> ', '</blockquote>']]) {
-  test(`a text fence line and a later unclosed opener stay apart, host ${JSON.stringify(host)}`, () => {
+  test(`a fence line opens and a later run past it is payload, host ${JSON.stringify(host)}`, () => {
     const lines = [`${host}x`, `${pad}${F}`, `${pad}a`, pad.trimEnd(), `${pad} ${F}`]
     const out = html(lines.join('\n') + '\n')
-    assert.match(out, /<code>\na<\/code>/)
-    assert.match(out, /<pre><code><\/code><\/pre>/)
+    assert.match(out, /<p>x<\/p>|<li>x\n/)
+    assert.ok(out.includes(`<pre><code>a\n\n ${F}\n</code></pre>`))
     if (close) assert.ok(out.includes(close))
   })
 }
 
 test('an unclosed opener after a blank leaves a below-column line outside the item', () => {
   assert.equal(html(`- x\n  ${F}\n  a\n\n   ${F}\ntail\n`),
-    `<ul>\n  <li>x\n<code>\na</code>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>tail</p>`)
+    `<ul>\n  <li>x\n    <pre><code>a\n\n ${F}\n</code></pre>\n  </li>\n</ul>\n<p>tail</p>`)
 })
 
-// §17 L3, L4: a marker body takes a `+` only with a block at its marker column.
-test('a `+` with no block at the marker column stays text in the lazy child paragraph', () => {
+// §17 L3, L4 with carve#4018: the fence opens at the outer item column, so the `+` is its payload.
+test('a `+` under a fence at the outer item column is fence payload', () => {
   const out = html(`- outer\n  - inner\n  ${F}\n  +\n   ${F}\nnext\n`)
-  assert.doesNotMatch(out, /<pre>/)
-  assert.match(out, /\+\n<\/code>\nnext<\/li>/)
+  assert.match(out, /<li>inner<\/li>\n\s*<\/ul>\n\s*<pre><code>\+\n `{3}\n<\/code><\/pre>/)
+  assert.match(out, /<\/ul>\n<p>next<\/p>$/)
 })
 
-// carve#3912: past a below-column line the closer is measured from the authored opener.
+// carve#3912, carve#4018: a below-column line ends an open fence; no closer is searched below it.
 for (const run of [F, '~~~']) for (const marker of ['- ', '1. ', '- [ ] ']) {
-  test(`a moved opener's closer past a below-column line opens the fence, ${marker.trim()}, ${run}`, () => {
+  test(`a moved opener opens the fence and a below-column line ends it, ${marker.trim()}, ${run}`, () => {
     const pad = ' '.repeat(marker === '1. ' ? 4 : 3)
     const doc = parse(`${marker}[^n]: text\n${pad}${run}\n${pad}code\n out\n${pad}${run}\nafter [^n]\n\nr[^n]\n`)
     assert.deepEqual(doc.blocks[0].items[0].blocks.map((block) => block.t), ['code'])
-    assert.deepEqual(doc.blocks[1].lines, ['out', run, 'after [^n]'])
+    assert.deepEqual(doc.blocks[1].lines, ['out'])
+    assert.deepEqual(doc.blocks[2], { t: 'code', lang: '', title: null, text: 'after [^n]\n\nr[^n]\n' })
   })
-  test(`an opener at the item column with a closer past it stays text, ${marker.trim()}, ${run}`, () => {
+  test(`an opener at the item column opens without a closer in the item, ${marker.trim()}, ${run}`, () => {
     const col = marker === '1. ' ? 3 : 2
-    const out = html(`${marker}text\n${' '.repeat(col)}${run}\n${' '.repeat(col)}code\n out\n${' '.repeat(col + 1)}${run}\nafter\n`)
-    assert.doesNotMatch(out, /<pre>/)
-    assert.match(out, /after<\/li>/)
+    const doc = parse(`${marker}text\n${' '.repeat(col)}${run}\n${' '.repeat(col)}code\n out\n${' '.repeat(col + 1)}${run}\nafter\n`)
+    assert.deepEqual(doc.blocks[0].items[0].blocks.map((block) => block.t), ['para', 'code'])
+    assert.deepEqual(doc.blocks[1].lines, ['out'])
+    assert.deepEqual(doc.blocks[2], { t: 'code', lang: '', title: null, text: 'after\n' })
   })
 }
 

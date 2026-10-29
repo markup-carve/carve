@@ -22,17 +22,17 @@ for (const depth of [1, 2]) for (const nesting of [1, 2, 3]) for (const over of 
     const out = html(quoted(depth, [...items(nesting), pad + 'text']) + 'tail\n')
     assert.match(out, /text tail<\/li>/)
   })
-  // An absorbed run of one fence character does not wait for the other.
+  // An unclosed opener interrupts the item paragraph; the other run is its payload.
   for (const [absorbed, run] of [['```', '~~~'], ['~~~', '```']]) {
-    test(`a fence past the column under an absorbed opener: depth ${depth}, nesting ${nesting}, +${over}, ${absorbed} then ${run}`, () => {
+    test(`a fence past the column is payload of the unclosed opener above it: depth ${depth}, nesting ${nesting}, +${over}, ${absorbed} then ${run}`, () => {
       const out = html(quoted(depth, [...items(nesting), pad + absorbed, pad + run, pad + 'code', pad + run]) + 'tail\n')
-      assert.match(out, /<pre><code>code/)
+      assert.match(out, new RegExp(`<pre><code>${run} code ${run}</code></pre>`))
       assert.match(out, /<\/blockquote><p>tail<\/p>$/)
     })
-    test(`with no closer the second run is absorbed too: depth ${depth}, nesting ${nesting}, +${over}, ${absorbed} then ${run}`, () => {
+    test(`with no closer the second run is payload too: depth ${depth}, nesting ${nesting}, +${over}, ${absorbed} then ${run}`, () => {
       const out = html(quoted(depth, [...items(nesting), pad + absorbed, pad + run, pad + 'code']) + 'tail\n')
-      assert.doesNotMatch(out, /<pre>/)
-      assert.doesNotMatch(out, /<p>tail<\/p>/)
+      assert.match(out, new RegExp(`<pre><code>${run} code</code></pre>`))
+      assert.match(out, /<\/blockquote><p>tail<\/p>$/)
     })
   }
 }

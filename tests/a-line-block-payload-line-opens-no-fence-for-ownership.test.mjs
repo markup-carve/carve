@@ -6,9 +6,10 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const render = source => renderDoc(parse(source))
 const boxCode = html => html.match(/<div class="box">[\s\S]*?<pre><code>[\s\S]*?<\/code><\/pre>/)?.[0].match(/<pre><code>[\s\S]*?<\/code><\/pre>/)?.[0]
 
+// An unclosed fence is not ended by a colon closer; the closer is payload (carve#4018).
 for (const [name, source, expected] of [
-  ['row 1', '> - ::: box\n>   - ::: |\n>     PAYLOAD\n>     :::\n>    ```\n>    :::bad\n>    :::\n- tail\n', '<pre><code>:::bad\n</code></pre>'],
-  ['row 3', '> - ::: box\n>   -   ::: |\n>       PAYLOAD\n>       :::\n>     ```\n>     :::\n>     :::bad\n>     :::\n- tail\n', '<pre><code></code></pre>'],
+  ['row 1', '> - ::: box\n>   - ::: |\n>     PAYLOAD\n>     :::\n>    ```\n>    :::bad\n>    :::\n- tail\n', '<pre><code>:::bad\n:::\n</code></pre>'],
+  ['row 3', '> - ::: box\n>   -   ::: |\n>       PAYLOAD\n>       :::\n>     ```\n>     :::\n>     :::bad\n>     :::\n- tail\n', '<pre><code>:::\n:::bad\n:::\n</code></pre>'],
 ]) {
   test(`${name} keeps box code independent of line-block payload shape`, () => {
     for (const payload of ['```', 'x', '~~~']) {
@@ -19,9 +20,9 @@ for (const [name, source, expected] of [
   })
 }
 
-test('a fence outside a line block ends at the box closer', () => {
+test('a fence outside a line block runs past the box closer', () => {
   const html = render('> - ::: box\n>    ```\n>    :::bad\n>    :::\n- tail\n')
-  assert.equal(boxCode(html), '<pre><code>:::bad\n</code></pre>')
+  assert.equal(boxCode(html), '<pre><code>:::bad\n:::\n</code></pre>')
 })
 
 test('a box closer at its own column remains structural without an open code fence', () => {

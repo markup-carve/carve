@@ -100,7 +100,7 @@ test('a folded separator leaves the item paragraph interruptible', () => {
 
 test('a document quote ends a description before a later fence closer', () => {
   const html = renderDoc(parse(':: term\n: detail\n  ```\n  code\n> payload\n  ```\nafter\n'))
-  assert.doesNotMatch(html, /<pre><code>/)
+  assert.match(html, /<pre><code>code\n<\/code><\/pre>\n\s*<\/dd>/)
   assert.match(html, /<\/dl>\n<blockquote>/)
 })
 

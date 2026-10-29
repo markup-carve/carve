@@ -75,6 +75,30 @@
       "source": "> - `a\n- b`\n"
     },
     {
+      "id": "code-fence-last-paragraph",
+      "host": "paragraph",
+      "value": "a\n```js",
+      "source": "`a\n```js`\n"
+    },
+    {
+      "id": "tilde-fence-last-bullet",
+      "host": "bullet",
+      "value": "a\n~~~",
+      "source": "- `a\n  ~~~`\n"
+    },
+    {
+      "id": "bare-fence-last-quote",
+      "host": "quote",
+      "value": "a\n```",
+      "source": "> ` a\n> ``` `\n"
+    },
+    {
+      "id": "raw-fence-last-description",
+      "host": "description",
+      "value": "a\n```=html",
+      "source": ":: t\n: `a\n  ```=html`\n"
+    },
+    {
       "host": "paragraph",
       "value": "a\n> b",
       "id": "refused-1"
@@ -218,6 +242,31 @@
       "host": "paragraph",
       "value": "a\n*[H]: x",
       "id": "refused-29"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n```\nb",
+      "id": "refused-30"
+    },
+    {
+      "host": "bullet",
+      "value": "a\n~~~js\nb",
+      "id": "refused-31"
+    },
+    {
+      "host": "quote",
+      "value": "a\n```=html\nb",
+      "id": "refused-32"
+    },
+    {
+      "host": "footnote",
+      "value": "a\n````\nb",
+      "id": "refused-33"
+    },
+    {
+      "host": "div",
+      "value": "a\n~~~\nb",
+      "id": "refused-34"
     }
   ]
 }

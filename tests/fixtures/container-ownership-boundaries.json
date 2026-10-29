@@ -13,7 +13,7 @@
   },
   {
     "source": "- > ```\n  > x\n    > y\n  > ```\n  > z\n  > ```",
-    "html": "<ul>\n  <li>\n    <blockquote>\n      <pre><code>x\ny\n</code></pre>\n      <p>z\n<code></code></p>\n    </blockquote>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <blockquote>\n      <pre><code>x\ny\n</code></pre>\n      <p>z</p>\n      <pre><code></code></pre>\n    </blockquote>\n  </li>\n</ul>"
   },
   {
     "source": "- > a\nlazy\n    > b",

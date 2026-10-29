@@ -69,19 +69,18 @@ test('an ordinary quoted line after the fence stores the claim again', () => {
     'quote[quote[p(a), code], p(b|y)]')
 })
 
-test('a fence with no closer under a quoted paragraph is paragraph text', () => {
-  // SS10 I4's other arm, which is what makes the closer lookahead load-bearing
-  // rather than a formality: read as an unconditional opener, these fold nothing.
-  assert.equal(blocks(`> a\n> ${F}\n> c\ny\n`), `quote[p(a|${F}|c|y)]`)
-  assert.equal(blocks(`> > a\n> > ${F}\n> > c\ny\n`), `quote[quote[p(a|${F}|c|y)]]`)
+test('a fence with no closer under a quoted paragraph interrupts it, and the unmarked line leaves', () => {
+  // carve#4018: no closer lookahead, and a fenced body never folds a lazy line.
+  assert.equal(blocks(`> a\n> ${F}\n> c\ny\n`), 'quote[p(a), code], p(y)')
+  assert.equal(blocks(`> > a\n> > ${F}\n> > c\ny\n`), 'quote[quote[p(a), code]], p(y)')
 })
 
-test('the closer lookahead is built per depth, not per opener', () => {
+test('an opener under a quoted paragraph asks no closer lookahead', () => {
   // COUNTED, for the reasons tests/nested-container-rescan.test.mjs records: a
   // wall-clock ceiling passes on a fast enough machine and a ratio flakes.
   //
-  // A body of fenced bodies under a quoted paragraph. Every opener sits under
-  // an open paragraph, so every one of them asks the lookahead.
+  // A body of fenced bodies under a quoted paragraph. Since carve#4018 an opener
+  // interrupts without a closer, so none of them asks the lookahead.
   const shapes = {
     // Closed pairs: every opener finds its closer on the next row.
     'closed fenced bodies': (d, n) => {
@@ -108,16 +107,9 @@ test('the closer lookahead is built per depth, not per opener', () => {
   }
   for (const [name, gen] of Object.entries(shapes)) {
     for (const d of [1, 2]) {
-      const small = perByte(gen(d, 50))
-      const large = perByte(gen(d, 400))
-      assert.ok(small > 0, `${name}: the lookahead counter is not counting at depth ${d}`)
-      assert.ok(
-        large / small <= 1.3,
-        `${name}: lookahead work per byte climbed ${(large / small).toFixed(2)}x from 50 to 400 ` +
-        `at depth ${d} (${small.toFixed(3)} -> ${large.toFixed(3)}): the index is being ` +
-        `rebuilt per opener, or searched rather than read`,
-      )
-      assert.ok(large <= 1, `${name}: ${large.toFixed(3)} lookahead lines per byte at depth ${d}, ceiling 1`)
+      for (const n of [50, 400]) {
+        assert.equal(perByte(gen(d, n)), 0, `${name}: the lookahead ran at depth ${d}, n=${n}`)
+      }
     }
   }
 })
@@ -146,9 +138,8 @@ test('unmatched quoted openers do not rescan incompatible closer candidates', ()
       parse(source)
       return layoutWork.fenceCloserLookahead
     }
-    const small = measure(40), large = measure(160)
-    assert.ok(small > 40)
-    assert.ok(large / small < 4.3, `${depth}, ${closer}: ${small} -> ${large}`)
+    assert.equal(measure(40), 0, `${depth}, ${closer}`)
+    assert.equal(measure(160), 0, `${depth}, ${closer}`)
   }
 })
 
@@ -208,19 +199,17 @@ test('the column gate is what decides it, and it can refuse', () => {
 })
 
 test('§10 I4 is asked at the container column too', () => {
-  // Under the item's OWN open paragraph the fence needs a closer. Without one it
-  // is paragraph text and the unmarked line folds; with one the item holds a
-  // code block and the line leaves.
+  // Under the item's OWN open paragraph the fence interrupts with or without a
+  // closer (carve#4018), so the item holds a code block and the line leaves.
   assert.equal(host(`> - a\n>   ${F}\n>   x\nflush\n`),
-    `quote[list[item[p(a|${F}|x|flush)]]]`)
+    'quote[list[item[p(a), code]]], p(flush)')
   assert.equal(host(`> - a\n>   ${F}\n>   x\n>   ${F}\nflush\n`),
     'quote[list[item[p(a), code]]], p(flush)')
 })
 
-test('a container-held closer index is read, not searched', () => {
-  // The index carries one bucket per fence character AND per column, so an
-  // opener at an item's content column cannot walk rows that belong to another
-  // column. #2509's rescan and #2517's search are the two shapes this bounds.
+test('a container-held opener reads no closer index', () => {
+  // #2509's rescan and #2517's search are the two shapes this bounded; since
+  // carve#4018 an item-held opener under a paragraph asks no lookahead at all.
   const shapes = {
     'item-held openers over tilde closers': (n) => '> - a\n' +
       Array.from({ length: n }, () => `>   ${F}${F} x`).join('\n') + '\n' +
@@ -242,13 +231,7 @@ test('a container-held closer index is read, not searched', () => {
     return layoutWork.fenceCloserLookahead / src.length
   }
   for (const [name, gen] of Object.entries(shapes)) {
-    const small = perByte(gen(50))
-    const large = perByte(gen(800))
-    assert.ok(small > 0, `${name}: the lookahead counter is not counting`)
-    assert.ok(large / small <= 1.3,
-      `${name}: lookahead work per byte climbed ${(large / small).toFixed(3)}x from 50 to 800 ` +
-      `(${small.toFixed(3)} -> ${large.toFixed(3)}): the index is rebuilt per opener or searched`)
-    assert.ok(large <= 1, `${name}: ${large.toFixed(3)} lookahead lines per byte, ceiling 1`)
+    for (const n of [50, 800]) assert.equal(perByte(gen(n)), 0, `${name}: the lookahead ran at n=${n}`)
   }
 })
 
@@ -276,8 +259,9 @@ test('a container this line opened puts the fence at its block start', () => {
 test('refused fence runs stay paragraph text at shifted columns', () => {
   assert.equal(host(`> - a\n>     ${F}\n>\n>    ${F}\n>   a\nflush\n`),
     'quote[list[item[p(a), code, p(a|flush)]]]')
+  // The opener interrupts (carve#4018) and the run further in is its payload.
   assert.equal(host(`> - a\n>   ${F}\n>   x\n>     ${F}\n>   a\nflush\n`),
-    `quote[list[item[p(a|${F}|x|${F}|a|flush)]]]`)
+    'quote[list[item[p(a), code]]], p(flush)')
   assert.equal(host(`> - a\n>\n>     ${F}\n>     x\nflush\n`),
     'quote[list[item[p(a), code]]], p(flush)')
   // A LINE WITH AN INVALID INFO STRING IS NOT A FENCE LINE AT ALL: it is prose
@@ -325,14 +309,13 @@ test('a closed fence past a description body\'s column opens a code block at eve
   }
 })
 
-test('an unclosed fence past a description body stays paragraph text at every quote depth', () => {
+test('an unclosed fence past a description body\'s column opens a code block at every quote depth', () => {
   for (const depth of [1, 2, 3]) {
     const q = '> '.repeat(depth)
     const source = `${q}:: t\n${q}:  d\n${q}   - a\n${q}    ${F}\n${q}    x\nflush\n`
     const html = renderDoc(parse(source)).replace(/\s+/g, ' ')
-    assert.equal(host(source), 'quote['.repeat(depth) + 'deflist' + ']'.repeat(depth), source)
-    assert.match(html, /<dd>d - a <code> x flush<\/code><\/dd>/, source)
-    assert.doesNotMatch(html, /<pre>/, source)
+    assert.equal(host(source), 'quote['.repeat(depth) + 'deflist' + ']'.repeat(depth) + ', p(flush)', source)
+    assert.match(html, /<dd> <p>d - a<\/p> <pre><code>x <\/code><\/pre> <\/dd>/, source)
   }
 })
 
@@ -441,14 +424,14 @@ test('an intermediate fence run closes the fence and a deeper one stays opaque t
 })
 
 
-test('a refused run at the content column leaves a shifted pair to open code', () => {
+test('an unclosed run at the content column takes a shifted pair as payload', () => {
   for (const depth of [1, 2, 3]) {
     const q = '> '.repeat(depth)
     for (const lead of ['- a', '- a\n- a']) {
       const body = `${lead}\n  ${T}\n   ${F}\n   y\n   ${F}\n`
       const source = body.trimEnd().split('\n').map(line => q + line).join('\n') + '\nflush\n'
       assert.equal(parse(source).blocks.at(-1).t, 'para', source)
-      assert.match(renderDoc(parse(source)), /<pre><code>y\n<\/code><\/pre>[\s\S]*<p>flush<\/p>$/, source)
+      assert.match(renderDoc(parse(source)), /<pre><code> ```\n y\n ```\n<\/code><\/pre>[\s\S]*<p>flush<\/p>$/, source)
     }
   }
 })
@@ -472,8 +455,9 @@ test('a lazy sublist line retains its host column for the next fence', () => {
     for (const lead of ['', `  ${F}\n  ${F}\n`]) {
       const body = `- a\n${lead}  - c\n  b\n    ${T}\n  ${T}\n`
       const source = body.trimEnd().split('\n').map(line => q + line).join('\n') + '\nflush\n'
-      assert.notEqual(parse(source).blocks.at(-1).t, 'para', source)
-      assert.match(renderDoc(parse(source)), /flush<\/li>/, source)
+      // The opener at the sublist's column opens in it; the one at the item's column ends it.
+      assert.equal(parse(source).blocks.at(-1).t, 'para', source)
+      assert.match(renderDoc(parse(source)), /<li>c\nb\s*<pre><code><\/code><\/pre>\s*<\/li>\s*<\/ul>\s*<pre><code><\/code><\/pre>[\s\S]*<p>flush<\/p>$/, source)
     }
   }
 })

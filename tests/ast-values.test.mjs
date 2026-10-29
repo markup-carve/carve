@@ -337,7 +337,8 @@ test('only a payload reaching EOF inherits the missing final break', async () =>
   for (const [source, payload] of [
     ['::: note\n```\na', 'a'],
     ['::: note\n```\na\n', 'a\n'],
-    ['::: note\n```\na\n:::', 'a\n'],
+    // The colon closer is payload of the unclosed fence (carve#4018).
+    ['::: note\n```\na\n:::', 'a\n:::'],
     ['> ```\n> a\n\nafter', 'a\n'],
     ['```\r\na\r\n```', 'a\n'],
     ['```\r\na', 'a'],

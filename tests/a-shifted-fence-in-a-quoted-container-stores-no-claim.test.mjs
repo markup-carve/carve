@@ -18,15 +18,17 @@ for (const depth of [1, 2]) for (const nested of [false, true]) {
       assert.ok(out.endsWith(tail === 'tail' ? '<p>tail</p>' : '<ul>\n  <li>tail</li>\n</ul>'), out)
     })
   }
-  test(`unopened shifted run keeps lazy continuation: depth ${depth}, nested ${nested}`, () => {
+  // carve#4018: the shifted run interrupts the paragraph with no closer, so nothing folds lazily.
+  test(`a shifted run under a paragraph opens and clears the quote claim: depth ${depth}, nested ${nested}`, () => {
     const prefix = '> '.repeat(depth)
     const source = ['- ::: box', ...(nested ? ['  - inner', '    %% c'] : []),
       '  paragraph', '   ```', '   code'].map(line => prefix + line).join('\n') + '\ntail\n'
     const doc = parse(source)
     const out = renderDoc(doc)
-    assert.equal(doc.blocks.length, 1, out)
-    assert.ok(!out.includes('<pre>'), out)
-    assert.ok(JSON.stringify(doc).includes('tail'), out)
+    assert.equal(doc.blocks.length, 2, out)
+    assert.equal(doc.blocks[1].t, 'para', out)
+    assert.match(out, /<p>paragraph<\/p>\s*<pre><code>code\n<\/code><\/pre>/)
+    assert.ok(out.endsWith('<p>tail</p>'), out)
   })
 }
 

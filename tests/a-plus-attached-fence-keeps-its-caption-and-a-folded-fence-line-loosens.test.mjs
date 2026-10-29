@@ -1,6 +1,7 @@
 /*
  * A list continuation marker gives its attached fence the following caption.
- * A fence line folded into a child paragraph is text in the looseness scan.
+ * A fence line below a child item's column opens in the outer item and never
+ * folds (carve#4018); blanks in its payload do not loosen the list.
  * The controls keep blank gaps, other hosts, and real fences in place.
  */
 import { test } from 'node:test'
@@ -63,9 +64,9 @@ for (const host of ['> q', '[^f]: n', ':: t\n:  d']) {
 }
 
 for (const fence of ['```', '~~~']) {
-  test(`${fence} folded into a child paragraph leaves the outer list loose`, () => {
+  test(`${fence} below a child item's column opens in the outer item, which stays tight`, () => {
     const result = html(doc('- - text', `  ${fence}`, '  x', '', '  cap', '- c'))
-    assert.match(result, /<\/ul><p>cap<\/p><\/li><li><p>c<\/p><\/li><\/ul>$/)
+    assert.equal(result, '<ul><li><ul><li>text</li></ul><pre><code>x cap </code></pre></li><li>c</li></ul>')
   })
 }
 
@@ -74,14 +75,14 @@ test('an ordinary lazy line also leaves the outer list loose', () => {
     /<\/ul><p>cap<\/p><\/li><li><p>c<\/p><\/li><\/ul>$/)
 })
 
-test('without a blank, the folded fence line leaves the list tight', () => {
+test('without a blank, the fence line below the child column opens in the outer item too', () => {
   assert.equal(html(doc('- - text', '  ```', '  x', '  cap', '- c')),
-    '<ul><li><ul><li>text <code> x cap</code></li></ul></li><li>c</li></ul>')
+    '<ul><li><ul><li>text</li></ul><pre><code>x cap </code></pre></li><li>c</li></ul>')
 })
 
-test('a real fence stays tight while blank-separated inline span paragraphs loosen', () => {
+test('a real fence stays tight, blanks in its payload included', () => {
   assert.equal(html(doc('- outer', '  - head', '', '    ```', '    a', '  ```', '', '  tail')),
     '<ul><li>outer <ul><li>head <pre><code>a </code></pre></li></ul><pre><code> tail </code></pre></li></ul>')
   assert.equal(html(doc('- a', '  ```', '  x', '', '  z', '', '  w')),
-    '<ul><li><p>a <code> x</code></p><p>z</p><p>w</p></li></ul>')
+    '<ul><li>a <pre><code>x z w </code></pre></li></ul>')
 })

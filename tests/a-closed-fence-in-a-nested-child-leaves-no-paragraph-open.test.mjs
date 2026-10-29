@@ -28,12 +28,12 @@ test('a heading leaves no child paragraph', () => {
 })
 
 test('an unclosed child fence retains its own body', () => {
-  const html = render('- a\n    - child\n      ```\n      x\n  ~~~\nafter\n')
-  assert.match(html, /<li>child\n<code>\nx\n~~~\nafter<\/code>/)
+  // The `~~~` line misses the child, ending its fence (carve#4018).
+  const html = outside('- a\n    - child\n      ```\n      x\n  ~~~\nafter\n')
+  assert.match(html, /<li>child\n\s*<pre><code>x\n<\/code><\/pre>/)
 })
 
-test('an open child paragraph keeps the later lazy line', () => {
-  const html = render('- a\n    - child\n      text\n  ~~~\nafter\n')
-  assert.doesNotMatch(html, /<p>after<\/p>/)
-  assert.match(html, /<li>child\n\s*text\n\s*~~~\n\s*after<\/li>/)
+test('an open child paragraph does not take a later fence opener lazily', () => {
+  const html = outside('- a\n    - child\n      text\n  ~~~\nafter\n')
+  assert.match(html, /<li>child\ntext<\/li>/)
 })

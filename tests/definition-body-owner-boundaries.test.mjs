@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 
+// carve#4018: a fence opens in the body without a closer; a line below the body ends it.
 const cases = [
   {
     name: 'tabbed fence with an in-body closer',
@@ -12,7 +13,8 @@ const cases = [
   {
     name: 'tabbed fence with a closer below the body',
     source: ':: t\n: a\n\t```\n ```\n',
-    owner: ['deflist', 'dd', 'para'],
+    owner: ['deflist', 'dd', 'code'],
+    code: '',
   },
   {
     name: 'nested marker at the invisible note body column',
@@ -29,12 +31,14 @@ const cases = [
   {
     name: 'definition fence with payload and a closer at its authored base',
     source: ':: m\n: l\n     ```\ne\n     ```\n',
-    owner: ['deflist', 'dd', 'para'],
+    owner: ['deflist', 'dd', 'code'],
+    code: '',
   },
   {
     name: 'definition fence with a closer outside its body',
     source: ':: m\n: l\n     ```\ne\n ```\n',
-    owner: ['deflist', 'dd', 'para'],
+    owner: ['deflist', 'dd', 'code'],
+    code: '',
   },
 ]
 

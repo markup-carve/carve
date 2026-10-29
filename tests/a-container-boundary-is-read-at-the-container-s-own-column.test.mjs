@@ -26,8 +26,8 @@ for (const depth of [0, 1, 2]) for (const box of ['::: box', ':::', ':::: w']) f
   }
 }
 
-// CARVE-P0-014: only closers inside the container count, and a blank followed
-// by a line below the column has ended a nested item as it ends a top-level one.
+// CARVE-P0-014: a blank followed by a line below the column has ended a nested
+// item as it ends a top-level one, and an unclosed fence in it with it.
 for (const depth of [0, 1, 2]) for (const nesting of [0, 1, 2]) for (const follower of ['y', '# h', '> q']) for (const blank of ['', 'padded']) {
   test(`a run after the item ended closes nothing: depth ${depth}, nesting ${nesting}, ${follower}, blank ${JSON.stringify(blank)}`, () => {
     const lines = []
@@ -35,9 +35,9 @@ for (const depth of [0, 1, 2]) for (const nesting of [0, 1, 2]) for (const follo
     const marker = ' '.repeat(2 * nesting)
     lines.push(marker + '- para', marker + '  ```', marker + '  code', blank ? marker + '  ' : '', marker + follower, marker + '  ```')
     const source = lines.map((line) => (blank ? '> '.repeat(depth) + line : ('> '.repeat(depth) + line).trimEnd())).join('\n') + '\n'
-    // The first run closes nothing, so `code` is no code block's payload. The
-    // last run may open one of its own past the outer item's column.
-    assert.ok(!html(source).includes('<pre><code>code'), html(source))
+    // The first run opens a fence that the follower ends (PART 0 S2), so the
+    // last run cannot close it; it may open one of its own.
+    assert.ok(html(source).includes('<pre><code>code</code></pre>'), html(source))
   })
   test(`without the blank the run is searched past the line and closes the fence: depth ${depth}, nesting ${nesting}, ${follower}`, () => {
     const lines = []

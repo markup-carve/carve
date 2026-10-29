@@ -170,11 +170,11 @@ test('GUARD: an unterminated comment fence in a dd opens no span', () => {
   assert.ok(out.includes('<p>a</p>'), out)
 })
 
-test('GUARD: a colon container host folds a fence only under its open paragraph', () => {
-  // With a paragraph open in the note the indented run folds into it and the
-  // line below the base folds with it (CARVE-P0-014).
+test('GUARD: a colon container host opens a fence with or without an open paragraph', () => {
+  // With a paragraph open in the note the run still interrupts it (carve#4018),
+  // and the line below the base ends the fence (CARVE-P0-013).
   const folded = html('- a\n  ::: note\n  text\n    ```\n    p\nx\n')
-  assert.ok(folded.includes('p\nx</code>'), folded)
+  assert.ok(folded.includes('<p>text</p>') && folded.includes('<pre><code>p\n</code></pre>') && folded.endsWith('<p>x</p>'), folded)
   // With none open the run is an opener past the column and takes its
   // authored base (CARVE-P0-004), so the line below leaves (CARVE-P0-013).
   const opened = html('- a\n  ::: note\n    ```\n    p\nx\n')

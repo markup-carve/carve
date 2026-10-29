@@ -111,7 +111,7 @@ for (const [source, expected] of [
     ['- one\n::: \tnote\n+\n', '<ul>\n  <li>one\n::: \tnote\n+</li>\n</ul>'],
     ['    - c\n::::>\n', '<ul>\n  <li>c\n::::&gt;</li>\n</ul>'],
     ['    - second\n   tail\n::: \t[First]\n', '<ul>\n  <li>second\ntail\n::: \t[First]</li>\n</ul>'],
-    ['- b\n:::>\n     ```\n y\n', '<ul>\n  <li>b\n:::&gt;\n<code>\ny</code></li>\n</ul>'],
+    ['- b\n:::>\n     ```\n y\n', '<ul>\n  <li>b\n:::&gt;\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>y</p>'],
   ]) {
   test(`rejected colon opener stays in list paragraph: ${JSON.stringify(source)}`, () => {
     assert.equal(exactHtml(source), expected)

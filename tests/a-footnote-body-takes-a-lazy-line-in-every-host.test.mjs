@@ -13,7 +13,8 @@ const contents = [
   ['a second paragraph', 'note', ['', 'more'], true],
   ['a nested list', '- x', [], true],
   ['a quote', '> q', [], true],
-  ['a closerless fence line', 'note', ['~~~', 'x'], true],
+  // carve#4018: a closerless opener interrupts too, so no paragraph stays open.
+  ['a closerless fence line', 'note', ['~~~', 'x'], false],
   ['a heading', '# h', [], false],
   ['a table', '| a |', [], false],
   ['a closed fence', 'note', [F, 'x', F], false],
