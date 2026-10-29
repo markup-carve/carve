@@ -6913,6 +6913,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     let headSubActive = headSubCol >= 0
     // A sibling list at the content column has ended the marker-line child.
     let headSubEnded = false
+    // A plain line below the child's column folded into its open paragraph.
+    let childParagraphLazy = false
     let subCol = -1
     // A comment below the child's column ends it in the body parse (carve#3985).
     let commentBelowChild = false
@@ -7497,6 +7499,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       }
       // A separator after a fence the block leaves open would be its payload.
       if (!leavesFenceOpen(taken)) pushLine('', BLANK_MEAS)
+      // Below the content column the blank after the block is the host's
+      // separator, not payload of a fence the block leaves open (SS17 L3).
+      else if (blockColumn < contentCol) {
+        const bounds = state.attachmentBoundaries ??= new WeakMap()
+        bounds.set(itemLines, [...(bounds.get(itemLines) ?? []), itemLines.length])
+      }
       closePara()
       return true
     }
@@ -7760,6 +7768,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             pushLine(dd.text, dd.meas, k)
           }
         }
+        // A descendant's attached fence runs through its closer (SS17 L3).
+        if (carriesBareContinuation && j < nestedAttachmentEnd) {
+          if (!descendantFence && !closedMarkerFence) for (let k = i; k < j; k++) if (!skipped.has(k)) pushLine('', BLANK_MEAS)
+          i = j
+          continue
+        }
         if (j >= n) { i = j; break }
         const jm = ind(j)
         const { col } = jm
@@ -7986,11 +8000,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       }
       const descendantParagraphBefore = descLive && deepestParagraphOpen()
       if (!descendantParagraphBefore) foldedChildParagraph = false
+      const childParagraphOpen = (descendantParagraphBefore || childParagraphLazy) && deepestParagraphOpen()
+      childParagraphLazy = false
       if (lm.rest !== '' && !insideFence()) commentBelowChild = COMMENT_LINE.test(lm.rest) && col >= contentCol && childCol >= 0 && col < childCol &&
         !(nestedOpaque?.kind === 'comment' && COMMENT_FENCE.exec(lm.rest)?.[1].length === nestedOpaque.run.length)
       // The task box is content (CARVE-P0-008): a line in its columns stands
       // below the marker-line child's marker and folds (carve#3976).
-      if (head.task !== undefined && headSubMarker && !headSubEnded && descendantParagraphBefore &&
+      if (head.task !== undefined && headSubMarker && !headSubEnded && childParagraphOpen &&
           col > contentCol &&
           col < contentCol + TASK_MARKER_SOURCE_WIDTH &&
           lm.rest !== '' && !insideFence()) {
@@ -8430,6 +8446,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             else if (!descendantOwned && !COMMENT_LINE.test(dedented)) {
               if (foldedChildFence) foldedChildParagraph = true
               if (!foldedChildParagraph || !descendantParagraphBefore || mayOpenAuthoredBlock) {
+                // The child's paragraph stays the deepest one for the box columns (PART 0 S4).
+                childParagraphLazy = childParagraphOpen && !mayOpenAuthoredBlock && foldablePlainLine(dmeas.rest)
                 descLive = false
                 foldedChildParagraph = false
               }
