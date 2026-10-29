@@ -1854,10 +1854,12 @@ function resolveCrossrefs(html, ctx) {
 
 // --- PART 9R R3: abbreviations ----------------------------------------------
 function applyAbbreviations(html, ctx) {
-  // transform only text segments outside tags and outside code/pre
+  // transform only text segments outside tags and outside code/pre and math
+  // spans, whose content is a code span's verbatim text (PART 9 §18)
   const parts = html.split(/(<[^>]*>)/)
   let inCode = 0
   let inAbbr = 0
+  let inMath = false
   const expand = (text) => {
     let result = text
     for (const [term, expansion] of ctx.abbrDefs) {
@@ -1873,19 +1875,24 @@ function applyAbbreviations(html, ctx) {
       else if (/^<\/(code|pre)>/.test(p)) inCode--
       if (/^<abbr[\s>]/.test(p)) inAbbr++
       else if (/^<\/abbr>/.test(p)) inAbbr--
+      // a math span holds escaped text only, so its first </span> closes it;
+      // its delimiter tells it from an authored span with the same classes
+      const math = /^<span\s(?:[^>]*\s)?class="math (inline|display)[\s"]/.exec(p)
+      if (math && parts[i + 1]?.startsWith(math[1] === 'inline' ? '\\(' : '\\[')) inMath = true
+      else if (inMath && p === '</span>') inMath = false
       continue
     }
     if (p === '') continue
     let result = ''
     let at = 0
     for (const frame of p.matchAll(REF_FRAME)) {
-      result += inCode > 0 || inAbbr > 0 ? p.slice(at, frame.index) : expand(p.slice(at, frame.index))
+      result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at, frame.index) : expand(p.slice(at, frame.index))
       let parsed
       try { parsed = JSON.parse(frame[1]) } catch { parsed = null }
       result += parsed?.opaque ? parsed.literal : frame[0]
       at = frame.index + frame[0].length
     }
-    result += inCode > 0 || inAbbr > 0 ? p.slice(at) : expand(p.slice(at))
+    result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at) : expand(p.slice(at))
     parts[i] = result
   }
   return parts.join('')
