@@ -6892,6 +6892,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       markerCarriesContinuation(head.text.trim(), prefixMemo(state, itemLines, 0).continuation)
     let nestedAttachmentColumn = sourceMarkerCol
     let nestedAttachmentEnd = -1
+    // A marker at the descendant's own indent is its sibling and bounds its block (SS17 L3).
+    let nestedSiblingIndent = -1
     // The spent attachment is a sublist, whose open paragraph a lazy line may still reach.
     let spentOnSublist = false
     const item = { }
@@ -7867,7 +7869,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const column = lm.col >= contentCol ? lm.col : nestedAttachmentColumn
         nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
           ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-          matchMarkerAt(ind(idx))?.indent === baseIndent, lm, column, Math.min(lm.col, column))
+          [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent), lm, column, Math.min(lm.col, column))
+      }
+      // The descendant's sibling marker closes it, and its spent `+` with it.
+      if (nestedAttachmentEnd === i && nestedSiblingIndent >= 0 && matchMarkerAt(lm)?.indent === nestedSiblingIndent) {
+        carriesBareContinuation = false
+        nestedAttachmentEnd = -1
+        nestedSiblingIndent = -1
       }
       // A descendant's first-block marker has spent its one attached block.
       // A later line at this item's marker column belongs to the enclosing
@@ -8777,6 +8785,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           carriesBareContinuation = true
           nestedAttachmentColumn = lm.L?.col ?? lm.col
           nestedAttachmentEnd = -1
+          nestedSiblingIndent = nm.indent
           // The descendant's `+` spends itself on a sublist at its content column.
           const sub = i + 1 < n ? matchMarkerAt(ind(i + 1)) : null
           spentOnSublist = /^(\[[^\]]\][ \t]+)?\+$/.test(trimWs(lm.rest.slice(nm.markerWidth))) && sub && sub.indent >= nm.indent + nm.markerWidth
@@ -9042,7 +9051,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (nestedAttachmentEnd < 0 && attachesFlushLeft(lm, attachmentColumn)) {
           nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
             ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-            matchMarkerAt(ind(idx))?.indent === baseIndent, lm, attachmentColumn)
+            [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent), lm, attachmentColumn)
         }
         if (i < nestedAttachmentEnd) {
           pushLine(line, lm)
