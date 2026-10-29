@@ -3522,7 +3522,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   }
   const sourceHasLonePlus = sourceLines.some(line =>
     /^[ \t]*(?:>[ \t]*)*\+[ \t]*$/.test(line) ||
-    /^[ \t]*(?:(?:[-*]|\d+[.)])[ \t]+)+(?:\[[ xX_-]\][ \t]+)?\+[ \t]*$/.test(line) ||
+    /^[ \t]*(?:(?:[-*]|(?:\d+|[a-z]+|[A-Z]+)[.)])[ \t]+)+(?:\[[ xX_-]\][ \t]+)?\+[ \t]*$/.test(line) ||
     (line.includes('>') && /\+[ \t]*$/.test(line) &&
       markerCarriesContinuation(indentCols(line).rest, new Map())))
   const quotePathBefore = []
@@ -3630,7 +3630,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   const lines = sourceHasLonePlus ? sourceLines.map((line, index) => {
     const stackedFollower = sourceLines[index + 1] === undefined
       ? null : indentCols(sourceLines[index + 1])
-    if (/^[ \t]*(?:>[ \t]*)?(?:(?:[-*]|\d+[.)])[ \t]+)+>[ \t]+\+[ \t]*$/.test(line) &&
+    if (/^[ \t]*(?:>[ \t]*)?(?:(?:[-*]|(?:\d+|[a-z]+|[A-Z]+)[.)])[ \t]+)+>[ \t]+\+[ \t]*$/.test(line) &&
         (!stackedFollower?.rest || matchMarkerAt(stackedFollower))) {
       hasOrdinaryPlus = true
       return line.replace(/\+(?=[ \t]*$)/, sentinel)
