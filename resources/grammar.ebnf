@@ -4799,13 +4799,14 @@ EOF = (* end of file *) ;
 
       INPUT. The inline content of one block after block structure is
       settled. A REGION is that content, or the content of a bracket run,
-      inline note, braced span or editorial frame. Pairing
-      never crosses a region boundary, in either direction. The bare
-      delimiters are `/`, `*`, `_`, `~` and `=`. A character is ALNUM when it
-      is an ASCII letter or digit. A delimiter followed by a
-      grapheme_extender is part of a larger character (CARVE-P3-025): it is
-      text and takes part in no step below, and a braced opener whose mark is
-      followed by one is text.
+      inline note, braced span or editorial frame. Pairing never crosses a
+      region boundary, in either direction. The bare delimiters are `/`,
+      `*`, `_`, `~` and `=`. A character is ALNUM when it is an ASCII letter
+      or digit (`alnum`, PART 7), and WHITESPACE when it is a space, a tab or
+      a line end (`ws`); a no-break space is neither. A delimiter followed by
+      a grapheme_extender is part of a larger character (CARVE-P3-025): it
+      is text and takes part in no step below, and a braced opener whose
+      mark is followed by one is text.
 
       TWO PASSES.
       P1 ATOMS. Scan left to right. At each position take the first
