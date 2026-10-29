@@ -3849,6 +3849,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const label = m[1]
       const sourceDefCol = ind(i).L?.col ?? ind(i).col
       const bodyLines = [m[2]]
+      const inheritedFenceOpens = new Set()
       i++
       if (CONT_MARKER.test(m[2]) && i < n && !isBlank(lines[i]) &&
           !matchMarkerAt(ind(i)) && attachesFlushLeft(ind(i), sourceDefCol)) {
@@ -3918,6 +3919,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (isFootnoteContinuationLine(lines[i])) {
           afterComment = afterCommentTransition(false, {})
           const content = dedent(lines[i], FOOTNOTE_BODY_COLUMN)
+          // An ancestor already answered §10 I4 for this line (CARVE-P0-014).
+          if (state.fenceOpensAt?.get(lines)?.has(i)) inheritedFenceOpens.add(bodyLines.length)
           bodyLines.push(content)
           // The body reader can rebase this line before recognizing its block.
           // Check the claim only when a below-column follower asks for it.
@@ -4014,7 +4017,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             (lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !COLON_CLOSER.test(lines[i]) &&
-            !(FENCE.test(lines[i]) && hasCloser(lines, i)) &&
+            !(FENCE.test(lines[i]) && (hasCloser(lines, i) || state.fenceOpensAt?.get(lines)?.has(i))) &&
             !(measured.col === 0 && commentFenceOpensSpan(lines, i)) &&
             !(measured.col === 0 && (isDefinitionOrAttributeLine(measured.rest) ||
               tryAttrLine(lines, i)))) {
@@ -4023,7 +4026,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i++
         } else break
       }
-      if (openFence !== -1) (state.fenceOpensAt ??= new WeakMap()).set(bodyLines, new Set([openFence]))
+      if (openFence !== -1) inheritedFenceOpens.add(openFence)
+      if (inheritedFenceOpens.size) (state.fenceOpensAt ??= new WeakMap()).set(bodyLines, inheritedFenceOpens)
       const key = labelKey(label)
       if (!state.footnoteDefs.has(key)) {
         // FIRST definition wins (PART 9R state)
@@ -7841,15 +7845,31 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           if (closer >= 0) noteFenceEnd = Math.max(noteFenceEnd, closer)
         }
         let absorbedNoteFence = false
+        let noteFenceOpensPast = false
         if (markerNoteEligible && !descendantOwned &&
             col >= markerNoteBodyColumn && noteFence && i > noteFenceEnd) {
+          // The lookahead searches past a below-column line and never matches
+          // one; the fence it opens then ends at that line (CARVE-P0-014).
+          let seenBelow = false
           const closer = cachedForwardSearch(noteCloserSearches, `${col}:${noteFence[1]}`, i + 1, lines.length, (at) => {
             const measured = ind(at)
-            if (measured.rest !== '' && measured.col < markerNoteBodyColumn) return null
-            const run = measured.col === col && PURE_FENCE.exec(measured.rest)
+            if (measured.rest !== '' && measured.col < markerNoteBodyColumn) {
+              seenBelow = true
+              return false
+            }
+            // Past a below-column line the walk left the closer where it was written.
+            const run = (measured.col === col || (seenBelow && measured.col >= col)) && PURE_FENCE.exec(measured.rest)
             return !!(run && run[1][0] === noteFence[1][0] && run[1].length >= noteFence[1].length)
           })
-          if (closer >= 0) noteFenceEnd = closer
+          let below = -1
+          for (let at = i + 1; closer >= 0 && at < closer; at++) {
+            const measured = ind(at)
+            if (measured.rest !== '' && measured.col < markerNoteBodyColumn) { below = at; break }
+          }
+          if (below >= 0) {
+            noteFenceEnd = below - 1
+            noteFenceOpensPast = true
+          } else if (closer >= 0) noteFenceEnd = closer
           else absorbedNoteFence = true
         }
         const inNoteBody = i <= noteFenceEnd || absorbedNoteFence
@@ -8045,6 +8065,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           col > colonBases.at(-1) &&
           col === authoredBlockBase && COLON_CLOSER.test(lm.rest)
         pushLine(codeColonText ? lazyFrame(dedented) : dedented, dmeas)
+        if (noteFenceOpensPast) fenceOpensAt.add(itemLines.length - 1)
         if (nm && lm.rest.includes('+') && markerCarriesContinuation(lm.rest.trim(),
             prefixMemo(state, lines, i).continuation ??= new Map())) {
           const columns = state.markerLineColumns.get(itemLines) ?? new Map()

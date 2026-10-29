@@ -53,10 +53,12 @@ for (const q of ['', '> ', '> > ']) for (const boundary of ['- sibling', 'outsid
     const src = lines.map(line => q + line).join('\n') + '\n'
     if (boundary === 'outside') {
       // The closer past `outside` is reachable (CARVE-P0-014), so the run opens
-      // and `outside` ends it: the line is document text, not a lazy note line.
-      let blocks = parse(src).blocks
+      // in the note and `outside` ends it as document text (carve#3910).
+      const doc = parse(src)
+      let blocks = doc.blocks
       for (let depth = 0; depth < q.length / 2; depth++) blocks = blocks[0].children
       assert.deepEqual(blocks.at(-1), { t: 'para', lines: ['outside', F, 'after [^n]'] }, src)
+      assert.deepEqual(doc.footnoteDefs.get('n').map((block) => block.t), ['para', 'code'], src)
       return
     }
     const twin = lines.map((line, index) => q + (index === 2 ? '      `' : line)).join('\n') + '\n'
