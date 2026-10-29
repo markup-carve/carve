@@ -1179,8 +1179,9 @@ function isColonParagraphInterrupt(line) {
 }
 
 function paraHasInvalidColonOpener(para) {
+  // Leading space does not stop an opener from being read as one (PART 0 S3).
   return para.some((l) => {
-    const cf = COLON_FENCE.exec(l)
+    const cf = COLON_FENCE.exec(stripLazy(l).replace(/^[ \t]+/, ''))
     return cf && parseColonOpener(cf[2]) === null
   })
 }
@@ -7017,7 +7018,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       : null
     // Open colon containers and the table run inside the descendant, so its own
     // last block can be classified without rescanning this item's body.
-    let descColon = 0
+    // One entry per open colon container: its run length and whether it is a line block.
+    const descColons = []
     let descTableOpen = false
     // Whether the LAST visible body line landed in a descendant frame, which is
     // what makes the descendant the DEEPEST frame for the line below.
@@ -7145,13 +7147,29 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (verbatim) { close(); return }
       const rowOpen = descTableOpen
       descTableOpen = tableRunStep(rowOpen, text)
-      // A colon container's blocks sit at the container's own column, which a
-      // line below the descendant cannot reach.
-      const opener = isColonBlockOpener(text) && !COLON_CLOSER.test(text)
-      const closer = COLON_CLOSER.test(text)
-      if (opener) descColon++
-      else if (closer && descColon > 0) descColon--
-      if (opener || closer || descColon > 0) { close(); return }
+      // A colon fence line leaves no paragraph open; the body's own lines take
+      // lazy lines at every depth (CARVE-P0-015), a line block's as inline text.
+      const top = descColons.at(-1)
+      const lineBlock = top?.lineBlock === true
+      // A bare run the open paragraph absorbs is its text (CARVE-P9-016).
+      if (!lineBlock && descendantQ1.open && idx > 0 && !isBlank(lines[idx - 1]) && COLON_CLOSER.test(text) &&
+          !colonFenceInterrupts(text, descendantQ1.para)) {
+        descendantQ1.para.push(text)
+        return
+      }
+      const run = COLON_FENCE.exec(text)?.[1].length
+      const closes = COLON_CLOSER.test(text) && top !== undefined && run === top.length
+      // Inside a line block only its own closer is a fence line.
+      const bare = !lineBlock && COLON_CLOSER.test(text) && !closes
+      const opener = bare || (!lineBlock && isColonBlockOpener(text) && !COLON_CLOSER.test(text))
+      if (closes) descColons.pop()
+      else if (opener) descColons.push({ length: run, lineBlock: !bare && parseColonOpener(COLON_FENCE.exec(text)[2])?.mode === 'line-block' })
+      if (opener || closes) { close(); return }
+      if (lineBlock) {
+        if (!descendantQ1.open) { descendantQ1.open = true; descendantQ1.para = [] }
+        descendantQ1.para.push(text)
+        return
+      }
       // A quote's last block answers across its lines, as at the item's own column.
       const opens = idx >= 0 && QUOTE.test(text)
         ? advanceQuoteRun(descendantQuote, text, idx)
@@ -8622,7 +8640,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // (carve#891). Same rule, same spelling, as the block reader's
         // colonInterruptsParagraph.
         else if (COLON_FENCE.test(dedented)) {
-          if (colonFenceInterrupts(dedented, para)) closePara()
+          if (colonFenceInterrupts(dedented, openPara ? para : [])) closePara()
           else openParaWith(dedented)
         }
         // A TABLE ROW closes the paragraph, and so does the continuation row

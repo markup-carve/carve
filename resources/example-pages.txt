@@ -483,6 +483,7 @@ index: examples/edge-cases/index.md
   640-a-folded-child-fence-keeps-the-below-column-line-in-its-paragraph
   641-an-unclosed-fence-run-with-no-closer-in-its-item-does-not-hide-a-blank-line
   641-an-unclosed-fence-run-with-no-closer-in-its-item-does-not-hide-a-blank-line-2
+  a-line-below-a-list-item-folds-into-the-open-paragraph-of-a-div-or-an-absorbed-colon-run
   642-a-lazy-colon-shaped-line-in-a-quote-paragraph-keeps-no-indentation
   642-a-lazy-colon-shaped-line-in-a-quote-paragraph-keeps-no-indentation-2
   642-a-lazy-colon-shaped-line-in-a-quote-paragraph-keeps-no-indentation-3

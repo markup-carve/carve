@@ -1,0 +1,71 @@
+A line below a list item folds into the open paragraph of a div or an absorbed colon run
+
+```
+- a
+  - b
+    ::: e
+    x
+y
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <div class="e">
+          <p>x
+y</p>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- m
+   :::e
+  :::
+l
+.
+<ul>
+  <li>m
+:::e
+:::
+l</li>
+</ul>
+```
+
+```
+> - x
+>    :::d
+>   :::
+- tail
+.
+<blockquote>
+  <ul>
+    <li>x
+:::d
+:::
+- tail</li>
+  </ul>
+</blockquote>
+```
+
+```
+- a
+  - m
+    :::e
+    :::
+l
+.
+<ul>
+  <li>a
+    <ul>
+      <li>m
+:::e
+:::
+l</li>
+    </ul>
+  </li>
+</ul>
+```
