@@ -1471,10 +1471,12 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
       continue
     }
     if (t.tailEnd !== undefined) {
-      // The comment ends at the closer token of the shape it stands in, whether
-      // or not that shape forms, and otherwise runs to the end of its line.
-      const ends = shapeCloses.has(j + 1)
-      for (let k = j + 1; k < t.tailEnd; k++) toks[k].dead = !ends
+      // The comment ends at the closer token of the shape it stands in, which
+      // may stand past the `*/` it was cut at, whether or not that shape forms,
+      // and otherwise runs to the end of its line (§21a).
+      const close = nextCloser[j + 1]
+      const end = close !== -1 && close < t.tailEnd && shapeCloses.has(close) ? close : t.tailEnd
+      for (let k = j + 1; k < end; k++) toks[k].dead = true
       continue
     }
     if (t.dead || (t.k !== 'd' && t.own === undefined)) continue

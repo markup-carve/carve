@@ -24,3 +24,7 @@ test('the closer token still ends the comment', () => {
   assert.equal(html('/*a %% b*/ y\n'), '<p><strong><em>a</em></strong> y</p>')
   assert.equal(html('/*a %% b*/'), '<p><strong><em>a</em></strong></p>')
 })
+
+test('a heading cuts its comment at the same closer token', () => {
+  assert.match(html('# /*a %% b*/c d*/ y\n'), /<h1><strong><em>a<\/em><\/strong> y<\/h1>/)
+})
