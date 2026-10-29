@@ -461,7 +461,13 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    character after ']': '(' -> inline_link, '[' -> reference link, '{' ->
    inline_span. A bare '[text]' with none of those is literal text (carve
    has no shortcut reference links). See PART 9 §14. *)
-inline_span = '[', inline_content, ']', attribute_run ;
+inline_span = '[', inline_content, ']', span_attribute_run ;
+(* A span's run also takes the blessed empty block as an ordinary member
+   that contributes no attribute (PART 9 §14 CARVE-P9-021): `[a]{}{.b}`,
+   `[a]{}{}{.b}` and `[a]{.b}{}` all give `<span class="b">a</span>`. Every
+   other carrier keeps `attribute_run`, so `*x*{}{.b}` stays text. *)
+span_attribute_run = (attributes | empty_attributes), {attributes | empty_attributes} ;
+empty_attributes = '{', attr_pad, '}' ;
 
 autolink = '<', (url_autolink | email_autolink), '>', [attribute_run] ;
 (* A trailing `[attribute_run]` attaches to the autolink (generic

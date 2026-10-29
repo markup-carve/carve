@@ -1,0 +1,43 @@
+The empty block is a member of a bracketed span's attribute run
+
+```
+[a]{}{.b}
+.
+<p><span class="b">a</span></p>
+```
+
+```
+[a]{}{}{.b}
+.
+<p><span class="b">a</span></p>
+```
+
+```
+[a]{.b}{}
+.
+<p><span class="b">a</span></p>
+```
+
+```
+[a]{ }{.b}
+.
+<p><span class="b">a</span></p>
+```
+
+```
+[a]{.b}{}{#i}
+.
+<p><span class="b" id="i">a</span></p>
+```
+
+```
+[a]{}
+.
+<p><span>a</span></p>
+```
+
+```
+*x*{}{.b}
+.
+<p><strong>x</strong>{}{.b}</p>
+```

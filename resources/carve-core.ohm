@@ -492,7 +492,9 @@ CarveCore {
   // it (CARVE-P3-001, both ruled 2026-10-15): `[a </#x]> b](u)` is one link.
   brContent  = escape | litInlineBody | code | edCommentBody | bracedComment | autolinkBody | crossref | nested | (~"]" any)
   nested     = "[" brContent* "]" destSlot?
-  brTail     = linkTail | refTail | attrRun | emptyAttrs
+  brTail     = linkTail | refTail | spanRun
+  // The blessed empty block is a member of a span's run (CARVE-P9-021, carve#4077).
+  spanRun    = (attrRun | emptyAttrs)+
   linkTail   = destSlot attrRun?
   // ONE SPELLING of the parenthesized destination slot, read from the link
   // tail, the image and the nested-run skip above. It was written out twice

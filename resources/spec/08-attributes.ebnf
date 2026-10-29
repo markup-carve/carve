@@ -49,7 +49,9 @@ attribute_run = attributes, {attributes} ;
    -> `class="k"`. The run ENDS at the first thing that is not an attribute
    block: a space (`*x*{.k} {.j}` attaches only `.k`), a brace group that is
    not a valid block (`{???}`, `{ }`), or a glued construct such as the
-   forced span in `*x*{.k}{*y*}`, which stays content. A run that attaches to
+   forced span in `*x*{.k}{*y*}`, which stays content. A bracketed span is
+   the one carrier whose run also takes the empty block `{}` / `{ }` as a
+   member (PART 3 `span_attribute_run`). A run that attaches to
    nothing is text, block by block (PART 9 §15 A7). *)
 
 attribute = language_attribute | id_attribute | class_attribute

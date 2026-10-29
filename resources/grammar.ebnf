@@ -2282,7 +2282,13 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    character after ']': '(' -> inline_link, '[' -> reference link, '{' ->
    inline_span. A bare '[text]' with none of those is literal text (carve
    has no shortcut reference links). See PART 9 §14. *)
-inline_span = '[', inline_content, ']', attribute_run ;
+inline_span = '[', inline_content, ']', span_attribute_run ;
+(* A span's run also takes the blessed empty block as an ordinary member
+   that contributes no attribute (PART 9 §14 CARVE-P9-021): `[a]{}{.b}`,
+   `[a]{}{}{.b}` and `[a]{.b}{}` all give `<span class="b">a</span>`. Every
+   other carrier keeps `attribute_run`, so `*x*{}{.b}` stays text. *)
+span_attribute_run = (attributes | empty_attributes), {attributes | empty_attributes} ;
+empty_attributes = '{', attr_pad, '}' ;
 
 autolink = '<', (url_autolink | email_autolink), '>', [attribute_run] ;
 (* A trailing `[attribute_run]` attaches to the autolink (generic
@@ -2994,7 +3000,9 @@ attribute_run = attributes, {attributes} ;
    -> `class="k"`. The run ENDS at the first thing that is not an attribute
    block: a space (`*x*{.k} {.j}` attaches only `.k`), a brace group that is
    not a valid block (`{???}`, `{ }`), or a glued construct such as the
-   forced span in `*x*{.k}{*y*}`, which stays content. A run that attaches to
+   forced span in `*x*{.k}{*y*}`, which stays content. A bracketed span is
+   the one carrier whose run also takes the empty block `{}` / `{ }` as a
+   member (PART 3 `span_attribute_run`). A run that attaches to
    nothing is text, block by block (PART 9 §15 A7). *)
 
 attribute = language_attribute | id_attribute | class_attribute
@@ -5557,7 +5565,11 @@ EOF = (* end of file *) ;
           and the block is unrecognized (CARVE-P4-001). The empty block is a blessed
           exception -- the bare `attribute_list` production nominally needs
           >= 1 attribute -- so a default-attribute processor can target the
-          span.
+          span. It is an ordinary member of the span's glued run
+          (`span_attribute_run`, PART 3) that contributes no attribute, in
+          any position: `[text]{}{.c}`, `[text]{}{}{.c}` and `[text]{.c}{}`
+          all render `<span class="c">text</span>`. Only the bracketed span
+          takes it; on any other carrier `{}` ends the run.
         - unrecognized non-empty content (`[text]{???}`, `[text]{=y=}`) -> NOT
           an attribute block: the brackets remain literal, and the following
           brace group is still inline-parsed. `[text]{=y=}` ->

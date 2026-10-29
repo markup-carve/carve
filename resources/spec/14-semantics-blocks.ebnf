@@ -755,7 +755,11 @@
           and the block is unrecognized (CARVE-P4-001). The empty block is a blessed
           exception -- the bare `attribute_list` production nominally needs
           >= 1 attribute -- so a default-attribute processor can target the
-          span.
+          span. It is an ordinary member of the span's glued run
+          (`span_attribute_run`, PART 3) that contributes no attribute, in
+          any position: `[text]{}{.c}`, `[text]{}{}{.c}` and `[text]{.c}{}`
+          all render `<span class="c">text</span>`. Only the bracketed span
+          takes it; on any other carrier `{}` ends the run.
         - unrecognized non-empty content (`[text]{???}`, `[text]{=y=}`) -> NOT
           an attribute block: the brackets remain literal, and the following
           brace group is still inline-parsed. `[text]{=y=}` ->

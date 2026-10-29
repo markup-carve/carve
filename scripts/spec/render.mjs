@@ -1017,13 +1017,9 @@ sem.addOperation('applyTail(text, source)', {
     const { text } = this.args
     return renderSemanticSpan(text, this.parseAttrs())
   },
-  attrRun(_blocks) {
+  spanRun(_parts) {
     const { text } = this.args
     return renderSemanticSpan(text, this.parseAttrs())
-  },
-  emptyAttrs(_o, _sp, _c) {
-    const { text } = this.args
-    return `<span>${text}</span>`
   },
 })
 
@@ -1052,6 +1048,12 @@ sem.addOperation('parseAttrs', {
   // keeps its last value at its first position - so no second merge is needed.
   attrRun(blocks) {
     return blocks.children.flatMap((b) => b.parseAttrs())
+  },
+  spanRun(parts) {
+    return parts.children.flatMap((p) => p.parseAttrs())
+  },
+  emptyAttrs(_o, _sp, _c) {
+    return []
   },
   looseAttrs(blocks) {
     return blocks.children.flatMap((b) => b.parseAttrs())

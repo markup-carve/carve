@@ -65,7 +65,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P3-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L385) | 3 | AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION |
 | [`CARVE-P3-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L400) | 3 | TRAILING ATTRIBUTES ON A DEFINITION |
 | [`CARVE-P3-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L431) | 3 | THE DEFINITION MARKER SEPARATOR |
-| [`CARVE-P3-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L513) | 3 | AN AUTOLINK BODY ADMITS NON-ASCII AND EXCLUDES FORMAT CHARACTERS |
+| [`CARVE-P3-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L519) | 3 | AN AUTOLINK BODY ADMITS NON-ASCII AND EXCLUDES FORMAT CHARACTERS |
 | [`CARVE-P3-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L11) | 3 | TRAILING ATTRIBUTES on math |
 | [`CARVE-P3-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L31) | 3 | FORMAL word-boundary guards |
 | [`CARVE-P3-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L100) | 3 | AN EMPTY BRACE PAIR IS NOT A CONSTRUCT |
@@ -77,11 +77,11 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P3-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L422) | 3 | A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH |
 | [`CARVE-P3-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L518) | 3 | THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES |
 | [`CARVE-P4-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L19) | 4 | ATTRIBUTE PADDING IS SPACE-ONLY |
-| [`CARVE-P4-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L86) | 4 | THE SIGIL TAKES NO PADDING |
-| [`CARVE-P4-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L92) | 4 | LANGUAGE SHORTHAND USES THE `lang` KEY |
-| [`CARVE-P4-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L149) | 4 | A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE |
-| [`CARVE-P4-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L181) | 4 | A QUOTED VALUE STOPS AT THE NEWLINE |
-| [`CARVE-P4-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L119) | 4 | A `class` KEY-VALUE IS A SPELLING OF THE CLASS SLOT |
+| [`CARVE-P4-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L88) | 4 | THE SIGIL TAKES NO PADDING |
+| [`CARVE-P4-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L94) | 4 | LANGUAGE SHORTHAND USES THE `lang` KEY |
+| [`CARVE-P4-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L151) | 4 | A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE |
+| [`CARVE-P4-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L183) | 4 | A QUOTED VALUE STOPS AT THE NEWLINE |
+| [`CARVE-P4-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L121) | 4 | A `class` KEY-VALUE IS A SPELLING OF THE CLASS SLOT |
 | [`CARVE-P7-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/11-lexical.ebnf#L23) | 7 | A TAB IS SYNTAX ONLY IN THE LEADING RUN |
 | [`CARVE-P7-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/11-lexical.ebnf#L58) | 7 | MARKER SEPARATORS AND PADDING SLOTS |
 | [`CARVE-P7-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/11-lexical.ebnf#L127) | 7 | ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT |
@@ -99,9 +99,9 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L467) | 9 | ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY |
 | [`CARVE-P9-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L721) | 9 | INLINE SPAN VS LINK DISAMBIGUATION |
 | [`CARVE-P9-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L749) | 9 | EMPTY OR INVALID ATTRIBUTE BLOCK |
-| [`CARVE-P9-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L773) | 9 | BOOLEAN ATTRIBUTES |
-| [`CARVE-P9-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L813) | 9 | A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK |
-| [`CARVE-P9-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L838) | 9 | A4 DROP IF DANGLING |
+| [`CARVE-P9-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L777) | 9 | BOOLEAN ATTRIBUTES |
+| [`CARVE-P9-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L817) | 9 | A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK |
+| [`CARVE-P9-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L842) | 9 | A4 DROP IF DANGLING |
 | [`CARVE-P9-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L164) | 9 | L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER |
 | [`CARVE-P9-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L179) | 9 | L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION |
 | [`CARVE-P9-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L296) | 9 | L6 A COLLECTED DEFINITION LEAVES NO TRACE |

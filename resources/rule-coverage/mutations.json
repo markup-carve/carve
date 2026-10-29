@@ -916,8 +916,8 @@
       "edits": [
         {
           "file": "resources/carve-core.ohm",
-          "find": "brTail     = linkTail | refTail | attrRun | emptyAttrs",
-          "replace": "brTail     = linkTail | attrRun | emptyAttrs"
+          "find": "brTail     = linkTail | refTail | spanRun",
+          "replace": "brTail     = linkTail | spanRun"
         }
       ]
     },
@@ -926,8 +926,8 @@
       "edits": [
         {
           "file": "resources/carve-core.ohm",
-          "find": "brTail     = linkTail | refTail | attrRun | emptyAttrs",
-          "replace": "brTail     = linkTail | refTail | attrRun"
+          "find": "spanRun    = (attrRun | emptyAttrs)+",
+          "replace": "spanRun    = attrRun"
         }
       ]
     },
