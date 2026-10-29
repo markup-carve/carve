@@ -28,7 +28,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { TARGET_EXTENSIONS, targetNames, targetOf } from './corpus-targets.mjs'
-import { exampleFiles, numberExamples, readExampleFiles, scanExampleSource } from './example-sections.mjs'
+import { exampleSectionNumbers, exampleSourceFiles, numberExamples, readExampleFiles, readExampleSource, scanExampleSource } from './example-sections.mjs'
 
 /*
  * A page id line opens a page; everything after it belongs to that page until
@@ -178,20 +178,24 @@ export const nonHeadingSections = (sections, context) =>
 /*
  * The sections a page entry may name, keyed by slug, and the corpus pairs those
  * sections hold, keyed by fixture name. Numbering comes from the CONCATENATION
- * of the three example files - that is what `generate-corpus.mjs` numbers by -
- * while `sourceName` comes from the file a section actually sits in, so a page
- * can name its provenance. Both are needed to resolve a route, which is why
- * they are built together here rather than reconstructed on each side.
+ * of the example sources - that is what `generate-corpus.mjs` numbers by -
+ * while `sourceName` names the source a section sits in (`core`, `extensions`
+ * or the `edge-cases` directory), so a page can name its provenance. Both are
+ * needed to resolve a route, which is why they are built together here rather
+ * than reconstructed on each side. A section file's `page:` front matter
+ * travels as `page`.
  */
 export const collectSections = (repoRoot) => {
   const complaints = []
   const combinedScan = scanExampleSource(readExampleFiles(repoRoot).split('\n'))
-  numberExamples(combinedScan)
+  const numbers = exampleSectionNumbers(repoRoot)
+  numberExamples(combinedScan, numbers)
   const numberedBySlug = new Map(combinedScan.sections.map((section) => [section.slug, section]))
   const sectionsBySlug = new Map()
-  for (const sourceName of exampleFiles) {
-    const sourcePath = resolve(repoRoot, 'resources/examples', `${sourceName}.md`)
-    const { sections } = scanExampleSource(readFileSync(sourcePath, 'utf8').split('\n'))
+  for (const source of exampleSourceFiles(repoRoot)) {
+    const sourceName = source.group
+    const { body, frontMatter } = readExampleSource(source.path)
+    const { sections } = scanExampleSource(body.split('\n'))
     for (const section of sections) {
       /* `scanExampleSource` already throws on two identical section TITLES.
        * Two DIFFERENT titles that slugify to one slug reach here instead, and
@@ -204,12 +208,34 @@ export const collectSections = (repoRoot) => {
       for (let i = 0; i < section.segments.length; i++) {
         section.segments[i].corpusName = numbered?.segments[i]?.corpusName
       }
-      sectionsBySlug.set(section.slug, { ...section, sourceName })
+      sectionsBySlug.set(section.slug, { ...section, sourceName, page: frontMatter.page ?? null, number: numbers.get(section.title) ?? null })
     }
   }
   const segmentsByName = new Map([...sectionsBySlug.values()].flatMap((section) =>
     section.segments.map((segment) => [segment.corpusName, { section, segment }])))
   return { sectionsBySlug, segmentsByName, complaints }
+}
+
+/*
+ * Route the sections whose file names their page in front matter. They join
+ * the page after its listed entries, in number order, so adding a section
+ * edits no shared file. A page id that names no page, or names two, is a
+ * complaint; a section also routed by the page file is caught by routePages.
+ */
+export const frontMatterRoutes = ({ pages, sectionsBySlug }) => {
+  const complaints = []
+  const routed = [...sectionsBySlug.values()]
+    .filter((section) => section.page)
+    .sort((a, b) => (a.number ?? 0) - (b.number ?? 0) || (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0))
+  for (const section of routed) {
+    const matches = pages.filter((page) => page.id === section.page)
+    if (matches.length !== 1) {
+      complaints.push(`section "${section.slug}" names page "${section.page}" in its front matter, which ${matches.length === 0 ? 'is not a page of resources/example-pages.txt' : 'more than one page of resources/example-pages.txt uses as its id'}.`)
+      continue
+    }
+    matches[0].slugs.push(section.slug)
+  }
+  return { complaints }
 }
 
 /*

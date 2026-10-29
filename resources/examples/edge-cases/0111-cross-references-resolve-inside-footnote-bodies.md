@@ -1,0 +1,31 @@
+## Cross-references resolve inside footnote bodies
+
+A footnote definition is full block content, so a `</#id>` cross-reference (and
+reference links) inside a footnote body resolve against document-level targets.
+
+::: compare
+
+```carve
+# H
+
+Body[^n]
+
+[^n]: see </#H>
+```
+
+```html
+<section id="H">
+  <h1>H</h1>
+  <p>Body<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+</section>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a href="#H">H</a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

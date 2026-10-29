@@ -23,8 +23,8 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { numberExamples, readExampleFiles, scanExampleSource } from '../scripts/lib/example-sections.mjs'
-import { SECTION_HEADING_PREFIX, collectSections, fenceLanguages, headerOnlyPages, nonHeadingSections, optionalCaseFences, parseOptionalPages, parsePages, routePages, scanPageSources } from '../scripts/lib/example-page-manifest.mjs'
+import { exampleSectionNumbers, numberExamples, readExampleFiles, scanExampleSource } from '../scripts/lib/example-sections.mjs'
+import { SECTION_HEADING_PREFIX, collectSections, fenceLanguages, frontMatterRoutes, headerOnlyPages, nonHeadingSections, optionalCaseFences, parseOptionalPages, parsePages, routePages, scanPageSources } from '../scripts/lib/example-page-manifest.mjs'
 import { TARGET_EXTENSIONS, targetNames } from '../scripts/lib/corpus-targets.mjs'
 import { optionalFeatureTitles } from '../scripts/lib/optional-feature-titles.mjs'
 
@@ -134,7 +134,7 @@ test('every UNROUTED waiver still names a real page', () => {
  * question without a build.
  */
 const exampleScan = scanExampleSource(readExampleFiles(repoRoot).split('\n'))
-numberExamples(exampleScan)
+numberExamples(exampleScan, exampleSectionNumbers(repoRoot))
 const sectionSlugByFixture = new Map(exampleScan.examples.map((example) => [example.corpusName, example.slug]))
 
 /* The census is the fixtures a contributor actually commits, not the scanner's
@@ -178,6 +178,7 @@ const { sectionsBySlug, segmentsByName, complaints: sectionComplaints } = collec
  * the collision, reported in the generator's voice for a run the generator
  * never performs. The collision itself is asserted just below.
  */
+const { complaints: frontMatterComplaints } = frontMatterRoutes({ pages, sectionsBySlug })
 const { complaints: routeComplaints } = sectionComplaints.length === 0
   ? routePages({ pages, sectionsBySlug, segmentsByName })
   : { complaints: [] }
@@ -189,6 +190,10 @@ test('both page manifests parsed something', () => {
   assert.ok(pages.length > 5, `expected the configured example pages, found ${pages.length}`)
   assert.ok(optionalPages.length > 1, `expected the optional example pages, found ${optionalPages.length}`)
   assert.ok(sectionsBySlug.size > 20, `expected the example source sections, found ${sectionsBySlug.size}`)
+})
+
+test('every page a section file names in its front matter exists', () => {
+  assert.deepEqual(frontMatterComplaints, [], frontMatterComplaints.join('\n'))
 })
 
 test('the page manifest has no structural complaint', () => {

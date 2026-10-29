@@ -32,8 +32,15 @@ For this repo in particular:
 - Node.js 24 is the minimum (`package.json` `engines`, and `.nvmrc` selects it).
   CI runs the conformance corpus on Node 24 and 26.
 - Spec or examples changes should normally keep `npm test` green.
-- If you change `resources/examples/*.md`, regenerate the corpus and verify the
+- If you change `resources/examples/`, regenerate the corpus and verify the
   resulting fixture diff is intentional.
+- A new corpus section is a new file, `resources/examples/edge-cases/NNNN-slug.md`:
+  one `##` section, `NNNN` the highest number in that directory plus one, `slug`
+  the title slugified. It names its docs page in front matter (`page: edge-lists`)
+  instead of an entry in `resources/example-pages.txt`, so it touches no shared
+  file. If another PR takes the same number first, keep yours: the number only
+  orders, the slug identifies, and neither section is renumbered. See
+  `resources/examples/edge-cases/README.md`.
 - Round trips are gated by per-document exception lists in
   `resources/roundtrip/`, not by committed totals. A corpus document that fails
   a round trip is added to the matching list, sorted, in the PR that adds it;

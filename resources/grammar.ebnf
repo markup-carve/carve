@@ -5304,7 +5304,7 @@ EOF = (* end of file *) ;
       empty body (opener immediately followed by its closer) opens too. A
       MISSING closer changes none of this: PART 2's UNCLOSED rule governs
       (corpus 270-a-real-div-in-a-container-and-the-flush-left-line-after-it).
-      (resources/examples/edge-cases.md "Fence opener with a nested-list body
+      (resources/examples/edge-cases/ "Fence opener with a nested-list body
       inside a list item" pins these.)
 
       The two tiers for a typed block:
@@ -6554,7 +6554,7 @@ EOF = (* end of file *) ;
       bind any implementation that emits HTML for UNTRUSTED input, so an
       implementation written to this grammar + the corpus cannot be conformant
       yet expose a trivial XSS vector. The corpus pins representative cases
-      (resources/examples/edge-cases.md "Security hardening").
+      (resources/examples/edge-cases/ "Security hardening").
       - URL SINK SCHEME DENYLIST. On every clickable URL sink -- link
         destination (`href`), image source (`src`), and autolink -- an HTML
         renderer MUST reject any URL whose scheme is `javascript`, `vbscript`,
@@ -6576,7 +6576,7 @@ EOF = (* end of file *) ;
         line/paragraph separators (U+2028 / U+2029), and the BOM (U+FEFF) --
         before matching the scheme, so an obfuscated `<U+202F>javascript:`
         destination cannot slip past the denylist. The corpus pins the
-        U+202F case (resources/examples/edge-cases.md "Scheme probe strips Unicode
+        U+202F case (resources/examples/edge-cases/ "Scheme probe strips Unicode
         whitespace").
 
         The probe does not strip the wider `Cf` category.
@@ -6780,7 +6780,7 @@ EOF = (* end of file *) ;
    26. TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING -- NORMATIVE [CARVE-P9-058] (CVE-2021-42574
       class). Visually deceptive or invisible Unicode MUST NOT produce
       diverging heading ids nor smuggle a live control character into the
-      output. The corpus pins representative cases (resources/examples/edge-cases.md
+      output. The corpus pins representative cases (resources/examples/edge-cases/
       "Trojan-Source: heading ids ...", "Trojan-Source: rendered text and
       code ...").
       - HEADING IDS are NFC-normalized and stripped of bidi-override /

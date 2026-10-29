@@ -1,16 +1,21 @@
 # Which generated page each example section appears on.
 #
-# resources/examples/{core,extensions,edge-cases}.md are APPEND-ONLY:
-# scripts/generate-corpus.mjs numbers a fixture by its section's POSITION in
-# the concatenation of those three files, and every engine allowlists
-# categories by `NN-slug`. So a section can never move in the SOURCE.
+# The corpus numbers are fixed in the SOURCE: resources/examples/{core,extensions}.md
+# by position, and one file per section under resources/examples/edge-cases/ by
+# its NNNN-slug.md name. Every engine allowlists categories by `NN-slug`, so a
+# section never moves there.
 #
 # This file is the reading order instead. A section may appear on any page
 # regardless of which source file holds it - section titles are unique across
-# all three (generate-corpus enforces that), so a slug names exactly one
+# the source (generate-corpus enforces that), so a slug names exactly one
 # section. An individual fixture name instead routes only that pair's segment.
 # scripts/generate-example-pages.mjs writes one page per entry below, in this
 # order, listing its sections or fixture segments in the order given.
+#
+# A NEW section does not need an entry here: its file names the page in front
+# matter (`page: <page-id>`), and it joins that page after the entries below,
+# in number order. That keeps a corpus PR off this shared file. An entry here
+# is for curating the order; a section routed both ways is an error.
 #
 # Format:
 #   [page-id] Page title

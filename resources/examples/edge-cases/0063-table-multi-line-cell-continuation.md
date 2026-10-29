@@ -1,0 +1,28 @@
+## Table multi-line cell continuation
+
+A `+` line continues the previous row's cells, so a logical cell can
+span several source lines.
+
+::: compare
+
+```carve
+|= Feature |= Description        |
+| Complex  | A long description |
++          | that continues     |
++          | across lines.      |
+| Simple   | Single line.       |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Feature</th><th scope="col">Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Complex</td><td>A long description that continues across lines.</td></tr>
+    <tr><td>Simple</td><td>Single line.</td></tr>
+  </tbody>
+</table>
+```
+
+:::

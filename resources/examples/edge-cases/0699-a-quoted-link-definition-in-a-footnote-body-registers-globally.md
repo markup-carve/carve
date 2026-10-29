@@ -1,0 +1,33 @@
+## A quoted link definition in a footnote body registers globally
+
+The first paragraph references the note. Its quoted link definition registers globally and closes the note paragraph. The later unmarked link line starts a document paragraph and resolves through that definition.
+
+:::: compare
+
+```carve
+see[^n]
+
+[^n]: a
+
+    > [r]: /x
+[x][r]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p><a href="/x">x</a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a</p>
+      <blockquote>
+
+      </blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::

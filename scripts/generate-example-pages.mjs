@@ -2,8 +2,8 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, posix, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { slugify } from './lib/example-sections.mjs'
-import { SECTION_HEADING_PREFIX, collectSections, headerOnlyPages, nonHeadingSections, optionalCaseFences, parseOptionalPages, parsePages, routePages, scanPageSources, unroutedFixtures } from './lib/example-page-manifest.mjs'
+import { sectionDir, slugify } from './lib/example-sections.mjs'
+import { SECTION_HEADING_PREFIX, collectSections, frontMatterRoutes, headerOnlyPages, nonHeadingSections, optionalCaseFences, parseOptionalPages, parsePages, routePages, scanPageSources, unroutedFixtures } from './lib/example-page-manifest.mjs'
 import { optionalFeatureTitles } from './lib/optional-feature-titles.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -81,6 +81,7 @@ failOn(sectionComplaints)
 
 const { pages, complaints: pageComplaints } = parsePages(readFileSync(pagesSource, 'utf8'))
 failOn(pageComplaints)
+failOn(frontMatterRoutes({ pages, sectionsBySlug }).complaints)
 const { routedSegments, complaints: routeComplaints } = routePages({ pages, sectionsBySlug, segmentsByName })
 failOn(routeComplaints)
 /* A generated corpus pair without documentation has no reader, which is the
@@ -94,11 +95,14 @@ for (const page of pages) page.standaloneSections = sectionsByPage.get(page)
 /* Asked of both populations that reach `sectionLines` below, before anything is
  * generated: the scanner guarantees a section opens at `##`, not what separates
  * it from the title, and the separator is re-emitted verbatim (carve#1496). */
-failOn(nonHeadingSections([...sectionsBySlug.values()], 'resources/examples/*.md'))
+failOn(nonHeadingSections([...sectionsBySlug.values()], 'resources/examples/'))
 for (const [page, sections] of sectionsByPage) failOn(nonHeadingSections(sections, `page "${page.id}" source resources/${page.source}`))
 
 const corpusUrl = (name) => `https://github.com/markup-carve/carve/blob/main/tests/corpus/${name}.crv`
-const sourceLink = (name) => `[\`resources/examples/${name}.md\`](https://github.com/markup-carve/carve/blob/main/resources/examples/${name}.md)`
+/* The edge cases are a directory of section files, so the banner links the directory. */
+const sourceLink = (name) => name === sectionDir
+  ? `[\`resources/examples/${name}/\`](https://github.com/markup-carve/carve/tree/main/resources/examples/${name})`
+  : `[\`resources/examples/${name}.md\`](https://github.com/markup-carve/carve/blob/main/resources/examples/${name}.md)`
 /*
  * ONE banner per page, not one per section. A page draws its sections from
  * whichever source files hold them - the Core page pulls from two - so the

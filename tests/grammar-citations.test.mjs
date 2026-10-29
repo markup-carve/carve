@@ -19,6 +19,7 @@ import assert from 'node:assert/strict'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { exampleFiles } from '../scripts/lib/example-sections.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
@@ -38,9 +39,7 @@ const walk = (dir) => readdirSync(dir).flatMap((entry) => {
 })
 const files = [
   ...walk(resolve(repoRoot, 'docs')),
-  ...readdirSync(resolve(repoRoot, 'resources/examples'))
-    .filter((f) => f.endsWith('.md'))
-    .map((f) => resolve(repoRoot, 'resources/examples', f)),
+  ...exampleFiles.map((name) => resolve(repoRoot, 'resources/examples', `${name}.md`)),
 ]
 
 test('the corpus of scanned pages is not empty', () => {

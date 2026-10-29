@@ -1,0 +1,23 @@
+## Table per-cell alignment override
+
+::: compare
+
+```carve
+|= Item     |=> Qty |
+| Apple      | 12     |
+| Subtotal   |< 12    |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Item</th><th scope="col" style="text-align: right;">Qty</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Apple</td><td style="text-align: right;">12</td></tr>
+    <tr><td>Subtotal</td><td style="text-align: left;">12</td></tr>
+  </tbody>
+</table>
+```
+
+:::

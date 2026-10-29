@@ -1,0 +1,23 @@
+## Table alignment with colspan
+
+::: compare
+
+```carve
+|=> Category |= Item   |= Price |
+| Fruit       | Apple    | $1      |
+| Total       | <        | $1.50   |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col" style="text-align: right;">Category</th><th scope="col">Item</th><th scope="col">Price</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="text-align: right;">Fruit</td><td>Apple</td><td>$1</td></tr>
+    <tr><td colspan="2" style="text-align: right;">Total</td><td>$1.50</td></tr>
+  </tbody>
+</table>
+```
+
+:::

@@ -21,6 +21,7 @@ import { extractNormativeClauses, readInventory } from '../scripts/normative-cla
 import { audit, blankFences, clausesOf, conditionStated, obligationTables, part9Sections as specPart9Sections, sectionLabel, namedSecurityBullets } from '../scripts/normative-page-audit.mjs'
 import { classifyLayoutComment, ownershipTransition } from '../scripts/spec/layout.mjs'
 import { bareCitation, eachClause, qualifiedCitation } from '../scripts/lib/citations.mjs'
+import { exampleFiles } from '../scripts/lib/example-sections.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
@@ -487,10 +488,10 @@ test('explanatory docs carry the non-normative banner', () => {
 
 test('the conformance contract exists and is non-empty', () => {
   assert.ok(existsSync(resolve(repo, 'docs/examples.md')))
-  for (const name of ['core', 'extensions', 'edge-cases']) {
+  for (const name of ['core.md', 'extensions.md', 'edge-cases']) {
     assert.ok(
-      existsSync(resolve(repo, `resources/examples/${name}.md`)),
-      `resources/examples/${name}.md (corpus source) is missing`,
+      existsSync(resolve(repo, `resources/examples/${name}`)),
+      `resources/examples/${name} (corpus source) is missing`,
     )
   }
   const crv = readdirSync(resolve(repo, 'tests/corpus')).filter((f) =>
@@ -505,9 +506,8 @@ test('the conformance contract exists and is non-empty', () => {
 // leaks as literal text. Guard: every `compare` container's colon marker must
 // be LONGER than the longest `:`-run anywhere in its body.
 test('every ::: compare container marker exceeds its body colon-run (VitePress render safety)', () => {
-  // The compare blocks live in resources/examples/{core,extensions,edge-cases}.md
-  // (the corpus source). Scan all of them, not the examples.md index.
-  const exampleFiles = ['core', 'extensions', 'edge-cases']
+  // The compare blocks live in the corpus source under resources/examples/.
+  // Scan all of it, not the examples.md index.
   const lines = exampleFiles.flatMap((name) =>
     readFileSync(resolve(repo, `resources/examples/${name}.md`), 'utf8').split('\n'),
   )

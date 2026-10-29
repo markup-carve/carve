@@ -1,0 +1,38 @@
+## A nested list in a footnote body stays nested
+
+Relative indentation inside a note body means what it means everywhere else: it says which item a marker belongs to. A body collected flush-left loses that, and the sublist becomes a sibling.
+
+::: compare
+
+```carve
+[^a]: note
+
+  - one
+    - deep
+
+  end.
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <ul>
+        <li>one
+          <ul>
+            <li>deep</li>
+          </ul>
+        </li>
+      </ul>
+      <p>end.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

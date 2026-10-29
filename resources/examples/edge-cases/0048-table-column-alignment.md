@@ -1,0 +1,23 @@
+## Table column alignment
+
+::: compare
+
+```carve
+|= Name |=> Age |=~ City |
+| Alice  | 28     | NYC     |
+| Bob    | 34     | London  |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Name</th><th scope="col" style="text-align: right;">Age</th><th scope="col" style="text-align: center;">City</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Alice</td><td style="text-align: right;">28</td><td style="text-align: center;">NYC</td></tr>
+    <tr><td>Bob</td><td style="text-align: right;">34</td><td style="text-align: center;">London</td></tr>
+  </tbody>
+</table>
+```
+
+:::

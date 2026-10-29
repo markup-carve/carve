@@ -2,7 +2,7 @@
    26. TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING -- NORMATIVE [CARVE-P9-058] (CVE-2021-42574
       class). Visually deceptive or invisible Unicode MUST NOT produce
       diverging heading ids nor smuggle a live control character into the
-      output. The corpus pins representative cases (resources/examples/edge-cases.md
+      output. The corpus pins representative cases (resources/examples/edge-cases/
       "Trojan-Source: heading ids ...", "Trojan-Source: rendered text and
       code ...").
       - HEADING IDS are NFC-normalized and stripped of bidi-override /

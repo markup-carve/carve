@@ -1,0 +1,32 @@
+## A table ends a footnote paragraph claim
+
+:::: compare
+
+```carve
+see[^n]
+
+[^n]: a
+  | a |
+end
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p>end</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a</p>
+      <table>
+        <tbody>
+          <tr><td>a</td></tr>
+        </tbody>
+      </table>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::

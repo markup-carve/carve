@@ -494,7 +494,7 @@
       empty body (opener immediately followed by its closer) opens too. A
       MISSING closer changes none of this: PART 2's UNCLOSED rule governs
       (corpus 270-a-real-div-in-a-container-and-the-flush-left-line-after-it).
-      (resources/examples/edge-cases.md "Fence opener with a nested-list body
+      (resources/examples/edge-cases/ "Fence opener with a nested-list body
       inside a list item" pins these.)
 
       The two tiers for a typed block:

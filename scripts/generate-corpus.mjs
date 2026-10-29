@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { shortfall } from './spec/participants.mjs'
-import { numberExamples, readExampleFiles, scanExampleSource } from './lib/example-sections.mjs'
+import { exampleSectionNumbers, exampleSourceComplaints, numberExamples, readExampleFiles, scanExampleSource } from './lib/example-sections.mjs'
 import { censusComparePairs } from './lib/example-pair-census.mjs'
 import { displacedExamples, parseCorpusName } from './lib/example-displacement.mjs'
 
@@ -12,9 +12,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
 const outDir = resolve(repoRoot, 'tests/corpus')
 
-// The example pairs live in resources/examples/{core,extensions,edge-cases}.md.
-// Read them in a fixed tier order so corpus numbering is deterministic across
-// machines and CI (readdir order is filesystem-dependent).
+// The example pairs live in resources/examples/{core,extensions}.md and one
+// file per section under resources/examples/edge-cases/. The reader fixes the
+// order (readdir order is filesystem-dependent): the two files, then the
+// section files by number.
+const sourceComplaints = exampleSourceComplaints(repoRoot)
+if (sourceComplaints.length) {
+  console.error('generate-corpus: the example source cannot be numbered:')
+  for (const c of sourceComplaints) console.error(`  - ${c}`)
+  process.exit(1)
+}
 const src = readExampleFiles(repoRoot)
 const lines = src.split('\n')
 
@@ -34,9 +41,8 @@ const lines = src.split('\n')
  * bytes (carve#872).
  *
  * `nul` is the same problem one step worse. A U+0000 in the example source
- * would make git call resources/examples/edge-cases.md BINARY - no diff for
- * the whole 26,000-line file, on every future review of any example in it -
- * and it is invisible in an editor besides. So the example writes U+2400
+ * would make git call its example file BINARY - no diff for any example in
+ * it, on every future review - and it is invisible in an editor besides. So the example writes U+2400
  * SYMBOL FOR NULL, which is exactly as reviewable as the character it stands
  * for is not, and this transform substitutes the real byte (carve#1523).
  */
@@ -173,7 +179,7 @@ const thin = shortfall({
   actual: examples.length,
   atLeast: CORPUS_FLOOR,
   of: 'example pair(s)',
-  hint: 'resources/examples/{core,extensions,edge-cases}.md is where they come from; ' +
+  hint: 'resources/examples/{core,extensions}.md and resources/examples/edge-cases/ are where they come from; ' +
     'an extraction that reached fewer of them writes a corpus every downstream ' +
     'floor is happy with.',
 })
@@ -185,7 +191,9 @@ if (thin) {
 // Stable per-section numbering. Examples in the same section share the section
 // index; their suffix increments per example within the section (omitted for the
 // first example so single-example sections keep their existing filenames).
-numberExamples(scan)
+// A section file's number comes from its name, the rest from position.
+const declaredNumbers = exampleSectionNumbers(repoRoot)
+numberExamples(scan, declaredNumbers)
 
 // --- APPEND-ONLY NUMBERING (guard) -----------------------------------------
 //
@@ -232,9 +240,11 @@ if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
     if (before !== ex.idx) moved.set(ex.slug, `${before}-${ex.slug} -> ${ex.idx}-${ex.slug}`)
     highestKept = Math.max(highestKept, Number(before))
   }
+  // Only a POSITIONAL section can push another one along. A section file
+  // names its own number, so a new one below the highest moves nothing.
   const addedTooLow = new Map()
   for (const ex of examples) {
-    if (existingNumbers.has(ex.slug)) continue
+    if (existingNumbers.has(ex.slug) || declaredNumbers.has(ex.section)) continue
     if (Number(ex.idx) < highestKept) addedTooLow.set(ex.slug, `${ex.idx}-${ex.slug}`)
   }
   // A category that DISAPPEARS breaks the same allowlists a renumber does - a
@@ -294,8 +304,8 @@ if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
       console.error('')
     }
     console.error('  Every engine allowlists categories by `NN-slug`, so this invalidates')
-    console.error('  all of those lists at once. Move the new section to the END of the last')
-    console.error('  examples file (resources/examples/edge-cases.md) instead.')
+    console.error('  all of those lists at once. Add a new section as its own file,')
+    console.error('  resources/examples/edge-cases/NNNN-slug.md, instead (see the README there).')
     console.error('')
     console.error('  If the renumber is deliberate, re-run with CORPUS_RENUMBER=1 and update')
     console.error('  every engine allowlist in the same change.')

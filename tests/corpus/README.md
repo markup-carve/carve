@@ -33,7 +33,7 @@ added here is kept as written.
 
 ## Regenerating
 
-The corpus is generated from the sources in [`../../resources/examples/`](../../resources/examples/) (`core.md`, `extensions.md`, `edge-cases.md`):
+The corpus is generated from the sources in [`../../resources/examples/`](../../resources/examples/) (`core.md`, `extensions.md`, one file per section in `edge-cases/`):
 
 ```sh
 npm run corpus:build

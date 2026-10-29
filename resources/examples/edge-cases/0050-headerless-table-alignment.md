@@ -1,0 +1,19 @@
+## Headerless table alignment
+
+::: compare
+
+```carve
+| a |> 9  |
+| b |> 10 |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td style="text-align: right;">9</td></tr>
+    <tr><td>b</td><td style="text-align: right;">10</td></tr>
+  </tbody>
+</table>
+```
+
+:::

@@ -380,7 +380,7 @@
       bind any implementation that emits HTML for UNTRUSTED input, so an
       implementation written to this grammar + the corpus cannot be conformant
       yet expose a trivial XSS vector. The corpus pins representative cases
-      (resources/examples/edge-cases.md "Security hardening").
+      (resources/examples/edge-cases/ "Security hardening").
       - URL SINK SCHEME DENYLIST. On every clickable URL sink -- link
         destination (`href`), image source (`src`), and autolink -- an HTML
         renderer MUST reject any URL whose scheme is `javascript`, `vbscript`,
@@ -402,7 +402,7 @@
         line/paragraph separators (U+2028 / U+2029), and the BOM (U+FEFF) --
         before matching the scheme, so an obfuscated `<U+202F>javascript:`
         destination cannot slip past the denylist. The corpus pins the
-        U+202F case (resources/examples/edge-cases.md "Scheme probe strips Unicode
+        U+202F case (resources/examples/edge-cases/ "Scheme probe strips Unicode
         whitespace").
 
         The probe does not strip the wider `Cf` category.

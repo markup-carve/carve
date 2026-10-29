@@ -1,0 +1,115 @@
+## Invalid table body metadata stays ordinary
+
+:::: compare
+
+```carve
+{header-rows=1 body-rows=x}
+| a | b |
+| c | d |
+```
+
+```html
+<table header-rows="1" body-rows="x">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{body-rows=1,1 body-header-rows=0}
+| a | b |
+| c | d |
+```
+
+```html
+<table body-rows="1,1" body-header-rows="0">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{body-rows=1}
+| a | b |
+| c | d |
+```
+
+```html
+<table body-rows="1">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{header-rows=1 body-header-rows=1}
+| a | b |
+| c | d |
+```
+
+```html
+<table header-rows="1" body-header-rows="1">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{body-rows=1,1 body-header-cols=x,0}
+| a | b |
+| c | d |
+```
+
+```html
+<table body-rows="1,1" body-header-cols="x,0">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{body-rows=9007199254740992}
+| a | b |
+| c | d |
+```
+
+```html
+<table body-rows="9007199254740992">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::

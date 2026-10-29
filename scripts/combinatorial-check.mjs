@@ -24,7 +24,7 @@
  *
  * This does NOT replace the corpus. A divergence found here is a question, not
  * a verdict: decide the canonical answer, then promote it to a corpus case in
- * resources/examples/edge-cases.md so it is pinned forever after.
+ * a section file under resources/examples/edge-cases/ so it is pinned forever after.
  *
  * Usage:
  *   node scripts/combinatorial-check.mjs

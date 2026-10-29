@@ -1,0 +1,22 @@
+## Empty table bodies keep their source boundaries
+
+:::: compare
+
+```carve
+{body-rows=0,1 body-header-rows=0,1 body-header-cols=,0}
+| H | G |
+| a | b |
+```
+
+```html
+<table>
+  <tbody>
+  </tbody>
+  <tbody>
+    <tr><th scope="col">H</th><th scope="col">G</th></tr>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+::::

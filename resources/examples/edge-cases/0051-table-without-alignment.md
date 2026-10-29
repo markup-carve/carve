@@ -1,0 +1,23 @@
+## Table without alignment
+
+::: compare
+
+```carve
+|= Name     |= Age |
+| Alice     |   28 |
+| Bob       |   34 |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Name</th><th scope="col">Age</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Alice</td><td>28</td></tr>
+    <tr><td>Bob</td><td>34</td></tr>
+  </tbody>
+</table>
+```
+
+:::

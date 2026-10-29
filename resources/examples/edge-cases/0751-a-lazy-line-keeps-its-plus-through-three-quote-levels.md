@@ -1,0 +1,29 @@
+## A lazy line keeps its plus through three quote levels
+
+:::: compare
+
+```carve
+> > > - > +
+> > > - > +
+>  s
+```
+
+```html
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <ul>
+        <li>
+          <blockquote><p>+</p></blockquote>
+        </li>
+        <li>
+          <blockquote><p>+
+s</p></blockquote>
+        </li>
+      </ul>
+    </blockquote>
+  </blockquote>
+</blockquote>
+```
+
+::::

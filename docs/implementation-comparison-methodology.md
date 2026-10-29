@@ -247,7 +247,7 @@ those fire even when every engine agrees and all of them are wrong, which has
 happened here before.
 
 A divergence it reports is a QUESTION, not a verdict. Decide the canonical
-answer, then promote it to a corpus case in `resources/examples/edge-cases.md` so it
+answer, then promote it to a corpus case in `resources/examples/edge-cases/` so it
 is pinned from then on.
 
 ```bash
