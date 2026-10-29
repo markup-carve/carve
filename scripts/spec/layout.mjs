@@ -1509,6 +1509,7 @@ function isBlank(line) {
 // Without the `\S`, `:: ` was a paragraph and `::··` a definition list -
 // stripping one trailing space changed the structure (carve#512).
 const DEFLIST_TERM = /^:: (?=[ \t]*[^ \t\n\r])/
+const DESCRIPTION_LEAD = /^: +(?=[^ \t])/
 const DEFLIST_SEPARATOR = /^: +[ \t]*(?=[^ \t\n\r])/
 // A nested marker on its parent's first line has no physical-column entry in
 // the continuation-marker cache. Keep that column for separator ownership.
@@ -2092,18 +2093,34 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
             : close[1].length === opaque.run.length)) opaque = null
       continue
     }
+    let body = measured
+    let fenceAt = measured
     if (line !== '' && !lines[k].startsWith(LAZY)) {
       while (columns.length > 1 && columns.at(-1) > measured.col) columns.pop()
+      if (scan.termColumn !== undefined && measured.col <= scan.termColumn &&
+          !(measured.col === scan.termColumn && (DEFLIST_TERM.test(line) || DESCRIPTION_LEAD.test(line)))) scan.termColumn = undefined
       let marker = matchMarkerAt(measured)
       while (marker) {
         const column = marker.indent + marker.markerWidth
         columns.push(column)
         const next = indentCols(marker.text)
-        marker = matchMarkerAt({ col: column + next.col, rest: next.rest })
+        body = { col: column + next.col, rest: next.rest }
+        marker = matchMarkerAt(body)
+      }
+      // PART 0 S2: a description or footnote body is a frame too, so a fence
+      // its marker line opens is the body's verbatim payload.
+      const description = scan.termColumn === body.col && DESCRIPTION_LEAD.exec(body.rest)
+      const note = !description && FOOTNOTE_DEF.exec(body.rest)
+      if (DEFLIST_TERM.test(body.rest)) scan.termColumn = body.col
+      if (description || note) {
+        const column = body.col + (description ? description[0].length : FOOTNOTE_BODY_COLUMN)
+        const lead = description ? description[0].length : note[0].length - note[2].length
+        columns.push(column)
+        fenceAt = { col: body.col + lead, rest: body.rest.slice(lead) }
       }
     }
-    const code = FENCE.exec(line)
-    if (!lines[k].startsWith(LAZY) && !scan.foldedFences?.has(k) && code && parseFenceInfo(code[2]) !== null) opaque = { kind: 'code', run: code[1], column: measured.col, base: columns.at(-1) }
+    const code = FENCE.exec(fenceAt.rest)
+    if (!lines[k].startsWith(LAZY) && !scan.foldedFences?.has(k) && code && parseFenceInfo(code[2]) !== null) opaque = { kind: 'code', run: code[1], column: fenceAt.col, base: columns.at(-1) }
     else {
       const comment = COMMENT_FENCE_BODY.exec(line)
       if (comment && (commentFenceCloserAhead(lines, k, comment[1]) || hasFutureCommentCloser(comment[1], columns.at(-1)))) opaque = { kind: 'comment', run: comment[1] }
