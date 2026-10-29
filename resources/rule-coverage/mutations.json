@@ -20,7 +20,7 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "export const replaceNulls = (src) => src.replace(/\\u0000/g, '\\uFFFD')",
+          "find": "export const replaceNulls = (src) => src.replace(/\u005cu0000/g, '\u005cuFFFD')",
           "replace": "export const replaceNulls = (src) => src"
         }
       ]
@@ -34,7 +34,7 @@
           "replace": "src = src"
         }
       ],
-      "note": "survives; differs on: a\\uD800b (lone surrogate in an API string: <p>a\\uFFFDb</p> vs raw surrogate)"
+      "note": "survives; differs on: a\u005cuD800b (lone surrogate in an API string: <p>a\u005cuFFFDb</p> vs raw surrogate)"
     },
     {
       "rule": "CARVE-P0-024",
@@ -581,7 +581,7 @@
       "edits": [
         {
           "file": "scripts/spec/render.mjs",
-          "find": "no author writes.\n    return '\\u2013'",
+          "find": "no author writes.\n    return '\u005cu2013'",
           "replace": "no author writes.\n    return '{--}'"
         }
       ]
@@ -826,7 +826,7 @@
       "edits": [
         {
           "file": "scripts/spec/render.mjs",
-          "find": "  ellipsis(_e) {\n    return '\\u2026'",
+          "find": "  ellipsis(_e) {\n    return '\u005cu2026'",
           "replace": "  ellipsis(_e) {\n    return '...'"
         }
       ]
@@ -1357,8 +1357,8 @@
       "edits": [
         {
           "file": "scripts/spec/html.mjs",
-          "find": "const text = hit.html.replace(/\\uE000[\\s\\S]*?\\uE001/g, '')",
-          "replace": "const text = stripTags(hit.html.replace(/\\uE000[\\s\\S]*?\\uE001/g, ''))"
+          "find": "const text = hit.html.replace(/\u005cuE000[\\s\\S]*?\u005cuE001/g, '')",
+          "replace": "const text = stripTags(hit.html.replace(/\u005cuE000[\\s\\S]*?\u005cuE001/g, ''))"
         }
       ]
     },

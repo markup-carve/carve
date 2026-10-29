@@ -29,7 +29,9 @@ npm run rules:coverage -- --write              # record the measured state
   exact edits to the model source (`scripts/spec/*.mjs`,
   `resources/carve-core.ohm`, or the model's `resources/spec/*.json` tables).
   A `find` must match exactly once, so a refactor that moves the code makes
-  the entry fail loudly instead of passing silently. The edit disables or
+  the entry fail loudly instead of passing silently. Spell a source backslash
+  before `u` as `\u005c`, since `tests/json-holds-utf8.test.mjs` reads `\\u`
+  followed by four hex digits as an escaped character. The edit disables or
   inverts the rule's own behavior, such as deleting a guard or flipping a
   condition. It should not break documents in general.
 - **Killed.** The tool copies the model, applies the edits, and renders every
