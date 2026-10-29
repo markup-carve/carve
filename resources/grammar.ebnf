@@ -4836,6 +4836,12 @@ EOF = (* end of file *) ;
          in P2 looks past the current character except three things: a
          nested reading and a combined opener, which look ahead to their own
          closer, and the attribute run directly after a closer.
+      COMMENTS. A `%%` comment (§21) and a `{%` comment (§21a) are removed
+         before P2, at the extent those sections give them, and P2 reads
+         the region as if they were not there. The extent is lexical: a
+         `%%` comment inside a `/*` ... `*/` shape ends at the `*/` whether
+         or not the combined token forms, so /x /*a %% b*/ y reads like
+         /x /*a*/ y -> <em>x /<strong>a</strong></em> y (carve#4042).
 
       THE TESTS for a bare delimiter d at position p are the templates of
       CARVE-P3-013. `before` is the source character at p - 1 and `after` the
@@ -4919,8 +4925,11 @@ EOF = (* end of file *) ;
 
       THE COMBINED TOKEN. A combined opener is a `/` followed by `*`, where
       the `/` can open, the `*` is followed by neither whitespace nor a
-      grapheme_extender, and neither `/` nor `*` is on the stack or an own
-      kind (carve#3234). Its closer token is a `*` that is not after
+      grapheme_extender, and neither `/` nor `*` is on the stack
+      (carve#3234). A braced span of either kind does not block it:
+      {*a /*b*/ c*} holds a combined span inside the strong one, while a
+      bare `/` or `*` of the span's own kind stays text (OWN KINDS,
+      carve#2903). Its closer token is a `*` that is not after
       whitespace, followed by a `/` that is not followed by alnum, and that
       does not stand directly after the opener. The opener looks ahead in
       its own region, outside atoms and formed nested spans, for a closer
