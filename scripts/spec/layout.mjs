@@ -682,6 +682,13 @@ function isFootnoteContinuationLine(line) {
  * test and the advance - because a fix reaching only one of them is the
  * recurring shape catalogued in carve#755.
  */
+// Does the last nonblank line above `i` belong to the body by its marker line or its column?
+function reachedBefore(lines, i, markerLine, reaches) {
+  let k = i - 1
+  while (k > markerLine && isBlank(lines[k])) k--
+  return k === markerLine || reaches(lines[k], k)
+}
+
 function footnoteBlankRunEnd(lines, i, n) {
   const body = markerBodyPolicy(FOOTNOTE_BODY_COLUMN)
   const k = body.blankRunEnd(lines, i, n)
@@ -4104,6 +4111,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const sourceDefCol = ind(i).L?.col ?? ind(i).col
       const bodyLines = [m[2]]
       const inheritedFenceOpens = new Set()
+      const defLine = i
       i++
       if (CONT_MARKER.test(m[2]) && i < n && !isBlank(lines[i]) &&
           !matchMarkerAt(ind(i)) && attachesFlushLeft(ind(i), sourceDefCol)) {
@@ -4283,6 +4291,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lazyParagraphOpen = true
           i++
         } else break
+      }
+      // PART 0 S2: a blank run reaches the body, so it is payload of a fence the
+      // body leaves open. A block a `+` attached is bounded by §17, not by the run.
+      if (i < n && isBlank(lines[i]) && reachedBefore(lines, i, defLine, isFootnoteContinuationLine)) {
+        const end = markerBodyPolicy(FOOTNOTE_BODY_COLUMN).blankRunEnd(lines, i, n)
+        for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
       }
       if (openFence !== -1) inheritedFenceOpens.add(openFence)
       if (inheritedFenceOpens.size) (state.fenceOpensAt ??= new WeakMap()).set(bodyLines, inheritedFenceOpens)
@@ -4653,6 +4667,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               afterComment = false
               // The whole blank run belongs to a continuation at the body column.
               if (reachesBody(afterBlankRun(i))) { pushBody(dedent(cur, bodyColumn)); i++; continue }
+              // PART 0 S2, as for a footnote body.
+              if (reachedBefore(lines, i, descriptionStart, (_, at) => reachesBody(at))) {
+                for (let k = i; k < afterBlankRun(i); k++) pushBody(dedent(lines[k], bodyColumn), k)
+              }
               break
             }
             if (CONT_MARKER.test(cur)) {
