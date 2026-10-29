@@ -4799,7 +4799,7 @@ EOF = (* end of file *) ;
 
       INPUT. The inline content of one block after block structure is
       settled. A REGION is that content, or the content of a bracket run,
-      inline note, braced span, editorial frame or combined span. Pairing
+      inline note, braced span or editorial frame. Pairing
       never crosses a region boundary, in either direction. The bare
       delimiters are `/`, `*`, `_`, `~` and `=`. A character is ALNUM when it
       is an ASCII letter or digit. A delimiter followed by a
@@ -4814,8 +4814,8 @@ EOF = (* end of file *) ;
          inside it pairs with one outside it. A bracket run and an inline
          note are atoms whose content is a new region.
       P2 READING. Read each region left to right with one stack of open bare
-         entries (R1 to R5). A braced opener, an editorial opener and a
-         combined opener each start a NESTED READING of a new region. Nothing
+         entries (R1 to R5). A braced or editorial opener starts a NESTED
+         READING of a new region; a combined opener is a stack entry. Nothing
          in P2 looks past the current character, except a nested reading,
          which reads ahead to its own closer, and the attribute run directly
          after a closer.
@@ -4838,31 +4838,35 @@ EOF = (* end of file *) ;
         _<strong>x</strong> q (carve#3973 X1). The mark of the braced or
         editorial span being read is markup too: {_*a* b_} nests. Any other
         guard blocks: a_*x* stays text.
-      - `=` followed by `>` never opens: it is the arrow (§8).
+      - `=` followed by `>` never opens: it starts the arrow (§8). The `=`
+        of a comparison `<=` or `>=` is part of that symbol and neither
+        opens nor closes: =a <= b= -> <mark>a ≤ b</mark>.
 
       OWN KINDS. A region has the kind of its braced span or editorial
-      frame, both `/` and `*` for a combined span, and none for the block,
-      a bracket run or an inline note. A bare delimiter of an own kind is
-      text in that region: {/a/b/} -> <em>a/b</em>.
+      frame, and none for the block, a bracket run, an inline note or either
+      side of a substitution. A bare delimiter of an own kind is text in that
+      region: {/a/b/} -> <em>a/b</em>, while {~a~>~b~ c~} holds a strike
+      span in its second side.
 
       THE STEPS, at each position of the region, in order:
-      R1 NESTED OPENER. At `{X` with X one of / * _ ~ = ^ , + -, or at a
-         combined opener (below), start a nested reading at the next
-         character. It reads exactly like this procedure with its own empty
+      R1 NESTED OPENER. At `{X` with X one of / * _ ~ = ^ , + -, start a
+         nested reading at the next character. It reads exactly like this procedure with its own empty
          stack. It is bounded only by the block or the enclosing bracket run
          or inline note, not by an enclosing nested reading, and it ends at
          the first closer token of its kind that it reaches outside its own
          atoms, its own formed nested spans and the attribute runs it
-         attached. The closer token is `X}` for a braced or editorial opener
-         and `*/` for a combined one; a closer token never shares a character
-         with its opener. If the reading ends with content between the
-         marks, the span forms: continue after its closer. Otherwise the
+         attached. Its closer token is `X}`, which never shares a character
+         with its opener; reaching it ends the reading before R2 reads its
+         X, so in {~a~>b ~c~} d the bare `~` stays text. If the reading ends
+         with content between the marks, the span forms: continue after its closer. Otherwise the
          opener fails: `{` is text, its mark is read as a bare candidate (for
          ^ , + - as text), and reading continues at that mark. So `{*}` and
          `{**}` form nothing and their characters are read like any others
          (CARVE-P3-014, carve#3973 X6): *a {*} b* ->
-         <strong>a {</strong>} b*. An editorial `{+` or `{-` inside a frame
-         of its own kind is text; it starts no nested reading. A nested
+         <strong>a {</strong>} b*. An editorial `{+` or `{-` directly in a
+         frame of its own kind is text and starts no nested reading; inside
+         a nested reading within that frame it is not:
+         {+a {*b {+c+} d*} e+} holds an insertion in the strong span. A nested
          reading may repeat a kind that is open outside it:
          {*a {*b*} c*} and *a {*b*} c* each hold two strong spans.
       R2 CLOSE FIRST. If d can close and an entry of kind d is on the stack,
@@ -4871,7 +4875,10 @@ EOF = (* end of file *) ;
       R3 ATTACH. A glued attribute_run (PART 4) directly after a closer that
          closed a span, a formed nested span, a bracket run, a code span,
          math or an autolink attaches to it and is consumed; its characters
-         take part in nothing else. After a delimiter that closed nothing, a
+         take part in nothing else. The run is read on the source
+         characters, through any atom P1 found in them, and an atom that
+         starts inside an attached run is dissolved: *a*{#b} c #} attaches
+         `#b` and leaves ` c #}` as text. After a delimiter that closed nothing, a
          brace group is not an attribute run: its characters are read like
          any others, so a braced opener or closer in it still counts. A run
          that attaches to nothing is text (§15 A7).
@@ -4887,12 +4894,19 @@ EOF = (* end of file *) ;
       THE COMBINED TOKEN. A combined opener is a `/` followed by `*`, where
       the `/` can open, the `*` is followed by neither whitespace nor a
       grapheme_extender, and neither `/` nor `*` is on the stack or an own
-      kind (carve#3234). Its closer token is a `*` that is not after
-      whitespace and is not the opener's own `*`, followed by a `/` that is
-      not followed by alnum. Its content is never empty: /**/ alone is
-      <em>**</em>, and /**/*/ -> <strong><em>*/</em></strong>. A formed
-      combined span renders as strong around emphasis. A failed one is two
-      bare candidates. A braced child of either kind nests inside it:
+      kind (carve#3234). It pushes ONE entry that counts as both kinds `/`
+      and `*` for R4 and for this test. Its closer token is a `*` that is not
+      after whitespace, followed by a `/` that is not followed by alnum, and
+      that does not stand directly after the opener: /**/ alone is
+      <em>**</em>, and /**/*/ -> <strong><em>*/</em></strong>. While the
+      entry is on the stack, a bare `/` or `*` that does not start its
+      closer token is text: /*a* b*/ -> <strong><em>a* b</em></strong>. The
+      closer token closes the entry by R2, removing the entries above it:
+      /*a _b*/ c_ leaves `_` text. Like any entry, it becomes text when a
+      closer removes it from below or its region ends: in =a /*b= c*/ the
+      `=` closes and the `/*` and `*/` are text, and in {_/*a_} the braced
+      closer ends the region first. A formed combined span renders as strong
+      around emphasis, and a braced child of either kind nests inside it:
       /*a {*b*} c*/ holds a strong child.
 
       SUBSTITUTION. A `{~` span is a substitution when its content holds a
