@@ -6,16 +6,16 @@
       smart typography, mentions, tags and symbols keep their own clauses and
       run on the text it leaves.
 
-      INPUT. The inline content of one block after block structure is
-      settled. A REGION is that content, or the content of a bracket run,
-      inline note, extension, braced span or editorial frame. Pairing never
-      crosses a region boundary, in either direction. The bare delimiters are `/`,
-      `*`, `_`, `~` and `=`. A character is ALNUM when it is an ASCII letter
-      or digit (`alnum`, PART 7), and WHITESPACE when it is a space, a tab or
-      a line end (`ws`); a no-break space is neither. A delimiter followed by
-      a grapheme_extender is part of a larger character (CARVE-P3-025): it
-      is text and takes part in no step below, and a braced opener whose
-      mark is followed by one is text.
+      INPUT. The inline content of one block after block structure is settled.
+      A REGION is that content, or the content of a bracket run, inline note,
+      extension, braced span or editorial frame. Pairing never crosses a
+      region boundary, in either direction. The bare delimiters are `/`, `*`,
+      `_`, `~` and `=`. A character is ALNUM when it is an ASCII letter or
+      digit (`alnum`, PART 7), and WHITESPACE when it is a space, a tab or a
+      line end (`ws`); a no-break space is neither. A delimiter followed by a
+      grapheme_extender is part of a larger character (CARVE-P3-025): it is
+      text and takes part in no step below, and a braced opener whose mark is
+      followed by one is text.
 
       TWO PASSES.
       P1 ATOMS. Scan left to right. At each position take the first
@@ -62,38 +62,41 @@
 
       THE STEPS, at each position of the region, in order:
       R1 NESTED OPENER. At `{X` with X one of / * _ ~ = ^ , + -, start a
-         nested reading at the next character. It reads exactly like this procedure with its own empty
-         stack. It is bounded only by the block or the enclosing bracket run
-         or inline note, not by an enclosing nested reading, and it ends at
-         the first closer token of its kind that it reaches outside its own
-         atoms, its own formed nested spans and the attribute runs it
-         attached. Its closer token is `X}`, which never shares a character
-         with its opener; reaching it ends the reading before R2 reads its
-         X, so in {~a~>b ~c~} d the bare `~` stays text. If the reading ends
-         with content between the marks, the span forms: continue after its closer. Otherwise the
-         opener fails: `{` is text, its mark is read as a bare candidate (for
+         nested reading at the next character. It reads exactly like this
+         procedure with its own empty stack. It is bounded only by the block
+         or the enclosing bracket run, inline note or extension, not by an
+         enclosing nested reading, and it ends at the first closer token of
+         its kind that it reaches outside its own atoms, its own formed
+         nested spans and the attribute runs it attached. Its closer token is
+         `X}`, which never shares a character with its opener; reaching it
+         ends the reading before R2 reads its X, so in {~a~>b ~c~} d the bare
+         `~` stays text. If the reading ends with content between the marks,
+         the span forms: continue after its closer. Otherwise the opener
+         fails: `{` is text, its mark is read as a bare candidate (for
          ^ , + - as text), and reading continues at that mark. So `{*}` and
          `{**}` form nothing and their characters are read like any others
-         (CARVE-P3-014, carve#3973 X6): *a {*} b* ->
-         <strong>a {</strong>} b*. An editorial `{+` or `{-` directly in a
-         frame of its own kind is text and starts no nested reading; inside
-         a nested reading within that frame it is not:
-         {+a {*b {+c+} d*} e+} holds an insertion in the strong span. A nested
-         reading may repeat a kind that is open outside it:
-         {*a {*b*} c*} and *a {*b*} c* each hold two strong spans.
+         (CARVE-P3-014, carve#3973 X6):
+           *a {*} b*  ->  <strong>a {</strong>} b*
+         An editorial `{+` or `{-` directly in a frame of its own kind is
+         text and starts no nested reading; inside a nested reading within
+         that frame it is not, so this holds an insertion in the strong span:
+           {+a {*b {+c+} d*} e+}
+         A nested reading may repeat a kind that is open outside it; each of
+         these holds two strong spans:
+           {*a {*b*} c*}    *a {*b*} c*
       R2 CLOSE FIRST. If d can close and an entry of kind d is on the stack,
          close the nearest such entry. Every entry above it is removed and
          becomes text; spans nest, never overlap. The new span is final.
       R3 ATTACH. A glued attribute_run (PART 4) directly after a closer that
          closed a span, a formed nested span, a bracket run, an extension, a
-         code span, math or an autolink attaches to it and is consumed; its characters
-         take part in nothing else. The run is read on the source
+         code span, math or an autolink attaches to it and is consumed; its
+         characters take part in nothing else. The run is read on the source
          characters, through any atom P1 found in them, and an atom that
          starts inside an attached run is dissolved: *a*{#b} c #} attaches
-         `#b` and leaves ` c #}` as text. After a delimiter that closed nothing, a
-         brace group is not an attribute run: its characters are read like
-         any others, so a braced opener or closer in it still counts. A run
-         that attaches to nothing is text (§15 A7).
+         `#b` and leaves ` c #}` as text. After a delimiter that closed
+         nothing, a brace group is not an attribute run: its characters are
+         read like any others, so a braced opener or closer in it still
+         counts. A run that attaches to nothing is text (§15 A7).
       R4 OPEN. Otherwise, if d can open, is not an own kind and no entry of
          kind d is on the stack, push d. A further bare d while one is open
          is text (NO BARE SAME-TYPE NESTING): /usr/local/ ->
