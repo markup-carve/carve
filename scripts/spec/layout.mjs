@@ -3004,7 +3004,12 @@ function ownLines(lines, trace = null) {
       // that line did not reach.
       // A term's continuation moves with the term, so a later `:` body still follows it.
       const term = owner.para && owner.last === 'term'
-      lead(owner.para || !closedColumn || plusFollower ? Math.max(m.col - (term ? owner.termCut : owner.cut), owner.canon) : owner.canon, term)
+      // A separator after a `+` moved onto the owner meets it where its term stood.
+      const afterPlus = owner.para && owner.plusLine === at - 1 && owner.termShift !== undefined && DESCRIPTION_LEAD.test(m.rest)
+      const cut = term ? owner.termCut : afterPlus ? owner.termShift : owner.cut
+      const moved = !(owner.para || !closedColumn || plusFollower)
+      lead(moved ? owner.canon : Math.max(m.col - cut, owner.canon), term)
+      owner.plusLine = moved && CONT_MARKER.test(m.rest) ? at : undefined
       if (owner.para && FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       owner.absorbs = (owner.para && owner.absorbs) || absorbsColon(m.rest)
       owner.para = true
