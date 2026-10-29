@@ -359,6 +359,50 @@ jobs:
         if: matrix.node-version == 24
         run: npm run engine:report -- --check
 
+  # Breaks the spec model code behind each gated rule and checks that a core
+  # corpus row notices (docs/rule-coverage.md). The uncovered baseline may
+  # only shrink, so a new rule id lands with a row that kills its mutation.
+  rule-coverage:
+    name: Rule coverage (corpus kills each rule's mutation)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - id: scope
+        name: Does this change touch the rules, the model or the corpus?
+        env:
+          BASE: ${{ github.base_ref }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT" != "pull_request" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git diff --name-only "origin/$BASE...HEAD" | grep -qE '^(resources/spec/|scripts/spec/|resources/carve-core\.ohm$|resources/rule-coverage/|resources/examples/|tests/corpus/|scripts/rule-coverage\.mjs$|scripts/lib/rule-coverage)'; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.scope.outputs.run == 'true'
+        uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
+
+      - name: Every gated rule has a killing corpus row, or is in the shrinking baseline
+        if: steps.scope.outputs.run == 'true'
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          if [ -n "$BASE" ]; then
+            npm run rules:coverage -- --base="origin/$BASE"
+          else
+            npm run rules:coverage
+          fi
+
   docs-build:
     name: docs build
     runs-on: ubuntu-latest
