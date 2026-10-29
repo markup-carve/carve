@@ -13,6 +13,7 @@ import { renderMathIn } from '../../render-math.js'
 import { encodeShare, decodeShare } from '../../share-link.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { formatCarve, wasmWriter } from '../../playground-format.js'
+import { isDiffPre } from '../../diff-fences.js'
 
 // Render the JS engine with every documented extension enabled, so the demo
 // showcases the full feature set (real Mermaid extension, wikilinks, tabs,
@@ -645,7 +646,7 @@ async function highlightCode(): Promise<void> {
     const lang = cls ? cls.slice('language-'.length) : ''
     if (!loaded.includes(lang)) continue // unknown language: leave the plain block
     try {
-      const isLanguageDiff = pre.classList.contains('diff')
+      const isLanguageDiff = isDiffPre(pre)
       const out = hl.codeToHtml(code.textContent ?? '', {
         lang,
         themes: { light: 'github-light', dark: 'github-dark' },

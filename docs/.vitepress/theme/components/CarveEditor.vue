@@ -31,6 +31,7 @@ import { searchKeymap, highlightSelectionMatches } from '@codemirror/search'
 import { sourceForShiki, editorTokenRanges, insertMarkerOverride } from '../../shiki-editor-source.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { standaloneContinuationOffsets } from '../../semantic-continuations.js'
+import { isDiffCodeBlock } from '../../diff-fences.js'
 
 const props = defineProps<{
   modelValue: string
@@ -86,10 +87,10 @@ function styleString(s: string | Record<string, string> | undefined): string {
 function diffMarkerRanges(text: string, doc: EditorState['doc'], ast: unknown): Array<{ from: number; to: number; mark: Decoration }> {
   if (!/\bdiff\b/i.test(text) || !ast) return []
   const ranges: Array<{ from: number; to: number; mark: Decoration }> = []
-  const visit = (value: unknown): void => {
+  const visit = (value: unknown, parent?: unknown): void => {
     if (value === null || typeof value !== 'object') return
     if (Array.isArray(value)) {
-      value.forEach(visit)
+      value.forEach((item) => visit(item, parent))
       return
     }
     const node = value as {
@@ -99,8 +100,7 @@ function diffMarkerRanges(text: string, doc: EditorState['doc'], ast: unknown): 
       content?: string
       pos?: { startLine?: number; endLine?: number }
     }
-    if (node.type === 'code_block' && (node.lang?.toLowerCase() === 'diff' || node.attrs?.classes?.includes('diff'))
-      && node.pos?.startLine && node.content) {
+    if (isDiffCodeBlock(node, parent) && node.pos?.startLine && node.content) {
       node.content.split('\n').forEach((contentLine, index) => {
         const marker = contentLine[0]
         if (marker !== '+' && marker !== '-') return
@@ -117,7 +117,7 @@ function diffMarkerRanges(text: string, doc: EditorState['doc'], ast: unknown): 
       return
     }
     for (const [key, child] of Object.entries(node)) {
-      if (key !== 'pos' && key !== 'attrs') visit(child)
+      if (key !== 'pos' && key !== 'attrs') visit(child, node)
     }
   }
   try {
