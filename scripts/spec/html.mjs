@@ -169,9 +169,10 @@ function reserveHeadingIds(blocks) {
 }
 
 function renderDocPass(doc, footnoteProbe) {
-  // A placed title takes an adm id before its authored children. Check whether
-  // a note actually resolves first, so a fallback div consumes no id. Only
-  // documents with a titled top-level marker need this extra pass.
+  // A placed title takes an adm id before its authored children, and a marker
+  // with no resolved note renders as a div one level deeper. Check whether a
+  // note actually resolves first; only documents with a top-level marker or a
+  // heading in a note body need this extra pass.
   const hasNoteHeading = !footnoteProbe && [...doc.footnoteDefs.values()].some((body) => {
     const pending = [...body]
     const seen = new WeakSet()
@@ -186,7 +187,7 @@ function renderDocPass(doc, footnoteProbe) {
     return false
   })
   const needsProbe = !footnoteProbe && (hasNoteHeading || doc.blocks.some((b) =>
-    b.t === 'footnotes-placement' && b.title !== null))
+    b.t === 'footnotes-placement'))
   const probe = needsProbe ? renderDocPass(doc, true) : null
   const hasResolvedNotes = probe?.hasResolvedNotes ?? null
   const reserved = reserveHeadingIds(doc)
