@@ -1,0 +1,119 @@
+name: Nightly fuzz differential
+
+# Mutates corpus documents and compares the HTML of the spec model, carve-js,
+# carve-php and carve-rs on each mutant (scripts/fuzz-nightly.mjs). Every
+# disagreement is reduced, grouped by a cause signature, and filed by
+# scripts/fuzz-file-issues.mjs: one `bug` + `area:corpus` issue per new cause,
+# a comment on an open issue with the same signature, nothing for a closed one,
+# at most ten new issues a night and three per agreement pattern.
+#
+# The seed is the UTC date unless a dispatch names one, and the run prints it.
+# Engines are built at the reviewed pins, as in ast-conformance.yml.
+#
+# Findings keep the run GREEN; the issues are the signal. The run goes red only
+# when the harness breaks: an engine fails to build, nothing was compared, too
+# few unmutated corpus documents agree, or gh cannot file.
+
+on:
+  schedule:
+    # 05:30 UTC, after ast-conformance's 04:00 run has had its slot.
+    - cron: '30 5 * * *'
+  workflow_dispatch:
+    inputs:
+      seed:
+        description: Seed (empty for the UTC date)
+        required: false
+        default: ''
+      budget-minutes:
+        description: Minutes of fuzzing
+        required: false
+        default: '20'
+      file-issues:
+        description: File and comment on issues (false prints the plan only)
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: nightly-fuzz
+  cancel-in-progress: false
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24.22.0
+
+      - name: Read the reviewed engine pins
+        id: pins
+        run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v7
+        with:
+          repository: markup-carve/carve-js
+          ref: ${{ steps.pins.outputs.js }}
+          path: carve-js
+          submodules: recursive
+      - name: Build carve-js
+        working-directory: carve-js
+        run: npm ci && npm run build
+
+      - uses: actions/checkout@v7
+        with:
+          repository: markup-carve/carve-rs
+          ref: ${{ steps.pins.outputs.rs }}
+          path: carve-rs
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build carve-rs
+        working-directory: carve-rs
+        run: cargo build --release --bin carve
+
+      - uses: actions/checkout@v7
+        with:
+          repository: markup-carve/carve-php
+          ref: ${{ steps.pins.outputs.php }}
+          path: carve-php
+          submodules: recursive
+      # 8.4 for the reason ast-conformance.yml gives: below it carve-php's
+      # HTML importer takes the legacy libxml path.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - name: Install carve-php
+        working-directory: carve-php
+        run: composer install --no-interaction --no-progress
+
+      - name: Fuzz
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+          CARGO_TARGET_DIR: ${{ github.workspace }}/carve-rs/target
+          SEED: ${{ inputs.seed }}
+          BUDGET: ${{ inputs.budget-minutes || '20' }}
+        run: |
+          node scripts/fuzz-nightly.mjs ${SEED:+--seed="$SEED"} --budget-minutes="$BUDGET" --report=/tmp/fuzz-nightly.json
+
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: fuzz-nightly-report
+          path: /tmp/fuzz-nightly.json
+          if-no-files-found: ignore
+
+      - name: File issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && !inputs.file-issues && '--dry-run' || '' }}
+        run: node scripts/fuzz-file-issues.mjs --report=/tmp/fuzz-nightly.json --repo="$GITHUB_REPOSITORY" $DRY_RUN

@@ -19,6 +19,35 @@ for release and cross-implementation work.
 The [container ownership map](./ownership-procedure) connects current rules
 to collector phases, helpers and proof evidence.
 
+## Nightly fuzz differential
+
+`.github/workflows/nightly-fuzz.yml` runs at 05:30 UTC and on dispatch. It
+mutates corpus documents that the spec model, carve-js, carve-php and carve-rs
+already agree on, renders each mutant to HTML in all four and reduces every
+disagreement while the same participants still disagree. Reduced cases are
+grouped by a signature: which participants agree, plus the document with every
+word replaced by `x`.
+
+Each new signature becomes one issue labeled `bug` and `area:corpus`, holding
+the reduced document, each output and the seed. A signature with an open issue
+gets a comment instead; one with a closed issue is not refiled. At most ten new
+issues go out a night, three per agreement pattern.
+
+Findings leave the run green. It fails only when the harness breaks: an engine
+missing, no mutant compared, fewer than half of the unmutated seed documents
+agreeing, or `gh` failing.
+
+Run it locally with the three engines checked out and built beside this
+repository:
+
+```bash
+node scripts/fuzz-nightly.mjs --budget-minutes=2 --report=/tmp/fuzz.json
+node scripts/fuzz-file-issues.mjs --report=/tmp/fuzz.json --repo=markup-carve/carve --dry-run
+```
+
+The seed defaults to the UTC date (`20261029`). `--seed=N --max-mutants=M`
+replays a night exactly, which is the line each issue prints.
+
 ## Diagnosing HTML drift
 
 Run `npm run engine:report -- --structure` to add an HTML tree diagnostic to
