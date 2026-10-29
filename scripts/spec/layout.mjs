@@ -7353,6 +7353,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // caller into the descendant's Q1 state. A return value cannot carry it:
     // the function's `null` is load-bearing (carve#2746).
     let absorbedFenceSeen = null
+    // §17 L3: the block a descendant's `+` attaches is the descendant's, so it ends no sublist.
+    const nestedAttachmentTakes = (lm) => carriesBareContinuation && (i < nestedAttachmentEnd ||
+      nestedAttachmentEnd < 0 && attachesFlushLeft(lm, (lm.L?.col ?? lm.col) === 0 && !matchMarkerAt(lm) ? 0 : nestedAttachmentColumn))
     const trackNestedFence = (open, dmeas, sourceCol, idx, descendantOwned) => {
       if (open) {
         if (open.kind === 'comment') {
@@ -8054,7 +8057,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (col >= contentCol) {
         // A descendant's comment closer pairs at any column (CARVE-P9-053), so it ends no sublist.
         if (subCol >= 0 && col < subCol && opensAuthoredBase(lm.rest) &&
-            !FENCE.test(lm.rest) && !nestedVerbatim() &&
+            !FENCE.test(lm.rest) && !nestedVerbatim() && !nestedAttachmentTakes(lm) &&
             !(nestedOpaque?.kind === 'comment' && COMMENT_FENCE.exec(lm.rest)?.[1].length === nestedOpaque.run.length)) {
           subCol = -1
           descLive = false
@@ -8673,7 +8676,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // A block of this item below the sublist's column has ended the sublist,
         // so a later line past this column is no descendant's (CARVE-P0-004).
         if (subCol >= 0 && col < subCol && !nm && dmeas.rest !== '' && !belowCloser && !inCommentSpan &&
-            !inDefBody && !COMMENT_LINE.test(dedented) &&
+            !inDefBody && !COMMENT_LINE.test(dedented) && !nestedAttachmentTakes(lm) &&
             (!paragraphIsOpen() ||
               (col === contentCol && opensBlockAt(dedented, i)))) subCol = -1
         // A FENCED BODY IS NOT A PARAGRAPH whichever container opened it
