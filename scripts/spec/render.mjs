@@ -1128,7 +1128,7 @@ function buildToks(children, literalDelims = '', blocked) {
       if (blocked?.has(at)) {
         toks.push(...splitCombined(bi, literalDelims, blocked))
       } else {
-        toks.push({ k: 't', h: c.h(), combinedAt: at })
+        toks.push({ k: 't', h: c.h(), combinedAt: at, closeAt: bi.child(3).source.startIdx + 1 })
       }
       continue
     }
@@ -1383,11 +1383,18 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
 
 // Pair, then block every opener whose guard did not open a span of its own,
 // and pair again. Blocking only removes openers, so the loop ends.
+// `tentative` holds the closers of the first round, where no opener is
+// blocked yet: a block behind any other delimiter can attach in no reading.
 function pairGuarded(build, src, literalDelims = '', contentAt = 0) {
   const blocked = new Set()
+  let tentative
   for (;;) {
     const toks = build(blocked)
     const openMap = pairDelims(toks, src, literalDelims, blocked)
+    tentative ??= new Set([
+      ...[...openMap.values()].map((i) => toks[i].at),
+      ...toks.filter((t) => t.closeAt !== undefined).map((t) => t.closeAt),
+    ])
     const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
     let grew = false
     for (const t of toks) {
@@ -1404,7 +1411,7 @@ function pairGuarded(build, src, literalDelims = '', contentAt = 0) {
         grew = true
       }
     }
-    if (!grew) return { toks, openMap }
+    if (!grew) return { toks, openMap, tentative }
   }
 }
 
@@ -1426,7 +1433,7 @@ function applyQuotes(toks, openMap, src, contentAt, spanContent) {
 
 // `spanContent`: `contentAt` starts a braced or combined span's content.
 function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanContent = false) {
-  const { toks, openMap } = pairGuarded(build, src, literalDelims, contentAt)
+  const { toks, openMap, tentative } = pairGuarded(build, src, literalDelims, contentAt)
   applyQuotes(toks, openMap, src, contentAt, spanContent)
   resolveNameRun(toks, openMap)
   applyMarkerBoundary(toks, openMap, src, contentAt)
@@ -1466,7 +1473,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
         if (!consumed.has(i)) {
           const marker = toks[i - 1]
           const literalMarker = t.heldMarker || (marker?.k === 'd' && !openMap.has(i - 1) && !closers.has(i - 1))
-          unattachedAttrs.push({ at: t.at, end: t.node.source.endIdx, literalMarker: literalMarker && t.markerAt + 1 === t.at, markerChar: t.markerChar })
+          unattachedAttrs.push({ at: t.at, end: t.node.source.endIdx, literalMarker: literalMarker && t.markerAt + 1 === t.at, markerChar: t.markerChar, provisional: marker?.k === 'd' && tentative.has(marker.at) })
         }
       } else out += t.h
       i++
@@ -1974,7 +1981,10 @@ function renderInlineInner(text) {
         if (offsets.length === 0 && escapes.length) return restoreAttached(source, escapes, result)
         return out
       }
-      const first = offsets.reduce((left, right) => left.at <= right.at ? left : right)
+      // A block that attaches in no reading is text first (carve#3933): only
+      // then may a block whose span a guard blocked hand its closer out.
+      const definite = offsets.filter((o) => !o.provisional)
+      const first = (definite.length ? definite : offsets).reduce((left, right) => left.at <= right.at ? left : right)
       // A literal delimiter cannot carry attributes. Preserve a following
       // editorial comment by escaping that delimiter instead of its brace.
       const comment = first.literalMarker && source[first.at - 1] === first.markerChar && source.startsWith('{#', first.at) && !extendsGrapheme(source, first.at + 2) && source.indexOf('#}', first.at + 2) >= 0

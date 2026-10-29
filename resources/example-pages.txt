@@ -968,6 +968,8 @@ index: examples/edge-cases/index.md
   a-nested-braced-span-hides-an-editorial-closer
   a-combined-token-inside-a-forced-span-stops-at-the-span-s-closer
   an-attribute-block-after-a-span-behind-a-guarding-opener-belongs-to-that-span
+  an-attribute-block-that-attaches-to-nothing-is-text-from-the-first-pass
+  a-guard-that-closes-only-inside-its-guarded-child-s-block
   a-matched-insertion-or-deletion-hides-a-substitution-s-closer
   a-footnote-label-may-hold-a-bracket
   a-footnote-reference-bounds-an-editorial-closer-scan
