@@ -7,7 +7,11 @@ const shapes = [
   ['marker-line quoted fence', '- > ```\n  > x\n  > ```'],
   ['unclosed quoted fence', '- intro\n  > ```'],
   ['nested heading after comment', '- - intro\n  %% c\n    # h'],
+]
+// A footnote body takes a lazy line like every container (carve#3885).
+const noteShapes = [
   ['nested quoted footnote', '- > - - x\n  >     [^f]: note'],
+  ['marker-line note', '- [^f]: note'],
 ]
 for (const depth of [0, 1, 2]) {
   const quote = '> '.repeat(depth)
@@ -37,9 +41,12 @@ for (const depth of [0, 1, 2]) {
   test(`comment before heading matches a heading at the outer item column at depth ${depth}`, () => {
     assert.equal(renderDoc(parse(wrap(shapes[2][1]) + 'tail\n')), renderDoc(parse(wrap('- - intro\n  # h') + 'tail\n')))
   })
-  test(`quoted nested note matches a marker-line note at depth ${depth}`, () => {
-    for (const prefix of [wrap(shapes[3][1]), wrap('- [^f]: note')]) {
-      assert.deepEqual(parse(prefix + 'tail\n').blocks, [...parse(prefix).blocks, ...parse('tail\n').blocks])
-    }
-  })
+  for (const [name, source] of noteShapes) {
+    test(`a ${name} takes a flush-left line at quote depth ${depth}`, () => {
+      const prefix = wrap(source)
+      const doc = parse(prefix + 'tail\n')
+      assert.deepEqual(doc.blocks, parse(prefix).blocks)
+      assert.deepEqual(doc.footnoteDefs.get('f')[0].lines.map((line) => line.replace(/^\u0000L\u0000/, '')), ['note', 'tail'])
+    })
+  }
 }

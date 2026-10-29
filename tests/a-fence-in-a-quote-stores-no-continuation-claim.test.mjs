@@ -366,8 +366,9 @@ test('only a list item\'s paragraph gives way to a marker', () => {
   // line out of a `dd` that keeps it (raised by codex review).
   assert.equal(host(`> :: t\n> :  d\n>    - ${F}\n>      x\nflush\n`),
     `quote[deflist]`)
+  // The note's paragraph takes `flush` as a lazy line (carve#3885).
   assert.equal(host(`> [^f]: d\n>   - ${F}\n>     x\nflush\n`),
-    'quote[], p(flush)')
+    'quote[]')
   // An ITEM's paragraph does give way, which is the other direction and what
   // keeps the clause above two-sided.
   assert.equal(host(`> - d\n>   - ${F}\n>     x\nflush\n`),

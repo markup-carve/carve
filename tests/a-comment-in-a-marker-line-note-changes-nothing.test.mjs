@@ -31,7 +31,9 @@ for (const blank of [false, true]) {
 
 test('a comment-shaped code payload stays code and leaves the item closed', () => {
   const source = '- [^n]: text\n    ```\n    %% x\n    ```\n    para\nafter [^n]\n'
-  const html = render(source)
-  assert.match(html, /^<ul>\n  <li><\/li>\n<\/ul>\n<p>after /)
-  assert.match(html, /<pre><code>%% x\n<\/code><\/pre>/)
+  // `para` leaves the note's paragraph open, so `after [^n]` folds into it (carve#3885).
+  assert.equal(render(source), '<ul>\n  <li></li>\n</ul>')
+  const note = parse(source).footnoteDefs.get('n')
+  assert.deepEqual(note.map((block) => block.t), ['para', 'code', 'para'])
+  assert.equal(note[1].text, '%% x\n')
 })

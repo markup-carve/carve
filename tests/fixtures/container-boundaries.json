@@ -242,7 +242,7 @@
   {
     "name": "container-564",
     "source": "> - [^n]: note\ntail\n",
-    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>\n<p>tail</p>"
+    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>"
   },
   {
     "name": "container-565",
@@ -252,22 +252,22 @@
   {
     "name": "container-566",
     "source": "> - [^n]: note\n  tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>\n<p>tail</p>"
+    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>"
   },
   {
     "name": "container-567",
     "source": "> - [^n]: note\n> tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n  <p>tail</p>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>"
   },
   {
     "name": "container-568",
     "source": "> - [^n]: note\n- tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>"
   },
   {
     "name": "container-569",
     "source": "> - [^n]: note\n+\n\ntail\n",
-    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>\n<p>+</p>\n<p>tail</p>"
+    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>\n<p>tail</p>"
   },
   {
     "name": "container-596",

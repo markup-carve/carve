@@ -17,7 +17,6 @@ for (const [name, first, second] of [
   ['nested quoted table row', '> > para', '> > | t |'],
   ['link definition', 'para', '[r]: /u'],
   ['quoted link definition', '> para', '> [r]: /u'],
-  ['quoted footnote definition', '> para', '> [^r]: n'],
   ['nested quoted link definition', '> > para', '> > [r]: /u'],
 ]) test(`${name} closes the paragraph, so the fence ends at the closer`, () => {
   assert.match(render(first, second).trim(), endsAtCloser)
@@ -29,4 +28,10 @@ test('control: a pipe line with no closing pipe is paragraph text', () => {
 
 test('control: a quoted pipe line with no closing pipe keeps the quote paragraph open', () => {
   assert.match(render('> para', '> | t', ':::\nafter *b*'), /<blockquote><p>para\n\| t\n<code>\ncode<\/code><\/p><\/blockquote>/)
+})
+
+// A quoted footnote body takes the closerless fence as a lazy line (carve#3885).
+test('quoted footnote definition takes the closerless fence as note text', () => {
+  const html = render('> para', '> [^r]: n').replace(/\s+/g, ' ').replace(/ ?(<[^>]+>) ?/g, '$1')
+  assert.equal(html, '<aside class="admonition note" aria-label="Note"><blockquote><p>para</p></blockquote><div></div></aside><p>after<strong>b</strong></p>')
 })

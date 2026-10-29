@@ -40,9 +40,9 @@ for (const q of ['', '> ', '> > ']) {
         assert.equal(renderDoc(parse(src)), renderDoc(parse(twin)), src)
       }
     }
-    const body = `<p>text - child <code> code</code>${backlink}</p>`
-    assert.equal(norm(renderDoc(parse(source('text', '-', 6, false)))),
-      wrap(`<ul><li></li></ul><p>after${ref}</p>`) + endnotes(body))
+    // `after [^n]` folds into the note's paragraph (carve#3885), so the note
+    // is referenced only from inside itself and renders nothing.
+    assert.equal(norm(renderDoc(parse(source('text', '-', 6, false)))), wrap('<ul><li></li></ul>'))
   })
 }
 
@@ -51,6 +51,14 @@ for (const q of ['', '> ', '> > ']) for (const boundary of ['- sibling', 'outsid
     const lines = ['- [^n]: text', '    - child', `      ${F}`, '      code',
       ...boundary.split('\n'), `      ${F}`, 'after [^n]']
     const src = lines.map(line => q + line).join('\n') + '\n'
+    if (boundary === 'outside') {
+      // The closer past `outside` is reachable (CARVE-P0-014), so the run opens
+      // and `outside` ends it: the line is document text, not a lazy note line.
+      let blocks = parse(src).blocks
+      for (let depth = 0; depth < q.length / 2; depth++) blocks = blocks[0].children
+      assert.deepEqual(blocks.at(-1), { t: 'para', lines: ['outside', F, 'after [^n]'] }, src)
+      return
+    }
     const twin = lines.map((line, index) => q + (index === 2 ? '      `' : line)).join('\n') + '\n'
     assert.equal(renderDoc(parse(src)), renderDoc(parse(twin)), src)
   })

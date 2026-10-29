@@ -26,8 +26,9 @@ const CASES = [
     '<dl><dt>t</dt><dd>d - para</dd></dl><p>x</p>'],
   ['an over-indented definition in a quoted item', '- > para\n  >  [r]: /u\ntail\n\n[r][]\n',
     `<ul><li><blockquote><p>para</p></blockquote></li></ul><p>tail</p>${link}`],
+  // The note takes `tail` as a lazy line (carve#3885).
   ['an over-indented footnote definition in a quoted item', '- > para\n  >  [^f]: n\ntail\n',
-    '<ul><li><blockquote><p>para</p></blockquote></li></ul><p>tail</p>'],
+    '<ul><li><blockquote><p>para</p></blockquote></li></ul>'],
   ['an over-indented definition in a quoted item in a quote', '> - > para\n>   >  [r]: /u\ntail\n\n[r][]\n',
     `<blockquote><ul><li><blockquote><p>para</p></blockquote></li></ul></blockquote><p>tail</p>${link}`],
 ]

@@ -30,8 +30,12 @@ test('unchanged at control', () => {
   assert.equal(render("- [^n]: %% c\n    - child\n      ```\n      code\n      ```\nafter [^n]\n"), "<ul>\n  <li></li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <ul>\n        <li>child\n          <pre><code>code\n</code></pre>\n        </li>\n      </ul>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>")
 })
 
+// The child's open paragraph takes the closerless run and `after [^n]` (carve#3885).
 test('unchanged unclosed control', () => {
-  assert.equal(render("- [^n]: %% c\n    - child\n     ```\n     code\nafter [^n]\n"), "<ul>\n  <li></li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <ul>\n        <li>child\n<code>\ncode</code></li>\n      </ul>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>")
+  const source = "- [^n]: %% c\n    - child\n     ```\n     code\nafter [^n]\n"
+  assert.equal(render(source), "<ul>\n  <li></li>\n</ul>")
+  const child = parse(source).footnoteDefs.get('n')[0].items[0].blocks[0]
+  assert.deepEqual(child.lines.map((line) => line.replace(/^\u0000L\u0000/, '')), ['child', '```', 'code', 'after [^n]'])
 })
 
 test('unchanged noBlank control', () => {

@@ -1,10 +1,9 @@
 /*
- * A footnote definition's extent takes no lazy line (CARVE-P0-012 DEFINITION
- * EXTENT), so after one at a nested content column no paragraph is open
- * anywhere in the stack (CARVE-P0-011) and an unmarked line leaves the
- * containers it does not reach. The quote tracker counted the note's own
- * lines as an open quote paragraph, and the item collector counted a note
- * continuation line as an open sub-item paragraph (carve#3276).
+ * A footnote body takes a lazy line like every container (carve#3885, PART 0
+ * S4): after a note at a nested content column, an unmarked line folds into
+ * the note's open paragraph and leaves the containers it does not reach.
+ * These rows encoded the retired "a footnote takes no lazy line" reading
+ * (carve#3276) until carve#3892 item 4.
  */
 
 import { test } from 'node:test'
@@ -16,20 +15,21 @@ const oracle = (src) => renderDoc(parse(src)).replace(/\s+/g, ' ').replace(/> </
 
 const QL = '<blockquote><ul><li>para</li></ul></blockquote>'
 const CASES = [
-  ['a quoted item', '> - para\n>   [^f]: n\ntail\n', `${QL}<p>tail</p>`],
-  ['a quoted ordered item', '> 1. para\n>    [^f]: n\ntail\n', '<blockquote><ol><li>para</li></ol></blockquote><p>tail</p>'],
-  ['a quoted item, unclosed fence', '> - para\n>   [^f]: n\n```\ncode\n', `${QL}<pre><code>code </code></pre>`],
-  ['a quoted item, note continuation', '> - para\n>   [^f]: n\n>     more\ntail\n', `${QL}<p>tail</p>`],
-  ['a quoted item, list marker', '> - para\n>   [^f]: n\n- tail\n', `${QL}<ul><li>tail</li></ul>`],
-  ['a quoted definition body', '> :: t\n> : d\n>   [^f]: n\ntail\n', '<blockquote><dl><dt>t</dt><dd>d</dd></dl></blockquote><p>tail</p>'],
-  ['a quoted sub-item', '> - a\n>   - para\n>     [^f]: n\ntail\n', '<blockquote><ul><li>a <ul><li>para</li></ul></li></ul></blockquote><p>tail</p>'],
-  ['a quote in an item, column 2', '- > - para\n  >   [^f]: n\n  tail\n', `<ul><li>${QL} tail </li></ul>`],
-  ['a sub-item, note continuation', '- a\n  - para\n    [^f]: n\n      more\nx\n', '<ul><li>a <ul><li>para</li></ul></li></ul><p>x</p>'],
+  ['a quoted item', '> - para\n>   [^f]: n\ntail\n', QL, 'n tail'],
+  ['a quoted ordered item', '> 1. para\n>    [^f]: n\ntail\n', '<blockquote><ol><li>para</li></ol></blockquote>', 'n tail'],
+  ['a quoted item, closerless fence', '> - para\n>   [^f]: n\n```\ncode\n', QL, 'n ``` code'],
+  ['a quoted item, note continuation', '> - para\n>   [^f]: n\n>     more\ntail\n', QL, 'n more tail'],
+  ['a quoted item, list marker', '> - para\n>   [^f]: n\n- tail\n', QL, 'n - tail'],
+  ['a quoted definition body', '> :: t\n> : d\n>   [^f]: n\ntail\n', '<blockquote><dl><dt>t</dt><dd>d</dd></dl></blockquote>', 'n tail'],
+  ['a quoted sub-item', '> - a\n>   - para\n>     [^f]: n\ntail\n', '<blockquote><ul><li>a <ul><li>para</li></ul></li></ul></blockquote>', 'n tail'],
+  ['a quote in an item, column 2', '- > - para\n  >   [^f]: n\n  tail\n', `<ul><li>${QL}</li></ul>`, 'n tail'],
+  ['a sub-item, note continuation', '- a\n  - para\n    [^f]: n\n      more\nx\n', '<ul><li>a <ul><li>para</li></ul></li></ul>', 'n more x'],
 ]
 
-for (const [what, src, expected] of CASES) {
-  test(`a footnote definition in ${what} leaves no lazy line`, () => {
+for (const [what, src, expected, note] of CASES) {
+  test(`a footnote definition in ${what} takes the lazy line`, () => {
     assert.equal(oracle(src), expected)
+    assert.equal(parse(src).footnoteDefs.get('f').at(-1).lines.map((l) => l.replace(/^\u0000L\u0000/, '')).join(' '), note)
   })
 }
 

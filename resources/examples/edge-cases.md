@@ -19822,6 +19822,7 @@ tail
 
 A footnote definition, the same both ways:
 
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), so the unmarked line below folds into the note:
 ::: compare
 
 ```carve
@@ -19835,13 +19836,13 @@ see[^f]
 <ul>
   <li></li>
 </ul>
-<p>tail</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>t<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>t
+tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -22613,8 +22614,10 @@ tail
 
 :::
 
-The footnote kind is the same construct and answers the same way:
+The footnote kind registers the same way, but its body holds the note's own
+paragraph. A footnote body takes a lazy line like every container (markup-carve/carve#3885), so `tail` folds into the note:
 
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), so the unmarked line below folds into the note:
 ::: compare
 
 ```carve
@@ -22629,13 +22632,13 @@ x[^f]
 <ul>
   <li>a</li>
 </ul>
-<p>tail</p>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>t<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>t
+tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -22744,6 +22747,7 @@ wherever both were measured, but this one had only ever been measured in the
 list item. A rule stated for "a container" and pinned for one of its containers
 is the shape a later divergence hides in.
 
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), so the unmarked line below folds into the note:
 ::: compare
 
 ```carve
@@ -22760,13 +22764,13 @@ x[^f]
   <dt>t</dt>
   <dd>a</dd>
 </dl>
-<p>tail</p>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>t<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>t
+tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -23697,6 +23701,7 @@ indented body continuation is part of that definition - the footnote parser
 consumes it and permits no lazy continuation into it - so nothing of the item's
 is open across any of it:
 
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), so the unmarked line below folds into the note:
 ::: compare
 
 ```carve
@@ -23712,14 +23717,14 @@ x[^f]
 <ul>
   <li>a</li>
 </ul>
-<p>tail</p>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>t
-more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+more
+tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -23745,13 +23750,13 @@ x[^f]
 <ul>
   <li>a</li>
 </ul>
-<p>tail</p>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>t<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>t
+tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -23848,9 +23853,8 @@ b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p
 The rule is over the BLOCK, and a footnote definition's block is whatever the
 footnote parser consumes - which may be more than one block of body. A blank
 between the note's blocks is INTERIOR to that block, so it hands nothing back
-to the container: the item ends here exactly as it does on the contiguous and
-the one-line spellings of the same definition, and the flush-left line is a
-document-level paragraph (markup-carve/carve#1363).
+to the container (markup-carve/carve#1363). The note's last paragraph is still
+open, and a footnote body takes a lazy line like every container (markup-carve/carve#3885), so the flush-left line folds into it.
 
 ::: compare
 
@@ -23868,14 +23872,14 @@ x[^f]
 <ul>
   <li>a</li>
 </ul>
-<p>tail</p>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>t</p>
-      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>more
+tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -25197,6 +25201,7 @@ tail
 At the body column the line remains part of the footnote block and opens no
 item paragraph. The flush-left line is consequently outside the item.
 
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), so the unmarked line below folds into the note:
 ::: compare
 
 ```carve
@@ -25212,14 +25217,14 @@ see[^f]
 <ul>
   <li>a</li>
 </ul>
-<p>tail</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>note
-more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+more
+tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -35636,11 +35641,9 @@ column at 3, so the note stands at column 3 and its floor is 5. The nested list
 at 5 reaches it and is the note's; the note is unreferenced, so it renders
 nothing and the `<dd>` is empty.
 
-`tail` at column 0 is a different question. Column 0 is the surrounding
-DOCUMENT's own opener column (PART 0 owner selection), which the note's body at
-column 5 does not reach - so the body ends and `tail` is a top-level sibling
-paragraph rather than the description's lazy continuation
-(markup-carve/carve#1974, carve-js#1667, carve-php#1929, carve-rs#1577).
+`tail` at column 0 reaches neither the description nor the note, and the
+note's paragraph is the deepest one open, so `tail` folds into the note (PART 0
+S4). A footnote body takes a lazy line like every container (markup-carve/carve#3885); the section keeps the title of the reading it used to pin.
 
 ::: compare
 
@@ -35656,7 +35659,6 @@ tail
   <dt>t</dt>
   <dd></dd>
 </dl>
-<p>tail</p>
 ```
 
 :::
@@ -35678,7 +35680,6 @@ tail
   <dt>t</dt>
   <dd></dd>
 </dl>
-<p>tail</p>
 ```
 
 :::
@@ -50310,9 +50311,10 @@ row in `<thead>` (CARVE-P9-006).
 
 ## A quote or a term at a marker-line note's body column opens in the note
 
-A quote or a definition term at the note's body column opens inside the note,
-and no lazy line continues it. One below that column belongs to the outer item
-(PART 0 DEFINITION EXTENT, CARVE-P9-083).
+A quote or a definition term at the note's body column opens inside the note.
+The quote's paragraph, or the description's, is then the deepest open paragraph,
+so `after [^n]` folds into it (PART 0 S4, markup-carve/carve#3885). The note is
+referenced only from inside itself and renders nothing.
 
 :::: compare
 
@@ -50326,17 +50328,6 @@ after [^n]
 <ul>
   <li></li>
 </ul>
-<p>after <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>text</p>
-      <blockquote><p>q</p></blockquote>
-      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 ::::
@@ -50354,20 +50345,6 @@ after [^n]
 <ul>
   <li></li>
 </ul>
-<p>after <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>text</p>
-      <dl>
-        <dt>t</dt>
-        <dd>d</dd>
-      </dl>
-      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 ::::
@@ -54236,6 +54213,8 @@ after *b*
 ::::::
 
 A footnote definition does the same:
+
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), so the unmarked line below folds into the note:
 :::::: compare
 
 ````carve
@@ -54254,9 +54233,9 @@ after *b*
   <ul>
     <li>para</li>
   </ul>
-  <pre><code>code
-::::
-</code></pre>
+  <div>
+
+  </div>
 </aside>
 <p>after <strong>b</strong></p>
 ```
@@ -54462,6 +54441,11 @@ after *b*
 
 ## A definition or attribute line in a nested container leaves no paragraph for an unmarked line
 
+A footnote definition is the exception in this section: its body holds the
+note's own paragraph, and a footnote body takes a lazy line like every container
+(markup-carve/carve#3885), so in the footnote rows the unmarked line folds into
+the note.
+
 A definition or attribute line at a sub-item's content column ends the
 sub-item's paragraph and leaves none open anywhere in the stack
 (CARVE-P0-010, CARVE-P0-011), so a line at document column 0 leaves the
@@ -54511,8 +54495,7 @@ x
 
 ::::::
 
-A footnote's extent takes no lazy line (CARVE-P0-012 DEFINITION EXTENT),
-so a continuation line in the note leaves nothing for `x` to continue:
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), so `x` folds into the note's paragraph:
 :::::: compare
 
 ````carve
@@ -54531,13 +54514,13 @@ x
     </ul>
   </li>
 </ul>
-<p>x</p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>n
-more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+more
+x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -54562,7 +54545,6 @@ tail
     <li>para</li>
   </ul>
 </blockquote>
-<p>tail</p>
 ```
 
 ::::::
@@ -54584,7 +54566,6 @@ tail
     </ul>
   </blockquote>
 </blockquote>
-<p>tail</p>
 ```
 
 ::::::
@@ -54606,8 +54587,6 @@ code
     <li>para</li>
   </ol>
 </blockquote>
-<pre><code>code
-</code></pre>
 ```
 
 ::::::
@@ -54629,7 +54608,6 @@ tail
     <dd>d</dd>
   </dl>
 </blockquote>
-<p>tail</p>
 ```
 
 ::::::
@@ -54655,7 +54633,6 @@ tail
     </li>
   </ul>
 </blockquote>
-<p>tail</p>
 ```
 
 ::::::
@@ -54675,9 +54652,6 @@ A list marker leaves the quote too, and opens a list:
     <li>para</li>
   </ul>
 </blockquote>
-<ul>
-  <li>tail</li>
-</ul>
 ```
 
 ::::::
@@ -54766,7 +54740,6 @@ tail
     <blockquote><p>para</p></blockquote>
   </li>
 </ul>
-<p>tail</p>
 ```
 
 ::::::
@@ -54789,7 +54762,6 @@ item's next paragraph:
         <li>para</li>
       </ul>
     </blockquote>
-    tail
   </li>
 </ul>
 ```
@@ -55131,6 +55103,8 @@ tail
 ::::::
 
 The footnote spelling is text as well:
+
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), so the unmarked line below folds into the note:
 :::::: compare
 
 ````carve
@@ -55145,7 +55119,6 @@ tail
     <blockquote><p>para</p></blockquote>
   </li>
 </ul>
-<p>tail</p>
 ```
 
 ::::::
@@ -55529,7 +55502,7 @@ b</p></blockquote>
 
 ::::::
 
-A footnote body in a quote takes no lazy line (DEFINITION EXTENT).
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), so `tail[^f]` joins the note's paragraph. The note is then referenced only from inside itself and renders nothing.
 :::::: compare
 
 ````carve
@@ -55545,16 +55518,6 @@ tail[^f]
     <blockquote><p>para</p></blockquote>
   </li>
 </ul>
-<p>tail<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>n
-- sub<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 ::::::
@@ -55853,7 +55816,7 @@ more</p></blockquote>
 
 ::::::
 
-A quote in a note on a description marker line holds no lazy line for the description, so a column-0 line leaves (DEFINITION EXTENT, CARVE-P0-011).
+A quote in a note on a description marker line holds the deepest open paragraph, so a column-0 line folds into it (PART 0 S4, markup-carve/carve#3885).
 :::::: compare
 
 ````carve
@@ -55871,13 +55834,13 @@ tail
   <dt>t</dt>
   <dd></dd>
 </dl>
-<p>tail</p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>para</p>
-      <blockquote><p>q</p></blockquote>
+      <blockquote><p>q
+tail</p></blockquote>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
@@ -57634,7 +57597,6 @@ tail
   </li>
 </ul>
 <blockquote><p>: d</p></blockquote>
-<p>tail</p>
 ```
 
 :::::::

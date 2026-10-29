@@ -12,7 +12,6 @@ const runsOn = /<p>after <strong>b<\/strong><\/p>\n\s*<\/div>/
 
 for (const [name, lines] of [
   ['link definition', ['- para', '  [r]: /u']],
-  ['footnote definition', ['- para', '  [^f]: n']],
   ['ordered item definition', ['1. para', '   [r]: /u']],
   ['quoted item definition', ['> - para', '>   [r]: /u']],
   ['task item definition', ['- [ ] para', '  [r]: /u']],
@@ -38,4 +37,13 @@ for (const [name, lines, expected] of [
   ['item prose after a table row', ['- para', '  | t |', '  more'], runsOn],
 ]) test(`control: ${name} ${expected === runsOn ? 'leaves a paragraph open, so the fence is paragraph text' : 'closes the item, so the fence ends at the closer'}`, () => {
   assert.match(render(lines).trim(), expected)
+})
+
+// A footnote body takes a lazy line like every container (carve#3885): the
+// closerless fence and its payload fold into the note, and the bare `::::`
+// opens a div in the admonition (§10 I1).
+test('a footnote definition at the item content column takes the closerless fence as note text', () => {
+  const html = render(['- para', '  [^f]: n']).replace(/\s+/g, ' ').replace(/ ?(<[^>]+>) ?/g, '$1')
+  assert.equal(html, '<aside class="admonition note" aria-label="Note"><ul><li>para</li></ul><div></div></aside><p>after<strong>b</strong></p>')
+  assert.deepEqual(parse('- para\n  [^f]: n\n```\ncode\n').footnoteDefs.get('f')[0].lines.map((l) => l.replace(/^\u0000L\u0000/, '')), ['n', '```', 'code'])
 })

@@ -6,9 +6,9 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const normalize = (h) => h.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
 const cases = [
   [
-    "a quote in a description marker-line note holds no lazy line",
+    "a quote in a description marker-line note takes the lazy line",
     "x[^c]\n\n:: t\n: [^c]: para\n     > q\ntail\n",
-    "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<dl>\n<dt>t</dt>\n<dd></dd>\n</dl>\n<p>tail</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p>para</p>\n<blockquote><p>q</p></blockquote>\n<p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n</li>\n</ol>\n</section>"
+    "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<dl>\n<dt>t</dt>\n<dd></dd>\n</dl>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p>para</p>\n<blockquote><p>q\ntail</p></blockquote>\n<p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n</li>\n</ol>\n</section>"
   ],
   [
     "a matched comment fence below the item column closes the item",
@@ -91,9 +91,9 @@ const cases = [
     "<ul>\n<li>\n<blockquote><p>a\nb</p></blockquote>\n</li>\n</ul>\n<p>x</p>"
   ],
   [
-    "a footnote body in a quote takes no lazy line",
+    "a footnote body in a quote takes the lazy line",
     "- > para\n  > [^f]: n\n  >   - sub\ntail[^f]\n",
-    "<ul>\n<li>\n<blockquote><p>para</p></blockquote>\n</li>\n</ul>\n<p>tail<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p>n\n- sub<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n</li>\n</ol>\n</section>"
+    "<ul>\n<li>\n<blockquote><p>para</p></blockquote>\n</li>\n</ul>"
   ],
   [
     "a note on a description marker line keeps its body column",

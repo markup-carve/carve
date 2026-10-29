@@ -46,13 +46,13 @@ x
     </ul>
   </li>
 </ul>
-<p>x</p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>n
-more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+more
+x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -68,7 +68,6 @@ tail
     <li>para</li>
   </ul>
 </blockquote>
-<p>tail</p>
 ```
 
 ```
@@ -83,7 +82,6 @@ tail
     </ul>
   </blockquote>
 </blockquote>
-<p>tail</p>
 ```
 
 ````
@@ -97,8 +95,6 @@ code
     <li>para</li>
   </ol>
 </blockquote>
-<pre><code>code
-</code></pre>
 ````
 
 ```
@@ -113,7 +109,6 @@ tail
     <dd>d</dd>
   </dl>
 </blockquote>
-<p>tail</p>
 ```
 
 ```
@@ -131,7 +126,6 @@ tail
     </li>
   </ul>
 </blockquote>
-<p>tail</p>
 ```
 
 ```
@@ -144,9 +138,6 @@ tail
     <li>para</li>
   </ul>
 </blockquote>
-<ul>
-  <li>tail</li>
-</ul>
 ```
 
 ```
@@ -206,7 +197,6 @@ tail
     <blockquote><p>para</p></blockquote>
   </li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -221,7 +211,6 @@ tail
         <li>para</li>
       </ul>
     </blockquote>
-    tail
   </li>
 </ul>
 ```
