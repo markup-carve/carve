@@ -1,13 +1,13 @@
 /*
- * The suite runs an EXPLICIT list of files, so a test file that nobody adds to
- * that list is never run - and a test nobody runs is indistinguishable from a
- * test that passes.
+ * The suite runs an EXPLICIT list of files, built by scripts/run-tests.mjs
+ * from tests/, so a new test file runs without editing package.json. A test
+ * nobody runs is indistinguishable from a test that passes.
  *
  * That is not hypothetical: tests/ast-positions.test.mjs was written, passed
  * locally when invoked by hand, and `npm test` reported the same 728 passing
  * tests as before it existed. Node's runner grows directory and glob arguments
- * across versions, and this repo's CI matrix spans two of them, so the list
- * stays explicit and this test keeps it honest.
+ * across versions, and this repo's CI matrix spans two of them, so the runner
+ * passes names, never a directory or glob, and this test keeps it honest.
  */
 
 import { test } from 'node:test'
@@ -19,25 +19,19 @@ import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { fleetEnv, specCommit } from './synthetic-fleet.helper.mjs'
+import { testFiles } from '../scripts/run-tests.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
 
-test('every test file in tests/ is in the npm test list', () => {
+test('npm test runs every test file in tests/ by explicit name', () => {
   const { scripts } = JSON.parse(readFileSync(resolve(repo, 'package.json'), 'utf8'))
-  const listed = new Set(
-    scripts.test
-      .split(/\s+/)
-      .filter((token) => token.endsWith('.test.mjs'))
-      .map((token) => token.replace(/^tests\//, '')),
-  )
-  const present = readdirSync(resolve(repo, 'tests')).filter((name) => name.endsWith('.test.mjs'))
-
-  const unrun = present.filter((name) => !listed.has(name))
-  assert.deepEqual(unrun, [], `test file(s) never run by npm test: ${unrun.join(', ')}`)
-
-  const missing = [...listed].filter((name) => !present.includes(name))
-  assert.deepEqual(missing, [], `npm test names file(s) that do not exist: ${missing.join(', ')}`)
+  assert.equal(scripts.test, 'node scripts/run-tests.mjs')
+  const present = readdirSync(resolve(repo, 'tests'))
+    .filter((name) => name.endsWith('.test.mjs'))
+    .sort()
+    .map((name) => `tests/${name}`)
+  assert.deepEqual(testFiles(repo), present)
 })
 
 test('the combinatorial inventory names and counts every curated family', () => {
