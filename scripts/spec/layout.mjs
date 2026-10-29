@@ -512,6 +512,11 @@ const stripLazyLead = (line) => {
   const at = line.indexOf(LAZY)
   return at > 0 && line.slice(0, at).trim() === '' ? line.slice(at) : line
 }
+// A line with its LAZY frame removed and its indentation kept.
+const unframeLazy = (line) => {
+  const at = line?.indexOf(LAZY) ?? -1
+  return at >= 0 && line.slice(0, at).trim() === '' ? line.slice(0, at) + line.slice(at + LAZY.length) : line
+}
 
 /// The verbatim payload of a raw block, from its lines between the delimiters.
 ///
@@ -1419,16 +1424,34 @@ const trimLineEnd = (line) => line.replace(/[ \t]+$/, '')
 // lines[i] (adjacent blocks on one line merge; one block may wrap lines; a
 // blank line inside the braces invalidates). Returns { lists, next } or null.
 // Lines from `start` dedented on read, so a scan touches only the lines it reaches.
-function dedentedWindow(lines, start, column) {
+function dedentedWindow(lines, start, column, unframe = false) {
   return new Proxy([], {
     get(_, key) {
       if (key === 'length') return Math.max(0, lines.length - start)
       const index = typeof key === 'string' && /^\d+$/.test(key) ? Number(key) : null
       if (index === null) return undefined
-      const line = lines[start + index]
+      const line = unframe ? unframeLazy(lines[start + index]) : lines[start + index]
       return line === undefined ? undefined : dedentMeasured(indentCols(line), line, column).text
     },
   })
+}
+
+// Whether the lines from `start` reach an unquoted `}` before a blank line or an
+// unquoted `{`, which no attribute block holds. Quote state is per line, as in
+// tryAttrLine, so a run of openers is read once (PART 9 SS9 LINEAR TIME).
+function wrapCloses(lines, start) {
+  for (let k = start; k < lines.length && !isBlank(lines[k]); k++) {
+    let inQuote = false
+    const line = lines[k]
+    for (let c = 0; c < line.length; c++) {
+      const ch = line[c]
+      if (ch === '\\' && inQuote) c++
+      else if (ch === '"') inQuote = !inQuote
+      else if (!inQuote && ch === '}') return true
+      else if (!inQuote && ch === '{') return false
+    }
+  }
+  return false
 }
 
 function tryAttrLine(lines, i) {
@@ -4202,12 +4225,18 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const content = dedent(lines[i], FOOTNOTE_BODY_COLUMN)
           // An ancestor already answered §10 I4 for this line (CARVE-P0-014).
           if (state.fenceOpensAt?.get(lines)?.has(i)) inheritedFenceOpens.add(bodyLines.length)
+          const attrOpener = content.startsWith('{') && noteOpenFence(i) === -1
           bodyLines.push(content)
           // The body reader can rebase this line before recognizing its block.
           // Check the claim only when a below-column follower asks for it.
           lazyParagraphOpen = null
           pullPending = false
           i++
+          // A wrapped attribute opened at the body column is one construct
+          // whatever its later lines' columns (PART 9 SS24 C3, carve#3537).
+          // An ancestor may have framed its closer line as lazy text.
+          const attributes = attrOpener && wrapCloses(lines, i) ? tryAttrLine(dedentedWindow(lines, i - 1, FOOTNOTE_BODY_COLUMN, true), 0) : null
+          for (let k = 1; k < (attributes?.next ?? 0); k++) bodyLines.push(dedent(unframeLazy(lines[i++]), FOOTNOTE_BODY_COLUMN))
         } else if (isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {
           // A BLANK RUN DOES NOT END THE DEFINITION -- carve#1620.
           //
