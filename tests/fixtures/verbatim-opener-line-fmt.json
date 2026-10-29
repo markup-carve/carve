@@ -69,6 +69,12 @@
       "source": "- `a\n . b`\n"
     },
     {
+      "id": "marker-in-a-quoted-item",
+      "host": "quotedItem",
+      "value": "a\n- b",
+      "source": "> - `a\n- b`\n"
+    },
+    {
       "host": "paragraph",
       "value": "a\n> b",
       "id": "refused-1"

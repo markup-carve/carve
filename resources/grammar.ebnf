@@ -9620,6 +9620,14 @@ EOF = (* end of file *) ;
       column, where the line is a lazy continuation of the item's paragraph,
       unless that column still reads a sibling marker of the item's list.
 
+      A LINE NO PREFIXED SPELLING KEEPS is written as a lazy continuation with
+      no container prefix, where that reads back. A paragraph in a quoted item
+      holding a code span whose value is `a`, a line break and `- b` is
+      written
+
+        > - `a
+        - b`
+
       NO SPELLING. These value lines open a block at every column in every
       host, so the writer refuses the value:
 
