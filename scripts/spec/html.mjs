@@ -700,9 +700,9 @@ function renderBlock(b, depth, ctx) {
       // direct paragraph children harden their soft breaks; nested blocks
       // keep normal behavior (PART 9 SS23)
       const parts = b.children.map((c) => {
-        if (c.t === 'para') {
+        if (c.t === 'para' && !c.blockImage) {
           const html = renderInlineHardBreaks(c.lines.join('\n'))
-          return `${'  '.repeat(depth + 1)}<p>${html}</p>`
+          return `${'  '.repeat(depth + 1)}<p${renderTextBlockAttrs(c.battrs, 'p')}>${html}</p>`
         }
         return renderBlock(c, depth + 1, ctx)
       }).filter((x) => x !== null)
