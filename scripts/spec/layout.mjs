@@ -8072,8 +8072,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       else if (pendingSeparation && col >= contentCol && !insideFence() &&
           lm.rest !== '' && !isDefinitionOrAttributeLine(lm.rest)) lastListBlock = 'paragraph'
       if (col >= contentCol) {
+        // A descendant's comment closer pairs at any column (CARVE-P9-053), so it ends no sublist.
         if (subCol >= 0 && col < subCol && opensAuthoredBase(lm.rest) &&
-            !FENCE.test(lm.rest) && !nestedVerbatim()) {
+            !FENCE.test(lm.rest) && !nestedVerbatim() &&
+            !(nestedOpaque?.kind === 'comment' && COMMENT_FENCE.exec(lm.rest)?.[1].length === nestedOpaque.run.length)) {
           subCol = -1
           descLive = false
           deepestIsDescendant = false
