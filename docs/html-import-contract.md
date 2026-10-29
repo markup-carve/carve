@@ -2393,7 +2393,7 @@ The shared set is deliberately small and each directory has one subject:
 | `ordered-delimiter-is-consumed` | a `data-delim` read as the list's delimiter, the bare `<ol>` that stays `.`, the attribute beside `type` and `start`, and a value outside the enumeration that stays the author's attribute |
 | `same-kind-strong-nesting` | a strong directly inside a strong, with both levels preserved as braced spans (PART 11 §1c) |
 | `same-kind-superscript-nesting` | two superscript levels preserved as nested braced spans |
-| `same-kind-indirect-nesting` | an emphasis inside a strong inside an emphasis, kept because the braced strong between them starts its own scope (PART 9 §9 E3, #2091) |
+| `same-kind-indirect-nesting` | an emphasis inside a strong inside an emphasis, kept because the braced strong between them starts its own scope (PART 9 §9 R1, #2091) |
 | `table-cell-hard-break` | a `<br>` in a cell written as one space between words, as nothing at the cell's end, and as a space at the edge of a span inside the cell, one row per break (PART 11 §1b) |
 | `adjacent-code-spans` | two `<code>` elements with nothing between them, separated by an empty delimited comment so the backtick runs do not merge (PART 11 §10k N3) |
 | `link-edge-whitespace` | edge whitespace of a link and a span moved outside, merged at a join and dropped at a block edge, beside a no-break space, a whitespace-only label and an edge image that stay |
