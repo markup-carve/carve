@@ -1,0 +1,182 @@
+A first-block plus hands its block to the host as the host reads it
+
+```
+[^a]: +
+tail
+ flush
+
+see[^a]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>tail
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^a]: +
+tail
+flush
+
+see[^a]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>tail
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> [^a]: +
+> tail
+>  flush
+
+see[^a]
+.
+<blockquote>
+
+</blockquote>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>tail
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^a]: +
+~s~
+ flush
+
+see[^a]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p><s>s</s>
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+````
+- +
+  ```
+  x
+.
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+- foo
+  - +
+    ```
+    x
+    ``
+.
+<ul>
+  <li>foo
+    <ul>
+      <li>
+        <pre><code>x
+``
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+`````
+- a
+  - ```
+ +
+````
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    <pre><code></code></pre>
+  </li>
+</ul>
+`````
+
+````
+[^a]: +
+```
+x
+
+see[^a]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <pre><code>x
+</code></pre>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+````
+- +
+  ```
+  x
+  ```
+  para
+.
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+    para
+  </li>
+</ul>
+````
+
+````
+- +
+  ```
+  x
+- b
+.
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+  </li>
+  <li>b</li>
+</ul>
+````

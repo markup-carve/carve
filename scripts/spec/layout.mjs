@@ -507,6 +507,10 @@ const lazyFrame = text => text.startsWith(LAZY) ? text : LAZY + text
 /// drops below the content column. tests/oracle-framing-never-leaks.test.mjs
 /// generates those shapes instead of listing them.
 export const stripLazy = (line) => (line.startsWith(LAZY) ? line.slice(LAZY.length) : line)
+const stripLazyLead = (line) => {
+  const at = line.indexOf(LAZY)
+  return at > 0 && line.slice(0, at).trim() === '' ? line.slice(at) : line
+}
 
 /// The verbatim payload of a raw block, from its lines between the delimiters.
 ///
@@ -4149,7 +4153,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
         }
         bodyLines[0] = ''
-        bodyLines.push(...lines.slice(i, next), '')
+        // A follower the frame pass framed LAZY stands at the note's reader
+        // column; the body reads it from column 0 like every other body line.
+        const taken = lines.slice(i, next).map(stripLazyLead)
+        bodyLines.push(...taken)
+        if (!leavesFenceOpen(taken)) bodyLines.push('')
         i = next
       }
       // `pullPending` is set by a `+` marker: the NEXT flush-left line begins a
@@ -6060,6 +6068,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   return blocks
 }
 
+// A block that opens a code fence and never closes it.
+const leavesFenceOpen = (block) => {
+  const m = FENCE.exec(block[0] ?? '')
+  return !!m && parseFenceInfo(m[2]) !== null && findCloser(block, 0, m[1]) === -1
+}
+
 // A closer cannot turn invalid metadata into a block opener. Interruption
 // probes and paragraph collection use the same validation and body extent.
 function hasCloser(lines, idx) {
@@ -7547,13 +7561,16 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (unclosedAttached) end = n
       const captionable = code ? hasCloser(attached, 0) : colon && isFigureGroupOpener(parseColonOpener(colon[2])) && COLON_CLOSER.test(attached.at(-1) ?? '')
       if (captionable && CAPTION.test(lines[end] ?? '')) end++
+      const taken = []
       for (; i < end; i++) {
         // Measure the attached block from the marker column.
         const measured = ind(i)
         const body = dedentMeasured(measured, lines[i], blockColumn)
         pushLine(body.text, body.meas)
+        taken.push(body.text)
       }
-      if (!unclosedAttached) pushLine('', BLANK_MEAS)
+      // A separator after a fence the block leaves open would be its payload.
+      if (!leavesFenceOpen(taken)) pushLine('', BLANK_MEAS)
       closePara()
       return true
     }

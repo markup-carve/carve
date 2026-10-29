@@ -308,4 +308,5 @@
 760-a-heading-inside-the-intervening-band-stays-description-text
 761-a-below-column-term-stays-in-the-footnote-paragraph
 770-a-combined-token-inside-a-forced-span-stops-at-the-span-s-closer
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-7
 88-list-continuation-marker-5

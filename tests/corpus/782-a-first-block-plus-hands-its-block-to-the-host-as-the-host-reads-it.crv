@@ -1,0 +1,5 @@
+[^a]: +
+tail
+ flush
+
+see[^a]
