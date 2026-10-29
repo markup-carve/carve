@@ -6652,6 +6652,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     }
     const itemBody = markerBodyPolicy(head.indent + head.markerWidth, authoredMarkerCol)
     let contentCol = itemBody.contentColumn
+    // A line's column as this item's own body parse measures it: stripped to
+    // the content column and walked again (PART 9 SS24 C5). It differs from
+    // `col` only for a tab past a content column off a tab stop, and it is the
+    // column a descendant's content column is compared against.
+    const reachOf = (m, line) => m.tabs && contentCol % 4 !== 0 && m.col > contentCol
+      ? contentCol + dedentMeasured(m, line, contentCol).meas.col
+      : m.col
     const itemLines = []
     const captionGaps = []
     const residueFence = { index: 0, opaque: null }
@@ -7844,10 +7851,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             i = j
             continue
           }
-          if (headSubActive && jm.col < headSubCol &&
-              (opensAuthoredBase(jm.rest) || jm.col >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(jm.rest)) &&
+          const jReach = reachOf(jm, lines[j])
+          if (headSubActive && jReach < headSubCol &&
+              (opensAuthoredBase(jm.rest) || jReach >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(jm.rest)) &&
               !COMMENT_LINE.test(jm.rest)) headSubActive = false
-          if (!commentBelowChild && ((subCol >= 0 && col >= subCol) || (headSubActive && col >= headSubCol))) {
+          if (!commentBelowChild && ((subCol >= 0 && jReach >= subCol) || (headSubActive && jReach >= headSubCol))) {
             // Content at or past the first sub-list's content column belongs to
             // the SUB-LIST, not this item -- a blank inside the sub-list must
             // not loosen this (ancestor) item (carve#322). Attach, stay tight;
@@ -7975,7 +7983,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             noteListBodyColumn = (authoredBlockBase ?? contentCol) + defBodyIndent + FOOTNOTE_BODY_COLUMN
             noteListChildColumn = nm.indent + nm.markerWidth
           }
-          if (subCol < 0) subCol = nm.indent + nm.markerWidth
+          if (subCol < 0) subCol = reachOf(jm, lines[j]) + nm.markerWidth
           // THE WHOLE RUN, not one blank standing in for it. §11 N1's boundary
           // applies at every level, and the sub-list is parsed recursively from
           // `itemLines`, so a run collapsed to a single blank here is a run the
@@ -7993,10 +8001,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         break
       }
       const { col } = lm
+      const reach = reachOf(lm, line)
       const priorContent = (lines[previousVisible(i - 1)] ?? '').replace(/^(?:[ \t]*>[ \t]?)+/, '')
       const childCol = subCol >= 0 ? subCol : (headSubActive ? headSubCol : -1)
       // A line reaching the child's column is parsed there without a lazy claim.
-      if (foldedChildParagraph && col >= childCol) {
+      if (foldedChildParagraph && reach >= childCol) {
         foldedChildParagraph = false
         descLive = false
       }
@@ -8004,7 +8013,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (!descendantParagraphBefore) foldedChildParagraph = false
       const childParagraphOpen = (descendantParagraphBefore || childParagraphLazy) && deepestParagraphOpen()
       childParagraphLazy = false
-      if (lm.rest !== '' && !insideFence()) commentBelowChild = COMMENT_LINE.test(lm.rest) && col >= contentCol && childCol >= 0 && col < childCol &&
+      if (lm.rest !== '' && !insideFence()) commentBelowChild = COMMENT_LINE.test(lm.rest) && col >= contentCol && childCol >= 0 && reach < childCol &&
         !(nestedOpaque?.kind === 'comment' && COMMENT_FENCE.exec(lm.rest)?.[1].length === nestedOpaque.run.length)
       // The task box is content (CARVE-P0-008): a line in its columns stands
       // below the marker-line child's marker and folds (carve#3976).
@@ -8016,14 +8025,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         i++
         continue
       }
-      const foldedChildFence = markerLineFence === null && !isBlank(priorContent) && !nestedVerbatim() && descendantParagraphBefore && col < childCol && FENCE.test(lm.rest) &&
+      const foldedChildFence = markerLineFence === null && !isBlank(priorContent) && !nestedVerbatim() && descendantParagraphBefore && reach < childCol && FENCE.test(lm.rest) &&
         !isCodeBlockOpener(dedentMeasured(lm, lines[i], col).text)
       // A line past the child's marker column that folds lazily into its open
       // paragraph or term opens nothing here, so the child keeps its column (carve#3950).
-      const foldsIntoChild = headSubActive && descendantParagraphBefore && col > headSubCol - headSubMarker.markerWidth &&
+      const foldsIntoChild = headSubActive && descendantParagraphBefore && reach > headSubCol - headSubMarker.markerWidth &&
         DEFLIST_SEPARATOR.test(lm.rest)
-      if (headSubActive && col < headSubCol && !foldsIntoChild &&
-          (opensAuthoredBase(lm.rest) || col >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(lm.rest)) &&
+      if (headSubActive && reach < headSubCol && !foldsIntoChild &&
+          (opensAuthoredBase(lm.rest) || reach >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(lm.rest)) &&
           !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
         headSubActive = false
       }
@@ -8064,7 +8073,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           lm.rest !== '' && !isDefinitionOrAttributeLine(lm.rest)) lastListBlock = 'paragraph'
       if (col >= contentCol) {
         // A descendant's comment closer pairs at any column (CARVE-P9-053), so it ends no sublist.
-        if (subCol >= 0 && col < subCol && opensAuthoredBase(lm.rest) &&
+        if (subCol >= 0 && reach < subCol && opensAuthoredBase(lm.rest) &&
             !FENCE.test(lm.rest) && !nestedVerbatim() && !nestedAttachmentTakes(lm) &&
             !(nestedOpaque?.kind === 'comment' && COMMENT_FENCE.exec(lm.rest)?.[1].length === nestedOpaque.run.length)) {
           subCol = -1
@@ -8081,7 +8090,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // Leave its authored indentation intact here so the recursive list
         // parser, which knows the descendant's content column, rebases it.
         // Rebasing it against this ancestor would hoist the block one level.
-        const descendantOwned = (subCol >= 0 && col >= subCol) || (headSubActive && col >= headSubCol)
+        const descendantOwned = (subCol >= 0 && reach >= subCol) || (headSubActive && reach >= headSubCol)
         // A footnote definition is invisible and leaves no paragraph open. Its
         // body starts two columns past the definition, so a block opener one
         // column past it is the item's next block, not definition residue.
@@ -8100,7 +8109,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // A colon container is not opaque: an opener past the column inside one
         // takes its authored base and may interrupt a paragraph
         // (CARVE-P0-004, CARVE-P9-083).
-        const retainedAfterComment = afterComment && subCol > col && !opensBlockAt(line, i)
+        const retainedAfterComment = afterComment && subCol > reach && !opensBlockAt(line, i)
         const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 &&
           col > contentCol && !descendantOwned && !COLON_CLOSER.test(lm.rest) && !inPayload && !retainedAfterComment && opensHostedColonBlock(lm.rest)
         if (markerNoteEligible && defBodyIndent !== null && nm && col >= contentCol + defBodyIndent + FOOTNOTE_BODY_COLUMN) noteMarkerSeen = true
@@ -8484,7 +8493,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         })
         // record the first sub-list's content column (carve#322)
         if (subCol < 0 && nm && nm.indent >= contentCol && !inDefBody) {
-          subCol = nm.indent + nm.markerWidth
+          subCol = reach + nm.markerWidth
           paraBeforeSublist = paragraphIsOpen() ? [...para] : []
         }
         if (nm && nm.indent >= contentCol && markerCarriesContinuation(lm.rest.trim(),
@@ -8686,7 +8695,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         else if (dmeas.rest !== '') openParaWith(dedented)
         // A block of this item below the sublist's column has ended the sublist,
         // so a later line past this column is no descendant's (CARVE-P0-004).
-        if (subCol >= 0 && col < subCol && !nm && dmeas.rest !== '' && !belowCloser && !inCommentSpan &&
+        if (subCol >= 0 && reach < subCol && !nm && dmeas.rest !== '' && !belowCloser && !inCommentSpan &&
             !inDefBody && !COMMENT_LINE.test(dedented) && !nestedAttachmentTakes(lm) &&
             (!paragraphIsOpen() ||
               (col === contentCol && opensBlockAt(dedented, i)))) subCol = -1
