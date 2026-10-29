@@ -69107,3 +69107,87 @@ A footnote label is any run of characters other than `]` and a line break, and a
 ```
 
 :::
+
+## A footnote reference bounds an editorial closer scan
+
+A `[^` run is a footnote reference before bracket scanning, so the scan for an insertion's, a deletion's or a substitution's closer does not skip `[^[g]+}]` as one bracket run. The closer after the reference's `]` ends the frame.
+
+::: compare
+
+```carve
+{+[^[g]+}] b+}
+```
+
+```html
+<p><ins>[^[g]</ins>] b+}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+{-[^[g]-}] b-}
+```
+
+```html
+<p><del>[^[g]</del>] b-}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+{~a~>[^[g]~}] b~}
+```
+
+```html
+<p><del>a</del><ins>[^[g]</ins>] b~}</p>
+```
+
+:::
+
+## Inside a note a footnote-shaped run is a bracket run
+
+Footnote recognition is off inside a note (PART 9 SS16), so `[^[g]/]` there is an ordinary bracketed run. The run closes at its balanced `]`, and a delimiter inside it pairs inside it.
+
+::: compare
+
+```carve
+^[/[^[g]/] b/]
+```
+
+```html
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p><em>[^[g]/] b</em><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+^[{+[^[g]+}] b+}]
+```
+
+```html
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p><ins>[^[g]+}] b</ins><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

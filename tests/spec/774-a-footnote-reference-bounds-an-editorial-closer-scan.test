@@ -1,0 +1,19 @@
+A footnote reference bounds an editorial closer scan
+
+```
+{+[^[g]+}] b+}
+.
+<p><ins>[^[g]</ins>] b+}</p>
+```
+
+```
+{-[^[g]-}] b-}
+.
+<p><del>[^[g]</del>] b-}</p>
+```
+
+```
+{~a~>[^[g]~}] b~}
+.
+<p><del>a</del><ins>[^[g]</ins>] b~}</p>
+```

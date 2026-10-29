@@ -304,3 +304,6 @@
 772-a-matched-insertion-or-deletion-hides-a-substitution-s-closer-4  Pinned JavaScript ends a substitution's old half at a `~>` inside a nested deletion; markup-carve/carve-js#3902.
 773-a-footnote-label-may-hold-a-bracket  Pinned JavaScript reads a footnote reference whose label holds `[` as a bracket run for emphasis pairing; markup-carve/carve-js#3903.
 773-a-footnote-label-may-hold-a-bracket-2  Pinned JavaScript reads a footnote reference whose label holds `[` as a bracket run for emphasis pairing; markup-carve/carve-js#3903.
+774-a-footnote-reference-bounds-an-editorial-closer-scan  Pinned JavaScript skips a footnote reference whose label holds `[` as a bracket run in an editorial closer scan; markup-carve/carve-js#3903.
+774-a-footnote-reference-bounds-an-editorial-closer-scan-2  Pinned JavaScript skips a footnote reference whose label holds `[` as a bracket run in an editorial closer scan; markup-carve/carve-js#3903.
+774-a-footnote-reference-bounds-an-editorial-closer-scan-3  Pinned JavaScript skips a footnote reference whose label holds `[` as a bracket run in an editorial closer scan; markup-carve/carve-js#3903.

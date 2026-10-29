@@ -570,17 +570,6 @@ const sem = g.createSemantics().addOperation('h', {
     return `xref:${id.sourceString}`
   },
   footnoteRef(_o, label, _c, attrs) {
-    if (noFootnotes) {
-      // SS16: recognition is DISABLED inside a note, EITHER DIRECTION - so
-      // `[^1]` there is not a reference. What is left is an ordinary bracketed
-      // run over the content `^1`, which is literal with no tail and a
-      // semantic span with an attribute one. Rebuilt here rather than
-      // re-parsed: the source spells `[^`, so re-parsing would match this rule
-      // again and never terminate.
-      const literal = renderInline('^' + label.sourceString, '[')
-      if (attrs.numChildren === 0) return `[${literal}]`
-      return renderSemanticSpan(literal, attrsOf(attrs))
-    }
     const a = renderAttrs(attrsOf(attrs))
     return `fn:${label.sourceString}\u0002${a}`
   },
@@ -1862,6 +1851,17 @@ export function renderInlineHardBreaks(text, prevCtx = '') {
  * recursive renderInline calls the note's own content makes, at any depth.
  */
 let noFootnotes = false
+// Inside a note `[^label]` is an ordinary bracketed run, so the grammar must not
+// match the reference at all: rebuilding it in the action kept the token ending
+// at the label's `]`, and pairing followed the reference reading (carve#3925).
+const gNoNotes = ohm.grammar(`CarveNoNotes <: ${g.name} {
+  footnoteRef := ~any "[^" fnLabel "]" attrRun?
+  noteRefBody := ~any "[^" fnLabel "]"
+}`, { [g.name]: g })
+let noNotesSem = null
+const inlineMatch = (source) => noFootnotes
+  ? [gNoNotes.match(source, 'inlines'), noNotesSem ??= gNoNotes.extendSemantics(sem)]
+  : [g.match(source, 'inlines'), sem]
 
 export function renderInlineWithoutSymbols(text, prevCtx = '') {
   omitSymbols = true
@@ -1957,9 +1957,9 @@ function renderInlineInner(text) {
   const read = (source) => {
     unattachedAttrs = []
     pairedDelims = []
-    const m = g.match(source, 'inlines')
+    const [m, semantics] = inlineMatch(source)
     if (m.failed()) throw new Refuse(`inline: ${m.shortMessage}`)
-    return { out: sem(m).h(), offsets: unattachedAttrs, paired: pairedDelims }
+    return { out: semantics(m).h(), offsets: unattachedAttrs, paired: pairedDelims }
   }
   try {
     let source = text
