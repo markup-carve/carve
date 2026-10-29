@@ -260,6 +260,7 @@ index: examples/edge-cases/index.md
   a-ragged-table-keeps-each-row-s-cell-count
   09-tables-4
   09-tables-5
+  a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row
 
   a-hard-break-in-a-pipe-table-cell-survives-markdown-export
 

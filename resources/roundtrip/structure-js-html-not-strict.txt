@@ -160,3 +160,8 @@
 780-a-braced-opener-forms-before-an-enclosing-closer-takes-its-block-11
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-4
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-7
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-3
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5

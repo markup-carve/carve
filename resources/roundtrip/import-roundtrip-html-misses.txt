@@ -1870,6 +1870,11 @@
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-3
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-4
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-8
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-3
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5
 81-paragraph-interruption-10
 81-paragraph-interruption-11
 81-paragraph-interruption-12

@@ -845,7 +845,8 @@ function splitRow(line, openRun = 0, openRunAt = 0) {
     if (c === '|' && (!inCode || i === closerIdx)) {
       cells.push(cur)
       cur = ''
-      if (cells.length === openRunAt) inCode = openRun
+      // The closer opens no column, so a run still open there stays open.
+      if (cells.length === openRunAt && i !== closerIdx) inCode = openRun
       i++
       continue
     }

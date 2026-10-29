@@ -309,4 +309,9 @@
 761-a-below-column-term-stays-in-the-footnote-paragraph
 770-a-combined-token-inside-a-forced-span-stops-at-the-span-s-closer
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-7
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-3
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5
 88-list-continuation-marker-5

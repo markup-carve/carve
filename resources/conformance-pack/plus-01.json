@@ -725,7 +725,7 @@
 {"id":"plus-9e50af51aa0e","source":"|= a |\n| - |\n| - |\n+ cont |\n","html":"<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>- cont</td></tr>\n  </tbody>\n</table>"},
 {"id":"plus-9ee379faecf7","source":"- foo\n  - +\n","html":"<ul>\n  <li>foo\n    <ul>\n      <li></li>\n    </ul>\n  </li>\n</ul>"},
 {"id":"plus-9f01abe74db9","source":"\n> > | a |\n> > + b*[A]: b |\n- tail\n","html":"<blockquote>\n  <blockquote>\n    <table>\n      <tbody>\n        <tr><td>a b*[A]: b</td></tr>\n      </tbody>\n    </table>\n  </blockquote>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"},
-{"id":"plus-9f896245edd1","source":"| a [l](u)| b |\n+ c` |\n+ x | y |\n","html":"<table>\n  <tbody>\n    <tr><td>a <a href=\"u\">l</a> c<code> x</code></td><td>b y</td></tr>\n  </tbody>\n</table>"},
+{"id":"plus-9f896245edd1","source":"| a [l](u)| b |\n+ c` |\n+ x | y |\n","html":"<table>\n  <tbody>\n    <tr><td>a <a href=\"u\">l</a> c<code> x | y</code></td><td>b</td></tr>\n  </tbody>\n</table>"},
 {"id":"plus-9f8ac68b7d99","source":":: t\n:_u_  a\n   + b |\ntil\n","html":"<dl>\n  <dt>t\n:<u>u</u>  a\n   + b |\ntil</dt>\n</dl>"},
 {"id":"plus-9fc3951721c3","source":"- a\n+ \n\n\nx\n","html":"<ul>\n  <li>a\n+</li>\n</ul>\n<p>x</p>"},
 {"id":"plus-9fc3dca45828","source":"|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n+ farms           |         |\n| ^               | Banana  |\n","html":"<table>\n  <thead>\n    <tr><th scope=\"col\">Category</th><th scope=\"col\">Item</th></tr>\n  </thead>\n  <tbody>\n    <tr><td rowspan=\"2\">Fresh Fruits from local farms farms</td><td>Apple</td></tr>\n    <tr><td>Banana</td></tr>\n  </tbody>\n</table>"},

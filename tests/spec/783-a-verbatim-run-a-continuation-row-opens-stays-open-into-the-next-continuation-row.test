@@ -1,0 +1,61 @@
+A verbatim run a continuation row opens stays open into the next continuation row
+
+```
+| a | b |
++ c` |
++ x | y |
+.
+<table>
+  <tbody>
+    <tr><td>a c<code> x | y</code></td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
++ c` | d |
++ x | y |
+.
+<table>
+  <tbody>
+    <tr><td>a c<code> | d x | y</code></td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
++ c | d` |
++ x | y |
+.
+<table>
+  <tbody>
+    <tr><td>a c x</td><td>b d<code> y</code></td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b | c |
++ x | y` |
++ p | q | r |
+.
+<table>
+  <tbody>
+    <tr><td>a x p</td><td>b y<code> q | r</code></td><td>c</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
++ ``c |
++ x `` y | z |
+.
+<table>
+  <tbody>
+    <tr><td>a <code>c x </code> y</td><td>b z</td></tr>
+  </tbody>
+</table>
+```

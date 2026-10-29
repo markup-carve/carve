@@ -34,3 +34,7 @@
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-55  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-58  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-7  The pinned writer moves a below-column `+` out of the item and drops the fence it reads there; carve-js main 6ce5d0f8f writes it back intact.
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
+783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
