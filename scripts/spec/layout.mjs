@@ -8326,19 +8326,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // re-walked, and handed to the item's parse below (carve#752).
         const dmeas = dd.meas ?? indentCols(dedented)
         if (i > wrappedAttrEnd && dedented.startsWith('{')) {
-          const window = lines.slice(i).map((candidate) => {
-            const measured = indentCols(candidate)
-            return dedentMeasured(measured, candidate, localBase).text
-          })
-          const attributes = tryAttrLine(window, 0)
+          // Lazy, so a scan reads only the lines the attribute run reaches.
+          const attributes = tryAttrLine(dedentedWindow(lines, i, localBase), 0)
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
         } else if (i > wrappedAttrEnd && !insideFence() && !nestedVerbatim() && dmeas.rest.startsWith('{')) {
           // A wrapped attribute opened in a nested child is one construct here too (carve#3421).
-          const window = lines.slice(i).map((candidate) => {
-            const measured = indentCols(candidate)
-            return dedentMeasured(measured, candidate, lm.col).text
-          })
-          const attributes = tryAttrLine(window, 0)
+          // Lazy, so a scan reads only the lines the attribute run reaches.
+          const attributes = tryAttrLine(dedentedWindow(lines, i, lm.col), 0)
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
         }
         if (
@@ -8353,7 +8347,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           !isLinkDef(dedented) &&
           !(noteBodyBoundary !== null && col >= noteBodyBoundary) &&
           !noteClaimsBelow &&
-          parseAttrList(trimLineEnd(dedented)) === null
+          parseAttrList(trimLineEnd(dedented)) === null &&
+          // A glued run (`{.a}{.b}`) is one attribute line too (carve#4078).
+          !tryAttrLine([trimLineEnd(dedented)], 0)
         ) {
           // §17 L1b: a second paragraph, still blank-line-separated.
           list.tight = false
