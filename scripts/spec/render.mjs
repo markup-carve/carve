@@ -508,6 +508,8 @@ function unclosedCode(content) {
   return `<code>${escapeHtml(content.sourceString.replace(trim, ''))}</code>`
 }
 
+// The delimiters the span around a combined token holds literal.
+let heldDelims = ''
 const sem = g.createSemantics().addOperation('h', {
   inlines(_initial, items) {
     // The bare single-char emphasis delimiters are NOT resolved by the PEG.
@@ -524,14 +526,22 @@ const sem = g.createSemantics().addOperation('h', {
     const a = renderAttrs(attrsOf(attrs))
     // The combined token owns BOTH `/` and `*`, so §9 E3 holds both literal
     // inside it while the other three delimiters resolve normally.
-    const body = resolveEmphasis(
-      () => combinedInner(first, rest, '/*'),
-      this.source.sourceString,
-      '/*',
-      first.source.startIdx,
-      true,
-    )
-    return `<strong${a}><em>${body}</em></strong>`
+    // An enclosing forced span's delimiter stays literal in here too.
+    const held = '/*' + heldDelims.replace(/[/*]/g, '')
+    const saved = heldDelims
+    heldDelims = ''
+    try {
+      const body = resolveEmphasis(
+        () => combinedInner(first, rest, held),
+        this.source.sourceString,
+        held,
+        first.source.startIdx,
+        true,
+      )
+      return `<strong${a}><em>${body}</em></strong>`
+    } finally {
+      heldDelims = saved
+    }
   },
   codeClosed(run) {
     return run.h()
@@ -1069,10 +1079,23 @@ function forcedUnder(alt) {
 // the reading `biInner` gave it.
 function combinedInner(first, rest, literalDelims, blocked) {
   const head = first.child(0)
+  // Split, a leading `*/` is two delimiters like any other (carve#3941).
   const leading = head.ctorName === 'biCloser'
-    ? [{ k: 't', h: escapeHtml(head.sourceString) }]
+    ? [...head.sourceString].map((ch, k) => literalDelims.includes(ch) ? { k: 't', h: escapeHtml(ch) } : { k: 'd', ch, at: head.source.startIdx + k })
     : buildToks([head], literalDelims, blocked)
   return [...leading, ...buildToks(rest.children, literalDelims, blocked)]
+}
+
+// The bare delimiters a combined token's content holds at its own level.
+function contentDelims(bi) {
+  const out = new Set()
+  for (const n of [bi.child(1), ...bi.child(2).children]) {
+    let alt = n
+    while (['biFirst', 'biInner', 'rich'].includes(alt.ctorName)) alt = alt.child(0)
+    if (alt.ctorName === 'litDelim') out.add(alt.child(0).sourceString)
+    else if (alt.ctorName === 'delimRun') for (const ch of alt.sourceString) out.add(ch)
+  }
+  return out
 }
 
 // A split combined token's inner `*` is an ordinary candidate, so a block glued
@@ -1132,7 +1155,7 @@ function classify(t, src, blocked) {
     t.canOpen = t.canClose = false
     return
   }
-  t.canOpen = !t.closeOnly && !blocked?.has(t.at) && !(t.ch === '=' && next === '>') && bareOpener(t.ch, prev, next)
+  t.canOpen = !t.closeOnly && !(blocked?.has(t.at) && !blocked.split?.has(t.at)) && !(t.ch === '=' && next === '>') && bareOpener(t.ch, prev, next)
   t.canClose = bareCloser(t.ch, prev, next)
 }
 
@@ -1168,7 +1191,15 @@ function buildToks(children, literalDelims = '', blocked) {
         toks.push(...split.toks)
         ci += split.skip
       } else {
-        toks.push({ k: 't', h: c.h(), combinedAt: at, closeAt: bi.child(3).source.startIdx + 1 })
+        const saved = heldDelims
+        heldDelims = literalDelims
+        let h
+        try {
+          h = c.h()
+        } finally {
+          heldDelims = saved
+        }
+        toks.push({ k: 't', h, combinedAt: at, closeAt: bi.child(3).source.startIdx + 1, delims: contentDelims(bi) })
       }
       continue
     }
@@ -1396,6 +1427,7 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
       }
       if (k !== -1) {
         openMap.set(openers[k], j)
+        for (let s = k + 1; s < openers.length; s++) toks[openers[s]].demoted = true
         openers.length = k // demote the entries above the matched opener
         continue
       }
@@ -1410,12 +1442,14 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
   }
   // A guarded delimiter after an unmatched prefix remains literal. It does
   // not enclose the combined token, even if it was tentatively on the stack.
+  // A guard that opens a span of its own does not block (carve#3941).
+  const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
   for (const t of toks) {
     if (t.combinedAt === undefined) continue
     t.nested = t.guardOpeners.some((oi) => {
       const opener = toks[oi]
-      return (opener.ch === '/' || opener.ch === '*') &&
-        (!guardedBy(opener.ch, src[opener.at - 1]) || openMap.has(oi))
+      return (opener.ch === '/' || opener.ch === '*' || t.delims.has(opener.ch)) &&
+        (!guardedBy(opener.ch, src[opener.at - 1]) || opens.has(opener.at - 1))
     })
   }
   return openMap
@@ -1426,7 +1460,9 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
 // `tentative` holds the closers of the first round, where no opener is
 // blocked yet: a block behind any other delimiter can attach in no reading.
 function pairGuarded(build, src, literalDelims = '', contentAt = 0) {
-  const blocked = new Set()
+  // `split` holds the nested combined tokens: read singly, their `/` may
+  // still open.
+  const blocked = Object.assign(new Set(), { split: new Set() })
   let tentative
   // A pass that blocks an opener is discarded, so the blocks its eager renders
   // reported unattached are dropped with it (carve#3939).
@@ -1441,22 +1477,34 @@ function pairGuarded(build, src, literalDelims = '', contentAt = 0) {
       ...toks.filter((t) => t.closeAt !== undefined).map((t) => t.closeAt),
     ])
     const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
-    let grew = false
-    for (const t of toks) {
-      const at = t.combinedAt
-      if (t.nested || (at > contentAt && guardedBy('/', src[at - 1]) && !opens.has(at - 1))) {
+    // Splitting a nested combined token shows the delimiters inside it, so
+    // those go first. A guard that a closer demoted may open once an opener
+    // left of it is blocked, so its block waits while any other is sure
+    // (carve#3941).
+    const nested = new Set(toks.filter((t) => t.nested).map((t) => t.combinedAt))
+    let batch = [...nested]
+    if (!batch.length) {
+      const demoted = new Set(toks.filter((t) => t.demoted).map((t) => t.at))
+      const due = []
+      for (const t of toks) {
+        const at = t.combinedAt
+        if (at !== undefined && at > contentAt && !opens.has(at - 1) && guardedBy('/', src[at - 1])) due.push(at)
+      }
+      for (const i of openMap.keys()) {
+        const t = toks[i]
+        if (t.at > contentAt && !opens.has(t.at - 1) && guardedBy(t.ch, src[t.at - 1])) due.push(t.at)
+      }
+      if (!due.length) return { toks, openMap, tentative }
+      batch = due.filter((at) => !demoted.has(at - 1))
+      if (!batch.length) batch = [Math.min(...due)]
+    }
+    for (const at of batch) {
+      if (blocked.has(at)) blocked.split.delete(at)
+      else {
         blocked.add(at)
-        grew = true
+        if (nested.has(at)) blocked.split.add(at)
       }
     }
-    for (const i of openMap.keys()) {
-      const t = toks[i]
-      if (t.at > contentAt && guardedBy(t.ch, src[t.at - 1]) && !opens.has(t.at - 1)) {
-        blocked.add(t.at)
-        grew = true
-      }
-    }
-    if (!grew) return { toks, openMap, tentative }
   }
 }
 
@@ -1493,7 +1541,15 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
       if (t.k === 'd' && openMap.has(i)) {
         const closeIdx = openMap.get(i)
         pairedDelims?.push(t.at, toks[closeIdx].at)
-        const inner = renderRange(i + 1, closeIdx)
+        // A `/*` ... `*/` pair split back out of a token is still the
+        // `bold_italic` spelling, which renders strong around em, where its
+        // content is one `biInner` takes (carve#3941).
+        const head = toks[i + 1]
+        const bi = t.ch === '/' && head?.k === 'd' && head.ch === '*' && head.at === t.at + 1 &&
+          openMap.get(i + 1) === closeIdx - 1 && toks[closeIdx - 1].at === toks[closeIdx].at - 1 &&
+          !/[ \t]\*\//.test(src.slice(head.at + 1, toks[closeIdx].at + 1))
+        if (bi) pairedDelims?.push(head.at, toks[closeIdx - 1].at)
+        const inner = bi ? renderRange(i + 2, closeIdx - 1) : renderRange(i + 1, closeIdx)
         // A `{...}` block immediately after the closer attaches as attributes.
         let attrsStr = ''
         const after = closeIdx + 1
@@ -1505,7 +1561,9 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
           attrsStr = renderAttrs(toks[after].node.parseAttrs())
           consumed.add(after)
         }
-        out += `<${TAG[t.ch]}${attrsStr}>${inner}</${TAG[t.ch]}>`
+        out += bi
+          ? `<strong${attrsStr}><em>${inner}</em></strong>`
+          : `<${TAG[t.ch]}${attrsStr}>${inner}</${TAG[t.ch]}>`
         i = closeIdx + 1
         continue
       }
