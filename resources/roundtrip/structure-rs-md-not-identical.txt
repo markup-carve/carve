@@ -904,13 +904,11 @@
 786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-2
 786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-3
 786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-4
-788-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5
-789-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5
 790-a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text
 790-a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text-2
 790-a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text-3
 790-a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text-4
-790-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5
+791-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5
 80-trailing-attribute-block-edge-cases
 81-paragraph-interruption-5
 90-list-item-attributes
