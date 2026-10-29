@@ -798,6 +798,7 @@ out: examples/edge-cases/blocks.md
 index: examples/edge-cases/index.md
   blocks-that-render-to-nothing
   paragraph-interruption
+  a-paragraph-line-that-would-open-a-fence-is-written-so-it-does-not
   thematic-break-requires-contiguous-markers
   a-flush-left-line-needs-an-open-paragraph-to-fold-into
   two-dashes-are-not-a-thematic-break

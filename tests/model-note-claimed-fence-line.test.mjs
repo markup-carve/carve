@@ -5,9 +5,11 @@ import { parse } from '../scripts/spec/layout.mjs'
 const tightness = (source) => parse(source).blocks[0].tight
 
 for (const fence of ['~~~', '```', '````', '``` js']) {
-  test(`a note-claimed ${fence} line keeps the separation before a second paragraph`, () => {
+  test(`a ${fence} line below a note opens a fence that holds the blank, so the item stays tight`, () => {
+    // The opener interrupts the note's paragraph (carve#4018), so it is never
+    // note text and the blank under it is code, not a separation.
     const lines = ['- item', '  [^c]: [^d]: para', '          more', `   ${fence}`, '', '  See[^c][^d]', '']
-    assert.equal(tightness(lines.join('\n')), false)
+    assert.equal(tightness(lines.join('\n')), true)
     lines[3] = '   text'
     assert.equal(tightness(lines.join('\n')), false)
   })
