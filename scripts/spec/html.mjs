@@ -1588,7 +1588,7 @@ function derivedText(source) {
       return ref.img ? ref.alt : ref.text
     })
     .replace(/\uE000[\s\S]*?\uE001/g, '')
-    .replace(/<span\b[^>]*\bclass="[^"]*\bmath\b[^"]*"[^>]*>\\\((.*?)\\\)<\/span>/gs, '$1')
+    .replace(/<span\b[^>]*\bclass="[^"]*\bmath\b[^"]*"[^>]*>(?:\\\((.*?)\\\)|\\\[(.*?)\\\])<\/span>/gs, '$1$2')
     // An image's plain-text projection is its alternative text. Preserve it
     // before the generic tag strip removes the `<img>` leaf altogether.
     .replace(/<img\b[^>]*\balt="([^"]*)"[^>]*>/g, '$1')
