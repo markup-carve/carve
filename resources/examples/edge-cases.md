@@ -68666,7 +68666,7 @@ An unclosed fence line below a footnote body interrupts the note paragraph and o
 
 ```html
 <ul>
-  <li><p>item</p>
+  <li>item
     <pre><code>
 See[^c][^d]
 </code></pre>
@@ -68688,7 +68688,7 @@ See[^c][^d]
 
 ```html
 <ol>
-  <li><p>item</p>
+  <li>item
     <pre><code>
 See[^c]
 </code></pre>

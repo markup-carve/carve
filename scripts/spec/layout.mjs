@@ -2414,10 +2414,8 @@ function hostFenceOpener(h, inner) {
 
 // The body index of a code fence a description body OPENED and has not closed,
 // or -1. A FENCED BODY IS NOT A PARAGRAPH (CARVE-P0-013), so a line below the
-// body's column cannot fold into it and ends the body. Whether the fence opened
-// is §10 I4's question: at block start it runs to the end of the container,
-// after a paragraph only when a closer follows - and the search does not stop
-// at a below-column line (CARVE-P0-014), as the item collector's does not.
+// body's column cannot fold into it and ends the body. A valid opener always
+// opens (§10 I4), under a paragraph too.
 function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) {
   for (let k = 0; k < bodyLines.length; k++) {
     const f = FENCE.exec(bodyLines[k])
@@ -2427,22 +2425,6 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) 
       k = end
       continue
     }
-    const prefix = bodyLines.slice(0, k)
-    // §10 I4 IS ASKED AT THE FENCE LINE, AND A BLANK ABOVE IT CLOSES THE
-    // PARAGRAPH (carve#2486). `bodyLeavesParagraphOpen` skips a trailing blank
-    // run by design - it answers for a body whose LAST BLOCK is what a lazy line
-    // folds into - so asking it over the prefix reported an open paragraph the
-    // blank had already ended, the fence was held to needing a closer, and a
-    // body-internal fence with none opened nothing.
-    //
-    // The item collector reads `openPara`, which the blank clears, so the two
-    // containers answered one clause differently and the `dd`'s reach past a
-    // column-zero run survived where the item's ended - the asymmetry
-    // CARVE-P0-014 refuses ("the reach of a container is not extended by what
-    // its innermost block happens to be"). CARVE-P0-014 names the blank as the
-    // control: "a blank closes the paragraph so S4's otherwise governs".
-    const atStart = prefix.length === 0 || prefix[prefix.length - 1].trim() === '' ||
-      !bodyLeavesParagraphOpen(prefix)
     return k
   }
   return -1
@@ -6851,6 +6833,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     let pendingSeparation = false
     let noteOpenerLine = null
     const noteClaimsLazyLine = (at) => {
+      // A code opener interrupts the note's paragraph rather than folding (§10 I4).
+      if (isCodeBlockOpener(ind(at).rest)) return false
       const markerNote = noteOpenerLine === null && markerNoteEligible
       if (!markerNote && (noteOpenerLine === null || noteBodyBoundary === null)) return false
       const opener = FOOTNOTE_DEF.exec(markerNote ? head.text : ind(noteOpenerLine).rest)

@@ -38,3 +38,4 @@
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
+763-a-note-claimed-fence-line-keeps-the-item-loose  The pinned writer respells the fence line below the note so it no longer opens in the item; the carve#4018 ruling is pending in carve-js.

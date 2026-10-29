@@ -26,11 +26,10 @@ other languages.
 | Markdown-familiar syntax        | ✅ |  ⚠️  | ✅ | ⚠️ |
 | Paragraph interruption (no blank line) | ✅ | ❌ | ✅ | ✅ \*\* |
 
-\* Inline parsing is single-pass with a delimiter stack; at the block level a
-code or raw fence uses a bounded forward scan for a matching closer. A `:::`
-container opens without that lookahead and may close at end of input. See
-[Technical Rationale](/technical-rationale).
-\*\* Like Markdown for quotes, headings, tables and closed fences; list markers
+\* Inline parsing is single-pass with a delimiter stack. At the block level a
+code, raw or `:::` fence opens without looking for its closer and may run to
+the end of its container. See [Technical Rationale](/technical-rationale).
+\*\* Like Markdown for quotes, headings, tables and fences; list markers
 (both bullet and ordered) deliberately never interrupt a paragraph - a list
 needs a blank line (no CommonMark `1.`-only heuristic).
 

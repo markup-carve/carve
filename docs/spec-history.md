@@ -372,3 +372,16 @@ precedence list. Three readings changed with the ruling: a `_` or `/` guard
 counts as markup where it stands (X1), an unclosed code run takes the rest of
 the block inside a braced span too (X5), and an empty brace group such as
 `{*}` is read as ordinary characters (X6).
+
+## Fence openers without a closer
+
+Until 2026-10-29 a code or raw fence interrupted an open paragraph only when a
+closer was reachable in its host (PART 9 §10 I4, with CARVE-P0-014 searching
+past a below-column line). Without one the opener line stayed paragraph text,
+and an unclosed fence inside a colon body ended at that body's closer (PART 0
+S1, the 2026-10-15 ruling pinned by corpus category 597). The maintainer
+ruled in markup-carve/carve#4018 that the opener always interrupts, as in
+CommonMark, and that an unclosed fence runs to the end of its container. No
+closer is looked for, so a colon line inside an unclosed fence is payload.
+Djot's reading, where a fence never interrupts a paragraph, was weighed and
+not taken.

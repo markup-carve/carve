@@ -52,8 +52,6 @@
 757-an-intervening-column-refuses-a-description-hosted-first-block  Pinned JavaScript retains the refused follower in the description; markup-carve/carve-js#3833.
 759-invalid-body-row-metadata-leaves-one-table-body  Pinned JavaScript infers a head after invalid body metadata; markup-carve/carve-js#3811.
 761-a-below-column-term-stays-in-the-footnote-paragraph  The pinned JavaScript parser releases a term one column below an open footnote paragraph; markup-carve/carve#3874.
-763-a-note-claimed-fence-line-keeps-the-item-loose  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
-763-a-note-claimed-fence-line-keeps-the-item-loose-2  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
 767-a-literal-bracket-run-bounds-emphasis-like-a-resolved-one  Pinned JavaScript keeps a same-kind pair literal inside a literal bracket run under an open span; markup-carve/carve-js#3887.
 767-a-literal-bracket-run-bounds-emphasis-like-a-resolved-one-2  Pinned JavaScript keeps a same-kind pair literal inside a literal bracket run under an open span; markup-carve/carve-js#3887.
 767-a-literal-bracket-run-bounds-emphasis-like-a-resolved-one-3  Pinned JavaScript keeps a same-kind pair literal inside a literal bracket run under an open span; markup-carve/carve-js#3887.
