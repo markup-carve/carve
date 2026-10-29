@@ -6412,9 +6412,11 @@ of the reading it used to pin.
 
     </aside>
   </li>
-  <li>para text
-:::</li>
+  <li>para text</li>
 </ul>
+<div>
+
+</div>
 ```
 
 ::::
@@ -37031,8 +37033,10 @@ question and is not decided here (markup-carve/carve#2147).
     </div>
   </dd>
 </dl>
-<p>y
-:::</p>
+<p>y</p>
+<div>
+
+</div>
 ```
 
 :::::
@@ -37338,10 +37342,10 @@ A `:::` on a list item's marker line opens its container whatever follows
 (*Only lazy folding demotes a marker-line colon opener*, ruled on
 markup-carve/carve#2978). A line below the item's content column is not its
 body, and the empty container holds no paragraph, so the line leaves the list
-and opens a document paragraph (`CARVE-P0-009`). A closer-shaped run written
-after it is then past the document's column under that open paragraph, and
-folds into it as text. The section keeps the title of the reading it used to
-pin (markup-carve/carve#2147).
+and opens a document paragraph. A bare `:::` written after it closes nothing
+that is open, so it is an opener: it interrupts that paragraph (§10 I1),
+indented or not (PART 0 S3), and opens an empty div. The section keeps the
+title of the reading it used to pin (markup-carve/carve#2147).
 
 ::::: compare
 
@@ -37359,8 +37363,10 @@ pin (markup-carve/carve#2147).
     </div>
   </li>
 </ul>
-<p>y
-:::</p>
+<p>y</p>
+<div>
+
+</div>
 ```
 
 :::::
@@ -37381,16 +37387,17 @@ pin (markup-carve/carve#2147).
     </aside>
   </li>
 </ul>
-<p>y
-:::</p>
+<p>y</p>
+<div>
+
+</div>
 ```
 
 :::::
 
-The same holds for an ordered item and for several lines. A blank line before
-the run closes the paragraph, so the run is a paragraph of its own. In a nested
-item the line below the inner column still reaches the outer item, which takes
-it and the run as its text.
+The same holds for an ordered item, for several lines and after a blank line.
+In a nested item the line below the inner column still reaches the outer item,
+which takes it as text, and the run opens its div in the outer item.
 
 ::::: compare
 
@@ -37408,8 +37415,10 @@ it and the run as its text.
     </div>
   </li>
 </ol>
-<p>y
-:::</p>
+<p>y</p>
+<div>
+
+</div>
 ```
 
 :::::
@@ -37432,8 +37441,10 @@ it and the run as its text.
   </li>
 </ul>
 <p>y
-z
-:::</p>
+z</p>
+<div>
+
+</div>
 ```
 
 :::::
@@ -37483,7 +37494,9 @@ z
       </li>
     </ul>
     y
-:::
+    <div>
+
+    </div>
   </li>
 </ul>
 ```
@@ -37552,8 +37565,10 @@ y</p>
     </div>
   </li>
 </ul>
-<p>y
-:::</p>
+<p>y</p>
+<div>
+
+</div>
 ```
 
 :::::
@@ -52086,6 +52101,10 @@ after
 
 ::::
 
+A payload line below the item column ends the fence and the item (PART 0 S1).
+The bare `:::` under the document paragraph that follows then opens a div
+(§10 I1).
+
 :::: compare
 
 ````carve
@@ -52106,9 +52125,10 @@ after
   </li>
 </ul>
 <p>x
-y
-:::
-after</p>
+y</p>
+<div>
+  <p>after</p>
+</div>
 ```
 
 ::::

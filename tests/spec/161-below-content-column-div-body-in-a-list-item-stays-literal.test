@@ -11,7 +11,9 @@ Below-content-column div body in a list item stays literal
 
     </aside>
   </li>
-  <li>para text
-:::</li>
+  <li>para text</li>
 </ul>
+<div>
+
+</div>
 ```

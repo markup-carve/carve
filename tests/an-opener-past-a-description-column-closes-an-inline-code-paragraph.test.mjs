@@ -21,13 +21,12 @@ const positiveRows = [
   ['a lazy line and a raw-looking inline code span before a div', [
     '> - :: term', '>   : payload', '   code', '>       ```=html',
     '>         :::', '>  :: t2', '',
-  ].join('\n'), '<blockquote>' + description('term', '<p>payload code<code>=html</code></p><div></div>') + '<p>:: t2</p></blockquote>'],
+  ].join('\n'), '<blockquote>' + description('term', '<p>payload code<code>=html</code></p><div></div>') + '<dl><dt>t2</dt></dl></blockquote>'],
 ]
 
 for (const [name, source, expected] of positiveRows) {
-  const todo = name.startsWith('a lazy line and a raw-looking') && 'markup-carve/carve#3892'
-  test(name, { todo }, () => assert.equal(html(source), expected))
-  test(`${name}, wrapped in one more quote`, { todo }, () => {
+  test(name, () => assert.equal(html(source), expected))
+  test(`${name}, wrapped in one more quote`, () => {
     assert.equal(html(quoted(source)), `<blockquote>${expected}</blockquote>`)
   })
 }

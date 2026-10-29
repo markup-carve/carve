@@ -483,7 +483,8 @@ test('lazy host tracking preserves the surrounding host controls', () => {
     [`- a\n  - c\nb\n    ${F}\n    y\n    ${F}\n`, true],
     // The blank-separated case already releases the line before this correction.
     [`- a\n  - c\n  b\n\n    ${T}\n    y\n    ${T}\n`, true],
-    [`- a\n  - c\n::: \n    ${T}\n  ${T}\n`, false],
+    // The bare `:::` interrupts and opens a div whose fence closes (§10 I1, carve#3894).
+    [`- a\n  - c\n::: \n    ${T}\n  ${T}\n`, true],
     [`[^n]: a\n  - c\n  b\n    ${T}\n  ${T}\n`, true],
   ]
   for (const depth of [1, 2, 3]) {

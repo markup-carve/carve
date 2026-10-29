@@ -2746,6 +2746,7 @@ function ownLines(lines) {
       // A term's continuation moves with the term, so a later `:` body still follows it.
       const term = owner.para && owner.last === 'term'
       lead(owner.para || !closedColumn || plusFollower ? Math.max(m.col - (term ? owner.termCut : owner.cut), owner.canon) : owner.canon, term)
+      owner.absorbs = (owner.para && owner.absorbs) || absorbsColon(m.rest)
       owner.para = true
       if (!term) owner.last = 'para'
     } else {
@@ -2791,6 +2792,7 @@ function ownLines(lines) {
       const form = classify(m.rest, frame, at)
       if (form.kind === 'text') {
         lead(m.col)
+        frame.absorbs = absorbsColon(m.rest)
         frame.para = true
         frame.last = 'para'
         return
@@ -2807,6 +2809,11 @@ function ownLines(lines) {
   }
   return result
 
+  function absorbsColon(rest) {
+    const colon = COLON_FENCE.exec(trimLineEnd(rest))
+    return !!colon && parseColonOpener(colon[2]) === null
+  }
+
   function classify(rest, owner, at) {
     // Line-final whitespace is trimmed before a line is read, so heads are measured without it.
     rest = trimLineEnd(rest)
@@ -2822,7 +2829,10 @@ function ownLines(lines) {
     }
     if (colon && parseColonOpener(colon[2]) !== null) {
       const run = colon[1].length
-      const interrupts = isColonParagraphInterrupt(rest)
+      // A bare `:::` interrupts unless the paragraph's own lines absorbed an
+      // invalid opener (§10 I4, CARVE-P9-016, CARVE-P9-017).
+      const interrupts = isColonParagraphInterrupt(rest) ||
+        (COLON_CLOSER.test(rest) && !(owner === top() && owner.para && owner.absorbs))
       if (owner.para && !interrupts) return { kind: 'text', interrupts: false }
       if (parseColonOpener(colon[2]).mode === 'line-block') {
         return { kind: 'fence', interrupts, lineBlock: true, closes: (r) => COLON_CLOSER.exec(r)?.[1].length === run }
@@ -7769,7 +7779,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           col < noteBodyBoundary && noteClaimsLazyLine(i)
         const mayOpenAuthoredBlock = !inNoteBody && !foldsIntoLeadTerm && !descendantOwned &&
           !foldedChildFence &&
-          (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest)
+          (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest) &&
+          // A fence with no closer under an open paragraph is text (§10 I4), as the walk read it.
+          (!isCodeBlockOpener(lm.rest) || bodyFenceOpens(i, lm.rest, col))
         if (pendingHeadQuote !== null && mayOpenAuthoredBlock) {
           const start = pendingHeadQuote
           const candidate = [head.text]

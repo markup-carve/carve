@@ -184,10 +184,13 @@ for (const body of ['lazy\n', '  body\n> lazy\n']) {
   test(`a lazy quoted div keeps its host: ${JSON.stringify(body)}`, () => {
     const prefix = `> - ::: box\n> ${body}>   :::\n`
     if (body === 'lazy\n') {
+      // A bare `:::` under the quote paragraph opens a div (§10 I1, carve#3894).
       const blocks = parse(prefix + '- tail\n').blocks
-      assert.equal(blocks.length, 1)
+      assert.equal(blocks.length, 2)
       assert.deepEqual(blocks[0].children[0].items[0].blocks[0].children, [])
-      assert.deepEqual(blocks[0].children[1], { t: 'para', lines: ['lazy', ':::', '- tail'] })
+      assert.deepEqual(blocks[0].children[1], { t: 'para', lines: ['lazy'] })
+      assert.equal(blocks[0].children[2].t, 'colon-div')
+      assert.deepEqual(blocks[1], parse('- tail\n').blocks[0])
     } else {
       assert.deepEqual(parse(prefix + '- tail\n').blocks, [...parse(prefix).blocks, ...parse('- tail\n').blocks])
     }

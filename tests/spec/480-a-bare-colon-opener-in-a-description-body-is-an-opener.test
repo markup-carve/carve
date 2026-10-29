@@ -14,8 +14,10 @@ A bare colon opener in a description body is an opener
     </div>
   </dd>
 </dl>
-<p>y
-:::</p>
+<p>y</p>
+<div>
+
+</div>
 ```
 
 ```

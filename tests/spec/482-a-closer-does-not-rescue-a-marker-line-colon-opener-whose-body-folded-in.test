@@ -12,8 +12,10 @@ A closer does not rescue a marker-line colon opener whose body folded in
     </div>
   </li>
 </ul>
-<p>y
-:::</p>
+<p>y</p>
+<div>
+
+</div>
 ```
 
 ```
@@ -28,8 +30,10 @@ A closer does not rescue a marker-line colon opener whose body folded in
     </aside>
   </li>
 </ul>
-<p>y
-:::</p>
+<p>y</p>
+<div>
+
+</div>
 ```
 
 ```
@@ -44,8 +48,10 @@ A closer does not rescue a marker-line colon opener whose body folded in
     </div>
   </li>
 </ol>
-<p>y
-:::</p>
+<p>y</p>
+<div>
+
+</div>
 ```
 
 ```
@@ -62,8 +68,10 @@ A closer does not rescue a marker-line colon opener whose body folded in
   </li>
 </ul>
 <p>y
-z
-:::</p>
+z</p>
+<div>
+
+</div>
 ```
 
 ```
@@ -101,7 +109,9 @@ z
       </li>
     </ul>
     y
-:::
+    <div>
+
+    </div>
   </li>
 </ul>
 ```
@@ -148,8 +158,10 @@ y</p>
     </div>
   </li>
 </ul>
-<p>y
-:::</p>
+<p>y</p>
+<div>
+
+</div>
 ```
 
 ```
