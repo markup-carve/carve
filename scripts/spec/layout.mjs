@@ -2983,14 +2983,44 @@ function ownLines(lines, trace = null) {
       for (let k = reached + 1; k < frames.length; k++) {
         if (frames[k].kind === 'quote') prefix += ' '.repeat(frames[k - 1].reader ?? frames[k - 1].canon) + '> '
       }
-      lines[at] = prefix + ' '.repeat(plusNote.reader - FOOTNOTE_BODY_COLUMN) + m.rest
+      const moved = prefix + ' '.repeat(plusNote.reader - FOOTNOTE_BODY_COLUMN)
+      // An attached code or comment fence moves whole: its payload is never
+      // read again as lines of the note's host.
+      const fence = FENCE.exec(m.rest)
+      if (fence && parseFenceInfo(fence[2]) !== null || COMMENT_FENCE_BODY.test(m.rest)) {
+        const end = at + pulledBlockLength(lines, at, (line) => line)
+        result.push(moved + m.rest, ...lines.slice(at + 1, end).map((line) => isBlank(line) ? line : moved + line))
+        if (trace) {
+          const family = fence ? 'code' : 'comment'
+          const path = ownerPath()
+          emit(at, 'S5', path, 'CARVE-P9-067', family, { cell: `B-${family}-start`, plus: at })
+          for (let j = at + 1; j < end; j++) {
+            const form = j === end - 1 && !leavesFenceOpen(lines.slice(at, end)) ? 'closer' : 'payload'
+            emit(j, 'S1', `${path}/${family}:${at + 1}`, 'CARVE-P0-005', form, { cell: `B-${family}-${form === 'closer' ? 'end' : 'keep'}` })
+          }
+        }
+        plusNote.para = false
+        plusNote.last = 'block'
+        plusNote.plus = undefined
+        at = end - 1
+        continue
+      }
+      // A colon fence's lines move with it and are read again in the note.
+      const end = COLON_FENCE.test(m.rest) && prefix === '' ? at + pulledBlockLength(lines, at, (line) => line) : at + 1
+      for (let j = at + 1; j < end; j++) {
+        replaced.add(j)
+        if (!isBlank(lines[j])) lines[j] = moved + lines[j]
+      }
+      lines[at] = moved + m.rest
       at--
       continue
     }
     // Past a missed note a marker opens where an item or a description body
     // owns it (§10 I2), or beside a missed list.
     const missedNote = missed && frames.slice(reached + 1).some((f) => f.kind === 'note')
-    if (missed && m.rest !== '' && top().para && !form.interrupts &&
+    // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
+    const interruptsPlus = plusNote && form.kind === 'item'
+    if (missed && m.rest !== '' && top().para && !form.interrupts && !interruptsPlus &&
         !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes) &&
         !(missedNote && form.kind === 'item' && (owner.kind === 'item' || owner.kind === 'dd' || frames.slice(reached + 1).some((f) => f.kind === 'item')))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
@@ -5858,7 +5888,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // The innermost quote owns the `+`: a follower at its column is read at that quote's column 0.
               const shift = here.d > 1 && quoteColFollower ? ind(i + 1).col : 0
               inner.push(here.d > 1 ? qm[1] : '',
-                ...(shift ? attached.rawMarker.map((line) => line.replace(new RegExp(`^ {0,${shift}}`), '')) : attached.rawMarker), '')
+                ...(shift ? attached.rawMarker.map((line) => line.replace(new RegExp(`^ {0,${shift}}`), '')) : attached.rawMarker))
+              if (!leavesFenceOpen(attached.rawMarker.map((line) => line.trimStart()))) inner.push('')
               if (here.d > 1 && QUOTE.test(lines[i + 1])) quotePulledFollowers.add(inner)
               qLastMarked = i
               i = attached.next
@@ -5927,7 +5958,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               qHost.fence = null
             }
             if (!insideColon || qOpenPara) inner.push('')
-            inner.push(...attached.rawMarker, '')
+            inner.push(...attached.rawMarker)
+            if (!leavesFenceOpen(attached.rawMarker.map((line) => line.trimStart()))) inner.push('')
             qOpenPara = false
             qItemPara = false
             qTermOpen = false
@@ -5982,8 +6014,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const unmarked = stripLazy(lines[i] ?? '')
         // X2: every open quote depth keeps its claim on an unmarked marker.
         const nestedMarkerFold = !qTermOpen && qNestedPara.some(Boolean) && !!matchMarkerAt(indentCols(unmarked))
+        // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
+        const refusedNotePlus = qLastMarked === i - 1 && !!matchMarkerAt(indentCols(unmarked)) &&
+          CONT_MARKER.test(FOOTNOTE_DEF.exec((QUOTE.exec(lines[i - 1])?.[1] ?? '').replace(/^(?:[ \t]*>(?: |(?=[ \t]|$)))*[ \t]*/, ''))?.[2] ?? '')
         if (lines[i] !== undefined && (qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&
-            !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
+            !bodyEndsWrappedAttr(inner) && !refusedNotePlus && !isBlank(lines[i]) &&
             !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(unmarked) ||
               QUOTE.test(stripIndent(unmarked)) ||
               (FENCE.test(unmarked) && !hasCloser(lines, i)) || nestedMarkerFold) &&
@@ -8304,6 +8339,25 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             noteFenceOpensPast = true
           } else if (closer >= 0) noteFenceEnd = closer
           else absorbedNoteFence = true
+        } else if (!markerNoteEligible && noteFrames.length && !descendantOwned && !insideFence() &&
+            noteFence && parseFenceInfo(noteFence[2]) !== null && col >= noteFrames.at(-1).body) {
+          // A note opened on its own line asks the same lookahead: a closer past
+          // a below-column line still opens the fence (CARVE-P0-014).
+          const body = noteFrames.at(-1).body
+          let seenBelow = false
+          const closer = cachedForwardSearch(noteCloserSearches, `frame:${body}:${col}:${noteFence[1]}`, i + 1, lines.length, (at) => {
+            const measured = ind(at)
+            if (measured.rest !== '' && measured.col < body) {
+              seenBelow = true
+              return false
+            }
+            const run = (measured.col === col || (seenBelow && measured.col >= col)) && PURE_FENCE.exec(measured.rest)
+            return !!(run && run[1][0] === noteFence[1][0] && run[1].length >= noteFence[1].length)
+          })
+          for (let at = i + 1; closer >= 0 && at < closer; at++) {
+            const measured = ind(at)
+            if (measured.rest !== '' && measured.col < body) { noteFenceOpensPast = true; break }
+          }
         }
         const inNoteBody = i <= noteFenceEnd || absorbedNoteFence
         const noteClaimsBelow = defBodyIndent !== null && noteBodyBoundary !== null &&
