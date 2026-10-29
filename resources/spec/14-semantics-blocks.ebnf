@@ -45,6 +45,11 @@
          run, whether the run resolves or stays literal text: a span opened
          outside the run is not reachable inside it, so `*[*g*] x*` ->
          <strong>[<strong>g</strong>] x</strong>, like `*[*g*](u) x*`.
+         An opener is open from where it stands, with no lookahead to
+         whether it later closes. A combined `/*` reads both kinds this way:
+         in `_*` followed by `/*`, the `*` of `_*` is open when `/*`
+         arrives, so the combined token does not open and its `/` and `*`
+         are read singly, even where that `_` never closes.
          Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6);
          the/path/here is literal; unbalanced trailing runs stay literal:
          /b// -> <em>b</em>/ and /x// -> <em>x</em>/ (resources/examples/edge-cases.md).

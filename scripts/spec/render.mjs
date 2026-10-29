@@ -1126,7 +1126,7 @@ function splitCombined(bi, literalDelims, blocked, siblings = []) {
     const rest = nodes.filter((n) => n.source.startIdx >= head.end)
     const fits = (n) => n.source.endIdx <= head.end || n.source.startIdx >= head.end
     if (head.end <= close && nodes.every(fits)) {
-      const inner = [head, ...buildToks(rest.map((n) => ({ child: () => n, h: () => n.h() })), literalDelims, blocked)]
+      const inner = [head, ...buildToks(rest, literalDelims, blocked)]
       return { toks: closeCombined(bi, delim, open, close, inner, literalDelims), skip: 0 }
     }
     let skip = 0
@@ -1444,16 +1444,13 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
     }
     // E1 / E5 literal: candidate left unpaired (rendered as its literal char).
   }
-  // A guarded delimiter after an unmatched prefix remains literal. It does
-  // not enclose the combined token, even if it was tentatively on the stack.
-  // A guard that opens a span of its own does not block (carve#3941).
-  const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
+  // An opener is open from where it stands, so a guarded one encloses the
+  // combined token whether or not its guard later closes (carve#3947).
   for (const t of toks) {
     if (t.combinedAt === undefined) continue
     t.nested = t.guardOpeners.some((oi) => {
-      const opener = toks[oi]
-      return (opener.ch === '/' || opener.ch === '*' || t.delims.has(opener.ch)) &&
-        (!guardedBy(opener.ch, src[opener.at - 1]) || opens.has(opener.at - 1))
+      const ch = toks[oi].ch
+      return ch === '/' || ch === '*' || t.delims.has(ch)
     })
   }
   return openMap
