@@ -3004,7 +3004,8 @@ function ownLines(lines, trace = null) {
     // `reader` is the column the block readers measure the opener at: a note's
     // marker-line content starts at its body column.
     function apply(owner, col, form, canon = owner.canon, reader = owner.reader ?? owner.canon) {
-      owner.para = false
+      // A caption spills onto following lines like a paragraph (CARVE-P2-021).
+      owner.para = !!form.caption
       owner.last = form.kind
       if (form.kind === 'term') {
         owner.para = true
@@ -3161,7 +3162,7 @@ function ownLines(lines, trace = null) {
         FOOTNOTE_DEF.test(rest) || ABBR_DEF.test(rest) || (rest[0] === '{' && tryAttrLine([rest], 0))) {
       return { kind: 'leaf', interrupts: true }
     }
-    if (CAPTION.test(rest)) return { kind: 'leaf', interrupts: false }
+    if (CAPTION.test(rest)) return { kind: 'leaf', interrupts: false, caption: true }
     return { kind: 'text', interrupts: false }
   }
 
@@ -3963,6 +3964,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (CAPTION.test(lines[k])) break // item 4: no repeated marker
       if (ind(k).rest.startsWith('%%')) break // §10 I5
       if (peekInterrupts(k)) break // §10 I1/I4/I5
+      if (inItem && matchMarkerAt(ind(k))) break // §10 I2, as for a paragraph
       text.push(lines[k].replace(/[ \t]+$/, ''))
       src.push(stripIndent(lines[k]).replace(/[ \t]+$/, ''))
       k++
