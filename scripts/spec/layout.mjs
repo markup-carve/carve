@@ -6251,6 +6251,8 @@ function measuredMarkerColumns(markerColumns, start, limit) {
   return shifted
 }
 
+const DESCRIPTION_TEXT = /^: (?=[ \t]*[^ \t\n\r])/
+
 function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0) {
   if (limit - start <= 1) return limit
   // Measure the block at the column it is read at: `  # H` is a heading there.
@@ -6262,7 +6264,9 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
     for (const line of measuredLines) {
       const measured = indentCols(line)
       if (measured.rest === '' || measured.col >= readColumn) read.push(dedentParts(line, readColumn).text)
-      else if (foldablePlainLine(measured.rest)) read.push(lazyFrame(measured.rest))
+      else if (measured.rest[0] === '{' && tryAttrLine([measured.rest], 0)) break
+      // A description marker with no term opens nothing, so it folds (PART 0 S4).
+      else if (foldablePlainLine(measured.rest) || DESCRIPTION_TEXT.test(measured.rest)) read.push(lazyFrame(measured.rest))
       else if (isCodeBlockOpener(measured.rest)) read.push(measured.rest)
       else break
     }
@@ -7618,7 +7622,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // frame, unless it is a new continuation marker for this item.
       if (nestedAttachmentEnd >= 0 && i >= nestedAttachmentEnd &&
           lm.rest !== '' && lm.col <= baseIndent &&
-          !CONT_MARKER.test(lm.rest) && !(spentOnSublist && deepestParagraphOpen() && (foldablePlainLine(lm.rest) ||
+          !CONT_MARKER.test(lm.rest) && !(spentOnSublist && deepestParagraphOpen() && (foldablePlainLine(lm.rest) || DESCRIPTION_TEXT.test(lm.rest) ||
             isCodeBlockOpener(lm.rest) && !hasCloser(lines.slice(i), 0)))) break
       if (i <= wrappedAttrEnd) {
         const body = dedentMeasured(lm, line, contentCol)
