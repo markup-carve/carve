@@ -7245,7 +7245,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           return !!(close && close[1][0] === code[1][0] && close[1].length >= code[1].length)
         }) : -1
         // A paired payload run shields inline delimiters but owns no fence.
-        if (payload && (payloadCloser < 0 || ind(payloadCloser).col < ind(index).col)) return
+        if (payload && payloadCloser < 0) return
         fence.opaque = { kind: 'code', run: code[1], opens, payload }
         return
       }
