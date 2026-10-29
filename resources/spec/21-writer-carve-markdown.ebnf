@@ -722,6 +722,52 @@
       block reads no thematic break (PART 9 §23), so a line block's `---` line is
       written `---`. `tests/fixtures/em-dash-line-fmt.json` pins the rows.
 
+   7h. A VERBATIM VALUE LINE THAT OPENS A BLOCK IS SPELLED OR REFUSED --
+      NORMATIVE [CARVE-P11-078]. A line after the first of a `code`,
+      `raw_inline`, `literal_inline` or `math` value is written as a line of
+      its paragraph, and stays in the span only where the block layer reads
+      that line as paragraph text in its host (PART 0 S3). The writer MUST
+      emit a spelling the parser reads back to the same value (§1). Where no
+      spelling does, the value has no Carve source and the writer refuses it
+      on the CARVE-P11-046 channel; a writer that can only throw raises its
+      source-unspellable error.
+
+      THE CLOSER IS PART OF THE LAST LINE. On the value's last line the
+      span's closer follows the line's content, so a shape that needs that
+      content to end the line opens nothing:
+
+        - a DEFINITION-SHAPED LAST LINE is written in a padded span. The
+          closer after a space ends the destination, so the line is not a
+          definition. A paragraph holding a code span whose value is `a`, a
+          line break and `[d]: u` is written
+
+            ` a
+            [d]: u `
+
+        - a last line that is a COLON RUN ALONE is written with its closer on
+          it, `:::` followed by the closer, and opens no fence in any host.
+
+      A LIST MARKER IN AN ITEM is written one column below the item's content
+      column, where the line is a lazy continuation of the item's paragraph,
+      unless that column still reads a sibling marker of the item's list.
+
+      NO SPELLING. These value lines open a block at every column in every
+      host, so the writer refuses the value:
+
+        - on any line: a quote line (`> b`), an ATX heading, a footnote
+          definition, a `%%` comment line, a `%%%` fence line and a term line
+          (`:: t`);
+        - on a line that is not the last: a bare `>`, a link definition, a
+          colon fence or colon run, a block attribute line, a pipe-table row
+          and a thematic break;
+        - in a list item, a marker of the item's own list (`- b` in a `-`
+          list, `1. b` and `. b` in an ordered list);
+        - in a paragraph directly in the document, an abbreviation
+          definition.
+
+      `tests/fixtures/verbatim-opener-line-fmt.json` pins the spelled rows
+      and, per refused shape, the candidate spellings that do not read back.
+
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It answers to a Markdown
       reader, and THIS TABLE IS ITS ESCAPING RULE FOR TEXT. Every condition is

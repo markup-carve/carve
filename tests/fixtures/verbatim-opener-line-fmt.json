@@ -1,0 +1,217 @@
+{
+  "version": 1,
+  "clause": "CARVE-P11-078",
+  "rows": [
+    {
+      "id": "definition-last-paragraph",
+      "host": "paragraph",
+      "value": "a\n[d]: u",
+      "source": "` a\n[d]: u `\n"
+    },
+    {
+      "id": "definition-last-quote",
+      "host": "quote",
+      "value": "a\n[d]: u",
+      "source": "> ` a\n> [d]: u `\n"
+    },
+    {
+      "id": "definition-last-bullet",
+      "host": "bullet",
+      "value": "a\n[d]: u",
+      "source": "- ` a\n  [d]: u `\n"
+    },
+    {
+      "id": "definition-last-ordered",
+      "host": "ordered",
+      "value": "a\n[d]: u",
+      "source": "1. ` a\n   [d]: u `\n"
+    },
+    {
+      "id": "definition-last-description",
+      "host": "description",
+      "value": "a\n[d]: u",
+      "source": ":: t\n: ` a\n  [d]: u `\n"
+    },
+    {
+      "id": "definition-last-footnote",
+      "host": "footnote",
+      "value": "a\n[d]: u",
+      "source": "y[^n]\n\n[^n]: ` a\n  [d]: u `\n"
+    },
+    {
+      "id": "definition-last-div",
+      "host": "div",
+      "value": "a\n[d]: u",
+      "source": "::: d\n` a\n[d]: u `\n:::\n"
+    },
+    {
+      "id": "colon-run-last-quote",
+      "host": "quote",
+      "value": "a\n:::",
+      "source": "> `a\n> :::`\n"
+    },
+    {
+      "id": "colon-run-last-bullet",
+      "host": "bullet",
+      "value": "a\n:::",
+      "source": "- `a\n  :::`\n"
+    },
+    {
+      "id": "colon-run-last-div",
+      "host": "div",
+      "value": "a\n:::",
+      "source": "::: d\n`a\n:::`\n:::\n"
+    },
+    {
+      "id": "dot-marker-in-a-bullet-item",
+      "host": "bullet",
+      "value": "a\n. b",
+      "source": "- `a\n . b`\n"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n> b",
+      "id": "refused-1"
+    },
+    {
+      "host": "bullet",
+      "value": "a\n> b",
+      "id": "refused-2"
+    },
+    {
+      "host": "footnote",
+      "value": "a\n> b",
+      "id": "refused-3"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n# h",
+      "id": "refused-4"
+    },
+    {
+      "host": "bullet",
+      "value": "a\n# h",
+      "id": "refused-5"
+    },
+    {
+      "host": "footnote",
+      "value": "a\n# h",
+      "id": "refused-6"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n[^d]: u",
+      "id": "refused-7"
+    },
+    {
+      "host": "bullet",
+      "value": "a\n[^d]: u",
+      "id": "refused-8"
+    },
+    {
+      "host": "footnote",
+      "value": "a\n[^d]: u",
+      "id": "refused-9"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n%% c",
+      "id": "refused-10"
+    },
+    {
+      "host": "bullet",
+      "value": "a\n%% c",
+      "id": "refused-11"
+    },
+    {
+      "host": "footnote",
+      "value": "a\n%% c",
+      "id": "refused-12"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n%%%",
+      "id": "refused-13"
+    },
+    {
+      "host": "bullet",
+      "value": "a\n%%%",
+      "id": "refused-14"
+    },
+    {
+      "host": "footnote",
+      "value": "a\n%%%",
+      "id": "refused-15"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n:: t",
+      "id": "refused-16"
+    },
+    {
+      "host": "bullet",
+      "value": "a\n:: t",
+      "id": "refused-17"
+    },
+    {
+      "host": "footnote",
+      "value": "a\n:: t",
+      "id": "refused-18"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n>\nc",
+      "id": "refused-19"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n[d]: u\nc",
+      "id": "refused-20"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n::: x\nc",
+      "id": "refused-21"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n:::\nc",
+      "id": "refused-22"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n{.c}\nc",
+      "id": "refused-23"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n| x |\nc",
+      "id": "refused-24"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n***\nc",
+      "id": "refused-25"
+    },
+    {
+      "host": "bullet",
+      "value": "a\n- b",
+      "id": "refused-26"
+    },
+    {
+      "host": "ordered",
+      "value": "a\n1. b",
+      "id": "refused-27"
+    },
+    {
+      "host": "ordered",
+      "value": "a\n. b",
+      "id": "refused-28"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n*[H]: x",
+      "id": "refused-29"
+    }
+  ]
+}

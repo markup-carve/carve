@@ -1535,6 +1535,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-078",
+      "part": "11",
+      "title": "A VERBATIM VALUE LINE THAT OPENS A BLOCK IS SPELLED OR REFUSED",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P12-001",
       "part": "12",
       "title": "AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY",
