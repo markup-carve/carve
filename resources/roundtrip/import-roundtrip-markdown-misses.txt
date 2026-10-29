@@ -2380,6 +2380,9 @@
 789-a-line-below-a-list-item-folds-into-the-open-paragraph-of-a-div-or-an-absorbed-colon-run-2
 789-a-line-below-a-list-item-folds-into-the-open-paragraph-of-a-div-or-an-absorbed-colon-run-4
 79-two-char-delimiter-runs
+790-a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text
+790-a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text-2
+790-a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text-3
 80-trailing-attribute-block-edge-cases
 80-trailing-attribute-block-edge-cases-2
 80-trailing-attribute-block-edge-cases-3

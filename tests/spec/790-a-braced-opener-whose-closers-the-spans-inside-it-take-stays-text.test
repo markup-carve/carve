@@ -1,0 +1,27 @@
+A braced opener whose closers the spans inside it take stays text
+
+```
+{*a {*b *} {*a {*b *} {*a {*b *}
+.
+<p>{*a <strong>b </strong> {*a <strong>b </strong> {*a <strong>b </strong></p>
+```
+
+```
+{*a {*b *} c *} {*d {*e *}
+.
+<p><strong>a <strong>b </strong> c </strong> {*d <strong>e </strong></p>
+```
+
+```
+> {/a {/b /} {/c {/d /}
+.
+<blockquote><p>{/a <em>b </em> {/c <em>d </em></p></blockquote>
+```
+
+```
+- {_a {_b _} {_c {_d _}
+.
+<ul>
+  <li>{_a <u>b </u> {_c <u>d </u></li>
+</ul>
+```

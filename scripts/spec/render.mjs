@@ -58,16 +58,51 @@ const core = ohm.grammar(`CarveGated <: ${base.name} {
   closerless = "\\u0000"
 ${BRACED_RULES.map((rule) => `  ${rule} := ~closerless ${coreSource.match(new RegExp(`^  ${rule.replace('<d>', '<d>')} *= (.*)$`, 'm'))[1]}`).join('\n')}
 }`, { [base.name]: base })
-let closerIndex = { source: null, last: null }
+// PART 9 §9 LINEAR TIME: a braced opener forms only at the first closer of
+// its mark at its level, past the spans formed inside it. Each `X}` pairs with
+// the nearest open `{X`; an opener left over is refused. A pair whose
+// text could hide a delimiter hands its closer to the openers below.
+const NESTING_MARKS = new Set(['/', '*', '_', '~', '^', ',', '='])
+// Characters that can start a construct hiding a delimiter (code, math, an
+// escape, a link, an autolink, a comment, a line break) or extend one.
+const HIDING = /[`$\\[\]<%\n\r\p{M}\u200D\uFE00-\uFE0F]/u
+let closerIndex = { source: null, unpaired: null }
 const closerless = new ohm.pexprs.Terminal('')
 closerless.eval = function (state) {
   const { source, pos } = state.inputStream
   if (closerIndex.source !== source) {
+    const stacks = new Map()
+    const unpaired = new Set()
+    const openers = []
     const last = new Map()
-    for (let i = source.indexOf('}', 1); i !== -1; i = source.indexOf('}', i + 1)) last.set(source[i - 1], i - 1)
-    closerIndex = { source, last }
+    const otherBefore = [0]
+    for (let i = 0; i < source.length; i++) otherBefore.push(otherBefore[i] + (HIDING.test(source[i]) ? 1 : 0))
+    for (let i = 0; i < source.length; i++) {
+      if (source[i] === '{' && source[i - 1] !== '\\') {
+        const mark = source[i + 1]
+        if (!stacks.has(mark)) stacks.set(mark, [])
+        stacks.get(mark).push(i)
+        openers.push(i)
+      } else if (source[i] === '~' && source[i + 1] === '>') {
+        // A `{~` before an arrow may be a substitution, which ends at the
+        // first `~}` after it.
+        stacks.get('~')?.splice(0)
+      } else if (source[i + 1] === '}' && stacks.has(source[i])) {
+        last.set(source[i], i)
+        const stack = stacks.get(source[i])
+        // An editorial or comment body ends at its first closer.
+        if (!NESTING_MARKS.has(source[i])) stack.length = 0
+        // An opener this closer overlaps or leaves empty cannot take it.
+        while (stack.length && i < stack.at(-1) + 3) stack.pop()
+        const at = stack.pop()
+        if (at !== undefined && (otherBefore[i] !== otherBefore[at + 2] || (at > 0 && HIDING.test(source[at - 1])))) stack.length = 0
+      }
+    }
+    for (const stack of stacks.values()) for (const at of stack) unpaired.add(at)
+    for (const at of openers) if (!((last.get(source[at + 1]) ?? -1) >= at + 2)) unpaired.add(at)
+    closerIndex = { source, unpaired }
   }
-  if (source[pos] === '{' && !((closerIndex.last.get(source[pos + 1]) ?? -1) >= pos + 2)) {
+  if (source[pos] === '{' && closerIndex.unpaired.has(pos)) {
     return ohm.pexprs.Terminal.prototype.eval.call(this, state)
   }
   state.processFailure(pos, this)
