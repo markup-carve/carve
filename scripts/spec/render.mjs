@@ -538,9 +538,10 @@ function renderSemanticSpan(text, list) {
 // the rule: it holds the no-break space, which every other clause calls
 // CONTENT, so a run ending in one silently lost it. The same narrowing
 // applies at the math and literal bodies, which share this extraction.
+// A line block keeps the run's newlines: they are content, not breaks.
+const unclosedBody = (content) => content.sourceString.replace(hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/, '')
 function unclosedCode(content) {
-  const trim = hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/
-  return `<code>${escapeHtml(content.sourceString.replace(trim, ''))}</code>`
+  return `<code>${escapeHtml(unclosedBody(content))}</code>`
 }
 
 // carve#1442: doubled runs are canonical in both families; the single
@@ -758,7 +759,7 @@ const sem = g.createSemantics().addOperation('h', {
     const inner = codeInner(code)
     const body = escapeHtml(
       inner.ctorName === 'codeU'
-        ? inner.child(2).sourceString.replace(hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/, '')
+        ? unclosedBody(inner.child(2))
         : codeText(inner.child(1)),
     )
     const a = renderAttrs(attrsOf(attrs))
@@ -1684,7 +1685,7 @@ function mathSpan(kind, code, attrs) {
   // codeU (unclosed run) carries its content in a different child slot
   const body = escapeHtml(
     inner.ctorName === 'codeU'
-      ? inner.child(2).sourceString.replace(/[ \t\n]+$/, '')
+      ? unclosedBody(inner.child(2))
       : codeText(inner.child(1))
   )
   // PART 9 SS18 A MATH SPAN CARRIES ROLE MATH (carve#1468). The span carries
