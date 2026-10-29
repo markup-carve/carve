@@ -1,0 +1,1693 @@
+{
+  "scopes": [
+    "parsing",
+    "resolution-rendering",
+    "imports-security-extensions"
+  ],
+  "mutations": [
+    {
+      "rule": "CARVE-P0-001",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-002",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "export const replaceNulls = (src) => src.replace(/\u005cu0000/g, '\u005cuFFFD')",
+          "replace": "export const replaceNulls = (src) => src"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-023",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "src = src.toWellFormed()",
+          "replace": "src = src"
+        }
+      ],
+      "note": "survives; differs on: a\u005cuD800b (lone surrogate in an API string: <p>a\u005cuFFFDb</p> vs raw surrogate)"
+    },
+    {
+      "rule": "CARVE-P0-024",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if ((subCol >= 0 && col >= subCol) || (headSubActive && col >= headSubCol)) {",
+          "replace": "if ((subCol >= 0 && col > subCol) || (headSubActive && col > headSubCol)) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-005",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const COMMENT_LINE = /^[ \\t]*%%/",
+          "replace": "const COMMENT_LINE = /^%%/"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-006",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "(qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&\n            !bodyEndsWrappedAttr(inner)",
+          "replace": "(true || qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&\n            !bodyEndsWrappedAttr(inner)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-007",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "  const inner = leavesParagraphOpen([text], 0, false)\n",
+          "replace": "  const inner = 'p'\n"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-008",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "markerWidth: m[2].length + (m[5] !== undefined ? 1 : whitespaceWidth),",
+          "replace": "markerWidth: m[2].length + (m[3]?.length ?? 0) + (m[5] !== undefined ? 1 : whitespaceWidth),"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-010",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "HR.test(block) || LINK_DEF.test(block) || EMPTY_LINK_DEF.test(block) ||",
+          "replace": "HR.test(block) ||"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-011",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "isTableRow(block) || (block[0] === '{' && (inItem ? tryAttrLine([block], 0) : tryAttrLine(lines, idx)))) return false",
+          "replace": "isTableRow(block)) return false"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-012",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (HEADING.test(block) || HR.test(block) || LINK_DEF.test(block)",
+          "replace": "if (HR.test(block) || LINK_DEF.test(block)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-013",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "        if (!para || closerAhead(run)) return true\n",
+          "replace": "        if (false) return true\n"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-014",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const reachable = closerAhead(run, at, owner.col, col)",
+          "replace": "const reachable = true"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P0-017",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "             isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||\n",
+          "replace": "             "
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-001",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if ((m = HEADING.exec(line))) {\n      const level = m[1].length",
+          "replace": "if (top && (m = HEADING.exec(line))) {\n      const level = m[1].length"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-002",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const HEADING = /^(#{1,6}) +(?=",
+          "replace": "const HEADING = /^(#{1,6}) (?="
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-003",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "push({ t: 'heading', level, text: headingText(m[2]) })",
+          "replace": "{ let ht = m[2]; while (i < lines.length && /^[A-Za-z]/.test(lines[i])) ht += ' ' + lines[i++]; push({ t: 'heading', level, text: headingText(ht) }) }"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-004",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "    if (omitComments) return ''\n    // comment content is verbatim",
+          "replace": "    // comment content is verbatim"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-005",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "    out.title = tm[1]",
+          "replace": "    out.title = null"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-006",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "    const c = PURE_FENCE.exec(lines[j])\n",
+          "replace": "    const c = PURE_FENCE.exec(lines[j].trimStart())\n"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-007",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "      const esc = b.text\n",
+          "replace": "      const esc = b.text.replaceAll('\\t', '  ')\n"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-008",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "(qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&\n            !bodyEndsWrappedAttr(inner)",
+          "replace": "false &&\n            !bodyEndsWrappedAttr(inner)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-009",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "(${ATTR_BLOCK})?( +)(?:\\\\[([ xX_>/!?-])\\\\] )?(.+)$`)",
+          "replace": "(${ATTR_BLOCK})?( +|$)(?:\\\\[([ xX_>/!?-])\\\\] )?(.*)$`)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-026",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if ((dm = /^:( +)(?=[ \\t]*[^ \\t])(.*)$/.exec(cur0))) {",
+          "replace": "if ((dm = /^:( *)(.*)$/.exec(cur0))) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-027",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if ((dm = /^:( +)(?=[ \\t]*[^ \\t])(.*)$/.exec(cur0))) {",
+          "replace": "if ((dm = /^:( +)(?=[^ ])(.*)$/.exec(cur0))) {"
+        },
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const isEntry = (s) => /^::?[ ](?=[ \\t]*[^ \\t\\n\\r])/",
+          "replace": "const isEntry = (s) => /^::?[ ](?=[ ]*[^ \\n\\r])/"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-010",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "          let dt = trimWs(dm[1])",
+          "replace": "          let dt = dm[1].replace(/[ \\t\\n\\r]+$/, '')"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-011",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "[A-Z]+|(?=\\\\.))([.)])",
+          "replace": "[A-Z]+)([.)])"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-012",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "[A-Z]+|(?=\\\\.))",
+          "replace": "[A-Z]+|(?=\\\\.(?!\\\\{)))"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-013",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "^([ \\\\t]*)([-*])(${ATTR_BLOCK})?",
+          "replace": "^([ \\\\t]*)([-*]) ?(${ATTR_BLOCK})?"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-014",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "let headSubActive = headSubCol >= 0",
+          "replace": "let headSubActive = false"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-015",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "disabled${taskName === '' ? '' : ` aria-label=\"${escapeAttr(taskName)}\"`}>",
+          "replace": "disabled>"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-016",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const bodyColumn = ind(i).col + 1 + dm[1].length",
+          "replace": "const bodyColumn = ind(i).col + 2"
+        },
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const sourceBodyColumn = sourceDescriptionCol + 1 + dm[1].length",
+          "replace": "const sourceBodyColumn = sourceDescriptionCol + 2"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-019",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (c === '|' && (!inCode || i === closerIdx)) {",
+          "replace": "if (c === '|' && !inCode) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-020",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const CAPTION = /^\\^ +(?=",
+          "replace": "const CAPTION = /^\\^ (?="
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-021",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "    let k = j + 1\n    while (k < n && !isBlank(lines[k])) {",
+          "replace": "    let k = j + 1\n    while (false) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-022",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "  if (at === -1) return text\n  // PART 7 whitespace",
+          "replace": "  if (true) return text\n  // PART 7 whitespace"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-023",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "pad + rawPassthrough(b.text) : null",
+          "replace": "pad + rawPassthrough(b.text).replace(/\\n(?=.)/g, '\\n' + pad) : null"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P2-025",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "para.push(stripIndent(lines[i]).replace(/[ \\t]+$/, ''))",
+          "replace": "para.push(stripIndent(lines[i]))"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-001",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "brContent  = escape | litInlineBody | code |",
+          "replace": "brContent  = escape | litInlineBody |"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-002",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "| newline | uSpace) any)",
+          "replace": "| newline) any)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-003",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const LINK_DEF = /^\\[([^\\]@]",
+          "replace": "const LINK_DEF = /^\\[([^\\]]"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-004",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "return refFrame({ opaque: true, literal: `[${escapeHtml(source ?? text)}][",
+          "replace": "return refFrame({ opaque: true, literal: `[${text}]["
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-005",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "(?: (\\{.*\\}))?[ \\t]*$/u",
+          "replace": "(?: (\\{.*\\}))?(?: .*)?$/u"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-006",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (url === null || attrs === null) return null",
+          "replace": "if (url === null) return null"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-007",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const attrs = m[5] === undefined ? undefined : parseAttrList(m[5])",
+          "replace": "const attrs = m[5] === undefined ? undefined : (parseAttrList(m[5]) && undefined)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-008",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const def = ctx.linkDefs.get(key)\n  // UNRESOLVED -> LITERAL, attribute block INCLUDED",
+          "replace": "const def = undefined\n  // UNRESOLVED -> LITERAL, attribute block INCLUDED"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-009",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const LINK_DEF = /^\\[([^\\]@][^\\]]*)\\]: +",
+          "replace": "const LINK_DEF = /^\\[([^\\]@][^\\]]*)\\]:[ \\t]+"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-010",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "return `<a href=\"${escapeUrlAttr(href)}\"${a}>${escapeHtml(raw)}</a>`",
+          "replace": "return `<a href=\"${escapeUrlAttr(href)}\"${a}>${escapeHtml(href)}</a>`"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-011",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "uUrlChar   = ~ascii ~uControl ~uSpace ~uFormat any",
+          "replace": "uUrlChar   = ~ascii ~uControl ~uSpace any"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-012",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "  const list = attrsOf(attrs)\n  // PART 10 SS1: the base classes",
+          "replace": "  const list = []\n  // PART 10 SS1: the base classes"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-013",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "return prev !== undefined && !isWs(prev) && (next === undefined || !isAlnum(next))",
+          "replace": "return prev !== undefined && !isWs(prev)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-014",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "(~\"+}\" edScan<\"+\">)+ \"+}\" attrRun?",
+          "replace": "(~\"+}\" edScan<\"+\">)* \"+}\" attrRun?"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-016",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "return `<span class=\"critic-comment\">${escapeHtml(body.child(1).sourceString)}</span>`",
+          "replace": "return `<span class=\"critic-comment\">${renderInline(body.child(1).sourceString, '{')}</span>`"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-017",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "return `<ins${renderAttrs(attrsOf(attrs))}>",
+          "replace": "return `<ins>"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-018",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "return `<span${renderAttrs(attrs.parseAttrs())}>:${escapeHtml(name.sourceString)}:</span>`",
+          "replace": "return `:${escapeHtml(name.sourceString)}:`"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-019",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "| symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag\n             | editorial",
+          "replace": "| symbol | footnoteRef | crossref | extension | symbolAttr | mention | tag\n             | editorial"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-020",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "no author writes.\n    return '\u005cu2013'",
+          "replace": "no author writes.\n    return '{--}'"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-021",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "if (prevIsSpace && !nextIsSpace) return escapeHtml(this.sourceString)",
+          "replace": "if (false && prevIsSpace && !nextIsSpace) return escapeHtml(this.sourceString)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-022",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "\"<-->\" | \"<->\" | \"-->\" | \"<--\"",
+          "replace": "\"<-->\" | \"<->\" | \"<--\""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P4-001",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "attrSp     = \" \"",
+          "replace": "attrSp     = \" \" | \"\\t\""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P4-002",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "classValue(a)\n      if (value !== '' && !classes.includes(value)) classes.push(value)",
+          "replace": "classValue(a)\n      if (value !== '') classes.push(value)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P4-003",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "langTag    = langSubtag (\"-\" langSubtag)*",
+          "replace": "langTag    = \" \"? langSubtag (\"-\" langSubtag)*"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P4-004",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "content stops inheriting a surrounding language.\n  langAttr(_c, tag) {\n    return ['kv', 'lang',",
+          "replace": "content stops inheriting a surrounding language.\n  langAttr(_c, tag) {\n    return ['kv', 'xml:lang',"
+        },
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "reaches it second.\n  langAttr(_c, tag) {\n    return ['kv', 'lang',",
+          "replace": "reaches it second.\n  langAttr(_c, tag) {\n    return ['kv', 'xml:lang',"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P4-005",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "boolAttr   = ~\"_\" ident",
+          "replace": "boolAttr   = ident"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P4-006",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "qChar      = qEsc | (~\"\\\"\" ~newline any)",
+          "replace": "qChar      = qEsc | (~\"\\\"\" any)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P4-007",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && a[1] === 'class')",
+          "replace": "export const isClass = (a) => a[0] === 'class'"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P6-001",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "      if (literals.length) {\n        let key",
+          "replace": "      if (false && literals.length) {\n        let key"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P7-001",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "else if (ch === '\\t') { col = (Math.floor(col / 4) + 1) * 4; tabs = true }",
+          "replace": "else if (ch === '\\t') { col = (Math.floor(col / 8) + 1) * 8; tabs = true }"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P7-002",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "titleSp    = \" \"",
+          "replace": "titleSp    = \" \" | \"\\t\""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P7-003",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "export const trimWs = (s) => s.replace(/^[ \\t\\n\\r]+|[ \\t\\n\\r]+$/g, '')",
+          "replace": "export const trimWs = (s) => s.trim()"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P7-004",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "alt=\"${escapeAttr(alt.sourceString.replace(/\\\\([!-/:-@\\[-`{-~])/g, '$1'))}\"",
+          "replace": "alt=\"${escapeAttr(alt.sourceString)}\""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-001",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "            const node = { t: 'figure-group', children }\n            if (close !== -1) {",
+          "replace": "            const node = { t: 'figure-group', children }\n            if (false) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-002",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "if (origin && origin.spanTop === r) {",
+          "replace": "if (origin) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-069",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "          if (afterDelimiterRow) break\n",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-003",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (isTableRow(text) || isContinuationRow(text, openTable)) return finish(false)",
+          "replace": "if (isTableRow(text)) return finish(false)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-004",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "          node.rows[0].cells.forEach((c) => (c.header = true))\n",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-005",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (ra && parseAttrBlock(`{${ra[1]}}`) !== null) {",
+          "replace": "if (false) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-006",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "if (isHeader && !/ scope=\"/i.test(parsed)) {",
+          "replace": "if (false) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-007",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": ".exec(seg.slice(afterMarks))",
+          "replace": ".exec(seg.slice(0))"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-008",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (seg[end] !== ' ') continue // a tab",
+          "replace": "if (false) continue // a tab"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-010",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "  ellipsis(_e) {\n    return '\u005cu2026'",
+          "replace": "  ellipsis(_e) {\n    return '...'"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-013",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "      if (lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5\n",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-014",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (visibleDistance(i, j) >= 3 && sameAxes(list, nm)) {",
+          "replace": "if (visibleDistance(i, j) >= 4 && sameAxes(list, nm)) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-015",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const baseCls = TIER1.has(b.type) ? ['admonition', b.type] : [b.type]",
+          "replace": "const baseCls = [b.type]"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-016",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "return COLON_CLOSER.test(line) && !paraHasInvalidColonOpener(para)",
+          "replace": "return COLON_CLOSER.test(line)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-017",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "            (!peekInterrupts(i) || foldedColon || nestedMarkerFold) &&\n            (!COLON_CLOSER.test(lines[i]) || foldedColon) && !CAPTION.test(lines[i])) {",
+          "replace": "            (!peekInterrupts(i) || foldedColon || nestedMarkerFold || (COLON_CLOSER.test(lines[i]) && !colonFenceInterrupts(lines[i], qPara))) &&\n            !CAPTION.test(lines[i])) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-018",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "if (tag === 'aside' && !hasAuthoredName(b.battrs)) {",
+          "replace": "if (false) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-072",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const firstChildren = heading === ''",
+          "replace": "const firstChildren = true"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-019",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "while (sections.length && sections[sections.length - 1] >= b.level) {",
+          "replace": "while (sections.length && sections[sections.length - 1] > b.level) {"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-020",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "brTail     = linkTail | refTail | attrRun | emptyAttrs",
+          "replace": "brTail     = linkTail | attrRun | emptyAttrs"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-021",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "brTail     = linkTail | refTail | attrRun | emptyAttrs",
+          "replace": "brTail     = linkTail | refTail | attrRun"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-022",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "boolAttr   = ~\"_\" ident",
+          "replace": "boolAttr   = ~\"_\" ~ident ident"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-023",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "        attrs: def.attrs,\n      })\n      i++\n      continue",
+          "replace": "        attrs: def.attrs,\n      })\n      pending.length = 0\n      i++\n      continue"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-024",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "    push(pnode)\n  }\n  return blocks\n}",
+          "replace": "    push(pnode)\n  }\n  if (blocks.length) flushAttrs(blocks[blocks.length - 1])\n  return blocks\n}"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-025",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "href=\"#fn${n}\" role=\"doc-noteref\"${remaining}>",
+          "replace": "href=\"#fn${n}\"${remaining}>"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-026",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "role=\"doc-backlink\" aria-label=\"${escapeAttr(label_)}\">↩</a>",
+          "replace": "role=\"doc-backlink\">↩</a>"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-027",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "? ` aria-label=\"${sectionName}\"`",
+          "replace": "? ''"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-075",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "return `${body === '' ? '' : `${body}\\n`}${section(placedHeading)}`",
+          "replace": "return `${section(placedHeading)}${body === '' ? '' : `\\n${body}`}`"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-073",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const firstPlaced = b.places && !ctx.placedFootnotesSeen",
+          "replace": "const firstPlaced = !ctx.placedFootnotesSeen"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-029",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "          if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)\n          list.tight = false\n          if (col === contentCol) subCol = -1",
+          "replace": "          if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)\n          if (!matchMarkerAt(indentCols(head.text))) list.tight = false\n          if (col === contentCol) subCol = -1"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-030",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "pendingSeparation = true",
+          "replace": "pendingSeparation = false"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-067",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const firstBlockPlus = /^[> \\t]*\\+[ \\t]*$/.test(qm[1] ?? '')",
+          "replace": "const firstBlockPlus = false"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-068",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (trimmed.join('').trim() !== '') blocks.push({ t: 'para', lines: trimmed })",
+          "replace": "if (trimmed.join('').trim() !== '') blocks.push({ t: 'para', lines: trimmed.slice(1) })"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-034",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "        attrs: def.attrs,\n      })\n      i++\n      continue",
+          "replace": "        attrs: def.attrs,\n      })\n      if (!top) blocks.push({ t: 'para', lines: [''] })\n      i++\n      continue"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-035",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (consumeLooseKey(blocks[before])) blocks[before].tight = false",
+          "replace": "if (consumeLooseKey(blocks[before])) {}"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-036",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "const wrap = kind === 'inline' ? ['\\\\(', '\\\\)'] : ['\\\\[', '\\\\]']",
+          "replace": "const wrap = kind === 'inline' ? ['', ''] : ['', '']"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-037",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "const roleStr = authoredRole ? '' : ' role=\"math\"'",
+          "replace": "const roleStr = ''"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-039",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "`<span class=\"mention\"><strong>@${escapeHtml(name.sourceString)}</strong></span>` +",
+          "replace": "`@${escapeHtml(name.sourceString)}` +"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-040",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "return fmt.sourceString === 'html' ? quoteOpaque(text) : ''",
+          "replace": "return fmt.sourceString === 'html' ? quoteOpaque(escapeHtml(text)) : ''"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-041",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "  spComment(_sp, _pp, _rest) {\n    return ''",
+          "replace": "  spComment(_sp, _pp, _rest) {\n    return this.sourceString"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-042",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "  bracedComment(_open, _content, _close) {\n    return ''",
+          "replace": "  bracedComment(_open, _content, _close) {\n    return this.sourceString"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-043",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "{ '/': 'em', '*': 'strong', _: 'u', '~': 's', '^': 'sup'",
+          "replace": "{ '/': 'strong', '*': 'em', _: 'u', '~': 's', '^': 'sup'"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-044",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "  if (separated && /^\\|[ \\t]*$/.test(s)) return { ...out, mode: 'line-block' }\n",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-045",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "    // of a line block lives (PART 11 SS7c).\n    return '<br>\\n'",
+          "replace": "    // of a line block lives (PART 11 SS7c).\n    return hardBreaks ? '<br>\\n<br>\\n' : '<br>\\n'"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-046",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "    return hardBreaks ? '<br>\\n' : '\\n'",
+          "replace": "    return hardBreaks && quoteRun.depth === 1 ? '<br>\\n' : '\\n'"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-047",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const span = top.mode === 'line-block' ? lineBlockSpanEnd(lines, j) : opaqueSpanEnd(lines, j)",
+          "replace": "const span = opaqueSpanEnd(lines, j)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-048",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const body = st.map((l) => (l.startsWith('%%') ? '' : l))",
+          "replace": "const body = st"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-049",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const body = st.map((l) => (l.startsWith('%%') ? '' : l))",
+          "replace": "const body = st.map((l, k) => (l.startsWith('%%') && !(st[k - 1] ?? '').trimEnd().endsWith('\\\\') ? '' : l))"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-050",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const html = renderInlineHardBreaks(c.lines.join('\\n'))",
+          "replace": "const html = renderInline(c.lines.join('\\n'))"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-051",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (!nm && (deepestParagraphOpen() || (lastListBlock === 'term'",
+          "replace": "if (!nm && (true || (lastListBlock === 'term'"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-052",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "        // A comment is an ordinary line: below the column it closes the item.\n        if (fence.opaque?.kind !== 'comment' &&",
+          "replace": "        // A comment is an ordinary line: below the column it closes the item.\n        if (false && fence.opaque?.kind !== 'comment' &&"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-054",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "const DENY = new Set(['javascript', 'vbscript',",
+          "replace": "const DENY = new Set(['vbscript',"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-055",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "  if (separator && !urlListIsClean(separator, value)) return { name, value: '' }\n",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-056",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "    if (line.trim() === '') { flush(); continue }\n    run.push(line)\n",
+          "replace": "    if (line.trim() === '') { flush(); continue }\n    run.push(line)\n    flush()\n"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-058",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "      .normalize('NFC')\n",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-059",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "    const body = escapeHtml(\n      inner.ctorName === 'codeU'",
+          "replace": "    const body = String(\n      inner.ctorName === 'codeU'"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-060",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const COMMENT_FENCE = /^[ \\t]*(%{3,})(.*)$/",
+          "replace": "const COMMENT_FENCE = /^[ \\t]*(%{3,})([ \\t]*)$/"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-061",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": ".replace(preserveBidi ? STRIP_FRAMES : STRIP, '')",
+          "replace": ".replace(preserveBidi ? STRIP_FRAMES : STRIP, '').replace(/[\\x01-\\x08\\x0B\\x0C\\x0E-\\x1F]/g, '')"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-062",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": ".replace(preserveBidi ? STRIP_FRAMES : STRIP, '')",
+          "replace": ".replace(preserveBidi ? STRIP_FRAMES : STRIP, '').replace(/�/g, '')"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-063",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "  footnoteBacklink: 'Back to reference',",
+          "replace": "  footnoteBacklink: 'Back to ref',"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9R-001",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "if (!def && label === null) {",
+          "replace": "if (!def) {"
+        }
+      ],
+      "note": "survives; differs on: # Intro\\n\\n[Intro][nothing]"
+    },
+    {
+      "rule": "CARVE-P9R-002",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "inner.push(lines[i].startsWith(LAZY) ? lines[i] : lazyFrame(ind(i).rest))",
+          "replace": "inner.push(lines[i].startsWith(LAZY) ? lines[i] : ind(i).rest)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9R-004",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "  html = resolveRefs(html, ctx)\n  html = resolveFootnotes(html, ctx)\n",
+          "replace": "  html = resolveFootnotes(html, ctx)\n  html = resolveRefs(html, ctx)\n"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9R-005",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const text = hit.html.replace(/\u005cuE000[\\s\\S]*?\u005cuE001/g, '')",
+          "replace": "const text = stripTags(hit.html.replace(/\u005cuE000[\\s\\S]*?\u005cuE001/g, ''))"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9R-006",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "return textOnly ? text : `<a href=\"#${hit.id}\">${text}</a>`",
+          "replace": "return textOnly ? stripTags(text) : `<a href=\"#${hit.id}\">${text}</a>`"
+        }
+      ],
+      "note": "survives; differs on: # *H*\\n\\n[see </#H>](/u)"
+    },
+    {
+      "rule": "CARVE-P9R-007",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "return IMG_ONLY.test(image) ? image : null",
+          "replace": "return null"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9R-010",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "return labelKey(stripTags(text)).normalize('NFC')",
+          "replace": "return labelKey(stripTags(text)).normalize('NFC').toLowerCase()"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-001",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "return `${open}\\n\\n${pad2}${closeTag}`",
+          "replace": "return `${open}\\n${pad2}${closeTag}`"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-002",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "if (headCount > 0) section('thead', 0, headCount)",
+          "replace": "if (headCount > 0) out.push(`${pad}  <thead>${rows.slice(0, headCount).map((row, r) => renderRow(row, r)).join('')}</thead>`)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-003",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "if (name && SEMANTIC_SPAN_ORDER.includes(name)) semantic.set",
+          "replace": "if (false) semantic.set"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-004",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "const own = name === outermost ? [...mapped, ...rest] : mapped",
+          "replace": "const own = name === outermost ? [...rest, ...mapped] : mapped"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-005",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "const own = name === outermost ? [...mapped, ...rest] : mapped",
+          "replace": "const own = name === outermost ? mapped : mapped"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-006",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "const SEMANTIC_SPAN_ORDER = ['abbr', 'time', 'kbd']",
+          "replace": "const SEMANTIC_SPAN_ORDER = ['abbr', 'time', 'kbd', 'mark']"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-007",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "const SEMANTIC_SPAN_ORDER = ['abbr', 'time', 'kbd']",
+          "replace": "const SEMANTIC_SPAN_ORDER = ['abbr', 'time', 'kbd', 'samp']"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-008",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "    const semantic = new Set()\n",
+          "replace": "    const semantic = new Set(['samp', 'var', 'cite', 'dfn'])\n"
+        }
+      ],
+      "note": "survives; differs on: :samp[x]"
+    },
+    {
+      "rule": "CARVE-P10-009",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const taskState = item.taskState ?? (list.task && item.checked ? 'x' : undefined)",
+          "replace": "const taskState = item.taskState"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P12-039",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (!col || col.align !== null) return",
+          "replace": "if (!col) return"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P12-040",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const vertical = verticalMark !== undefined && '^~v'.includes(verticalMark)",
+          "replace": "const vertical = false && verticalMark !== undefined && '^~v'.includes(verticalMark)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-077",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const noBlocks = body.every((b) => rendersNoElement(b))",
+          "replace": "const noBlocks = body.length === 0"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-011",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "attrStr = ` class=\"${escapeAttr([...baseCls, ...extra].join(' '))}\"` +\n          (tag === 'div' ? renderTextBlockAttrs(rest, tag) : renderBlockAttrs(rest))",
+          "replace": "attrStr = (tag === 'div' ? renderTextBlockAttrs(rest, tag) : renderBlockAttrs(rest)) +\n          ` class=\"${escapeAttr([...baseCls, ...extra].join(' '))}\"`"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-012",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "return b.format === 'html' ? pad + rawPassthrough(b.text) : null",
+          "replace": "return b.format === 'html' ? (b.text === '' ? null : pad + rawPassthrough(b.text)) : null"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P10-014",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "if (list.ord.delim === ')') structural +=",
+          "replace": "if (false) structural +="
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-023",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "else if (/^<\\//.test(piece) || /^<img\\b/i.test(piece)) prev = 'x'",
+          "replace": "else if (/^<img\\b/i.test(piece)) prev = 'x'"
+        }
+      ],
+      "note": "survives; differs on: [—]{.c}\"q\""
+    },
+    {
+      "rule": "CARVE-P3-024",
+      "edits": [
+        {
+          "file": "resources/carve-core.ohm",
+          "find": "| \" \"* -- empty",
+          "replace": "| (\" \" | \"\\t\")* -- empty"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-025",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "if (extendsGrapheme(src, t.at + 1)) {\n    t.canOpen",
+          "replace": "if (false) {\n    t.canOpen"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-026",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "const inner = renderInline(content.sourceString, '[')\n    // PART 10 §9",
+          "replace": "const inner = escapeHtml(content.sourceString)\n    // PART 10 §9"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P3-027",
+      "edits": [
+        {
+          "file": "scripts/spec/render.mjs",
+          "find": "`<span class=\"mention\"><strong>@${",
+          "replace": "`<span class=\"mention\">@<strong>${"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-080",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const cap = children.length > 0 ? captionSlot(i) : null",
+          "replace": "const cap = captionSlot(i)"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-081",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "const bare = list.tight && pattrs === ''",
+          "replace": "const bare = list.tight"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-082",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "  if (cells.length === 0) return null // T2: a lone `|` has no cell slot",
+          "replace": "  if (cells.every((c) => trimWs(c) === '')) return null"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-083",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "markerWidth: m[2].length + (m[5] !== undefined ? 1 : whitespaceWidth),",
+          "replace": "markerWidth: m[2].length + (m[3] ?? '').length + (m[5] !== undefined ? 1 : whitespaceWidth),"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-084",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (closeLen === top.length) {",
+          "replace": "if (closeLen >= top.length) {"
+        }
+      ]
+    }
+  ],
+  "unmapped": {
+    "CARVE-P0-003": "frame record is the whole layout; implemented, but no single targeted site found within the time box (layout-transitions.json is not editable)",
+    "CARVE-P0-015": "implemented in the item collector; no targeted mutation found within the time box",
+    "CARVE-P0-019": "implemented via per-quote host ladders; no targeted mutation found within the time box",
+    "CARVE-P0-020": "implemented; two candidate mutations (leavesParagraphOpen reach, reachesDefinitionSite) survived and no differing input was found in the time box",
+    "CARVE-P2-029": "Markdown importer behavior; the model has no importer",
+    "CARVE-P2-030": "Markdown importer frontmatter decision; the model has no importer",
+    "CARVE-P2-031": "Markdown importer fragment rewriting; the model has no importer",
+    "CARVE-P2-032": "Markdown importer reference handling; the model has no importer",
+    "CARVE-P2-033": "Markdown importer GitHub-alert conversion; the model has no importer",
+    "CARVE-P2-018": "implemented through the shared P0 S3 machinery for definition bodies; no targeted site found within the time box",
+    "CARVE-P2-024": "render-loss reporting (losses/totalLosses result of a checked renderer); the model renderer has no loss channel",
+    "CARVE-P4-008": "djot importer behavior; the model has no importer",
+    "CARVE-P9-070": "social link resolution is host resolver configuration; the model has no mention/tag resolver hook",
+    "CARVE-P9-071": "media type and .crv file extension are transport/tooling facts with no model code",
+    "CARVE-P9-009": "lint diagnostic id (table-marker-run-padding); the model emits no diagnostics",
+    "CARVE-P9-011": "optional host smartTypography switch; the model does not offer it (omitting is conformant), so no code to mutate",
+    "CARVE-P9-074": "Markdown importer behavior (checkbox vs reference); the model has no importer",
+    "CARVE-P9-078": "canonical writer refuse arm past the cap; the model has no canonical writer",
+    "CARVE-P9-038": "HTML importer behavior; the spec model has no importer",
+    "CARVE-P9-057": "render-ceiling refusal applies only to API-built trees; parsed trees cannot reach it and the model has no such check",
+    "CARVE-P9-064": "extension-contributed labels keys (indexBackref, tabsGroup, codeGroup, tocNav); the core model renders no extensions",
+    "CARVE-P9-065": "HTML importer drop of derived attributes; the spec model has no importer",
+    "CARVE-P9-066": "HTML importer reconstructability test and endnotes unwrapping; the spec model has no importer",
+    "CARVE-P9R-003": "extension block-matcher coordinates; the model has no extension matcher API",
+    "CARVE-P9R-008": "unanswerable probe for unrecognized/extension constructs; the model has no probe or extension matchers",
+    "CARVE-P9R-009": "direct numbering of labeled display math (math.label/number); the model has no equation-label numbering",
+    "CARVE-P10-010": "directive (toc/glossary/index) generated-content indentation; the model refuses ::: toc and renders no generated directive content",
+    "CARVE-P12-009": "consumer obligation on serialized AST hrefs; the model's denylist is P9-054 at its own render",
+    "CARVE-P12-032": "source-layout AST sidecar; the model emits HTML only, no sidecar",
+    "CARVE-P12-033": "AST shortCaption field is interchange-only; no Carve source or model code produces it",
+    "CARVE-P12-034": "AST rowGroups field is interchange-only; no model code produces it",
+    "CARVE-P12-036": "figure wrapping a table is unspellable in Carve source; model has no such tree",
+    "CARVE-P12-037": "citation_definition AST node (Tier-2 citations); not in the core model's HTML path",
+    "CARVE-P12-038": "citation item AST pos (Tier-2 citations); not in the core model's HTML path",
+    "CARVE-P9-076": "toc placement extension; the model refuses ::: toc (layout.mjs Refuse) so has no code for it",
+    "CARVE-P10-013": "raw block escaped under a safe policy; the model has no raw-escape policy (html raw passes through, others drop)",
+    "CARVE-P10-015": "roundtrip export carriers; the model has no roundtrip option",
+    "CARVE-P10-016": "roundtrip carrier inventory; the model has no roundtrip option",
+    "CARVE-P10-017": "export vs import mode separation; import/security behavior the model does not implement",
+    "CARVE-P10-019": "roundtrip export drops reserved authored names and reports loss; no roundtrip option or render-loss reporting in the model",
+    "CARVE-P10-020": "HTML importer alias data-djot-; the model has no HTML importer",
+    "CARVE-P10-021": "HTML import consumption of carriers; the model has no HTML importer"
+  }
+}

@@ -263,6 +263,7 @@ export default defineConfig({
               items: [
                 { text: 'Technical Rationale', link: '/technical-rationale' },
                 { text: 'Development', link: '/development' },
+                { text: 'Rule Coverage', link: '/rule-coverage' },
                 { text: 'Formal Grammar', link: '/grammar' },
               {
                 text: 'Specification Rules',
