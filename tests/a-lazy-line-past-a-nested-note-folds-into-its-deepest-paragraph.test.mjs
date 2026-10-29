@@ -54,3 +54,30 @@ test('a lone plus on a note marker line still attaches a column-zero block', () 
   const out = html(['[^a]: +', '- a list', '', 'see[^a]'])
   assert.match(out, /^<ul>\n  <li>a list<\/li>/)
 })
+
+// A note's first-block `+` takes a non-list block at document column zero or
+// at its own marker column; any other column refuses it, and the `+` stays
+// text the follower folds into (CARVE-P9-067, carve#3928).
+const noteBody = (out) => out.slice(out.indexOf('<li id="fn1">'))
+for (const [name, lines, attached] of [
+  ['an item, follower at column zero', ['- x', '  [^b]: +', 'after'], true],
+  ['an item, follower at the marker column', ['- x', '  [^b]: +', '  after'], true],
+  ['an item, follower at column one', ['- x', '  [^b]: +', ' after'], false],
+  ['a quote, follower at column zero', ['> [^b]: +', 'after'], true],
+  ['a quote, follower at the marker column', ['> [^b]: +', '  after'], true],
+  ['a quote, follower at column one', ['> [^b]: +', ' after'], false],
+  ['a quote, heading at column zero', ['> [^b]: +', '# after'], true],
+  ['an ordered item, follower at column zero', ['1. x', '   [^b]: +', 'after'], true],
+  ['a description, follower at column zero', [':: t', ': [^b]: +', 'after'], true],
+]) {
+  test(`a note's first-block plus in ${name} ${attached ? 'attaches' : 'is refused'}`, () => {
+    const out = html([...lines, '', 'r[^b]'])
+    assert.equal(/<p>\+/.test(noteBody(out)), !attached, out)
+    assert.match(noteBody(out), /after/)
+  })
+}
+
+test('a stacked note plus takes a column-zero follower and refuses column one', () => {
+  assert.doesNotMatch(noteBody(html(['- [^b]: +', 'after', '', 'r[^b]'])), /<p>\+/)
+  assert.match(noteBody(html(['- [^b]: +', ' after', '', 'r[^b]'])), /<p>\+\nafter/)
+})

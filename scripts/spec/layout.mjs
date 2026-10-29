@@ -2719,6 +2719,8 @@ function ownLines(lines) {
   const textFences = []
   // The line after an accepted `+` keeps its column: the marker reads it.
   let afterPlus = false
+  // Lines moved to a note's marker column for its first-block `+`.
+  const replaced = new Set()
   let start = 0
   if (lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
     const close = lines.findIndex((line, k) => k > 0 && /^---[ \t]*$/.test(line))
@@ -2803,6 +2805,22 @@ function ownLines(lines) {
     if (inner.kind === 'fence') frames.pop()
     let owner = frames[reached]
     const form = classify(m.rest, owner, at, m.col)
+    // A note's first-block `+` takes a non-list block at document column zero
+    // as at its marker column (CARVE-P9-067): read the line again there.
+    const plusNote = top().kind === 'note' && top().plus === at - 1 ? top() : null
+    const docCol = plusNote ? docColumn(lines[at], m.rest) : -1
+    // Stacked on an item's marker line, the `+` already reads column zero there.
+    const host = plusNote ? frames[frames.length - 2] : null
+    if (plusNote && !(host.kind !== 'quote' && host.line === plusNote.line) && missed && m.rest !== '' && docCol === 0 && form.kind !== 'item' && !CONT_MARKER.test(m.rest) && !replaced.has(at)) {
+      replaced.add(at)
+      let prefix = out
+      for (let k = reached + 1; k < frames.length; k++) {
+        if (frames[k].kind === 'quote') prefix += ' '.repeat(frames[k - 1].reader ?? frames[k - 1].canon) + '> '
+      }
+      lines[at] = prefix + ' '.repeat(plusNote.reader - FOOTNOTE_BODY_COLUMN) + m.rest
+      at--
+      continue
+    }
     // Past a missed note a marker opens where an item or a description body
     // owns it (§10 I2), or beside a missed list.
     const missedNote = missed && frames.slice(reached + 1).some((f) => f.kind === 'note')
@@ -2812,10 +2830,11 @@ function ownLines(lines) {
       // Step 4: a lazy line, read as text where it stands, and still short of
       // the frame it missed. Past a missed note it is framed LAZY in the
       // deepest container, so every reader folds it there (carve#3885).
-      if (missedNote && top().plus !== at - 1) {
+      // A refused `+` stays a line of text the follower folds into (CARVE-P9-067).
+      if (missedNote && (top().plus !== at - 1 || (plusNote && docCol !== 0 && docCol !== plusNote.docMarker))) {
         lead(0)
         for (let k = reached + 1; k < frames.length; k++) {
-          if (frames[k].kind === 'quote') out += ' '.repeat(frames[k - 1].canon) + '> '
+          if (frames[k].kind === 'quote') out += ' '.repeat(frames[k - 1].reader ?? frames[k - 1].canon) + '> '
         }
         const leaf = top()
         result.push(out + ' '.repeat(leaf.kind === 'quote' ? 0 : leaf.reader) + LAZY + src)
@@ -2879,6 +2898,7 @@ function ownLines(lines) {
       }
       if (form.kind === 'item' || form.kind === 'note' || form.kind === 'dd') {
         const frame = { kind: form.kind, col: col + form.width, canon: canon + form.width, reader: reader + form.width,
+          docMarker: docColumn(lines[at], src), line: at,
           cut: col - canon, para: false, last: null, markerCol: col, markerCanon: canon, axes: form.axes }
         frames.push(frame)
         take(form.head)
@@ -2912,6 +2932,13 @@ function ownLines(lines) {
     }
   }
   return frameTextFences(result, textFences)
+
+  // The document column where `rest`, a suffix of `line`, starts.
+  function docColumn(line, rest) {
+    let col = 0
+    for (const ch of line.slice(0, line.length - rest.length)) col = ch === '\t' ? (Math.floor(col / 4) + 1) * 4 : col + 1
+    return col
+  }
 
   // Whether line `next` holds a block at `col` under `depth` quote levels.
   function attachesAt(next, col, depth) {
