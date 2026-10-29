@@ -1,0 +1,31 @@
+A block glued to a combined closer inside a braced emphasis span
+
+```
+{/a /*b*/{.k} c/}
+.
+<p><em>a <strong class="k"><em>b</em></strong> c</em></p>
+```
+
+```
+{/a /*b*/{.k}{#i}/}
+.
+<p><em>a <strong class="k" id="i"><em>b</em></strong></em></p>
+```
+
+```
+*x {/a /*b*/{k="v w"} c/}
+.
+<p>*x <em>a <strong k="v w"><em>b</em></strong> c</em></p>
+```
+
+```
+{*x {/a /*b*/{.k} c/} y*}
+.
+<p><strong>x <em>a <strong class="k"><em>b</em></strong> c</em> y</strong></p>
+```
+
+```
+{/a /*b */{.k} c/}
+.
+<p><em>a /*b */{.k} c</em></p>
+```

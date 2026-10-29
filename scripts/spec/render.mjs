@@ -1106,15 +1106,19 @@ function buildToks(children, literalDelims = '') {
   // Each token knows its child, so a split combined token can drop the
   // siblings its leading block swallowed.
   let cur = 0
+  // The block glued to a held `/`, while its children are being read.
+  let held = null
   const push = (...ts) => {
     for (const t of ts) t.ci = cur
     toks.push(...ts)
+    if (held) held.blockTo = toks.length
   }
   // A comment cut at a `*/`, and where the line it would run to ends.
   let comment = null
   for (let ci = 0; ci < children.length; ci++) {
     cur = ci
     const c = children[ci]
+    if (held && c.source.startIdx >= held.blockEnd) held = null
     if (comment && c.source.startIdx >= comment.lineEnd) {
       comment.tok.tailEnd = toks.length
       comment = null
@@ -1244,6 +1248,24 @@ function buildToks(children, literalDelims = '') {
       }
       continue
     }
+    // A held `/` with a block glued to it is no `litDelim` (carve#3939), but it
+    // can end a combined closer, and R3 attaches the block to that span.
+    if (marker.ctorName === 'anyChar' && alt.sourceString === '/' && literalDelims.includes('/')) {
+      const at = alt.source.startIdx
+      push(ownCombined('/', at, literalDelims))
+      const blockEnd = heldAttrsEnd(alt.source.sourceString, at + 1, children.at(-1).source.endIdx)
+      if (blockEnd !== -1) {
+        const block = { k: 'attrs', at: at + 1, h: '', heldBlock: true, blockEnd }
+        block.node = {
+          source: { endIdx: blockEnd },
+          parseAttrs: () => attrSem(g.match(alt.source.sourceString.slice(at + 1, blockEnd), 'attrRun')).parseAttrs(),
+        }
+        push(block)
+        block.blockFrom = block.blockTo = toks.length
+        held = block
+      }
+      continue
+    }
     const boundary = ['rawInline', 'litInline', 'shortcode'].includes(marker.ctorName)
       ? `\uE000quote-boundary:${quoteRun.key}\uE001` : ''
     const t = { k: 't', h: c.h() + boundary }
@@ -1252,6 +1274,57 @@ function buildToks(children, literalDelims = '') {
   }
   if (comment) comment.tok.tailEnd = toks.length
   return toks
+}
+
+// The end of the glued `looseAttrs` run at `at` within `limit`, or -1. A lexical pass bounds
+// each block before Ohm confirms it, so the scan never reaches past a block
+// that cannot be one; a bare value is skipped through `bareStops` in one step.
+let bareStops = { source: null, next: null }
+function heldAttrsEnd(src, at, limit) {
+  if (bareStops.source !== src) {
+    const next = new Int32Array(src.length + 1).fill(src.length)
+    for (let i = src.length - 1; i >= 0; i--) next[i] = ' \t}|"\'\\\n\r'.includes(src[i]) ? i : next[i + 1]
+    bareStops = { source: src, next }
+  }
+  const ident = (i) => {
+    while (/[A-Za-z0-9_-]/.test(src[i] ?? '')) i++
+    return i
+  }
+  const block = (i) => {
+    i++
+    while (src[i] === ' ') i++
+    for (let first = true; ; first = false) {
+      if (src[i] === '}' && !first) return i + 1
+      if (!first) {
+        if (src[i] !== ' ') return -1
+        while (src[i] === ' ') i++
+        if (src[i] === '}') return i + 1
+      }
+      const c = src[i]
+      if (c === '#' || c === '.' || c === ':') {
+        i = ident(i + 1)
+        continue
+      }
+      if (!/[A-Za-z_]/.test(c ?? '')) return -1
+      i = ident(i)
+      if (src[i] !== '=') continue
+      const q = src[++i]
+      if (q === '"' || q === "'") {
+        for (i++; src[i] !== q; i++) {
+          if (src[i] === undefined || src[i] === '\n' || src[i] === '\r') return -1
+          if (src[i] === '\\') i++
+        }
+        i++
+      } else i = bareStops.next[i]
+    }
+  }
+  let end = -1
+  for (let i = at; src[i] === '{'; ) {
+    const e = block(i)
+    if (e === -1 || e > limit || g.match(src.slice(i, e), 'attrs').failed()) break
+    end = i = e
+  }
+  return end
 }
 
 // An own-kind `/` or `*` is text, but it can still be half of a combined
@@ -1461,6 +1534,9 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
     if (delimAt(k, '/') && delimAt(k + 1, '*') && toks[k + 1].at === toks[k].at + 1 && !isAlnum(src[toks[k].at - 1]) &&
       !isWs(src[toks[k].at + 2]) && !extendsGrapheme(src, toks[k].at + 2) && nextCloser[k + 2] !== -1) shapeCloses.add(nextCloser[k + 2])
   }
+  const hideBlock = (block, hidden) => {
+    for (let b = block.blockFrom; b < block.blockTo; b++) toks[b].hidden = hidden
+  }
   // A combined entry counts as both `/` and `*`.
   const holds = (oi, d) => toks[oi].ch === d || (toks[oi].combined !== undefined && (d === '/' || d === '*'))
   for (let j = 0; j < toks.length; j++) {
@@ -1479,7 +1555,7 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
       for (let k = j + 1; k < end; k++) toks[k].dead = true
       continue
     }
-    if (t.dead || (t.k !== 'd' && t.own === undefined)) continue
+    if (t.dead || t.hidden || (t.k !== 'd' && t.own === undefined)) continue
     const d = t.k === 'd' ? t.ch : t.own
     // THE COMBINED TOKEN: an opener with a closer token ahead in its region
     // pushes one entry; without one its `/` and `*` are two bare candidates.
@@ -1523,6 +1599,7 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
           opener.combined = undefined
           opener.bare = true
           for (const key of [...openMap.keys()]) if (key >= dropped) openMap.delete(key)
+          for (let b = dropped; b < j + 3 && b < toks.length; b++) if (toks[b].heldBlock) hideBlock(toks[b], false)
           j = dropped - 1
           continue
         }
@@ -1535,6 +1612,8 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
           openMap.set(openers[k], j + 1)
           openMap.set(openers[k] + 1, j)
           entry.combinedSpan = true
+          // The block glued to the closer belongs to the span, not the stack.
+          if (toks[j + 2]?.heldBlock && toks[j + 2].at === toks[j + 1].at + 1) hideBlock(toks[j + 2], true)
           openers.length = k
           j++
           continue
@@ -1600,7 +1679,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
     let i = lo
     while (i < hi) {
       const t = toks[i]
-      if (t.dead) {
+      if (t.dead || t.hidden) {
         i++
         continue
       }
@@ -1643,7 +1722,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
         // what is inside them (carve#2084). renderInlineInner re-reads the text
         // with this brace escaped, which is the same document and puts the
         // block's characters back into the surrounding inline stream.
-        if (!consumed.has(i)) {
+        if (!consumed.has(i) && !t.heldBlock) {
           const marker = toks[i - 1]
           const literalMarker = t.heldMarker || (marker?.k === 'd' && !openMap.has(i - 1) && !closers.has(i - 1))
           unattachedAttrs.push({ at: t.at, end: t.node.source.endIdx, literalMarker: literalMarker && t.markerAt + 1 === t.at, markerChar: t.markerChar, provisional: marker?.k === 'd' && tentative.has(marker.at) })
