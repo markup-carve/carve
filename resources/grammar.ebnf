@@ -11198,6 +11198,14 @@ EOF = (* end of file *) ;
    the GFM pipe table and its caption as a paragraph, with
    `markdown-caption-flattened`, exactly as for the authored CSV table. It does
    not write the source `^ ` caption line literally.
+   A promoted image (PART 9R R7) reports `markdown-attributes-dropped` only
+   for an authored block attribute run merged into it, as in
+   `{.outer k=one}` above `![a](b){.inner k=two}`. Attributes glued to the
+   image follow the inline rule and report no loss, exactly as for the same
+   image mid-paragraph: `![alt](img.png){.x}` alone on its line reports
+   none. The loss follows the construct the author wrote, not how it
+   renders. The shared AST keeps the merged set on the inline image, so an
+   AST-only renderer sees no block run and reports none.
    A code fence title dropped because the fence has no language reports
    `fence-title-dropped` with message
    `Dropped a code fence title without a language in Markdown`.
