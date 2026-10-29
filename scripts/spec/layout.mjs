@@ -2939,7 +2939,8 @@ function ownLines(lines, trace = null) {
     const interruptsPlus = plusNote && form.kind === 'item'
     if (missed && m.rest !== '' && top().para && !form.interrupts && !interruptsPlus &&
         !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes) &&
-        !(missedNote && form.kind === 'item' && (owner.kind === 'item' || owner.kind === 'dd' || frames.slice(reached + 1).some((f) => f.kind === 'item')))) {
+        !(missedNote && form.kind === 'item' && (owner.kind === 'item' || owner.kind === 'dd' || frames.slice(reached + 1).some((f) => f.kind === 'item'))) &&
+        !(missedNote && form.kind === 'dd' && m.col - owner.cut === owner.canon)) {
       // Step 4: a lazy line, read as text where it stands, and still short of
       // the frame it missed. Past a missed note it is framed LAZY in the
       // deepest container, so every reader folds it there (carve#3885).
