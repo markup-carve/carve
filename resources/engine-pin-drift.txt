@@ -55,6 +55,9 @@
 763-a-note-claimed-fence-line-keeps-the-item-loose  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
 763-a-note-claimed-fence-line-keeps-the-item-loose-2  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
 763-a-note-claimed-fence-line-keeps-the-item-loose-3  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
+767-a-literal-bracket-run-bounds-emphasis-like-a-resolved-one  Pinned JavaScript keeps a same-kind pair literal inside a literal bracket run under an open span; markup-carve/carve-js#3887.
+767-a-literal-bracket-run-bounds-emphasis-like-a-resolved-one-2  Pinned JavaScript keeps a same-kind pair literal inside a literal bracket run under an open span; markup-carve/carve-js#3887.
+767-a-literal-bracket-run-bounds-emphasis-like-a-resolved-one-3  Pinned JavaScript keeps a same-kind pair literal inside a literal bracket run under an open span; markup-carve/carve-js#3887.
 05-lists-10  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 05-lists-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 103-heading-marker-column-zero  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
