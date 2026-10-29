@@ -516,7 +516,7 @@ const sem = g.createSemantics().addOperation('h', {
     // Build a flat token stream (leaf HTML fragments + bare-delimiter
     // candidates) and run the PART 9 SS9 delimiter-stack pass over it.
     return resolveEmphasis(
-      (blocked) => buildToks(items.children, '', blocked),
+      () => buildToks(items.children, ''),
       this.source.sourceString,
       '',
       this.source.startIdx,
@@ -549,16 +549,6 @@ const sem = g.createSemantics().addOperation('h', {
   codeRun: codeOp,
   codeU(_o, _r, content) {
     return unclosedCode(content)
-  },
-  fCodeU(_o, _r, content) {
-    return unclosedCode(content)
-  },
-  fPrefixU(prefix, run) {
-    const p = prefix.sourceString
-    const body = escapeHtml(run.child(2).sourceString.replace(hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/, ''))
-    if (p === '!') return body
-    const [o, c, kind] = p === '$' ? ['\\(', '\\)', 'inline'] : ['\\[', '\\]', 'display']
-    return `<span class="math ${kind}" role="math">${o}${body}${c}</span>`
   },
   nl(_n) {
     // A SOFT BREAK, and the only place one is visible AS a break. A newline
@@ -695,12 +685,6 @@ const sem = g.createSemantics().addOperation('h', {
       escapeHtml(glued.sourceString)
     )
   },
-  emptyForced(_open, _markers, _close) {
-    return escapeHtml(this.sourceString)
-  },
-  overlapForced(_open, _marker, _close) {
-    return escapeHtml(this.sourceString)
-  },
   forcedSpan(f) {
     return f.h()
   },
@@ -712,7 +696,7 @@ const sem = g.createSemantics().addOperation('h', {
     // delimiters resolve normally, but the forced delimiter X itself stays
     // literal inside (PART 9 SS22). Run the same SS9 stack, holding X literal.
     const body = resolveEmphasis(
-      (blocked) => buildToks(inner.children, dch, blocked),
+      () => buildToks(inner.children, dch),
       this.source.sourceString,
       dch,
       inner.source.startIdx,
@@ -1059,7 +1043,7 @@ function bareOpener(d, prev, next) {
   return !isWs(next) && next !== d
 }
 // A `_` (or a `/` before `/` or `_`) blocks the opener after it unless that
-// guard opens a span that closes, which only pairing decides (`pairGuarded`).
+// guard is an open entry on the stack where the opener stands (`pairDelims`).
 function guardedBy(d, prev) {
   return prev === '_' || ((d === '/' || d === '_') && prev === '/')
 }
@@ -1077,13 +1061,13 @@ function forcedUnder(alt) {
 
 // A blocked combined token as the delimiters it is made of. Its content keeps
 // the reading `biInner` gave it.
-function combinedInner(first, rest, literalDelims, blocked) {
+function combinedInner(first, rest, literalDelims) {
   const head = first.child(0)
   // Split, a leading `*/` is two delimiters like any other (carve#3941).
   const leading = head.ctorName === 'biCloser'
     ? [...head.sourceString].map((ch, k) => literalDelims.includes(ch) ? { k: 't', h: escapeHtml(ch) } : { k: 'd', ch, at: head.source.startIdx + k })
-    : buildToks([head], literalDelims, blocked)
-  return [...leading, ...buildToks(rest.children, literalDelims, blocked)]
+    : buildToks([head], literalDelims)
+  return [...leading, ...buildToks(rest.children, literalDelims)]
 }
 
 // The bare delimiters a combined token's content holds at its own level.
@@ -1115,7 +1099,7 @@ function looseAttrsAt(text, at) {
 
 // `siblings` are the inline nodes after the token: a block that runs past the
 // token's end (its `*/` was inside the block) takes them while they fit in it.
-function splitCombined(bi, literalDelims, blocked, siblings = []) {
+function splitCombined(bi, literalDelims, siblings = []) {
   const delim = (ch, at) => literalDelims.includes(ch) ? { k: 't', h: escapeHtml(ch) } : { k: 'd', ch, at }
   const open = bi.child(0).source.startIdx
   const close = bi.child(3).source.startIdx
@@ -1126,7 +1110,7 @@ function splitCombined(bi, literalDelims, blocked, siblings = []) {
     const rest = nodes.filter((n) => n.source.startIdx >= head.end)
     const fits = (n) => n.source.endIdx <= head.end || n.source.startIdx >= head.end
     if (head.end <= close && nodes.every(fits)) {
-      const inner = [head, ...buildToks(rest, literalDelims, blocked)]
+      const inner = [head, ...buildToks(rest, literalDelims)]
       return { toks: closeCombined(bi, delim, open, close, inner, literalDelims), skip: 0 }
     }
     let skip = 0
@@ -1135,7 +1119,7 @@ function splitCombined(bi, literalDelims, blocked, siblings = []) {
       return { toks: [delim('/', open), delim('*', open + 1), head], skip }
     }
   }
-  const inner = combinedInner(bi.child(1), bi.child(2), literalDelims, blocked)
+  const inner = combinedInner(bi.child(1), bi.child(2), literalDelims)
   return { toks: closeCombined(bi, delim, open, close, inner, literalDelims), skip: 0 }
 }
 
@@ -1147,7 +1131,7 @@ function closeCombined(bi, delim, open, close, inner, literalDelims) {
 }
 
 // E1 CLASSIFY for one candidate.
-function classify(t, src, blocked) {
+function classify(t, src) {
   if (t.k !== 'd') return
   const prev = t.at > 0 ? src[t.at - 1] : undefined
   const next = src[t.at + 1]
@@ -1155,7 +1139,7 @@ function classify(t, src, blocked) {
     t.canOpen = t.canClose = false
     return
   }
-  t.canOpen = !t.closeOnly && !(blocked?.has(t.at) && !blocked.split?.has(t.at)) && !(t.ch === '=' && next === '>') && bareOpener(t.ch, prev, next)
+  t.canOpen = !t.closeOnly && !(t.ch === '=' && next === '>') && bareOpener(t.ch, prev, next)
   t.canClose = bareCloser(t.ch, prev, next)
 }
 
@@ -1164,15 +1148,23 @@ function classify(t, src, blocked) {
 // alternative renders to an HTML fragment now. `literalDelims` (the enclosing
 // span's own delimiters, if any) are held literal rather than made candidates:
 // one character for a forced span, both of `/*` for the combined token.
-function buildToks(children, literalDelims = '', blocked) {
+function buildToks(children, literalDelims = '') {
   const toks = []
+  // Each token knows its child, so a split combined token can drop the
+  // siblings its leading block swallowed.
+  let cur = 0
+  const push = (...ts) => {
+    for (const t of ts) t.ci = cur
+    toks.push(...ts)
+  }
   for (let ci = 0; ci < children.length; ci++) {
+    cur = ci
     const c = children[ci]
     const alt = c.child(0)
     const name = alt.ctorName
     const forcedNode = forcedUnder(alt)
     if (forcedNode && STACK_DELIMS.has(forcedNode.child(1).sourceString)) {
-      toks.push({
+      push({
         k: 'f',
         ch: forcedNode.child(1).sourceString,
         node: forcedNode,
@@ -1181,34 +1173,38 @@ function buildToks(children, literalDelims = '', blocked) {
       continue
     }
     if (name === 'span') {
-      // A `_` or `/` before the combined token blocks its opener unless it
-      // opens a span that closes, which only pairing decides (carve#3226).
-      // `pairGuarded` blocks it, and the rebuild reads its delimiters singly.
+      // Whether the combined token stays one token is decided on the stack
+      // where it stands (`pairDelims`); `split` reads its delimiters singly.
+      // It renders only if it stays whole, so a split one reports no block.
       const bi = alt.child(0)
       const at = alt.source.startIdx
-      if (blocked?.has(at)) {
-        const split = splitCombined(bi, literalDelims, blocked, children.slice(ci + 1))
-        toks.push(...split.toks)
-        ci += split.skip
-      } else {
-        const saved = heldDelims
-        heldDelims = literalDelims
-        let h
-        try {
-          h = c.h()
-        } finally {
-          heldDelims = saved
-        }
-        toks.push({ k: 't', h, combinedAt: at, closeAt: bi.child(3).source.startIdx + 1, delims: contentDelims(bi) })
-      }
+      const siblings = children.slice(ci + 1)
+      let h
+      push({
+        k: 't',
+        get h() {
+          if (h !== undefined) return h
+          const saved = heldDelims
+          heldDelims = literalDelims
+          try {
+            return (h = c.h())
+          } finally {
+            heldDelims = saved
+          }
+        },
+        combinedAt: at,
+        closeAt: bi.child(3).source.startIdx + 1,
+        delims: contentDelims(bi),
+        split: () => splitCombined(bi, literalDelims, siblings),
+      })
       continue
     }
     if (name === 'wordSlash') {
       // The word, mention or tag goes through this same loop on its own.
       const head = alt.child(0)
-      toks.push(...buildToks([{ child: () => head, h: () => head.h() }], literalDelims, blocked))
+      push(...buildToks([{ child: () => head, h: () => head.h() }], literalDelims))
       const slash = alt.child(1)
-      toks.push(literalDelims.includes('/')
+      push(literalDelims.includes('/')
         ? { k: 't', h: '/' }
         : { k: 'd', ch: '/', at: slash.source.startIdx })
       continue
@@ -1217,14 +1213,14 @@ function buildToks(children, literalDelims = '', blocked) {
       const ch = alt.child(0).sourceString
       // Only / * _ ~ = are stack candidates; ^ and , have no bare span.
       if (STACK_DELIMS.has(ch) && !literalDelims.includes(ch)) {
-        toks.push({ k: 'd', ch, at: alt.source.startIdx })
+        push({ k: 'd', ch, at: alt.source.startIdx })
       } else {
-        toks.push({ k: 't', h: escapeHtml(ch) })
+        push({ k: 't', h: escapeHtml(ch) })
       }
       const loose = alt.child(1).children[0]
       if (loose) {
         // Attaches to the span this delimiter closes; otherwise its literal fallback.
-        toks.push({ k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h(), heldMarker: literalDelims.includes(ch), markerAt: alt.source.startIdx, markerChar: ch })
+        push({ k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h(), heldMarker: literalDelims.includes(ch), markerAt: alt.source.startIdx, markerChar: ch })
       }
       continue
     }
@@ -1237,7 +1233,7 @@ function buildToks(children, literalDelims = '', blocked) {
     if (marker.ctorName === 'delimRun') {
       for (let offset = 0; offset < marker.sourceString.length; offset++) {
         const ch = marker.sourceString[offset]
-        toks.push(STACK_DELIMS.has(ch) && !literalDelims.includes(ch)
+        push(STACK_DELIMS.has(ch) && !literalDelims.includes(ch)
           ? { k: 'd', ch, at: marker.source.startIdx + offset }
           : { k: 't', h: escapeHtml(ch) })
       }
@@ -1245,18 +1241,18 @@ function buildToks(children, literalDelims = '', blocked) {
     }
     if (QUOTE_RULES.has(marker.ctorName)) {
       const h = c.h()
-      toks.push({ k: 't', h, quote: { at: marker.source.startIdx, record: quoteRun.records.at(-1) } })
+      push({ k: 't', h, quote: { at: marker.source.startIdx, record: quoteRun.records.at(-1) } })
       continue
     }
     // An escaped quote renders straight and is what the next quote reads.
     if (marker.ctorName === 'escape' && QUOTE_CHARS.has(marker.child(1).sourceString)) {
-      toks.push({ k: 't', h: c.h(), straight: marker.child(1).sourceString })
+      push({ k: 't', h: c.h(), straight: marker.child(1).sourceString })
       continue
     }
     if (MARKER_RULES.has(marker.ctorName)) {
       const at = marker.source.startIdx
       const t = { k: 't', h: c.h(), at, raw: marker.sourceString, full: marker.sourceString }
-      toks.push(t)
+      push(t)
       if (NAME_RULES.has(marker.ctorName)) {
         // The name's own `_` characters, plus the one `tagChar` gave up so a
         // forced underline could close (`{_@ex_}`), reach the stack as
@@ -1267,12 +1263,12 @@ function buildToks(children, literalDelims = '', blocked) {
         if (tail) ci++
         t.cuts = nameCuts(t, tail)
         for (const cut of t.cuts) {
-          toks.push(cut)
+          push(cut)
           // The borrowed delimiter keeps its trailing attribute block, which
           // attaches to whatever it closes.
           const loose = cut.loose
-          if (loose) toks.push({ k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h() })
-          toks.push(cut.seg)
+          if (loose) push({ k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h() })
+          push(cut.seg)
         }
       }
       continue
@@ -1281,7 +1277,7 @@ function buildToks(children, literalDelims = '', blocked) {
       ? `\uE000quote-boundary:${quoteRun.key}\uE001` : ''
     const t = { k: 't', h: c.h() + boundary }
     if (alt.sourceString === '{') t.braceAt = alt.source.startIdx
-    toks.push(t)
+    push(t)
   }
   return toks
 }
@@ -1396,13 +1392,17 @@ let attachedAttrs = null
 // index`. Split out because the caption `#` placeholder asks the same question
 // the renderer does -- which offsets sit inside a span -- over a stream that
 // carries positions instead of HTML.
-function pairDelims(toks, src, literalDelims = '', blocked) {
+function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
   // E1 CLASSIFY: evaluate bare_opener(d) / bare_closer(d) at each candidate.
-  for (const t of toks) classify(t, src, blocked)
+  for (const t of toks) classify(t, src)
   // One pass with a delimiter stack. `openers` holds indices (into toks) of
   // still-open candidates, in source order. `openMap` records paired spans.
   const openers = []
   const openMap = new Map() // open index -> close index
+  // A `_` or `/` guard is markup only while it is an open entry where the
+  // opener after it stands, whether or not it closes later (carve#3973 X1).
+  const guarded = (j, ch, at) => at > contentAt && guardedBy(ch, src[at - 1]) &&
+    !(toks[j - 1]?.k === 'd' && toks[j - 1].at === at - 1 && openers.includes(j - 1))
   for (let j = 0; j < toks.length; j++) {
     const t = toks[j]
     if (t.k === 'f') {
@@ -1411,9 +1411,24 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
       continue
     }
     // The combined token holds an italic and a bold, so §9 E3 keeps it from
-    // opening while either is open (carve#3234); `pairGuarded` splits it.
+    // opening while either is open (carve#3234), and a blocking guard keeps
+    // its `/` from opening: both read its delimiters singly.
     if (t.combinedAt !== undefined) {
-      t.guardOpeners = openers.slice()
+      const nested = openers.some((oi) => {
+        const ch = toks[oi].ch
+        return ch === '/' || ch === '*' || t.delims.has(ch)
+      })
+      if (nested || guarded(j, '/', t.combinedAt)) {
+        const { toks: parts, skip } = t.split()
+        for (const part of parts) {
+          part.ci = t.ci
+          classify(part, src)
+        }
+        let end = j + 1
+        while (skip && end < toks.length && toks[end].ci > t.ci && toks[end].ci <= t.ci + skip) end++
+        toks.splice(j, end - j, ...parts)
+        j--
+      }
       continue
     }
     if (t.k !== 'd') continue
@@ -1431,82 +1446,19 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
       }
       if (k !== -1) {
         openMap.set(openers[k], j)
-        for (let s = k + 1; s < openers.length; s++) toks[openers[s]].demoted = true
         openers.length = k // demote the entries above the matched opener
         continue
       }
     }
     // E4 OPEN, subject to E3 (no same-type nesting): while a d-span is open,
     // a further d does not push -- it is literal content.
-    if (t.canOpen && !openers.some((oi) => toks[oi].ch === d)) {
+    if (t.canOpen && !guarded(j, d, t.at) && !openers.some((oi) => toks[oi].ch === d)) {
       openers.push(j)
       continue
     }
     // E1 / E5 literal: candidate left unpaired (rendered as its literal char).
   }
-  // An opener is open from where it stands, so a guarded one encloses the
-  // combined token whether or not its guard later closes (carve#3947).
-  for (const t of toks) {
-    if (t.combinedAt === undefined) continue
-    t.nested = t.guardOpeners.some((oi) => {
-      const ch = toks[oi].ch
-      return ch === '/' || ch === '*' || t.delims.has(ch)
-    })
-  }
   return openMap
-}
-
-// Pair, then block every opener whose guard did not open a span of its own,
-// and pair again. Blocking only removes openers, so the loop ends.
-// `tentative` holds the closers of the first round, where no opener is
-// blocked yet: a block behind any other delimiter can attach in no reading.
-function pairGuarded(build, src, literalDelims = '', contentAt = 0) {
-  // `split` holds the nested combined tokens: read singly, their `/` may
-  // still open.
-  const blocked = Object.assign(new Set(), { split: new Set() })
-  let tentative
-  // A pass that blocks an opener is discarded, so the blocks its eager renders
-  // reported unattached are dropped with it (carve#3939).
-  const reported = [unattachedAttrs?.length, pairedDelims?.length]
-  for (;;) {
-    if (unattachedAttrs) unattachedAttrs.length = reported[0]
-    if (pairedDelims) pairedDelims.length = reported[1]
-    const toks = build(blocked)
-    const openMap = pairDelims(toks, src, literalDelims, blocked)
-    tentative ??= new Set([
-      ...[...openMap.values()].map((i) => toks[i].at),
-      ...toks.filter((t) => t.closeAt !== undefined).map((t) => t.closeAt),
-    ])
-    const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
-    // Splitting a nested combined token shows the delimiters inside it, so
-    // those go first. A guard that a closer demoted may open once an opener
-    // left of it is blocked, so its block waits while any other is sure
-    // (carve#3941).
-    const nested = new Set(toks.filter((t) => t.nested).map((t) => t.combinedAt))
-    let batch = [...nested]
-    if (!batch.length) {
-      const demoted = new Set(toks.filter((t) => t.demoted).map((t) => t.at))
-      const due = []
-      for (const t of toks) {
-        const at = t.combinedAt
-        if (at !== undefined && at > contentAt && !opens.has(at - 1) && guardedBy('/', src[at - 1])) due.push(at)
-      }
-      for (const i of openMap.keys()) {
-        const t = toks[i]
-        if (t.at > contentAt && !opens.has(t.at - 1) && guardedBy(t.ch, src[t.at - 1])) due.push(t.at)
-      }
-      if (!due.length) return { toks, openMap, tentative }
-      batch = due.filter((at) => !demoted.has(at - 1))
-      if (!batch.length) batch = [Math.min(...due)]
-    }
-    for (const at of batch) {
-      if (blocked.has(at)) blocked.split.delete(at)
-      else {
-        blocked.add(at)
-        if (nested.has(at)) blocked.split.add(at)
-      }
-    }
-  }
 }
 
 // Pairing supplies the opening context of an emphasis span; quote state follows rendered order.
@@ -1527,7 +1479,12 @@ function applyQuotes(toks, openMap, src, contentAt, spanContent) {
 
 // `spanContent`: `contentAt` starts a braced or combined span's content.
 function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanContent = false) {
-  const { toks, openMap, tentative } = pairGuarded(build, src, literalDelims, contentAt)
+  const toks = build()
+  const openMap = pairDelims(toks, src, literalDelims, contentAt)
+  const tentative = new Set([
+    ...[...openMap.values()].map((i) => toks[i].at),
+    ...toks.filter((t) => t.closeAt !== undefined).map((t) => t.closeAt),
+  ])
   applyQuotes(toks, openMap, src, contentAt, spanContent)
   resolveNameRun(toks, openMap)
   applyMarkerBoundary(toks, openMap, src, contentAt)
@@ -2089,8 +2046,9 @@ function renderInlineInner(text) {
     // would pick next (carve#3936): the sure blocks, or when none is sure the
     // provisional ones. That is the same document unless an escape lets a later
     // member attach. A member that could is one glued to a closer that pairs
-    // once the batch is text and holding a delimiter of its own; the batch is
-    // then taken back and only its leftmost block escaped.
+    // once the batch is text and holding a delimiter of its own: those members
+    // are taken back and the rest read again. A block left unattached by that
+    // takes the whole batch back, and only its leftmost block is escaped.
     let batch = null
     const limit = 4 * (text.split('{').length + 1)
     for (let pass = 0; ; pass++) {
@@ -2100,11 +2058,17 @@ function renderInlineInner(text) {
         const paired = new Set(result.paired)
         const active = batch.members.filter((m) => m.active)
         const last = Math.max(...active.map((m) => m.at))
-        if (active.some((m) => paired.has(m.at - 1)) || offsets.some((o) => o.provisional ? batch.provisional && o.at < last : batch.provisional || o.at < last)) {
+        if (offsets.some((o) => o.provisional ? batch.provisional && o.at < last : batch.provisional || o.at < last)) {
           source = batch.source
           escapes.splice(0, escapes.length, ...batch.escapes)
           escape([batch.first])
           batch = null
+          continue
+        }
+        const glued = active.filter((m) => paired.has(m.at - 1))
+        if (glued.length) {
+          for (const m of glued.toReversed()) takeBack(m, batch.members)
+          batch.members = batch.members.filter((m) => !glued.includes(m))
           continue
         }
         batch = null
@@ -2133,6 +2097,16 @@ function renderInlineInner(text) {
     unattachedAttrs = saved
     pairedDelims = savedPaired
     attachedAttrs = savedAttached
+  }
+
+  // Undoes one batch member's escape.
+  function takeBack(member, members) {
+    const k = escapes.findIndex((e) => e.at === member.at)
+    const { at, len } = escapes[k]
+    source = source.slice(0, at) + source.slice(at + len)
+    escapes.splice(k, 1)
+    for (const e of escapes) if (e.at > at) { e.at -= len; e.end -= len }
+    for (const m of members) if (m.at > at) m.at -= len
   }
 
   // A literal delimiter cannot carry attributes. Preserve a following
@@ -2277,7 +2251,8 @@ const capSem = g.createSemantics().addOperation('capIdx', {
         const ch = alt.ctorName === 'litDelim' ? alt.child(0).sourceString : ''
         return STACK_DELIMS.has(ch) ? { k: 'd', ch, at } : { k: alt.ctorName, at }
       }).flat()
-    const { toks, openMap } = pairGuarded(build, this.source.sourceString)
+    const toks = build()
+    const openMap = pairDelims(toks, this.source.sourceString)
     for (let i = 0; i < toks.length; i++) {
       if (openMap.has(i)) {
         i = openMap.get(i)

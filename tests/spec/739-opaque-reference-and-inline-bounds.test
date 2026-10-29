@@ -34,15 +34,15 @@ see [m] here
 ```
 {+`{#+}#}
 .
-<p><ins><code>{#</code></ins>#}</p>
+<p>{+<code>{#+}#}</code></p>
 ```
 
 ```
 _*x
 /*b*/
 .
-<p>_*x
-<strong><em>b</em></strong></p>
+<p>_<strong>x
+/*b</strong>/</p>
 ```
 
 ```

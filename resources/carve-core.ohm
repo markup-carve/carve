@@ -178,7 +178,7 @@ CarveCore {
   inline     = wordSlash | word | spComment | bracedComment | inlineSpace
              | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
-             | editorial | bracedDash | emptyForced | forcedSpan | overlapForced
+             | editorial | bracedDash | forcedSpan
              | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escapedCrossref | escape | imageRef | image | bracketed
              | autolink | bang | dollar
              | ellipsis | dashRun | dot | dash | plus | pct | lt | gt
@@ -230,7 +230,7 @@ CarveCore {
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)
   rich       = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
-             | editorial | bracedDash | emptyForced | forcedSpan | overlapForced | mathD | mathI
+             | editorial | bracedDash | forcedSpan | mathD | mathI
              | litInline | codeA | escape | imageRef | image | bracketed | autolink | bang | dollar
              | ellipsis | dashRun | dquote | squote
              | dot | dash | plus | pct
@@ -344,9 +344,8 @@ CarveCore {
 
   // --- Forced intraword spans {X...X} (PART 9 SS22) and editorial markup.
   // A same-type delimiter inside a forced span is literal until the `X}`
-  // closer; other constructs nest normally.
-  emptyForced = "{" ("//" | "**" | "__" | "~~" | "^^" | ",," | "==") "}"
-  overlapForced = "{" ("/" | "*" | "_" | "~" | "^" | "," | "=") "}"
+  // closer; other constructs nest normally. A brace group that forms no span
+  // (`{*}`, `{**}`) is read like any other characters (carve#3973 X6).
   forcedSpan = forced<"/"> | forced<"*"> | forced<"_"> | forced<"~">
              | forced<"^"> | forced<","> | forced<"=">
   // CONTENT IS REQUIRED (`+`, not `*`): `forced_content` in grammar.ebnf is a
@@ -358,7 +357,9 @@ CarveCore {
   forced<d>  = ~("{" d graphemeExt) "{" d fInner<d>+ d "}" attrRun?
   // The span's own delimiter is literal inside it (E3), so a block glued to it
   // attaches to nothing and is text: its braces cannot hide the `X}` (carve#3939).
-  fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~dRun<d> rich
+  // An unclosed code run takes the rest of the block here too, so the span
+  // cannot close (carve#3973 X5).
+  fInner<d>  = ~(d "}") (editorial | bracedDash | ~dRun<d> rich
              | ~(~fSpan<d> "/*") span | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | ~(d attrs) litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
@@ -368,11 +369,6 @@ CarveCore {
   fBiFirst<d> = fBiCloser<d> | fBiInner<d>
   fBiInner<d> = ~(d "}") biInner
   fBiCloser<d> = ~("*" d "}") biCloser
-  // An unclosed run inside a forced span ends at the span's `X}` (PART 3
-  // UNCLOSED RUN, PART 9 SS22).
-  fCodeU<d>  = ~codeClosed "\u0060" "\u0060"* (~(d "}") any)*
-  // The same bound reaches a run behind a math or literal prefix.
-  fPrefixU<d> = ("$$" | "$" | "!") fCodeU<d>
 
   // editorial: {+ins+} {-del-} {~old~>new~} {# comment #} (+ the doubled
   // {++...++} / {--...--} forms whose extra marker chars stay literal)
@@ -388,7 +384,7 @@ CarveCore {
   edDel      = "{-" ~graphemeExt (~"-}" edScan<"-">)+ "-}" attrRun?
   // The `~>` and `~}` a substitution needs are TOP-LEVEL: the search skips
   // verbatim content, so a pair whose only `~>` sits in code is a forced
-  // strikethrough (PART 9 SS22, carve#2083). An unclosed run ends at `~}`.
+  // strikethrough (PART 9 SS22, carve#2083). An unclosed run takes the rest of the block.
   // PART 8 ranks a bracket run, an autolink and a cross-reference above
   // editorial markup (PART 9 E2a, E2b), so the `~>` and the `~}` search both
   // step over all three: an autolink or a cross-reference whose body ends in
@@ -401,30 +397,29 @@ CarveCore {
   // behind it is what carries the arrow, and this rule skips that run.
   // A matched insertion or deletion is an E2a boundary too, so its `~>` and
   // `~}` are its own (PART 9 SS22).
-  edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | emptyForced | forcedSpan | overlapForced
-             | edInsBody | edDelBody | noteRefBody | nested | edChar
-  edSubCode  = codeClosed | edSubCodeU
-  edSubCodeU = "\u0060" "\u0060"* (~"~}" any)*
+  edSubAtom  = ~unclosedRun (escape | codeClosed | bracedComment | edCommentBody | forcedSpan
+             | edInsBody | edDelBody | noteRefBody | nested | edChar)
   edComment  = edCommentBody
   // The body, without the attribute block - see `litInlineBody`.
   edCommentBody = "{#" ~graphemeExt (~"#}" edChar)+ "#}"
   edChar     = any
   // A closed code span is skipped whole while scanning for the closer, so a
   // run whose closer sits later in the block stays one span (PART 3 UNCLOSED
-  // RUN). A run with no closer is consumed as itself and ends at the closer.
+  // RUN). A run with no closer takes the rest of the block (carve#3973 X5).
   // A cross-reference, an autolink and a bracket run (its destination slot
   // included) resolve before editorial markup (PART 8, PART 9 E2b), and an
   // editorial comment is opaque (E2a), so a `+}` or `-}` inside one is its
   // content (ruled 2026-10-15). Bodies only, as in `brContent`: an attribute
   // block after any of them is still scanned. A nested matched braced span is
   // skipped too (E2a), body only, except a frame of the scan's own kind (PART 9 SS22).
-  edScan<d>  = escape | codeClosed | edCodeU<d> | crossref | autolinkBody | edCommentBody | bracedComment | noteRefBody | nested
-             | forcedBody | ~("{" d) (edSub | edInsBody | edDelBody) | any
+  edScan<d>  = ~unclosedRun (escape | codeClosed | crossref | autolinkBody | edCommentBody | bracedComment | noteRefBody | nested
+             | forcedBody | ~("{" d) (edSub | edInsBody | edDelBody) | any)
   forcedBody = fBody<"/"> | fBody<"*"> | fBody<"_"> | fBody<"~"> | fBody<"^"> | fBody<","> | fBody<"=">
   fBody<d>   = ~("{" d graphemeExt) "{" d fInner<d>+ d "}"
   edInsBody  = "{+" ~graphemeExt (~"+}" edScan<"+">)+ "+}"
   edDelBody  = "{-" ~graphemeExt (~"-}" edScan<"-">)+ "-}"
-  edCodeU<d> = ~codeClosed backtickRun (~(d "}") any)*
+  // The scan stops at an unclosed run, which leaves the frame without its closer.
+  unclosedRun = ~codeClosed backtickRun
   backtickRun = "\u0060"+
 
   // raw inline passthrough: a code span whose trailing block is EXACTLY

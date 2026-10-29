@@ -2138,7 +2138,7 @@ An unclosed run is opaque: an emphasis delimiter or link tail after it is verbat
 
 :::
 
-A forced span's closer ends an unclosed run inside it, and the run's trailing whitespace is stripped there as at the end of a block.
+An unclosed run inside a forced span takes the rest of the block too, so the span has no closer and its opener is text (markup-carve/carve#3973).
 
 ::: compare
 
@@ -2147,12 +2147,12 @@ A forced span's closer ends an unclosed run inside it, and the run's trailing wh
 ```
 
 ```html
-<p><s><code></code></s></p>
+<p>{~<code> ~}</code></p>
 ```
 
 :::
 
-The run is over at that closer, so a link, image or span after it opens as usual. Link text is scanned from its own `[`.
+The run does not stop at the span's closer, so a link, image or span after it is code as well.
 
 ::: compare
 
@@ -2167,10 +2167,10 @@ A {=`y=}[note]{.k} here.
 ```
 
 ```html
-<p>Run <strong><code>make</code></strong><a href="u">the docs</a>.</p>
-<p>A <u><code>x</code></u><img src="p.png" alt="logo"> here.</p>
-<p>A <mark><code>y</code></mark><span class="k">note</span> here.</p>
-<p><ins><code>added</code></ins> <a href="u">n</a></p>
+<p>Run {*<code>make*}[the docs](u).</code></p>
+<p>A {_<code>x_}![logo](p.png) here.</code></p>
+<p>A {=<code>y=}[note]{.k} here.</code></p>
+<p>{+<code>added+} [n](u)</code></p>
 ```
 
 :::
@@ -2195,7 +2195,7 @@ A backtick that is content of an earlier construct opens no run at all, so it do
 
 :::
 
-The closer bounds a run behind a math or literal prefix the same way, and a literal nests in a forced span like any other construct.
+A run behind a math or literal prefix takes the rest of the block the same way, and a closed literal nests in a forced span like any other construct.
 
 ::: compare
 
@@ -2210,9 +2210,9 @@ x{_!`d`_} here
 ```
 
 ```html
-<p>x<strong><span class="math inline" role="math">\(a\)</span></strong> here</p>
-<p>x<s><span class="math display" role="math">\[b\]</span></s> here</p>
-<p>x<em>c</em> here</p>
+<p>x{*<span class="math inline" role="math">\(a*} here\)</span></p>
+<p>x{~<span class="math display" role="math">\[b~} here\]</span></p>
+<p>x{/c/} here</p>
 <p>x<u>d</u> here</p>
 ```
 
@@ -2241,7 +2241,7 @@ x{+`a+} and `b`
 
 :::
 
-The strip at a forced closer takes a trailing line break too, as at the end of a paragraph. In a line block the break is content and stays.
+The run takes a line break with the rest of the block. In a line block the break is content and stays.
 
 :::: compare
 
@@ -2256,10 +2256,11 @@ x{*`a
 ```
 
 ```html
-<p>x<strong><code>a</code></strong></p>
+<p>x{*<code>a
+*}</code></p>
 <div class="line-block">
-  <p>x<strong><code>a
-</code></strong></p>
+  <p>x{*<code>a
+*}</code></p>
 </div>
 ```
 

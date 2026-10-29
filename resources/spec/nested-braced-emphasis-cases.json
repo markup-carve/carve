@@ -1493,12 +1493,16 @@
           "children": [
             {
               "type": "text",
-              "value": "a {**} b"
+              "value": "a {*"
             }
           ]
+        },
+        {
+          "type": "text",
+          "value": " b*}"
         }
       ],
-      "html": "<p><strong>a {**} b</strong></p>"
+      "html": "<p><strong>a {*</strong> b*}</p>"
     },
     {
       "id": "discarded-braced-closer-can-close-bare-child",

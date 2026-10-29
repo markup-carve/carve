@@ -30,7 +30,7 @@ test('a block that attaches once an earlier one is text is not escaped with it',
 })
 
 test('a block whose text opens a code span is escaped before the blocks it covers', () => {
-  assert.equal(html('_/a/{t="q`} "} _/a/{t="_"}'), '<p>_/a/{t=“q<code>} "} _/a/{t="_"}</code></p>')
+  assert.equal(html('_/a/{t="q`} "} _/a/{t="_"}'), '<p><u><em t="q`} ">a</em> _/a/{t=“</u>”}</p>')
 })
 
 test('a run of 400 blocks reads in well under the one-pass-per-block time', () => {

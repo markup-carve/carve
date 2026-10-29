@@ -36226,8 +36226,9 @@ spelling has both and no content.
 
 :::
 
-Inside a parent of the same kind the empty pair stays literal as a whole,
-closer included, so it cannot end the parent early.
+An empty pair forms no span, and its characters are read like any others
+(markup-carve/carve#3973). Inside a parent of the same kind its second mark is
+that parent's closer.
 
 ::: compare
 
@@ -36236,7 +36237,7 @@ closer included, so it cannot end the parent early.
 ```
 
 ```html
-<p><strong>a {**} b</strong></p>
+<p><strong>a {*</strong> b*}</p>
 ```
 
 :::
@@ -36300,7 +36301,8 @@ A `{~ … ~}` pair is a substitution when it holds a top-level `~>`. The search
 skips verbatim content, so an arrow inside a code span, math, an inline literal
 or a comment does not split the pair, and neither does an escaped one. A pair
 with no top-level arrow is a forced strikethrough
-(markup-carve/carve#2083).
+(markup-carve/carve#2083). An unclosed run takes the rest of the block, so
+`` {~`a~>b~} `` has no closer at all (markup-carve/carve#3973).
 
 ::: compare
 
@@ -36315,7 +36317,7 @@ with no top-level arrow is a forced strikethrough
 ```
 
 ```html
-<p><s><code>a~&gt;b</code></s></p>
+<p>{~<code>a~&gt;b~}</code></p>
 <p><s>a <code>x~&gt;y</code> b</s></p>
 <p><del><em>old</em></del><ins><em>new</em></ins></p>
 <p><s>a~&gt;b</s></p>
@@ -37735,10 +37737,10 @@ c</dd>
 ## A delimiter after an underscore or slash opens only when that one pairs
 
 A delimiter never opens directly after `_`, nor `/` or `_` directly after `/`,
-unless that `_` or `/` itself opens a span that closes (CARVE-P3-013,
-markup-carve/carve#2156). Only pairing decides that, so an unpaired guard keeps
-the delimiter after it literal even at the start of a line, whatever the
-delimiter.
+unless that `_` or `/` is an open entry where the delimiter stands
+(CARVE-P3-013, markup-carve/carve#3973). Whether the guard closes later does
+not matter, so a guard at the start of a line lets the delimiter after it open
+and stays text itself, whatever the delimiter.
 
 ::: compare
 
@@ -37755,11 +37757,11 @@ _=x= q
 ```
 
 ```html
-<p>_*x* q</p>
-<p>_/x/ q</p>
-<p>/_x_ q</p>
-<p>_~x~ q</p>
-<p>_=x= q</p>
+<p>_<strong>x</strong> q</p>
+<p>_<em>x</em> q</p>
+<p>/<u>x</u> q</p>
+<p>_<s>x</s> q</p>
+<p>_<mark>x</mark> q</p>
 ```
 
 :::
@@ -37773,12 +37775,12 @@ a _*x* q
 ```
 
 ```html
-<p>a _*x* q</p>
+<p>a _<strong>x</strong> q</p>
 ```
 
 :::
 
-CONTROL. A guard that pairs lets the delimiter after it open, so the spans nest.
+CONTROL. A guard that pairs closes its own span around the inner one, so the spans nest.
 
 ::: compare
 
@@ -37812,7 +37814,7 @@ _*{*x*} q
 
 :::
 
-A caption's `#` placeholder is outside a span the guard keeps from opening.
+A caption's `#` placeholder inside the span after a guard is literal.
 
 ::: compare
 
@@ -37824,7 +37826,7 @@ A caption's `#` placeholder is outside a span the guard keeps from opening.
 ```html
 <figure>
   <img src="p.png" alt="p">
-  <figcaption>Figure _*1 x* q</figcaption>
+  <figcaption>Figure _<strong># x</strong> q</figcaption>
 </figure>
 ```
 
@@ -37840,7 +37842,7 @@ _*x* \"'a' "
 ```
 
 ```html
-<p>_*x* "’a’ “</p>
+<p>_<strong>x</strong> "’a’ “</p>
 ```
 
 :::
@@ -67543,7 +67545,7 @@ see [m] here
 ```
 
 ```html
-<p><ins><code>{#</code></ins>#}</p>
+<p>{+<code>{#+}#}</code></p>
 ```
 
 ::::
@@ -67556,8 +67558,8 @@ _*x
 ```
 
 ```html
-<p>_*x
-<strong><em>b</em></strong></p>
+<p>_<strong>x
+/*b</strong>/</p>
 ```
 
 ::::
@@ -69257,7 +69259,7 @@ _x /*a*/{.q} b/{c_} c_
 
 ## A guard that closes only inside its guarded child's block
 
-With its guarded child open, the `_` closes nowhere, so it blocks that child. The child's block is then content, and the `_` inside it closes the underline. A later attributed span does not change that: its block attaches and is opaque.
+The `_` is an open entry where the `*` stands, so the `*` opens whether or not the `_` closes later (markup-carve/carve#3973). The child closes and its block attaches, so the `_` inside the block is opaque and the guard stays text. A later attributed span reads the same way.
 
 ::: compare
 
@@ -69266,7 +69268,7 @@ _*a*{t="_"}
 ```
 
 ```html
-<p><u><strong>a</strong>{t=“</u>”}</p>
+<p>_<strong t="_">a</strong></p>
 ```
 
 :::
@@ -69278,7 +69280,7 @@ _*a*{t="_"} /a/{t=a_}
 ```
 
 ```html
-<p><u><strong>a</strong>{t=“</u>”} <em t="a_">a</em></p>
+<p>_<strong t="_">a</strong> <em t="a_">a</em></p>
 ```
 
 :::
@@ -69616,7 +69618,7 @@ _*`/`/*{c_}*/
 ```
 
 ```html
-<p><u><strong><code>/</code>/</strong>{c</u>}*/</p>
+<p>_<strong c_=""><code>/</code>/</strong>*/</p>
 ```
 
 :::
@@ -69628,7 +69630,7 @@ _*`/`/*{t=a*/}*/
 ```
 
 ```html
-<p>_*<code>/</code><strong><em>{t=a</em></strong>}*/</p>
+<p>_<strong t="a*/"><code>/</code>/</strong>*/</p>
 ```
 
 :::
@@ -69640,7 +69642,7 @@ _*/*a**/
 ```
 
 ```html
-<p>_*<em><strong>a</strong>*</em></p>
+<p>_<strong>/*a</strong>*/</p>
 ```
 
 :::
@@ -69652,7 +69654,7 @@ _*`/`/*a**/
 ```
 
 ```html
-<p>_*<code>/</code><em><strong>a</strong>*</em></p>
+<p>_<strong><code>/</code>/*a</strong>*/</p>
 ```
 
 :::
@@ -69688,7 +69690,7 @@ _*`/`/*{c_}
 ```
 
 ```html
-<p><u><strong><code>/</code>/</strong>{c</u>}</p>
+<p>_<strong c_=""><code>/</code>/</strong></p>
 ```
 
 :::
@@ -69724,7 +69726,7 @@ _*`/`/*{t=a*/}
 ```
 
 ```html
-<p>_*<code>/</code><strong><em>{t=a</em></strong>}</p>
+<p>_<strong t="a*/"><code>/</code>/</strong></p>
 ```
 
 :::
@@ -69736,7 +69738,7 @@ _*`/`/*a*/
 ```
 
 ```html
-<p>_*<code>/</code><strong><em>a</em></strong></p>
+<p>_<strong><code>/</code>/*a</strong>/</p>
 ```
 
 :::
@@ -69832,7 +69834,7 @@ _*`a/`/*{c_}*/
 ```
 
 ```html
-<p><u><strong><code>a/</code>/</strong>{c</u>}*/</p>
+<p>_<strong c_=""><code>a/</code>/</strong>*/</p>
 ```
 
 :::
@@ -69868,7 +69870,7 @@ _*`a/`/*{c_}
 ```
 
 ```html
-<p><u><strong><code>a/</code>/</strong>{c</u>}</p>
+<p>_<strong c_=""><code>a/</code>/</strong></p>
 ```
 
 :::
@@ -69880,7 +69882,7 @@ _*`a/`/*{t=a*/}*/
 ```
 
 ```html
-<p>_*<code>a/</code><strong><em>{t=a</em></strong>}*/</p>
+<p>_<strong t="a*/"><code>a/</code>/</strong>*/</p>
 ```
 
 :::
@@ -69916,7 +69918,7 @@ _*`a/`/*{t=a*/}
 ```
 
 ```html
-<p>_*<code>a/</code><strong><em>{t=a</em></strong>}</p>
+<p>_<strong t="a*/"><code>a/</code>/</strong></p>
 ```
 
 :::
@@ -69928,7 +69930,7 @@ _*`a/`/*a*/
 ```
 
 ```html
-<p>_*<code>a/</code><strong><em>a</em></strong></p>
+<p>_<strong><code>a/</code>/*a</strong>/</p>
 ```
 
 :::
@@ -70024,7 +70026,7 @@ _*`//`/*{c_}*/
 ```
 
 ```html
-<p><u><strong><code>//</code>/</strong>{c</u>}*/</p>
+<p>_<strong c_=""><code>//</code>/</strong>*/</p>
 ```
 
 :::
@@ -70060,7 +70062,7 @@ _*`//`/*{c_}
 ```
 
 ```html
-<p><u><strong><code>//</code>/</strong>{c</u>}</p>
+<p>_<strong c_=""><code>//</code>/</strong></p>
 ```
 
 :::
@@ -70072,7 +70074,7 @@ _*`//`/*{t=a*/}*/
 ```
 
 ```html
-<p>_*<code>//</code><strong><em>{t=a</em></strong>}*/</p>
+<p>_<strong t="a*/"><code>//</code>/</strong>*/</p>
 ```
 
 :::
@@ -70108,7 +70110,7 @@ _*`//`/*{t=a*/}
 ```
 
 ```html
-<p>_*<code>//</code><strong><em>{t=a</em></strong>}</p>
+<p>_<strong t="a*/"><code>//</code>/</strong></p>
 ```
 
 :::
@@ -70120,7 +70122,7 @@ _*`//`/*a*/
 ```
 
 ```html
-<p>_*<code>//</code><strong><em>a</em></strong></p>
+<p>_<strong><code>//</code>/*a</strong>/</p>
 ```
 
 :::
@@ -70216,7 +70218,7 @@ _*`x /`/*{c_}*/
 ```
 
 ```html
-<p><u><strong><code>x /</code>/</strong>{c</u>}*/</p>
+<p>_<strong c_=""><code>x /</code>/</strong>*/</p>
 ```
 
 :::
@@ -70252,7 +70254,7 @@ _*`x /`/*{c_}
 ```
 
 ```html
-<p><u><strong><code>x /</code>/</strong>{c</u>}</p>
+<p>_<strong c_=""><code>x /</code>/</strong></p>
 ```
 
 :::
@@ -70264,7 +70266,7 @@ _*`x /`/*{t=a*/}*/
 ```
 
 ```html
-<p>_*<code>x /</code><strong><em>{t=a</em></strong>}*/</p>
+<p>_<strong t="a*/"><code>x /</code>/</strong>*/</p>
 ```
 
 :::
@@ -70300,7 +70302,7 @@ _*`x /`/*{t=a*/}
 ```
 
 ```html
-<p>_*<code>x /</code><strong><em>{t=a</em></strong>}</p>
+<p>_<strong t="a*/"><code>x /</code>/</strong></p>
 ```
 
 :::
@@ -70312,7 +70314,7 @@ _*`x /`/*a*/
 ```
 
 ```html
-<p>_*<code>x /</code><strong><em>a</em></strong></p>
+<p>_<strong><code>x /</code>/*a</strong>/</p>
 ```
 
 :::

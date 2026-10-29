@@ -112,7 +112,8 @@
         MATCHING ORDER. Tokenize candidate braced openers and closers
         inside each bracket run, preserving escapes and existing opacity.
         Tokens do not overlap: a mark consumed by {X cannot also form X}.
-        Thus {*} is unmatched literal input, not an empty paired span.
+        Thus {*} forms no span: its braces are text and its * is read as
+        a bare candidate like any other (carve#3973 X6).
         Pair them in a RIGHT-TO-LEFT pass. A closer is pushed onto a stack
         and a per-kind head indexes the nearest available closer. An opener
         with no available closer of its kind remains literal and changes

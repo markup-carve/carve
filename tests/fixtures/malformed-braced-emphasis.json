@@ -7,17 +7,17 @@
   {
     "id": "malformed-02",
     "source": "a _}{_~>{~_}{~~}x _}x _} z",
-    "html": "<p>a _}<u><s>&gt;{</s></u>{~~}x _}x _} z</p>"
+    "html": "<p>a _}<u>~&gt;<s>_}{~</s>x </u>x _} z</p>"
   },
   {
     "id": "malformed-03",
     "source": "a ~}{_/}{/~>{*_}{//}{*~} z",
-    "html": "<p>a <s>}<u><em>}{</em>~&gt;{*</u>{//}{*</s>} z</p>"
+    "html": "<p>a <s>}{_/}<em>~&gt;{*_}{/</em>{*</s>} z</p>"
   },
   {
     "id": "malformed-04",
     "source": "a *}{_*}{*~>{/_}{**}{~~} z",
-    "html": "<p>a *}<u><strong>}{</strong>~&gt;{/</u>{**}{~~} z</p>"
+    "html": "<p>a <strong>}{_</strong>}<strong>~&gt;{/_}{*</strong>{~~} z</p>"
   },
   {
     "id": "malformed-05",
@@ -57,7 +57,7 @@
   {
     "id": "malformed-12",
     "source": "a *}{/~>{~~>{~/}{~~}{_~> z",
-    "html": "<p>a *}<em><s>&gt;{</s>~&gt;{~</em>{~~}{_~&gt; z</p>"
+    "html": "<p>a *}{/<s>&gt;{</s>~&gt;<s>/}{~</s>{_~&gt; z</p>"
   },
   {
     "id": "malformed-13",

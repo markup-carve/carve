@@ -11,8 +11,8 @@ for (const [src, out] of [
   ['_*/*a*/_', '<p><u><strong>/*a</strong>/</u></p>'],
   ['_*/*a*/ b_', '<p><u><strong>/*a</strong>/ b</u></p>'],
   ['=*/*a*/ b=', '<p><mark><strong>/*a</strong>/ b</mark></p>'],
-  ['_*/*a*/', '<p>_*<strong><em>a</em></strong></p>'],
-  ['_*/*a*/* b', '<p>_*<strong><em>a</em></strong>* b</p>'],
+  ['_*/*a*/', '<p>_<strong>/*a</strong>/</p>'],
+  ['_*/*a*/* b', '<p>_<strong>/*a</strong>/* b</p>'],
   ['__*_/*a*/**__', '<p>__*<u><strong><em>a</em></strong>**</u>_</p>'],
 ]) {
   test(`guarded opener before a combined token: ${src}`, () => assert.equal(html(src), out))
@@ -24,7 +24,7 @@ for (const [src, out] of [
 for (const [src, out] of [
   ['*/*/*a*/', '<p><strong>/</strong><strong><em>a</em></strong></p>'],
   ['*/*/*a*/{.c}', '<p><strong>/</strong><strong class="c"><em>a</em></strong></p>'],
-  ['_/**/*a*/ /', '<p>_/**<strong><em>a</em></strong> /</p>'],
+  ['_/**/*a*/ /', '<p>_<strong><em>*/*a</em></strong> /</p>'],
   ['x _/*_a_*/_', '<p>x <u>/*_a</u>*/_</p>'],
   ['_*/*_a_*/ b*', '<p><u><strong>/</strong>_a</u>*/ b*</p>'],
   ['x _/*/*_a_*/_', '<p>x <u><em>*</em>*_a</u>*/_</p>'],

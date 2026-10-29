@@ -9,7 +9,7 @@ Substitution content is inline, and only a top-level arrow splits it
 
 {~a\~>b~}
 .
-<p><s><code>a~&gt;b</code></s></p>
+<p>{~<code>a~&gt;b~}</code></p>
 <p><s>a <code>x~&gt;y</code> b</s></p>
 <p><del><em>old</em></del><ins><em>new</em></ins></p>
 <p><s>a~&gt;b</s></p>

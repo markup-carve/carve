@@ -56,3 +56,4 @@ fSpan          LOOKAHEAD  only in the `fInner` guard `~(~fSpan<d> "/*") span`
 fBiFirst       LOOKAHEAD  reached only through `fSpan`
 fBiInner       LOOKAHEAD  reached only through `fSpan`
 fBiCloser      LOOKAHEAD  reached only through `fSpan`
+unclosedRun    LOOKAHEAD  only in the `edScan` and `edSubAtom` guards: an unclosed run leaves an editorial frame without its closer (carve#3973 X5)

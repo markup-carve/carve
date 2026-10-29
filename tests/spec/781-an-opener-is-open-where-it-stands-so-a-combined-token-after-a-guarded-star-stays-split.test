@@ -3,25 +3,25 @@ An opener is open where it stands, so a combined token after a guarded star stay
 ```
 _*`/`/*{c_}*/
 .
-<p><u><strong><code>/</code>/</strong>{c</u>}*/</p>
+<p>_<strong c_=""><code>/</code>/</strong>*/</p>
 ```
 
 ```
 _*`/`/*{t=a*/}*/
 .
-<p>_*<code>/</code><strong><em>{t=a</em></strong>}*/</p>
+<p>_<strong t="a*/"><code>/</code>/</strong>*/</p>
 ```
 
 ```
 _*/*a**/
 .
-<p>_*<em><strong>a</strong>*</em></p>
+<p>_<strong>/*a</strong>*/</p>
 ```
 
 ```
 _*`/`/*a**/
 .
-<p>_*<code>/</code><em><strong>a</strong>*</em></p>
+<p>_<strong><code>/</code>/*a</strong>*/</p>
 ```
 
 ```
@@ -39,7 +39,7 @@ _*`/`/*{c_}_
 ```
 _*`/`/*{c_}
 .
-<p><u><strong><code>/</code>/</strong>{c</u>}</p>
+<p>_<strong c_=""><code>/</code>/</strong></p>
 ```
 
 ```
@@ -57,13 +57,13 @@ _*`/`/*{t=a*/}_
 ```
 _*`/`/*{t=a*/}
 .
-<p>_*<code>/</code><strong><em>{t=a</em></strong>}</p>
+<p>_<strong t="a*/"><code>/</code>/</strong></p>
 ```
 
 ```
 _*`/`/*a*/
 .
-<p>_*<code>/</code><strong><em>a</em></strong></p>
+<p>_<strong><code>/</code>/*a</strong>/</p>
 ```
 
 ```
@@ -111,7 +111,7 @@ _*`/`/*{c}_
 ```
 _*`a/`/*{c_}*/
 .
-<p><u><strong><code>a/</code>/</strong>{c</u>}*/</p>
+<p>_<strong c_=""><code>a/</code>/</strong>*/</p>
 ```
 
 ```
@@ -129,13 +129,13 @@ _*`a/`/*{c_}_
 ```
 _*`a/`/*{c_}
 .
-<p><u><strong><code>a/</code>/</strong>{c</u>}</p>
+<p>_<strong c_=""><code>a/</code>/</strong></p>
 ```
 
 ```
 _*`a/`/*{t=a*/}*/
 .
-<p>_*<code>a/</code><strong><em>{t=a</em></strong>}*/</p>
+<p>_<strong t="a*/"><code>a/</code>/</strong>*/</p>
 ```
 
 ```
@@ -153,13 +153,13 @@ _*`a/`/*{t=a*/}_
 ```
 _*`a/`/*{t=a*/}
 .
-<p>_*<code>a/</code><strong><em>{t=a</em></strong>}</p>
+<p>_<strong t="a*/"><code>a/</code>/</strong></p>
 ```
 
 ```
 _*`a/`/*a*/
 .
-<p>_*<code>a/</code><strong><em>a</em></strong></p>
+<p>_<strong><code>a/</code>/*a</strong>/</p>
 ```
 
 ```
@@ -207,7 +207,7 @@ _*`a/`/*{c}_
 ```
 _*`//`/*{c_}*/
 .
-<p><u><strong><code>//</code>/</strong>{c</u>}*/</p>
+<p>_<strong c_=""><code>//</code>/</strong>*/</p>
 ```
 
 ```
@@ -225,13 +225,13 @@ _*`//`/*{c_}_
 ```
 _*`//`/*{c_}
 .
-<p><u><strong><code>//</code>/</strong>{c</u>}</p>
+<p>_<strong c_=""><code>//</code>/</strong></p>
 ```
 
 ```
 _*`//`/*{t=a*/}*/
 .
-<p>_*<code>//</code><strong><em>{t=a</em></strong>}*/</p>
+<p>_<strong t="a*/"><code>//</code>/</strong>*/</p>
 ```
 
 ```
@@ -249,13 +249,13 @@ _*`//`/*{t=a*/}_
 ```
 _*`//`/*{t=a*/}
 .
-<p>_*<code>//</code><strong><em>{t=a</em></strong>}</p>
+<p>_<strong t="a*/"><code>//</code>/</strong></p>
 ```
 
 ```
 _*`//`/*a*/
 .
-<p>_*<code>//</code><strong><em>a</em></strong></p>
+<p>_<strong><code>//</code>/*a</strong>/</p>
 ```
 
 ```
@@ -303,7 +303,7 @@ _*`//`/*{c}_
 ```
 _*`x /`/*{c_}*/
 .
-<p><u><strong><code>x /</code>/</strong>{c</u>}*/</p>
+<p>_<strong c_=""><code>x /</code>/</strong>*/</p>
 ```
 
 ```
@@ -321,13 +321,13 @@ _*`x /`/*{c_}_
 ```
 _*`x /`/*{c_}
 .
-<p><u><strong><code>x /</code>/</strong>{c</u>}</p>
+<p>_<strong c_=""><code>x /</code>/</strong></p>
 ```
 
 ```
 _*`x /`/*{t=a*/}*/
 .
-<p>_*<code>x /</code><strong><em>{t=a</em></strong>}*/</p>
+<p>_<strong t="a*/"><code>x /</code>/</strong>*/</p>
 ```
 
 ```
@@ -345,13 +345,13 @@ _*`x /`/*{t=a*/}_
 ```
 _*`x /`/*{t=a*/}
 .
-<p>_*<code>x /</code><strong><em>{t=a</em></strong>}</p>
+<p>_<strong t="a*/"><code>x /</code>/</strong></p>
 ```
 
 ```
 _*`x /`/*a*/
 .
-<p>_*<code>x /</code><strong><em>a</em></strong></p>
+<p>_<strong><code>x /</code>/*a</strong>/</p>
 ```
 
 ```

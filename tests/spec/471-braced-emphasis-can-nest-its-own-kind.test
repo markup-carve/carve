@@ -69,7 +69,7 @@ a{*{*x*}*}b
 ```
 {*a {**} b*}
 .
-<p><strong>a {**} b</strong></p>
+<p><strong>a {*</strong> b*}</p>
 ```
 
 ```

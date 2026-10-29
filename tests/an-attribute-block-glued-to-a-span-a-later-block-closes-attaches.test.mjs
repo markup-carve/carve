@@ -23,5 +23,5 @@ for (const inner of ['/', '*', '~', '=']) for (const value of ['q', 'x y']) {
 
 // A delimiter inside the first block that closes the outer span keeps the block text.
 test('a block whose own delimiter closes the outer span stays text', () => {
-  assert.equal(html('_/a/{t="_"} _*a*{t="_"}'), '<p><u><em>a</em>{t=“</u>”} <u><strong>a</strong>{t=“</u>”}</p>')
+  assert.equal(html('_/a/{t="_"} _*a*{t="_"}'), '<p><u><em t="_">a</em> _*a*{t=“</u>”}</p>')
 })

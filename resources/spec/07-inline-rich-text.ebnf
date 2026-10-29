@@ -79,9 +79,12 @@ grapheme_extender = (* a character of Unicode general category Mn, Mc or Me *)
                   | (* U+FE00 .. U+FE0F, VARIATION SELECTOR-1 to -16 *)
                   | (* U+200D ZERO WIDTH JOINER *) ;
 (* The look-behind reads the character before d IN d's OWN INLINE RUN. A `_`
-   or `/` that opens a span is markup, not text: the content after it begins
-   at START, so `_*x*_` nests. An unmatched `_` or `/` stays text and blocks:
-   `_*x* q` is literal. *)
+   or `/` that is an OPEN ENTRY on the PART 9 §9 stack where d stands is
+   markup, not text, and does not block: `_*x*_` nests. Whether that entry
+   closes later does not matter, so `_*x* q` renders `_<strong>x</strong> q`
+   (carve#3973 X1, the reading carve#3947 gave E3). Any other `_` or `/` is
+   text and blocks: `a_*x*` stays literal. The mark of a formed braced span is
+   markup too: `{_*a* b_}` nests. *)
 
 (* slash_if(d) = '/' when d in { '/', '_' }, otherwise nothing: italic and
    underline additionally never open when the char immediately before d is `/`
@@ -96,7 +99,7 @@ grapheme_extender = (* a character of Unicode general category Mn, Mc or Me *)
      (same-delimiter adjacency, PART 9 §9: a doubled delimiter never
      opens), and -- for d in { '/', '_' } only -- NOT `/`
      (slash_if(d), path protection); d is NOT followed by whitespace and NOT
-     by another d. A `_` or `/` that itself opens a span that closes is not
+     by another d. A `_` or `/` that is an open entry where d stands is not
      the character before d (the note under the templates).
    - closer: d is NOT preceded by whitespace and NOT followed by an
      alphanumeric.
@@ -147,11 +150,14 @@ inline_span_content = (inline_element | text_run | literal_special)+ ;
 forced_content    = inline_span_content ;
 (* AN EMPTY BRACE PAIR IS NOT A CONSTRUCT -- NORMATIVE [CARVE-P3-014]. The `+`
    above is load-bearing: an opener that meets its own closer with nothing
-   between them opened nothing, and its characters are TEXT.
+   between them opened nothing.
 
      {//}  {**}  {__}  {~~}  {^^}  {,,}  {==}  {++}  {##}
 
-   all render literally. IT APPLIES TO THE EDITORIAL FAMILY TOO, whose content
+   form no span. Their characters are read like any others (carve#3973 X6):
+   the braces are text, and a bare delimiter among them is a §9 candidate,
+   so `{**}` alone is literal while `*a {*}` closes the strong span at the
+   `*`. IT APPLIES TO THE EDITORIAL FAMILY TOO, whose content
    slots are the same `+` repetition (braced en dash: CARVE-P3-020).
 
    THE ONE EXCEPTION is a fully empty SUBSTITUTION, `{~~>~}`, which renders an
@@ -458,8 +464,8 @@ ellipsis = "..." ;    (* → … *)
    it is flag-shaped and stays literal, so `x ---That`, `x ---(p)` and
    `x ---, y` are all refused by that rule.
 
-   `{---}` is `<del>-</del>` and `{-x-}` is `<del>x</del>`. Every other empty brace pair reads back as TEXT rather
-   than as a dash (see the empty-brace clause under Forced Intraword Emphasis).
+   `{---}` is `<del>-</del>` and `{-x-}` is `<del>x</del>`. Every other empty brace pair forms no span and no
+   dash (see the empty-brace clause under Forced Intraword Emphasis).
    There is NO braced EM dash -- `{---}` is a deletion of a hyphen -- so a
    tight em dash still has no shorthand and is written as the literal
    character. *)

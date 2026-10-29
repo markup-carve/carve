@@ -3,11 +3,11 @@ A guard that closes only inside its guarded child's block
 ```
 _*a*{t="_"}
 .
-<p><u><strong>a</strong>{t=“</u>”}</p>
+<p>_<strong t="_">a</strong></p>
 ```
 
 ```
 _*a*{t="_"} /a/{t=a_}
 .
-<p><u><strong>a</strong>{t=“</u>”} <em t="a_">a</em></p>
+<p>_<strong t="_">a</strong> <em t="a_">a</em></p>
 ```

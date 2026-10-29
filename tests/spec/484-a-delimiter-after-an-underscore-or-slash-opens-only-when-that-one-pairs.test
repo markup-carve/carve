@@ -11,17 +11,17 @@ _~x~ q
 
 _=x= q
 .
-<p>_*x* q</p>
-<p>_/x/ q</p>
-<p>/_x_ q</p>
-<p>_~x~ q</p>
-<p>_=x= q</p>
+<p>_<strong>x</strong> q</p>
+<p>_<em>x</em> q</p>
+<p>/<u>x</u> q</p>
+<p>_<s>x</s> q</p>
+<p>_<mark>x</mark> q</p>
 ```
 
 ```
 a _*x* q
 .
-<p>a _*x* q</p>
+<p>a _<strong>x</strong> q</p>
 ```
 
 ```
@@ -48,12 +48,12 @@ _*{*x*} q
 .
 <figure>
   <img src="p.png" alt="p">
-  <figcaption>Figure _*1 x* q</figcaption>
+  <figcaption>Figure _<strong># x</strong> q</figcaption>
 </figure>
 ```
 
 ```
 _*x* \"'a' "
 .
-<p>_*x* "’a’ “</p>
+<p>_<strong>x</strong> "’a’ “</p>
 ```

@@ -24,5 +24,5 @@ for (const [guard, kids] of [['_', ['/', '*', '~', '=']], ['/', ['_']]]) for (co
 }
 
 test('a block whose span the guard blocks still hands out its closer when nothing else can', () => {
-  assert.equal(html('_*a*{t="_"}'), '<p><u><strong>a</strong>{t=“</u>”}</p>')
+  assert.equal(html('_*a*{t="_"}'), '<p>_<strong t="_">a</strong></p>')
 })

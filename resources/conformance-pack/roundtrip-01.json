@@ -1093,7 +1093,7 @@
 {"id":"roundtrip-e64d44696e8b","source":"{*a *\"x\"*}\n{*a *\"x\"*}\n{*a *\"x\"*}\n","html":"<p><strong>a *”x”</strong>\n<strong>a *”x”</strong>\n<strong>a *”x”</strong></p>"},
 {"id":"roundtrip-e6d2eefbe33e","source":"\n\n^ cap\n[x]{.a1 #b2 k3=v}\n","html":"<p>^ cap\n<span class=\"a1\" id=\"b2\" k3=\"v\">x</span></p>"},
 {"id":"roundtrip-e6f5542b3c0a","source":"```\n```\n- >  :: t\n```\n","html":"<pre><code></code></pre>\n<ul>\n  <li>\n    <blockquote>\n      <dl>\n        <dt>t\n<code></code></dt>\n      </dl>\n    </blockquote>\n  </li>\n</ul>"},
-{"id":"roundtrip-e6fc9920767c","source":"{*a $`x!`z``*\"x\"*}\n","html":"<p><strong>a <span class=\"math inline\" role=\"math\">\\(x!\\)</span>z<code>*\"x\"</code></strong></p>"},
+{"id":"roundtrip-e6fc9920767c","source":"{*a $`x!`z``*\"x\"*}\n","html":"<p>{*a <span class=\"math inline\" role=\"math\">\\(x!\\)</span>z<code>*\"x\"*}</code></p>"},
 {"id":"roundtrip-e71672f23391","source":":: t\n:  a\n   ::: note\n    [r]: /url\n   :::\n\n[r[]\n","html":"<dl>\n  <dt>t</dt>\n  <dd>\n    <p>a</p>\n    <aside class=\"admonition note\" aria-label=\"Note\">\n\n    </aside>\n  </dd>\n</dl>\n<p>[r[]</p>"},
 {"id":"roundtrip-e72b07c8a71c","source":":: t\n:  head\n\n     %%%\n%%%\na\na\n\n   tail\n","html":"<dl>\n  <dt>t</dt>\n  <dd>head</dd>\n</dl>\n<p>a\na</p>\n<p>tail</p>"},
 {"id":"roundtrip-e74dfc7e1327","source":"a  %% hidden\n\n","html":"<p>a</p>"},
