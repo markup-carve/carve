@@ -356,8 +356,10 @@ CarveCore {
   // Every forced opener needs a whole delimiter, `{^` and `{,` included
   // (CARVE-P3-025).
   forced<d>  = ~("{" d graphemeExt) "{" d fInner<d>+ d "}" attrRun?
+  // The span's own delimiter is literal inside it (E3), so a block glued to it
+  // attaches to nothing and is text: its braces cannot hide the `X}` (carve#3939).
   fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~dRun<d> rich
-             | ~(~fSpan<d> "/*") span | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | litDelim
+             | ~(~fSpan<d> "/*") span | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | ~(d attrs) litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
   // A combined token inside a forced span closes before the span's `X}` and

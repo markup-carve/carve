@@ -1,0 +1,31 @@
+A block glued to a split combined token or a forced span's own delimiter
+
+```
+b *//*{c_}*/
+.
+<p>b <strong c_="">//</strong>*/</p>
+```
+
+```
+//*a*{c_}*/
+.
+<p>//<strong c_="">a</strong>*/</p>
+```
+
+```
+b *///*{t="*/"}
+.
+<p>b <strong t="*/">///</strong></p>
+```
+
+```
+{*x *b*{t=a*}
+.
+<p><strong>x *b*{t=a</strong></p>
+```
+
+```
+{_x _b_{t=a_}
+.
+<p><u>x _b_{t=a</u></p>
+```

@@ -302,6 +302,12 @@ export function refFrame(payload) {
  * case too, which no engine does (carve#2578).
  */
 export function flattenInnerLinks(text) {
+  // A note's content renders in the endnotes, not in the link text, so links
+  // inside a note frame keep their destinations (carve#3938).
+  const parts = text.split(new RegExp(`(${NOTE_FRAME.source})`))
+  if (parts.length > 1) {
+    return parts.map((part, i) => i % 3 === 0 ? flattenInnerLinks(part) : i % 3 === 1 ? part : '').join('')
+  }
   // An inner crossref flattens to its resolved TEXT; it reaches here as a
   // sentinel because PART 9R resolves it in a later pass.
   let out = text
@@ -574,12 +580,6 @@ const sem = g.createSemantics().addOperation('h', {
     return `fn:${label.sourceString}\u0002${a}`
   },
   inlineNote(_o, content, _c, attrs) {
-    if (noFootnotes) {
-      // Same clause, the other direction: `^[` inside a note opens nothing, so
-      // the `^` is text and the rest is an ordinary bracketed run. Dropping the
-      // `^` from the source is what makes the re-parse terminate.
-      return '^' + renderInline(this.sourceString.slice(1), '^')
-    }
     // anonymous note: content renders now; numbering happens in PART 9R.
     // SS16 DISABLES footnote recognition inside the content, in both
     // directions, so a nested `^[...]` or `[^ref]` renders as its own literal
@@ -1075,11 +1075,49 @@ function combinedInner(first, rest, literalDelims, blocked) {
   return [...leading, ...buildToks(rest.children, literalDelims, blocked)]
 }
 
-function splitCombined(bi, literalDelims, blocked) {
+// A split combined token's inner `*` is an ordinary candidate, so a block glued
+// to it attaches the way it would to any `*` (PART 4, carve#3939); the token's
+// own content reading kept those braces as text.
+const attrHead = ohm.grammar(`CarveAttrHead <: ${g.name} {
+  attrHead = looseAttrs any*
+}`, { [g.name]: g })
+let attrHeadSem = null
+function looseAttrsAt(text, at) {
+  const match = attrHead.match(text.slice(at), 'attrHead')
+  if (match.failed()) return null
+  const node = (attrHeadSem ??= attrHead.extendSemantics(sem))(match).child(0)
+  const end = at + node.source.endIdx
+  return { k: 'attrs', node: { parseAttrs: () => node.parseAttrs(), source: { startIdx: at, endIdx: end } }, at, h: node.h(), end }
+}
+
+// `siblings` are the inline nodes after the token: a block that runs past the
+// token's end (its `*/` was inside the block) takes them while they fit in it.
+function splitCombined(bi, literalDelims, blocked, siblings = []) {
   const delim = (ch, at) => literalDelims.includes(ch) ? { k: 't', h: escapeHtml(ch) } : { k: 'd', ch, at }
   const open = bi.child(0).source.startIdx
   const close = bi.child(3).source.startIdx
-  const toks = [delim('/', open), delim('*', open + 1), ...combinedInner(bi.child(1), bi.child(2), literalDelims, blocked), delim('*', close), delim('/', close + 1)]
+  const head = literalDelims.includes('*') ? null : looseAttrsAt(bi.source.sourceString, open + 2)
+  if (head) {
+    Object.assign(head, { markerAt: open + 1, markerChar: '*' })
+    const nodes = [bi.child(1).child(0), ...bi.child(2).children]
+    const rest = nodes.filter((n) => n.source.startIdx >= head.end)
+    const fits = (n) => n.source.endIdx <= head.end || n.source.startIdx >= head.end
+    if (head.end <= close && nodes.every(fits)) {
+      const inner = [head, ...buildToks(rest.map((n) => ({ child: () => n, h: () => n.h() })), literalDelims, blocked)]
+      return { toks: closeCombined(bi, delim, open, close, inner, literalDelims), skip: 0 }
+    }
+    let skip = 0
+    while (skip < siblings.length && siblings[skip].source.endIdx <= head.end) skip++
+    if (head.end >= bi.source.endIdx && (skip === siblings.length || siblings[skip].source.startIdx >= head.end)) {
+      return { toks: [delim('/', open), delim('*', open + 1), head], skip }
+    }
+  }
+  const inner = combinedInner(bi.child(1), bi.child(2), literalDelims, blocked)
+  return { toks: closeCombined(bi, delim, open, close, inner, literalDelims), skip: 0 }
+}
+
+function closeCombined(bi, delim, open, close, inner, literalDelims) {
+  const toks = [delim('/', open), delim('*', open + 1), ...inner, delim('*', close), delim('/', close + 1)]
   const attrs = bi.child(4).children[0]
   if (attrs) toks.push({ k: 'attrs', node: attrs, at: attrs.source.startIdx, h: attrs.h(), heldMarker: literalDelims.includes('/'), markerAt: close + 1, markerChar: '/' })
   return toks
@@ -1126,7 +1164,9 @@ function buildToks(children, literalDelims = '', blocked) {
       const bi = alt.child(0)
       const at = alt.source.startIdx
       if (blocked?.has(at)) {
-        toks.push(...splitCombined(bi, literalDelims, blocked))
+        const split = splitCombined(bi, literalDelims, blocked, children.slice(ci + 1))
+        toks.push(...split.toks)
+        ci += split.skip
       } else {
         toks.push({ k: 't', h: c.h(), combinedAt: at, closeAt: bi.child(3).source.startIdx + 1 })
       }
@@ -1388,7 +1428,12 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
 function pairGuarded(build, src, literalDelims = '', contentAt = 0) {
   const blocked = new Set()
   let tentative
+  // A pass that blocks an opener is discarded, so the blocks its eager renders
+  // reported unattached are dropped with it (carve#3939).
+  const reported = [unattachedAttrs?.length, pairedDelims?.length]
   for (;;) {
+    if (unattachedAttrs) unattachedAttrs.length = reported[0]
+    if (pairedDelims) pairedDelims.length = reported[1]
     const toks = build(blocked)
     const openMap = pairDelims(toks, src, literalDelims, blocked)
     tentative ??= new Set([
@@ -1858,12 +1903,14 @@ export function renderInlineHardBreaks(text, prevCtx = '') {
  * recursive renderInline calls the note's own content makes, at any depth.
  */
 let noFootnotes = false
-// Inside a note `[^label]` is an ordinary bracketed run, so the grammar must not
-// match the reference at all: rebuilding it in the action kept the token ending
-// at the label's `]`, and pairing followed the reference reading (carve#3925).
+// Inside a note `[^label]` and `^[...]` are ordinary text, so the grammar must
+// not match either: rebuilding them in the action kept the token ending at the
+// note's `]`, which cut a bracketed run off from its link tail (carve#3925,
+// carve#3938).
 const gNoNotes = ohm.grammar(`CarveNoNotes <: ${g.name} {
   footnoteRef := ~any "[^" fnLabel "]" attrRun?
   noteRefBody := ~any "[^" fnLabel "]"
+  inlineNote := ~any "^[" brContent* "]" attrRun?
 }`, { [g.name]: g })
 let noNotesSem = null
 const inlineMatch = (source) => noFootnotes

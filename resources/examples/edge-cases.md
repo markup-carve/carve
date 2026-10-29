@@ -69283,3 +69283,153 @@ _*a*{t="_"} /a/{t=a_}
 ```
 
 :::
+
+## Inside a note a nested note opener is a caret and a bracket run
+
+Footnote recognition is off inside a note (PART 9 SS16), so a nested `^[` is a literal `^` before an ordinary bracketed run. That run takes a link tail, a reference tail or attributes like any other, and a link inside a note keeps its destination even when the note sits in link text, because the note renders in the endnotes.
+
+::: compare
+
+```carve
+^[x ^[a](u) b]
+```
+
+```html
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x ^<a href="u">a</a> b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+^[x ^[a][r] b]
+
+[r]: /v
+```
+
+```html
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x ^<a href="/v">a</a> b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+^[x ^[a]{.c} b]
+```
+
+```html
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x ^<span class="c">a</span> b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+[t ^[x [a](u) b]](/w)
+```
+
+```html
+<p><a href="/w">t <sup id="fnref1">1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x <a href="u">a</a> b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A block glued to a split combined token or a forced span's own delimiter
+
+A combined `/*` that cannot open is read as its two delimiters, so a block after its `*` attaches to the span that `*` closes (PART 4), even when the block holds the `*/` the token would have ended at. Inside a forced span the span's own delimiter is literal (PART 9 SS22), so a block after it attaches to nothing, is text, and cannot hide the span's closer.
+
+::: compare
+
+```carve
+b *//*{c_}*/
+```
+
+```html
+<p>b <strong c_="">//</strong>*/</p>
+```
+
+:::
+
+::: compare
+
+```carve
+//*a*{c_}*/
+```
+
+```html
+<p>//<strong c_="">a</strong>*/</p>
+```
+
+:::
+
+::: compare
+
+```carve
+b *///*{t="*/"}
+```
+
+```html
+<p>b <strong t="*/">///</strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{*x *b*{t=a*}
+```
+
+```html
+<p><strong>x *b*{t=a</strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{_x _b_{t=a_}
+```
+
+```html
+<p><u>x _b_{t=a</u></p>
+```
+
+:::
