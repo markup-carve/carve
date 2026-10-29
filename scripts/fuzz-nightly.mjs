@@ -172,7 +172,8 @@ const perPattern = new Map()
 while (Date.now() - started < budgetMs && mutants < maxMutants) {
   const docs = Array.from({ length: BATCH }, () => r.pick(pool))
   const fresh = [...new Set(docs.filter((doc) => !calibrated.has(doc.name)))]
-  patterns(fresh.map((doc) => doc.source)).forEach((p, i) => calibrated.set(fresh[i].name, agrees(p)))
+  // A seed the model refuses is left out: its mutants would have no oracle.
+  patterns(fresh.map((doc) => doc.source)).forEach((p, i) => calibrated.set(fresh[i].name, p === 'js,model,php,rs'))
   const batch = docs
     .filter((doc) => calibrated.get(doc.name))
     .slice(0, Math.max(0, maxMutants - mutants))
