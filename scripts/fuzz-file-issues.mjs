@@ -35,13 +35,25 @@ const report = JSON.parse(readFileSync(reportPath, 'utf8'))
 const run = { seed: report.seed, mutants: report.mutants, engines: report.enginesLine }
 const gh = (args, input) => execFileSync('gh', args, { encoding: 'utf8', input, stdio: ['pipe', 'pipe', 'inherit'] })
 
+// GitHub search returns at most 1000 results.
+const SEARCH_CAP = 1000
+const search = (query) => JSON.parse(gh([
+  'issue', 'list', '--repo', repo, '--state', 'all', '--limit', String(SEARCH_CAP),
+  '--search', `${query} in:body`, '--json', 'number,state,body',
+]))
 const existing = new Map()
 try {
-  const issues = JSON.parse(gh([
-    'issue', 'list', '--repo', repo, '--state', 'all', '--limit', '1000',
-    '--search', `"${SIGNATURE_MARKER}" in:body`, '--json', 'number,state,body',
-  ]))
+  const issues = search(`"${SIGNATURE_MARKER}"`)
   for (const [sig, hits] of signaturesIn(issues)) existing.set(sig, hits)
+  // A capped listing may have dropped older signatures: ask for each unseen one.
+  // Spaced to stay under the search API's 30 requests a minute.
+  if (issues.length >= SEARCH_CAP) {
+    for (const { signature } of report.groups.filter((g) => !existing.has(g.signature))) {
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2100)
+      const hits = signaturesIn(search(signature)).get(signature)
+      if (hits) existing.set(signature, hits)
+    }
+  }
 } catch (error) {
   console.error(`fuzz-file-issues: could not list existing issues: ${error.message}`)
   process.exit(2)

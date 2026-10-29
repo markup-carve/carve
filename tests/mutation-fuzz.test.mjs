@@ -131,6 +131,31 @@ test('the filer labels new issues and comments on an open one', () => {
   assert.match(calls[2], /^issue create --repo o\/r .*--label bug --label area:corpus/)
 })
 
+test('a capped signature listing falls back to one search per unseen signature', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'fuzz-filer-'))
+  const log = join(dir, 'calls.log')
+  const filler = Array.from({ length: 1000 }, (_, i) => ({ number: 1000 + i, state: 'CLOSED', body: 'fuzz-signature: `ffffffffffffffff`' }))
+  writeFileSync(join(dir, 'all.json'), JSON.stringify(filler))
+  writeFileSync(join(dir, 'one.json'), JSON.stringify([{ number: 7, state: 'OPEN', body: 'fuzz-signature: `000000000000000c`' }]))
+  writeFileSync(join(dir, 'gh'), [
+    '#!/bin/sh',
+    `printf '%s\\n' "$*" >> '${log}'`,
+    `case "$*" in *"list"*000000000000000c*) cat '${dir}/one.json';; *"issue list"*) cat '${dir}/all.json';; esac`,
+    'cat > /dev/null',
+  ].join('\n'))
+  chmodSync(join(dir, 'gh'), 0o755)
+  const report = join(dir, 'report.json')
+  writeFileSync(report, JSON.stringify({ seed: 1, mutants: 1, disagreements: 1, enginesLine: 'e', groups: [group('000000000000000c')] }))
+  const run = spawnSync(process.execPath, [join(repo, 'scripts/fuzz-file-issues.mjs'), `--report=${report}`, '--repo=o/r'], {
+    encoding: 'utf8', env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, GITHUB_STEP_SUMMARY: '' },
+  })
+  assert.equal(run.status, 0, run.stderr)
+  const calls = readFileSync(log, 'utf8').trim().split('\n')
+  assert.equal(calls.length, 3)
+  assert.match(calls[1], /--search 000000000000000c in:body/)
+  assert.match(calls[2], /^issue comment 7 /)
+})
+
 test('the filer fails when gh cannot list issues', () => {
   const dir = mkdtempSync(join(tmpdir(), 'fuzz-filer-'))
   writeFileSync(join(dir, 'gh'), '#!/bin/sh\nexit 1\n')
