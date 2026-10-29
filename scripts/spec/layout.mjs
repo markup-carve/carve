@@ -2940,10 +2940,12 @@ function ownLines(lines, trace = null) {
         continue
       }
       // A colon fence's lines move with it and are read again in the note.
-      const end = COLON_FENCE.test(m.rest) && prefix === '' ? at + pulledBlockLength(lines, at, (line) => line) : at + 1
+      // Under a quote prefix a blank line moves too, or it would end the quote.
+      const end = COLON_FENCE.test(m.rest) ? at + pulledBlockLength(lines, at, (line) => line) : at + 1
       for (let j = at + 1; j < end; j++) {
         replaced.add(j)
         if (!isBlank(lines[j])) lines[j] = moved + lines[j]
+        else if (prefix !== '') lines[j] = prefix.trimEnd()
       }
       lines[at] = moved + m.rest
       at--
@@ -5898,7 +5900,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const nestedMarkerFold = !qTermOpen && qNestedPara.some(Boolean) && !!matchMarkerAt(indentCols(unmarked))
         // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
         const refusedNotePlus = qLastMarked === i - 1 && !!matchMarkerAt(indentCols(unmarked)) &&
-          CONT_MARKER.test(FOOTNOTE_DEF.exec((QUOTE.exec(lines[i - 1])?.[1] ?? '').replace(/^(?:[ \t]*>(?: |(?=[ \t]|$)))*[ \t]*/, ''))?.[2] ?? '')
+          endsInNotePlus(QUOTE.exec(lines[i - 1])?.[1] ?? '')
         if (lines[i] !== undefined && (qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&
             !bodyEndsWrappedAttr(inner) && !refusedNotePlus && !isBlank(lines[i]) &&
             !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(unmarked) ||
@@ -6477,6 +6479,22 @@ const firstBlockQuoteColumn = (source) => {
     if (CONT_MARKER.test(rest)) return column
   }
   return undefined
+}
+// Whether a marker line's stack of quote and list markers ends in a note's
+// first-block `+` (`> [^b]: +`, `> - [^b]: +`).
+const endsInNotePlus = (source) => {
+  let rest = source
+  for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+    const measured = indentCols(rest)
+    const note = FOOTNOTE_DEF.exec(measured.rest)
+    if (note) return CONT_MARKER.test(note[2])
+    const marker = matchMarkerAt(measured)
+    if (marker) { rest = marker.text; continue }
+    const quote = QUOTE.exec(measured.rest)
+    if (!quote) return false
+    rest = quote[1] ?? ''
+  }
+  return false
 }
 // Per lazily folded line: whether it started at a column a first-block `+`
 // may pull from (column 0 of the frame it was read in, or the opener line's
