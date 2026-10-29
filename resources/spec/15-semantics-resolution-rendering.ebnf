@@ -270,7 +270,8 @@
          its next owned block, including one at its content column, and ends
          at that block's boundary. A block in an enclosing item's column stays
          with that item. A sibling list item stays a sibling. Other first-block
-         hosts accept a non-list block at document column zero or their own
+         hosts accept a non-list block at column zero of their quote level
+         (the document's, or an enclosing quote's content) or at their own
          marker column; an intervening column refuses the marker. The pull
          precedes an unprefixed line's ordinary closure of a host quote (§10 I5).
 

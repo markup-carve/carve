@@ -1072,8 +1072,9 @@ indent = whitespace, {whitespace} ;
 (* Continuation marker (PART 9 §17): a lone `+` at an open container's marker column,
    or directly after a quote prefix, attaches one block starting at that
    column. A first-block `+` after the last opener on its line attaches to
-   that innermost opener when a non-list block starts at document column 0 or
-   the opener line's own column. At an open list item's marker column, a following
+   that innermost opener when a non-list block starts at column 0 of its quote
+   level (the document's, or an enclosing quote's content) or at the opener
+   line's own column. At an open list item's marker column, a following
    same-column list item is a sibling, so the `+` is ordinary text and the
    refused-marker lint reports it. *)
 continuation_marker = '+', newline ;
@@ -1084,7 +1085,7 @@ continuation_marker_block = continuation_marker, block ;
 (* First-block form (Carve addition; see PART 9 §17 L4): a lone `+` as the
    sole content right after a container's last opener (`- +`, `1. +`, `: +`,
    `> +`, `[^a]: +`, `- - +`) opens a body that is the one block starting at
-   document column 0 or that opener line's column, with no inline lead;
+   column 0 of its quote level or that opener line's column, with no inline lead;
    a list item at a column owned by an open list remains a sibling.
    `- + text` keeps `+ text` as literal
    inline content -- only a bare `+` triggers this. With no block at that column
@@ -5969,7 +5970,8 @@ EOF = (* end of file *) ;
          its next owned block, including one at its content column, and ends
          at that block's boundary. A block in an enclosing item's column stays
          with that item. A sibling list item stays a sibling. Other first-block
-         hosts accept a non-list block at document column zero or their own
+         hosts accept a non-list block at column zero of their quote level
+         (the document's, or an enclosing quote's content) or at their own
          marker column; an intervening column refuses the marker. The pull
          precedes an unprefixed line's ordinary closure of a host quote (§10 I5).
 
