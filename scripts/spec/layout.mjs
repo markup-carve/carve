@@ -6869,6 +6869,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       markerCarriesContinuation(head.text.trim(), prefixMemo(state, itemLines, 0).continuation)
     let nestedAttachmentColumn = sourceMarkerCol
     let nestedAttachmentEnd = -1
+    // The spent attachment is a sublist, whose open paragraph a lazy line may still reach.
+    let spentOnSublist = false
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
     if (list.task) item.checked = /^[xX]$/.test(head.task)
@@ -7721,6 +7723,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       itemLines.length = 0
       itemMeas.length = 0
       if (itemOrigins) itemOrigins.length = 0
+      // The memo carried for the `+` head must not answer for the line that now opens the body.
+      state.prefixMemos?.get(itemLines)?.delete(0)
       attachNext = true
       closePara()
     }
@@ -7789,6 +7793,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // block here, the carry below must not take a SECOND one: `- +` / `para` /
     // `> q` attaches the paragraph and leaves the quote outside the item.
     if (attachNext && attachFlushLeft()) carriesBareContinuation = false
+    // A sublist at the content column is the `+`'s one block, so a later
+    // flush-left block closes the item (SS17 L3).
+    else if (attachNext && i < n && matchMarkerAt(ind(i))?.indent >= contentCol) {
+      spentOnSublist = true
+      nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
+        ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
+        matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i), ind(i).col, ind(i).col)
+    }
     // End of a wrapped block-attribute line, inclusive. Attribute lines are
     // interrupters whether they occupy one physical line or several; each
     // continuation line therefore leaves no paragraph available for a later
@@ -7837,7 +7849,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // frame, unless it is a new continuation marker for this item.
       if (nestedAttachmentEnd >= 0 && i >= nestedAttachmentEnd &&
           lm.rest !== '' && lm.col <= baseIndent &&
-          !CONT_MARKER.test(lm.rest)) break
+          !CONT_MARKER.test(lm.rest) && !(spentOnSublist && deepestParagraphOpen() && (foldablePlainLine(lm.rest) ||
+            isCodeBlockOpener(lm.rest) && !hasCloser(lines.slice(i), 0)))) break
       if (i <= wrappedAttrEnd) {
         const body = dedentMeasured(lm, line, contentCol)
         pushLine(body.text, body.meas)
@@ -8733,6 +8746,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           carriesBareContinuation = true
           nestedAttachmentColumn = lm.L?.col ?? lm.col
           nestedAttachmentEnd = -1
+          // The descendant's `+` spends itself on a sublist at its content column.
+          const sub = i + 1 < n ? matchMarkerAt(ind(i + 1)) : null
+          spentOnSublist = /^(\[[^\]]\][ \t]+)?\+$/.test(trimWs(lm.rest.slice(nm.markerWidth))) && sub && sub.indent >= nm.indent + nm.markerWidth
+          if (spentOnSublist) {
+            nestedAttachmentEnd = attachedBlockEnd(lines, i + 1, state, (idx) =>
+              ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
+              matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i + 1), ind(i + 1).col, ind(i + 1).col)
+          }
         }
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
