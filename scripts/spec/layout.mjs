@@ -7966,7 +7966,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       }
       const foldedChildFence = markerLineFence === null && !isBlank(priorContent) && !nestedVerbatim() && descendantParagraphBefore && col < childCol && FENCE.test(lm.rest) &&
         !fenceCloserFollows(i, dedentMeasured(lm, lines[i], col).text, col)
-      if (headSubActive && col < headSubCol &&
+      // A line past the child's marker column that folds lazily into its open
+      // paragraph or term opens nothing here, so the child keeps its column (carve#3950).
+      const foldsIntoChild = headSubActive && descendantParagraphBefore && col > headSubCol - headSubMarker.markerWidth &&
+        DEFLIST_SEPARATOR.test(lm.rest)
+      if (headSubActive && col < headSubCol && !foldsIntoChild &&
           (opensAuthoredBase(lm.rest) || col >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(lm.rest)) &&
           !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
         headSubActive = false
