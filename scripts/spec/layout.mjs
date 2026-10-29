@@ -2976,8 +2976,8 @@ function ownLines(lines, trace = null) {
       }
       const next = frames[reached + 1]
       const limit = next.kind === 'quote' ? Infinity : next.canon - 1
-      // A description separator is measured from its term's own column (CARVE-P0-008).
-      const cut = form.kind === 'dd' && owner.termShift !== undefined ? owner.termShift : owner.cut
+      // A lazy line in a description list is measured from its term's own column (CARVE-P0-008).
+      const cut = owner.termShift !== undefined && (owner.last === 'dd' || owner.last === 'term') ? owner.termShift : owner.cut
       lead(Math.min(Math.max(m.col - cut, owner.canon), limit))
       if (FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       result.push(out + src)
@@ -3006,7 +3006,9 @@ function ownLines(lines, trace = null) {
       const term = owner.para && owner.last === 'term'
       // A separator after a `+` moved onto the owner meets it where its term stood.
       const afterPlus = owner.para && owner.plusLine === at - 1 && owner.termShift !== undefined && DESCRIPTION_LEAD.test(m.rest)
-      const cut = term ? owner.termCut : afterPlus ? owner.termShift : owner.cut
+      // So does the block a `+` attaches to a description.
+      const attached = plusFollower && owner.termShift !== undefined && owner.last === 'dd'
+      const cut = term ? owner.termCut : afterPlus || attached ? owner.termShift : owner.cut
       const moved = !(owner.para || !closedColumn || plusFollower)
       lead(moved ? owner.canon : Math.max(m.col - cut, owner.canon), term)
       owner.plusLine = moved && CONT_MARKER.test(m.rest) ? at : undefined
