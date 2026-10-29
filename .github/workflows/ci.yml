@@ -255,12 +255,23 @@ jobs:
         # Match this repository's Node minimum and test the current release too.
         # Published engine runtime support belongs in each engine repository.
         # Node 26 gates normally; demote it only for recorded toolchain breakage.
-        # It runs `npm test` only: the audits after it read committed files and
-        # give the same answer on any Node, so Node 24 runs them once.
+        # On main both versions run `npm test`, and Node 24 runs the audits once:
+        # they read committed files and give the same answer on any Node. On a
+        # pull request only Node 26 works (suite and audits); the Node 24 entry
+        # just reports, because the required check name includes the version.
         node-version: [24, 26]
 
+    env:
+      AUDIT_NODE: ${{ github.event_name == 'pull_request' && '26' || '24' }}
+      PR_SKIP: ${{ github.event_name == 'pull_request' && matrix.node-version == 24 }}
+
     steps:
+      - name: Node 24 runs on main only
+        if: env.PR_SKIP == 'true'
+        run: echo "Pull requests run the suite and the audits on Node 26; main runs both versions."
+
       - uses: actions/checkout@v6
+        if: env.PR_SKIP != 'true'
         with:
           fetch-depth: 0
 
@@ -268,6 +279,7 @@ jobs:
       # `@markup-carve/carve` reference build the conformance steps render
       # through. The pin is an exact carve-js commit in package.json.
       - name: Install on Node ${{ matrix.node-version }}
+        if: env.PR_SKIP != 'true'
         uses: ./.github/actions/npm-ci
         with:
           node-version: ${{ matrix.node-version }}
@@ -278,7 +290,7 @@ jobs:
       # `git diff` compares tracked files, so a generated file a pull request
       # never added is untracked and produces no diff (carve#2037).
       - name: Corpus is in sync with examples
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: |
           npm run corpus:build
           git diff --exit-code -- tests/corpus tests/spec
@@ -294,11 +306,12 @@ jobs:
       # carve-js build still backs the Tier-2, round-trip, prose-example and
       # render-option suites in the same run.
       - name: Conformance
+        if: env.PR_SKIP != 'true'
         run: npm test
 
       # Audit normative pages on each PR; inputs come from this repository.
       - name: Normative pages state nothing the spec source does not
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run normative:check
 
       # Three committed artifacts are assembled from sources: grammar.ebnf from
@@ -307,40 +320,40 @@ jobs:
       # ARTIFACT, so a source-only edit is invisible to all of them - it does not
       # fail, it silently does not apply.
       - name: Grammar aggregate matches its spec sources
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run spec:check
 
       - name: Rule ids and the rule index match the grammar
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run spec:rules:check
 
       - name: node-roles.json matches the AST contract
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run roles:check
 
       # A production off the `document` root derives nothing, so an edit to it
       # changes no document and no test notices. quote_block sat that way from
       # the modularization refactor until carve#2670.
       - name: Every production is reachable or declared unreachable
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run grammar:productions
 
       # A rule COPIED instead of referenced drifts: widening one copy leaves the
       # others behind. Seven productions spelled one alternation before carve#2671.
       - name: No production copies another's right-hand side undeclared
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run grammar:duplicates
 
       - name: Escaper corpus
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run escape:check
 
       - name: Executable-spec gate (formal Core grammar vs corpus)
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run core:check
 
       - name: Grammar reachability (corpus vs formal Core grammar)
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run grammar:reach
 
       # Check writer invariants on 2,000 generated documents with a fixed seed.
@@ -349,14 +362,14 @@ jobs:
       # which is currently unwired. The 2,000-case set detects the
       # table-alignment regression verified by reverting carve-js#903.
       - name: PART 11 canonical-writer invariants (generated documents)
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run property:check -- --count=2000
 
       # Fail on undeclared drift and on declarations the pin has caught up on.
       # Add spec-ahead fixtures to resources/engine-pin-drift.txt and remove them
       # once the pinned engine reproduces them.
       - name: Pinned reference build matches its declared drift
-        if: matrix.node-version == 24
+        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run engine:report -- --check
 
   # The generated conformance pack every engine runs at its spec pin
