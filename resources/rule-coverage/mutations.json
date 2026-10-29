@@ -41,8 +41,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "if ((subCol >= 0 && col >= subCol) || (headSubActive && col >= headSubCol)) {",
-          "replace": "if ((subCol >= 0 && col > subCol) || (headSubActive && col > headSubCol)) {"
+          "find": "if (!commentBelowChild && ((subCol >= 0 && col >= subCol) || (headSubActive && col >= headSubCol))) {",
+          "replace": "if (!commentBelowChild && ((subCol >= 0 && col > subCol) || (headSubActive && col > headSubCol))) {"
         }
       ]
     },
