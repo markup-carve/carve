@@ -160,8 +160,8 @@ const MAX_NESTING_DEPTH = 200
 /// fence under a paragraph only when a closer FOLLOWS. Asking it with a forward
 /// scan per opener is quadratic on a body of fenced bodies, which is carve#2509,
 /// so the answer comes from an index built once per depth and this counts the
-/// lines that index reads.
-export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0 }
+/// lines that index reads. `closerScan` counts the lines `findCloser` reads.
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0, closerScan: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
@@ -170,6 +170,7 @@ export function resetLayoutWork() {
   layoutWork.quoteStrips = 0
   layoutWork.lineVisits = 0
   layoutWork.fenceCloserLookahead = 0
+  layoutWork.closerScan = 0
   layoutWork.forwardSearch = 0
   layoutWork.commentTail = 0
   layoutWork.ownership = 0
@@ -3961,6 +3962,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   const sourceColumns = state.descriptionSourceColumns?.get(lines)
   const relativeTermColumns = state.itemRelativeTermColumns?.has(lines) ?? false
   layoutWork.lineVisits += n
+  // §10 I4 asks for a closer once per fence line; answer each from one index.
+  const hasCloserHere = closerIndex(lines)
 
   // Measurements for these lines, memoized per index and SEEDED by the
   // enclosing container where it could derive them (carve#752). Without the
@@ -3988,7 +3991,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     if (startsParagraphBlock(line, top)) return true
     if (fenceOpens?.has(idx)) return true
     if (isColonParagraphInterrupt(line) || COLON_CLOSER.test(line)) return true
-    if (hasCloser(lines, idx)) return true // I4: valid opener and matching closer
+    if (hasCloserHere(idx)) return true // I4: valid opener and matching closer
     // A BLOCK-ATTRIBUTE LINE is in I5's list too - "a reference definition, a
     // comment, and a block-attribute line" - and it was the one member missing
     // here. Inside a list item that meant `- a` / `{.c}` / `text` folded all
@@ -4388,7 +4391,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           break
         } else if (afterComment &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
-            !isColonBlockOpener(lines[i]) && !(FENCE.test(lines[i]) && hasCloser(lines, i))) {
+            !isColonBlockOpener(lines[i]) && !(FENCE.test(lines[i]) && hasCloserHere(i))) {
           // A retained marker is paragraph text and opens no list (PART 0 X1).
           bodyLines.push(BULLET.test(trimLineEnd(measured.rest)) || isOrderedMarkerLine(measured.rest) ? lazyFrame(measured.rest) : measured.rest)
           afterComment = afterCommentTransition(afterComment, {})
@@ -4403,7 +4406,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             (lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !COLON_CLOSER.test(lines[i]) &&
-            !(FENCE.test(lines[i]) && (hasCloser(lines, i) || state.fenceOpensAt?.get(lines)?.has(i))) &&
+            !(FENCE.test(lines[i]) && (hasCloserHere(i) || state.fenceOpensAt?.get(lines)?.has(i))) &&
             !(measured.col === 0 && commentFenceOpensSpan(lines, i)) &&
             !(measured.col === 0 && (isDefinitionOrAttributeLine(measured.rest) ||
               tryAttrLine(lines, i)))) {
@@ -4953,7 +4956,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (classifyLayoutComment(lines, i) !== null) break
             if (afterComment && !startsVisibleBlock(cur) &&
                 !isTableRow(cur) && !isColonBlockOpener(cur) &&
-                !(FENCE.test(cur) && hasCloser(lines, i))) {
+                !(FENCE.test(cur) && hasCloserHere(i))) {
               pushBody(BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented) ? lazyFrame(dedented) : dedented)
               afterComment = afterCommentTransition(afterComment, {})
               retainedParagraph = true
@@ -5028,7 +5031,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (!top && authoredCol > 0 && isCodeBlockOpener(dedented) &&
                 hasCloser([dedented, ...lines.slice(i + 1)], 0)) break
             const lazyFence = !foldablePlain(dedented) && FENCE.test(dedented) &&
-              !(FENCE.test(cur) && hasCloser(lines, i))
+              !(FENCE.test(cur) && hasCloserHere(i))
             // A table row interrupts the paragraph (PART 9 §10 I1), so below
             // the body's column it ends the body rather than folding (carve#3145).
             if (isTableRow(dedented)) break
@@ -6022,7 +6025,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             !bodyEndsWrappedAttr(inner) && !refusedNotePlus && !isBlank(lines[i]) &&
             !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(unmarked) ||
               QUOTE.test(stripIndent(unmarked)) ||
-              (FENCE.test(unmarked) && !hasCloser(lines, i)) || nestedMarkerFold) &&
+              (FENCE.test(unmarked) && !hasCloserHere(i)) || nestedMarkerFold) &&
             (!peekInterrupts(i) || foldedColon || nestedMarkerFold) &&
             (!COLON_CLOSER.test(lines[i]) || foldedColon) && !CAPTION.test(lines[i])) {
           // lazy continuation folds into the open quoted paragraph (SS10 I6)
@@ -6124,7 +6127,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         {
           if (colonInterruptsParagraph(lines, i, para)) break // I1/I4
         }
-        if (hasCloser(lines, i)) break // I4: valid opener and matching closer
+        if (hasCloserHere(i)) break // I4: valid opener and matching closer
       }
       para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
       i++
@@ -6184,9 +6187,38 @@ function hasCloser(lines, idx) {
   return findCloser(lines, idx, m[1]) !== -1
 }
 
+// `hasCloser` over a fixed line array. The first closer at or after each line
+// is tabled once per fence character and run length: successive `findCloser`
+// scans cover disjoint ranges, so a table costs one pass.
+function closerIndex(lines) {
+  if (lines.length <= 32) return (idx) => hasCloser(lines, idx)
+  const next = new Map()
+  const firstCloser = (from, run) => {
+    const key = run[0] + run.length
+    let table = next.get(key)
+    if (!table) {
+      table = new Int32Array(lines.length + 1).fill(-1)
+      for (let at = 0; at < lines.length; ) {
+        const closer = findCloser(lines, at - 1, run)
+        const upTo = closer === -1 ? lines.length - 1 : closer
+        table.fill(closer, at, upTo + 1)
+        at = upTo + 1
+      }
+      next.set(key, table)
+    }
+    return table[from]
+  }
+  return (idx) => {
+    const m = FENCE.exec(lines[idx])
+    if (!m || parseFenceInfo(m[2]) === null) return false
+    return firstCloser(idx + 1, m[1]) !== -1
+  }
+}
+
 function findCloser(lines, openIdx, run) {
   const ch = run[0]
   for (let j = openIdx + 1; j < lines.length; j++) {
+    layoutWork.closerScan++
     const c = PURE_FENCE.exec(lines[j])
     if (!c || c[1][0] !== ch) continue
     if (c[1].length < run.length) continue // shorter run: content (the `where` guard)
@@ -6954,15 +6986,27 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
      * item past a blank followed by a line below the column, so lines after
      * such a blank are not the item's and cannot close its fence.
      */
+    // One answer per line, walk state, base and run: a scan that reaches a line
+    // an earlier scan passed in the same state takes that scan's answer.
+    const closerFollowsMemo = new Map()
     const fenceCloserFollows = (idx, dedented, blockBase = contentCol) => {
       const m = FENCE.exec(dedented)
       if (!m || parseFenceInfo(m[2]) === null) return false // INVALID-FENCE FALLBACK
-      const body = [dedented]
-      let pendingBlanks = 0
-      let seenBelow = false
-      for (let j = idx + 1; j < lines.length; j++) {
+      const run = m[1]
+      const memoKey = `${blockBase} ${run[0]}${run.length}`
+      let memo = closerFollowsMemo.get(memoKey)
+      if (!memo) closerFollowsMemo.set(memoKey, memo = new Map())
+      const path = []
+      let found = false
+      // Walk state: 1 = blanks pending, 2 = a below-column line was seen.
+      let walk = 0
+      for (let j = idx + 1; ; j++) {
+        if (j >= lines.length) break
+        const at = j * 4 + walk
+        if (memo.has(at)) { found = memo.get(at); break }
+        path.push(at)
         const raw = lines[j] ?? ''
-        if (isBlank(raw)) { pendingBlanks++; continue }
+        if (isBlank(raw)) { walk |= 1; continue }
         const lm2 = indentCols(raw)
         // A sibling or outer marker ends the item, so nothing from there on is
         // this fence's to close.
@@ -6970,8 +7014,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (nm2 && nm2.indent <= baseIndent) break
         // A blank followed by a line below the content column ends the item too
         // (carve#1379), and the fence does not reach past it.
-        if (pendingBlanks > 0 && lm2.col < contentCol) break
-        for (; pendingBlanks > 0; pendingBlanks--) body.push('')
+        if ((walk & 1) && lm2.col < contentCol) break
+        walk &= ~1
         // A line BELOW the column is not outside the search: §24 C3 folds it as
         // lazy text while a paragraph is open, so a closer written after it is
         // still written inside this item. Stopping here instead made the answer
@@ -6982,18 +7026,20 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // The below-column line itself cannot be the closer: it is not written
         // inside the item (carve#2145), so it is searched past and never matched.
         // Past a below-column line the walk left the closer where it was written.
-        if (seenBelow && lm2.col >= blockBase && PURE_FENCE.test(lm2.rest)) {
-          body.push(lm2.rest)
-          continue
+        let text
+        if ((walk & 2) && lm2.col >= blockBase && PURE_FENCE.test(lm2.rest)) text = lm2.rest
+        else {
+          if (lm2.col < contentCol) walk |= 2
+          text = lm2.col >= blockBase
+            ? dedentMeasured(lm2, raw, blockBase).text
+            : lm2.col >= contentCol
+              ? dedentMeasured(lm2, raw, contentCol).text
+              : lazyFrame(lm2.rest)
         }
-        if (lm2.col < contentCol) seenBelow = true
-        body.push(lm2.col >= blockBase
-          ? dedentMeasured(lm2, raw, blockBase).text
-          : lm2.col >= contentCol
-            ? dedentMeasured(lm2, raw, contentCol).text
-            : lazyFrame(lm2.rest))
+        if (findCloser([text], -1, run) !== -1) { found = true; break }
       }
-      return hasCloser(body, 0)
+      for (const at of path) memo.set(at, found)
+      return found
     }
     const bodyFenceOpens = (idx, dedented, blockBase = contentCol, endedDescendant = false) => {
       const m = FENCE.exec(dedented)
