@@ -4071,16 +4071,15 @@ EOF = (* end of file *) ;
    Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
    the order of its atom table (escapes, code spans, math, inline
    literals, autolinks and cross-references, comments, inline notes, note
-   references, bracket runs and their tails), and pass P2 pairs bare,
+   references, extensions, bracket runs and their tails), and pass P2 pairs bare,
    braced, combined and editorial spans in one left-to-right reading.
    Prefer literal text over markup: a delimiter that pairs with nothing
    under §9 is literal. What remains is read afterwards, in this order:
-   1. Extensions (:type[content])
-   2. Mentions and tags (@user, #tag)
-   3. Smart typography (--, ---, etc.; `=>` is the arrow, never a
+   1. Mentions and tags (@user, #tag)
+   2. Smart typography (--, ---, etc.; `=>` is the arrow, never a
       highlight opener, PART 9 §8)
-   4. Trailing line comments (%%, PART 9 §21)
-   5. Plain text
+   3. Trailing line comments (%%, PART 9 §21)
+   4. Plain text
 *)
 
 (* ============================================================================
@@ -4799,8 +4798,8 @@ EOF = (* end of file *) ;
 
       INPUT. The inline content of one block after block structure is
       settled. A REGION is that content, or the content of a bracket run,
-      inline note, braced span or editorial frame. Pairing never crosses a
-      region boundary, in either direction. The bare delimiters are `/`,
+      inline note, extension, braced span or editorial frame. Pairing never
+      crosses a region boundary, in either direction. The bare delimiters are `/`,
       `*`, `_`, `~` and `=`. A character is ALNUM when it is an ASCII letter
       or digit (`alnum`, PART 7), and WHITESPACE when it is a space, a tab or
       a line end (`ws`); a no-break space is neither. A delimiter followed by
@@ -4846,10 +4845,10 @@ EOF = (* end of file *) ;
         opens nor closes: =a <= b= -> <mark>a ≤ b</mark>.
 
       OWN KINDS. A region has the kind of its braced span or editorial
-      frame, and none for the block, a bracket run, an inline note or either
-      side of a substitution. A bare delimiter of an own kind is text in that
-      region: {/a/b/} -> <em>a/b</em>, while {~a~>~b~ c~} holds a strike
-      span in its second side.
+      frame, and none for the block, a bracket run, an inline note, an
+      extension or either side of a substitution. A bare delimiter of an own
+      kind is text in that region: {/a/b/} -> <em>a/b</em>, while
+      {~a~>~b~ c~} holds a strike span in its second side.
 
       THE STEPS, at each position of the region, in order:
       R1 NESTED OPENER. At `{X` with X one of / * _ ~ = ^ , + -, start a
@@ -4876,8 +4875,8 @@ EOF = (* end of file *) ;
          close the nearest such entry. Every entry above it is removed and
          becomes text; spans nest, never overlap. The new span is final.
       R3 ATTACH. A glued attribute_run (PART 4) directly after a closer that
-         closed a span, a formed nested span, a bracket run, a code span,
-         math or an autolink attaches to it and is consumed; its characters
+         closed a span, a formed nested span, a bracket run, an extension, a
+         code span, math or an autolink attaches to it and is consumed; its characters
          take part in nothing else. The run is read on the source
          characters, through any atom P1 found in them, and an atom that
          starts inside an attached run is dissolved: *a*{#b} c #} attaches
@@ -4943,6 +4942,8 @@ EOF = (* end of file *) ;
                          (CARVE-P3-016). Unmatched, it is text.
         inline note      `^[`, to the balanced `]` (§16); a region.
         note reference   `[^` and a label, to the first `]`.
+        extension        `:`, an extension_name and `[`, to the FIRST `]`
+                         (PART 3); a region: :foo[a [b] c] holds `a [b`.
         bracket run      `[`, to the balanced `]`, skipping what
                          CARVE-P3-001 names; a region. Unbalanced, the `[`
                          is text.
@@ -4972,6 +4973,7 @@ EOF = (* end of file *) ;
         literal         atom              none
         comment         atom              none
         bracket run     atom              after the `]` or its tail (§14)
+        extension       atom              after the `]`
         autolink        atom              after the `>`
       A bare `^` or `,` delimits nothing: superscript and subscript have only
       the braced form.

@@ -26,15 +26,14 @@
    Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
    the order of its atom table (escapes, code spans, math, inline
    literals, autolinks and cross-references, comments, inline notes, note
-   references, bracket runs and their tails), and pass P2 pairs bare,
+   references, extensions, bracket runs and their tails), and pass P2 pairs bare,
    braced, combined and editorial spans in one left-to-right reading.
    Prefer literal text over markup: a delimiter that pairs with nothing
    under §9 is literal. What remains is read afterwards, in this order:
-   1. Extensions (:type[content])
-   2. Mentions and tags (@user, #tag)
-   3. Smart typography (--, ---, etc.; `=>` is the arrow, never a
+   1. Mentions and tags (@user, #tag)
+   2. Smart typography (--, ---, etc.; `=>` is the arrow, never a
       highlight opener, PART 9 §8)
-   4. Trailing line comments (%%, PART 9 §21)
-   5. Plain text
+   3. Trailing line comments (%%, PART 9 §21)
+   4. Plain text
 *)
 
