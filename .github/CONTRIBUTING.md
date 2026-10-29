@@ -34,6 +34,13 @@ For this repo in particular:
 - Spec or examples changes should normally keep `npm test` green.
 - If you change `resources/examples/*.md`, regenerate the corpus and verify the
   resulting fixture diff is intentional.
+- Round trips are gated by per-document exception lists in
+  `resources/roundtrip/`, not by committed totals. A corpus document that fails
+  a round trip is added to the matching list, sorted, in the PR that adds it;
+  one that passes after an engine change is removed. Rewrite the lists with
+  `CARVE_ROUNDTRIP_WRITE=1 npm run html-import:check` and
+  `npm run roundtrip:structure -- --write`, then inspect the diff. Explain the
+  changes in the commit message, not in the lists.
 - If you move the pinned `@markup-carve/carve` commit (`npm run bump-carve-pin`),
   pin only a commit merged to `carve-js` `main`, not a local branch build.
 - Issues titled `fuzz: ...` come from the nightly fuzz differential. Keep the

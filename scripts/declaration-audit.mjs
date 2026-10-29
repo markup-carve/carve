@@ -214,10 +214,9 @@ const MANIFEST = [
   { repo: 'spec', path: 'resources/ingest-comparison-drift.json', name: 'differences', kind: 'json', policy: 'manual', guard: 'two-way', stalenessFile: 'scripts/lib/import-comparison.mjs', staleness: 'STALE comparison declaration:', owner: 'npm run ast:ingest' },
   { repo: 'spec', path: 'resources/roundtrip-export-acceptance-fixtures.json', name: 'aheadOfPin', kind: 'json-flag', flag: 'aheadOfPin', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/roundtrip-export-acceptance.test.mjs', staleness: 'is declared aheadOfPin but the pinned engine passes it: drop the flag', owner: 'tests/roundtrip-export-acceptance.test.mjs' },
   { repo: 'spec', path: 'resources/ast-cell-wraps-acceptance.json', name: 'aheadOfPin', kind: 'json-flag', flag: 'aheadOfPin', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/an-atomic-inline-carries-its-continuation-join.test.mjs', staleness: 'is declared aheadOfPin but the pinned engine passes it: drop the flag', owner: 'tests/an-atomic-inline-carries-its-continuation-join.test.mjs' },
-  // A counts ratchet rather than a ledger, but it carries a per-document
-  // allowlist inside it. Two-directional by construction - the whole object is
-  // compared with deepEqual - so a row here cannot rot silently.
-  { repo: 'spec', path: 'resources/import-roundtrip-baseline.json', name: 'htmlImportPopulation.expectedRejections', kind: 'json', policy: 'manual', guard: 'two-way', stalenessFile: 'tests/import-roundtrip-ratchets.check-helper.mjs', staleness: 'htmlImportPopulation: baseline.htmlImportPopulation,', owner: 'tests/import-roundtrip-ratchets.check-helper.mjs' },
+  // The one round-trip exception list that names an engine refusal rather than
+  // a lossy target; the check fails on an id that passes now.
+  { repo: 'spec', path: 'resources/roundtrip/import-html-rejected.txt', kind: 'txt', policy: 'manual', guard: 'two-way', stalenessFile: 'scripts/lib/exception-list.mjs', staleness: 'passes now; remove it from the list', owner: 'tests/import-roundtrip-ratchets.check-helper.mjs' },
 
   { repo: 'spec', path: 'resources/html-import-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/html-import-contract.check.mjs', staleness: 'pinned build now reproduces it. Delete the entry', owner: 'npm run html-import:check' },
 

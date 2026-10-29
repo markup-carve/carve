@@ -1,4 +1,5 @@
 import { labelKey } from '../spec/label-key.mjs'
+import { compareExceptions, corpusId } from './exception-list.mjs'
 
 // CARVE-P11-028 and carve-js#2905 permit HTML to lose unused definitions and literalize unresolved references.
 export function acceptHtmlLosses(tree) {
@@ -125,6 +126,8 @@ export function record(stats, file, diff, error, message, strictDiff = null) {
   if (!diff && !error) {
     stats.identical++
     if (!strictDiff) { stats.strict = (stats.strict ?? 0) + 1; return }
+    stats.notStrict ??= []
+    stats.notStrict.push(corpusId(file))
     const bucket = (stats.strictBuckets ??= {})[strictDiff.kind] ??= { count: 0, examples: [] }
     bucket.count++
     bucket.examples.push({ file, ...strictDiff })
@@ -134,6 +137,8 @@ export function record(stats, file, diff, error, message, strictDiff = null) {
   }
   if (error) stats.errors++
   else stats.different = (stats.different ?? 0) + 1
+  stats.notIdentical ??= []
+  stats.notIdentical.push(corpusId(file))
   const kind = error ? error : diff.kind
   const buckets = error ? (stats.errorBuckets ??= {}) : stats.buckets
   const bucket = buckets[kind] ??= { count: 0, examples: [] }
@@ -142,34 +147,35 @@ export function record(stats, file, diff, error, message, strictDiff = null) {
   bucket.examples.sort((a, b) => a.file < b.file ? -1 : a.file > b.file ? 1 : 0)
   bucket.examples.length = Math.min(bucket.examples.length, 3)
 }
-export function validateBaseline(value) {
-  if (value?.version !== 2) throw new Error('Unsupported baseline version')
-  for (const engine of ['js', 'php', 'rs']) for (const target of ['html', 'md']) {
-    const row = value.engines?.[engine]?.[target]
-    if (row === null) continue
-    if (!row || ![row.identical, row.strict, row.total].every(Number.isInteger) || row.strict < 0 || row.identical < row.strict || row.total < row.identical) throw new Error(`Invalid baseline ${engine}/${target}`)
-  }
-  return value
-}
+// The ids that are not identical, and the identical ids that are not strict.
+export const exceptionFiles = (engine, target) => ({
+  notIdentical: `structure-${engine}-${target}-not-identical.txt`,
+  notStrict: `structure-${engine}-${target}-not-strict.txt`,
+})
 
-export function checkCounts(rows, baseline) {
+/**
+ * Gate measured rows against their exception lists. `declared(engine, target)`
+ * returns `{ notIdentical, notStrict }` id arrays, or null where no list exists;
+ * an unsupported row is expected to have none.
+ */
+export function checkExceptions(rows, declared, corpus) {
   const notices = []
   let failed = false
   for (const row of rows) {
     const name = `${row.engine}/${row.target}`
-    if (row.status === 'skipped') { failed = true; notices.push(`${name}: skipped, cannot gate baseline`); continue }
-    const previous = baseline.engines[row.engine][row.target]
+    if (row.status === 'skipped') { failed = true; notices.push(`${name}: skipped, cannot gate`); continue }
+    const lists = declared(row.engine, row.target)
     if (row.status === 'unsupported') {
-      if (previous !== null) failed = true
-      notices.push(`${name}: unsupported${previous !== null ? ', cannot gate baseline' : ', no baseline'}: ${row.reason}`)
+      if (lists !== null) failed = true
+      notices.push(`${name}: unsupported${lists !== null ? ', cannot gate its exception lists' : ', no exception lists'}: ${row.reason}`)
       continue
     }
-    if (previous === null) { notices.push(`${name}: supported now; review and write a baseline`); continue }
-    if (row.total !== previous.total) { failed = true; notices.push(`${name}: corpus total changed (${previous.total} -> ${row.total}); review and rewrite baseline`) }
-    if (row.identical < previous.identical) { failed = true; notices.push(`${name}: regression ${row.identical} < ${previous.identical}`) }
-    if (row.identical > previous.identical) notices.push(`${name}: raise the baseline ${previous.identical} -> ${row.identical}`)
-    if (row.strict < previous.strict) { failed = true; notices.push(`${name}: strict regression ${row.strict} < ${previous.strict}`) }
-    if (row.strict > previous.strict) notices.push(`${name}: raise the strict baseline ${previous.strict} -> ${row.strict}`)
+    if (lists === null) { failed = true; notices.push(`${name}: supported but has no exception lists; review and --write them`); continue }
+    const files = exceptionFiles(row.engine, row.target)
+    const problems = ['notIdentical', 'notStrict'].flatMap(key => compareExceptions({
+      name: `resources/roundtrip/${files[key]}`, declared: lists[key], failing: row[key] ?? [], corpus,
+    }))
+    if (problems.length) { failed = true; notices.push(...problems) }
   }
   return { failed, notices }
 }
@@ -196,12 +202,13 @@ export function finishMeasurement(row) {
   return row
 }
 
-export function baselineCounts(rows) {
-  const engines = {}
+export function exceptionLists(rows) {
+  const lists = []
   for (const row of rows) {
-    if (row.status === 'skipped') throw new Error(`${row.engine}/${row.target}: skipped, cannot write baseline`)
-    const targets = engines[row.engine] ??= {}
-    targets[row.target] = row.status === 'unsupported' ? null : { identical: row.identical, strict: row.strict, total: row.total }
+    if (row.status === 'skipped') throw new Error(`${row.engine}/${row.target}: skipped, cannot write exception lists`)
+    if (row.status === 'unsupported') continue
+    const files = exceptionFiles(row.engine, row.target)
+    lists.push({ file: files.notIdentical, ids: [...row.notIdentical ?? []].sort() }, { file: files.notStrict, ids: [...row.notStrict ?? []].sort() })
   }
-  return { version: 2, engines }
+  return lists
 }

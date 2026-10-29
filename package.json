@@ -26,6 +26,7 @@
     "compare:impls": "node scripts/compare-impls.mjs",
     "compare:convert": "node scripts/compare-impls.mjs --corpus=convert --fail-on-diff",
     "compare:counts": "node scripts/compare-impls.mjs --counts-only",
+    "compare:run-corpus": "node scripts/comparison-run-corpus.mjs",
     "compare:report": "node scripts/check-compare-report.mjs",
     "parity:check": "node scripts/parity-check.mjs",
     "lint:parity": "node scripts/lint-corpus-check.mjs",

@@ -171,14 +171,12 @@ const NOT_SHIPPED = [
     /^tests\/examples\//,
     // MEASUREMENT LEDGERS. Every `.txt` in resources/ is a declaration list or
     // an inventory - engine pin drift, fmt drift, AST divergence, the oracle
-    // and converter ledgers, the page and clause inventories - and these two
-    // JSON files are the same thing in another format: a corpus sidecar lock
-    // and a round-trip snapshot stamped with the engine commit it measured.
+    // and converter ledgers, the round-trip exception lists, the page and
+    // clause inventories - and the corpus sidecar lock is the same thing in JSON.
     // A pin bump rewrites them all and owes the reader nothing; six of the 67
     // merges in 0.1.6 were exactly that.
     /^resources\/.*\.txt$/,
     /^resources\/corpus-sidecars\.lock\.json$/,
-    /^resources\/import-roundtrip-baseline\.json$/,
 ];
 
 const EXEMPT_FILE = '.changelog-exempt';

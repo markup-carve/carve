@@ -1,7 +1,8 @@
 /*
- * Reconcile the comparison snapshot with the live corpus and its declared lag.
- * Lag names fixture categories rather than hand-entered counts, so both stale
- * declarations and undeclared corpus additions fail these checks.
+ * Reconcile the comparison snapshot with the live corpus. The fixtures the
+ * dated runs covered are listed in resources/comparison-run-corpus.txt, so the
+ * lag behind them is computed and a corpus addition edits neither the page nor
+ * the list.
  * Timings remain properties of the recorded run and are not asserted here.
  */
 import { test } from 'node:test'
@@ -22,29 +23,8 @@ const quoted = [...page.matchAll(/corpus=(core|optional)(?: selected_corpus=none
   pairs: Number(m[2]),
 }))
 
-// The categories the page declares as added after its quoted run. Names only:
-// every number below is counted from the corpus directory, never read from the
-// page. Absent line = no lag, which is the normal state.
-const declaredAfterRun = (label) => {
-  const m = page.match(new RegExp(`^${label} added since this run: (.+?)\\.$`, 'ms'))
-  if (!m) return []
-  return [...m[1].matchAll(/`([^`]+)`/g)].map((x) => x[1])
-}
-
-const laggedCategories = declaredAfterRun('Corpus')
-
-// A sidecar added to a document the run did measure: the document stays in the
-// denominators, only the new target fixture is outside them.
-const laggedSidecars = declaredAfterRun('Sidecars')
-
-// The OPTIONAL corpus needs the same declaration, and used to be excused from
-// it on the grounds that "nothing has ever added to it from a host that could
-// not re-run the tool". carve#560 is that host: it adds the two cases that pin
-// smartTypography on the plain-text and ANSI targets, on a machine with no
-// engine checkouts, so the choice was a declared lag or a hand-edited
-// three-engine measurement nobody took. Same rule, same two directions of
-// failure.
-const laggedOptional = declaredAfterRun('Optional corpus')
+const runFixtures = readFileSync(resolve(root, 'resources/comparison-run-corpus.txt'), 'utf8').split('\n').filter(Boolean)
+const covered = new Set(runFixtures)
 
 const corpusFiles = readdirSync(resolve(root, 'tests/corpus')).filter((f) => f.endsWith('.crv'))
 const corpusSidecars = readdirSync(resolve(root, 'tests/corpus')).filter((f) => /\.(md|txt|fmt|ansi)$/.test(f))
@@ -52,26 +32,10 @@ const optionalFiles = readdirSync(resolve(root, 'tests/corpus-optional')).filter
   f.endsWith('.crv'),
 )
 
-/** The fixtures one declared category contributes: `NN-slug.crv` and `NN-slug-K.crv`. */
-const fixturesOf = (category) =>
-  corpusFiles.filter(
-    (f) =>
-      f === `${category}.crv` ||
-      // The example index suffix, and ONLY that: `-2.crv`, not `-too-2.crv`.
-      // Slicing without the prefix test matched any file long enough to end in
-      // `-<digits>.crv`, whatever category it belonged to.
-      (f.startsWith(category) && /^-\d+\.crv$/.test(f.slice(category.length))),
-  )
+const laggedPairs = corpusFiles.filter((f) => !covered.has(`tests/corpus/${f}`)).length
+const laggedOptionalPairs = optionalFiles.filter((f) => !covered.has(`tests/corpus-optional/${f}`)).length
 
-const laggedPairs = laggedCategories.reduce((n, c) => n + fixturesOf(c).length, 0)
-
-// An optional case is one `.crv`, with no `-K` sub-pairs, so its slug is the
-// whole of the pairing rule.
-const optionalFixturesOf = (slug) => optionalFiles.filter((f) => f === `${slug}.crv`)
-const laggedOptionalPairs = laggedOptional.reduce((n, c) => n + optionalFixturesOf(c).length, 0)
-
-// The quoted run's denominator plus whatever it could not have covered. With no
-// declaration this is exactly the live count, i.e. the original rule.
+// The quoted run's denominator: the live corpus minus what it could not have covered.
 const effectiveCore = () => countPairs('tests/corpus') - laggedPairs
 
 const coreRows = () => {
@@ -105,39 +69,29 @@ for (const corpus of ['core', 'optional']) {
     const suffix = corpus === 'optional' ? ' -- --corpus=optional' : ''
     const rerun = `npm run compare:counts${suffix}`
     const full = `npm run compare:impls${suffix}`
-    const declared = corpus === 'core' ? laggedCategories : laggedOptional
-    const declaredPairs = corpus === 'core' ? laggedPairs : laggedOptionalPairs
-    const lagNote =
-      declaredPairs > 0
-        ? ` (${declaredPairs} pair(s) in ${declared.length} declared-lag categor(ies) are excluded)`
-        : ''
+    const lagged = corpus === 'core' ? laggedPairs : laggedOptionalPairs
+    const lagNote = lagged > 0 ? ` (${lagged} pair(s) added after the run are excluded)` : ''
     assert.equal(
       entry.pairs,
       live,
-      `docs/implementation-comparison-methodology.md quotes corpus_pairs=${entry.pairs} for the ${corpus} corpus, which now holds ${live}${lagNote}. Re-run "${rerun}" for the counts this test reads, or "${full}" to retake the whole published snapshot.`,
+      `docs/implementation-comparison-methodology.md quotes corpus_pairs=${entry.pairs} for the ${corpus} corpus, which now holds ${live}${lagNote}. Re-run "${rerun}" for the counts this test reads, or "${full}" to retake the whole published snapshot, then "npm run compare:run-corpus".`,
     )
   })
 }
 
-// The declaration is names, and a name that matches nothing is a blanket excuse
-// with no expiry. Two ways it rots - the category is renumbered by a rebase, or
-// removed outright - and both leave a line that keeps subtracting zero while
-// reading as though it still describes something.
-test('every declared-lag category still contributes fixtures', () => {
-  const declared = [
-    ...laggedCategories.map((c) => [c, fixturesOf(c)]),
-    ...laggedOptional.map((c) => [c, optionalFixturesOf(c)]),
-    ...laggedSidecars.map((f) => [f, corpusSidecars.includes(f) ? [f] : []]),
-  ]
-  for (const [category, files] of declared) {
-    assert.ok(
-      files.length > 0,
-      `docs/implementation-comparison-methodology.md declares "${category}" as added since its quoted ` +
-        `run, but no tests/corpus fixture carries that name. Renumbered by a rebase, or ` +
-        `removed? Fix the name or delete the line - a declaration that matches nothing ` +
-        `excuses everything.`,
-    )
-  }
+// A renamed or removed fixture would silently shrink the run's denominator.
+test('every fixture the dated run covered is still in the corpus', () => {
+  const live = new Set([
+    ...readdirSync(resolve(root, 'tests/corpus')).map((f) => `tests/corpus/${f}`),
+    ...readdirSync(resolve(root, 'tests/corpus-optional')).map((f) => `tests/corpus-optional/${f}`),
+  ])
+  const missing = runFixtures.filter((f) => !live.has(f))
+  assert.deepEqual(
+    missing,
+    [],
+    'resources/comparison-run-corpus.txt names fixtures the corpus no longer holds. Renamed or removed ' +
+      'since the run? Retake the counts and run "npm run compare:run-corpus".',
+  )
 })
 
 test('the comparison cards and table quote the real core corpus size', () => {
@@ -205,16 +159,11 @@ test('the cards and the table agree about what each engine passed', () => {
 
 test('the core table scores the fixtures present in the corpus', () => {
   const stems = new Set(corpusFiles.map((f) => f.slice(0, -'.crv'.length)))
-  // The declared lag reaches this column too. It is the same run the card grid
-  // and the table denominators speak for, and a category the run predates
-  // contributes its sidecars to no engine's score either - so counting the live
-  // directory here left the one number the ledger could not excuse, and a
-  // corpus addition on a host that cannot retake the run had nowhere to go.
-  const lagged = new Set(laggedCategories.flatMap((c) => fixturesOf(c)).map((f) => f.slice(0, -'.crv'.length)))
-  const sidecars = readdirSync(resolve(root, 'tests/corpus'))
-  const scored = corpusFiles.length - lagged.size + sidecars.filter((f) => {
+  // The lag reaches this column too: a fixture the run predates, document or
+  // sidecar, contributes to no engine's score.
+  const scored = corpusFiles.length - laggedPairs + corpusSidecars.filter((f) => {
     const match = f.match(/^(.*)\.(md|txt|fmt|ansi)$/)
-    return match && stems.has(match[1]) && !lagged.has(match[1]) && !laggedSidecars.includes(f)
+    return match && stems.has(match[1]) && covered.has(`tests/corpus/${f}`)
   }).length
   const rows = coreRows()
   assert.equal(rows.length, 3)

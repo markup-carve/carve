@@ -22,9 +22,11 @@ were checked against the current engine pins on 2026-10-28 and added to the
 dated run's counts. The comparison checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: two, then `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-5`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-6`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-7`, `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block-8`, `209-an-unresolved-reference-image-takes-no-caption-2`, `209-an-unresolved-reference-image-takes-no-caption-3`, `713-a-description-continues-after-any-blank-run`, `715-invalid-include-line-ranges-remain-literal-in-core`, `716-url-sinks-reject-schemes-after-emitted-value-normalization`, `717-citation-shaped-lines-remain-core-text`, `718-a-lone-brace-stays-inside-forced-emphasis`, `719-combined-emphasis-finds-a-later-nonempty-closer`, `720-raw-inline-image-bytes-stay-inside-a-paragraph`, `721-an-unclosed-nested-fence-keeps-blanks-before-outer-text`, `722-unresolved-footnote-literal-escapes-html-text`, `723-a-contentless-description-marker-folds-under-a-quoted-term`, `724-an-overindented-colon-opener-keeps-the-quote-paragraph-open`, `725-a-quoted-include-with-no-resolver-parses-inline-content`, `726-a-second-plus-starts-its-own-paragraph-after-attachment`, `727-an-enclosing-closer-ends-a-tag-name`, `728-a-first-block-item-takes-the-next-owned-block`, `729-compact-single-paragraph-quote`, `730-multiple-footnote-backlinks-follow-inline-content`, `731-loose-list-starts-directly-on-its-first-paragraph`, `732-paired-german-quotes-leave-no-quote-in-a-heading-id`, `733-consecutive-continuation-markers-in-a-div-hosted-quote`, `734-a-nested-first-block-item-releases-the-next-root-block`, `735-invalid-line-range-includes-within-paragraphs-stay-literal`, `736-model-syntax-boundaries-and-ownership`, `737-model-inline-frames-and-html-attributes`, `738-invalid-table-metadata-keeps-the-table`, `739-opaque-reference-and-inline-bounds`, `740-lazy-quote-owners`, `741-visible-footnote-headings`, `742-lint-directives-are-invisible-in-rendered-content`, `743-a-later-term-after-a-shifted-separator-opens-in-the-outer-item`, `744-a-task-item-uses-the-ordered-item-column-rule`, `745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes`, `746-a-native-header-continues-a-promoted-gfm-header-run`, `747-a-table-ends-a-footnote-paragraph-claim`, `748-a-footnote-heading-does-not-loosen-its-host-item`, `749-a-promoted-gfm-header-keeps-following-native-headers-before-the-body`, `750-a-below-column-line-returns-to-its-definition-body`, `751-a-lazy-line-keeps-its-plus-through-three-quote-levels`, `752-a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker`, `753-a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker`, `754-a-promoted-image-merges-block-attributes-before-inline-attributes`, `755-a-content-tab-does-not-hide-a-description-boundary`, `756-a-description-keeps-a-list-marker-below-its-hosted-footnote`, `757-an-intervening-column-refuses-a-description-hosted-first-block`, `758-a-hosted-footnote-keeps-a-heading-at-its-body-floor`, `759-invalid-body-row-metadata-leaves-one-table-body`, `760-a-heading-inside-the-intervening-band-stays-description-text`, `761-a-below-column-term-stays-in-the-footnote-paragraph`, `762-a-closed-footnote-child-releases-a-flush-line`, `763-a-note-claimed-fence-line-keeps-the-item-loose`, `766-an-editorial-comment-contributes-nothing-to-a-heading-id`, `767-a-literal-bracket-run-bounds-emphasis-like-a-resolved-one`, `768-a-quote-at-the-start-of-a-span-opens`, `769-a-nested-braced-span-hides-an-editorial-closer`, `770-a-combined-token-inside-a-forced-span-stops-at-the-span-s-closer`, `771-an-attribute-block-after-a-span-behind-a-guarding-opener-belongs-to-that-span`, `772-a-matched-insertion-or-deletion-hides-a-substitution-s-closer`, `773-a-footnote-label-may-hold-a-bracket`, `774-a-footnote-reference-bounds-an-editorial-closer-scan`, `775-inside-a-note-a-footnote-shaped-run-is-a-bracket-run`, `776-an-attribute-block-that-attaches-to-nothing-is-text-from-the-first-pass`, `777-a-guard-that-closes-only-inside-its-guarded-child-s-block`, `778-inside-a-note-a-nested-note-opener-is-a-caret-and-a-bracket-run`, `779-a-block-glued-to-a-split-combined-token-or-a-forced-span-s-own-delimiter`, `780-a-braced-opener-forms-before-an-enclosing-closer-takes-its-block`, `781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split`.
-
-Sidecars added since this run: one Markdown target.
+The fixtures this run and the optional run below covered are listed in
+`resources/comparison-run-corpus.txt`. Corpus documents and sidecars added
+after them are left out of the counts on this page; its checks compute that lag
+from the list. Retaking the runs rewrites the list with
+`npm run compare:run-corpus`.
 
 The run used this branch's corpus, including the new inline, reference, heading clone, and image promotion cases. The spec
 worktree held those additions; the engine worktrees were clean at the commits
@@ -114,8 +116,6 @@ A host that needs one answer across engines should bound its own trees rather
 than rely on the ceilings agreeing, because §25 says they will not.
 
 ## Optional Tier-2 Profile
-
-Optional corpus added since this run: `99-citations-definition-space-run`, `100-toc-body-keeps-placement-scope`, `101-profile-denied-cross-reference`, `102-profile-denied-code-block`.
 
 The optional profile was measured on 2026-10-25 CET with the same engine commits as
 the core snapshot. It enables a shared adapter per feature where each
@@ -746,22 +746,24 @@ collapsed or full form. Whitespace and comments are normalized as above.
 Strict differences are reported as `strictBuckets`, separate from `buckets`.
 
 CI runs `npm run roundtrip:structure -- --check` against the pinned engines.
-Identical or strict counts below `resources/roundtrip-structure-baseline.json`
-fail; improvements print a “raise the baseline” message. A changed corpus size requires review
-and a rewritten baseline. A selected engine that is skipped cannot pass the
-check. When every document errors for an engine and target, its status is
-`unsupported` and its error is reported. The baseline stores that row as
-`null`, excluding it from count comparisons. If a row with an existing count
-becomes unsupported, `--check` fails, including when the previous identical
-count was zero. Partial errors remain a measurement. Newly supported rows
-with a null baseline print a request to review and write their baseline.
-To refresh the baseline, provision all engines at
+For each engine and target, `resources/roundtrip/structure-<engine>-<target>-not-identical.txt`
+lists the corpus documents whose trees differ or fail, and
+`resources/roundtrip/structure-<engine>-<target>-not-strict.txt` lists the identical
+documents that lose a strict field. Every other document must pass. A listed
+document that passes now fails the check until its line is removed, and a listed
+id that is no longer in the corpus fails as stale. The counts are computed from
+the corpus at run time, so a new corpus document that round-trips touches no
+file. A selected engine that is skipped cannot pass the check. When every
+document errors for an engine and target, its status is `unsupported` and its
+error is reported; such a row has no lists, and a row with lists that becomes
+unsupported fails. Partial errors remain a measurement and are listed as not
+identical. To rewrite the lists, provision all engines at
 `resources/engine-pins.json`, inspect the buckets, then run
-`npm run roundtrip:structure -- --write`. Commit the reviewed baseline with
-the corresponding engine pin or corpus change. Subset runs cannot rewrite it.
+`npm run roundtrip:structure -- --write`. Commit the reviewed lists with the
+corresponding engine pin or corpus change. Subset runs cannot rewrite them.
 
-The current counts are in `resources/roundtrip-structure-baseline.json` and
-use the revisions in `resources/engine-pins.json`. The table below records an
+The current counts are printed by that command at the revisions in
+`resources/engine-pins.json`. The table below records an
 earlier measurement at carve-js `672d0a0a`, carve-php `29e42817`, and carve-rs
 `ee85c4ca`, across 2,401 documents per target. All six rows were measured.
 

@@ -8,36 +8,26 @@
  * and Unicode whitespace collapses in every string, including code and URLs.
  * Keep the first difference per document and at most three examples per bucket.
  * A strict count keeps the PART 10 §13 carrier fields among the identical trees.
- * --check gates identical and strict counts against resources/roundtrip-structure-baseline.json.
- * Inspect improvements, then --write with all pinned engines to raise the baseline.
+ * --check gates every document against resources/roundtrip/structure-<engine>-<target>-*.txt:
+ * an id not listed must be identical (and strict), and a listed id that passes fails as stale.
+ * Inspect the buckets, then --write with all pinned engines to rewrite the lists.
  * Missing engines are skipped; --check and --write fail if a selected engine is missing.
- * The JS pin 52bb3c2e parses corpus 638's outer list as loose. Its roundtrip
- * HTML contains only a nested list, so HTML import cannot recover that unused
- * tightness bit. This accounts for the strict baseline moving 2290 to 2289.
- * The JS 52aedcc8 pin keeps corpus 643's column-zero list outside its
- * footnote. Markdown roundtrip escapes the footnote's literal `+`, leaving
- * the normalized tree equal but changing text to escaped_text in the strict
- * carrier comparison. This moves JS/md strict from 1689 to 1688.
- * The RS 4d0df469 pin reads corpus 652-2's quoted `+` as text (carve-rs#3106),
- * which Markdown roundtrip escapes the same way. RS/md strict 2015 to 2014.
- * At JS d2709c00 (carve-js#3502, recorded in carve#3489), corpus 626,
- * 626-2, 626-3 and 630-9 write a literal `+` that Markdown must escape.
- * Import keeps escaped_text, moving JS/md strict 1724 to 1720.
- * At Rust 7db0926a (carve-rs#3115, carve#3550), corpus 658 remains semantically equal
- * after HTML import, but text becomes escaped_text in the strict tree.
- * This moves RS/html strict 2349 to 2348.
- * At PHP a562b167 (carve-php#3855), Markdown export escapes the literal
- * description line in corpus 657 and 657-4. Reimport keeps escaped_text
- * instead of text, moving PHP/md strict from 1656 to 1654.
  */
-import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs'
+import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { resolve, basename } from 'node:path'
 import { phpDir, rustBinary } from './lib/engine-locations.mjs'
-import { acceptHtmlLosses, normalize, firstDiff, record, validateBaseline, checkCounts, jsRoundtrip, finishMeasurement, baselineCounts } from './lib/roundtrip-structure.mjs'
+import { acceptHtmlLosses, normalize, firstDiff, record, checkExceptions, exceptionFiles, jsRoundtrip, finishMeasurement, exceptionLists } from './lib/roundtrip-structure.mjs'
+import { corpusId, readExceptions, writeExceptions } from './lib/exception-list.mjs'
 const root = fileURLToPath(new URL('..', import.meta.url))
-const baselinePath = resolve(root, 'resources/roundtrip-structure-baseline.json')
+const listDir = resolve(root, 'resources/roundtrip')
+function declared(engine, target) {
+  const files = exceptionFiles(engine, target)
+  const notIdentical = readExceptions(resolve(listDir, files.notIdentical))
+  const notStrict = readExceptions(resolve(listDir, files.notStrict))
+  return notIdentical === null || notStrict === null ? null : { notIdentical, notStrict }
+}
 function options(args) {
   const result = { engines: ['js', 'php', 'rs'], targets: ['html', 'md'], workers: 16 }
   for (let i = 0; i < args.length; i++) {
@@ -171,18 +161,17 @@ async function main() {
     }
   }
   let failed = false
-  if (opt.write) for (const row of report.results) if (row.status === 'skipped') {
+  if (opt.write) for (const row of report.results) if (row.status === 'skipped' || (row.status === 'unsupported' && declared(row.engine, row.target) !== null)) {
     failed = true
-    report.notices.push(`${row.engine}/${row.target}: skipped, cannot write baseline`)
+    report.notices.push(`${row.engine}/${row.target}: ${row.status}, cannot write its exception lists`)
   }
   if (opt.check) {
-    const baseline = validateBaseline(JSON.parse(readFileSync(baselinePath, 'utf8')))
-    const verdict = checkCounts(report.results, baseline)
+    const verdict = checkExceptions(report.results, declared, files.map(file => corpusId(file)))
     failed = verdict.failed
     report.notices.push(...verdict.notices)
   }
   if (opt.write && !failed) {
-    writeFileSync(baselinePath, JSON.stringify(baselineCounts(report.results), null, 2) + '\n')
+    for (const { file, ids } of exceptionLists(report.results)) writeExceptions(resolve(listDir, file), ids)
   }
   report.seconds = +((performance.now() - started) / 1000).toFixed(3)
   if (opt.json) console.log(JSON.stringify(report, null, 2))

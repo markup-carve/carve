@@ -484,8 +484,8 @@ be reported as degraded or dropped. The reverse direction is more important:
 an unmapped construct in the target document must be an error, because silently
 skipping it destroys content.
 
-The repository maintains detailed round-trip baselines for its built-in
-converters in `resources/import-roundtrip-baseline.json`. Those measurements
+The repository gates the round trips of its built-in converters with
+per-document exception lists in `resources/roundtrip/`. Those measurements
 are development gates rather than compatibility promises, so this guide does
 not publish their changing totals.
 

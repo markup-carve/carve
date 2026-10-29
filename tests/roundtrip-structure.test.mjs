@@ -1,11 +1,12 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { acceptHtmlLosses, normalize, firstDiff, record, validateBaseline, checkCounts, jsRoundtrip, finishMeasurement, baselineCounts } from '../scripts/lib/roundtrip-structure.mjs'
+import { acceptHtmlLosses, normalize, firstDiff, record, checkExceptions, exceptionFiles, jsRoundtrip, finishMeasurement, exceptionLists } from '../scripts/lib/roundtrip-structure.mjs'
+import { readExceptions } from '../scripts/lib/exception-list.mjs'
 
 test('normalization matches the PHP measurement, including non-text strings', () => {
   const tree = { type: 'document', pos: {}, srcByteLength: 99, attrs: { order: ['x'] }, children: [
@@ -78,38 +79,43 @@ test('a strict difference stays identical and lands in its own bucket', () => {
   assert.deepEqual(stats.strictBuckets['value list.bulletChar'].examples.map(e => e.file), ['lost.crv'])
 })
 
-test('baseline has a count for every engine and target', () => {
-  const baseline = JSON.parse(readFileSync(new URL('../resources/roundtrip-structure-baseline.json', import.meta.url)))
-  assert.equal(validateBaseline(baseline), baseline)
-  assert.throws(() => validateBaseline({ version: 2, engines: {} }), /Invalid baseline/)
-  assert.throws(() => validateBaseline({ ...baseline, version: 1 }), /Unsupported baseline version/)
-  const invalid = structuredClone(baseline)
-  invalid.engines.php.md.identical = invalid.engines.php.md.total + 1
-  assert.throws(() => validateBaseline(invalid), /Invalid baseline/)
-  const strictAboveIdentical = structuredClone(baseline)
-  strictAboveIdentical.engines.js.html.strict = strictAboveIdentical.engines.js.html.identical + 1
-  assert.throws(() => validateBaseline(strictAboveIdentical), /Invalid baseline js\/html/)
-  const missingStrict = structuredClone(baseline)
-  delete missingStrict.engines.rs.md.strict
-  assert.throws(() => validateBaseline(missingStrict), /Invalid baseline rs\/md/)
+test('every engine and target has both exception lists', () => {
+  for (const engine of ['js', 'php', 'rs']) for (const target of ['html', 'md']) {
+    for (const file of Object.values(exceptionFiles(engine, target))) {
+      const ids = readExceptions(new URL(`../resources/roundtrip/${file}`, import.meta.url))
+      assert.ok(ids, `resources/roundtrip/${file} is missing`)
+      assert.deepEqual(ids, [...new Set(ids)].sort(), `${file} is not sorted and unique`)
+    }
+  }
 })
 
-test('baseline gate rejects regressions and skips, and requests a raise for improvements', () => {
-  const baseline = { engines: { js: { html: { identical: 5, strict: 3, total: 10 } } } }
-  const row = { engine: 'js', target: 'html', status: 'measured', identical: 5, strict: 3, total: 10 }
-  assert.deepEqual(checkCounts([row], baseline), { failed: false, notices: [] })
-  assert.equal(checkCounts([{ ...row, identical: 4 }], baseline).failed, true)
-  const improvement = checkCounts([{ ...row, identical: 6 }], baseline)
-  assert.equal(improvement.failed, false)
-  assert.match(improvement.notices[0], /raise the baseline/)
-  assert.equal(checkCounts([{ ...row, status: 'skipped' }], baseline).failed, true)
-  assert.equal(checkCounts([{ ...row, total: 11 }], baseline).failed, true)
-  const strictLoss = checkCounts([{ ...row, strict: 2 }], baseline)
+const lists = (notIdentical = [], notStrict = []) => () => ({ notIdentical, notStrict })
+const corpus = ['a', 'b', 'c', 'd']
+
+test('exception gate rejects unlisted failures and skips, and stale or unknown entries', () => {
+  const row = { engine: 'js', target: 'html', status: 'measured', notIdentical: ['a'], notStrict: ['b'] }
+  assert.deepEqual(checkExceptions([row], lists(['a'], ['b']), corpus), { failed: false, notices: [] })
+  const regression = checkExceptions([{ ...row, notIdentical: ['a', 'c'] }], lists(['a'], ['b']), corpus)
+  assert.equal(regression.failed, true)
+  assert.match(regression.notices[0], /structure-js-html-not-identical\.txt: c fails and is not listed/)
+  const improvement = checkExceptions([{ ...row, notIdentical: [] }], lists(['a'], ['b']), corpus)
+  assert.equal(improvement.failed, true)
+  assert.match(improvement.notices[0], /a passes now; remove it from the list/)
+  const strictLoss = checkExceptions([{ ...row, notStrict: ['b', 'd'] }], lists(['a'], ['b']), corpus)
   assert.equal(strictLoss.failed, true)
-  assert.match(strictLoss.notices[0], /strict regression 2 < 3/)
-  const strictGain = checkCounts([{ ...row, strict: 4 }], baseline)
-  assert.equal(strictGain.failed, false)
-  assert.match(strictGain.notices[0], /raise the strict baseline 3 -> 4/)
+  assert.match(strictLoss.notices[0], /structure-js-html-not-strict\.txt: d fails and is not listed/)
+  const strictGain = checkExceptions([{ ...row, notStrict: [] }], lists(['a'], ['b']), corpus)
+  assert.match(strictGain.notices[0], /not-strict\.txt: b passes now/)
+  const unknown = checkExceptions([row], lists(['a', 'z'], ['b']), corpus)
+  assert.match(unknown.notices[0], /z is not in the corpus/)
+  assert.equal(checkExceptions([row], lists(['a'], ['b', 'b']), corpus).failed, true)
+  assert.equal(checkExceptions([{ ...row, notIdentical: ['a', 'c'] }], lists(['c', 'a'], ['b']), corpus).failed, true)
+  assert.equal(checkExceptions([{ ...row, status: 'skipped' }], lists(['a'], ['b']), corpus).failed, true)
+})
+
+test('a corpus row that round-trips touches no list', () => {
+  const row = { engine: 'rs', target: 'md', status: 'measured', notIdentical: ['a'], notStrict: [] }
+  assert.equal(checkExceptions([row], lists(['a'], []), [...corpus, 'e']).failed, false)
 })
 
 test('JS roundtrips use the importer source value and the PART 12 export', async () => {
@@ -122,7 +128,7 @@ test('JS roundtrips use the importer source value and the PART 12 export', async
 
 const measurement = () => ({ engine: 'php', target: 'md', status: 'measured', total: 0, identical: 0, strict: 0, different: 0, errors: 0, buckets: {}, errorBuckets: {}, strictBuckets: {} })
 
-test('every document error is unsupported and has a null baseline', () => {
+test('every document error is unsupported and writes no lists', () => {
   const row = measurement()
   record(row, 'b.crv', null, 'Error', 'missing roundtrip setter')
   record(row, 'a.crv', null, 'Error', 'missing roundtrip setter')
@@ -132,10 +138,9 @@ test('every document error is unsupported and has a null baseline', () => {
   assert.equal(row.different, 0)
   assert.deepEqual(row.buckets, {})
   assert.equal(row.errorBuckets.Error.count, 2)
-  assert.equal(baselineCounts([row]).engines.php.md, null)
-  const previous = { engines: { php: { md: { identical: 0, strict: 0, total: 2 } } } }
-  assert.equal(checkCounts([row], previous).failed, true)
-  assert.equal(checkCounts([row], { engines: { php: { md: null } } }).failed, false)
+  assert.deepEqual(exceptionLists([row]), [])
+  assert.equal(checkExceptions([row], lists(['a', 'b']), ['a', 'b']).failed, true)
+  assert.equal(checkExceptions([row], () => null, ['a', 'b']).failed, false)
 })
 
 test('partial errors stay measured and separate from different trees', () => {
@@ -148,24 +153,19 @@ test('partial errors stay measured and separate from different trees', () => {
   assert.equal(row.total, row.identical + row.different + row.errors)
   assert.equal(row.errors, 1)
   assert.equal(row.different, 1)
-  assert.deepEqual(baselineCounts([row]).engines.php.md, { identical: 1, strict: 1, total: 3 })
+  assert.deepEqual(exceptionLists([row]), [
+    { file: 'structure-php-md-not-identical.txt', ids: ['different', 'error'] },
+    { file: 'structure-php-md-not-strict.txt', ids: [] },
+  ])
 })
 
-test('explicit null baseline is valid but missing entries are invalid', () => {
-  const baseline = baselineCounts(['js', 'php', 'rs'].flatMap(engine => ['html', 'md'].map(target => ({ ...measurement(), engine, target, status: 'unsupported' }))))
-  assert.equal(validateBaseline(baseline), baseline)
-  delete baseline.engines.php.md
-  assert.throws(() => validateBaseline(baseline), /Invalid baseline php\/md/)
-})
-
-test('new support requests a baseline and skipped engines still fail', () => {
-  const baseline = { engines: { php: { md: null } } }
+test('a supported row without lists fails and skipped engines cannot write', () => {
   const row = { ...measurement(), total: 2, identical: 2 }
-  const verdict = checkCounts([row], baseline)
-  assert.equal(verdict.failed, false)
-  assert.match(verdict.notices[0], /supported now/)
-  assert.equal(checkCounts([{ ...row, status: 'skipped' }], baseline).failed, true)
-  assert.throws(() => baselineCounts([{ ...row, status: 'skipped' }]), /cannot write baseline/)
+  const verdict = checkExceptions([row], () => null, ['a', 'b'])
+  assert.equal(verdict.failed, true)
+  assert.match(verdict.notices[0], /has no exception lists/)
+  assert.equal(checkExceptions([{ ...row, status: 'skipped' }], () => null, ['a', 'b']).failed, true)
+  assert.throws(() => exceptionLists([{ ...row, status: 'skipped' }]), /cannot write exception lists/)
 })
 
 function withBatchDriver(t, body) {
