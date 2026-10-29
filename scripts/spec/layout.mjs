@@ -7026,6 +7026,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // The marker-line child owns this column until an outer authored block opens.
     let headSubActive = headSubCol >= 0
     let subCol = -1
+    // A comment below the child's column ends it in the body parse (carve#3985).
+    let commentBelowChild = false
     /*
      * PER-DESCENDANT QUESTION 1 (carve#2746).
      *
@@ -7999,7 +8001,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           if (headSubActive && jm.col < headSubCol &&
               (opensAuthoredBase(jm.rest) || jm.col >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(jm.rest)) &&
               !COMMENT_LINE.test(jm.rest)) headSubActive = false
-          if ((subCol >= 0 && col >= subCol) || (headSubActive && col >= headSubCol)) {
+          if (!commentBelowChild && ((subCol >= 0 && col >= subCol) || (headSubActive && col >= headSubCol))) {
             // Content at or past the first sub-list's content column belongs to
             // the SUB-LIST, not this item -- a blank inside the sub-list must
             // not loosen this (ancestor) item (carve#322). Attach, stay tight;
@@ -8154,6 +8156,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       }
       const descendantParagraphBefore = descLive && deepestParagraphOpen()
       if (!descendantParagraphBefore) foldedChildParagraph = false
+      if (lm.rest !== '') commentBelowChild = COMMENT_LINE.test(lm.rest) && !insideFence() && col >= contentCol && childCol >= 0 && col < childCol
       // The task box is content (CARVE-P0-008): a line in its columns stands
       // below the marker-line child's marker and folds (carve#3976).
       if (head.task !== undefined && headSubMarker && descendantParagraphBefore &&
