@@ -2713,7 +2713,9 @@ function cachedForwardSearch(cache, key, from, length, visit) {
 // rescan guards still measure only the block readers.
 // One line of a quote run at a container's content column: whether the run
 // now ends in an open paragraph. `run` carries the run's state between lines.
-function advanceQuoteRun(run, text, idx) {
+// `closerAhead(depth, run, column)`, when given, answers §10 I4 for a fence
+// under the open paragraph; without it such a fence counts as an opener.
+function advanceQuoteRun(run, text, idx, closerAhead = null) {
   const continues = run.at === idx - 1
   if (!continues) run.hosts = []
   let depth = 0
@@ -2724,8 +2726,9 @@ function advanceQuoteRun(run, text, idx) {
     const host = run.hosts[depth] ??= hostLadder()
     if (hostFenceStep(host, text)) { opaque = true; break }
     const { inner, blockStart, popped } = hostAdvance(host, text, continues && run.open)
-    const opener = hostFenceOpener(host, inner, () => blockStart || !continues || !run.open)
-    if (opener) {
+    const canOpen = (f) => blockStart || !continues || !run.open || !!closerAhead?.(depth + 1, f[1], inner.col)
+    const opener = hostFenceOpener(host, inner, canOpen)
+    if (opener && (closerAhead === null || canOpen(opener))) {
       host.fence = { run: opener[1], column: inner.col, host: host.columns.at(-1) }
       opaque = true
       break
@@ -7064,6 +7067,47 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const d = descendantQ1At(descendantQ1.col)
       return d === null ? true : d.open
     }
+    // Per quote depth and base column, the pure fence runs ahead in the quote
+    // run, each key's rows with the widest run still ahead.
+    const bodyQuoteClosers = new Map()
+    const bodyQuoteCloser = (idx, base = contentCol) => (depth, run, column) => {
+      let st = bodyQuoteClosers.get(`${depth}:${base}`)
+      if (!st || idx < st.start || idx >= st.end) {
+        st = { start: idx, end: n, keys: new Map() }
+        for (let j = idx + 1; j < n; j++) {
+          const measured = ind(j)
+          let text = measured && measured.col >= base ? dedentMeasured(measured, lines[j], base).text : ''
+          let k = 0
+          // The quote may stand past the base, behind further markers' columns.
+          while (k < depth && QUOTE.test(text.trimStart())) {
+            text = QUOTE.exec(text.trimStart())[1] ?? ''
+            k++
+          }
+          if (k < depth) { st.end = j; break }
+          const lm2 = indentCols(text)
+          const c = PURE_FENCE.exec(lm2.rest)
+          if (!c) continue
+          const key = `${c[1][0]}${lm2.col}`
+          const rows = st.keys.get(key) ?? []
+          rows.push([j, c[1].length])
+          st.keys.set(key, rows)
+        }
+        for (const rows of st.keys.values()) {
+          for (let r = rows.length - 2; r >= 0; r--) rows[r][1] = Math.max(rows[r][1], rows[r + 1][1])
+        }
+        bodyQuoteClosers.set(`${depth}:${base}`, st)
+      }
+      const rows = st.keys.get(`${run[0]}${column}`)
+      if (!rows) return false
+      let lo = 0
+      let hi = rows.length
+      while (lo < hi) {
+        const mid = (lo + hi) >> 1
+        if (rows[mid][0] > idx) hi = mid
+        else lo = mid + 1
+      }
+      return lo < rows.length && rows[lo][1] >= run.length
+    }
     // The quote run the deepest descendant holds, read like the item's own.
     const descendantQuote = { at: -2, open: false, table: false, hosts: [], para: [] }
     const seedDescendantQ1 = (col, text, memo = null, idx = -1) => {
@@ -7072,7 +7116,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // A quote behind further markers (`- > - x`) starts the run the lines below continue.
       const quoted = idx >= 0 && text !== '' ? markerQuoteText(text, prefixMemo(state, lines, idx).markerQuote ??= new Map()) : null
       descendantQ1.open = text !== '' && (quoted !== null
-        ? advanceQuoteRun(descendantQuote, quoted, idx)
+        ? advanceQuoteRun(descendantQuote, quoted, idx, bodyQuoteCloser(idx, col))
         : descendantLineOpensParagraph(text, false, -1, memo))
       descendantQ1.para = descendantQ1.open ? [text] : []
       descendantQ1.absorbedFence = null
@@ -7146,7 +7190,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (opener || closer || descColon > 0) { close(); return }
       // A quote's last block answers across its lines, as at the item's own column.
       const opens = idx >= 0 && QUOTE.test(text)
-        ? advanceQuoteRun(descendantQuote, text, idx)
+        ? advanceQuoteRun(descendantQuote, text, idx, bodyQuoteCloser(idx, descendantQ1.col))
         : descendantLineOpensParagraph(text, rowOpen, idx)
       if (!opens) { close(); return }
       if (!descendantQ1.open) { descendantQ1.open = true; descendantQ1.para = [] }
@@ -7490,7 +7534,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // The quote run at this item's content column: its last line's index, and
     // whether that line left the quote a paragraph or a table open.
     const bodyQuote = { at: -2, open: false, table: false, hosts: [], para: [] }
-    const advanceBodyQuote = (text, idx) => advanceQuoteRun(bodyQuote, text, idx)
+    const advanceBodyQuote = (text, idx) => advanceQuoteRun(bodyQuote, text, idx, bodyQuoteCloser(idx))
     // Seed from an open-paragraph head only when a marked line follows; a
     // single-line nest would otherwise re-walk every level (quadratic).
     if (QUOTE.test(head.text) && (!paragraphIsOpen() || QUOTE.test(stripIndent(lines[headIndex + 1] ?? '')))) {
@@ -8104,7 +8148,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // A span closer remains payload after trackFence clears the span.
       const inPayload = col >= contentCol && fence.colon.length !== 0 &&
         colonLineBlock.at(-1) === true
-      const nm = inPayload ? null : matchMarkerAt(lm)
+      // So is one in an open code or comment fence's payload (PART 0 opacity).
+      const inOpaque = col >= contentCol && fence.opaque !== null && fence.opaque.opens !== false
+      const nm = inPayload || inOpaque ? null : matchMarkerAt(lm)
       if (DEFLIST_TERM.test(lm.rest) && col >= contentCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) {
         lastListBlock = 'term'
@@ -8373,7 +8419,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // A PARAGRAPH is deliberately not in this list. It does not attach - it
         // is §17 L1b's second paragraph, and the branch above has just loosened
         // the item for it.
-        if (dmeas.rest !== '' && (opensSubBlock(dedented) || matchMarkerAt(dmeas))) {
+        // Fence payload attaches nothing: its lines are opaque (PART 0).
+        if (dmeas.rest !== '' && !insideFence() && !nestedVerbatim() && (opensSubBlock(dedented) || matchMarkerAt(dmeas))) {
           blankBeforeInvisible = false
           pendingSeparation = false
         }
@@ -8465,8 +8512,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (!belowCloser && !inCommentSpan) {
           if (nm && nm.indent >= contentCol && !inDefBody &&
               !fence.opaque && !nestedOpaque && !wasNested && !inPayload &&
-              descendantQ1.col >= 0 && nm.indent < descendantQ1.col) {
-            seedDescendantQ1(nm.indent + nm.markerWidth, nm.text, prefixMemo(state, lines, i).paragraph)
+              // A quote on the marker line starts the descendant's quote run there.
+              (descendantQ1.col < 0 ? QUOTE.test(nm.text) : nm.indent < descendantQ1.col)) {
+            seedDescendantQ1(nm.indent + nm.markerWidth, nm.text, prefixMemo(state, lines, i).paragraph, i)
           }
           if (descendantOwned) {
             if (descendantQ1.col < 0) seedDescendantQ1(subCol >= 0 ? subCol : headSubCol, '')
