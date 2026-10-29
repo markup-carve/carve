@@ -414,7 +414,8 @@ function renderBlock(b, depth, ctx) {
         .replaceAll('\u00a0', '&nbsp;')
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;')
-      return `${pad}<pre${title}${ba}><code${cls}>${esc}</code></pre>`
+      // A fence header title is authored (PART 10 SS1 R3), written after the attribute line above it.
+      return `${pad}<pre${ba}${title}><code${cls}>${esc}</code></pre>`
     }
     case 'quote': {
       // PART 9 §4b: a caption makes its host a FIGURE, and a quote is not a

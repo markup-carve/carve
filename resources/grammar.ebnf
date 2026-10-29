@@ -7427,7 +7427,10 @@ EOF = (* end of file *) ;
          4 RENDER ORDER). All classes accumulate, space-joined, into one
          `class` slot at its first-appearance position. An Attrs built
          programmatically with no recorded order falls back to `class`, then
-         `id`, then key=value order.
+         `id`, then key=value order. A code fence's header title (CARVE-P2-005)
+         is authored: it takes its source position after the block-attribute
+         line above the fence, so `{.x}` over ```` ```php "f" ```` gives
+         `<pre class="x" title="f">`.
       An authored `href` or `src` on a link or image does not replace the
       URL derived at R1. The structural URL is emitted once; the colliding
       authored URL attribute is omitted.
