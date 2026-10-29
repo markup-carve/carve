@@ -1,0 +1,25 @@
+A combined token inside a forced span stops at the span's closer
+
+```
+{*a*/*} b*/
+.
+<p><strong>a*/</strong> b*/</p>
+```
+
+```
+{/a /*b/} c*/
+.
+<p><em>a /*b</em> c*/</p>
+```
+
+```
+{_x /*a {_b_} c*/ y_}
+.
+<p><u>x <strong><em>a <u>b</u> c</em></strong> y</u></p>
+```
+
+```
+/*{*a*/*} b*/
+.
+<p><strong><em><strong>a*/</strong> b</em></strong></p>
+```

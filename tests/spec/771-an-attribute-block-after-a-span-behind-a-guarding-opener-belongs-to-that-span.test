@@ -1,0 +1,13 @@
+An attribute block after a span behind a guarding opener belongs to that span
+
+```
+/_a_{title="/"} b/
+.
+<p><em><u title="/">a</u> b</em></p>
+```
+
+```
+_*a*{title="_"} b_
+.
+<p><u><strong title="_">a</strong> b</u></p>
+```

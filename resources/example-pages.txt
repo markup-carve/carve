@@ -965,6 +965,9 @@ index: examples/edge-cases/index.md
   combined-emphasis-finds-a-later-nonempty-closer
   a-literal-bracket-run-bounds-emphasis-like-a-resolved-one
   a-quote-at-the-start-of-a-span-opens
+  a-nested-braced-span-hides-an-editorial-closer
+  a-combined-token-inside-a-forced-span-stops-at-the-span-s-closer
+  an-attribute-block-after-a-span-behind-a-guarding-opener-belongs-to-that-span
   a-mention-or-tag-keeps-its-full-spelling-in-a-strong-child
   a-generic-extension-parses-its-captured-content-as-inline-content
 [edge-links] Links, images and references

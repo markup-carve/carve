@@ -52,3 +52,7 @@ hashes         LOOKAHEAD  reached only through `headingStart`, itself lookahead-
 colonFence     LOOKAHEAD  reached only through `structural`
 ordMarker      LOOKAHEAD  reached only through `structural`
 spaceOrEnd     LOOKAHEAD  only in `boldItalic = "/*" ~spaceOrEnd ~graphemeExt biInner+ biCloser attrRun?`
+fSpan          LOOKAHEAD  only in the `fInner` guard `~(~fSpan<d> "/*") span`
+fBiFirst       LOOKAHEAD  reached only through `fSpan`
+fBiInner       LOOKAHEAD  reached only through `fSpan`
+fBiCloser      LOOKAHEAD  reached only through `fSpan`

@@ -1,0 +1,31 @@
+A nested braced span hides an editorial closer
+
+```
+{-{_a-}_} b-}
+.
+<p><del><u>a-}</u> b</del></p>
+```
+
+```
+{+x {~a+}~>c~} b+}
+.
+<p><ins>x <del>a+}</del><ins>c</ins> b</ins></p>
+```
+
+```
+{-{+a-}+} b-}
+.
+<p><del><ins>a-}</ins> b</del></p>
+```
+
+```
+{-{-a-}-} b-}
+.
+<p><del>{-a</del>-} b-}</p>
+```
+
+```
+{+{-a+}-} b+}
+.
+<p><ins><del>a+}</del> b</ins></p>
+```

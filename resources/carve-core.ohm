@@ -354,9 +354,15 @@ CarveCore {
   // (CARVE-P3-025).
   forced<d>  = ~("{" d graphemeExt) "{" d fInner<d>+ d "}" attrRun?
   fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~dRun<d> rich
-             | span | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | litDelim
+             | ~(~fSpan<d> "/*") span | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
+  // A combined token inside a forced span closes before the span's `X}` and
+  // takes none of its characters (PART 9 SS22: tokens do not overlap).
+  fSpan<d>   = ~("/" d "}") "/*" ~spaceOrEnd ~graphemeExt fBiFirst<d> fBiInner<d>* fBiCloser<d>
+  fBiFirst<d> = fBiCloser<d> | fBiInner<d>
+  fBiInner<d> = ~(d "}") biInner
+  fBiCloser<d> = ~("*" d "}") biCloser
   // An unclosed run inside a forced span ends at the span's `X}` (PART 3
   // UNCLOSED RUN, PART 9 SS22).
   fCodeU<d>  = ~codeClosed "\u0060" "\u0060"* (~(d "}") any)*
@@ -402,8 +408,14 @@ CarveCore {
   // included) resolve before editorial markup (PART 8, PART 9 E2b), and an
   // editorial comment is opaque (E2a), so a `+}` or `-}` inside one is its
   // content (ruled 2026-10-15). Bodies only, as in `brContent`: an attribute
-  // block after any of them is still scanned.
-  edScan<d>  = escape | codeClosed | edCodeU<d> | crossref | autolinkBody | edCommentBody | bracedComment | nested | any
+  // block after any of them is still scanned. A nested matched braced span is
+  // skipped too (E2a), body only, except a frame of the scan's own kind (PART 9 SS22).
+  edScan<d>  = escape | codeClosed | edCodeU<d> | crossref | autolinkBody | edCommentBody | bracedComment | nested
+             | forcedBody | ~("{" d) (edSub | edInsBody | edDelBody) | any
+  forcedBody = fBody<"/"> | fBody<"*"> | fBody<"_"> | fBody<"~"> | fBody<"^"> | fBody<","> | fBody<"=">
+  fBody<d>   = ~("{" d graphemeExt) "{" d fInner<d>+ d "}"
+  edInsBody  = "{+" ~graphemeExt (~"+}" edScan<"+">)+ "+}"
+  edDelBody  = "{-" ~graphemeExt (~"-}" edScan<"-">)+ "-}"
   edCodeU<d> = ~codeClosed backtickRun (~(d "}") any)*
   backtickRun = "\u0060"+
 

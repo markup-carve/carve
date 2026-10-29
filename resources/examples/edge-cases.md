@@ -68921,3 +68921,147 @@ x.*/"q"/* and x.{^"q"^}
 ```
 
 :::
+
+## A nested braced span hides an editorial closer
+
+An insertion or deletion looks for its closer past a nested matched braced span, as every closer does under E2a. A frame of its own kind is not skipped, because same-kind insertion or deletion does not nest.
+
+::: compare
+
+```carve
+{-{_a-}_} b-}
+```
+
+```html
+<p><del><u>a-}</u> b</del></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{+x {~a+}~>c~} b+}
+```
+
+```html
+<p><ins>x <del>a+}</del><ins>c</ins> b</ins></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{-{+a-}+} b-}
+```
+
+```html
+<p><del><ins>a-}</ins> b</del></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{-{-a-}-} b-}
+```
+
+```html
+<p><del>{-a</del>-} b-}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+{+{-a+}-} b+}
+```
+
+```html
+<p><ins><del>a+}</del> b</ins></p>
+```
+
+:::
+
+## A combined token inside a forced span stops at the span's closer
+
+A forced span's closer is paired before bare resolution, so a combined `/*` token inside the span cannot take a character of that closer or close past it.
+
+::: compare
+
+```carve
+{*a*/*} b*/
+```
+
+```html
+<p><strong>a*/</strong> b*/</p>
+```
+
+:::
+
+::: compare
+
+```carve
+{/a /*b/} c*/
+```
+
+```html
+<p><em>a /*b</em> c*/</p>
+```
+
+:::
+
+::: compare
+
+```carve
+{_x /*a {_b_} c*/ y_}
+```
+
+```html
+<p><u>x <strong><em>a <u>b</u> c</em></strong> y</u></p>
+```
+
+:::
+
+::: compare
+
+```carve
+/*{*a*/*} b*/
+```
+
+```html
+<p><strong><em><strong>a*/</strong> b</em></strong></p>
+```
+
+:::
+
+## An attribute block after a span behind a guarding opener belongs to that span
+
+A `_` or `/` that opens a span that closes is not the character before the next opener, so the inner span opens and its attribute block is part of it. A delimiter inside that block closes nothing outside it.
+
+::: compare
+
+```carve
+/_a_{title="/"} b/
+```
+
+```html
+<p><em><u title="/">a</u> b</em></p>
+```
+
+:::
+
+::: compare
+
+```carve
+_*a*{title="_"} b_
+```
+
+```html
+<p><u><strong title="_">a</strong> b</u></p>
+```
+
+:::
