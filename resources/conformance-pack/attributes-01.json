@@ -62,7 +62,7 @@
 {"id":"attributes-0d89b0b59de4","source":"| a | b |\n{:fr}\n{lang=de}\nText\n","html":"<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<p lang=\"de\">Text</p>"},
 {"id":"attributes-0da8fe0ccea6","source":"*x*{.a .b}\n\n\n\n*z*{.d }\n[w]{ }\n","html":"<p><strong class=\"a b\">x</strong></p>\n<p><strong class=\"d\">z</strong>\n<span>w</span></p>"},
 {"id":"attributes-0de2a03ec1d7","source":"- a\n+\n{.x}\n> q\n*b*- c\n","html":"<ul>\n  <li>a\n    <blockquote class=\"x\"><p>q\n<strong>b</strong>- c</p></blockquote>\n  </li>\n</ul>"},
-{"id":"attributes-0df06d3610eb","source":"- a\n  - b\n  +\n  {.x}\n  ```\n code\n  ```\n","html":"<ul>\n  <li>a\n    <ul>\n      <li>b\n        <pre class=\"x\"><code>\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>code\n<code></code></p>"},
+{"id":"attributes-0df06d3610eb","source":"- a\n  - b\n  +\n  {.x}\n  ```\n code\n  ```\n","html":"<ul>\n  <li>a\n    <ul>\n      <li>b\n        <pre class=\"x\"><code></code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>code\n<code></code></p>"},
 {"id":"attributes-0e268a129f1d","source":"[labl]{key=c .a #b}{\n","html":"<p><span key=\"c\" class=\"a\" id=\"b\">labl</span>{</p>"},
 {"id":"attributes-0e29fdaf39bc","source":"> q\n\n[x]{class=w/i/-1/2 .bar}\n","html":"<blockquote><p>q</p></blockquote>\n<p><span class=\"w/i/-1/2 bar\">x</span></p>"},
 {"id":"attributes-0e3fb1ce0530","source":":^[fn]: t\n:  d\ntail\n","html":"<p>:<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>: t\n:  d\ntail</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>fn<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"},

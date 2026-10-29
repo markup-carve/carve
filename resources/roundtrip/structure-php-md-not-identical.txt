@@ -903,6 +903,7 @@
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-66
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-8
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-9
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-13
 80-trailing-attribute-block-edge-cases
 81-paragraph-interruption-5
 85-blockquote-lazy-continuation-stops-at-a-fenced-block-2

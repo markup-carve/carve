@@ -6088,10 +6088,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   return blocks
 }
 
-// A block that opens a code fence and never closes it.
+// A block that opens a code fence, after any attribute lines, and never closes it.
 const leavesFenceOpen = (block) => {
-  const m = FENCE.exec(block[0] ?? '')
-  return !!m && parseFenceInfo(m[2]) !== null && findCloser(block, 0, m[1]) === -1
+  let at = 0
+  for (let attrs; (attrs = tryAttrLine(block, at)); ) at = attrs.next
+  const m = FENCE.exec(block[at] ?? '')
+  return !!m && parseFenceInfo(m[2]) !== null && findCloser(block, at, m[1]) === -1
 }
 
 // A closer cannot turn invalid metadata into a block opener. Interruption
