@@ -11076,6 +11076,19 @@ EOF = (* end of file *) ;
    `totalLosses` counts the complete render, and `truncated` says whether the
    bounded array omitted entries.
 
+   WHERE A LOSS POINTS. A loss in content an include brought in (PART 6)
+   points the way a lint finding in included content does (PART 6 I16). It
+   carries `file`, the included file's I11 identity, and its `pos` is counted
+   in that file, so content selected by `@lines` or `@region` keeps its
+   source coordinates. It also carries `includedBy`, the include chain with
+   the top-level document's directive first, each entry the directive's
+   `file`, `line` and `column`. A loss in the top-level document carries
+   neither field, and `pos` never carries a file. A CLI summary line names
+   the loss's own file and position, never the including file's name with
+   the included file's line, for example
+   `snippets/div.crv:2:1 markdown-container-flattened - Flattened a container
+   into Markdown blocks (included from docs/d.crv:3:1)`.
+
    Each flattened `ruby` inline node contributes one loss in document order
    with the stable code `ruby-flattened`, the selected `target`, `nodeType` of
    `inline`, its `pos` when recorded, and a short message. It has NO `format`.

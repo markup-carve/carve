@@ -15,6 +15,16 @@
         "endOffset": { "type": "integer", "minimum": 0 }
       },
       "additionalProperties": false
+    },
+    "includeSite": {
+      "type": "object",
+      "required": ["file", "line", "column"],
+      "properties": {
+        "file": { "type": "string", "minLength": 1 },
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
     }
   },
   "type": "object",
@@ -38,8 +48,11 @@
           "target": { "enum": ["html", "markdown", "plain", "ansi", "carve"] },
           "nodeType": { "enum": ["inline", "block"] },
           "message": { "type": "string" },
-          "pos": { "$ref": "#/$defs/pos" }
+          "pos": { "$ref": "#/$defs/pos" },
+          "file": { "type": "string", "minLength": 1 },
+          "includedBy": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/includeSite" } }
         },
+        "dependentRequired": { "file": ["includedBy"], "includedBy": ["file"] },
         "if": { "properties": { "code": { "const": "table-span-flattened" } }, "required": ["code"] },
         "else": { "properties": { "colspan": false, "rowspan": false } },
         "oneOf": [
