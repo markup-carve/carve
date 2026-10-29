@@ -280,6 +280,14 @@
       "expected": {
         "findings": []
       }
+    },
+    {
+      "name": "marker-in-inner-code",
+      "description": "A marker inside code in the span is not a literal marker of the span.",
+      "source": "*a `*` b*{.x}\n",
+      "expected": {
+        "findings": []
+      }
     }
   ]
 }
