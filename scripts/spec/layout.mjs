@@ -1152,7 +1152,8 @@ function bodyEndsInOpenFence(bodyLines, closerAhead = () => false) {
   for (let k = 0; k < bodyLines.length; k++) {
     const line = stripLazy(bodyLines[k])
     if (line.trim() === '' || COMMENT_LINE.test(line)) { para = false; continue }
-    if (isCodeBlockOpener(line)) {
+    // A LAZY line is paragraph text, whatever it looks like.
+    if (isCodeBlockOpener(line) && line === bodyLines[k]) {
       const run = FENCE.exec(line)[1]
       const closer = findCloser(bodyLines, k, run)
       if (closer === -1) {
@@ -1925,7 +1926,16 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   // `opensParagraph` cannot tell it from a closer - but the line above says it
   // closes nothing, and a `:::` opener is not guarded (§10 I4). An empty
   // container leaves no paragraph open (carve#1938, carve#2147).
-  if (COLON_CLOSER.test(bodyLines[last])) return false
+  // Unless an invalid opener earlier in an open paragraph absorbed it (CARVE-P9-016).
+  if (COLON_CLOSER.test(bodyLines[last])) {
+    let text = last
+    while (text >= 0 && COLON_CLOSER.test(bodyLines[text])) text--
+    if (text < 0 || bodyLines[text].trim() === '') return false
+    let start = text
+    while (start > 0 && bodyLines[start - 1].trim() !== '') start--
+    return paraHasInvalidColonOpener(bodyLines.slice(start, text + 1)) &&
+      bodyLeavesParagraphOpen(bodyLines.slice(0, text + 1), quoted, depth)
+  }
 
   return opensParagraph(bodyLines[last], false, tableOpenAfter(bodyLines.slice(0, last)))
 }
@@ -2705,6 +2715,8 @@ function ownLines(lines) {
   const top = () => frames[frames.length - 1]
   let reach = 0
   let runs = null
+  // Fence-shaped lines the walk read as paragraph text.
+  const textFences = []
   // The line after an accepted `+` keeps its column: the marker reads it.
   let afterPlus = false
   let start = 0
@@ -2737,9 +2749,10 @@ function ownLines(lines) {
     let plus = null
     for (let k = 1; k < frames.length; k++) {
       const f = frames[k]
-      // A lone `+` reaches the marker column of an open marker container.
+      // A lone `+` reaches the marker column of an open marker container. A
+      // marker body takes only a block at that column (§17 L3, L4).
       if (f.markerCol !== undefined && CONT_MARKER.test(m.rest) && m.col === f.markerCol &&
-          (f.kind === 'quote' || m.col < f.col)) {
+          (f.kind === 'quote' || (m.col < f.col && attachesAt(at + 1, f.markerCol, frames.slice(1, k).filter((q) => q.kind === 'quote').length)))) {
         plus = f
         break
       }
@@ -2774,7 +2787,7 @@ function ownLines(lines) {
         const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
         if (c && c[1][0] === inner.span[0] &&
             (inner.span[0] === '%' ? c[1].length === inner.span.length : c[1].length >= inner.span.length)) inner.span = null
-      } else if (m.rest !== '' && inner.closes(m.rest)) {
+      } else if (m.rest !== '' && inner.closes(m.rest, m.col)) {
         frames.pop()
         top().last = 'block'
       } else if (inner.lineBlock) {
@@ -2789,7 +2802,7 @@ function ownLines(lines) {
     }
     if (inner.kind === 'fence') frames.pop()
     let owner = frames[reached]
-    const form = classify(m.rest, owner, at)
+    const form = classify(m.rest, owner, at, m.col)
     if (missed && m.rest !== '' && top().para && !form.interrupts &&
         !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes)) {
       // Step 4: a lazy line, read as text where it stands, and still short of
@@ -2797,6 +2810,7 @@ function ownLines(lines) {
       const next = frames[reached + 1]
       const limit = next.kind === 'quote' ? Infinity : next.canon - 1
       lead(Math.min(Math.max(m.col - owner.cut, owner.canon), limit))
+      if (FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       result.push(out + src)
       continue
     }
@@ -2817,6 +2831,7 @@ function ownLines(lines) {
       // A term's continuation moves with the term, so a later `:` body still follows it.
       const term = owner.para && owner.last === 'term'
       lead(owner.para || !closedColumn || plusFollower ? Math.max(m.col - (term ? owner.termCut : owner.cut), owner.canon) : owner.canon, term)
+      if (owner.para && FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       owner.absorbs = (owner.para && owner.absorbs) || absorbsColon(m.rest)
       owner.para = true
       if (!term) owner.last = 'para'
@@ -2860,7 +2875,7 @@ function ownLines(lines) {
     // there can its content be moved.
     function content(frame, start, canon) {
       if (m.rest === '' || frames.length > MAX_NESTING_DEPTH) return
-      const form = classify(m.rest, frame, at)
+      const form = classify(m.rest, frame, at, frame.kind === 'quote' ? m.col : start + m.col)
       if (form.kind === 'text') {
         lead(m.col)
         frame.absorbs = absorbsColon(m.rest)
@@ -2878,14 +2893,25 @@ function ownLines(lines) {
       apply(frame, col, form, canon + m.col)
     }
   }
-  return result
+  return frameTextFences(result, textFences)
+
+  // Whether line `next` holds a block at `col` under `depth` quote levels.
+  function attachesAt(next, col, depth) {
+    if (next >= lines.length) return false
+    let m = walkIndent(lines[next])
+    for (let d = 0; d < depth; d++) {
+      if (!QUOTE.test(m.rest)) return false
+      m = walkIndent(QUOTE.exec(m.rest)[1] ?? '')
+    }
+    return m.rest.trim() !== '' && m.col === col
+  }
 
   function absorbsColon(rest) {
     const colon = COLON_FENCE.exec(trimLineEnd(rest))
     return !!colon && parseColonOpener(colon[2]) === null
   }
 
-  function classify(rest, owner, at) {
+  function classify(rest, owner, at, col) {
     // Line-final whitespace is trimmed before a line is read, so heads are measured without it.
     rest = trimLineEnd(rest)
     if (rest === '') return { kind: 'blank', interrupts: true }
@@ -2913,12 +2939,13 @@ function ownLines(lines) {
     const fence = FENCE.exec(rest)
     if (fence && parseFenceInfo(fence[2]) !== null) {
       const run = fence[1]
-      const closes = (r) => {
-        const c = PURE_FENCE.exec(r)
+      // A run indented past its opener is code content (CARVE-P2-006).
+      const closes = (r, closerCol) => {
+        const c = closerCol <= col && PURE_FENCE.exec(r)
         return !!(c && c[1][0] === run[0] && c[1].length >= run.length)
       }
       // A closer below the owner's column never matches (CARVE-P0-014).
-      const reachable = (widestFrom(run[0], owner.col)[at + 1] ?? 0) >= run.length
+      const reachable = closerAhead(run, at, owner.col, col)
       if (owner.para && !reachable) return { kind: 'text', interrupts: false }
       return { kind: 'fence', interrupts: reachable, closes }
     }
@@ -2979,23 +3006,98 @@ function ownLines(lines) {
     return m
   }
 
-  // The widest closer run of `char` at or after every line, counting only
-  // closers written at `col` or deeper. One pass per column asked.
-  function widestFrom(char, col) {
-    const key = `${char}${col}`
-    const cached = (runs ??= closerRuns()).byColumn?.get(key)
-    if (cached) return cached
-    const widest = new Array(lines.length + 1).fill(0)
-    for (let j = lines.length - 1; j >= 0; j--) {
-      widest[j] = widest[j + 1]
-      const m = quotedMeasure(lines[j])
-      if (m.col < col) continue
-      const c = PURE_FENCE.exec(m.rest)
-      if (c && c[1][0] === char) widest[j] = Math.max(widest[j], c[1].length)
+  // Whether a closer for `run` lies after line `at`, written from column `lo`
+  // to column `hi`. The walk asks in line order, so each line leaves the index
+  // once: per character, a max segment tree over columns holds the widest run
+  // still ahead at each column.
+  function closerAhead(run, at, lo, hi) {
+    const index = (runs ??= closerRuns()).ahead ??= aheadIndex()
+    const char = index[run[0]]
+    while (index.next <= at) {
+      for (const [ch, col] of index.at[index.next] ?? []) {
+        const tree = index[ch]
+        const column = tree.columns[col]
+        column.from++
+        let k = tree.size + col
+        tree.max[k] = column.suffix[column.from] ?? 0
+        for (k >>= 1; k > 0; k >>= 1) tree.max[k] = Math.max(tree.max[2 * k], tree.max[2 * k + 1])
+      }
+      index.next++
     }
-    ;(runs.byColumn ??= new Map()).set(key, widest)
-    return widest
+    let widest = 0
+    for (let l = char.size + lo, r = char.size + Math.min(hi, char.size - 1) + 1; l < r; l >>= 1, r >>= 1) {
+      if (l & 1) widest = Math.max(widest, char.max[l++])
+      if (r & 1) widest = Math.max(widest, char.max[--r])
+    }
+    return widest >= run.length
   }
+
+  function aheadIndex() {
+    const found = { '`': [], '~': [] }
+    const index = { next: 0, at: [] }
+    for (let j = 0; j < lines.length; j++) {
+      const m = quotedMeasure(lines[j])
+      const c = PURE_FENCE.exec(m.rest)
+      if (!c) continue
+      found[c[1][0]].push([m.col, c[1].length])
+      ;(index.at[j] ??= []).push([c[1][0], m.col])
+    }
+    for (const ch of ['`', '~']) {
+      let size = 1
+      for (const [col] of found[ch]) while (size <= col) size *= 2
+      const columns = []
+      for (const [col, length] of found[ch]) (columns[col] ??= { lengths: [], from: 0 }).lengths.push(length)
+      const max = new Array(2 * size).fill(0)
+      columns.forEach((column, col) => {
+        column.suffix = new Array(column.lengths.length)
+        for (let k = column.lengths.length - 1; k >= 0; k--) column.suffix[k] = Math.max(column.lengths[k], column.suffix[k + 1] ?? 0)
+        max[size + col] = column.suffix[0]
+      })
+      for (let k = size - 1; k > 0; k--) max[k] = Math.max(max[2 * k], max[2 * k + 1])
+      index[ch] = { size, columns, max }
+    }
+    return index
+  }
+}
+
+// The readers re-derive a fence line's reading from the walk's output, where
+// moved lines can supply a closer the source did not have (CARVE-P2-006). A
+// fence-shaped line the walk read as paragraph text is framed LAZY, which every
+// reader takes as text, when a closer-shaped run lies below it at its column or
+// deeper. The frame sits at the owner's content column, so the line stays in
+// its container. One reverse pass; a max Fenwick tree per character over columns.
+function frameTextFences(result, textFences) {
+  if (textFences.length === 0) return result
+  const segments = result.map((line) => {
+    let s = line
+    let m = walkIndent(s)
+    while (QUOTE.test(m.rest)) {
+      s = QUOTE.exec(m.rest)[1] ?? ''
+      m = walkIndent(s)
+    }
+    return { prefix: line.slice(0, line.length - s.length), m }
+  })
+  const size = segments.reduce((max, { m }) => Math.max(max, m.col), 0) + 2
+  const trees = { '`': new Array(size).fill(0), '~': new Array(size).fill(0) }
+  // Index `size - 1 - col`, so a prefix holds every column at or past `col`.
+  const add = (tree, col, run) => { for (let k = size - 1 - col; k < size; k |= k + 1) tree[k] = Math.max(tree[k], run) }
+  const widest = (tree, col) => {
+    let best = 0
+    for (let k = size - 1 - col; k >= 0; k = (k & (k + 1)) - 1) best = Math.max(best, tree[k])
+    return best
+  }
+  let next = textFences.length - 1
+  for (let j = result.length - 1; j >= 0 && next >= 0; j--) {
+    const { prefix, m } = segments[j]
+    if (textFences[next]?.at === j) {
+      const f = FENCE.exec(m.rest)
+      if (f && widest(trees[f[1][0]], m.col) >= f[1].length) result[j] = prefix + ' '.repeat(textFences[next].col) + LAZY + m.rest
+      next--
+    }
+    const c = PURE_FENCE.exec(m.rest)
+    if (c) add(trees[c[1][0]], m.col, c[1].length)
+  }
+  return result
 }
 
 /*
@@ -6528,6 +6630,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (!m || parseFenceInfo(m[2]) === null) return false // INVALID-FENCE FALLBACK
       const body = [dedented]
       let pendingBlanks = 0
+      let seenBelow = false
       for (let j = idx + 1; j < lines.length; j++) {
         const raw = lines[j] ?? ''
         if (isBlank(raw)) { pendingBlanks++; continue }
@@ -6549,6 +6652,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         //
         // The below-column line itself cannot be the closer: it is not written
         // inside the item (carve#2145), so it is searched past and never matched.
+        // Past a below-column line the walk left the closer where it was written.
+        if (seenBelow && lm2.col >= blockBase && PURE_FENCE.test(lm2.rest)) {
+          body.push(lm2.rest)
+          continue
+        }
+        if (lm2.col < contentCol) seenBelow = true
         body.push(lm2.col >= blockBase
           ? dedentMeasured(lm2, raw, blockBase).text
           : lm2.col >= contentCol
@@ -6588,7 +6697,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           body.push('')
         } else if (measured.col >= bodyColumn) {
           body.push(dedentMeasured(measured, lines[k], bodyColumn).text)
-        } else if (body.at(-1) !== '' && foldablePlainLine(measured.rest)) {
+        } else if (body.at(-1) !== '' && (measured.rest.startsWith(LAZY) || foldablePlainLine(measured.rest))) {
           body.push(measured.rest)
         } else {
           return false
