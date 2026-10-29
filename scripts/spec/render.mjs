@@ -1325,6 +1325,8 @@ function applyMarkerBoundary(toks, openMap, src, contentAt) {
 // Source offsets of attribute blocks that reached the render with nothing to
 // attach to. renderInlineInner reads this after a pass and re-runs the text.
 let unattachedAttrs = []
+// Source offsets of the delimiters that paired in the same pass, while one runs.
+let pairedDelims = null
 
 // E1-E5 over a token stream: which candidates pair, as `open index -> close
 // index`. Split out because the caption `#` placeholder asks the same question
@@ -1449,6 +1451,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
       const t = toks[i]
       if (t.k === 'd' && openMap.has(i)) {
         const closeIdx = openMap.get(i)
+        pairedDelims?.push(t.at, toks[closeIdx].at)
         const inner = renderRange(i + 1, closeIdx)
         // A `{...}` block immediately after the closer attaches as attributes.
         let attrsStr = ''
@@ -1474,7 +1477,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
         if (!consumed.has(i)) {
           const marker = toks[i - 1]
           const literalMarker = t.heldMarker || (marker?.k === 'd' && !openMap.has(i - 1) && !closers.has(i - 1))
-          unattachedAttrs.push({ at: t.at, literalMarker: literalMarker && t.markerAt + 1 === t.at, markerChar: t.markerChar })
+          unattachedAttrs.push({ at: t.at, end: t.node.source.endIdx, literalMarker: literalMarker && t.markerAt + 1 === t.at, markerChar: t.markerChar })
         }
       } else out += t.h
       i++
@@ -1692,6 +1695,8 @@ const QUOTE_CHARS = new Set(['"', "'"])
 // the preceding character and the quote closes. Pairing decides which, so
 // `applyQuotes` settles it after the stack has run.
 const EMPHASIS_DELIMS = new Set(['*', '_', '~'])
+// The last character of a bare closer or a forced span's `X}`.
+const SPAN_CLOSER_ENDS = new Set(['/', '*', '_', '~', '=', '}'])
 const QUOTE_RULES = new Set(['dquote', 'squote'])
 const ELISION_WORDS = new Set(['tis', 'tisn', 'twas', 'twasn', 'twere', 'twill', 'twould', 'em', 'cause', 'til', 'n', 'bout'])
 const quoteAlnum = (c) => c !== '' && /[\p{L}\p{N}]/u.test(c)
@@ -1948,28 +1953,61 @@ function renderInlineInner(text) {
   if (bracketDepthExceeds(text, MAX_NESTING_DEPTH)) throw new Refuse('inline nesting exceeds MAX_NESTING_DEPTH')
   if (text.includes('`'.repeat(MAX_CODE_RUN + 1))) throw new Refuse('inline backtick run past the code span tiers')
   const saved = unattachedAttrs
-  let source = text
-  // Each pass escapes ONE unattached block, so the number of blocks bounds the
-  // loop and a pass that finds none is the answer.
-  for (let pass = 0; ; pass++) {
+  const savedPaired = pairedDelims
+  const read = (source) => {
     unattachedAttrs = []
+    pairedDelims = []
     const m = g.match(source, 'inlines')
-    if (m.failed()) {
-      unattachedAttrs = saved
-      throw new Refuse(`inline: ${m.shortMessage}`)
+    if (m.failed()) throw new Refuse(`inline: ${m.shortMessage}`)
+    return { out: sem(m).h(), offsets: unattachedAttrs, paired: pairedDelims }
+  }
+  try {
+    let source = text
+    // Brace escapes this loop wrote, as offsets into `source`.
+    const escapes = []
+    // Each pass escapes ONE unattached block, so the number of blocks bounds the
+    // loop and a pass that finds none is the answer.
+    for (let pass = 0; ; pass++) {
+      const result = read(source)
+      const { out, offsets } = result
+      if (offsets.length === 0 || pass > offsets.length + 1) {
+        if (offsets.length === 0 && escapes.length) return restoreAttached(source, escapes, result)
+        return out
+      }
+      const first = offsets.reduce((left, right) => left.at <= right.at ? left : right)
+      // A literal delimiter cannot carry attributes. Preserve a following
+      // editorial comment by escaping that delimiter instead of its brace.
+      const comment = first.literalMarker && source[first.at - 1] === first.markerChar && source.startsWith('{#', first.at) && !extendsGrapheme(source, first.at + 2) && source.indexOf('#}', first.at + 2) >= 0
+      const escapeAt = comment ? first.at - 1 : first.at
+      source = source.slice(0, escapeAt) + '\\' + source.slice(escapeAt)
+      for (const e of escapes) if (e.at >= escapeAt) { e.at++; e.end++ }
+      if (!comment) escapes.push({ at: escapeAt, end: first.end + 1 })
     }
-    const out = sem(m).h()
-    const offsets = unattachedAttrs
-    if (offsets.length === 0 || pass > offsets.length + 1) {
-      unattachedAttrs = saved
-      return out
+  } finally {
+    unattachedAttrs = saved
+    pairedDelims = savedPaired
+  }
+
+  // A block escaped because a block to its right was still opaque may follow a
+  // span that closes once that block is text. Glued to that closer it attaches
+  // (PART 3 `attribute_run`), so its escape is taken back when no delimiter in
+  // it paired and the document still reads with no unattached block.
+  function restoreAttached(source, escapes, current) {
+    escapes.sort((a, b) => a.at - b.at)
+    for (let k = 0; k < escapes.length; k++) {
+      const { at, end } = escapes[k]
+      if (!SPAN_CLOSER_ENDS.has(source[at - 1])) continue
+      if (current.paired.some((p) => p > at && p < end)) continue
+      const trial = source.slice(0, at) + source.slice(at + 1)
+      const result = read(trial)
+      if (result.offsets.length) continue
+      source = trial
+      current = result
+      escapes.splice(k, 1)
+      for (let j = k; j < escapes.length; j++) { escapes[j].at--; escapes[j].end-- }
+      k = -1
     }
-    const first = offsets.reduce((left, right) => left.at <= right.at ? left : right)
-    // A literal delimiter cannot carry attributes. Preserve a following
-    // editorial comment by escaping that delimiter instead of its brace.
-    const comment = first.literalMarker && source[first.at - 1] === first.markerChar && source.startsWith('{#', first.at) && !extendsGrapheme(source, first.at + 2) && source.indexOf('#}', first.at + 2) >= 0
-    const escapeAt = comment ? first.at - 1 : first.at
-    source = source.slice(0, escapeAt) + '\\' + source.slice(escapeAt)
+    return current.out
   }
 }
 
