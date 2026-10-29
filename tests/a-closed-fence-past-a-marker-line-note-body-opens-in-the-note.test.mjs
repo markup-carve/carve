@@ -31,38 +31,35 @@ for (const q of ['', '> ', '> > ']) {
       wrap(`<ul><li></li></ul><p>after${ref}</p>`) + endnotes(body))
   })
 
-  test(`an unclosed fence past a marker-line note body stays note text, quote depth ${q.length / 2}`, () => {
+  // The run opens with no closer (carve#4018), and `after [^n]` ends it and the note.
+  test(`an unclosed fence past a marker-line note body opens in the note like a closed one, quote depth ${q.length / 2}`, () => {
     for (const marker of ['-', '*', '1.', '1)', '- [ ]', '- [x]']) {
       for (const column of [5, 6, 7, 8]) for (const run of [F, '~~~']) {
         const src = source('text', marker, column, false).replace(F, run)
-        // Keep the inline reading with a single backtick or an escaped tilde run.
-        const twin = src.replace(run, run === F ? '`' : '\\~~~')
-        assert.equal(renderDoc(parse(src)), renderDoc(parse(twin)), src)
+        const closed = source('text', marker, column).replaceAll(F, run)
+        assert.equal(renderDoc(parse(src)), renderDoc(parse(closed)), src)
       }
     }
-    // `after [^n]` folds into the note's paragraph (carve#3885), so the note
-    // is referenced only from inside itself and renders nothing.
-    assert.equal(norm(renderDoc(parse(source('text', '-', 6, false)))), wrap('<ul><li></li></ul>'))
   })
 }
 
 for (const q of ['', '> ', '> > ']) for (const boundary of ['- sibling', 'outside', '\n- sibling']) {
-  test(`a closer beyond the note boundary leaves the run as note text: ${JSON.stringify(boundary)}, quote depth ${q.length / 2}`, () => {
+  // The run opens in the note with no closer (carve#4018); the boundary ends it,
+  // and the later run opens a fence of its own where it lands.
+  test(`a closer beyond the note boundary does not decide the run: ${JSON.stringify(boundary)}, quote depth ${q.length / 2}`, () => {
     const lines = ['- [^n]: text', '    - child', `      ${F}`, '      code',
       ...boundary.split('\n'), `      ${F}`, 'after [^n]']
     const src = lines.map(line => q + line).join('\n') + '\n'
+    const doc = parse(src)
+    assert.deepEqual(doc.footnoteDefs.get('n').map((block) => block.t), ['para', 'code'], src)
+    let blocks = doc.blocks
+    for (let depth = 0; depth < q.length / 2; depth++) blocks = blocks[0].children
     if (boundary === 'outside') {
-      // The closer past `outside` is reachable (CARVE-P0-014), so the run opens
-      // in the note and `outside` ends it as document text (carve#3910).
-      const doc = parse(src)
-      let blocks = doc.blocks
-      for (let depth = 0; depth < q.length / 2; depth++) blocks = blocks[0].children
-      assert.deepEqual(blocks.at(-1), { t: 'para', lines: ['outside', F, 'after [^n]'] }, src)
-      assert.deepEqual(doc.footnoteDefs.get('n').map((block) => block.t), ['para', 'code'], src)
-      return
+      assert.deepEqual(blocks.slice(-2), [{ t: 'para', lines: ['outside'] }, { t: 'code', lang: '', title: null, text: 'after [^n]\n' }], src)
+    } else {
+      assert.deepEqual(blocks.at(-1), { t: 'para', lines: ['after [^n]'] }, src)
+      assert.match(norm(renderDoc(doc)), /<li>(<p>)?sibling(<\/p>)?<pre><code><\/code><\/pre><\/li>/, src)
     }
-    const twin = lines.map((line, index) => q + (index === 2 ? '      `' : line)).join('\n') + '\n'
-    assert.equal(renderDoc(parse(src)), renderDoc(parse(twin)), src)
   })
 }
 

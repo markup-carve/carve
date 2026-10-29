@@ -10,14 +10,12 @@ code
 after *b*
 .
 <aside class="admonition note" aria-label="Note">
-  <p>para
-<code>
-code</code></p>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <p>para</p>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ````
 
@@ -31,14 +29,12 @@ code
 after *b*
 .
 <aside class="admonition note" aria-label="Note">
-  <blockquote><p>quote
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <blockquote><p>quote</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ````
 
@@ -53,14 +49,12 @@ after *b*
 .
 <aside class="admonition note" aria-label="Note">
   <ul>
-    <li>item
-<code>
-code</code></li>
+    <li>item</li>
   </ul>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ````

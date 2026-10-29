@@ -14,9 +14,10 @@ after *b*
   <blockquote><p>para</p></blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -33,9 +34,10 @@ after *b*
   <blockquote><p>para</p></blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -49,9 +51,10 @@ after *b*
 .
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
-more text
-<code>
-code</code></p></blockquote>
+more text</p></blockquote>
+  <pre><code>code
+:::
+after *b*
+</code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````

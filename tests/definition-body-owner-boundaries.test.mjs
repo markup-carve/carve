@@ -12,7 +12,9 @@ const cases = [
   {
     name: 'tabbed fence with a closer below the body',
     source: ':: t\n: a\n\t```\n ```\n',
-    owner: ['deflist', 'dd', 'para'],
+    // The fence opens with no closer (carve#4018); the line below the body ends it.
+    owner: ['deflist', 'dd', 'code'],
+    code: '',
   },
   {
     name: 'nested marker at the invisible note body column',
@@ -29,12 +31,16 @@ const cases = [
   {
     name: 'definition fence with payload and a closer at its authored base',
     source: ':: m\n: l\n     ```\ne\n     ```\n',
-    owner: ['deflist', 'dd', 'para'],
+    // The fence opens with no closer (carve#4018); the line below the body ends it.
+    owner: ['deflist', 'dd', 'code'],
+    code: '',
   },
   {
     name: 'definition fence with a closer outside its body',
     source: ':: m\n: l\n     ```\ne\n ```\n',
-    owner: ['deflist', 'dd', 'para'],
+    // The fence opens with no closer (carve#4018); the line below the body ends it.
+    owner: ['deflist', 'dd', 'code'],
+    code: '',
   },
 ]
 

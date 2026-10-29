@@ -123,7 +123,7 @@
     },
     {
       "name": "container-div",
-      "description": "The div's closer ends the fence inside it.",
+      "description": "The div's closer is payload of the unclosed fence, which runs to the end of the input.",
       "source": "::: note\n```\nx\n:::\n",
       "expected": {
         "findings": [
@@ -132,7 +132,7 @@
             "column": 1,
             "includes": [
               "```",
-              "end of its container"
+              "end of the document"
             ]
           }
         ]
@@ -181,6 +181,74 @@
       }
     },
     {
+      "name": "under-paragraph",
+      "description": "A fence under a paragraph opens without a closer and runs to the end of the input (carve#4018).",
+      "source": "para\n```js\ncode\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "```",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "under-paragraph-indented",
+      "description": "An indented fence under a document paragraph opens too.",
+      "source": "para\n  ```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "```",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "under-item-paragraph",
+      "description": "A fence under an item's paragraph ends with the item.",
+      "source": "- a\n  ```\n  x\nafter\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "```",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "under-quote-paragraph",
+      "description": "A tilde fence under a quoted paragraph ends with the quote.",
+      "source": "> a\n> ~~~\n> x\n\nafter\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "~~~",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "closed",
       "description": "A closed fence.",
       "source": "```\nx\n```\n",
@@ -213,9 +281,9 @@
       }
     },
     {
-      "name": "folded-opener-is-not-a-fence",
-      "description": "An indented opener folds into the paragraph as text and opens no code block.",
-      "source": "para\n  ```\n",
+      "name": "invalid-opener-is-not-a-fence",
+      "description": "An opener with invalid metadata stays paragraph text and opens no code block.",
+      "source": "para\n```js title=\"x\"\ncode\n",
       "expected": {
         "findings": []
       }

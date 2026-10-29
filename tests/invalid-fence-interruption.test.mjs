@@ -11,7 +11,7 @@ const invalidInfo = [
 ]
 for (const run of ['```', '~~~']) for (const info of invalidInfo) {
   for (const depth of [1, 2, 4]) test(`invalid ${JSON.stringify(run + info)} stays in a quote at depth ${depth}`, () => {
-    const lines = ['lead', run + info, 'payload', run, 'tail']
+    const lines = ['lead', run + info, 'payload', 'tail']
     const source = '> '.repeat(depth) + lines.join('\n') + '\n'
     let expected = { t: 'para', lines }
     for (let i = 0; i < depth; i++) expected = { t: 'quote', children: [expected] }
@@ -19,7 +19,7 @@ for (const run of ['```', '~~~']) for (const info of invalidInfo) {
     assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
   })
   for (const host of ['| h |', '![a](u)']) test(`invalid ${JSON.stringify(run + info)} continues ${host}'s caption`, () => {
-    const tail = ['cap', run + info, 'payload', run, 'tail']
+    const tail = ['cap', run + info, 'payload', 'tail']
     const source = [host, '^ ' + tail[0], ...tail.slice(1)].join('\n') + '\n'
     const blocks = parse(source).blocks
     assert.equal(blocks.length, 1, 'the invalid fence must not become a sibling paragraph')
@@ -38,12 +38,13 @@ for (const run of ['```', '~~~']) test(`a valid matched ${run} still ends a quot
   assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
 })
 
-for (const run of ['```', '~~~']) test(`a valid unmatched ${run} remains quoted paragraph text`, () => {
+// An unmatched valid opener interrupts too and runs to the end (carve#4018).
+for (const run of ['```', '~~~']) test(`a valid unmatched ${run} ends a quoted paragraph`, () => {
   const source = ['> lead', run + 'js', 'payload', 'tail'].join('\n') + '\n'
   assert.deepEqual(parse(source).blocks, [
-    { t: 'quote', children: [{ t: 'para', lines: ['lead', run + 'js', 'payload', 'tail'] }] },
+    { t: 'quote', children: [{ t: 'para', lines: ['lead'] }] },
+    { t: 'code', lang: 'js', title: null, text: 'payload\ntail\n' },
   ])
-  assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
 })
 
 for (const run of ['```', '~~~']) for (const host of ['| h |', '![a](u)']) {
@@ -56,18 +57,18 @@ for (const run of ['```', '~~~']) for (const host of ['| h |', '![a](u)']) {
     assert.deepEqual(blocks[2], { t: 'para', lines: ['tail'] })
     assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
   })
-  test(`a valid unmatched ${run} continues ${host}'s caption`, () => {
+  test(`a valid unmatched ${run} ends ${host}'s caption`, () => {
     const source = [host, '^ cap', run + 'js', 'payload', 'tail'].join('\n') + '\n'
     const blocks = parse(source).blocks
-    assert.equal(blocks.length, 1)
-    assert.equal(host[0] === '|' ? blocks[0].caption : blocks[0].captionSlot.text, ['cap', run + 'js', 'payload', 'tail'].join('\n'))
-    assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
+    assert.equal(blocks.length, 2)
+    assert.equal(host[0] === '|' ? blocks[0].caption : blocks[0].captionSlot.text, 'cap')
+    assert.deepEqual(blocks[1], { t: 'code', lang: 'js', title: null, text: 'payload\ntail\n' })
   })
 }
 
 for (const run of ['```', '~~~']) for (const info of invalidInfo) {
   test(`invalid ${JSON.stringify(run + info)} is inline at document block start`, () => {
-    const lines = [run + info, 'payload', run, 'tail']
+    const lines = [run + info, 'payload', 'tail']
     const source = lines.join('\n') + '\n'
     assert.deepEqual(parse(source).blocks, [{ t: 'para', lines }])
     assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
@@ -92,7 +93,7 @@ for (const run of ['```', '~~~']) test(`valid ${run} metadata retains its title 
 
 for (const run of ['```', '~~~']) for (const info of ['raw html', '=html "title"']) {
   for (const comment of [' %% hidden', ' %%%\n hidden\n %%%']) {
-    const lines = [run + info, 'payload', run]
+    const lines = [run + info, 'payload']
     const tail = { t: 'para', lines }
     const tailHtml = () => carveToHtml(lines.join('\n') + '\n').trim()
     test(`invalid ${JSON.stringify(run + info)} leaves an item after ${JSON.stringify(comment)}`, () => {

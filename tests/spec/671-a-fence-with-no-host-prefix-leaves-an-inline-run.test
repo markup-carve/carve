@@ -10,8 +10,8 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -24,6 +24,6 @@ y
     <pre><code></code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ````

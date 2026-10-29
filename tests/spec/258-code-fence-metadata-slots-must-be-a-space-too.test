@@ -6,8 +6,8 @@ x
 ```
 .
 <p><code>	js
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -16,8 +16,8 @@ x
 ```
 .
 <p><code> 	js
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -26,8 +26,8 @@ x
 ```
 .
 <p><code>	 js
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -36,8 +36,8 @@ x
 ```
 .
 <p><code>js	"T"
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -46,8 +46,8 @@ x
 ```
 .
 <p><code>js 	"T"
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -56,8 +56,8 @@ x
 ```
 .
 <p><code>js	 "T"
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -66,8 +66,8 @@ x
 ```
 .
 <p><code>js "T"	[L]
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -76,8 +76,8 @@ x
 ```
 .
 <p><code>js "T" 	[L]
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -86,8 +86,8 @@ x
 ```
 .
 <p><code>js "T"	 [L]
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 ````

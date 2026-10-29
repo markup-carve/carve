@@ -14,10 +14,12 @@ after *b*
   <div class="inner">
     <pre><code>code
 :::
+::::
+:::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -34,10 +36,12 @@ after *b*
   <div class="inner">
     <pre><code>code
 ::::
+:::
+::::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -51,9 +55,10 @@ after *b*
 <aside class="admonition note" aria-label="Note">
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -89,9 +94,10 @@ after *b*
 <aside class="admonition note" aria-label="Note">
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -109,10 +115,12 @@ after *b*
   <div class="inner">
     <pre><code>code
 :::
+::::
+:::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -130,9 +138,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -150,7 +159,8 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````

@@ -29,9 +29,9 @@ text
 ```
 code
 .
-<p>text
-<code>
-code</code></p>
+<p>text</p>
+<pre><code>code
+</code></pre>
 ````
 
 ```

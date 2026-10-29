@@ -11,13 +11,14 @@ A lazily folded fence opener line does not keep a list tight
 <ul>
   <li>
     <ul>
-      <li>text
-<code>
-x</code></li>
+      <li>text</li>
     </ul>
-    <p>cap</p>
+    <pre><code>x
+
+cap
+</code></pre>
   </li>
-  <li><p>c</p></li>
+  <li>c</li>
 </ul>
 ````
 
@@ -32,13 +33,14 @@ x</code></li>
 <ul>
   <li>
     <ul>
-      <li>text
-~~~
-x</li>
+      <li>text</li>
     </ul>
-    <p>cap</p>
+    <pre><code>x
+
+cap
+</code></pre>
   </li>
-  <li><p>c</p></li>
+  <li>c</li>
 </ul>
 ```
 
@@ -73,11 +75,11 @@ x</li>
 <ul>
   <li>
     <ul>
-      <li>text
-<code>
-x
-cap</code></li>
+      <li>text</li>
     </ul>
+    <pre><code>x
+cap
+</code></pre>
   </li>
   <li>c</li>
 </ul>

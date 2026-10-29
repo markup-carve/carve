@@ -792,14 +792,10 @@ after
 
 ::::
 
-Only a fence that CLOSES is opaque. An opener with no closer ahead opens no
-span at all, so the container's own closer stays structural and the lines after
-it are parsed normally. Without this one unclosed fence would swallow the rest
-of the document - the `:::` and `after` below would both render inside the code
-block, and the admonition would close at end of input.
-
-The `%%%` rule already worked this way; the code fence did not, in any of the
-three engines, because the spec had only ever written it down for `%%%`.
+An unclosed code fence is opaque too: it runs to the end of its container, so
+the `:::` and `after` below render inside the code block and the admonition
+closes at end of input. A `%%%` opener with no exact-width closer is different:
+it opens no span and is a line comment.
 
 :::: compare
 
@@ -814,16 +810,16 @@ after
 ```html
 <aside class="admonition note" aria-label="Note">
   <pre><code>x
+:::
+after
 </code></pre>
 </aside>
-<p>after</p>
 ```
 
 ::::
 
-A fence with nothing to take structure away from is unaffected: alone, or as
-the whole content of a blockquote, an unterminated fence still opens a code
-block that runs to the end.
+Alone, or as the whole content of a blockquote, an unterminated fence opens a
+code block that runs to the end the same way.
 
 :::: compare
 
@@ -1646,9 +1642,9 @@ paragraph with no blank line before it, at the top level and inside nested
 content. Three carve-outs keep common prose safe: **list markers never
 interrupt** — neither a bullet (`- `/`* `) nor an ordered marker, in any dialect
 or value, so a list always needs a blank line before it (symmetric, Djot-like);
-a code or raw fence interrupts only when it has a matching closer ahead; and a
-bare image is never a block. A `:::` opener interrupts with or without a closer
-and closes at its container boundary or end of input. Invisible constructs
+and a bare image is never a block. A code or raw fence opener and a `:::`
+opener interrupt with or without a closer and close at their container boundary
+or end of input. Invisible constructs
 (reference definitions, comments, block-attribute lines) interrupt as they
 always have.
 
@@ -1670,7 +1666,7 @@ text
 
 :::
 
-A fenced code block with a closer interrupts (an inline span no longer).
+A fenced code block interrupts.
 
 ::: compare
 
@@ -1989,10 +1985,8 @@ text
 
 :::
 
-An **unterminated** code fence opener does not interrupt a paragraph (§10
-closer lookahead): with no matching closer ahead, the ` ``` ` line stays
-paragraph text. It is then an unclosed inline verbatim run, which renders as a `<code>`
-span to the end of the block (matching the `code_span` maximal-run rule).
+An **unterminated** code fence opener interrupts a paragraph too (§10 I4): no
+closer is looked for, and the code block runs to the end of its container.
 
 ::: compare
 
@@ -2003,14 +1997,14 @@ code
 ````
 
 ```html
-<p>Text
-<code>
-code</code></p>
+<p>Text</p>
+<pre><code>code
+</code></pre>
 ```
 
 :::
 
-A `:::` opener goes the other way: its closer is optional (PART 9 §12), so
+A `:::` opener works the same way: its closer is optional (PART 9 §12), so
 there is nothing to look ahead for. The opener interrupts, and the container it
 opens closes at the end of the input. That is the counterweight to the exact
 closer - a mistyped closer costs the container's extent, not the rest of the
@@ -2358,7 +2352,7 @@ A heading inside a container is a heading line too.
 
 ## Blockquote lazy continuation stops at a fenced block
 
-Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code. After the quote ends, `b` starts a paragraph and the trailing `> c` interrupts it into a fresh block quote (§10 — a `>` marker interrupts a paragraph). In the second example the mid-paragraph ` ``` ` has no closer, so it does not interrupt (§10 closer lookahead); it is then an unclosed inline verbatim run that renders as a `<code>` span to the end of the block (matching djot and carve-php), and the lazy line still folds in.
+Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code. After the quote ends, `b` starts a paragraph and the trailing `> c` interrupts it into a fresh block quote (§10 — a `>` marker interrupts a paragraph). In the second example the mid-paragraph ` ``` ` has no closer, and it still interrupts (§10 I4): the unclosed fence opens an empty code block, and `lazy`, which misses the quote, ends it and the quote.
 
 ::: compare
 
@@ -2389,9 +2383,11 @@ lazy
 ````
 
 ````html
-<blockquote><p>text
-<code>
-lazy</code></p></blockquote>
+<blockquote>
+  <p>text</p>
+  <pre><code></code></pre>
+</blockquote>
+<p>lazy</p>
 ````
 
 :::
@@ -11504,7 +11500,9 @@ padding and all three take a space.
 
 The fallback here is the INVALID-FENCE FALLBACK the grammar already names: the
 opener is not a fence opener, so the run is read as an inline verbatim span in
-a paragraph and every character of it survives.
+a paragraph and every character of its line survives. The bare `` ``` `` line
+below it is a valid opener, so it interrupts that paragraph and opens an empty
+code block that runs to the end of the document.
 
 Each slot is pinned separately, because implementations decide them in three
 places and a document carrying a tab in all three cannot tell a partial fix
@@ -11522,8 +11520,8 @@ x
 
 ````html
 <p><code>	js
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11540,8 +11538,8 @@ x
 
 ````html
 <p><code> 	js
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11556,8 +11554,8 @@ x
 
 ````html
 <p><code>	 js
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11575,8 +11573,8 @@ x
 
 ````html
 <p><code>js	"T"
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11591,8 +11589,8 @@ x
 
 ````html
 <p><code>js 	"T"
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11607,8 +11605,8 @@ x
 
 ````html
 <p><code>js	 "T"
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11625,8 +11623,8 @@ x
 
 ````html
 <p><code>js "T"	[L]
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11641,8 +11639,8 @@ x
 
 ````html
 <p><code>js "T" 	[L]
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11657,8 +11655,8 @@ x
 
 ````html
 <p><code>js "T"	 [L]
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -12037,7 +12035,8 @@ distinguishes narrowing the slot from breaking it.
 opener slot as exactly one character. A second space reaches `language_info`,
 whose character class holds no space, so the opener matches no shape and the
 INVALID-FENCE FALLBACK applies: the run is an inline verbatim span in a
-paragraph.
+paragraph. The bare `` ``` `` line below it is a valid opener and interrupts
+that paragraph with an empty code block.
 
 The two metadata slots INSIDE `code_fence_info` are spelled `space+` and are
 unaffected. The productions differ, so the cardinality differs, and carve#912
@@ -12053,8 +12052,8 @@ x = 1
 
 ````html
 <p><code>  php
-x = 1
-</code></p>
+x = 1</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -14017,16 +14016,14 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 :::::
 
-The trailing delimiter becoming EMPTY INLINE CODE is pinned deliberately rather
-than inherited. It is not part of the rule - it is what a backtick run means once
-the line is ordinary paragraph text - but it is the kind of output nobody would
-write down on purpose, so it is stated.
+The trailing delimiter is a valid opener at document level, so it interrupts
+`x` and opens an empty code block that runs to the end of the document.
 
 One column in is the same answer, and it is a separate row because the two
 broken readings differed here: one kept the leading space in the code text and
@@ -14046,8 +14043,8 @@ one stripped it. Below the content column is below the content column.
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -14091,15 +14088,14 @@ x
 <blockquote>
   <pre><code></code></pre>
 </blockquote>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 :::::
 
-A tilde fence takes the same route, and the residue shows the empty inline code
-above was a property of the BACKTICK run rather than of this rule: `~~~` in
-paragraph text is just text.
+A tilde fence takes the same route, and its trailing `~~~` opens an empty code
+block the same way:
 
 ::::: compare
 
@@ -14115,8 +14111,8 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-~~~</p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -14142,22 +14138,17 @@ mechanisms to pass, and only the fence-shaped rule passes both:
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
 
 The same clause reaches one shape further: a fence opened on a CONTINUATION line,
-after `a` has opened a paragraph. §10 I4 decides first whether the fence
-interrupts `a`, and its closer lookahead does not stop at the below-column line
-(PART 1, THE CLOSER LOOKAHEAD DOES NOT STOP AT A BELOW-COLUMN LINE), so it finds
-the closer and a real code block opens. That open body is what makes ` y` end
-the item, and the block runs to the item's end with its closer left outside.
-
-The item's own parse takes the same answer. Asking I4 again over the truncated
-item would find no closer and read the run as paragraph text - one line read two
-ways in one parse, with a paragraph open that ` y` would then have folded into.
+after `a` has opened a paragraph. The fence interrupts `a` whether or not a
+closer follows (§10 I4), so a real code block opens. That open body is what
+makes ` y` end the item, and the trailing run then opens an empty code block
+after the document paragraph `y`.
 
 ::::: compare
 
@@ -14176,8 +14167,8 @@ ways in one parse, with a paragraph open that ` y` would then have folded into.
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -16103,7 +16094,8 @@ x
 
 :::
 
-A container's closer ends the fence the same way its own closer would.
+Inside a colon container the unclosed fence takes the container's closer as
+payload, and the blank before it is still content.
 
 :::: compare
 
@@ -16119,13 +16111,14 @@ x
 <aside class="admonition note" aria-label="Note">
   <pre><code>x
 
+:::
 </code></pre>
 </aside>
 ````
 
 ::::
 
-So does the end of a list item.
+The end of a list item ends the fence the same way its own closer would.
 
 ::: compare
 
@@ -20921,8 +20914,8 @@ opener. Read that way the two clauses never overlap, so neither needs an
 exception written into it to protect the other.
 
 A code fence whose info string is preceded by a tab is not a fence opener. The
-backtick run is then an ordinary inline verbatim run, and it reaches the end of
-the block:
+backtick run is then an ordinary inline verbatim run in a paragraph, and the
+bare `` ``` `` line below it is a valid opener that interrupts that paragraph:
 
 ::: compare
 
@@ -20934,8 +20927,8 @@ x
 
 ````html
 <p><code>	php
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -24700,15 +24693,14 @@ b
 
 ## An unterminated fence at a content column opens no block, so the paragraph stays open
 
-Section 10 I4 decides whether a code fence interrupts an open paragraph, and it
-is a question about the CLOSER: without one the fence line is ordinary paragraph
-text. That is what every reader already does at document level, where `q` over a
-bare fence run over `b` is one paragraph holding an unclosed inline verbatim run
-rather than a code block.
+Section 10 I4 makes a valid code fence interrupt an open paragraph whether or
+not a closer follows. At document level `q` over a bare fence run over `b` is a
+paragraph followed by a code block holding `b`.
 
-At a container's content column the same line does the same thing, so PART 1 S4
-finds an open paragraph and a flush-left line below folds into it. The container
-does not end, because nothing closed the paragraph (carve#1387).
+At a container's content column the same line does the same thing: the fence
+opens a code block that runs to the end of the container. A fenced body is not a
+paragraph, so a flush-left line below does not fold into it and the container
+ends (CARVE-P0-013).
 
 ::: compare
 
@@ -24721,17 +24713,16 @@ tail
 ````html
 <ul>
   <li>q
-<code>
-tail</code></li>
+    <pre><code></code></pre>
+  </li>
 </ul>
+<p>tail</p>
 ````
 
 :::
 
 The container is not a parameter. A definition body's content column answers the
-same way, and so does a block quote's - the quote spelling is the one every
-reader already folded, which is what made the list spelling a contradiction
-inside each of them rather than a disagreement between them.
+same way, and so does a block quote's.
 
 ::: compare
 
@@ -24745,10 +24736,12 @@ tail
 ````html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-tail</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>tail</p>
 ````
 
 :::
@@ -24762,16 +24755,17 @@ tail
 ````
 
 ````html
-<blockquote><p>q
-<code>
-tail</code></p></blockquote>
+<blockquote>
+  <p>q</p>
+  <pre><code></code></pre>
+</blockquote>
+<p>tail</p>
 ````
 
 :::
 
-CONTROL. A blank line closes the paragraph, so S4's other half governs and the
-item ends whatever container is still waiting for its closer. This is the
-document the reading above must not swallow.
+CONTROL. A blank line inside the open fence is content, and the flush-left line
+still ends the fence and the item.
 
 ::: compare
 
@@ -24785,20 +24779,18 @@ tail
 ````html
 <ul>
   <li>q
-<code></code></li>
+    <pre><code>
+</code></pre>
+  </li>
 </ul>
 <p>tail</p>
 ````
 
 :::
 
-CONTROL. AT BLOCK START a fence opens a body whether or not it is terminated -
-there is no paragraph for section 10 I4 to protect, and the body runs to the end
-of the container. The flush-left line then has nothing to fold into and the item
-ends, which is the fenced-body clause with its premise intact. Nothing in the
-corpus pinned this shape before, and a reading that made every unterminated
-fence at a content column absorb its container's following lines passed all 1267
-documents without it.
+CONTROL. AT BLOCK START a fence opens a body the same way, and the body runs to
+the end of the container. The flush-left line has nothing to fold into and the
+item ends, which is the fenced-body clause.
 
 ::: compare
 
@@ -24823,8 +24815,7 @@ tail
 :::
 
 CONTROL. A fence WITH its closer is a block, and a block leaves no paragraph
-open, so the item ends on the flush-left line for the ordinary reason. The
-premise the clause turns on is the closer, and this is the shape where it holds.
+open, so the item ends on the flush-left line for the ordinary reason.
 
 ::: compare
 
@@ -34382,10 +34373,9 @@ tail
 
 :::
 
-CONTROL -- an UNTERMINATED fence is the opposite answer, and the reason the rule
-is about the closed fence rather than about the fence line: an unterminated
-fence opens no block, so the paragraph above it is still open and the flush-left
-line folds into the body.
+CONTROL -- an UNTERMINATED fence gives the same answer: it interrupts the
+paragraph above it and opens a code block, so the flush-left line has no
+paragraph to continue and ends the body.
 
 ::: compare
 
@@ -34400,11 +34390,13 @@ tail
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition
-<code>
-c
-tail</code></dd>
+  <dd>
+    <p>definition</p>
+    <pre><code>c
+</code></pre>
+  </dd>
 </dl>
+<p>tail</p>
 ```
 
 :::
@@ -35089,8 +35081,9 @@ after
 
 ## An unterminated fence on a nested lead in a description body owns its body
 
-A flush-left line leaves the description body and its nested fence.
-CARVE-P0-013 and CARVE-P9-083 give both hosts the same boundary
+A flush-left line leaves the description body and its nested fence. The
+trailing run then interrupts that document paragraph and opens an empty code
+block. CARVE-P0-013 and CARVE-P9-083 give both hosts the same boundary
 (markup-carve/carve#2973).
 
 ::: compare
@@ -35113,8 +35106,8 @@ code
     </ul>
   </dd>
 </dl>
-<p>code
-<code></code></p>
+<p>code</p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -35141,8 +35134,8 @@ code
     </ul>
   </dd>
 </dl>
-<p>code
-~~~</p>
+<p>code</p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -35169,8 +35162,8 @@ code
     </ul>
   </dd>
 </dl>
-<p>code
-<code></code></p>
+<p>code</p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -36499,13 +36492,13 @@ block after either one is text.
 
 ## An item's fence is read once, whatever block it follows
 
-A fence on an item's continuation line whose closer sits past a below-column line
-opens a code block (see *A fence opened on a list marker line, body below the
-content column*), and that holds after a caption or a quote as it does after a
-paragraph. Each reader that asks §10 I4 about the fence line takes the answer the
-item collector gave, so the fence is not folded into the caption or the quoted
-paragraph while the item ends at ` y` as though it had opened. With the closer
-inside the item the same documents open the same block.
+A fence on an item's continuation line opens a code block (see *A fence opened
+on a list marker line, body below the content column*), and that holds after a
+caption or a quote as it does after a paragraph. Each reader takes the answer
+the item collector gave, so the fence is not folded into the caption or the
+quoted paragraph, and ` y` ends it and the item. The trailing run then opens an
+empty code block after the document paragraph `y`. With the closer inside the
+item the same documents open the same block.
 
 ::::: compare
 
@@ -36529,8 +36522,8 @@ inside the item the same documents open the same block.
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36553,8 +36546,8 @@ inside the item the same documents open the same block.
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36698,9 +36691,9 @@ decides whether a caption line below finds its image.
 
 A FENCED BODY IS NOT A PARAGRAPH (PART 1, CARVE-P0-013), in a definition body as
 in a list item: a line below the body's column has no paragraph to fold into,
-so the body ends there and the line is read at document level. Whether the
-fence opened is §10 I4's question, asked the way *An item's fence is read once,
-whatever block it follows* asks it (markup-carve/carve#2143).
+so the body ends there and the line is read at document level. The fence opens
+whether or not a closer follows (§10 I4), the way *An item's fence is read once,
+whatever block it follows* reads it (markup-carve/carve#2143).
 
 ::::: compare
 
@@ -36718,8 +36711,8 @@ whatever block it follows* asks it (markup-carve/carve#2143).
     <pre><code></code></pre>
   </dd>
 </dl>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36746,8 +36739,8 @@ whatever block it follows* asks it (markup-carve/carve#2143).
 
 :::::
 
-After a paragraph the fence opens because its closer follows, past the
-below-column line, and the body's own parse takes the same answer.
+After a paragraph the fence opens too, and the body's own parse takes the same
+answer. ` y` ends it, and the trailing run opens an empty code block after `y`.
 
 ::::: compare
 
@@ -36769,8 +36762,8 @@ below-column line, and the body's own parse takes the same answer.
 </code></pre>
   </dd>
 </dl>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36803,10 +36796,9 @@ y</p>
 
 :::::
 
-The closer has to be reachable. A blank line followed by a line below the
-column ends the body (carve#1379), and a fence-shaped line past that is not
-this fence's closer, so the fence opened nothing and ` y` folds into the
-paragraph it stayed part of.
+A later fence-shaped line is not this fence's closer either: ` y` has already
+ended the fence and the body, and the trailing run opens its own empty code
+block after `z`.
 
 ::::: compare
 
@@ -36824,23 +36816,25 @@ z
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-b
-y</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code>b
+</code></pre>
+  </dd>
 </dl>
-<p>z
-<code></code></p>
+<p>y</p>
+<p>z</p>
+<pre><code></code></pre>
 ```
 
 :::::
 
 ## A closer below the container's column does not count
 
-The closer lookahead runs past a line below the content column but never matches
-one (PART 1, A BELOW-COLUMN LINE IS SEARCHED PAST, NEVER MATCHED). A flush-left
-run, or one a column short, is not written inside the item, so the fence opens
-nothing and the lines fold into the paragraph as text (markup-carve/carve#2145).
+The fence opens whether or not a closer follows (§10 I4), and a line below the
+content column ends it and the item. A flush-left run, or one a column short, is
+not written inside the item, so it closes nothing there: it is read at document
+level, where it opens an empty code block of its own (markup-carve/carve#2145).
 
 ::::: compare
 
@@ -36855,11 +36849,12 @@ nothing and the lines fold into the paragraph as text (markup-carve/carve#2145).
 ```html
 <ul>
   <li>a
-<code>
-b
-y
-</code></li>
+    <pre><code>b
+</code></pre>
+  </li>
 </ul>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36877,11 +36872,12 @@ y
 ```html
 <ul>
   <li>a
-<code>
-b
-y
-</code></li>
+    <pre><code>b
+</code></pre>
+  </li>
 </ul>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36904,11 +36900,12 @@ below the content column*.
 ```html
 <ul>
   <li>a
-<code>
-b
-y
-</code></li>
+    <pre><code>b
+</code></pre>
+  </li>
 </ul>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36929,12 +36926,14 @@ A definition body reads the same way, on both sides.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-b
-y
-</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code>b
+</code></pre>
+  </dd>
 </dl>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36953,19 +36952,21 @@ y
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-b
-y
-</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code>b
+</code></pre>
+  </dd>
 </dl>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
 
-The flush-left run folds because §10 I4 lets a fence interrupt a paragraph only
-when a closer follows it. That holds in a definition body with nothing else in
-play, as it does under a list item.
+With nothing else in play the flush-left run interrupts the description's
+paragraph, since §10 I4 asks for no closer, and opens an empty code block at
+document level, as it does under a list item.
 
 ::::: compare
 
@@ -36978,15 +36979,15 @@ play, as it does under a list item.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code></code></dd>
+  <dd>a</dd>
 </dl>
+<pre><code></code></pre>
 ```
 
 :::::
 
-CONTROL. With a closer after it the same run does interrupt, so the description
-ends and the fence opens a block at document level.
+CONTROL. With a closer after it the same run interrupts the same way, and the
+fence opens a block at document level that ends at its closer.
 
 ::::: compare
 
@@ -37139,7 +37140,8 @@ y
 :::::
 
 CONTROL. A container that already holds a paragraph takes the line in as lazy
-continuation, and a `:::` inside an open code fence is code, not an opener.
+continuation. A `:::` inside an open code fence is code, not an opener, and
+` y` below the column ends that fence and the body.
 
 ::::: compare
 
@@ -37185,8 +37187,8 @@ y</p>
 </code></pre>
   </dd>
 </dl>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -40974,18 +40976,17 @@ document, column 2 reaches the outer item. Every container between the fence's
 host and that owner closes, the fence ends unterminated, and the run is
 classified in the owner at its own column.
 
-`CARVE-P0-014` names the deciding parameter, so the branch inverts where a
-container does hold an open paragraph: without the blank line the fence
-interrupts nothing and the run folds as text. The two fence kinds and the raw
-form answer alike, and `%%%` keeps the rule written for itself.
+An open paragraph does not change this: the fence interrupts it whether or not
+a closer follows (CARVE-P0-014), so without the blank line the run still ends
+the fence and opens an empty code block in its owner. The two fence kinds and
+the raw form answer alike, and `%%%` keeps the rule written for itself.
 
-The last two cases are the parameter rather than the blank line: the fence has a
-closer, so it interrupts the paragraph under CARVE-P0-014's closer-lookahead rule,
-and the line below the base then finds no open paragraph and selects the document.
-The host keeps its fenced body at either depth, which is the rule the same clause
-works at one level. The control after them writes the second run inside a SIBLING
-item, where it is not a closer at all: the fence opens nothing and the paragraph
-keeps it.
+The last two cases put a line below the base before the second run. That line
+ends the fence and selects the document, and the run then opens an empty code
+block there. The host keeps its fenced body at either depth, which is the rule
+the same clause works at one level. The control after them writes the second run
+inside a SIBLING item, where it is not a closer at all: it opens that item's own
+fence.
 
 ::: compare
 
@@ -41095,12 +41096,13 @@ keeps it.
   <li>a
     <ul>
       <li>b
-<code>
-p
-</code></li>
+        <pre><code>p
+</code></pre>
+      </li>
     </ul>
   </li>
 </ul>
+<pre><code></code></pre>
 `````
 
 :::
@@ -41120,12 +41122,13 @@ p
   <li>a
     <ul>
       <li>b
-<code>
-p
-</code></li>
+        <pre><code>p
+</code></pre>
+      </li>
     </ul>
   </li>
 </ul>
+<pre><code></code></pre>
 `````
 
 :::
@@ -41281,8 +41284,8 @@ x
     </ul>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 `````
 
 :::
@@ -41314,8 +41317,8 @@ x
     </ul>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 `````
 
 :::
@@ -41336,10 +41339,12 @@ x
   <li>a
     <ul>
       <li>b
-<code>
-p</code></li>
+        <pre><code>p
+</code></pre>
+      </li>
       <li>c
-<code></code></li>
+        <pre><code></code></pre>
+      </li>
     </ul>
   </li>
 </ul>
@@ -41382,10 +41387,9 @@ not ordinary lines either, so the unmarked line leaves every quote it was
 written under. Each nesting level is asked on its own, which is what the nested
 spellings below turn on.
 
-§10 I4 decides whether the fence opened: at a block start it does, under a
-paragraph only when a closer follows. *Blockquote lazy continuation stops at a
-fenced block* pins the other arm, where a fence with no closer stays paragraph
-text and the lazy line folds in.
+§10 I4 opens the fence under a paragraph as at a block start, whether or not a
+closer follows, so the unmarked line leaves the quote in both arms
+(*Blockquote lazy continuation stops at a fenced block*).
 
 ::: compare
 
@@ -43018,7 +43022,8 @@ a%%b and 50%% stay
 `CARVE-P0-014` gives an unmarked column-0 line to the document when a code or
 raw fence is open, even when the opener sits past the quoted item's content
 column. Quote depth and opener indentation do not preserve a continuation claim.
-A run that remains paragraph text still permits lazy continuation.
+A shifted run under the item's paragraph opens a fence too, so it permits no
+lazy continuation either, and a later quoted run opens a fence of its own.
 
 ::: compare
 
@@ -43066,8 +43071,10 @@ z
   </ul>
 </blockquote>
 <p>z</p>
-<blockquote><p>b
-~~~</p></blockquote>
+<blockquote>
+  <p>b</p>
+  <pre><code></code></pre>
+</blockquote>
 `````
 
 :::
@@ -43110,11 +43117,12 @@ flush
 <blockquote>
   <ul>
     <li>a
-<code>
-x
-flush</code></li>
+      <pre><code>x
+</code></pre>
+    </li>
   </ul>
 </blockquote>
+<p>flush</p>
 `````
 
 :::
@@ -45370,8 +45378,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -45395,8 +45405,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -45560,8 +45572,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-~~~</p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -45585,8 +45599,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-~~~</p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -45747,8 +45763,10 @@ y
     <blockquote>
       x
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -45771,8 +45789,10 @@ y
     <blockquote>
       x
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -46747,7 +46767,8 @@ STILL FOLDS` arm is conditioned on a paragraph being open above the line. A
 body whose own block is a fence leaves none, so a flush-left non-opener has
 nothing to reach and the body ends at the opener. The fence holds nothing and
 the line below it is classified in the surviving context, which is the
-document.
+document, where the trailing run interrupts that paragraph and opens an empty
+code block.
 
 ::: compare
 
@@ -46765,8 +46786,8 @@ code
     <pre><code></code></pre>
   </dd>
 </dl>
-<p>code
-<code></code></p>
+<p>code</p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -48021,11 +48042,11 @@ line closes the list and begins a new block, and no surviving frame adopts it.
 These documents pin the answer in the shapes where a reader kept the line in a
 frame that had ended (markup-carve/carve#2925).
 
-A closed code block after a failed fence opener. The first run has no closer, so
-it is paragraph text (§10 I4) and the paragraph ends at the blank. The tilde
-block below it is closed, the item holds no paragraph, and `after` is a document
-paragraph (markup-carve/carve#2949). A thematic break between the two changes
-nothing.
+A fence opener with no closer under the item's paragraph. The first run
+interrupts the paragraph (§10 I4) and opens a code block that runs to the end of
+the item, so the blank, the tilde lines and anything between them are its
+content. A fenced body is not a paragraph, and `after` is a document paragraph
+(markup-carve/carve#2949). A thematic break between the two changes nothing.
 
 ::: compare
 
@@ -48042,8 +48063,10 @@ after
 ```html
 <ul>
   <li>a
-<code></code>
-    <pre><code>code
+    <pre><code>
+~~~
+code
+~~~
 </code></pre>
   </li>
 </ul>
@@ -48064,9 +48087,11 @@ after
 ```html
 <ul>
   <li>a
-<code></code>
-    <hr>
-    <pre><code>code
+    <pre><code>
+---
+~~~
+code
+~~~
 </code></pre>
   </li>
 </ul>
@@ -48075,8 +48100,8 @@ after
 
 :::
 
-The control. With a line of prose after the closed block the item does hold an
-open paragraph, and `after` folds into it.
+A line of prose after the tilde block is code content too, and `after` still
+leaves the item.
 
 ::: compare
 
@@ -48094,13 +48119,15 @@ after
 ```html
 <ul>
   <li>a
-<code></code>
-    <pre><code>code
+    <pre><code>
+~~~
+code
+~~~
+more
 </code></pre>
-    more
-after
   </li>
 </ul>
+<p>after</p>
 ```
 
 :::
@@ -48676,10 +48703,10 @@ tail
 
 A fence run after a nested item has ended. The blank and the heading at the
 outer item's column end the child item, so the later run is not inside it and
-closes nothing: the first run has no closer and is paragraph text
+closes nothing: the first run opens a code block that the heading ends
 (`CARVE-P0-014`, markup-carve/carve#2961). The later run is past the outer
 item's column with no paragraph open, so it opens a code block of its own
-(`CARVE-P0-004`). The top-level spelling already read the first run this way.
+(`CARVE-P0-004`). The top-level spelling reads the first run the same way.
 
 ::: compare
 
@@ -48698,8 +48725,10 @@ item's column with no paragraph open, so it opens a code block of its own
   <li>outer
     <ul>
       <li>para
-<code>
-code</code></li>
+        <pre><code>code
+
+</code></pre>
+      </li>
     </ul>
     <h1 id="h">h</h1>
     <pre><code></code></pre>
@@ -48719,11 +48748,13 @@ y
 ```html
 <ul>
   <li>a
-<code>
-b</code></li>
+    <pre><code>b
+
+</code></pre>
+  </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::
@@ -49133,8 +49164,8 @@ tail
 An opener past a nested item's content column inside a quote. The heading is
 rebased into the item (`CARVE-P0-004`), which then holds no paragraph, so no
 frame of the quote adopts the line below (`CARVE-P0-009`,
-markup-carve/carve#2960). The second document has a fence under an absorbed
-run of the other fence character: the tilde fence has a closer and opens.
+markup-carve/carve#2960). In the second document the backtick run opens a
+fence under the item's paragraph, so the tilde lines below it are its content.
 
 ::::: compare
 
@@ -49173,8 +49204,9 @@ tail
 <blockquote>
   <ul>
     <li>a
-<code></code>
-      <pre><code>code
+      <pre><code>~~~
+code
+~~~
 </code></pre>
     </li>
   </ul>
@@ -50385,8 +50417,8 @@ column leaves that item and is read in the enclosing host (CARVE-P0-009). With
 nothing to interrupt and no closer to take, an unclosed fence opens a code block
 that runs to the end of that host, and a bare `:::` past a box's column is
 text, not the box's closer (PART 2 `admonition`, A CLOSER IS REQUIRED).
-A fence below the sublist's column interrupts its paragraph only when a closer
-follows (CARVE-P0-014); without one it stays sublist text.
+A fence below the sublist's column interrupts its paragraph whether or not a
+closer follows (CARVE-P0-014) and opens in the enclosing host.
 A fence-shaped line-block payload line opens nothing, so the box reads the same
 when that line is plain text. A `:::` inside an open code fence is code text.
 
@@ -50416,6 +50448,7 @@ when that line is plain text. A `:::` inside an open code fence is code text.
           </li>
         </ul>
         <pre><code>:::bad
+:::
 </code></pre>
       </div>
     </li>
@@ -50493,10 +50526,11 @@ x
             </div>
           </li>
         </ul>
-        <pre><code></code></pre>
-      </div>
-      :::bad
+        <pre><code>:::
+:::bad
 :::
+</code></pre>
+      </div>
     </li>
   </ul>
 </blockquote>
@@ -50524,12 +50558,12 @@ after
   <ul>
     <li>a
       <ul>
-        <li>child
-<code></code>
-          <pre><code></code></pre>
-        </li>
+        <li>child</li>
       </ul>
-      <pre><code></code></pre>
+      <pre><code>
+  ```
+~~~
+</code></pre>
     </li>
   </ul>
 </blockquote>
@@ -50606,13 +50640,13 @@ after
 <ul>
   <li>a
     <ul>
-      <li>child
-<code>
-code
-after</code></li>
+      <li>child</li>
     </ul>
+    <pre><code>code
+</code></pre>
   </li>
 </ul>
+<p>after</p>
 ```
 
 ::::
@@ -50643,6 +50677,7 @@ after</code></li>
           </li>
         </ul>
         <pre><code>:::bad
+:::
 </code></pre>
       </div>
     </li>
@@ -50681,10 +50716,11 @@ after</code></li>
             </div>
           </li>
         </ul>
-        <pre><code></code></pre>
-      </div>
-      :::bad
+        <pre><code>:::
+:::bad
 :::
+</code></pre>
+      </div>
     </li>
   </ul>
 </blockquote>
@@ -50711,6 +50747,7 @@ after</code></li>
     <li>
       <div class="box">
         <pre><code>:::bad
+:::
 </code></pre>
       </div>
     </li>
@@ -51914,7 +51951,7 @@ marker extends, and no rule fills blank cells (T5):
 
 ## A closed fence in a nested child leaves no paragraph open
 
-A closed child code block leaves no paragraph open. An unclosed fence at the enclosing item column opens there, and a column-zero line ends that item (CARVE-P0-014). A heading closes the child paragraph too. An open child paragraph retains a lazy line.
+A closed child code block leaves no paragraph open. An unclosed fence at the enclosing item column opens there, and a column-zero line ends that item (CARVE-P0-014). A heading closes the child paragraph too. An open child paragraph does not keep the run either: the fence interrupts it and opens at the enclosing item column.
 
 :::: compare
 
@@ -52016,19 +52053,19 @@ after
   <li>a
     <ul>
       <li>child
-text
-~~~
-after</li>
+text</li>
     </ul>
+    <pre><code></code></pre>
   </li>
 </ul>
+<p>after</p>
 ```
 
 ::::
 
 ## A code line left of an authored-base fence opener is measured from that base
 
-A fence past the box content column establishes its own authored base. Payload left of that base loses its available prefix, while payload to the right keeps its extra spaces (CARVE-P0-004). A fence at the box content column uses that column as its base.
+A fence past the box content column establishes its own authored base. Payload left of that base loses its available prefix, while payload to the right keeps its extra spaces (CARVE-P0-004). The fence has no closer, so the box's `:::` is payload too, and `after` ends the fence, the box and the item. A fence at the box content column uses that column as its base.
 
 :::: compare
 
@@ -52047,6 +52084,7 @@ after
     <div class="box">
       <pre><code>x
 y
+:::
 </code></pre>
     </div>
   </li>
@@ -52071,6 +52109,7 @@ after
   <li>
     <div class="box">
       <pre><code>  z
+:::
 </code></pre>
     </div>
   </li>
@@ -52485,11 +52524,11 @@ cross-reference cannot close a forced span opened before it (PART 9 §9 E2a).
 
 ## Inside an unclosed fence only the innermost container's closer is structural
 
-A code fence with no closer ahead opens no span, and it ends at the closer of
-the container it sits in. Every other colon line before that closer is fence
-content, whatever its width: an ancestor's closer closes nothing there and a
-wider or narrower run opens nothing. A fence that closes stays opaque to every
-colon line inside it (PART 2, A CLOSER IS REQUIRED).
+A code fence with no closer runs to the end of its container. Every colon line
+after it is fence content, whatever its width, and that includes the closer of
+the container it sits in: no closer closes anything there and no run opens
+anything. A fence that closes stays opaque to every colon line inside it
+(PART 2, A CLOSER IS REQUIRED).
 
 :::::: compare
 
@@ -52509,10 +52548,12 @@ after *b*
   <div class="inner">
     <pre><code>code
 :::
+::::
+:::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52535,10 +52576,12 @@ after *b*
   <div class="inner">
     <pre><code>code
 ::::
+:::
+::::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52558,9 +52601,10 @@ after *b*
 <aside class="admonition note" aria-label="Note">
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52592,9 +52636,8 @@ after *b*
 
 ::::::
 
-A comment line above the fence leaves no paragraph open, so the fence still
-has nothing to interrupt and the same closer ends it, in one container or
-nested.
+A comment line above the fence changes nothing: the fence still runs to the
+end, in one container or nested.
 
 :::::: compare
 
@@ -52612,9 +52655,10 @@ after *b*
 <aside class="admonition note" aria-label="Note">
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52638,16 +52682,17 @@ after *b*
   <div class="inner">
     <pre><code>code
 :::
+::::
+:::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
 
-A quote or an item whose only content is a comment leaves no paragraph open
-either:
+Nor does a quote or an item whose only content is a comment:
 
 :::::: compare
 
@@ -52668,9 +52713,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52694,9 +52740,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53261,13 +53308,11 @@ A braced span nests inside a bare span of its own kind:
 
 ## An unclosed fence under an open paragraph in a container opens nothing
 
-A code fence with no closer ahead cannot interrupt an open paragraph (PART 9
-§10 I4), and that holds inside a container too: the fence line and the lines
-after it continue the paragraph, lazily where it is a quote's or an item's.
-With no fence open, A CLOSER IS REQUIRED does not apply and every colon line
-below is read normally. A bare run that does not match the innermost
-container's width opens a block (PART 2), so `::::` opens a child, `:::`
-opens a child of that, and the paragraph after them stays inside the note.
+A code fence with no closer still interrupts an open paragraph (PART 9 §10
+I4), and that holds inside a container too: the fence ends the paragraph, a
+quote's or an item's included, and opens a code block. Unclosed, it runs to
+the end of its container, so every colon line below it is payload and the
+note closes at end of input.
 
 :::::: compare
 
@@ -53283,14 +53328,12 @@ after *b*
 
 ```html
 <aside class="admonition note" aria-label="Note">
-  <p>para
-<code>
-code</code></p>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <p>para</p>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -53312,14 +53355,12 @@ after *b*
 
 ```html
 <aside class="admonition note" aria-label="Note">
-  <blockquote><p>quote
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <blockquote><p>quote</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -53342,15 +53383,13 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <ul>
-    <li>item
-<code>
-code</code></li>
+    <li>item</li>
   </ul>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -53546,11 +53585,10 @@ autolink (CARVE-P3-001), so each label below closes at its last `]`.
 
 ## An unclosed fence after an attribute line in a container ends at its closer
 
-A block-attribute line is not paragraph text, so it leaves nothing for an
-unclosed fence below it to interrupt: A CLOSER IS REQUIRED applies, and the
-fence ends at the innermost container's own closer. A colon line of any other
-width before it is code. The attribute floats onto
-the code block (PART 9 §15).
+A block-attribute line is not paragraph text, so an unclosed fence below it
+opens at a block start. It runs to the end of its container: every colon line
+after it, the innermost container's own closer included, is code. The
+attribute floats onto the code block (PART 9 §15).
 
 :::::: compare
 
@@ -53568,14 +53606,15 @@ after *b*
 <aside class="admonition note" aria-label="Note">
   <pre id="x"><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
 
-Nested, only the inner container's closer ends the fence:
+Nested, no container's closer ends the fence:
 
 :::::: compare
 
@@ -53596,10 +53635,12 @@ after *b*
   <div class="inner">
     <pre class="c"><code>code
 :::
+::::
+:::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53626,9 +53667,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53652,9 +53694,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53662,8 +53705,8 @@ after *b*
 ## A quoted comment or attribute line closes the quote's paragraph
 
 A comment or a block-attribute line inside a quote closes the quoted paragraph,
-as it does outside one. An unclosed fence on the next line then has nothing to
-interrupt, so A CLOSER IS REQUIRED ends it at the note's own closer:
+as it does outside one. An unclosed fence on the next line misses the quote and
+opens in the note, where it runs to the end, the note's own closer included:
 
 :::::: compare
 
@@ -53683,9 +53726,10 @@ after *b*
   <blockquote><p>para</p></blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53708,15 +53752,16 @@ after *b*
   <blockquote><p>para</p></blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
 
-Quoted text keeps the paragraph open, so the fence line folds into it and opens
-nothing:
+Quoted text keeps the paragraph open, and the fence line interrupts it all the
+same:
 
 :::::: compare
 
@@ -53733,11 +53778,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
-more text
-<code>
-code</code></p></blockquote>
+more text</p></blockquote>
+  <pre><code>code
+:::
+after *b*
+</code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53745,10 +53791,9 @@ code</code></p></blockquote>
 ## An unclosed fence under a multi-line quote paragraph in a container opens nothing
 
 A quote paragraph that runs over several quoted lines is still open at the
-fence line, so the fence continues it lazily and opens nothing (PART 9 §10
-I4). Every quoted line carries paragraph text, so none of them closes the
-paragraph above it. The colon lines below are read as openers, as in the
-one-line case.
+fence line, and the fence interrupts it (PART 9 §10 I4). Every quoted line
+carries paragraph text, so none of them closes the paragraph above it. The
+colon lines below are payload of the unclosed fence, as in the one-line case.
 
 :::::: compare
 
@@ -53766,14 +53811,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
-more
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+more</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -53799,14 +53842,12 @@ after *b*
   <blockquote><p>a
 b
 c
-d
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+d</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -53835,10 +53876,9 @@ x \</#x~>y> y
 ## An item comment or attribute line closes the item's paragraph
 
 An item line under an item's paragraph starts the next item and reads its
-content. A comment or block-attribute line there closes the paragraph, so an
-unclosed fence on the next line has something to interrupt, and A CLOSER IS
-REQUIRED ends it at the note's own closer. Bullet, ordered and nested items
-all read it:
+content. A comment or block-attribute line there closes the paragraph, and an
+unclosed fence on the next line opens in the note, where it runs to the end,
+the note's own closer included. Bullet, ordered and nested items all read it:
 
 :::::: compare
 
@@ -53861,9 +53901,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53889,9 +53930,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53917,9 +53959,10 @@ after *b*
   </ol>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53948,15 +53991,16 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
 
-Item text keeps the paragraph open, so the fence line folds into it and opens
-nothing; the colon lines below it are then openers:
+Item text keeps the paragraph open, and the fence line interrupts it all the
+same:
 
 :::::: compare
 
@@ -53975,22 +54019,21 @@ after *b*
 <aside class="admonition note" aria-label="Note">
   <ul>
     <li>para</li>
-    <li>text
-<code>
-code</code></li>
+    <li>text</li>
   </ul>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
 ::::::
 
 Under a plain paragraph an item line is lazy text (PART 9 §10 I2) and reads no
-content, so a comment there keeps the paragraph open too, quoted or not:
+content, so a comment there keeps the paragraph open too, quoted or not. The
+fence interrupts that paragraph like any other:
 
 :::::: compare
 
@@ -54008,14 +54051,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <p>para
--
-<code>
-code</code></p>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+-</p>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -54037,14 +54078,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
--
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+-</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -54054,8 +54093,8 @@ code</code></p></blockquote>
 
 A valid table row (PART 9 §10 I1) and a reference definition (I5) close the
 paragraph above them, bare or inside a quote. An unclosed fence on the next
-line then has nothing to fold into, so A CLOSER IS REQUIRED ends it at the
-note's own closer and `::::` stays fence content:
+line opens in the note and runs to its end, so `::::`, the note's own closer
+and `after *b*` are fence content:
 
 :::::: compare
 
@@ -54080,9 +54119,10 @@ after *b*
   </table>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54114,9 +54154,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54141,15 +54182,16 @@ after *b*
   <blockquote><p>para</p></blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
 
 A pipe line without a closing pipe is not a table row (T2), so the quoted
-paragraph stays open and the fence line folds into it as text:
+paragraph stays open, and the fence line interrupts it:
 
 :::::: compare
 
@@ -54167,14 +54209,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
-| t
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+| t</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -54184,9 +54224,9 @@ code</code></p></blockquote>
 
 A link or footnote definition at a list item's content column ends the
 item's paragraph (CARVE-P0-010), and so does any other block there
-(CARVE-P0-011). The unclosed fence on the next line reaches no paragraph to
-fold into, so the item closes, A CLOSER IS REQUIRED ends the fence at the
-note's own closer, and `::::` stays fence content:
+(CARVE-P0-011). The unclosed fence on the next line misses the item, so the
+item closes and the fence opens in the note, where it runs to the end:
+`::::`, the note's own closer and `after *b*` are fence content:
 :::::: compare
 
 ````carve
@@ -54207,16 +54247,17 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
 
 A footnote definition does the same:
 
-A footnote body takes a lazy line like every container (markup-carve/carve#3885), so the unmarked line below folds into the note:
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), but a fence line interrupts instead of folding, so it ends the note and the item and opens in the admonition:
 :::::: compare
 
 ````carve
@@ -54235,11 +54276,11 @@ after *b*
   <ul>
     <li>para</li>
   </ul>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -54272,9 +54313,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54307,9 +54349,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54342,9 +54385,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54371,9 +54415,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54400,16 +54445,16 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
 
-One column short of the content column, the row is lazy paragraph text, so
-the fence line folds into the paragraph and the colon lines below it are
-read as openers:
+One column short of the content column, the row misses the item and opens
+a table in the note; the fence below it runs to the end:
 :::::: compare
 
 ````carve
@@ -54435,9 +54480,10 @@ after *b*
   </table>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54590,6 +54636,8 @@ code
     <li>para</li>
   </ol>
 </blockquote>
+<pre><code>code
+</code></pre>
 ```
 
 ::::::
@@ -54798,8 +54846,8 @@ tail</li>
 An item line under an item's paragraph starts the next item, so a comment or
 attribute item closes that paragraph inside a quote too. No paragraph is then
 open for the unquoted fence line to continue, so the quote ends, the fence
-opens in the note's body, and A CLOSER IS REQUIRED ends it at the note's own
-closer:
+opens in the note's body, and it runs to the end, the note's own closer
+included:
 
 :::::: compare
 
@@ -54824,9 +54872,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54856,15 +54905,16 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
 
 Under a quoted plain paragraph the item line is lazy text, so the paragraph
-stays open and the fence line folds into it:
+stays open, and the fence line interrupts it:
 
 :::::: compare
 
@@ -54882,14 +54932,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
--
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+-</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -55439,7 +55487,7 @@ b</p></blockquote>
 
 ::::::
 
-A quoted term folds an unmarked, unclosed fence line (CARVE-P2-028).
+An unmarked, unclosed fence line interrupts a quoted term: it ends the quote and opens at document level.
 :::::: compare
 
 ````carve
@@ -55450,10 +55498,10 @@ A quoted term folds an unmarked, unclosed fence line (CARVE-P2-028).
 ```html
 <blockquote>
   <dl>
-    <dt>t
-<code></code></dt>
+    <dt>t</dt>
   </dl>
 </blockquote>
+<pre><code></code></pre>
 ```
 
 ::::::
@@ -57818,12 +57866,12 @@ gen-250
   <li>
     <blockquote>
       <dl>
-        <dt>t
-<code></code></dt>
+        <dt>t</dt>
       </dl>
     </blockquote>
   </li>
 </ul>
+<pre><code></code></pre>
 ```
 
 :::::::
@@ -58096,14 +58144,16 @@ gen-362
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58124,14 +58174,16 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-~~~
-a
-~~~</li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58152,14 +58204,16 @@ a
 
 ```html
 <ol>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ol>
 ```
@@ -58181,14 +58235,16 @@ a
 ```html
 <blockquote>
   <ul>
-    <li><p>outer</p>
+    <li>outer
       <ul>
         <li>head
-<code>
-a
-</code></li>
+          <pre><code>a
+</code></pre>
+        </li>
       </ul>
-      <p>tail</p>
+      <pre><code>
+tail
+</code></pre>
     </li>
   </ul>
 </blockquote>
@@ -58505,13 +58561,14 @@ Folded fence variant 1
 <ul>
   <li>
     <ul>
-      <li>text
-<code>
-x</code></li>
+      <li>text</li>
     </ul>
-    <p>cap</p>
+    <pre><code>x
+
+cap
+</code></pre>
   </li>
-  <li><p>c</p></li>
+  <li>c</li>
 </ul>
 ```
 
@@ -58534,13 +58591,14 @@ Folded fence variant 2
 <ul>
   <li>
     <ul>
-      <li>text
-~~~
-x</li>
+      <li>text</li>
     </ul>
-    <p>cap</p>
+    <pre><code>x
+
+cap
+</code></pre>
   </li>
-  <li><p>c</p></li>
+  <li>c</li>
 </ul>
 ```
 
@@ -58591,11 +58649,11 @@ Folded fence variant 4
 <ul>
   <li>
     <ul>
-      <li>text
-<code>
-x
-cap</code></li>
+      <li>text</li>
     </ul>
+    <pre><code>x
+cap
+</code></pre>
   </li>
   <li>c</li>
 </ul>
@@ -58619,14 +58677,16 @@ cap</code></li>
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58647,14 +58707,16 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58675,14 +58737,16 @@ a
 
 ```html
 <ol>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ol>
 ```
@@ -58704,14 +58768,16 @@ a
 ```html
 <blockquote>
   <ul>
-    <li><p>outer</p>
+    <li>outer
       <ul>
         <li>head
-<code>
-a
-</code></li>
+          <pre><code>a
+</code></pre>
+        </li>
       </ul>
-      <p>tail</p>
+      <pre><code>
+tail
+</code></pre>
     </li>
   </ul>
 </blockquote>
@@ -58734,15 +58800,17 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
 more
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58765,13 +58833,14 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+  tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58796,13 +58865,14 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+ tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58825,15 +58895,16 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
   </li>
 </ul>
+<pre><code>
+    tail
+</code></pre>
 ```
 
 :::::::
@@ -58855,13 +58926,15 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+
+  tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58884,13 +58957,14 @@ a
 <ol>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+  tail
+</code></pre>
   </li>
 </ol>
 ```
@@ -58915,14 +58989,16 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
-        <p>more</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+  tail
+
+  more
+</code></pre>
   </li>
 </ul>
 ```
@@ -58945,15 +59021,16 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-~~~
-a
-~~~</p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
   </li>
 </ul>
+<pre><code>
+   tail
+</code></pre>
 ```
 
 :::::::
@@ -58972,16 +59049,18 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
   </li>
 </ul>
+<pre><code>
+  tail
+</code></pre>
 ```
 
 :::::::
@@ -59000,16 +59079,18 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
   </li>
 </ul>
+<pre><code>
+ tail
+</code></pre>
 ```
 
 :::::::
@@ -59056,14 +59137,16 @@ a
 
 ````html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-```</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ````
@@ -59086,13 +59169,14 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-```</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+  tail
+</code></pre>
   </li>
 </ul>
 ````
@@ -62814,7 +62898,7 @@ c</li>
 
 These examples pin the ruled owner columns in carve#3446, carve#3448, and carve#3452.
 
-A tabbed fence opens in a definition body when its closer reaches the body
+A tabbed fence opens in a definition body, and a closer that reaches the body closes it
 
 ::::::: compare
 
@@ -62837,7 +62921,7 @@ A tabbed fence opens in a definition body when its closer reaches the body
 
 :::::::
 
-A closer below the definition body leaves the tabbed fence line as text
+A closer below the definition body opens a fence of its own after the body
 
 ::::::: compare
 
@@ -62851,10 +62935,12 @@ A closer below the definition body leaves the tabbed fence line as text
 `````html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<pre><code></code></pre>
 `````
 
 :::::::
@@ -62914,11 +63000,13 @@ e
 `````html
 <dl>
   <dt>m</dt>
-  <dd>l
-<code>
-e
-</code></dd>
+  <dd>
+    <p>l</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>e</p>
+<pre><code></code></pre>
 `````
 
 :::::::
@@ -62938,11 +63026,13 @@ e
 `````html
 <dl>
   <dt>m</dt>
-  <dd>l
-<code>
-e
-</code></dd>
+  <dd>
+    <p>l</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>e</p>
+<pre><code></code></pre>
 `````
 
 :::::::
@@ -63056,12 +63146,13 @@ The nested description keeps the attached fence
 
 `````html
 <ul>
-  <li><p>o
-<code>
-</code></p>
-    <p>t</p>
+  <li>o
+    <pre><code></code></pre>
   </li>
 </ul>
+<pre><code>
+  t
+</code></pre>
 `````
 
 :::::::
@@ -63082,20 +63173,21 @@ The nested description keeps the attached fence
   <li>o
     <ul>
       <li>h
-<code>
-</code></li>
+        <pre><code></code></pre>
+      </li>
     </ul>
   </li>
 </ul>
+<pre><code></code></pre>
 `````
 
 :::::::
 
 ## An unclosed fence run with no closer in its item does not hide a blank line
 
-These rows follow up the folded fence run section (carve#3495). A fence-shaped line with no closer inside its item is paragraph text (PART 9 §10 I4), so a blank line after it separates two paragraphs and the list is loose (§17 L1), whether a closer-shaped line or a letter follows below the item column.
+These rows follow up the folded fence run section (carve#3495). A fence line with no closer inside its item opens a code block (PART 9 §10 I4), so a blank line after it is payload and leaves the list tight. A line below the item column ends the fence and the item, whether it is a closer-shaped line or a letter.
 
-A closer-shaped line below the item column closes nothing, so the blank before it separates two paragraphs
+A closer-shaped line below the item column ends the item and opens a fence of its own
 
 ::::::: compare
 
@@ -63109,17 +63201,18 @@ A closer-shaped line below the item column closes nothing, so the blank before i
 
 `````html
 <ul>
-  <li><p>h
-<code></code></p>
-    <p>b
-<code></code></p>
+  <li>h
+    <pre><code>
+b
+</code></pre>
   </li>
 </ul>
+<pre><code></code></pre>
 `````
 
 :::::::
 
-A lazy letter after an unclosed fence run reads the same way
+A letter below the item column ends the item the same way
 
 ::::::: compare
 
@@ -63133,12 +63226,12 @@ x
 
 `````html
 <ul>
-  <li><p>o
-<code>
-x</code></p>
-    <p>t</p>
+  <li>o
+    <pre><code></code></pre>
   </li>
 </ul>
+<p>x</p>
+<p>t</p>
 `````
 
 :::::::
@@ -65399,7 +65492,7 @@ $`x⁦y`
 
 ## A fence with no host prefix leaves an inline run
 
-A fence opener inside a list item owns no flush-left body line. The closing backticks then form an unclosed inline code run in the document paragraph.
+A fence opener inside a list item owns no flush-left body line. The closing backticks then open an unclosed fence after the document paragraph.
 
 ::: compare
 
@@ -65415,8 +65508,8 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 :::
@@ -65435,8 +65528,8 @@ y
     <pre><code></code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::
@@ -68558,7 +68651,7 @@ tail
 
 ## A note-claimed fence line keeps the item loose
 
-An unclosed fence-shaped line below a footnote body folds into the note paragraph. It opens no fence in the item, so the blank before the item's second paragraph still makes the list loose.
+An unclosed fence line below a footnote body interrupts the note paragraph and opens a fence in the item. The fence runs to the end of the item, so the blank and the reference after it are payload.
 
 ::: compare
 
@@ -68574,22 +68667,11 @@ An unclosed fence-shaped line below a footnote body folds into the note paragrap
 ```html
 <ul>
   <li><p>item</p>
-    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a><a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+    <pre><code>
+See[^c][^d]
+</code></pre>
   </li>
 </ul>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-    <li id="fn2">
-      <p>para
-more
-~~~<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 :::
@@ -68607,18 +68689,11 @@ more
 ```html
 <ol>
   <li><p>item</p>
-    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+    <pre><code>
+See[^c]
+</code></pre>
   </li>
 </ol>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>para
-~~~~<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 :::
@@ -68639,18 +68714,11 @@ more
   <dt>term</dt>
   <dd>
     <p>item</p>
-    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+    <pre><code>
+See[^c]
+</code></pre>
   </dd>
 </dl>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>para
-<code></code><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 :::
@@ -70670,8 +70738,8 @@ see[^a]
     </ul>
   </li>
 </ul>
-<p>code
-<code></code></p>
+<p>code</p>
+<pre><code></code></pre>
 ```
 
 :::

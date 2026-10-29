@@ -71,8 +71,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "  const inner = leavesParagraphOpen([text], 0, false)\n",
-          "replace": "  const inner = 'p'\n"
+          "find": "      if (nm) {\n        text = nm.text.trim()\n",
+          "replace": "      if (false) {\n        text = nm.text.trim()\n"
         }
       ]
     },
@@ -91,8 +91,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "HR.test(block) || LINK_DEF.test(block) || EMPTY_LINK_DEF.test(block) ||",
-          "replace": "HR.test(block) ||"
+          "find": "    if (isDefinitionOrAttributeLine(text)) return finish(false)\n",
+          "replace": "    if (false) return finish(false)\n"
         }
       ]
     },
@@ -101,8 +101,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "isTableRow(block) || (block[0] === '{' && (inItem ? tryAttrLine([block], 0) : tryAttrLine(lines, idx)))) return false",
-          "replace": "isTableRow(block)) return false"
+          "find": "    if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return finish(false)\n",
+          "replace": "    if (false) return finish(false)\n"
         }
       ]
     },
@@ -111,8 +111,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "if (HEADING.test(block) || HR.test(block) || LINK_DEF.test(block)",
-          "replace": "if (HR.test(block) || LINK_DEF.test(block)"
+          "find": "    if (HEADING.test(text) || HR.test(text)) return finish(false)\n",
+          "replace": "    if (HR.test(text)) return finish(false)\n"
         }
       ]
     },
@@ -121,8 +121,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "        if (!para || closerAhead(run)) return true\n",
-          "replace": "        if (false) return true\n"
+          "find": "      if (closer === -1) return true\n",
+          "replace": "      if (closer === -1) return false\n"
         }
       ]
     },
@@ -131,8 +131,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "const reachable = closerAhead(run, at, owner.col, col)",
-          "replace": "const reachable = true"
+          "find": "if (opensFence(lines, i)) break // I4: a valid opener interrupts",
+          "replace": "if (hasCloser(lines, i)) break // I4: a valid opener interrupts"
         }
       ]
     },

@@ -548,11 +548,11 @@ of this matches Djot; the heading half deliberately does not.
 
 **Other carve-outs:**
 
-1. **Closer lookahead** — a code or raw fence (`` ``` ``/`~~~`) interrupts only
-   when a matching closer exists ahead. An unterminated opener stays paragraph
-   text, so a stray marker never swallows the rest of the block. A `:::` opener
-   is different: it opens without a closer and closes at its container boundary
-   or end of input (§12).
+1. **No closer lookahead** - a valid code or raw fence (`` ``` ``/`~~~`)
+   interrupts a paragraph whether or not a closer follows, as in CommonMark.
+   An unclosed fence runs to the end of its container. A `:::` opener behaves
+   the same way: it opens without a closer and closes at its container
+   boundary or end of input (§12).
 2. **Image excluded** — a bare image `![alt](url)` is inline content, not a
    block, so it renders inside the paragraph.
 
@@ -568,8 +568,8 @@ collected/consumed (an attribute line floats forward to the next block, §15).
 | `Text` / `1. a` (or `2. a`, `1985. a`) | one paragraph | list marker folds |
 | `Text` / (blank) / `- a` | paragraph + list | blank line starts the list |
 | `Text` / `# H` | paragraph + heading | heading interrupts |
-| `Text` / `` ``` `` / `code` / `` ``` `` | paragraph + code block | fence with a closer interrupts |
-| `Text` / `` ``` `` / `code` | one paragraph | unterminated fence — no closer |
+| `Text` / `` ``` `` / `code` / `` ``` `` | paragraph + code block | fence interrupts |
+| `Text` / `` ``` `` / `code` | paragraph + code block | an unclosed fence runs to the end |
 | `Text` / `---` / `more` | paragraph + `<hr>` + paragraph | thematic break interrupts |
 | `Text` / `![a](u)` | one paragraph (inline image) | image excluded |
 | `Text` / `^ cap` | one paragraph | a caption line is not an interrupter (I7); §4 attaches only to a captionable host |

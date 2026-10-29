@@ -23,10 +23,12 @@ Definition body, note, and fence owner boundaries
 .
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<pre><code></code></pre>
 ````
 
 ```
@@ -62,11 +64,13 @@ e
 .
 <dl>
   <dt>m</dt>
-  <dd>l
-<code>
-e
-</code></dd>
+  <dd>
+    <p>l</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>e</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -78,9 +82,11 @@ e
 .
 <dl>
   <dt>m</dt>
-  <dd>l
-<code>
-e
-</code></dd>
+  <dd>
+    <p>l</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>e</p>
+<pre><code></code></pre>
 ````

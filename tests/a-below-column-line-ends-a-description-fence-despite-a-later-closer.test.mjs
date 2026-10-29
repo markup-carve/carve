@@ -5,20 +5,22 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = source => renderDoc(parse(source)).replace(/\n[ \t]*(?=<)/g, '').trim()
 
-for (const [below, expected] of [
-  [' y', /<dd><p>body<\/p><pre><code><\/code><\/pre><\/dd><\/dl><p>y<code>\nnext<\/code><\/p>$/],
-  [' > y', /<dd>body<code><\/code><\/dd><\/dl><blockquote><p>y<code>\nnext<\/code><\/p><\/blockquote>$/],
-  [' > > +', /<dd>body<code><\/code><\/dd><\/dl><blockquote><blockquote><p>\+<code>\nnext<\/code><\/p><\/blockquote><\/blockquote>$/],
-  [' > > z', /<dd>body<code><\/code><\/dd><\/dl><blockquote><blockquote><p>z<code>\nnext<\/code><\/p><\/blockquote><\/blockquote>$/],
+// The description fence opens without a closer (carve#4018) and the
+// below-column line ends it. The later run opens a fence of its own there.
+const empty = '<dl><dt>term</dt><dd><p>body</p><pre><code></code></pre></dd></dl>'
+for (const [below, block] of [
+  [' y', '<p>y</p>'],
+  [' > y', '<blockquote><p>y</p></blockquote>'],
+  [' > > +', '<blockquote><blockquote><p>+</p></blockquote></blockquote>'],
+  [' > > z', '<blockquote><blockquote><p>z</p></blockquote></blockquote>'],
 ]) {
-  test(`a below-column line decides whether the description fence opens: ${below}`, () => {
+  test(`a below-column line ends the description fence: ${below}`, () => {
     const out = html([':: term', ': body', '  ```', below, '  ```', 'next'].join('\n'))
-    assert.match(out, expected)
-    assert.doesNotMatch(out, /<pre><code>[^<]+<\/code><\/pre>/)
+    assert.equal(out, empty + block + '<pre><code>next</code></pre>')
   })
 }
 
 test('the below-column quote is read outside the description', () => {
   assert.equal(html(':: term\n: body\n  ```\n > y\n  ```\nnext'),
-    '<dl><dt>term</dt><dd>body<code></code></dd></dl><blockquote><p>y<code>\nnext</code></p></blockquote>')
+    empty + '<blockquote><p>y</p></blockquote><pre><code>next</code></pre>')
 })

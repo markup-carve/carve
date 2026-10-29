@@ -1,1 +1,17 @@
-{}
+{
+  "unclosed-code-fence/container-div": {
+    "message": "end of the document"
+  },
+  "unclosed-code-fence/under-paragraph": {
+    "actual": []
+  },
+  "unclosed-code-fence/under-paragraph-indented": {
+    "actual": []
+  },
+  "unclosed-code-fence/under-item-paragraph": {
+    "actual": []
+  },
+  "unclosed-code-fence/under-quote-paragraph": {
+    "actual": []
+  }
+}

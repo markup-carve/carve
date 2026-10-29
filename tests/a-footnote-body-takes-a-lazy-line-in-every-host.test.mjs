@@ -13,7 +13,9 @@ const contents = [
   ['a second paragraph', 'note', ['', 'more'], true],
   ['a nested list', '- x', [], true],
   ['a quote', '> q', [], true],
-  ['a closerless fence line', 'note', ['~~~', 'x'], true],
+  ['an invalid fence line', 'note', ['~~~js title="x"', 'x'], true],
+  // A valid opener opens even without a closer (carve#4018).
+  ['a closerless fence line', 'note', ['~~~', 'x'], false],
   ['a heading', '# h', [], false],
   ['a table', '| a |', [], false],
   ['a closed fence', 'note', [F, 'x', F], false],

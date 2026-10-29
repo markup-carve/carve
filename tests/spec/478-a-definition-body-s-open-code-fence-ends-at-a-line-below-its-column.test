@@ -12,8 +12,8 @@ A definition body's open code fence ends at a line below its column
     <pre><code></code></pre>
   </dd>
 </dl>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -48,8 +48,8 @@ A definition body's open code fence ends at a line below its column
 </code></pre>
   </dd>
 </dl>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -83,11 +83,13 @@ z
 .
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-b
-y</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code>b
+</code></pre>
+  </dd>
 </dl>
-<p>z
-<code></code></p>
+<p>y</p>
+<p>z</p>
+<pre><code></code></pre>
 ````

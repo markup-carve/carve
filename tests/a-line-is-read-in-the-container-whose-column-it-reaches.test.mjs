@@ -116,9 +116,9 @@ const cases = [
     "<p>[r][] [^p] <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<ul>\n<li>para</li>\n</ul>\n<h1 id=\"H\">H</h1>\n<p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n</li>\n</ol>\n</section>"
   ],
   [
-    "an unclosed fence line folds into a quoted term",
+    "an unclosed fence line under a quoted term opens in the document (carve#4018)",
     "> :: t\n```\n",
-    "<blockquote>\n<dl>\n<dt>t\n<code></code></dt>\n</dl>\n</blockquote>"
+    "<blockquote>\n<dl>\n<dt>t</dt>\n</dl>\n</blockquote>\n<pre><code></code></pre>"
   ],
   [
     "a comment below the item column closes the nested dd, and the unclosed fence opens in the document",

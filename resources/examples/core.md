@@ -1919,7 +1919,7 @@ code
 
 :::
 
-Anything else after the language token — a bare second word, a `key="value"` pair, an inline `{…}` block, or a header and label in the wrong order — is **not** a fenced code block. There is no error: the backtick run falls back to ordinary inline parsing (an inline code span). Quotes and brackets are the only delimiters that admit metadata, and only in the order header-then-label.
+Anything else after the language token — a bare second word, a `key="value"` pair, an inline `{…}` block, or a header and label in the wrong order — is **not** a fenced code block. There is no error: the backtick run falls back to ordinary inline parsing (an inline code span). Quotes and brackets are the only delimiters that admit metadata, and only in the order header-then-label. The bare `` ``` `` line below is a valid opener, so it interrupts that paragraph and opens an empty code block that runs to the end of the document.
 
 ::: compare
 
@@ -1931,8 +1931,8 @@ code
 
 ```html
 <p><code>js title="x"
-code
-</code></p>
+code</code></p>
+<pre><code></code></pre>
 ```
 
 :::
@@ -1947,8 +1947,8 @@ code
 
 ```html
 <p><code>php [Composer] "x"
-code
-</code></p>
+code</code></p>
+<pre><code></code></pre>
 ```
 
 :::
@@ -2106,7 +2106,7 @@ Use `ls | grep foo` to filter.
 
 :::
 
-The opener is a maximal run of backticks and closes only on a run of the same length. A run with no matching closer is not literal text: it opens a verbatim span that runs to the end of the block. (A fence-looking ` ``` ` mid-paragraph is the common case.)
+The opener is a maximal run of backticks and closes only on a run of the same length. A run with no matching closer is not literal text: it opens a verbatim span that runs to the end of the block. A ` ``` ` on a line of its own is different: it is a fence opener, so it interrupts the paragraph and opens a code block that runs to the end of the document.
 
 ::: compare
 
@@ -2117,9 +2117,9 @@ code
 ````
 
 ````html
-<p>text
-<code>
-code</code></p>
+<p>text</p>
+<pre><code>code
+</code></pre>
 ````
 
 :::

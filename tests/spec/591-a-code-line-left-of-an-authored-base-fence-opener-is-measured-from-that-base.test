@@ -13,6 +13,7 @@ after
     <div class="box">
       <pre><code>x
 y
+:::
 </code></pre>
     </div>
   </li>
@@ -31,6 +32,7 @@ after
   <li>
     <div class="box">
       <pre><code>  z
+:::
 </code></pre>
     </div>
   </li>

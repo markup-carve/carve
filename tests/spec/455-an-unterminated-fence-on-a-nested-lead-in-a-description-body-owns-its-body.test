@@ -16,8 +16,8 @@ code
     </ul>
   </dd>
 </dl>
-<p>code
-<code></code></p>
+<p>code</p>
+<pre><code></code></pre>
 ````
 
 ```
@@ -36,8 +36,8 @@ code
     </ul>
   </dd>
 </dl>
-<p>code
-~~~</p>
+<p>code</p>
+<pre><code></code></pre>
 ```
 
 ````
@@ -56,8 +56,8 @@ code
     </ul>
   </dd>
 </dl>
-<p>code
-<code></code></p>
+<p>code</p>
+<pre><code></code></pre>
 ````
 
 ````

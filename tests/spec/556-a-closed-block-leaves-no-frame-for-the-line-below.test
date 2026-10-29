@@ -11,8 +11,10 @@ after
 .
 <ul>
   <li>a
-<code></code>
-    <pre><code>code
+    <pre><code>
+~~~
+code
+~~~
 </code></pre>
   </li>
 </ul>
@@ -31,9 +33,11 @@ after
 .
 <ul>
   <li>a
-<code></code>
-    <hr>
-    <pre><code>code
+    <pre><code>
+---
+~~~
+code
+~~~
 </code></pre>
   </li>
 </ul>
@@ -52,13 +56,15 @@ after
 .
 <ul>
   <li>a
-<code></code>
-    <pre><code>code
+    <pre><code>
+~~~
+code
+~~~
+more
 </code></pre>
-    more
-after
   </li>
 </ul>
+<p>after</p>
 ````
 
 ```

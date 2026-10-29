@@ -15,12 +15,13 @@ import assert from 'node:assert/strict'
 import { renderDoc } from '../scripts/spec/html.mjs'
 import { parse } from '../scripts/spec/layout.mjs'
 
-const T = '~'.repeat(3)
+// An invalid info string: the run opens nothing, while a valid one always opens (carve#4018).
+const T = '~'.repeat(3) + 'js title="x"'
 const render = (source) => renderDoc(parse(source))
 
 test('an absorbed paragraph still claims a flush-left line in a quote host', () => {
-  // Q1 says a paragraph is open: `c`, the lazy `b` and both tilde runs are one
-  // absorbed paragraph, which is why they render as text rather than a fence.
+  // Q1 says a paragraph is open: `c`, the lazy `b` and both invalid tilde runs
+  // are one paragraph, which is why they render as text rather than a fence.
   // Generalizing Q2 across the nested columns erased that signal and moved
   // `flush` out to the quote, destroying §10 lazy continuation.
   for (const depth of [1, 2, 3]) {
@@ -69,23 +70,16 @@ test('a malformed colon opener absorbed on a marker line is reachable', () => {
   )
 })
 
-test('an absorbed fence in a descendant is recorded without opening anything', () => {
-  // `trackNestedFence` returns null for an absorbed fence, and that null is
-  // load-bearing: returning `kind: 'code'` would make `nestedVerbatim()` end
-  // the item and tell the nested parse the fence opens. The signal is recorded
-  // beside it instead.
+test('a fence under a descendant paragraph opens without a closer', () => {
+  // No fence is absorbed any more (carve#4018): the run at the sub-item's
+  // column opens there, and the run at the item column ends it and opens anew.
   const sink = {}
   const source = '- a\n  - c\n  b\n    ```\n  ```\nflush\n'
   parse(source, { stateSink: sink })
-  assert.equal(sink.descendantQ1.at(-1).absorbedFence.run, '```')
-  // The paragraph the fence is absorbed INTO is this item's own (`b`, at the
-  // item's content column), not the descendant's: `b` already closed the
-  // sub-item above it. So the descendant holds no open paragraph, and the
-  // absorbed opener does not invent one (markup-carve/carve#2884).
+  assert.equal(sink.descendantQ1.at(-1).absorbedFence, null)
   assert.equal(sink.descendantQ1.at(-1).open, false)
-  // The fence is absorbed, so it renders as text and `flush` stays in the item -
-  // the item's own paragraph is the deepest frame here, and it is open.
-  assert.match(renderDoc(parse(source)), /flush<\/li>/)
+  assert.equal(renderDoc(parse(source)),
+    '<ul>\n  <li>a\n    <ul>\n      <li>c\nb\n        <pre><code></code></pre>\n      </li>\n    </ul>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>flush</p>')
 })
 
 test('a descendant s marker-line fence closer is not an unterminated opener', () => {

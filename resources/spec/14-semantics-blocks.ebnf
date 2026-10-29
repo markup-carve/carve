@@ -237,7 +237,7 @@
          - a definition-list term (`:: ` followed by non-whitespace content);
          - a valid table row (valid_row(L), §5 T2; a stray `|` in prose,
            and a line-initial `|` with no closing `|`, are NOT ones);
-         - a fenced code opener WITH a matching closer ahead (I4);
+         - a code or raw fence opener, closer or not (I4);
          - a `:::` opener, closer or not (I4).
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
          is <p>intro</p> + <hr> + <p>more</p> (corpus
@@ -255,12 +255,13 @@
       I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
          does not interrupt: an image is not a block of its own in Carve;
          it stays an inline image inside the paragraph.
-      I4 CLOSER LOOKAHEAD -- the same &(...) the VERBATIM fence productions
-         carry. A ``` or ~~~ code fence interrupts an open paragraph only
-         when a matching code closer is reachable in its host. Otherwise
-         the fence line stays in that paragraph, where the code_span
-         maximal-run rule may consume it. Pinned by corpus
-         81-paragraph-interruption-19: `Text` / ``` / `more` as one paragraph with an inline code span.
+      I4 FENCE OPENERS INTERRUPT WITHOUT LOOKAHEAD. A valid ``` or ~~~
+         code or raw opener interrupts an open paragraph, as in CommonMark.
+         No closer is searched for: an unclosed fence runs to the end of its
+         container (PART 0 S1), and a line with invalid metadata is not an
+         opener and stays paragraph text. Pinned by corpus
+         81-paragraph-interruption-19: `Text` / ``` / `code` as a paragraph
+         followed by a code block holding `code` (carve#4018).
 
          A `:::` colon opener interrupts an open paragraph even without a
          closer. PART 2's UNCLOSED `admonition` rule determines where its

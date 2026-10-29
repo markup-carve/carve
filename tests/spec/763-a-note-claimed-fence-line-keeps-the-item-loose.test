@@ -10,22 +10,11 @@ A note-claimed fence line keeps the item loose
 .
 <ul>
   <li><p>item</p>
-    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a><a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+    <pre><code>
+See[^c][^d]
+</code></pre>
   </li>
 </ul>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-    <li id="fn2">
-      <p>para
-more
-~~~<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 ```
@@ -37,18 +26,11 @@ more
 .
 <ol>
   <li><p>item</p>
-    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+    <pre><code>
+See[^c]
+</code></pre>
   </li>
 </ol>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>para
-~~~~<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 ````
@@ -63,16 +45,9 @@ more
   <dt>term</dt>
   <dd>
     <p>item</p>
-    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+    <pre><code>
+See[^c]
+</code></pre>
   </dd>
 </dl>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>para
-<code></code><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ````

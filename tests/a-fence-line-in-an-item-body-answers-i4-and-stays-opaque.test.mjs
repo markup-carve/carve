@@ -5,13 +5,13 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = (source) => renderDoc(parse(source))
 
-// §10 I4 (carve#3967): a fence line with no reachable closer stays in the open
-// quoted paragraph, so an unmarked line folds into it in every host.
+// §10 I4 (carve#4018): a fence line opens under the quoted paragraph with or
+// without a closer, so an unmarked line ends it and leaves in every host.
 const stacks = [['- > ', '  > '], ['- > > ', '  > > '], ['1. > ', '   > '], ['- a\n  - > ', '    > '], ['- - - > ', '      > ']]
 for (const [head, pad] of stacks) {
   for (const fence of ['```', '~~~', '````', '``` x']) {
-    test(`"${head.replace('\n', ' / ')}para" then an unclosed "${fence}": tail folds`, () => {
-      assert.doesNotMatch(html(`${head}para\n${pad}${fence}\n${pad}x\ntail\n`), /<p>tail<\/p>/)
+    test(`"${head.replace('\n', ' / ')}para" then an unclosed "${fence}": tail leaves`, () => {
+      assert.match(html(`${head}para\n${pad}${fence}\n${pad}x\ntail\n`), /<pre><code[^>]*>x\n<\/code><\/pre>[\s\S]*\n<p>tail<\/p>\s*$/)
     })
     test(`"${head.replace('\n', ' / ')}para" then a closed "${fence}": tail leaves`, () => {
       const run = fence.match(/^[`~]+/)[0]
@@ -39,7 +39,7 @@ for (const [head, col] of [['- head', 2], ['1. head', 3], ['- a\n  - head', 4]])
 
 test('carve#3967', () => {
   assert.equal(html('- > para\n  > ```\n  > x\ntail\n'),
-    '<ul>\n  <li>\n    <blockquote><p>para\n<code>\nx\ntail</code></p></blockquote>\n  </li>\n</ul>')
+    '<ul>\n  <li>\n    <blockquote>\n      <p>para</p>\n      <pre><code>x\n</code></pre>\n    </blockquote>\n  </li>\n</ul>\n<p>tail</p>')
 })
 
 test('carve#3978', () => {

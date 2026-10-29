@@ -22,17 +22,18 @@ for (const depth of [1, 2]) for (const nesting of [1, 2, 3]) for (const over of 
     const out = html(quoted(depth, [...items(nesting), pad + 'text']) + 'tail\n')
     assert.match(out, /text tail<\/li>/)
   })
-  // An absorbed run of one fence character does not wait for the other.
-  for (const [absorbed, run] of [['```', '~~~'], ['~~~', '```']]) {
-    test(`a fence past the column under an absorbed opener: depth ${depth}, nesting ${nesting}, +${over}, ${absorbed} then ${run}`, () => {
-      const out = html(quoted(depth, [...items(nesting), pad + absorbed, pad + run, pad + 'code', pad + run]) + 'tail\n')
-      assert.match(out, /<pre><code>code/)
+  // A fence past the column opens under the paragraph (carve#4018), so a run
+  // of the other fence character is its content, closed or not.
+  for (const [first, run] of [['```', '~~~'], ['~~~', '```']]) {
+    test(`a fence past the column opens under the paragraph: depth ${depth}, nesting ${nesting}, +${over}, ${first} then ${run}`, () => {
+      const out = html(quoted(depth, [...items(nesting), pad + first, pad + run, pad + 'code', pad + run]) + 'tail\n')
+      assert.match(out, new RegExp(`<pre><code>${run} code ${run}</code></pre>`))
       assert.match(out, /<\/blockquote><p>tail<\/p>$/)
     })
-    test(`with no closer the second run is absorbed too: depth ${depth}, nesting ${nesting}, +${over}, ${absorbed} then ${run}`, () => {
-      const out = html(quoted(depth, [...items(nesting), pad + absorbed, pad + run, pad + 'code']) + 'tail\n')
-      assert.doesNotMatch(out, /<pre>/)
-      assert.doesNotMatch(out, /<p>tail<\/p>/)
+    test(`an unclosed fence past the column still ends with the quote: depth ${depth}, nesting ${nesting}, +${over}, ${first} then ${run}`, () => {
+      const out = html(quoted(depth, [...items(nesting), pad + first, pad + run, pad + 'code']) + 'tail\n')
+      assert.match(out, new RegExp(`<pre><code>${run} code</code></pre>`))
+      assert.match(out, /<\/blockquote><p>tail<\/p>$/)
     })
   }
 }

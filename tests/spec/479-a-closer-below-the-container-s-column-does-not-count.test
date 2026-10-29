@@ -9,11 +9,12 @@ A closer below the container's column does not count
 .
 <ul>
   <li>a
-<code>
-b
-y
-</code></li>
+    <pre><code>b
+</code></pre>
+  </li>
 </ul>
+<p>y</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -25,11 +26,12 @@ y
 .
 <ul>
   <li>a
-<code>
-b
-y
-</code></li>
+    <pre><code>b
+</code></pre>
+  </li>
 </ul>
+<p>y</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -41,11 +43,12 @@ y
 .
 <ul>
   <li>a
-<code>
-b
-y
-</code></li>
+    <pre><code>b
+</code></pre>
+  </li>
 </ul>
+<p>y</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -58,12 +61,14 @@ y
 .
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-b
-y
-</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code>b
+</code></pre>
+  </dd>
 </dl>
+<p>y</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -76,12 +81,14 @@ y
 .
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-b
-y
-</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code>b
+</code></pre>
+  </dd>
 </dl>
+<p>y</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -91,9 +98,9 @@ y
 .
 <dl>
   <dt>t</dt>
-  <dd>a
-<code></code></dd>
+  <dd>a</dd>
 </dl>
+<pre><code></code></pre>
 ````
 
 ````

@@ -40,7 +40,10 @@ for (const file of files) {
     assert.ok(page.includes(`| \`${data.rule}\` |`), `${data.rule} has no row in docs/validation.md`)
     const names = data.vectors.map((v) => v.name)
     if (data.rule === 'continuation-marker-refused') {
-      assert.deepEqual(Object.keys(ahead).filter((name) => !names.includes(name)), [])
+      assert.deepEqual(Object.keys(ahead).filter((name) => !name.includes('/') && !names.includes(name)), [])
+    }
+    for (const key of Object.keys(ahead).filter((name) => name.startsWith(`${data.rule}/`))) {
+      assert.ok(names.includes(key.slice(data.rule.length + 1)), `${key}: no such vector`)
     }
     assert.equal(new Set(names).size, names.length, 'duplicate vector name')
     const positives = data.vectors.filter((v) => v.expected.findings.length > 0)
@@ -68,7 +71,8 @@ for (const file of files) {
     for (const v of data.vectors) {
       const actual = lintCarve(v.source, data.rule === 'caption-looking-paragraph'
         ? { captionLookingParagraph: true } : {}).filter((w) => w.rule === data.rule)
-      const pinned = data.rule === 'continuation-marker-refused' ? ahead[v.name] : undefined
+      // Other rules key their pin-window declarations `<rule>/<vector>`.
+      const pinned = data.rule === 'continuation-marker-refused' ? ahead[v.name] : ahead[`${data.rule}/${v.name}`]
       const expected = v.expected.findings.map((f) => [f.line, f.column])
       if (pinned?.actual) assert.notDeepEqual(pinned.actual, expected, `${v.name}: stale pin declaration`)
       assert.deepEqual(

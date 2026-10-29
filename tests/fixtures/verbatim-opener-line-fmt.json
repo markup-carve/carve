@@ -218,6 +218,49 @@
       "host": "paragraph",
       "value": "a\n*[H]: x",
       "id": "refused-29"
+    },
+    {
+      "id": "fence-run-last-paragraph",
+      "host": "paragraph",
+      "value": "a\n~~~",
+      "source": "`a\n~~~`\n"
+    },
+    {
+      "id": "fence-run-last-quote",
+      "host": "quote",
+      "value": "a\n~~~",
+      "source": "> `a\n> ~~~`\n"
+    },
+    {
+      "id": "fence-run-last-bullet",
+      "host": "bullet",
+      "value": "a\n~~~",
+      "source": "- `a\n  ~~~`\n"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n~~~\nc",
+      "id": "refused-30"
+    },
+    {
+      "host": "quote",
+      "value": "a\n~~~\nc",
+      "id": "refused-31"
+    },
+    {
+      "host": "bullet",
+      "value": "a\n~~~\nc",
+      "id": "refused-32"
+    },
+    {
+      "host": "description",
+      "value": "a\n~~~\nc",
+      "id": "refused-33"
+    },
+    {
+      "host": "paragraph",
+      "value": "a\n~~~js\nc",
+      "id": "refused-34"
     }
   ]
 }

@@ -4,10 +4,11 @@ import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 // carve#3258: the colon-closer scan held a paragraph open across any quote or
-// item line, so an unclosed fence below ran to the end of the document.
+// item line. Under carve#4018 the fence opens whatever paragraph is open, and
+// unclosed it runs to the end of the input, the colon closers included.
 const render = (first, second, tail = '::::\n:::\nafter *b*') =>
   renderDoc(parse(`::: note\n${first}\n${second}\n\`\`\`\ncode\n${tail}\n`))
-const endsAtCloser = /<pre(?: id="x")?><code>code\n::::\n<\/code><\/pre>\n<\/aside>\n<p>after <strong>b<\/strong><\/p>$/
+const runsToEnd = (tail) => new RegExp(`<pre><code>code\\n${tail.replace(/\*/g, '\\*')}\\n</code></pre>\\n</aside>$`)
 
 for (const [name, first, second] of [
   ['quoted comment', '> para', '> %% c'],
@@ -18,20 +19,21 @@ for (const [name, first, second] of [
   ['attribute item after an item paragraph', '- para', '- {#x}'],
   ['ordered comment item', '1. para', '2. %% c'],
   ['comment sub-item', '- para', '  - %% c'],
-]) test(`${name} closes the paragraph, so the fence ends at the closer`, () => {
-  assert.match(render(first, second).trim(), endsAtCloser)
+]) test(`${name}: the unclosed fence runs past the colon closers`, () => {
+  assert.match(render(first, second).trim(), runsToEnd('::::\n:::\nafter *b*'))
 })
 
-const opaque = /<code>\ncode<\/code>(?:<\/p>)?(?:<\/blockquote>|<\/li>)[\s\S]*<\/aside>\n<p>after <strong>b<\/strong><\/p>$/
 for (const [name, first, second] of [
   ['quoted text', '> para', '> more text'],
   ['item text', '- para', '- more text'],
-]) test(`control: ${name} keeps the paragraph open, so the fence opens nothing`, () => {
-  assert.match(render(first, second, ':::\nafter *b*').trim(), opaque)
+]) test(`control: under ${name} the fence opens too`, () => {
+  assert.match(render(first, second, ':::\nafter *b*').trim(), runsToEnd(':::\nafter *b*'))
 })
 
 test('control: a dash line under a plain paragraph is paragraph text, not an item', () => {
-  assert.match(render('para', '- %% c', ':::\nafter *b*'), /<p>para\n-\n<code>\ncode<\/code><\/p>/)
+  const html = render('para', '- %% c', ':::\nafter *b*')
+  assert.match(html, /<p>para\n-<\/p>/)
+  assert.match(html.trim(), runsToEnd(':::\nafter *b*'))
 })
 
 for (const head of ['{x', '{.c} x', 'p']) {

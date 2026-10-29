@@ -98,8 +98,8 @@ code
 ```
 .
 <p><code>js title="x"
-code
-</code></p>
+code</code></p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -108,8 +108,8 @@ code
 ```
 .
 <p><code>php [Composer] "x"
-code
-</code></p>
+code</code></p>
+<pre><code></code></pre>
 ````
 
 ```

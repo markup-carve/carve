@@ -28,5 +28,7 @@ test('a lazy line still folds into the sublist', () => {
   assert.equal(html('- +\n  * x\ntail\n'), '<ul><li><ul><li>x tail</li></ul></li></ul>')
   assert.equal(html('> - +\n>   * * *\n> tail\n'), '<blockquote><ul><li><ul><li><ul><li>* tail</li></ul></li></ul></li></ul></blockquote>')
   assert.equal(html('- o\n  - +\n    * x\ntail\n'), '<ul><li>o <ul><li><ul><li>x tail</li></ul></li></ul></li></ul>')
-  assert.equal(html('- o\n  - +\n    * x\n```\n'), '<ul><li>o <ul><li><ul><li>x <code></code></li></ul></li></ul></li></ul>')
+  // A valid fence interrupts and leaves the list (carve#4018); an invalid one folds.
+  assert.equal(html('- o\n  - +\n    * x\n```\n'), '<ul><li>o <ul><li><ul><li>x</li></ul></li></ul></li></ul><pre><code></code></pre>')
+  assert.equal(html('- o\n  - +\n    * x\n```js title="x"\n'), '<ul><li>o <ul><li><ul><li>x <code>js title="x"</code></li></ul></li></ul></li></ul>')
 })

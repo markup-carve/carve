@@ -23,7 +23,7 @@ test("a below-description ``` after opaque quote opens in the item, column 7, qu
   assert.equal(renderDoc(parse("- :: t\n  :    p\n       > ```\n      ```\n text\n")), "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <p>p</p>\n        <blockquote>\n          <pre><code></code></pre>\n        </blockquote>\n      </dd>\n    </dl>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>text</p>")
 })
 
-test("CONTROL: a quote ending in prose keeps lazy fence text", () => {
-  assert.equal(renderDoc(parse("- :: t\n  :   p\n      > words\n     ```\n text\n")), "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <p>p</p>\n        <blockquote><p>words\n<code>\ntext</code></p></blockquote>\n      </dd>\n    </dl>\n  </li>\n</ul>")
+// The fence interrupts the quoted prose too (carve#4018).
+test("CONTROL: a quote ending in prose leaves the fence to the item", () => {
+  assert.equal(renderDoc(parse("- :: t\n  :   p\n      > words\n     ```\n text\n")), "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <p>p</p>\n        <blockquote><p>words</p></blockquote>\n      </dd>\n    </dl>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>text</p>")
 })
-

@@ -51,8 +51,9 @@ for (const depth of [0, 1, 2]) for (const marker of ['-', '*', '1.', '1)', '- [ 
       const html = render(src)
       assert.doesNotMatch(html.slice(html.indexOf('<li id="fn1">')), /<pre>/, src)
     }
+    // Without a closer the fence still opens, and the column-zero line ends it (carve#4018).
     const unclosed = source(marker, body, run, depth, { closed: false })
-    assert.equal(render(unclosed), render(unclosed.replace(run, run === '```' ? '`' : '\\~~~')), unclosed)
+    assert.equal(render(unclosed), render(source(marker, body, run, depth)), unclosed)
   })
 }
 

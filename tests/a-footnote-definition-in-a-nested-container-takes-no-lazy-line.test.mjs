@@ -17,7 +17,6 @@ const QL = '<blockquote><ul><li>para</li></ul></blockquote>'
 const CASES = [
   ['a quoted item', '> - para\n>   [^f]: n\ntail\n', QL, 'n tail'],
   ['a quoted ordered item', '> 1. para\n>    [^f]: n\ntail\n', '<blockquote><ol><li>para</li></ol></blockquote>', 'n tail'],
-  ['a quoted item, closerless fence', '> - para\n>   [^f]: n\n```\ncode\n', QL, 'n ``` code'],
   ['a quoted item, note continuation', '> - para\n>   [^f]: n\n>     more\ntail\n', QL, 'n more tail'],
   ['a quoted item, list marker', '> - para\n>   [^f]: n\n- tail\n', QL, 'n - tail'],
   ['a quoted definition body', '> :: t\n> : d\n>   [^f]: n\ntail\n', '<blockquote><dl><dt>t</dt><dd>d</dd></dl></blockquote>', 'n tail'],
@@ -32,6 +31,14 @@ for (const [what, src, expected, note] of CASES) {
     assert.equal(parse(src).footnoteDefs.get('f').at(-1).lines.map((l) => l.replace(/^\u0000L\u0000/, '')).join(' '), note)
   })
 }
+
+// A closerless fence interrupts the note's paragraph (carve#4018), so it is
+// not lazy text: it leaves the quote and opens at document level.
+test('a footnote definition in a quoted item ends at a closerless fence', () => {
+  const src = '> - para\n>   [^f]: n\n```\ncode\n'
+  assert.equal(oracle(src), QL + '<pre><code>code </code></pre>')
+  assert.equal(parse(src).footnoteDefs.get('f').at(-1).lines.join(' '), 'n')
+})
 
 // Controls: a line at the sub-item's column ends the note and reopens a
 // paragraph, and an abbreviation inside a container is ordinary text.

@@ -54,7 +54,6 @@
 761-a-below-column-term-stays-in-the-footnote-paragraph  The pinned JavaScript parser releases a term one column below an open footnote paragraph; markup-carve/carve#3874.
 763-a-note-claimed-fence-line-keeps-the-item-loose  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
 763-a-note-claimed-fence-line-keeps-the-item-loose-2  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
-763-a-note-claimed-fence-line-keeps-the-item-loose-3  Pinned JavaScript opens an item fence from a note-claimed fence-shaped line; markup-carve/carve#3879.
 767-a-literal-bracket-run-bounds-emphasis-like-a-resolved-one  Pinned JavaScript keeps a same-kind pair literal inside a literal bracket run under an open span; markup-carve/carve-js#3887.
 767-a-literal-bracket-run-bounds-emphasis-like-a-resolved-one-2  Pinned JavaScript keeps a same-kind pair literal inside a literal bracket run under an open span; markup-carve/carve-js#3887.
 767-a-literal-bracket-run-bounds-emphasis-like-a-resolved-one-3  Pinned JavaScript keeps a same-kind pair literal inside a literal bracket run under an open span; markup-carve/carve-js#3887.
@@ -221,11 +220,6 @@
 535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 556-a-closed-block-leaves-no-frame-for-the-line-below-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 556-a-closed-block-leaves-no-frame-for-the-line-below-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-10  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-10  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-11  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
@@ -292,7 +286,6 @@
 613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-3  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-4  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-5  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
-613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-6  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-7  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-8  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-9  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
@@ -366,3 +359,145 @@
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-7  Pinned JavaScript ends the item at a `+` one column short of the sublist and reads it as text; carve-js main 6ce5d0f8f keeps it in the item.
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-15  Pinned JavaScript drops a nested item's attached fence payload indentation at depth three or in a quote; markup-carve/carve-js#3970 (also on carve-js main).
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-16  Pinned JavaScript drops a nested item's attached fence payload indentation at depth three or in a quote; markup-carve/carve-js#3970 (also on carve-js main).
+11-fenced-code-11  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+11-fenced-code-12  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+12-inline-code-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+258-code-fence-metadata-slots-must-be-a-space-too  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+258-code-fence-metadata-slots-must-be-a-space-too-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+258-code-fence-metadata-slots-must-be-a-space-too-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+258-code-fence-metadata-slots-must-be-a-space-too-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+258-code-fence-metadata-slots-must-be-a-space-too-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+258-code-fence-metadata-slots-must-be-a-space-too-6  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+258-code-fence-metadata-slots-must-be-a-space-too-7  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+258-code-fence-metadata-slots-must-be-a-space-too-8  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+258-code-fence-metadata-slots-must-be-a-space-too-9  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+263-a-code-fence-opener-takes-exactly-one-space  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-6  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-7  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+330-a-tab-after-a-fence-or-a-frontmatter-opener-depends-on-where-it-sits  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+450-a-closed-fence-in-a-description-body-ends-it-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+476-an-item-s-fence-is-read-once-whatever-block-it-follows  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+476-an-item-s-fence-is-read-once-whatever-block-it-follows-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+479-a-closer-below-the-container-s-column-does-not-count  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+479-a-closer-below-the-container-s-column-does-not-count-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+479-a-closer-below-the-container-s-column-does-not-count-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+479-a-closer-below-the-container-s-column-does-not-count-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+479-a-closer-below-the-container-s-column-does-not-count-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+479-a-closer-below-the-container-s-column-does-not-count-6  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+480-a-bare-colon-opener-in-a-description-body-is-an-opener-7  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-10  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-11  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-12  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-11  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-12  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-19  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-20  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+548-a-description-body-whose-own-block-is-a-fence-keeps-no-line-below-its-column  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+556-a-closed-block-leaves-no-frame-for-the-line-below  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+556-a-closed-block-leaves-no-frame-for-the-line-below-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+556-a-closed-block-leaves-no-frame-for-the-line-below-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+558-a-container-boundary-is-read-at-the-container-s-own-column-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+558-a-container-boundary-is-read-at-the-container-s-own-column-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+562-a-quoted-item-that-ends-on-a-block-past-its-column-holds-no-paragraph-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-7  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-6  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-7  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-8  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+604-an-unclosed-fence-under-an-open-paragraph-in-a-container-opens-nothing  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+604-an-unclosed-fence-under-an-open-paragraph-in-a-container-opens-nothing-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+604-an-unclosed-fence-under-an-open-paragraph-in-a-container-opens-nothing-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+607-a-quoted-comment-or-attribute-line-closes-the-quote-s-paragraph  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+607-a-quoted-comment-or-attribute-line-closes-the-quote-s-paragraph-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+607-a-quoted-comment-or-attribute-line-closes-the-quote-s-paragraph-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+608-an-unclosed-fence-under-a-multi-line-quote-paragraph-in-a-container-opens-nothing  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+608-an-unclosed-fence-under-a-multi-line-quote-paragraph-in-a-container-opens-nothing-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-6  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-7  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-6  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-7  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+616-a-line-is-read-in-the-container-whose-column-it-reaches-9  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+620-generated-container-documents-13  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+621-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+623-a-lazily-folded-fence-opener-line-does-not-keep-a-list-tight  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+623-a-lazily-folded-fence-opener-line-does-not-keep-a-list-tight-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+623-a-lazily-folded-fence-opener-line-does-not-keep-a-list-tight-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+624-a-fence-run-folded-into-a-child-paragraph-loosens-the-outer-item-when-it-closes-at-the-outer-column-6  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-10  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-11  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-3  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-4  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-6  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-7  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+625-a-fence-closer-outside-the-child-folds-and-leaves-the-child-open-8  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+637-definition-body-note-and-fence-owner-boundaries-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+637-definition-body-note-and-fence-owner-boundaries-6  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+639-a-folded-fence-run-leaves-a-later-paragraph-loose  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+640-a-folded-child-fence-keeps-the-below-column-line-in-its-paragraph  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+641-an-unclosed-fence-run-with-no-closer-in-its-item-does-not-hide-a-blank-line  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+641-an-unclosed-fence-run-with-no-closer-in-its-item-does-not-hide-a-blank-line-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+671-a-fence-with-no-host-prefix-leaves-an-inline-run  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+671-a-fence-with-no-host-prefix-leaves-an-inline-run-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+69-opaque-spans-inside-a-container-5  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-11  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+81-paragraph-interruption-19  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+85-blockquote-lazy-continuation-stops-at-a-fenced-block-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.

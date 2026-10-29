@@ -75,9 +75,10 @@ after
 .
 <aside class="admonition note" aria-label="Note">
   <pre><code>x
+:::
+after
 </code></pre>
 </aside>
-<p>after</p>
 ````
 
 ````

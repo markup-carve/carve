@@ -47,8 +47,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 ````
@@ -66,8 +68,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 ````
@@ -189,8 +193,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-~~~</p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 ```
@@ -208,8 +214,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-~~~</p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 ```
@@ -328,8 +336,10 @@ y
     <blockquote>
       x
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 ````
@@ -346,8 +356,10 @@ y
     <blockquote>
       x
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 ````

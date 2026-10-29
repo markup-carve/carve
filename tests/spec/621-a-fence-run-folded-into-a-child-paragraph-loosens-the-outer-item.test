@@ -10,14 +10,16 @@ A fence run folded into a child paragraph loosens the outer item
   tail
 .
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ````
@@ -32,14 +34,16 @@ a
   tail
 .
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-~~~
-a
-~~~</li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -54,14 +58,16 @@ a
    tail
 .
 <ol>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ol>
 ````
@@ -77,14 +83,16 @@ a
 .
 <blockquote>
   <ul>
-    <li><p>outer</p>
+    <li>outer
       <ul>
         <li>head
-<code>
-a
-</code></li>
+          <pre><code>a
+</code></pre>
+        </li>
       </ul>
-      <p>tail</p>
+      <pre><code>
+tail
+</code></pre>
     </li>
   </ul>
 </blockquote>

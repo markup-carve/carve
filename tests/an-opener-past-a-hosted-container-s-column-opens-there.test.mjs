@@ -52,7 +52,7 @@ for (const [kind, [lines]] of Object.entries(kinds)) for (const offset of [1, 2,
 }
 for (const sublist of [false, true]) test(`an item heading releases the child column, sublist ${sublist}`, () => {
   const source = '- outer\n' + (sublist ? '  - para\n    ```\n    code\n\n' : '') + '  # h\n    ```\n'
-  assert.equal(compact(source), '<ul><li>outer' + (sublist ? '<ul><li>para<code>code</code></li></ul>' : '') + '<h1 id="h">h</h1><pre><code></code></pre></li></ul>')
+  assert.equal(compact(source), '<ul><li>outer' + (sublist ? '<ul><li>para<pre><code>code</code></pre></li></ul>' : '') + '<h1 id="h">h</h1><pre><code></code></pre></li></ul>')
 })
 test('a shifted reference definition opens on its authored base in a hosted box', () => {
   assert.equal(compact('- ::: box\n   [r]: /url\n  :::\n\n[r][]\n'), '<ul><li><div class="box"></div></li></ul><p><a href="/url">r</a></p>')
@@ -83,7 +83,10 @@ for (const lines of [['```', 'x'], ['~~~', 'x'], [':::broken']]) {
   for (const offset of [1, 2, 4]) test(`a hosted box uses item interruption for ${JSON.stringify(lines)}, offset ${offset}`, () => {
     const shifted = lines.map(line => ' '.repeat(2 + offset) + line)
     const box = parse(['- ::: box', '  text', ...shifted, '  :::'].join('\n') + '\n').blocks[0].items[0].blocks[0]
-    const item = parse(['- text', ...shifted].join('\n') + '\n').blocks[0].items[0]
+    // An unclosed fence takes the box's closer as content (carve#4018), so the
+    // item twin carries that line too.
+    const fence = lines[0] !== ':::broken'
+    const item = parse(['- text', ...shifted, ...(fence ? ['  :::'] : [])].join('\n') + '\n').blocks[0].items[0]
     assert.deepEqual(box.children, item.blocks)
   })
 }

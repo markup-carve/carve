@@ -257,9 +257,10 @@
                        in; S3 moves its lines left
 
      S1 PAYLOAD. If a code, raw or comment fence is open, test the line
-        against its closer first. A code or raw fence with no matching closer
-        ahead in its host also ends at the host's closer, and a nonblank line
-        that misses the fence's owner in S2 ends the fence. Any other payload
+        against its closer first. A nonblank line that misses the fence's
+        owner in S2 ends the fence; nothing else ends a code or raw fence
+        without its closer, so an unclosed one runs to the end of its
+        container and a host's colon closer inside it is payload. Any other payload
         line opens nothing and changes no frame state. A colon body is not a
         payload: its lines go on to S2.
 
@@ -336,8 +337,8 @@
         The code is `code`, `less`, `  more`. `  # h` at document level is a
         heading, and a `> q` indented under a `:: t` term opens a quote in
         the enclosing container. Under an open paragraph a list marker is text
-        unless the owner is a list item, and a code or raw opener is text
-        unless a matching closer follows (PART 9 §10). A list marker at a
+        unless the owner is a list item, and a valid code or raw opener
+        interrupts it (PART 9 §10 I4). A list marker at a
         list item's content column opens a child list; a sibling marker at the
         item's marker column continues the enclosing list, and siblings group
         by the container they open in, not by the column they are written at.
@@ -374,7 +375,7 @@
         at every depth. The test is the same at every depth and in every
         family. A list marker interrupts only as the sibling of an open list.
         Headings, thematic breaks, quotes, terms, tables, valid colon openers,
-        code openers with a reachable closer, comments, attributes and
+        code and raw openers, comments, attributes and
         definitions interrupt. An invalid opener is text. A fold closes
         nothing and changes the leaf operation, never which container
         survives.
@@ -439,9 +440,8 @@
 
         FENCE KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-014].
         Code and colon bodies answer CARVE-P0-013's test alike. A code fence
-        interrupts an open paragraph only when a closer exists (PART 9 §10
-        I4); the closer lookahead searches past a below-column line and never
-        matches one. In
+        interrupts an open paragraph whether or not a closer follows (PART 9
+        §10 I4), and a line that misses its owner ends it. In
 
             - a
               ```
@@ -449,9 +449,8 @@
              y
               ```
 
-        the indented closer makes `b` a code block, ` y` ends it and the
-        item, and the last run is inline content of the document paragraph
-        `y`.
+        `b` is a code block, ` y` ends it and the item, and the last run
+        opens an unclosed code block after the document paragraph `y`.
 
         CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-017].
         Quotes answer CARVE-P0-013's test too. `> quote` / `> ::: note` /
@@ -1510,12 +1509,11 @@ admonition = admonition_open, newline,
    the span closes, resume normal colon-body parsing. A raw-line body
    scanner MUST make the same decision.
 
-   If a code opener has NO MATCHING code closer ahead, the host's
-   exact-length colon closer ends the code block and stays structural,
-   closing the colon body. This is the host-boundary rule below, not a
-   colon closer found inside an opaque span. Example: `::: note` / ``` /
-   `x` / `:::` / `after` renders a note containing a code block with `x`,
-   then `after` as a top-level paragraph.
+   A code opener with NO MATCHING code closer is an opaque span too: it
+   runs to the end of its container (PART 0 S1), so a colon closer after it
+   is payload and the colon body stays open. Example: `::: note` / ``` /
+   `x` / `:::` / `after` renders a note whose code block holds `x`, `:::`
+   and `after`.
 
    TOOLING FOR NEAR MATCHES. Exact length remains a parse rule,
    not a recoverable syntax error. A processor with diagnostics SHOULD report
@@ -1532,26 +1530,11 @@ admonition = admonition_open, newline,
    ranges from parser structure; proximity alone never licenses resizing a
    nested fence.
 
-   A ``` or ~~~ opener with no code closer ahead opens a code block that ends
-   at the innermost container's exact-length closer. That closer stays
-   structural. Every other colon line before it is code content, and lines
-   after it parse normally. In
-
-       ::: note
-       ```
-       x
-       :::
-       after
-
-   the `:::` closes the admonition and `after` is a top-level paragraph.
-
-   This does NOT change a fence with nothing to interrupt: `` ``` `` alone,
-   or as the whole content of a blockquote, still opens a code block that
-   runs to the end. PART 9 §10 I4 and this clause both gate a fence that would take
-   structure away from something else, not a fence that is the content.
-   Nor does it reach a ``` or ~~~ line that continues an open paragraph:
-   under PART 9 §10 I4 that line is paragraph text, not an opener, so the
-   colon lines after it are read under PART 2 as usual. *)
+   An unclosed code fence takes no closer from its host, and nothing is
+   searched for: the opener is read where it stands, whether a paragraph is
+   open or not (PART 9 §10 I4). A ``` or ~~~ line with invalid metadata is
+   not an opener, so it continues an open paragraph and the colon lines
+   after it are read under PART 2 as usual. *)
 
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
    is colon_fence, type, an optional quoted "header", an optional [label],
@@ -5056,7 +5039,7 @@ EOF = (* end of file *) ;
          - a definition-list term (`:: ` followed by non-whitespace content);
          - a valid table row (valid_row(L), §5 T2; a stray `|` in prose,
            and a line-initial `|` with no closing `|`, are NOT ones);
-         - a fenced code opener WITH a matching closer ahead (I4);
+         - a code or raw fence opener, closer or not (I4);
          - a `:::` opener, closer or not (I4).
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
          is <p>intro</p> + <hr> + <p>more</p> (corpus
@@ -5074,12 +5057,13 @@ EOF = (* end of file *) ;
       I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
          does not interrupt: an image is not a block of its own in Carve;
          it stays an inline image inside the paragraph.
-      I4 CLOSER LOOKAHEAD -- the same &(...) the VERBATIM fence productions
-         carry. A ``` or ~~~ code fence interrupts an open paragraph only
-         when a matching code closer is reachable in its host. Otherwise
-         the fence line stays in that paragraph, where the code_span
-         maximal-run rule may consume it. Pinned by corpus
-         81-paragraph-interruption-19: `Text` / ``` / `more` as one paragraph with an inline code span.
+      I4 FENCE OPENERS INTERRUPT WITHOUT LOOKAHEAD. A valid ``` or ~~~
+         code or raw opener interrupts an open paragraph, as in CommonMark.
+         No closer is searched for: an unclosed fence runs to the end of its
+         container (PART 0 S1), and a line with invalid metadata is not an
+         opener and stays paragraph text. Pinned by corpus
+         81-paragraph-interruption-19: `Text` / ``` / `code` as a paragraph
+         followed by a code block holding `code` (carve#4018).
 
          A `:::` colon opener interrupts an open paragraph even without a
          closer. PART 2's UNCLOSED `admonition` rule determines where its
@@ -9643,6 +9627,9 @@ EOF = (* end of file *) ;
 
         - a last line that is a COLON RUN ALONE is written with its closer on
           it, `:::` followed by the closer, and opens no fence in any host.
+        - a last line that is a CODE FENCE OPENER (`~~~`, `~~~js`) is written
+          with its closer on it, the run followed by the closer. A backtick in
+          the info string is invalid metadata, so the line opens no fence.
 
       A LIST MARKER IN AN ITEM is written one column below the item's content
       column, where the line is a lazy continuation of the item's paragraph,
@@ -9663,12 +9650,16 @@ EOF = (* end of file *) ;
           definition, a `%%` comment line, a `%%%` fence line and a term line
           (`:: t`);
         - on a line that is not the last: a bare `>`, a link definition, a
-          colon fence or colon run, a block attribute line, a pipe-table row
-          and a thematic break;
+          colon fence or colon run, a code or raw fence opener, a block
+          attribute line, a pipe-table row and a thematic break;
         - in a list item, a marker of the item's own list (`- b` in a `-`
           list, `1. b` and `. b` in an ordered list);
         - in a paragraph directly in the document, an abbreviation
           definition.
+
+      A TEXT LINE THAT STARTS WITH A FENCE RUN is escaped, since a fence
+      opener interrupts its paragraph whether or not a closer follows. The
+      backtick is always escaped (§5), and a tilde run takes `\~~~`.
 
       `tests/fixtures/verbatim-opener-line-fmt.json` pins the spelled rows
       and, per refused shape, the candidate spellings that do not read back.

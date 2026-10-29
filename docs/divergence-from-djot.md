@@ -251,7 +251,7 @@ context rules (PART 9 §10). Ordinary **list markers**, including bullets
 (`-`/`*`, task) and ordered markers, stay paragraph text; use a blank line to
 start a list. Both list-marker classes behave identically here. Fence and
 `:::` closers and bare images are also excluded. Code and raw fences interrupt
-only with valid metadata and a matching closer in the same context. Container
+whenever their metadata is valid, closer or not. Container
 ownership can change how a marker is read; the
 [ownership procedure](./ownership-procedure) covers nested lists and unmarked
 quote continuations.

@@ -98,10 +98,11 @@ test('a folded separator leaves the item paragraph interruptible', () => {
   assert.doesNotMatch(html, /\[\^n\]: note/)
 })
 
-test('a document quote ends a description before a later fence closer', () => {
+// The fence opens with no closer (carve#4018); the quote ends it and the description.
+test('a document quote ends a description and its fence before a later fence run', () => {
   const html = renderDoc(parse(':: term\n: detail\n  ```\n  code\n> payload\n  ```\nafter\n'))
-  assert.doesNotMatch(html, /<pre><code>/)
-  assert.match(html, /<\/dl>\n<blockquote>/)
+  assert.match(html, /<pre><code>code\n<\/code><\/pre>\n  <\/dd>\n<\/dl>\n<blockquote>/)
+  assert.match(html, /<\/blockquote>\n<pre><code>after\n<\/code><\/pre>$/)
 })
 
 test('a document definition ends a description before a later fence closer', () => {

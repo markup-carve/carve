@@ -1,6 +1,7 @@
 /*
  * A list continuation marker gives its attached fence the following caption.
  * A fence line folded into a child paragraph is text in the looseness scan.
+ * Only an invalid opener folds: a valid one always opens (carve#4018).
  * The controls keep blank gaps, other hosts, and real fences in place.
  */
 import { test } from 'node:test'
@@ -64,7 +65,7 @@ for (const host of ['> q', '[^f]: n', ':: t\n:  d']) {
 
 for (const fence of ['```', '~~~']) {
   test(`${fence} folded into a child paragraph leaves the outer list loose`, () => {
-    const result = html(doc('- - text', `  ${fence}`, '  x', '', '  cap', '- c'))
+    const result = html(doc('- - text', `  ${fence}js title="x"`, '  x', '', '  cap', '- c'))
     assert.match(result, /<\/ul><p>cap<\/p><\/li><li><p>c<\/p><\/li><\/ul>$/)
   })
 }
@@ -75,13 +76,13 @@ test('an ordinary lazy line also leaves the outer list loose', () => {
 })
 
 test('without a blank, the folded fence line leaves the list tight', () => {
-  assert.equal(html(doc('- - text', '  ```', '  x', '  cap', '- c')),
-    '<ul><li><ul><li>text <code> x cap</code></li></ul></li><li>c</li></ul>')
+  assert.equal(html(doc('- - text', '  ```js title="x"', '  x', '  cap', '- c')),
+    '<ul><li><ul><li>text <code>js title="x" x cap</code></li></ul></li><li>c</li></ul>')
 })
 
 test('a real fence stays tight while blank-separated inline span paragraphs loosen', () => {
   assert.equal(html(doc('- outer', '  - head', '', '    ```', '    a', '  ```', '', '  tail')),
     '<ul><li>outer <ul><li>head <pre><code>a </code></pre></li></ul><pre><code> tail </code></pre></li></ul>')
-  assert.equal(html(doc('- a', '  ```', '  x', '', '  z', '', '  w')),
-    '<ul><li><p>a <code> x</code></p><p>z</p><p>w</p></li></ul>')
+  assert.equal(html(doc('- a', '  ```js title="x"', '  x', '', '  z', '', '  w')),
+    '<ul><li><p>a <code>js title="x" x</code></p><p>z</p><p>w</p></li></ul>')
 })

@@ -6,21 +6,26 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (source) => renderDoc(parse(source)).replace(/\s+/g, ' ').replace(/ ?(<[^>]+>) ?/g, '$1').trim()
 const quoted = (source) => source.split('\n').slice(0, -1).map((line) => '> ' + line).join('\n') + '\n'
 
-// §10 I4: a fence with no closer under an open paragraph is text, so it sets
-// no base for the lines below it (carve#3894).
+// §10 I4: a fence-shaped line that opens nothing (an invalid info string) is
+// text, so it sets no base for the lines below it (carve#3894). A valid run
+// opens even without a closer and takes the rest of the item (carve#4018).
 for (const [marker, column] of [['-', 2], ['1.', 3], ['*', 2]]) {
   for (const run of ['```', '~~~', '````']) {
     for (const offset of [1, 2, 3]) {
       const pad = ' '.repeat(column)
       const other = run[0] === '~' ? '```' : '~~~'
-      const source = [`${marker} a`, ' '.repeat(column + offset) + run, `${pad}- c`,
+      const lines = (opener) => [`${marker} a`, ' '.repeat(column + offset) + opener, `${pad}- c`,
         `${pad}  ${other}`, `${pad}  y`, `${pad}  ${other}`, ''].join('\n')
+      const source = lines(run + 'js title="x"')
       const tag = marker === '1.' ? 'ol' : 'ul'
-      test(`a closerless ${run} at ${offset} past a ${marker} item keeps the sub-item's fence`, () => {
+      test(`an invalid ${run} opener at ${offset} past a ${marker} item keeps the sub-item's fence`, () => {
         assert.match(html(source), new RegExp(`<li>c<pre><code>y</code></pre></li></ul></li></${tag}>$`))
       })
-      test(`a closerless ${run} at ${offset} past a quoted ${marker} item keeps the sub-item's fence`, () => {
+      test(`an invalid ${run} opener at ${offset} past a quoted ${marker} item keeps the sub-item's fence`, () => {
         assert.match(html(quoted(source)), new RegExp(`<li>c<pre><code>y</code></pre></li></ul></li></${tag}></blockquote>$`))
+      })
+      test(`a closerless ${run} at ${offset} past a ${marker} item takes the rest of the item`, () => {
+        assert.match(html(lines(run)), new RegExp(`<li>a<pre><code>- c ${other} y ${other}</code></pre></li></${tag}>$`))
       })
     }
   }
