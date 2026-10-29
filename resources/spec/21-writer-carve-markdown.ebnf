@@ -650,11 +650,13 @@
           starts on the line after the earlier one ends, counting the
           attribute lines the writer itself puts above the later block. The
           earlier block MUST be a paragraph, block image, heading, code block,
-          thematic break, comment, table, link reference definition, or a div,
-          admonition or block quote written with a closing `:::` fence, since a
-          `%%` line written directly below anything else can be read into it.
-          Otherwise, and in a tree without positions, the ordinary separator
-          applies.
+          thematic break, comment, table, link reference definition, list, or
+          a div, admonition or block quote written with a closing `:::` fence,
+          since a `%%` line written directly below anything else can be read
+          into it. A marker written below a list stands at the list's own
+          column, which closes every item of it (PART 0 S2, S5), so it is the
+          list's sibling. Otherwise, and in a tree without positions, the
+          ordinary separator applies.
 
       (b) A MARKER KEPT IN A LIST ITEM KEEPS ITS COLUMN. A region marker that
           is a list item's child, adjacent under (a) to the paragraph or block
