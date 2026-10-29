@@ -72,14 +72,17 @@
          ends the reading before R2 reads its X, so in {~a~>b ~c~} d the bare
          `~` stays text. If the reading ends with content between the marks,
          the span forms: continue after its closer. Otherwise the opener
-         fails: `{` is text, its mark is read as a bare candidate (for
-         ^ , + - as text), and reading continues at that mark. So `{*}` and
-         `{**}` form nothing and their characters are read like any others
-         (CARVE-P3-014, carve#3973 X6):
+         fails: `{` is text and reading continues at its mark, which is
+         read like any character there: a bare candidate (text for
+         ^ , + -), or the first character of the enclosing reading's closer
+         token. So `{*}` and `{**}` form nothing and their characters are
+         read like any others (CARVE-P3-014, carve#3973 X6):
            *a {*} b*  ->  <strong>a {</strong>} b*
-         An editorial `{+` or `{-` directly in a frame of its own kind is
-         text and starts no nested reading; inside a nested reading within
-         that frame it is not, so this holds an insertion in the strong span:
+           {,{,}      ->  <sub>{</sub>
+         An editorial `{+` or `{-` directly in a frame of its own kind starts
+         no nested reading: its `{` is text and reading continues at its
+         mark, so {+{+} -> <ins>{</ins>. Inside a nested reading within that
+         frame it is an opener, so this holds an insertion in the strong span:
            {+a {*b {+c+} d*} e+}
          A nested reading may repeat a kind that is open outside it; each of
          these holds two strong spans:
