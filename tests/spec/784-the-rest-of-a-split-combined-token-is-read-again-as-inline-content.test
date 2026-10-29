@@ -1,0 +1,21 @@
+The rest of a split combined token is read again as inline content
+
+```
+x */*~/**b a*/~
+.
+<p>x <strong>/</strong><s><strong><em>*b a</em></strong></s></p>
+```
+
+```
+x a/*b~/*/*/*/
+.
+<p>x a/<strong>b~/</strong><strong><em>/</em></strong></p>
+```
+
+```
+- x */*~/**b a*/~
+.
+<ul>
+  <li>x <strong>/</strong><s><strong><em>*b a</em></strong></s></li>
+</ul>
+```
