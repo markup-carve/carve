@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 
 const schema = JSON.parse(readFileSync(new URL('../resources/render-loss-report.schema.json', import.meta.url), 'utf8'))
@@ -24,6 +25,6 @@ test('a loss in included content names its file and include chain', () => {
     { ...loss, includedBy: [{ file: 'docs/d.crv', line: 3, column: 1 }] },
     { ...included, includedBy: [] },
     { ...included, includedBy: [{ file: 'docs/d.crv', line: 3 }] },
-    { ...loss, pos: { ...pos, file: '/home/user/docs/snippets/div.crv' } },
+    { ...loss, pos: { ...pos, file: resolve('docs/snippets/div.crv') } },
   ]) assert.equal(validate(report(changed)), false)
 })
