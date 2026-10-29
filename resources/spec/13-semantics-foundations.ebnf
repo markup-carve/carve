@@ -4,9 +4,8 @@
    ============================================================================ *)
 
 (*
-   1. WORD BOUNDARIES FOR EMPHASIS -- the guard templates of CARVE-P3-013
-      and the delimiter note above them in PART 3; run resolution is §9, the
-      forced family §22.
+   1. WORD BOUNDARIES FOR EMPHASIS -- the templates of CARVE-P3-013, read
+      as the CAN OPEN and CAN CLOSE tests of §9.
 
    2. MATCHING FENCES -- FORMALIZED. Stated as `where` guards on the
       productions (GUARD NOTATION, header):
@@ -18,8 +17,8 @@
         `%` is compared -- trailing text on either fence line is insignificant,
         and an opener with no matching closer ahead opens nothing (§28).
 
-   3. NO BARE SAME-TYPE NESTING -- §9 (E3 and SAME-DELIMITER ADJACENCY);
-      braced same-type children are §22 (CARVE-P9-043).
+   3. NO BARE SAME-TYPE NESTING -- §9 R4 and SAME-DELIMITER ADJACENCY;
+      a braced child may repeat its parent's kind (§9 R1).
 
    4. CAPTION PLACEMENT -- ONE RULE, TWO SPELLINGS (caption_slot in PART 2).
       A `^ ` caption attaches to exactly seven captionable hosts: an image

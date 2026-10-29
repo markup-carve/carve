@@ -23,7 +23,7 @@ stay literal). This rule applies to *every* bare delimiter
 (`/ * _ ~ =`, all single-char), so `foo*bar*baz` and `foo~bar~baz` are
 literal too. For deliberate intraword emphasis use the forced `{X … X}` family
 (PART 9 §22), e.g. `foo{*bar*}baz`. The normative statement lives in
-`resources/grammar.ebnf` PART 9 §9 and §22; in summary, for any bare delimiter:
+`resources/grammar.ebnf` PART 9 §9, the inline pairing procedure; in summary, for any bare delimiter:
 - **opens** only if *not* followed by whitespace **and** preceded by the start
   of the line/block, whitespace, or punctuation, but not by an alphanumeric,
   `_`, or the same delimiter (so `(/x/)` and `a./b/` open, while `snake_/case/`

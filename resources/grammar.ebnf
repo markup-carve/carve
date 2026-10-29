@@ -2434,41 +2434,16 @@ math_display = "$$", code_span ;
    `$\`x\`{=html}` leaves the `{=html}` literal.
    The math content is the verbatim text of the reused code_span. *)
 
-(* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
-   The word-boundary restriction applies to EVERY bare emphasis delimiter
-   (`/`, `*`, `_`, `~`, `=`). No bare delimiter opens or closes
-   intraword: `foo*bar*baz`, `foo~bar~baz`, `snake_case`, `a/b/c` all stay
-   literal. One rule, no per-character carve-outs. Every bare delimiter is
-   single-char -- there is no two-char delimiter. This is STRICTER than Djot,
-   whose rule is whitespace-only.
-
-   NO BARE SUPERSCRIPT/SUBSCRIPT -- `^` and `,` are NOT bare delimiters.
-   Superscript and subscript exist ONLY in the braced form
-   (`{^x^}` -> <sup>, `{,x,}` -> <sub>; the PART 9 §22 brace-pair family,
-   whose productions keep their historical forced_* names). Two reasons:
-   (a) sub/sup attach to characters, not words -- the dominant uses
-   (`H{,2,}O`, `mc{^2^}`, `10{^6^}`) are intraword, which the bare
-   word-boundary form could never express anyway; the bare form covered
-   only the rare whole-word case. (b) `,` is the most frequent punctuation
-   character in prose and `^` is claimed by captions, header rowspan, and
-   inline footnotes; a single misplaced space (`typo ,oops, happens`)
-   would otherwise conjure a subscript. A bare `^` or `,` delimits no
-   span; `^` keeps only its other roles (caption marker, rowspan marker,
-   the `^[` inline footnote opener).
-
-   FORCED INTRAWORD -- the brace-pair `{X … X}` family (PART 9 §22) is the
-   explicit escape hatch: it opens a span regardless of word boundary, so
-   `x{*bold*}y`, `x{/italic/}y`, `x{_under_}y` emphasize intraword. It is
-   ADDITIVE -- bare delimiters at a word boundary are unchanged; the braces are
-   only needed to force a span where a bare delimiter would otherwise stay
-   literal.
-
-   HIGHLIGHT is the single-char `=` delimiter. Uniform word boundary makes
-   single `=` safe: `x = 5`, `key=value`, `a=b`, `=>` all stay literal -- the
-   opener is followed by whitespace, or preceded/followed by an alphanumeric,
-   so the word-boundary rule rejects it. A DOUBLED bare delimiter (`==x==`)
-   is literal by the same-delimiter-adjacency rule (PART 9 §9), like `**x**`
-   or `//x//`. The delimiter set is fully uniform: all single-char. --- *)
+(* --- Emphasis. PART 9 §9 (CARVE-P9-043) is the one inline pairing
+   procedure: these productions name the spans it forms, and §9 decides which
+   characters pair. Every bare delimiter is one character, `/ * _ ~ =`, and
+   none opens or closes intraword: `foo*bar*baz`, `snake_case`, `a/b/c` and
+   `x = 5` stay literal. This is STRICTER than Djot, whose rule is
+   whitespace-only. `^` and `,` are not bare delimiters: superscript and
+   subscript exist only in the braced form (`H{,2,}O`, `mc{^2^}`), because
+   they attach to characters rather than words and because a stray `,` in
+   prose must not open a span. The braced family `{X … X}` is the intraword
+   form (PART 9 §22). --- *)
 
 (* FORMAL word-boundary guards -- NORMATIVE [CARVE-P3-013]; production templates (GUARD
    NOTATION, header) instantiated for every bare delimiter
@@ -2495,40 +2470,16 @@ bare_closer(d) = <&(non_ws), d, !(alnum | grapheme_extender) ;
 grapheme_extender = (* a character of Unicode general category Mn, Mc or Me *)
                   | (* U+FE00 .. U+FE0F, VARIATION SELECTOR-1 to -16 *)
                   | (* U+200D ZERO WIDTH JOINER *) ;
-(* The look-behind reads the character before d IN d's OWN INLINE RUN. A `_`
-   or `/` that is an OPEN ENTRY on the PART 9 §9 stack where d stands is
-   markup, not text, and does not block: `_*x*_` nests. Whether that entry
-   closes later does not matter, so `_*x* q` renders `_<strong>x</strong> q`
-   (carve#3973 X1, the reading carve#3947 gave E3). Any other `_` or `/` is
-   text and blocks: `a_*x*` stays literal. The mark of a formed braced span is
-   markup too: `{_*a* b_}` nests. *)
+(* The look-behind reads the source character before d. Which `_` or `/`
+   before an opener is markup rather than a guard is PART 9 §9 GUARD
+   EXEMPTION. *)
 
 (* slash_if(d) = '/' when d in { '/', '_' }, otherwise nothing: italic and
    underline additionally never open when the char immediately before d is `/`
-   (PART 9 §9 -- path protection: /a/_b_, snake_/case/, a_/_a_). For d = '/'
+   (path protection, PART 9 §9: /a/_b_, snake_/case/, a_/_a_). For d = '/'
    this coincides with same-delimiter adjacency; for d = '_' it is the extra
    cross-delimiter guard. The other delimiters '*', '~', '=' are NOT guarded
    against a preceding '/', so a/~y~ -> a/<s>y</s>. *)
-
-(* Reading:
-   - opener: the char BEFORE d is START, whitespace, or punctuation -- but
-     NOT an alphanumeric, NOT `_`, NOT the same delimiter
-     (same-delimiter adjacency, PART 9 §9: a doubled delimiter never
-     opens), and -- for d in { '/', '_' } only -- NOT `/`
-     (slash_if(d), path protection); d is NOT followed by whitespace and NOT
-     by another d. A `_` or `/` that is an open entry where d stands is not
-     the character before d (the note under the templates).
-   - closer: d is NOT preceded by whitespace and NOT followed by an
-     alphanumeric.
-   - either: d is NOT followed by a grapheme_extender (CARVE-P3-025). (A
-     following same-delimiter is allowed: in `/x//` the first `/` after `x`
-     closes; the trailing `/` stays literal.)
-   Run disambiguation (nearest valid closer, delimiter stack, no bare same-type
-   nesting; explicit braced children may repeat a kind) is PART 9 §9.
-   Existing `01-emphasis` cases pin bare behavior; new explicit nesting is
-   specified in resources/spec/nested-braced-emphasis-cases.json.
-   Forced `{X … X}` spans bypass BOTH word-boundary guards (PART 9 §22);
-   only the CARVE-P3-025 guard on their opener remains, for all seven. *)
 
 emphasis = bare_opener('/'), emphasis_content, bare_closer('/'), [attribute_run] ;  (* italic *)
 strong = bare_opener('*'), strong_content, bare_closer('*'), [attribute_run] ;       (* bold *)
@@ -2543,18 +2494,16 @@ highlight = bare_opener('='), highlight_content, bare_closer('='), [attribute_ru
    nothing outside the forced forms; see the rationale note above and
    forced_super / forced_sub below *)
 
-(* --- Forced intraword emphasis (PART 9 §22). A brace-pair wrapping a bare
-   emphasis delimiter forces a span with NO word-boundary condition, so it
-   emphasizes intraword. The closing `X}` bounds the span; a bare delimiter of
-   the span's own kind inside it is literal, and the rest of the content parses
-   as ordinary inline content (CARVE-P9-043). Every mark has a forced form: *)
+(* --- Braced intraword emphasis (PART 9 §22). A brace pair around a mark
+   forms a span with no word-boundary condition; how it finds its closer is
+   PART 9 §9 R1. Every mark has a braced form: *)
 forced_emphasis   = "{/", !(grapheme_extender), forced_content, "/}", [attribute_run] ;   (* italic    *)
 forced_strong     = "{*", !(grapheme_extender), forced_content, "*}", [attribute_run] ;   (* bold      *)
 forced_underline  = "{_", !(grapheme_extender), forced_content, "_}", [attribute_run] ;   (* underline *)
 forced_super      = "{^", !(grapheme_extender), forced_content, "^}", [attribute_run] ;   (* sup       *)
 forced_sub        = "{,", !(grapheme_extender), forced_content, ",}", [attribute_run] ;   (* sub       *)
-(* `{~ … ~}` is forced strikethrough UNLESS it contains a top-level `~>`, in
-   which case it is editorial substitution (PART 9 §22 disambiguation). *)
+(* `{~ … ~}` is braced strikethrough UNLESS it holds a `~>` at its own
+   level, in which case it is editorial substitution (PART 9 §9). *)
 forced_strike     = "{~", !(grapheme_extender), forced_content, "~}", [attribute_run] ;
 (* `{= … =}` is forced highlight (see Editorial Markup below for the
    distinction from the raw-inline `{=format}` attribute). *)
@@ -2590,9 +2539,9 @@ forced_content    = inline_span_content ;
    80-trailing-attribute-block-edge-cases. *)
 
 (* Content MAY contain the delimiter character: a delimiter that does not
-   satisfy the close condition (PART 9 §1) is literal content, not the span
-   boundary. The span ends at the matched closer only. The boundary is a
-   semantic constraint (PART 9 §1, §9), not a context-free one. *)
+   close (PART 9 §9) is literal content, not the span boundary. The span
+   ends at the matched closer only. The boundary is a semantic constraint
+   (PART 9 §9), not a context-free one. *)
 emphasis_content = inline_span_content ;
 strong_content = inline_span_content ;
 bi_content = inline_span_content ;
@@ -2766,8 +2715,9 @@ comment_content = (* any text until the matching `#}`, preserved literally;
    (CARVE-P3-016). A braced comment never joins an attribute run or passes
    attachment to the preceding element, with or without intervening spaces:
    `*x*{% c %}{.k}` -> `<strong>x</strong>{.k}`. *)
-(* DISAMBIGUATION (PART 9 §22). `{~ … ~}` is editorial SUBSTITUTION when it
-   contains a top-level `~>`, and forced STRIKETHROUGH otherwise. `{# … #}`
+(* DISAMBIGUATION (PART 9 §9 SUBSTITUTION). `{~ … ~}` is editorial
+   SUBSTITUTION when it holds a `~>` at its own level, and braced
+   STRIKETHROUGH otherwise. `{# … #}`
    stays editorial comment (`#` is not an emphasis delimiter, no collision). *)
 
 (* HIGHLIGHT is the single-char `=` delimiter, and `{=text=}` is its FORCED
@@ -4118,46 +4068,19 @@ EOF = (* end of file *) ;
    Recognition order is NOT interruption: which of these may interrupt an
    open paragraph is PART 9 §10.
 
-   Inline parsing precedence (second pass):
-   1. Escaped characters (\x)
-   2. Code spans (`...`)
-   3. Autolinks (<url>) and crossrefs (</#id>)
-   4. Inline footnotes (^[content]) -- above emphasis; a bare `^` is
-      always literal, so `^[` is unambiguous; see PART 9 §16
-   5. Links, images, reference footnotes, inline spans
-      ([text](url), ![alt](src), [^label], [text]{attrs} -- the
-      single-char lookahead after `]` selects among them, PART 9 §14;
-      a `[^` run is a footnote reference before bracket scanning)
-   6. Math ($`…`, $$`…`)
-   7. Emphasis markers (/, *, _, ~, =) and forced spans ({/.../}, {^...^},
-      {,...,} etc.)
-      -- EXCEPT a delimiter that begins a multi-char smart-typography
-      pattern: `=>` is the arrow, never a highlight opener (the pattern
-      is consumed first; PART 9 §8)
-   8. Editorial markup ({+...+}, etc.; {~...~} with `~>` = substitution)
-   9. Extensions (:type[content])
-   10. Mentions and tags (@user, #tag)
-   11. Smart typography (--, ---, etc.)
-   12. Trailing line comments (%%, PART 9 §21)
-   13. Plain text
-
-   Disambiguation rule:
-   - Prefer literal text over markup: a delimiter that has no valid match
-     (per the word-boundary conditions, PART 9 §1) is literal.
-   - A forced span or an editorial insertion, deletion or substitution
-     opened inside a bracket run cannot match a closer past that run's closing
-     `]`. The unmatched opener and closer remain literal: `[{+a]+}` is text.
-   - A bare opener matches the NEAREST reachable valid closer of its type.
-     Further bare openers of an active kind remain literal (PART 9 §3);
-     e.g. /usr/local/ -> <em>usr/local</em>. Explicit braced children may
-     repeat a reachable parent kind (PART 9 §22), without crossing a braced
-     boundary.
-   - Different-type spans and explicit same-type children use a delimiter
-     stack in a single left-to-right pass (NO backtracking, linear time); e.g.
-     *bold /italic/* and /italic *bold*/ nests fully.
-
-   "Shorter spans / earlier opening wins" does not apply; `/usr/local/`
-   remains one span under the delimiter-stack rule.
+   Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
+   the order of its atom table (escapes, code spans, math, inline
+   literals, autolinks and cross-references, comments, inline notes, note
+   references, bracket runs and their tails), and pass P2 pairs bare,
+   braced, combined and editorial spans in one left-to-right reading.
+   Prefer literal text over markup: a delimiter that pairs with nothing
+   under §9 is literal. What remains is read afterwards, in this order:
+   1. Extensions (:type[content])
+   2. Mentions and tags (@user, #tag)
+   3. Smart typography (--, ---, etc.; `=>` is the arrow, never a
+      highlight opener, PART 9 §8)
+   4. Trailing line comments (%%, PART 9 §21)
+   5. Plain text
 *)
 
 (* ============================================================================
@@ -4166,9 +4089,8 @@ EOF = (* end of file *) ;
    ============================================================================ *)
 
 (*
-   1. WORD BOUNDARIES FOR EMPHASIS -- the guard templates of CARVE-P3-013
-      and the delimiter note above them in PART 3; run resolution is §9, the
-      forced family §22.
+   1. WORD BOUNDARIES FOR EMPHASIS -- the templates of CARVE-P3-013, read
+      as the CAN OPEN and CAN CLOSE tests of §9.
 
    2. MATCHING FENCES -- FORMALIZED. Stated as `where` guards on the
       productions (GUARD NOTATION, header):
@@ -4180,8 +4102,8 @@ EOF = (* end of file *) ;
         `%` is compared -- trailing text on either fence line is insignificant,
         and an opener with no matching closer ahead opens nothing (§28).
 
-   3. NO BARE SAME-TYPE NESTING -- §9 (E3 and SAME-DELIMITER ADJACENCY);
-      braced same-type children are §22 (CARVE-P9-043).
+   3. NO BARE SAME-TYPE NESTING -- §9 R4 and SAME-DELIMITER ADJACENCY;
+      a braced child may repeat its parent's kind (§9 R1).
 
    4. CAPTION PLACEMENT -- ONE RULE, TWO SPELLINGS (caption_slot in PART 2).
       A `^ ` caption attaches to exactly seven captionable hosts: an image
@@ -4868,88 +4790,186 @@ EOF = (* end of file *) ;
 
    ============================================================================ *)
 (* ============================================================================
-   9. EMPHASIS SPAN RESOLUTION -- FORMAL GUARDS + DELIMITER-STACK
-      OPERATIONAL SEMANTICS (governs the *_content productions in PART 3;
-      §1 points here). The per-delimiter boundary tests ARE the
-      bare_opener(d) / bare_closer(d) templates in PART 3. Run resolution
-      is one left-to-right pass over the inline stream with a delimiter
-      stack -- O(n), NO backtracking (Design Principle 1):
-      E1 CLASSIFY. At each unescaped bare delimiter d outside code spans /
-         raw inline, evaluate bare_opener(d) and bare_closer(d). Neither
-         holds -> literal text. A d followed by a grapheme_extender is a
-         part of a larger character and satisfies neither (CARVE-P3-025):
-         `*a*` + U+20DD is literal, `*a*` + U+0301 + ` b*` pairs the
-         first `*` with the last, and a spacing mark counts the same:
-         `*` + U+093E + `x *y*` leaves the first `*` text.
-      E2 CLOSE FIRST. A d satisfying bare_closer(d) with a REACHABLE open
-         d-entry on the stack (E2a) closes the NEAREST such entry. Spans NEST,
-         never overlap: entries pushed above the closed one are popped and
-         their delimiters demoted to literal (the djot model -- an opener that
-         gets closed demotes the still-open candidates between).
-      E2a OPAQUE CONSTRUCTS. No delimiter -- bare, a braced closer or the
-         substitution arrow `~>` -- pairs across the boundary of a CODE SPAN
-         (with raw inline and math), a BRACED INLINE (§22's forced spans,
-         `{+ +}`, `{- -}`, `{~ ~> ~}`, `{# #}`, `{% %}`), a LINK DESTINATION (title
-         included), an AUTOLINK or a CROSS-REFERENCE (`</#id>`), in either
-         direction; they are atomic. Inside a braced inline
-         only its own entries are reachable, and open ones demote at its closer.
-         `~{/x/}{/y~/}` -> ~<em>x</em><em>y~</em>.
-         A braced opener forms first: its closer lookahead sees an attribute
-         block before any enclosing pair's later closer can take it, so
-         `={_a={c_}` -> =<u>a={c</u> and `={_a=b_}` -> =<u>a=b</u> (carve#3940).
-      E2b BRACKET-RUN BOUND. PART 8 resolves a BRACKET RUN before bare
-         emphasis, forced spans and non-opaque editorial markup. Every delimiter pair,
-         bare or braced, must open and close inside the same run. An opener
-         inside a run cannot pair with a closer outside it, even when the run
-         resolves to literal text rather than a link or span:
-         `[{+a]+}` and `[{^a]^}` are literal text. This bounds pairing, not
-         label content: a complete braced span inside a label still parses.
-         CARVE-P3-001 defines which constructs the bracket scan skips.
-         In particular, a bracket inside an editorial comment opens no run,
-         so `[{#a]#}`
-         retains its comment and renders the outside `[`.
-      E3 NO BARE SAME-TYPE NESTING. While a reachable d-span is open,
-         a further bare d that would open does NOT push -- it is literal.
-         Reachability stops at an E2a braced boundary AND at an E2b bracket
-         run, whether the run resolves or stays literal text: a span opened
-         outside the run is not reachable inside it, so `*[*g*] x*` ->
-         <strong>[<strong>g</strong>] x</strong>, like `*[*g*](u) x*`.
-         An opener is open from where it stands, with no lookahead to
-         whether it later closes. A combined `/*` reads both kinds this way:
-         in `_*` followed by `/*`, the `*` of `_*` is open when `/*`
-         arrives, so the combined token does not open and its `/` and `*`
-         are read singly, even where that `_` never closes.
-         Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6);
-         the/path/here is literal; unbalanced trailing runs stay literal:
-         /b// -> <em>b</em>/ and /x// -> <em>x</em>/ (resources/examples/edge-cases.md).
-         An explicit braced opener is exempt: it MAY push a child of the
-         same kind under either a bare or a braced parent (§22). Each braced
-         span creates the E2a boundary; its closer closes that span, never
-         an ancestor across an intervening braced boundary. Thus
-         {*a {*b*} c*} nests, while {*a *b* c*} keeps the inner bare stars
-         literal. Cross-type behavior is unchanged: {*a {/b {*c*} d/} e*}
-         nests, and a *} inside the {/ /} closes nothing outside it.
-      E4 OPEN. Otherwise a d satisfying bare_opener(d) pushes an entry.
-      E5 END OF BLOCK. Entries still open demote to literal.
-      Forced `{X … X}` spans (§22) push/pop on the SAME stack; only the
-      boundary tests are skipped.
-      CONSEQUENCES (pinned): SAME-DELIMITER ADJACENCY is bare_opener's
-      <!(d) / !(d) guards -- a doubled bare delimiter is literal, never
-      nested same-type emphasis: `**x**`, `~~x~~`, `==x==` like `//x//`,
-      `__x__` (corpus 76-doubled-emphasis-delimiters, 01-emphasis-11);
-      longer runs (`===y===`) all-literal. (The braced-only `^`/`,` are not
-      bare, so `^^x^^` and `,,x,,` are likewise literal.) SLASH-ADJACENCY
-      (slash_if(d), bare_opener's extra left guard): italic `/` and underline
-      `_` do NOT open when the immediately preceding char is `/`, so `a_/_a_`,
-      `a/_y_` and `/a/_b_` -> <em>a</em>_b_ stay literal at the `_`; for `/`
-      this is same-delimiter adjacency. The other delimiters `* ~ =` are NOT
-      guarded against a preceding `/` (a/~y~ -> a/<s>y</s>, a/=y= ->
-      a/<mark>y</mark>) (corpus 129-emphasis-opener-slash-adjacency). WORD BOUNDARY: (/x/) ->
-      (<em>x</em>), a./b/ -> a.<em>b</em> (01-emphasis-8); foo_bar_baz,
-      foo*bar*baz, snake_case, x = 5, key=value literal (01-emphasis-10,
-      -11); "x /a/b y" literal -- the candidate closer is followed by `b`
-      (01-emphasis-9). Intraword emphasis: forced family only, x{*y*}z ->
-      x<strong>y</strong>z (§22).
+   9. INLINE PAIRING -- NORMATIVE [CARVE-P9-043] (governs every bare, braced,
+      combined and editorial span production of PART 3, the attribute_run
+      slot of PART 4 and the inline order of PART 8). This section decides
+      which characters pair and what each pair becomes. Element rendering,
+      smart typography, mentions, tags and symbols keep their own clauses and
+      run on the text it leaves.
+
+      INPUT. The inline content of one block after block structure is
+      settled. A REGION is that content, or the content of a bracket run,
+      inline note, braced span, editorial frame or combined span. Pairing
+      never crosses a region boundary, in either direction. The bare
+      delimiters are `/`, `*`, `_`, `~` and `=`. A character is ALNUM when it
+      is an ASCII letter or digit. A delimiter followed by a
+      grapheme_extender is part of a larger character (CARVE-P3-025): it is
+      text and takes part in no step below, and a braced opener whose mark is
+      followed by one is text.
+
+      TWO PASSES.
+      P1 ATOMS. Scan left to right. At each position take the first
+         construct of the atom table that matches; otherwise the character
+         is one inline character. An atom is opaque to P2: no delimiter
+         inside it pairs with one outside it. A bracket run and an inline
+         note are atoms whose content is a new region.
+      P2 READING. Read each region left to right with one stack of open bare
+         entries (R1 to R5). A braced opener, an editorial opener and a
+         combined opener each start a NESTED READING of a new region. Nothing
+         in P2 looks past the current character, except a nested reading,
+         which reads ahead to its own closer, and the attribute run directly
+         after a closer.
+
+      THE TESTS for a bare delimiter d at position p are the templates of
+      CARVE-P3-013. `before` is the source character at p - 1 and `after` the
+      one at p + 1, also across a region boundary or an atom: in a`b`_c_ the
+      `_` stands after a backtick, and in a_*x* the `*` stands after `_`.
+      Only the start and end of the block are START and END, which count as
+      whitespace.
+      - CAN CLOSE: `before` is not whitespace and `after` is not alnum.
+      - CAN OPEN: `after` is neither whitespace nor d, and `before` is not
+        alnum and not d (SAME-DELIMITER ADJACENCY: `**x**`, `//x//` and
+        `==x==` are text). Two guards apply to an opener: `before` is `_`,
+        for every d; `before` is `/`, for d of `/` or `_` (path protection:
+        a/_y_ and /a/_b_ stay text at the `_`).
+      - GUARD EXEMPTION. A guard character that is itself an open entry on
+        the stack where d stands is markup and does not block: _*x*_ nests.
+        Whether that entry closes later does not matter, so _*x* q renders
+        _<strong>x</strong> q (carve#3973 X1). The mark of the braced or
+        editorial span being read is markup too: {_*a* b_} nests. Any other
+        guard blocks: a_*x* stays text.
+      - `=` followed by `>` never opens: it is the arrow (§8).
+
+      OWN KINDS. A region has the kind of its braced span or editorial
+      frame, both `/` and `*` for a combined span, and none for the block,
+      a bracket run or an inline note. A bare delimiter of an own kind is
+      text in that region: {/a/b/} -> <em>a/b</em>.
+
+      THE STEPS, at each position of the region, in order:
+      R1 NESTED OPENER. At `{X` with X one of / * _ ~ = ^ , + -, or at a
+         combined opener (below), start a nested reading at the next
+         character. It reads exactly like this procedure with its own empty
+         stack. It is bounded only by the block or the enclosing bracket run
+         or inline note, not by an enclosing nested reading, and it ends at
+         the first closer token of its kind that it reaches outside its own
+         atoms, its own formed nested spans and the attribute runs it
+         attached. The closer token is `X}` for a braced or editorial opener
+         and `*/` for a combined one; a closer token never shares a character
+         with its opener. If the reading ends with content between the
+         marks, the span forms: continue after its closer. Otherwise the
+         opener fails: `{` is text, its mark is read as a bare candidate (for
+         ^ , + - as text), and reading continues at that mark. So `{*}` and
+         `{**}` form nothing and their characters are read like any others
+         (CARVE-P3-014, carve#3973 X6): *a {*} b* ->
+         <strong>a {</strong>} b*. An editorial `{+` or `{-` inside a frame
+         of its own kind is text; it starts no nested reading. A nested
+         reading may repeat a kind that is open outside it:
+         {*a {*b*} c*} and *a {*b*} c* each hold two strong spans.
+      R2 CLOSE FIRST. If d can close and an entry of kind d is on the stack,
+         close the nearest such entry. Every entry above it is removed and
+         becomes text; spans nest, never overlap. The new span is final.
+      R3 ATTACH. A glued attribute_run (PART 4) directly after a closer that
+         closed a span, a formed nested span, a bracket run, a code span,
+         math or an autolink attaches to it and is consumed; its characters
+         take part in nothing else. After a delimiter that closed nothing, a
+         brace group is not an attribute run: its characters are read like
+         any others, so a braced opener or closer in it still counts. A run
+         that attaches to nothing is text (§15 A7).
+      R4 OPEN. Otherwise, if d can open, is not an own kind and no entry of
+         kind d is on the stack, push d. A further bare d while one is open
+         is text (NO BARE SAME-TYPE NESTING): /usr/local/ ->
+         <em>usr/local</em> and /b// -> <em>b</em>/.
+      R5 TEXT. Otherwise d is text. A closer token `X}` that ends no nested
+         reading is a bare X followed by a literal `}`: *a b*} closes a bare
+         strong span and leaves } outside it.
+      At the end of the region every entry still on the stack becomes text.
+
+      THE COMBINED TOKEN. A combined opener is a `/` followed by `*`, where
+      the `/` can open, the `*` is followed by neither whitespace nor a
+      grapheme_extender, and neither `/` nor `*` is on the stack or an own
+      kind (carve#3234). Its closer token is a `*` that is not after
+      whitespace and is not the opener's own `*`, followed by a `/` that is
+      not followed by alnum. Its content is never empty: /**/ alone is
+      <em>**</em>, and /**/*/ -> <strong><em>*/</em></strong>. A formed
+      combined span renders as strong around emphasis. A failed one is two
+      bare candidates. A braced child of either kind nests inside it:
+      /*a {*b*} c*/ holds a strong child.
+
+      SUBSTITUTION. A `{~` span is a substitution when its content holds a
+      `~>` at its own level, outside every atom and formed nested span. The
+      first such `~>` splits it into two regions: {~old~>new~} ->
+      <del>old</del><ins>new</ins>. Any other `{~` span is strike, so a code
+      span hides the arrow, and {~a {*x~>y*} b~} is strike around strong
+      text x~>y.
+
+      ATOM TABLE (P1), first match wins in this order:
+        escape           a backslash and an ASCII punctuation character
+                         (escaped_char), the character and never a
+                         delimiter; or a backslash and a space
+                         (escaped_space), a non-breaking space; or a
+                         backslash at a line end (hard_break).
+        code span        a backtick run of length n, to the next run of
+                         exactly n backticks; verbatim, and a glued
+                         `{=format}` makes it raw inline. Unclosed, the rest
+                         of the block is code, inside a braced span or frame
+                         too (carve#3973 X5).
+        math             a dollar sign or two before a code span, to the
+                         code span's end; verbatim; unclosed as a code span.
+        inline literal   `!` before a code span, as math.
+        autolink and     `<` and a valid URL, address or `/#id`, to `>`;
+        cross-reference  opaque. Otherwise the `<` is text.
+        comment          `{%` or `{#`, to the matching `%}` or `#}`; opaque,
+                         and `{#` renders as an editorial comment
+                         (CARVE-P3-016). Unmatched, it is text.
+        inline note      `^[`, to the balanced `]` (§16); a region.
+        note reference   `[^` and a label, to the first `]`.
+        bracket run      `[`, to the balanced `]`, skipping what
+                         CARVE-P3-001 names; a region. Unbalanced, the `[`
+                         is text.
+        bracket tail     `(` after a bracket run's `]`, to the balanced `)`,
+                         title included; an opaque destination, and the run
+                         is a link or image (§14).
+      A bracket run is a region whether it resolves to a link, an image, a
+      span, a reference or literal brackets: [{+a]+} and [{^a]^} are text,
+      and *[*g*] x* holds two strong spans. Braced spans, editorial frames
+      and combined spans are not atoms; P2 finds them, so an attribute block
+      that a bare closer has not taken is visible to them: in ={_a={c_} the
+      `{_` forms and the `=` closes nothing (carve#3940).
+
+      KIND TABLE (P2): kind, bare mark, other spelling, attribute run.
+        emphasis        /      {/ /}      after the closer
+        strong          *      {* *}      after the closer
+        underline       _      {_ _}      after the closer
+        strike          ~      {~ ~}      after the closer
+        highlight       =      {= =}      after the closer
+        superscript     none   {^ ^}      after the closer
+        subscript       none   {, ,}      after the closer
+        combined        none   /* */      after the closer
+        substitution    none   {~ ~> ~}   none
+        insertion       none   {+ +}      after the closer
+        deletion        none   {- -}      after the closer
+        code, math      atom              after the atom
+        literal         atom              none
+        comment         atom              none
+        bracket run     atom              after the `]` or its tail (§14)
+        autolink        atom              after the `>`
+      A bare `^` or `,` delimits nothing: superscript and subscript have only
+      the braced form.
+
+      DEPTH. Bare and braced spans share the nesting cap; a braced span over
+      it stays literal as a whole (§22).
+
+      LINEAR TIME (Design Principle 1, carve#3936). The result MUST be
+      computed in time linear in the block; reading a range again once per
+      failed opener does not meet this. Two facts make it possible. A nested
+      reading depends only on where it starts, so each one is computed once
+      and reused when an enclosing reading meets its opener again. Whether
+      it forms is decided by the first closer token of its kind at its
+      level, which a per-kind index of closer tokens, built in one
+      right-to-left pass per region and skipping formed spans, finds. A
+      closer token inside a brace group directly after a bare delimiter
+      counts only where the reading leaves that group unattached, and such
+      groups are settled for a whole run of them at once, not one per pass.
 
    10. PARAGRAPH INTERRUPTION -- OPERATIONAL SEMANTICS (governs
       `paragraph` in PART 2). The relation interrupts(L, P) decides whether
@@ -5588,7 +5608,7 @@ EOF = (* end of file *) ;
       A6 NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE. A `{…}` line whose
          braces do not parse as an attribute list is ordinary paragraph
          content under normal inline rules (a `{#a #}` line is an editorial
-         comment, §22 family).
+         comment, §9 braced family).
       A7 THE ONLY BLOCK CHANNEL. NO block construct takes a trailing `{…}`
          on its own line (djot-strict; headings, fences and `:::` openers
          included) -- the preceding block-attribute line is the sole
@@ -6153,115 +6173,30 @@ EOF = (* end of file *) ;
         template tags (`{% raw %}`, `{% endif %}`), which is the one shape
         where a Liquid or Nunjucks source reaches the parser as text.
 
-   22. FORCED EMPHASIS AND EXPLICIT SAME-TYPE NESTING -- NORMATIVE [CARVE-P9-043] (governs the forced_* productions
-      in PART 3). The brace-pair family is the escape hatch for emphasis where a
-      bare delimiter would otherwise stay literal (§9 word boundary), and
-      for a same-kind child that a bare opener cannot represent (§9 E3).
-      - FORMS. Each emphasis mark has a forced form that renders the SAME
+   22. BRACED SPANS (the forced_* productions in PART 3). How a braced
+      opener finds its closer, nests and fails is §9 R1; this section holds
+      what §9 does not.
+      - FORMS. Each emphasis mark has a braced form that renders the SAME
         element as its bare delimiter:
           {/x/}   -> <em>x</em>        {*x*}   -> <strong>x</strong>
           {_x_}   -> <u>x</u>          {~x~}   -> <s>x</s>
           {^x^}   -> <sup>x</sup>      {,x,}   -> <sub>x</sub>
           {=x=}   -> <mark>x</mark>
-      - NO WORD BOUNDARY. A forced span opens and closes regardless of the
-        surrounding characters, so it emphasizes intraword: foo{*bar*}baz ->
-        foo<strong>bar</strong>baz; my{_path_}name -> my<u>path</u>name. This
-        is the ONLY way to emphasize intraword. The opener still needs a whole
-        delimiter (CARVE-P3-025): in `{*` followed by a combining mark, a
-        variation selector or U+200D the `*` is part of that character, and
-        the braces are text. The guard covers every braced opener: `{^` and
-        `{,` followed by a grapheme_extender are text like `{*`, and so are
+      - NO WORD BOUNDARY. A braced span opens and closes regardless of the
+        surrounding characters, so it is the only way to emphasize
+        intraword: foo{*bar*}baz -> foo<strong>bar</strong>baz. Its opener
+        still needs a whole delimiter (CARVE-P3-025), and so do `{^`, `{,`,
         the editorial openers `{+`, `{-`, `{~` and `{#` and the comment `{%`.
-      - BOUNDS = THE BRACES. The closing `X}` ends the span; a bare delimiter
-        of the same kind INSIDE is literal content, like the bare-span rule
-        (§9): {/a/b/} -> <em>a/b</em>. Inner content otherwise parses normally,
-        so cross-type nesting works: {/italic *bold*/} -> <em>italic
-        <strong>bold</strong></em>.
-      - EXPLICIT SAME-TYPE NESTING. A valid forced opener MAY open a child
-        of any of the seven emphasis kinds even when that kind is active.
-        {*outer {*inner*} tail*} and *outer {*inner*} tail* each have two
-        strong nodes. Bare openers remain literal while a same-kind span
-        is reachable under E2a; an intervening braced boundary or E2b
-        bracket run, resolved or literal, can hide that ancestor. Doubled bare delimiters retain their existing meaning.
-        A combined token activates two kinds, and E3 reads both as ordinary
-        active kinds, so a braced child of either nests inside it:
-        /*a {*b*} c*/ holds a strong child. The absence of a carve-out for
-        the combined token is deliberate.
-        The X} closes the innermost reachable matching braced span. It MUST
-        NOT cross an intervening braced boundary (E2a) or bracket-run bound
-        (E2b). Unmatched explicit openers remain literal, not implicitly
-        closed at end of input: {*a {*b*} keeps its literal outer opener
-        and its closed inner strong span. Empty forced spans remain literal.
-        MATCHING ORDER. Tokenize candidate braced openers and closers
-        inside each bracket run, preserving escapes and existing opacity.
-        Tokens do not overlap: a mark consumed by {X cannot also form X}.
-        Thus {*} forms no span: its braces are text and its * is read as
-        a bare candidate like any other (carve#3973 X6).
-        Pair them in a RIGHT-TO-LEFT pass. A closer is pushed onto a stack
-        and a per-kind head indexes the nearest available closer. An opener
-        with no available closer of its kind remains literal and changes
-        no stack entry. Otherwise pair it with that indexed closer; pop
-        every closer above it as a discarded BRACED closer, then pop the
-        paired closer. Discarding prevents braced pairing only; forward
-        resolution still evaluates its bare mark under E2a.
-        Those discarded closers lie inside the matched child and cannot
-        later close an ancestor. Updating per-kind heads on each push/pop
-        makes lookup constant-time; each closer is popped at most once.
-        Apply this pairing rule to the seven forced emphasis kinds.
-        Existing matched {+ +} and {- -} editorial frames impose E2a
-        boundaries: process their inline content as separate regions and
-        skip the whole frame when pairing outside it. Their matching,
-        nesting and malformed-recovery rules are unchanged; this exception
-        does not admit same-kind editorial insertion or deletion. A {~ ~}
-        frame has one matching kind whether subsequently classified as
-        strike or substitution. Code, raw, math, literal, editorial comment {# #},
-        delimited comment {% %}, attributes, link/image destinations with
-        titles, and autolinks retain their existing opaque scans.
-        Only indexed pairs establish E2a boundaries in forward resolution.
-        Empty paired forms stay literal as a whole, including their closer.
-        Thus {*a {/b *} c*} closes strong at the first *}: the unmatched
-        italic opener is literal. In {*a {/b *} d/} e*}, the matched
-        italic discards the inner *} from outer matching and strong closes
-        at e*}. Bare behavior remains unchanged.
-        MATCHED OPENERS ONLY. An explicit opener with no indexed matching
-        closer creates no E2a boundary and stays literal.
-        Thus *a {*b c* remains one strong node containing a literal {*.
-        With {*a {*b c*}, the closer belongs to the inner span: the outer
-        opener is literal and the inner strong contains b c. Matching may
-        be indexed in a preliminary linear token pass; resolution remains
-        a left-to-right stack pass, without retrying failed suffixes.
-        DEPTH LIMIT. When an otherwise matched braced span would exceed
-        the existing cap, its whole spelling, including its closer and
-        nested markup, stays literal. Its closer MUST NOT close a parent.
-        A linear matching index or equivalent counted skip MUST bound the
-        literal range; this recovery must not recursively parse it or
-        rescan the remaining suffix for each rejected opener. LITERAL here
-        means the current inline source characters as text: do not decode
-        escapes or produce nodes for code, autolinks or other markup inside
-        the rejected range. Earlier document ingestion policies still apply.
-        Bare and braced spans consume the same existing depth budget.
-        An unmatched
-        over-limit opener follows the matched-openers rule above.
-      - UNPAIRED AND DISCARDED CLOSERS. An X} with no indexed braced match,
-        including a discarded closer, is processed as an ordinary bare X
-        followed by literal }. It MUST NOT be retried as a braced closer.
-        E2a still bounds which bare entries are reachable: {/x ~b~} d/}
-        contains italic with bare strike b followed by literal } d.
-        Thus *a b*} closes a bare strong span and leaves } outside it.
-      - `{~ … ~}` DISAMBIGUATION. The brace pair is editorial SUBSTITUTION when
-        it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
-        </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->
-        <s>old</s>). The `~>` test is the discriminator. TOP-LEVEL means the
-        search skips nested braced spans, verbatim content (code, math, an
-        inline literal, a comment), a bracket run, an autolink, a cross-reference
-        and an escaped `\~>` (E2a), so {~`a~>b~} is <s><code>a~>b</code></s>.
-        Only MATCHED braced spans hide one. Track separators by their
-        braced frame during the linear token pass, not with a suffix scan
-        per {~ opener. At a matched frame's closer, a visible top-level ~>
-        selects substitution; otherwise the frame is strike. A nested {~
-        frame is resolved independently, including in either substitution
-        side: {~a {*x~>y*} b~} is strike containing strong text x~>y.
-      - `{= … =}` is forced highlight (<mark>), distinct from the raw-inline
+      - DEPTH LIMIT. When an otherwise formed braced span would exceed the
+        existing cap, its whole spelling, including its closer and nested
+        markup, stays literal, and its closer MUST NOT close a parent. The
+        literal range is bounded by the linear index of §9, not by parsing it
+        again or rescanning the rest of the block for each rejected opener.
+        LITERAL here means the current inline source characters as text: do
+        not decode escapes or produce nodes for code, autolinks or other
+        markup inside the rejected range. Earlier document ingestion policies
+        still apply. Bare and braced spans consume the same depth budget.
+      - `{= … =}` is braced highlight (<mark>), distinct from the raw-inline
         `{=format}` attribute on a code span (`` `x`{=html} ``), which has no
         trailing `=` before the `}`.
       - ESCAPING. A literal `{/` (etc.) is written `\{/` -- one backslash on the
@@ -6270,7 +6205,7 @@ EOF = (* end of file *) ;
         literal brace around a bare strong span. To keep a whole {*x*} literal,
         escape the active marks as well: \{\*x\*\}. The canonical writer
         applies ordinary literal escaping.
-      - ATTRIBUTES. A forced span MAY carry a trailing `[attribute_run]` like
+      - ATTRIBUTES. A braced span MAY carry a trailing `[attribute_run]` like
         any bare span: {*x*}{.c} -> <strong class="c">x</strong>. Child and
         parent attribute runs attach independently; neither inherits the
         other's attributes merely because they have the same kind.
@@ -8525,7 +8460,7 @@ EOF = (* end of file *) ;
       record, which is the whole of what §1 can be held to here.
 
       REPEATED EMPHASIS KINDS ARE WRITTEN BRACED -- NORMATIVE [CARVE-P11-076].
-      PART 9 §22
+      PART 9 §9 R1
       permits a braced child of an active kind, so repeated emphasis,
       including <sup><sup>x</sup></sup>, has a native spelling. The writer
       MUST preserve both nodes, their child order and their attributes,

@@ -359,3 +359,16 @@ and the depth- and family-specific lazy rules (CARVE-P0-009, CARVE-P0-021,
 CARVE-P0-022, CARVE-P9-053). An opener indented past its owner's content column
 now opens there, a comment below a container's column closes it, and sibling
 items group by the container they open in.
+
+## One inline pairing procedure
+
+On 2026-10-29 the maintainer ruled in markup-carve/carve#3973 that one
+procedure decides inline pairing. PART 9 §9 now states it as two passes, atoms
+and then one left-to-right reading per region, with an atom table and a kind
+table (CARVE-P9-043, retitled from the braced-emphasis rule). It replaces the
+E1 to E5 resolution steps, the §22 matching order and unpaired-closer rules,
+the `{~` disambiguation, the PART 3 reading notes and the PART 8 inline
+precedence list. Three readings changed with the ruling: a `_` or `/` guard
+counts as markup where it stands (X1), an unclosed code run takes the rest of
+the block inside a braced span too (X5), and an empty brace group such as
+`{*}` is read as ordinary characters (X6).

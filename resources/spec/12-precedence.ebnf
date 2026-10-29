@@ -23,45 +23,18 @@
    Recognition order is NOT interruption: which of these may interrupt an
    open paragraph is PART 9 §10.
 
-   Inline parsing precedence (second pass):
-   1. Escaped characters (\x)
-   2. Code spans (`...`)
-   3. Autolinks (<url>) and crossrefs (</#id>)
-   4. Inline footnotes (^[content]) -- above emphasis; a bare `^` is
-      always literal, so `^[` is unambiguous; see PART 9 §16
-   5. Links, images, reference footnotes, inline spans
-      ([text](url), ![alt](src), [^label], [text]{attrs} -- the
-      single-char lookahead after `]` selects among them, PART 9 §14;
-      a `[^` run is a footnote reference before bracket scanning)
-   6. Math ($`…`, $$`…`)
-   7. Emphasis markers (/, *, _, ~, =) and forced spans ({/.../}, {^...^},
-      {,...,} etc.)
-      -- EXCEPT a delimiter that begins a multi-char smart-typography
-      pattern: `=>` is the arrow, never a highlight opener (the pattern
-      is consumed first; PART 9 §8)
-   8. Editorial markup ({+...+}, etc.; {~...~} with `~>` = substitution)
-   9. Extensions (:type[content])
-   10. Mentions and tags (@user, #tag)
-   11. Smart typography (--, ---, etc.)
-   12. Trailing line comments (%%, PART 9 §21)
-   13. Plain text
-
-   Disambiguation rule:
-   - Prefer literal text over markup: a delimiter that has no valid match
-     (per the word-boundary conditions, PART 9 §1) is literal.
-   - A forced span or an editorial insertion, deletion or substitution
-     opened inside a bracket run cannot match a closer past that run's closing
-     `]`. The unmatched opener and closer remain literal: `[{+a]+}` is text.
-   - A bare opener matches the NEAREST reachable valid closer of its type.
-     Further bare openers of an active kind remain literal (PART 9 §3);
-     e.g. /usr/local/ -> <em>usr/local</em>. Explicit braced children may
-     repeat a reachable parent kind (PART 9 §22), without crossing a braced
-     boundary.
-   - Different-type spans and explicit same-type children use a delimiter
-     stack in a single left-to-right pass (NO backtracking, linear time); e.g.
-     *bold /italic/* and /italic *bold*/ nests fully.
-
-   "Shorter spans / earlier opening wins" does not apply; `/usr/local/`
-   remains one span under the delimiter-stack rule.
+   Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
+   the order of its atom table (escapes, code spans, math, inline
+   literals, autolinks and cross-references, comments, inline notes, note
+   references, bracket runs and their tails), and pass P2 pairs bare,
+   braced, combined and editorial spans in one left-to-right reading.
+   Prefer literal text over markup: a delimiter that pairs with nothing
+   under §9 is literal. What remains is read afterwards, in this order:
+   1. Extensions (:type[content])
+   2. Mentions and tags (@user, #tag)
+   3. Smart typography (--, ---, etc.; `=>` is the arrow, never a
+      highlight opener, PART 9 §8)
+   4. Trailing line comments (%%, PART 9 §21)
+   5. Plain text
 *)
 
