@@ -1626,6 +1626,23 @@ function markerFenceSummary(text, memo) {
   return summary
 }
 
+// The quote a marker-line chain (`- 1. > x`) carries, from its `>` on, or null.
+function markerQuoteText(text, memo) {
+  const path = []
+  let found
+  for (;;) {
+    if (memo.has(text.length)) { found = memo.get(text.length); break }
+    const measured = indentCols(text)
+    if (QUOTE.test(measured.rest)) { found = measured.rest; break }
+    const marker = path.length < MAX_NESTING_DEPTH ? matchMarkerAt(measured) : null
+    if (!marker) { found = null; break }
+    path.push(text.length)
+    text = marker.text
+  }
+  for (const length of path) memo.set(length, found)
+  return found
+}
+
 function quotePrefixSummary(text, memo) {
   const path = []
   let summary
@@ -2227,16 +2244,19 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
   const insideItem = h.kinds.at(-1) === 'item'
   let inner = meas
   let blockStart = false
+  // The task box is content on the marker line (CARVE-P0-008): a marker after it stands past it.
+  let box = 0
   for (;;) {
     const marker = matchMarkerAt(inner)
     if (marker) {
       if (paraOpen && !insideItem && !siblingItem && !leftOfClosedItem) break
-      const column = marker.indent + marker.markerWidth
+      const column = box + marker.indent + marker.markerWidth
       while (h.colons?.length && h.colons.at(-1).base >= column) h.colons.pop()
-      h.markerCols.push(marker.indent)
+      h.markerCols.push(box + marker.indent)
       h.columns.push(column)
       h.kinds.push('item')
       blockStart = true
+      box = marker.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH
       const next = indentCols(marker.text)
       inner = { col: h.columns.at(-1) + next.col, rest: next.rest }
       continue
@@ -5362,7 +5382,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         if (atStart && qNestedTable.length === 0) {
           const summary = quotePrefixSummary(line, prefixMemo(state, lines, idx).quote)
-          if (summary && !QUOTE.test(matchMarkerAt(indentCols(summary.tail))?.text ?? '') && !isColonBlockOpener(summary.tail) && !(FENCE.test(summary.tail) && parseFenceInfo(FENCE.exec(summary.tail)[2]) !== null)) {
+          if (summary && markerQuoteText(summary.tail, prefixMemo(state, lines, idx).markerQuote ??= new Map()) === null && !isColonBlockOpener(summary.tail) && !(FENCE.test(summary.tail) && parseFenceInfo(FENCE.exec(summary.tail)[2]) !== null)) {
             const { depth, tail } = summary
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
               const remaining = MAX_NESTING_DEPTH - state.blockDepth
@@ -7035,8 +7055,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     const seedDescendantQ1 = (col, text, memo = null, idx = -1) => {
       descendantQ1.col = col
       descendantQuote.at = -2
-      descendantQ1.open = text !== '' && (idx >= 0 && QUOTE.test(text)
-        ? advanceQuoteRun(descendantQuote, text, idx)
+      // A quote behind further markers (`- > - x`) starts the run the lines below continue.
+      const quoted = idx >= 0 && text !== '' ? markerQuoteText(text, prefixMemo(state, lines, idx).markerQuote ??= new Map()) : null
+      descendantQ1.open = text !== '' && (quoted !== null
+        ? advanceQuoteRun(descendantQuote, quoted, idx)
         : descendantLineOpensParagraph(text, false, -1, memo))
       descendantQ1.para = descendantQ1.open ? [text] : []
       descendantQ1.absorbedFence = null
