@@ -237,3 +237,70 @@ see[^a]
   </ol>
 </section>
 ````
+
+````
+- a
+  - b
+  +
+  ```
+    code
+  ```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre><code>  code
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- a
+  - b
+    - c
+    +
+    ```
+      code
+    ```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <ul>
+          <li>c
+            <pre><code>  code
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+> - a
+>   - b
+>   +
+>   ```
+>     code
+>   ```
+.
+<blockquote>
+  <ul>
+    <li>a
+      <ul>
+        <li>b
+          <pre><code>  code
+</code></pre>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+````

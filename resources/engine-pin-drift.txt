@@ -364,3 +364,5 @@
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-59  Pinned JavaScript still blocks an opener after a guard that does not close (carve#3973 X1); tracked at markup-carve/carve-js#3961.
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-7  Pinned JavaScript still blocks an opener after a guard that does not close (carve#3973 X1); tracked at markup-carve/carve-js#3961.
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-7  Pinned JavaScript ends the item at a `+` one column short of the sublist and reads it as text; carve-js main 6ce5d0f8f keeps it in the item.
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-15  Pinned JavaScript drops a nested item's attached fence payload indentation at depth three or in a quote; markup-carve/carve-js#3970 (also on carve-js main).
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-16  Pinned JavaScript drops a nested item's attached fence payload indentation at depth three or in a quote; markup-carve/carve-js#3970 (also on carve-js main).

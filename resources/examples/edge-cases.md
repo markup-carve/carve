@@ -70722,3 +70722,88 @@ see[^a]
 ```
 
 :::
+
+::: compare
+
+````carve
+- a
+  - b
+  +
+  ```
+    code
+  ```
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre><code>  code
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+````carve
+- a
+  - b
+    - c
+    +
+    ```
+      code
+    ```
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <ul>
+          <li>c
+            <pre><code>  code
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+````carve
+> - a
+>   - b
+>   +
+>   ```
+>     code
+>   ```
+````
+
+```html
+<blockquote>
+  <ul>
+    <li>a
+      <ul>
+        <li>b
+          <pre><code>  code
+</code></pre>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+```
+
+:::

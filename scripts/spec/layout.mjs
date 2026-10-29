@@ -7628,9 +7628,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (captionable && CAPTION.test(lines[end] ?? '')) end++
       const taken = []
       for (; i < end; i++) {
-        // Measure the attached block from the marker column.
+        // Measure the attached block from the marker column. `blockColumn` is a
+        // source column; a nested item's lines are measured from its parent's.
         const measured = ind(i)
-        const body = dedentMeasured(measured, lines[i], blockColumn)
+        const shift = (measured.L?.col ?? measured.col) - measured.col
+        const body = dedentMeasured(measured, lines[i], Math.max(0, blockColumn - shift))
         pushLine(body.text, body.meas)
         taken.push(body.text)
       }
