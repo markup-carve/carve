@@ -6563,7 +6563,7 @@ function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem
 // pattern is anchored at exactly the same character, so the match is the same
 // match; the indent it would have reported is `col`, which the measurement
 // already carries.
-function matchMarkerAt(meas) {
+function matchMarkerAt(meas, tabOrigin = 0) {
   if (meas === undefined) return null
   const { col, rest } = meas
   const line = trimLineEnd(rest)
@@ -6580,7 +6580,7 @@ function matchMarkerAt(meas) {
   if (m && m[3] && m[3].replace(/[{} ]/g, '') !== '' && parseAttrList(m[3]) === null) m = null
   if (m) {
     const whitespaceWidth = m[4].length
-    return {
+    return foldLeadTab({
       indent: col,
       bullet: m[2],
       attrs: m[3] ?? null, // marker-glued item attribute block (SS15 ext)
@@ -6590,14 +6590,14 @@ function matchMarkerAt(meas) {
       // neither moves the bare marker's content column (carve#1701). The
       // whitespace branch keeps an ordinary marker's authored separator run.
       markerWidth: m[2].length + (m[5] !== undefined ? 1 : whitespaceWidth),
-    }
+    }, tabOrigin)
   }
   m = ORDERED.exec(line)
   if (m && m[4] && m[4].replace(/[{} ]/g, '') !== '' && parseAttrList(m[4]) === null) m = null
   if (m) {
     const dialects = classifyOrdered(m[2])
     if (dialects.length === 0) return null
-    return {
+    return foldLeadTab({
       indent: col,
       // `ordered` carries the marker TOKEN, which is the empty string for a
       // bare dot - so orderedness is a flag of its own rather than the token's
@@ -6613,9 +6613,22 @@ function matchMarkerAt(meas) {
       // content column is where the content actually starts (§24 C3), so
       // `1.   x` sits at 5 exactly as `-   x` sits at 4 (carve#1773).
       markerWidth: m[2].length + m[3].length + m[5].length,
-    }
+    }, tabOrigin)
   }
   return null
+}
+
+// CARVE-P2-010: a tab that begins the content is leading whitespace, so the
+// content column is where the content starts. `leadTab` keeps the stripped
+// content paragraph text (the item loop frames it lazily). Tab stops count from
+// `origin`, the column the marker's own frame starts at (PART 9 SS24 C5).
+function foldLeadTab(marker, origin) {
+  const { indent, markerWidth, text, task } = marker
+  const run = task === undefined ? /^\t[ \t]*/.exec(text)?.[0] : undefined
+  if (!run || /^%{3}/.test(text.slice(1))) return marker
+  let end = indent + markerWidth
+  for (const ch of run) end = ch === '\t' ? origin + (Math.floor((end - origin) / 4) + 1) * 4 : end + 1
+  return { ...marker, text: text.slice(run.length), markerWidth: end - indent, leadTab: true }
 }
 
 function sameAxes(list, head) {
@@ -6687,7 +6700,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     if (list.items.length > 0) i = commentsBeforeSibling(i)
     const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
-    if (head.text.startsWith('\t') && !/^%{3}/.test(head.text.slice(1))) {
+    if (head.leadTab) head.text = lazyFrame(head.text)
+    else if (head.text.startsWith('\t') && !/^%{3}/.test(head.text.slice(1))) {
       head.text = lazyFrame(head.text.slice(1).replace(/^[ \t]+/, ''))
     }
     const sourceQuoteCol = (i === 0 ? markerLineQuoteColumns.get(lines) : undefined) ??
@@ -7835,7 +7849,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (j >= n) { i = j; break }
         const jm = ind(j)
         const { col } = jm
-        const nm = matchMarkerAt(jm)
+        const nm = matchMarkerAt(jm, col >= contentCol ? contentCol : 0)
         if (nestedOpaque?.kind === 'code' && CONT_MARKER.test(jm.rest) &&
             jm.col >= contentCol && jm.col <= Math.max(nestedOpaque.col, contentCol)) {
           // §17 L3: a descendant's marker ends its fence after every blank payload line.
@@ -8112,7 +8126,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         colonLineBlock.at(-1) === true
       // So is one in an open code or comment fence's payload (PART 0 opacity).
       const inOpaque = col >= contentCol && fence.opaque !== null && fence.opaque.opens !== false
-      const nm = inPayload || inOpaque ? null : matchMarkerAt(lm)
+      const nm = inPayload || inOpaque ? null : matchMarkerAt(lm, col >= contentCol ? contentCol : 0)
       if (nm && col >= contentCol) descendantColumns.add(nm.indent + nm.markerWidth)
       if (DEFLIST_TERM.test(lm.rest) && col >= contentCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) {
