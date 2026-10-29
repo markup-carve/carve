@@ -870,7 +870,7 @@
 {"id":"ownership-bd136514e326","source":"  %% c\n- inner\ncoe\ntail\n1. outer\n   1. inner\n","html":"<ul>\n  <li>inner\ncoe\ntail</li>\n</ul>\n<ol>\n  <li>outer\n1. inner</li>\n</ol>"},
 {"id":"ownership-bd4670f38659","source":"\n - - +\n    x\n:: t. ail\n:  definition\n","html":"<ul>\n  <li>\n    <ul>\n      <li></li>\n    </ul>\n    x\n  </li>\n</ul>\n<dl>\n  <dt>t. ail</dt>\n  <dd>definition</dd>\n</dl>"},
 {"id":"ownership-bd4d97d0a4f1","source":"- item\n: \n  :: c\n    %% note\n  more\n","html":"<ul>\n  <li>item\n:\n    <dl>\n      <dt>c</dt>\n    </dl>\n    more\n  </li>\n</ul>"},
-{"id":"ownership-bd5caf2c0c4d","source":":: t\n: -a\n    {.c\n}\npara\n","html":"<dl>\n  <dt>t</dt>\n  <dd>-a\n{.c\n}</dd>\n</dl>\n<p>para</p>"},
+{"id":"ownership-bd5caf2c0c4d","source":":: t\n: -a\n    {.c\n}\npara\n","html":"<dl>\n  <dt>t</dt>\n  <dd>-a\n{.c\n}\npara</dd>\n</dl>"},
 {"id":"ownership-bd9cff137daf","source":" >> > a\n> b\n","html":"<p>&gt;&gt; &gt; a</p>\n<blockquote><p>b</p></blockquote>"},
 {"id":"ownership-bda4d0729f7e","source":"- - text\n  ![i](x.png)\n  \n\n  cap\n- \n","html":"<ul>\n  <li>\n    <ul>\n      <li>text\n<img src=\"x.png\" alt=\"i\"></li>\n    </ul>\n    <p>cap\n-</p>\n  </li>\n</ul>"},
 {"id":"ownership-bddd22365be5","source":":: termtext\n:  definition\n   ::: note\n   b:: tody\n   :::\ntail\n","html":"<dl>\n  <dt>termtext</dt>\n  <dd>\n    <p>definition</p>\n    <aside class=\"admonition note\" aria-label=\"Note\">\n      <p>b:: tody</p>\n    </aside>\n  </dd>\n</dl>\n<p>tail</p>"},

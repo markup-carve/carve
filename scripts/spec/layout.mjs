@@ -1857,7 +1857,7 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
       if (marker) return tail.col < marker.indent + marker.markerWidth
     }
   }
-  if (trailingWrappedAttr(bodyLines, last)) return false
+  if (trailingWrappedAttr(bodyLines, last, false, true)) return false
 
   // A definition at the body or a marked quote's block position closes the
   // deepest paragraph even when authored indentation obscures its opener.
@@ -4895,7 +4895,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (authoredCol > 0 && bodyLeavesParagraphOpen(bodyLines) &&
                 !startsVisibleBlock(dedented) &&
                 (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented) ||
-                 ABBR_DEF.test(dedented) || tryAttrLine([dedented], 0) !== null)) {
+                 ABBR_DEF.test(dedented) || dedented[0] === '{')) {
               pushBody(lazyFrame(dedented))
               i++
               continue
@@ -7576,6 +7576,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // continuation line therefore leaves no paragraph available for a later
     // below-column lazy continuation.
     let wrappedAttrEnd = -1
+    // Content columns of the item's nested markers, where a wrapped attribute may open.
+    const descendantColumns = new Set()
     let fenceBlankRun = 0
     if (head.text.startsWith('{')) {
       const window = [
@@ -8106,6 +8108,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // So is one in an open code or comment fence's payload (PART 0 opacity).
       const inOpaque = col >= contentCol && fence.opaque !== null && fence.opaque.opens !== false
       const nm = inPayload || inOpaque ? null : matchMarkerAt(lm)
+      if (nm && col >= contentCol) descendantColumns.add(nm.indent + nm.markerWidth)
       if (DEFLIST_TERM.test(lm.rest) && col >= contentCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) {
         lastListBlock = 'term'
@@ -8336,8 +8339,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           // Lazy, so a scan reads only the lines the attribute run reaches.
           const attributes = tryAttrLine(dedentedWindow(lines, i, localBase), 0)
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
-        } else if (i > wrappedAttrEnd && !insideFence() && !nestedVerbatim() && dmeas.rest.startsWith('{')) {
+        } else if (i > wrappedAttrEnd && !insideFence() && !nestedVerbatim() && dmeas.rest.startsWith('{') &&
+            ((headSubActive && col >= headSubCol) || reach === subCol || descendantColumns.has(col))) {
           // A wrapped attribute opened in a nested child is one construct here too (carve#3421).
+          // Over-indented in this item's own body it is paragraph text, which a lazy line continues.
           // Lazy, so a scan reads only the lines the attribute run reaches.
           const attributes = tryAttrLine(dedentedWindow(lines, i, lm.col), 0)
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1

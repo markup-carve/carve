@@ -535,6 +535,10 @@ index: examples/edge-cases/index.md
   653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-8
   653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-9
   653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-10
+  787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text
+  787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-2
+  787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-3
+  787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-4
   654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column
   654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column-2
   655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero
