@@ -39,9 +39,10 @@
       - CAN CLOSE: `before` is not whitespace and `after` is not alnum.
       - CAN OPEN: `after` is neither whitespace nor d, and `before` is not
         alnum and not d (SAME-DELIMITER ADJACENCY: `**x**`, `//x//` and
-        `==x==` are text). Two guards apply to an opener: `before` is `_`,
-        for every d; `before` is `/`, for d of `/` or `_` (path protection:
-        a/_y_ and /a/_b_ stay text at the `_`).
+        `==x==` are text; corpus 76-doubled-emphasis-delimiters). Two guards
+        apply to an opener: `before` is `_`, for every d; `before` is `/`,
+        for d of `/` or `_` (path protection: a/_y_ and /a/_b_ stay text at
+        the `_`; corpus 129-emphasis-opener-slash-adjacency).
       - GUARD EXEMPTION. A guard character that is itself an open entry on
         the stack where d stands is markup and does not block: _*x*_ nests.
         Whether that entry closes later does not matter, so _*x* q renders
