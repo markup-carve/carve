@@ -36,6 +36,10 @@ For this repo in particular:
   resulting fixture diff is intentional.
 - If you move the pinned `@markup-carve/carve` commit (`npm run bump-carve-pin`),
   pin only a commit merged to `carve-js` `main`, not a local branch build.
+- Issues titled `fuzz: ...` come from the nightly fuzz differential. Keep the
+  `fuzz-signature:` line in the body: it is how the next night finds the issue
+  instead of filing a duplicate. See the
+  [development guide](../docs/development.md#nightly-fuzz-differential).
 
 ## Every new guard ships with a demonstrated failure
 
