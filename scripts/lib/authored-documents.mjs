@@ -142,6 +142,10 @@ export function authoredDocuments() {
  * The citation definition sample in docs/migrate-from-markdown.md#8 is now
  * answered as core text rather than refused (carve#3773): 120 -> 121.
  *
+ * docs/validation.md adds two "Fragile spellings" samples for the carve#3992
+ * lint rules, placed after the declared `#5` so no index moves: 122 -> 124,
+ * both answered.
+ *
  * Pinned EXACTLY and in both directions, which is the whole point of writing
  * them down. A floor would let the population shrink - a docs rewrite that
  * dropped twenty samples would read as a pass - and a ceiling alone would let a
@@ -154,5 +158,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 122
-export const AUTHORED_ANSWERED = 122
+export const AUTHORED_POPULATION = 124
+export const AUTHORED_ANSWERED = 124

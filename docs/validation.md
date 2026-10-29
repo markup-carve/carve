@@ -457,6 +457,24 @@ separators, and separator-shaped lines inside literal payloads. The rule does
 not rewrite source. Shared positive and negative cases are in
 [`tests/lint-rule-vectors/description-separator-below-content-column.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/description-separator-below-content-column.json).
 
+### Ordered lists split by indentation
+
+`ordered-list-split-by-indent` reported adjacent sibling ordered lists whose
+first markers started at different source columns. Since
+markup-carve/carve#3885, sibling items group by the container they open in,
+not by the column they are written at, so this document is one list:
+
+```carve
+ 9. nine
+10. ten
+```
+
+It renders one ordered list starting at 9, as Djot does. Both markers open at
+the document's content column, so there is no second list to report. The rule
+retires as each engine adopts the ruling; until then an engine may still
+report it. The shared vectors are in
+[`tests/lint-rule-vectors/ordered-list-split-by-indent.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/ordered-list-split-by-indent.json).
+
 ### Fragile spellings
 
 Two rules report spellings that parse, but not the way a reader of the source
@@ -494,24 +512,6 @@ The shared vectors are in
 [`tests/lint-rule-vectors/block-opener-overindented.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/block-opener-overindented.json)
 and
 [`tests/lint-rule-vectors/emphasis-marker-before-attributes.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/emphasis-marker-before-attributes.json).
-
-### Ordered lists split by indentation
-
-`ordered-list-split-by-indent` reported adjacent sibling ordered lists whose
-first markers started at different source columns. Since
-markup-carve/carve#3885, sibling items group by the container they open in,
-not by the column they are written at, so this document is one list:
-
-```carve
- 9. nine
-10. ten
-```
-
-It renders one ordered list starting at 9, as Djot does. Both markers open at
-the document's content column, so there is no second list to report. The rule
-retires as each engine adopts the ruling; until then an engine may still
-report it. The shared vectors are in
-[`tests/lint-rule-vectors/ordered-list-split-by-indent.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/ordered-list-split-by-indent.json).
 
 ### Declaring a target version
 
