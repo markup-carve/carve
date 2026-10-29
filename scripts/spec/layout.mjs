@@ -8039,6 +8039,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           // A lazy line continues the note's open paragraph and keeps the note open.
           if (openPara && foldablePlainLine(lm.rest) && !isDefinitionOrAttributeLine(lm.rest)) break
           noteFrames.pop()
+          // The enclosing note's body takes back the reach this note borrowed.
+          defBodyIndent = frame.outerReach.def
+          noteBodyBoundary = frame.outerReach.boundary
         }
       }
       // A note's later list leaves no item paragraph for a below-column tail.
@@ -8637,6 +8640,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // level only (line 1453), so inside an item the line is paragraph text
         // and reopening the paragraph is the correct answer for it.
         else if (isLinkDef(dedented) || FOOTNOTE_DEF.test(lm.rest)) {
+          const outerReach = { def: defBodyIndent, boundary: noteBodyBoundary }
           closePara()
           // ONLY A FOOTNOTE DEFINITION HAS A BODY. A link reference definition
           // is ONE LINE in Carve: an indented line under it is not its title
@@ -8649,7 +8653,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             noteOpenerLine = i
             const outerNote = noteFrames.at(-1)
             if (outerNote) outerNote.ownerBase = outerNote.marker
-            noteFrames.push({ marker: col, base: localBase, body: noteBodyBoundary, ownerBase: outerNote?.marker ?? null,
+            noteFrames.push({ marker: col, base: localBase, body: noteBodyBoundary, ownerBase: outerNote?.marker ?? null, outerReach,
               firstBlockPending: CONT_MARKER.test(FOOTNOTE_DEF.exec(lm.rest)?.[2] ?? '') })
             // A footnote body takes a lazy line like every container (carve#3885).
             const noteText = FOOTNOTE_DEF.exec(lm.rest)[2]

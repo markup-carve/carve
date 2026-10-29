@@ -2247,20 +2247,47 @@ function renderInlineInner(text) {
 
   // Escapes `blocks` (in source order) and returns where each escape landed,
   // with whether the block holds a delimiter besides a `key=`.
+  // One splice for the whole batch, so a long run of blocks stays linear (carve#4059).
   function escape(blocks) {
-    const placed = []
-    for (const block of blocks.toReversed()) {
+    const cuts = blocks.map((block) => {
       const comment = commentAfter(block)
-      const escapeAt = comment ? block.at - 1 : block.at
       // A brace that opens a braced inline stays one: an empty comment parts
       // it from the delimiter instead (carve#3940).
       const cut = !comment && BRACED_MARKS.has(source[block.at + 1]) ? '{%%}' : '\\'
       const body = source.slice(block.at + 1, block.end - 1).replace(/[A-Za-z0-9_-]+=/g, '')
-      source = source.slice(0, escapeAt) + cut + source.slice(escapeAt)
-      for (const e of escapes) if (e.at >= escapeAt) { e.at += cut.length; e.end += cut.length }
-      for (const p of placed) p.at += cut.length
-      placed.unshift({ at: escapeAt, active: [...body].some((c) => BRACED_MARKS.has(c)) })
-      if (!comment) escapes.push({ at: escapeAt, end: block.end + cut.length, len: cut.length })
+      return { block, comment, cut, at: comment ? block.at - 1 : block.at, active: [...body].some((c) => BRACED_MARKS.has(c)) }
+    })
+    // Width of the cuts at or left of `at`, in the source before this batch.
+    const widthUpTo = (at) => {
+      let lo = 0
+      let hi = cuts.length
+      while (lo < hi) {
+        const mid = (lo + hi) >> 1
+        if (cuts[mid].at <= at) lo = mid + 1
+        else hi = mid
+      }
+      return lo === 0 ? 0 : cuts[lo - 1].before + cuts[lo - 1].cut.length
+    }
+    const parts = []
+    let from = 0
+    let width = 0
+    for (const c of cuts) {
+      c.before = width
+      parts.push(source.slice(from, c.at), c.cut)
+      from = c.at
+      width += c.cut.length
+    }
+    parts.push(source.slice(from))
+    for (const e of escapes) {
+      const shift = widthUpTo(e.at)
+      e.at += shift
+      e.end += shift
+    }
+    source = parts.join('')
+    const placed = []
+    for (const c of cuts) {
+      placed.push({ at: c.at + c.before, active: c.active })
+      if (!c.comment) escapes.push({ at: c.at + c.before, end: c.block.end + c.before + c.cut.length, len: c.cut.length })
     }
     return placed
   }
@@ -2274,10 +2301,16 @@ function renderInlineInner(text) {
     // Every candidate is first taken back at once; a candidate that still
     // reads unattached leaves the trial, and what remains needs one read
     // (carve#3936). The one-at-a-time walk below finishes the rest.
+    // A block with no delimiter of its own that is loose when every candidate
+    // is taken back stays loose alone, so the walk skips it (carve#4059).
+    let loneLoose = new Set()
     for (;;) {
       let trial = source
       let result = current
       let back = escapes.filter((e) => SPAN_CLOSER_ENDS.has(source[e.at - 1]) && !current.paired.some((p) => p > e.at && p < e.end))
+      const plain = back.every((e) => PLAIN_BODY.test(source.slice(e.at + e.len + 1, e.end - 1)))
+      loneLoose = new Set()
+      let everyCandidate = true
       while (back.length > 1) {
         trial = source
         for (const e of back.toReversed()) trial = trial.slice(0, e.at) + trial.slice(e.at + e.len)
@@ -2288,8 +2321,10 @@ function renderInlineInner(text) {
         const kept = back.filter((e) => {
           const keep = !loose.has(e.at - shift)
           shift += e.len
+          if (!keep && everyCandidate && plain) loneLoose.add(e)
           return keep
         })
+        everyCandidate = false
         back = kept.length < back.length ? kept : []
       }
       if (back.length < 2) break
@@ -2309,6 +2344,7 @@ function renderInlineInner(text) {
     }
     for (let k = 0; k < escapes.length; k++) {
       const { at, end, len } = escapes[k]
+      if (loneLoose.has(escapes[k])) continue
       if (!SPAN_CLOSER_ENDS.has(source[at - 1])) continue
       if (current.paired.some((p) => p > at && p < end)) continue
       const trial = source.slice(0, at) + source.slice(at + len)
@@ -2318,6 +2354,7 @@ function renderInlineInner(text) {
       current = result
       escapes.splice(k, 1)
       for (let j = k; j < escapes.length; j++) { escapes[j].at -= len; escapes[j].end -= len }
+      loneLoose.clear()
       k = -1
     }
     return current.out
@@ -2327,6 +2364,8 @@ function renderInlineInner(text) {
 // Characters that, once a block is text, can start a construct swallowing the
 // text after it (a code span, a link, a nested block, an escape).
 const TOKEN_CHARS = /[`[\]{}\\<]/
+// A block body that holds no delimiter, escape or nested construct.
+const PLAIN_BODY = /^[A-Za-z0-9 .#="]*$/
 
 // The markers after `{` that open a braced inline (PART 9 SS22, editorial, comments).
 const BRACED_MARKS = new Set(['/', '*', '_', '~', '^', ',', '=', '+', '-', '#', '%'])
