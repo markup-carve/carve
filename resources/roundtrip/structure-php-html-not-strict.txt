@@ -178,3 +178,4 @@
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-7
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-8
 786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-5
+788-whitespace-after-a-leading-content-tab-is-not-content-3

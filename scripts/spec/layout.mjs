@@ -6683,7 +6683,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
     if (head.text.startsWith('\t') && !/^%{3}/.test(head.text.slice(1))) {
-      head.text = lazyFrame(head.text.slice(1))
+      head.text = lazyFrame(head.text.slice(1).replace(/^[ \t]+/, ''))
     }
     const sourceQuoteCol = (i === 0 ? markerLineQuoteColumns.get(lines) : undefined) ??
       firstBlockQuoteColumn(ind(i).L?.src ?? lines[i])

@@ -1,0 +1,29 @@
+Whitespace after a leading content tab is not content
+
+```
+- 	 e
+.
+<ul>
+  <li>e</li>
+</ul>
+```
+
+```
+1. 	  *a*
+   b
+.
+<ol>
+  <li><strong>a</strong>
+b</li>
+</ol>
+```
+
+```
+> - 	 - x
+.
+<blockquote>
+  <ul>
+    <li>- x</li>
+  </ul>
+</blockquote>
+```

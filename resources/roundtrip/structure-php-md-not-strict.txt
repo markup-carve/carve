@@ -668,6 +668,7 @@
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5
 786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-5
+788-whitespace-after-a-leading-content-tab-is-not-content-3
 79-two-char-delimiter-runs
 80-trailing-attribute-block-edge-cases-2
 80-trailing-attribute-block-edge-cases-3
