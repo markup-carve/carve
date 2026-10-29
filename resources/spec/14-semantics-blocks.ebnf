@@ -26,9 +26,9 @@
       P2 READING. Read each region left to right with one stack of open bare
          entries (R1 to R5). A braced or editorial opener starts a NESTED
          READING of a new region; a combined opener is a stack entry. Nothing
-         in P2 looks past the current character, except a nested reading,
-         which reads ahead to its own closer, and the attribute run directly
-         after a closer.
+         in P2 looks past the current character except three things: a
+         nested reading and a combined opener, which look ahead to their own
+         closer, and the attribute run directly after a closer.
 
       THE TESTS for a bare delimiter d at position p are the templates of
       CARVE-P3-013. `before` is the source character at p - 1 and `after` the
@@ -46,7 +46,9 @@
         the stack where d stands is markup and does not block: _*x*_ nests.
         Whether that entry closes later does not matter, so _*x* q renders
         _<strong>x</strong> q (carve#3973 X1). The mark of the braced or
-        editorial span being read is markup too: {_*a* b_} nests. Any other
+        editorial span being read is markup too, neither a guard nor the
+        same delimiter for the adjacency test: {_*a* b_} nests, and in
+        {~~a~ b~>c~} the second `~` opens. Any other
         guard blocks: a_*x* stays text.
       - `=` followed by `>` never opens: it starts the arrow (§8). The `=`
         of a comparison `<=` or `>=` is part of that symbol and neither
@@ -104,24 +106,27 @@
       THE COMBINED TOKEN. A combined opener is a `/` followed by `*`, where
       the `/` can open, the `*` is followed by neither whitespace nor a
       grapheme_extender, and neither `/` nor `*` is on the stack or an own
-      kind (carve#3234). It pushes ONE entry that counts as both kinds `/`
-      and `*` for R4 and for this test. Its closer token is a `*` that is not
-      after whitespace, followed by a `/` that is not followed by alnum, and
-      that does not stand directly after the opener: /**/ alone is
-      <em>**</em>, and /**/*/ -> <strong><em>*/</em></strong>. While the
-      entry is on the stack, a bare `/` or `*` that does not start its
-      closer token is text: /*a* b*/ -> <strong><em>a* b</em></strong>. The
-      closer token closes the entry by R2, removing the entries above it:
-      /*a _b*/ c_ leaves `_` text. Like any entry, it becomes text when a
-      closer removes it from below or its region ends: in =a /*b= c*/ the
-      `=` closes and the `/*` and `*/` are text, and in {_/*a_} the braced
-      closer ends the region first. A formed combined span renders as strong
-      around emphasis, and a braced child of either kind nests inside it:
-      /*a {*b*} c*/ holds a strong child.
+      kind (carve#3234). Its closer token is a `*` that is not after
+      whitespace, followed by a `/` that is not followed by alnum, and that
+      does not stand directly after the opener. The opener looks ahead in
+      its own region, outside atoms and formed nested spans, for a closer
+      token. With none, it is two bare candidates read by R2 to R5: /**/
+      alone is <em>**</em>, and {_/*a_} is <u>/*a</u>. With one, it pushes
+      ONE entry that counts as both kinds `/` and `*`: /**/*/ ->
+      <strong><em>*/</em></strong>. While that entry is on the stack, a bare
+      `/` or `*` that does not start its closer token is text:
+      /*a* b*/ -> <strong><em>a* b</em></strong>. The closer token closes the
+      entry by R2, removing the entries above it, so /*a _b*/ c_ leaves `_`
+      text. Like any entry, it becomes text when a closer removes it from
+      below: in =a /*b= c*/ the `=` closes and both `/*` and `*/` are text.
+      A formed combined span renders as strong around emphasis, and a
+      braced child of either kind nests inside it: /*a {*b*} c*/ holds a
+      strong child.
 
       SUBSTITUTION. A `{~` span is a substitution when its content holds a
-      `~>` at its own level, outside every atom and formed nested span. The
-      first such `~>` splits it into two regions: {~old~>new~} ->
+      `~>` at its own level, outside every atom and formed nested span; the
+      arrow is found before either side is read. The first such `~>` splits
+      it into two regions: {~old~>new~} ->
       <del>old</del><ins>new</ins>. Any other `{~` span is strike, so a code
       span hides the arrow, and {~a {*x~>y*} b~} is strike around strong
       text x~>y.
