@@ -1,0 +1,25 @@
+A quote at the start of a span opens
+
+```
+x.="q"=
+.
+<p>x.<mark>“q”</mark></p>
+```
+
+```
+x.*"q"* and x./'q'/
+.
+<p>x.<strong>“q”</strong> and x.<em>‘q’</em></p>
+```
+
+```
+x.*/"q"/* and x.{^"q"^}
+.
+<p>x.<strong><em>“q”</em></strong> and x.<sup>“q”</sup></p>
+```
+
+```
+*a*"q" and x="q"
+.
+<p><strong>a</strong>”q” and x=“q”</p>
+```

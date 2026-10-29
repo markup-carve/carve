@@ -634,8 +634,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    assigned before a cross-reference resolves or a symbol is looked up. Code
    spans, MATH runs, an image's alt text, a link's label and a superscript
    contribute; raw inline content for every `{=format}` target, footnote
-   references, cross-references and symbols `:name:` do
-   not, and a line comment ends the line it sits on. Then, on that text:
+   references, cross-references, symbols `:name:` and editorial comments
+   `{# #}` do not, and a line comment ends the line it sits on. A comment is
+   about the text rather than part of it, so adding or removing one never
+   moves an id: `# x {#c#} y` gets `id="x-y"`. The heading index (PART 9R R1)
+   and a task box's `aria-label` (CARVE-P2-015) read the same text, so
+   `[x y][]` finds that heading and `- [ ] x {#c#} y` is named `x y`.
+   Then, on that text:
      - reverse smart-typography output to its ASCII source first, so the id does
        not depend on presentation (`Don’t` -> `Don-t`, `Step 1 → 2` -> `Step-1-2`).
        Paired quotation marks reverse together: `‘`, `’`, `‚`, `‛` to ASCII
@@ -2904,7 +2909,10 @@ smart_quote = '"' | "'" ;
    character: `\{{%%}"q"` renders `{“q”`, just as `\{"q"` does. The end of a
    closed inline element (emphasis, span, link, code) counts as a word
    character whatever it ends in, so the quote after it CLOSES:
-   `[—]{.c}"q"` renders `<span class="c">—</span>”q”`.
+   `[—]{.c}"q"` renders `<span class="c">—</span>”q”`. The START of an
+   inline span's content (emphasis of every kind, bare, braced or combined,
+   a span, a link) is start-of-content, whatever precedes the span, so the
+   quote there OPENS: `x.="q"=`, `x.*"q"*` and `x.*/"q"/*` all render `“q”`.
    Letters and digits are judged by Unicode code point, so a character
    outside the Basic Multilingual Plane is a letter like any other.
 
@@ -4879,6 +4887,10 @@ EOF = (* end of file *) ;
          retains its comment and renders the outside `[`.
       E3 NO BARE SAME-TYPE NESTING. While a reachable d-span is open,
          a further bare d that would open does NOT push -- it is literal.
+         Reachability stops at an E2a braced boundary AND at an E2b bracket
+         run, whether the run resolves or stays literal text: a span opened
+         outside the run is not reachable inside it, so `*[*g*] x*` ->
+         <strong>[<strong>g</strong>] x</strong>, like `*[*g*](u) x*`.
          Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6);
          the/path/here is literal; unbalanced trailing runs stay literal:
          /b// -> <em>b</em>/ and /x// -> <em>x</em>/ (resources/examples/edge-cases.md).
@@ -6141,8 +6153,8 @@ EOF = (* end of file *) ;
         of any of the seven emphasis kinds even when that kind is active.
         {*outer {*inner*} tail*} and *outer {*inner*} tail* each have two
         strong nodes. Bare openers remain literal while a same-kind span
-        is reachable under E2a; an intervening braced boundary can hide
-        that ancestor. Doubled bare delimiters retain their existing meaning.
+        is reachable under E2a; an intervening braced boundary or E2b
+        bracket run, resolved or literal, can hide that ancestor. Doubled bare delimiters retain their existing meaning.
         A combined token activates two kinds, and E3 reads both as ordinary
         active kinds, so a braced child of either nests inside it:
         /*a {*b*} c*/ holds a strong child. The absence of a carve-out for

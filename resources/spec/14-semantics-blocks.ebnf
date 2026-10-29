@@ -38,6 +38,10 @@
          retains its comment and renders the outside `[`.
       E3 NO BARE SAME-TYPE NESTING. While a reachable d-span is open,
          a further bare d that would open does NOT push -- it is literal.
+         Reachability stops at an E2a braced boundary AND at an E2b bracket
+         run, whether the run resolves or stays literal text: a span opened
+         outside the run is not reachable inside it, so `*[*g*] x*` ->
+         <strong>[<strong>g</strong>] x</strong>, like `*[*g*](u) x*`.
          Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6);
          the/path/here is literal; unbalanced trailing runs stay literal:
          /b// -> <em>b</em>/ and /x// -> <em>x</em>/ (resources/examples/edge-cases.md).

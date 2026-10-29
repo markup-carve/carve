@@ -506,7 +506,10 @@ smart_quote = '"' | "'" ;
    character: `\{{%%}"q"` renders `{“q”`, just as `\{"q"` does. The end of a
    closed inline element (emphasis, span, link, code) counts as a word
    character whatever it ends in, so the quote after it CLOSES:
-   `[—]{.c}"q"` renders `<span class="c">—</span>”q”`.
+   `[—]{.c}"q"` renders `<span class="c">—</span>”q”`. The START of an
+   inline span's content (emphasis of every kind, bare, braced or combined,
+   a span, a link) is start-of-content, whatever precedes the span, so the
+   quote there OPENS: `x.="q"=`, `x.*"q"*` and `x.*/"q"/*` all render `“q”`.
    Letters and digits are judged by Unicode code point, so a character
    outside the Basic Multilingual Plane is a letter like any other.
 

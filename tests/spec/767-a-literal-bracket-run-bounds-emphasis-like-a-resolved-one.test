@@ -1,0 +1,25 @@
+A literal bracket run bounds emphasis like a resolved one
+
+```
+*[*g*] x*
+.
+<p><strong>[<strong>g</strong>] x</strong></p>
+```
+
+```
+_[_g_] x_ and /[/g/] x/
+.
+<p><u>[<u>g</u>] x</u> and <em>[<em>g</em>] x</em></p>
+```
+
+```
+{*a [*g*] x*}
+.
+<p><strong>a [<strong>g</strong>] x</strong></p>
+```
+
+```
+*[*g*](u) x* and *[*g*]{.c} x*
+.
+<p><strong><a href="u"><strong>g</strong></a> x</strong> and <strong><span class="c"><strong>g</strong></span> x</strong></p>
+```

@@ -523,6 +523,7 @@ const sem = g.createSemantics().addOperation('h', {
       this.source.sourceString,
       '/*',
       first.source.startIdx,
+      true,
     )
     return `<strong${a}><em>${body}</em></strong>`
   },
@@ -716,6 +717,7 @@ const sem = g.createSemantics().addOperation('h', {
       this.source.sourceString,
       dch,
       inner.source.startIdx,
+      true,
     )
     return `<${tag}${a}>${body}</${tag}>`
   },
@@ -729,6 +731,8 @@ const sem = g.createSemantics().addOperation('h', {
     return `<del>${renderInline(oldC.sourceString, '{')}</del><ins>${renderInline(newC.sourceString, '{')}</ins>`
   },
   edComment(body) {
+    // CARVE-P2-004: a comment is about the text, not part of it (carve#3899).
+    if (omitComments) return ''
     // comment content is verbatim (spaces preserved)
     return `<span class="critic-comment">${escapeHtml(body.child(1).sourceString)}</span>`
   },
@@ -1414,22 +1418,25 @@ function pairGuarded(build, src, literalDelims = '', contentAt = 0) {
 }
 
 // Pairing supplies the opening context of an emphasis span; quote state follows rendered order.
-function applyQuotes(toks, openMap, src, contentAt) {
+function applyQuotes(toks, openMap, src, contentAt, spanContent) {
   const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
   const candidates = new Set(toks.filter((t) => t.k === 'd').map((t) => t.at))
   for (const t of toks) {
     if (!t.quote) continue
     const pi = quotePrevIdx(src, t.quote.at)
     const prev = pi > 0 ? src[pi - 1] : quotePrevCtx
-    if (EMPHASIS_DELIMS.has(prev)) {
-      t.quote.record.spanStart = candidates.has(pi - 1) ? opens.has(pi - 1) : pi === contentAt
+    // CARVE-P3-023: an opener of any kind starts content (carve#3898).
+    if (opens.has(pi - 1) || (spanContent && pi === contentAt)) t.quote.record.spanStart = true
+    else if (EMPHASIS_DELIMS.has(prev)) {
+      t.quote.record.spanStart = candidates.has(pi - 1) ? false : pi === contentAt
     }
   }
 }
 
-function resolveEmphasis(build, src, literalDelims = '', contentAt = 0) {
+// `spanContent`: `contentAt` starts a braced or combined span's content.
+function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanContent = false) {
   const { toks, openMap } = pairGuarded(build, src, literalDelims, contentAt)
-  applyQuotes(toks, openMap, src, contentAt)
+  applyQuotes(toks, openMap, src, contentAt, spanContent)
   resolveNameRun(toks, openMap)
   applyMarkerBoundary(toks, openMap, src, contentAt)
   // Build the span tree by walking the paired ranges (properly nested).
@@ -1679,12 +1686,11 @@ export const TYPOGRAPHY_FLANK = new Set([' ', '\t', '\n', '\r', '\u00a0'])
 export const isTypographyFlank = (ch) => TYPOGRAPHY_FLANK.has(ch)
 const QUOTE_OPEN_PREV = new Set(['=', ':', '-', '–', '—', '/', '(', '[', '{', '“', '‘'])
 const QUOTE_CHARS = new Set(['"', "'"])
-// A quote directly after a bare delimiter that OPENS a span stands at the
-// START of that span's content, which is an opening context (carve#348).
-// After a delimiter that opens nothing the delimiter IS the preceding
-// character, and none of these three is an opening context, so the quote
-// closes. Pairing decides which, so `applyQuotes` settles it after the stack
-// has run. `/` and `=` are in the opening set already, either way.
+// A quote directly after a delimiter that OPENS a span stands at the START of
+// that span's content, an opening context for every kind (carve#348,
+// carve#3898). After one of these three that opens nothing the delimiter IS
+// the preceding character and the quote closes. Pairing decides which, so
+// `applyQuotes` settles it after the stack has run.
 const EMPHASIS_DELIMS = new Set(['*', '_', '~'])
 const QUOTE_RULES = new Set(['dquote', 'squote'])
 const ELISION_WORDS = new Set(['tis', 'tisn', 'twas', 'twasn', 'twere', 'twill', 'twould', 'em', 'cause', 'til', 'n', 'bout'])
@@ -1806,6 +1812,7 @@ let quotePrevCtx = '' // preceding character for recursive inline parses
  */
 let omitSymbols = false
 let omitRawInline = false
+let omitComments = false
 
 /*
  * HARD BREAKS: a soft break renders as `<br>` (PART 9 SS23).
@@ -1854,11 +1861,13 @@ let noFootnotes = false
 export function renderInlineWithoutSymbols(text, prevCtx = '') {
   omitSymbols = true
   omitRawInline = true
+  omitComments = true
   try {
     return renderInline(text, prevCtx)
   } finally {
     omitSymbols = false
     omitRawInline = false
+    omitComments = false
   }
 }
 

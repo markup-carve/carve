@@ -68741,3 +68741,163 @@ an empty span.
 ```
 
 :::
+
+## An editorial comment contributes nothing to a heading id
+
+An editorial comment is about the text, not part of it, so it never moves a heading id. The heading index and a task box name read the same text.
+
+::: compare
+
+```carve
+# x {#c#} y
+
+[x y][]
+```
+
+```html
+<section id="x-y">
+  <h1>x <span class="critic-comment">c</span> y</h1>
+  <p><a href="#x-y">x y</a></p>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+- [ ] x {#c#} y
+- [x] {# note #}done
+```
+
+```html
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="x y"> x <span class="critic-comment">c</span> y</li>
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="done"> <span class="critic-comment"> note </span>done</li>
+</ul>
+```
+
+:::
+
+::: compare
+
+```carve
+# Plan {#draft#}
+
+# Plan
+```
+
+```html
+<section id="Plan">
+  <h1>Plan <span class="critic-comment">draft</span></h1>
+</section>
+<section id="Plan-2">
+  <h1>Plan</h1>
+</section>
+```
+
+:::
+
+## A literal bracket run bounds emphasis like a resolved one
+
+A span opened outside a bracket run is not reachable inside it, whether the run resolves or stays literal text, so a same-kind pair inside the run nests.
+
+::: compare
+
+```carve
+*[*g*] x*
+```
+
+```html
+<p><strong>[<strong>g</strong>] x</strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+_[_g_] x_ and /[/g/] x/
+```
+
+```html
+<p><u>[<u>g</u>] x</u> and <em>[<em>g</em>] x</em></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{*a [*g*] x*}
+```
+
+```html
+<p><strong>a [<strong>g</strong>] x</strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+*[*g*](u) x* and *[*g*]{.c} x*
+```
+
+```html
+<p><strong><a href="u"><strong>g</strong></a> x</strong> and <strong><span class="c"><strong>g</strong></span> x</strong></p>
+```
+
+:::
+
+## A quote at the start of a span opens
+
+The start of an inline span's content is start-of-content for quote direction, for every span kind. A quote after a closed span still closes.
+
+::: compare
+
+```carve
+x.="q"=
+```
+
+```html
+<p>x.<mark>“q”</mark></p>
+```
+
+:::
+
+::: compare
+
+```carve
+x.*"q"* and x./'q'/
+```
+
+```html
+<p>x.<strong>“q”</strong> and x.<em>‘q’</em></p>
+```
+
+:::
+
+::: compare
+
+```carve
+x.*/"q"/* and x.{^"q"^}
+```
+
+```html
+<p>x.<strong><em>“q”</em></strong> and x.<sup>“q”</sup></p>
+```
+
+:::
+
+::: compare
+
+```carve
+*a*"q" and x="q"
+```
+
+```html
+<p><strong>a</strong>”q” and x=“q”</p>
+```
+
+:::

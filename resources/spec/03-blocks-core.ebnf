@@ -74,8 +74,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    assigned before a cross-reference resolves or a symbol is looked up. Code
    spans, MATH runs, an image's alt text, a link's label and a superscript
    contribute; raw inline content for every `{=format}` target, footnote
-   references, cross-references and symbols `:name:` do
-   not, and a line comment ends the line it sits on. Then, on that text:
+   references, cross-references, symbols `:name:` and editorial comments
+   `{# #}` do not, and a line comment ends the line it sits on. A comment is
+   about the text rather than part of it, so adding or removing one never
+   moves an id: `# x {#c#} y` gets `id="x-y"`. The heading index (PART 9R R1)
+   and a task box's `aria-label` (CARVE-P2-015) read the same text, so
+   `[x y][]` finds that heading and `- [ ] x {#c#} y` is named `x y`.
+   Then, on that text:
      - reverse smart-typography output to its ASCII source first, so the id does
        not depend on presentation (`Don’t` -> `Don-t`, `Step 1 → 2` -> `Step-1-2`).
        Paired quotation marks reverse together: `‘`, `’`, `‚`, `‛` to ASCII
