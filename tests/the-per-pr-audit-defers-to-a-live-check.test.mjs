@@ -141,6 +141,7 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       ['resources/roundtrip-export-acceptance-fixtures.json', 'owed', 'declared'],
       ['tests/corpus-convert.test.mjs', 'owed', 'manual'],
       ['tests/optional-corpus.test.mjs', 'owed', 'manual'],
+      ['tests/a-promoted-image-reports-only-its-block-attribute-run.test.mjs', 'owed', 'manual'],
       ['tests/examples-tier3.test.mjs', 'owed', 'manual'],
       // The CAPTION window of CARVE-P11-063 (carve#2851), an engine-pin window
       // like the ledgers above: its declaration names the issue that retires
