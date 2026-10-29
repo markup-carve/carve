@@ -2739,6 +2739,33 @@ function hostsIndentedContent(text) {
   return text[0] === ' '
 }
 
+// `line` past `depth` quote prefixes, or null when it lacks one.
+function stripQuotes(line, depth) {
+  let rest = line
+  for (let d = 0; d < depth; d++) {
+    const m = QUOTE.exec(walkIndent(rest).rest)
+    if (!m) return null
+    rest = m[1] ?? ''
+  }
+  return { rest }
+}
+
+// How many lines from `at` the block starting there holds, each line read
+// through `view`; a null view left its quote level and ends the block. The
+// window doubles only while the block reaches its edge, so a pull stays local.
+function pulledBlockLength(lines, at, view) {
+  for (let size = 16; ; size *= 2) {
+    const own = []
+    for (let j = at; j < Math.min(lines.length, at + size); j++) {
+      const line = view(lines[j])
+      if (line === null) break
+      own.push(line)
+    }
+    const next = takeOneBlock(own, 0, {}, indentCols(own[0]), 0).next
+    if (next < own.length || own.length < size) return Math.max(1, next)
+  }
+}
+
 function walkIndent(line) {
   let col = 0
   let i = 0
@@ -2805,7 +2832,10 @@ function ownLines(lines) {
     let plus = null
     // A quote's first-block `+` reads a follower by its raw column (CARVE-P9-067).
     const quotePlus = top().kind === 'quote' && top().plus === at - 1 ? top() : null
+    const baseAt = quotePlus ? frames.findIndex((f) => f.line === at - 1) : -1
+    // `zero` is column 0 of the follower's own quote level, past host quote prefixes.
     let stack = null
+    let zero = 0
     for (let k = 1; k < frames.length; k++) {
       const f = frames[k]
       if (quotePlus && !stack && f.line === at - 1) stack = { base: f, col: -1 }
@@ -2821,6 +2851,7 @@ function ownLines(lines) {
         if (stack && stack.col < 0) stack.col = docColumn(lines[at], m.rest)
         lead(frames[k - 1].canon)
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
+        if (k < baseAt) zero = docColumn(lines[at], src)
         m = walkIndent(src)
         reached = k
         continue
@@ -2842,8 +2873,39 @@ function ownLines(lines) {
     // A follower carrying the prefix of a quote opened on the `+` line loses
     // its raw column to the walk, so the walk refuses it here; the readers
     // take every other such follower.
-    if (stack && stack.col >= 0 && missed && m.rest !== '' &&
-        stack.col !== 0 && stack.col !== stack.base.docMarker && stack.col !== quotePlus.docMarker) refusedPlus.add(at - 1)
+    // A follower at an ineligible raw column refuses the `+` whatever block it
+    // starts; one at column 0 that would close the host moves into the quote
+    // holding the `+`, which it attaches to (CARVE-P9-067, carve#3421).
+    if (quotePlus && (missed || stack?.col >= 0) && m.rest !== '' && !CONT_MARKER.test(m.rest)) {
+      const base = frames[baseAt]
+      const col = stack?.col >= 0 ? stack.col : docColumn(lines[at], m.rest)
+      if (col !== 0 && col !== zero && col !== base.docMarker && col !== quotePlus.docMarker) refusedPlus.add(at - 1)
+      else if (!(stack?.col >= 0) && !replaced.has(at) && classify(m.rest, frames[reached], at, m.col).kind !== 'item' &&
+          ((col === 0 || col === zero) && reached < baseAt - 1 && base.kind === 'quote' ||
+            col === quotePlus.docMarker && frames.slice(baseAt, -1).some((f) => f.kind === 'quote'))) {
+        const depth = frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length
+        const shift = col - zero
+        const cut = (line) => {
+          const rest = stripQuotes(line, depth)?.rest
+          if (rest === undefined) return null
+          const ind = indentCols(rest)
+          return ' '.repeat(Math.max(0, ind.col - shift)) + ind.rest
+        }
+        const end = at + pulledBlockLength(lines, at, cut)
+        // The `+` line's continuation prefix: its quote markers, every other mark as a space.
+        const opener = stripQuotes(lines[at - 1], depth).rest.replace(/\+[ \t]*$/, '').replace(/[^>\t]/g, ' ')
+        for (let j = at; j < end; j++) {
+          const rest = stripQuotes(lines[j], depth).rest
+          replaced.add(j)
+          lines[j] = lines[j].slice(0, lines[j].length - rest.length) + opener + cut(lines[j])
+        }
+        result[result.length - 1] = result.at(-1).replace(/\+[ \t]*$/, '')
+        quotePlus.para = false
+        quotePlus.plus = undefined
+        at--
+        continue
+      }
+    }
     reach = reached
     const inner = top()
     if (inner.kind === 'fence' && !missed) {

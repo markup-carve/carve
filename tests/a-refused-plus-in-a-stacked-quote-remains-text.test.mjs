@@ -10,15 +10,18 @@ test('a closed fence below the quote column ends the quote and holds the stacked
     '<blockquote><p>quote</p></blockquote><pre><code>&gt; &gt; +</code></pre><p>next</p>')
 })
 
-for (const letter of ['+', 'z']) {
-  test(`the follower at an intervening column does not attach: ${letter}`, () => {
-    assert.match(html(`> > ${letter}\n  y`), new RegExp(`<blockquote><blockquote><p>\\${letter === '+' ? '+' : letter}\\ny<\\/p>`))
-  })
-}
+test('a letter keeps a follower at the owning quote column as text', () => {
+  assert.match(html('> > z\n  y'), /<blockquote><blockquote><p>z\ny<\/p>/)
+})
 
-test('a refused plus after a description fence remains quote text', () => {
+// carve#3421 ruling of 22 October, item 4: the owning quote's column is eligible.
+test('a follower at the owning quote column attaches', () => {
+  assert.match(html('> > +\n  y'), /<blockquote><blockquote><p>y<\/p><\/blockquote><\/blockquote>$/)
+})
+
+test('a fence after a description fence attaches at the owning quote column', () => {
   assert.match(html(':: term\n: body\n  ```\n> > +\n  ```\nnext'),
-    /<\/dl><blockquote><blockquote><p>\+<code>\nnext<\/code><\/p><\/blockquote><\/blockquote>$/)
+    /<\/dl><blockquote><blockquote><pre><code>next<\/code><\/pre><\/blockquote><\/blockquote>$/)
 })
 
 test('a document-column follower attaches to the stacked quote', () => {
