@@ -377,7 +377,7 @@
   {
     "name": "list-attached-code-opener",
     "source": "- ```\n+\n```\n",
-    "html": "<ul>\n  <li>\n    <pre><code></code></pre>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <pre><code></code></pre>\n    <pre><code></code></pre>\n  </li>\n</ul>"
   },
   {
     "name": "quote-list-code-attachment",
