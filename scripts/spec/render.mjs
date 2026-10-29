@@ -2154,10 +2154,12 @@ const bracedHeadEnd = bracedHead.createSemantics().addOperation('headEnd', {
 // closer forms first. When the `X}` it needs sits in the closer's block, the
 // outer entry is unreachable and the block attaches to nothing.
 function contestedBlock(source, block) {
-  const trial = source.slice(0, block.at) + '\\' + source.slice(block.at)
+  const body = source.slice(block.at, block.end)
   return block.braces.some((p) => {
-    if (!BRACED_MARKS.has(source[p + 1])) return false
-    const m = bracedHead.match(trial.slice(p), 'bracedHead')
+    const mark = source[p + 1]
+    if (!BRACED_MARKS.has(mark) || !body.includes(mark + '}')) return false
+    // The span has to close inside the block, so the probe stops at its end.
+    const m = bracedHead.match(source.slice(p, block.at) + '\\' + body, 'bracedHead')
     return m.succeeded() && p + bracedHeadEnd(m).headEnd() > block.at + 1
   })
 }
