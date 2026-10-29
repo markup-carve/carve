@@ -1359,6 +1359,22 @@ const MARKER_RULES = new Set(['mention', 'tag', 'shortcode', 'symbolAttr'])
 const NAME_RULES = new Set(['mention', 'tag'])
 const isWordCh = (c) => c !== undefined && /[A-Za-z0-9_]/.test(c)
 
+// A marker that fails §7 whatever pairs is no mention or tag, so its name's
+// `_` characters are ordinary delimiters and may open. Only a word character
+// that no opener can turn into markup decides that before the stack runs.
+function releaseFailedNames(toks, src, contentAt) {
+  for (let i = 0; i < toks.length; i++) {
+    const t = toks[i]
+    if (!t.cuts || t.at <= contentAt || !isWordCh(src[t.at - 1])) continue
+    const left = toks[i - 1]
+    if (left?.k === 'd' && left.at === t.at - 1 && left.canOpen) continue
+    for (const cut of t.cuts) {
+      cut.closeOnly = false
+      classify(cut, src)
+    }
+  }
+}
+
 /*
  * A bare delimiter that PAIRED as an opener is markup, not content, so it is
  * not the character standing before the marker: `_@ex_` is an underlined
@@ -1372,7 +1388,7 @@ const isWordCh = (c) => c !== undefined && /[A-Za-z0-9_]/.test(c)
 // Borrowed name `_` offsets handed back by `resolveEmphasis`, for one source.
 let freedTails = null
 
-function applyMarkerBoundary(toks, openMap, src, contentAt) {
+function applyMarkerBoundary(toks, openMap, src, contentAt, literalDelims) {
   const failed = []
   for (let i = 0; i < toks.length; i++) {
     const t = toks[i]
@@ -1387,7 +1403,9 @@ function applyMarkerBoundary(toks, openMap, src, contentAt) {
     // position. The delimiter that opened the span is markup, not a character
     // the marker stands behind.
     if (!isWordCh(at > contentAt ? src[at - 1] : undefined)) continue
-    t.h = escapeHtml(t.raw[0]) + renderInline(t.raw.slice(1), t.raw[0])
+    // An enclosing span's held `_` stays literal in the rest it leaves.
+    const rest = t.raw.slice(1)
+    t.h = escapeHtml(t.raw[0]) + renderInline(literalDelims.includes('_') ? rest.replaceAll('_', '\\_') : rest, t.raw[0])
     failed.push(t)
   }
   return failed
@@ -1416,6 +1434,7 @@ let attachedAttrs = null
 function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
   // E1 CLASSIFY: evaluate bare_opener(d) / bare_closer(d) at each candidate.
   for (const t of toks) classify(t, src)
+  if (!literalDelims.includes('_')) releaseFailedNames(toks, src, contentAt)
   // One pass with a delimiter stack. `openers` holds indices (into toks) of
   // still-open candidates, in source order. `openMap` records paired spans.
   let openers = []
@@ -1551,7 +1570,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
   resolveArrowCuts(toks, openMap)
   // A bare marker that is no mention or tag leaves the `_` it borrowed an
   // ordinary delimiter, so the run is read again without that borrowing.
-  const freed = applyMarkerBoundary(toks, openMap, src, contentAt)
+  const freed = applyMarkerBoundary(toks, openMap, src, contentAt, literalDelims)
     .filter((t) => t.tailAt !== undefined && t.full.length === 2 && !freedTails?.at.has(t.tailAt)).map((t) => t.tailAt)
   if (freed.length) {
     const saved = freedTails
