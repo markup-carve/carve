@@ -59,7 +59,7 @@ test('a malformed colon opener absorbed on a marker line is reachable', () => {
   // only place `:::d` exists at the descendant's column.
   const sink = {}
   parse('- - :::d\n', { stateSink: sink })
-  assert.deepEqual(sink.descendantQ1, [{ col: 4, open: true, para: [':::d'], absorbedFence: null }])
+  assert.deepEqual(sink.descendantQ1, [{ col: 4, open: true, para: [':::d'] }])
   // and the answer itself does not move: the opener stays text in the item.
   assert.equal(
     renderDoc(parse('- - :::d\n')),
@@ -67,13 +67,12 @@ test('a malformed colon opener absorbed on a marker line is reachable', () => {
   )
 })
 
-test('a fence in a descendant opens and records no absorbed fence', () => {
+test('a fence in a descendant opens and leaves no paragraph', () => {
   // A valid opener interrupts the paragraph above it, so nothing is absorbed
   // and no paragraph is left open (carve#4018, markup-carve/carve#2884).
   const sink = {}
   const source = '- a\n  - c\n  b\n    ```\n  ```\nflush\n'
   parse(source, { stateSink: sink })
-  assert.equal(sink.descendantQ1.at(-1).absorbedFence, null)
   assert.equal(sink.descendantQ1.at(-1).open, false)
   assert.match(renderDoc(parse(source)), /<\/ul>\n<p>flush<\/p>$/)
 })
