@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -1128,12 +1128,16 @@ function numberCaption(text, ctx, id, panelIds) {
   if (at === -1) return text
   // PART 7 whitespace, not the host language's Unicode class.
   const label = text.slice(0, at).replace(/[ \t\n\r]+$/, '')
-  const n = (ctx.captionSeq.get(label) ?? 0) + 1
-  ctx.captionSeq.set(label, n)
-  if (id) ctx.captionIds.set(id, `${label} ${n}`)
+  // CARVE-P2-022 buckets by the label's plain text and R4 links its rendered
+  // markup; neither reads the source, so `\{` and `{` are one label.
+  const key = derivedText(label, renderInline)
+  const n = (ctx.captionSeq.get(key) ?? 0) + 1
+  ctx.captionSeq.set(key, n)
+  const shown = label === '' ? '' : flattenInnerLinks(renderInline(label)).replace(/\uE000(?!ref:)[\s\S]*?\uE001/g, '')
+  if (id) ctx.captionIds.set(id, `${shown} ${n}`)
   if (panelIds) {
     panelIds.forEach((pid, k) => {
-      if (pid) ctx.captionIds.set(pid, `${label} ${n}${panelLetter(k)}`)
+      if (pid) ctx.captionIds.set(pid, `${shown} ${n}${panelLetter(k)}`)
     })
   }
   return text.slice(0, at) + n + text.slice(at + 1)
@@ -1581,8 +1585,8 @@ const ENTITIES = { '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp
  * Raw inlines are omitted by the same heading-only render pass. The escapes
  * then come back off, so `# A & B` is `A-B` and not `A-amp-B`.
  */
-function derivedText(source) {
-  const html = renderInlineWithoutSymbols(source)
+function derivedText(source, render = renderInlineWithoutSymbols) {
+  const html = render(source)
     .replace(REF_FRAME, (_frame, json) => {
       const ref = JSON.parse(json)
       return ref.img ? ref.alt : ref.text
@@ -1827,7 +1831,8 @@ function resolveCrossrefs(html, ctx) {
   return html.replace(/xref(text)?:(.*?)/g, (_, textOnly, id) => {
     const hit = ctx.headingIds.get(id)
     if (!hit) {
-      const cap = ctx.captionIds.get(id)
+      // A reference in the label is still a frame: refs resolved before this pass.
+      const cap = ctx.captionIds.has(id) ? resolveRefs(ctx.captionIds.get(id), ctx) : undefined
       if (cap) return textOnly ? cap : `<a href="#${id}">${cap}</a>`
       // unresolved: literal source text (PART 9 SS19), HTML-escaped -- an
       // unresolved id may carry `<`/`>`/`&` (e.g. `</#<script>`) which must not
