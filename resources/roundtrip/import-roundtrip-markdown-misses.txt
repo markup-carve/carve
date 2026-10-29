@@ -2367,6 +2367,11 @@
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-6
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-7
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-8
+786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span
+786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-2
+786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-3
+786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-4
+786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-5
 79-two-char-delimiter-runs
 80-trailing-attribute-block-edge-cases
 80-trailing-attribute-block-edge-cases-2

@@ -1886,6 +1886,10 @@
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-6
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-7
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-8
+786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span
+786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-2
+786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-3
+786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-4
 81-paragraph-interruption-10
 81-paragraph-interruption-11
 81-paragraph-interruption-12

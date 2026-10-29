@@ -314,4 +314,5 @@
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-3
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5
+786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-5
 88-list-continuation-marker-5
