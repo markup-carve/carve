@@ -510,6 +510,15 @@ function unclosedCode(content) {
 
 // The delimiters the span around a combined token holds literal.
 let heldDelims = ''
+// carve#1442: doubled runs are canonical in both families; the single
+// forms are deprecated but still render; `=>` is removed.
+const ARROWS = {
+  '<-->': '\u2194', '-->': '\u2192', '<--': '\u2190',
+  '<=>': '\u21d4', '==>': '\u21d2', '<==': '\u21d0',
+  '<->': '\u2194', '->': '\u2192', '<-': '\u2190',
+  '!=': '\u2260', '<=': '\u2264', '>=': '\u2265', '+-': '\u00b1',
+}
+
 const sem = g.createSemantics().addOperation('h', {
   inlines(_initial, items) {
     // The bare single-char emphasis delimiters are NOT resolved by the PEG.
@@ -674,12 +683,14 @@ const sem = g.createSemantics().addOperation('h', {
     return `<span${renderAttrs(attrs.parseAttrs())}>:${escapeHtml(name.sourceString)}:</span>`
   },
   mention(_a, name, glued) {
+    if (!name.sourceString) return escapeHtml(`@${glued.sourceString}`)
     return (
       `<span class="mention"><strong>@${escapeHtml(name.sourceString)}</strong></span>` +
       escapeHtml(glued.sourceString)
     )
   },
   tag(_h, name, glued) {
+    if (!name.sourceString) return escapeHtml(`#${glued.sourceString}`)
     return (
       `<span class="tag"><strong>#${escapeHtml(name.sourceString)}</strong></span>` +
       escapeHtml(glued.sourceString)
@@ -792,14 +803,13 @@ const sem = g.createSemantics().addOperation('h', {
     return ''
   },
   arrow(tok) {
-    // carve#1442: doubled runs are canonical in both families; the single
-    // forms are deprecated but still render; `=>` is removed.
-    return {
-      '<-->': '\u2194', '-->': '\u2192', '<--': '\u2190',
-      '<=>': '\u21d4', '==>': '\u21d2', '<==': '\u21d0',
-      '<->': '\u2194', '->': '\u2192', '<-': '\u2190',
-      '!=': '\u2260', '<=': '\u2264', '>=': '\u2265', '+-': '\u00b1',
-    }[tok.sourceString]
+    return ARROWS[tok.sourceString]
+  },
+  eqArrow(tok, loose) {
+    return ARROWS[tok.sourceString] + loose.sourceString
+  },
+  eqCloseCut(_t, _d, _c, _e) {
+    return { '<=': '\u2264', '<': '&lt;', '>': '&gt;', '!': '!' }[this.sourceString]
   },
   symbol(tok) {
     return { '(c)': '\u00a9', '(r)': '\u00ae', '(tm)': '\u2122' }[tok.sourceString]
@@ -1249,6 +1259,30 @@ function buildToks(children, literalDelims = '') {
       push({ k: 't', h: c.h(), straight: marker.child(1).sourceString })
       continue
     }
+    // The `=` ending a typographic arrow may close a bare highlight instead
+    // (PART 8: emphasis ranks above smart typography); `resolveArrowCuts`
+    // gives it back to the arrow when it closes nothing.
+    if (marker.ctorName === 'eqArrow') {
+      const tok = marker.child(0)
+      const raw = tok.sourceString
+      const t = { k: 't', h: ARROWS[raw], raw, arrowCuts: [], end: tok.source.endIdx }
+      push(t)
+      const loose = marker.child(1).children[0]
+      const held = literalDelims.includes('=')
+      const attrs = loose && { k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h(), heldMarker: held, markerAt: tok.source.endIdx - 1, markerChar: '=' }
+      // Each `=` may close; the first that does splits the arrow.
+      for (let k = 0; !held && k < raw.length; k++) {
+        if (raw[k] !== '=') continue
+        const cut = { k: 'd', ch: '=', at: tok.source.startIdx + k, closeOnly: true, ofArrow: t, idx: k, seg: { k: 't', h: '' } }
+        t.arrowCuts.push(cut)
+        push(cut)
+        // The block rides on the closer only when the closer ends the arrow.
+        if (attrs && k === raw.length - 1) push(attrs)
+        push(cut.seg)
+      }
+      if (attrs && (held || raw.at(-1) !== '=')) push(attrs)
+      continue
+    }
     if (MARKER_RULES.has(marker.ctorName)) {
       const at = marker.source.startIdx
       const t = { k: 't', h: c.h(), at, raw: marker.sourceString, full: marker.sourceString }
@@ -1258,8 +1292,12 @@ function buildToks(children, literalDelims = '') {
         // forced underline could close (`{_@ex_}`), reach the stack as
         // candidates; `resolveNameRun` decides which of them the name keeps.
         const next = children[ci + 1]?.child(0)
+        // Inside a forced underline a `_` before a block is no delimiter
+        // (E3), so it stays in the name.
         const tail =
-          next?.ctorName === 'litDelim' && next.child(0).sourceString === '_' ? next : undefined
+          (next?.ctorName === 'litDelim' && next.child(0).sourceString === '_' ||
+            literalDelims.includes('_') && next?.sourceString === '_') &&
+          !(freedTails?.src === next.source.sourceString && freedTails.at.has(next.source.startIdx)) ? next : undefined
         if (tail) ci++
         t.cuts = nameCuts(t, tail)
         for (const cut of t.cuts) {
@@ -1297,7 +1335,8 @@ function nameCuts(t, tail) {
   // `tagChar` gave this one up so a forced underline could close.
   if (tail) {
     t.full = t.raw + '_'
-    push(tail.source.startIdx, tail.child(1).children[0])
+    t.tailAt = tail.source.startIdx
+    push(tail.source.startIdx, tail.ctorName === 'litDelim' ? tail.child(1).children[0] : undefined)
   }
   for (let n = 0; n < cuts.length; n++) {
     const from = cuts[n].at - t.at + 1
@@ -1311,6 +1350,36 @@ function nameCuts(t, tail) {
 // admits `_`, and `_` is the underline delimiter. The name ends at the first
 // of its underscores that pairs; the rest of its source is ordinary content.
 // A name that keeps every one of them renders as the grammar matched it.
+function resolveArrowCuts(toks, openMap) {
+  const closed = new Set(openMap.values())
+  const hits = new Set()
+  const loneEq = new Map()
+  toks.forEach((cut, j) => {
+    if (cut.ofArrow && closed.has(j)) hits.add(cut)
+    if (cut.k === 'd' && cut.ch === '=' && !cut.ofArrow && !openMap.has(j) && !closed.has(j)) loneEq.set(cut.at, cut)
+  })
+  for (const t of toks) {
+    if (!t.arrowCuts?.length) continue
+    const hit = t.arrowCuts.find((cut) => hits.has(cut))
+    for (const cut of t.arrowCuts) {
+      if (cut !== hit) {
+        cut.k = 't'
+        cut.h = ''
+      }
+    }
+    if (!hit) continue
+    t.h = escapeHtml(t.raw.slice(0, hit.idx))
+    let rest = t.raw.slice(hit.idx + 1)
+    // The rest is read again, so it can take an `=` after the arrow (`<=>=`).
+    const next = loneEq.get(t.end)
+    if (next && ARROWS[rest.at(-1) + '=']) {
+      next.k = 't'
+      next.h = ''
+      hit.seg.h = escapeHtml(rest.slice(0, -1)) + ARROWS[rest.at(-1) + '=']
+    } else hit.seg.h = escapeHtml(rest)
+  }
+}
+
 function resolveNameRun(toks, openMap) {
   const closed = new Set(openMap.values())
   for (let i = 0; i < toks.length; i++) {
@@ -1357,7 +1426,11 @@ const isWordCh = (c) => c !== undefined && /[A-Za-z0-9_]/.test(c)
  * text and the rest goes back through the inline pass, so `a_:+-:` renders the
  * typographic `a_:±:` rather than the symbol name.
  */
+// Borrowed name `_` offsets handed back by `resolveEmphasis`, for one source.
+let freedTails = null
+
 function applyMarkerBoundary(toks, openMap, src, contentAt) {
+  const failed = []
   for (let i = 0; i < toks.length; i++) {
     const t = toks[i]
     if (t.raw === undefined) continue
@@ -1372,7 +1445,9 @@ function applyMarkerBoundary(toks, openMap, src, contentAt) {
     // the marker stands behind.
     if (!isWordCh(at > contentAt ? src[at - 1] : undefined)) continue
     t.h = escapeHtml(t.raw[0]) + renderInline(t.raw.slice(1), t.raw[0])
+    failed.push(t)
   }
+  return failed
 }
 
 // Resolve a flat token stream (leaf HTML fragments interleaved with bare
@@ -1385,6 +1460,9 @@ function applyMarkerBoundary(toks, openMap, src, contentAt) {
 let unattachedAttrs = []
 // Source offsets of the delimiters that paired in the same pass, while one runs.
 let pairedDelims = null
+// Every span's opener and closer offset in the top-level inline text, while
+// `renderInline` probes a literal directive.
+let spanPairs = null
 // Blocks that attached to a closer, with the raw `{` offsets inside the span.
 let attachedAttrs = null
 
@@ -1487,7 +1565,20 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
   ])
   applyQuotes(toks, openMap, src, contentAt, spanContent)
   resolveNameRun(toks, openMap)
-  applyMarkerBoundary(toks, openMap, src, contentAt)
+  resolveArrowCuts(toks, openMap)
+  // A bare marker that is no mention or tag leaves the `_` it borrowed an
+  // ordinary delimiter, so the run is read again without that borrowing.
+  const freed = applyMarkerBoundary(toks, openMap, src, contentAt)
+    .filter((t) => t.tailAt !== undefined && t.full.length === 2 && !freedTails?.at.has(t.tailAt)).map((t) => t.tailAt)
+  if (freed.length) {
+    const saved = freedTails
+    freedTails = { src, at: new Set([...(saved?.at ?? []), ...freed]) }
+    try {
+      return resolveEmphasis(build, src, literalDelims, contentAt, spanContent)
+    } finally {
+      freedTails = saved
+    }
+  }
   // Build the span tree by walking the paired ranges (properly nested).
   const consumed = new Set() // attrs tokens attached to a span
   const closers = new Set(openMap.values())
@@ -1499,6 +1590,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
       if (t.k === 'd' && openMap.has(i)) {
         const closeIdx = openMap.get(i)
         pairedDelims?.push(t.at, toks[closeIdx].at)
+        spanPairs?.push([t.at, toks[closeIdx].at])
         // A `/*` ... `*/` pair split back out of a token is still the
         // `bold_italic` spelling, which renders strong around em, where its
         // content is one `biInner` takes (carve#3941).
@@ -1982,6 +2074,8 @@ export function deTypography(s) {
 
 export function renderInline(text, prevCtx = '', separateQuoteScope = false) {
   const saved = quotePrevCtx
+  const outerPairs = spanPairs
+  spanPairs = null
   const outerRun = quoteRun
   const root = outerRun === null || separateQuoteScope
   if (root) quoteRun = { records: [], opaque: [], depth: 0, key: randomUUID() }
@@ -1990,8 +2084,24 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false) {
   try {
     let html
     if (text.includes('{{')) {
-      const literals = findDirectives(text).filter((directive) =>
+      let literals = findDirectives(text).filter((directive) =>
         hasInvalidLineRange(directive) || !directive.quoted && directive.options.some(([key, value]) => key === 'code' && value === null))
+      if (literals.length) {
+        // A literal directive is no atom (CARVE-P9-043): an opener before it
+        // that closes inside it breaks it, and its text is read as content.
+        const savedPairs = spanPairs
+        spanPairs = []
+        let pairs
+        try {
+          html = renderInlineInner(text)
+          pairs = spanPairs
+        } finally {
+          spanPairs = savedPairs
+        }
+        literals = literals.filter((d) => !pairs.some(([o, c]) => o < d.start && c >= d.start && c < d.end))
+        if (!literals.length) return root ? settleQuotes(html, quoteRun, prevCtx) : html
+        html = undefined
+      }
       if (literals.length) {
         let key = randomUUID().replaceAll('-', '')
         while (text.includes(key)) key = randomUUID().replaceAll('-', '')
@@ -2014,6 +2124,7 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false) {
     html ??= renderInlineInner(text)
     return root ? settleQuotes(html, quoteRun, prevCtx) : html
   } finally {
+    spanPairs = outerPairs
     quotePrevCtx = saved
     quoteRun.depth--
     quoteRun = outerRun

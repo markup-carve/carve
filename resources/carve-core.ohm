@@ -176,7 +176,7 @@ CarveCore {
   // tokenizer's per-character work
   // near-constant, so the inline pass (with the SS9 delimiter stack) is O(n).
   inline     = wordSlash | word | spComment | bracedComment | inlineSpace
-             | arrow | span | inlineNote | litDelim
+             | eqArrow | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | bracedDash | forcedSpan
              | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escapedCrossref | escape | imageRef | image | bracketed
@@ -229,7 +229,7 @@ CarveCore {
 
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)
-  rich       = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
+  rich       = eqArrow | arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | bracedDash | forcedSpan | mathD | mathI
              | litInline | codeA | escape | imageRef | image | bracketed | autolink | bang | dollar
              | ellipsis | dashRun | dquote | squote
@@ -285,8 +285,12 @@ CarveCore {
   // that case, because the run starts with the marker and never enters `word`
   // at all, so the tail is absorbed here and rendered as literal text
   // (carve#1156).
-  mention    = "@" tagName gluedMarker*
-  tag        = "#" tagName gluedMarker*
+  mention    = "@" markName gluedMarker*
+  tag        = "#" markName gluedMarker*
+  // A name that is only the `_` `tagChar` gives up (`{#_}`): the name run is
+  // empty here and `nameCuts` hands the `_` back when nothing pairs with it.
+  markName   = tagName | braceUnderscore
+  braceUnderscore = &("_" ("{" | "}"))
   gluedMarker = ("@" | "#") tagName
   tagName    = tagChar+ (tagDot tagChar+)*
   // ASCII, per `name_word = (letter | digit | '_' | '-')+` in grammar.ebnf,
@@ -359,10 +363,13 @@ CarveCore {
   // attaches to nothing and is text: its braces cannot hide the `X}` (carve#3939).
   // An unclosed code run takes the rest of the block here too, so the span
   // cannot close (carve#3973 X5).
-  fInner<d>  = ~(d "}") (editorial | bracedDash | ~dRun<d> rich
+  fInner<d>  = ~(d "}") (editorial | bracedDash | eqCloseCut<d> | ~(~"==>" dRun<d>) rich
              | ~(~fSpan<d> "/*") span | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | ~(d attrs) litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
+  // The span's closer ranks above smart typography (PART 8 items 7 and 11),
+  // so `>=` before `=}` leaves its `=` to close a forced highlight.
+  eqCloseCut<d> = "<=" &(d "}") &"=" | ("<" | ">" | "!") &(d "}") &"="
   // A combined token inside a forced span closes before the span's `X}` and
   // takes none of its characters (PART 9 SS22: tokens do not overlap).
   fSpan<d>   = ~("/" d "}") "/*" ~spaceOrEnd ~graphemeExt fBiFirst<d> fBiInner<d>* fBiCloser<d>
@@ -847,6 +854,9 @@ CarveCore {
   arrow      = "<-->" | "<->" | "-->" | "<--"
              | "<=>" | "==>" | "<=="
              | "->" | "<-" | "!=" | "<=" | ">=" | "+-"
+  // An arrow whose `=` may close a bare highlight instead (PART 8 items 7
+  // and 11). Like `litDelim` it carries the block a closer would take.
+  eqArrow    = ("<=>" | "<==" | "==>" | "<=" | "!=" | ">=") looseAttrs?
   symbol     = "(c)" | "(r)" | "(tm)"
   ellipsis   = "..."
   dashRun    = "-" "-"+
