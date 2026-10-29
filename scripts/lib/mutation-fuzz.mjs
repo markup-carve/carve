@@ -60,11 +60,11 @@ export const MUTATORS = {
     return lines.with(i, lines[i].replace(/^[ \t]/, ''))
   },
   insertBlank: (lines, r) => lines.toSpliced(r.int(lines.length + 1), 0, ''),
-  insertFragmentLine: (lines, r) => lines.toSpliced(r.int(lines.length + 1), 0, r.pick(FRAGMENTS)),
-  insertFragmentInline: (lines, r) => {
+  insertFragmentLine: (lines, r, _donors, fragments = FRAGMENTS) => lines.toSpliced(r.int(lines.length + 1), 0, r.pick(fragments)),
+  insertFragmentInline: (lines, r, _donors, fragments = FRAGMENTS) => {
     const i = r.int(lines.length)
     const at = r.int(lines[i].length + 1)
-    return lines.with(i, lines[i].slice(0, at) + r.pick(FRAGMENTS) + lines[i].slice(at))
+    return lines.with(i, lines[i].slice(0, at) + r.pick(fragments) + lines[i].slice(at))
   },
   prefixRun: (lines, r) => {
     const start = r.int(lines.length)
@@ -96,13 +96,13 @@ export const MUTATORS = {
 const MUTATOR_NAMES = Object.keys(MUTATORS)
 
 /** One to three mutations of a seed document; returns the mutant and the names applied. */
-export function mutate(source, r, donors = []) {
+export function mutate(source, r, donors = [], fragments = FRAGMENTS) {
   let lines = splitLines(source)
   const applied = []
   const n = 1 + r.int(3)
   for (let k = 0; k < n; k++) {
     const name = r.pick(MUTATOR_NAMES)
-    lines = MUTATORS[name](lines, r, donors)
+    lines = MUTATORS[name](lines, r, donors, fragments)
     applied.push(name)
   }
   return { source: joinLines(lines).toWellFormed(), applied }

@@ -35,6 +35,8 @@
     "import:report": "node scripts/import-report-claims.mjs",
     "fmt:check": "node scripts/fmt-fixture-claims.mjs",
     "fuzz:impls": "node scripts/fuzz-impls.mjs",
+    "pack:write": "node scripts/conformance-pack.mjs --write",
+    "pack:check": "node scripts/conformance-pack.mjs --check",
     "combinatorial:check": "node scripts/combinatorial-check.mjs",
     "block-family:check": "node scripts/block-family-differential.mjs",
     "property:check": "node scripts/property-check.mjs",

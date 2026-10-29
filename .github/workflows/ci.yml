@@ -359,6 +359,19 @@ jobs:
         if: matrix.node-version == 24
         run: npm run engine:report -- --check
 
+  # The generated conformance pack every engine runs at its spec pin
+  # (docs/development.md). A model change that moves a pack case regenerates it.
+  conformance-pack:
+    name: Conformance pack is current against the spec model
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
+      - run: npm run pack:check
+
   # Breaks the spec model code behind each gated rule and checks that a core
   # corpus row notices (docs/rule-coverage.md). The uncovered baseline may
   # only shrink, so a new rule id lands with a row that kills its mutation.
