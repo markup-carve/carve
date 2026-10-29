@@ -133,7 +133,9 @@
       `~>` at its own level, outside every atom and formed nested span; the
       arrow is found before either side is read. The first such `~>` splits
       it into two regions: {~old~>new~} ->
-      <del>old</del><ins>new</ins>. Any other `{~` span is strike, so a code
+      <del>old</del><ins>new</ins>. The span's extent is the one its own
+      reading found, and nothing read in a side reaches past it:
+      {~a~>~x~{k=~} -> <del>a</del><ins><s>x</s>{k=</ins>. Any other `{~` span is strike, so a code
       span hides the arrow, and {~a {*x~>y*} b~} is strike around strong
       text x~>y.
 
