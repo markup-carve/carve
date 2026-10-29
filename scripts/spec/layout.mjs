@@ -8028,8 +8028,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       }
       const descendantParagraphBefore = descLive && deepestParagraphOpen()
       if (!descendantParagraphBefore) foldedChildParagraph = false
+      // The task box is content (CARVE-P0-008): a line in its columns stands
+      // below the marker-line child's marker and folds (carve#3976).
       if (head.task !== undefined && headSubMarker && descendantParagraphBefore &&
-          col >= contentCol + TASK_MARKER_SOURCE_WIDTH - 1 &&
+          col > contentCol &&
           col < contentCol + TASK_MARKER_SOURCE_WIDTH &&
           lm.rest !== '' && !insideFence()) {
         pushLine(lazyFrame(lm.rest), LAZY_MEAS(lm.rest))
