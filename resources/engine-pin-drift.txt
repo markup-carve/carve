@@ -507,6 +507,6 @@
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-6  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-7  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).
 785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-8  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).
-788-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-2  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.
-788-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-3  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.
-788-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.
+789-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-2  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.
+789-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-3  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.
+789-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.

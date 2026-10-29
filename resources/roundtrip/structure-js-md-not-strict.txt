@@ -635,6 +635,9 @@
 789-a-line-below-a-list-item-folds-into-the-open-paragraph-of-a-div-or-an-absorbed-colon-run-2
 789-a-line-below-a-list-item-folds-into-the-open-paragraph-of-a-div-or-an-absorbed-colon-run-3
 789-a-line-below-a-list-item-folds-into-the-open-paragraph-of-a-div-or-an-absorbed-colon-run-4
+789-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-2
+789-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-3
+789-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-7
 79-two-char-delimiter-runs
 80-trailing-attribute-block-edge-cases-2
 80-trailing-attribute-block-edge-cases-3

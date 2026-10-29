@@ -905,6 +905,7 @@
 786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-3
 786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-4
 788-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5
+789-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5
 790-a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text
 790-a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text-2
 790-a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text-3
