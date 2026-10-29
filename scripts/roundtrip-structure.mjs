@@ -26,7 +26,7 @@ function declared(engine, target) {
   const files = exceptionFiles(engine, target)
   const notIdentical = readExceptions(resolve(listDir, files.notIdentical))
   const notStrict = readExceptions(resolve(listDir, files.notStrict))
-  return notIdentical === null || notStrict === null ? null : { notIdentical, notStrict }
+  return notIdentical === null && notStrict === null ? null : { notIdentical, notStrict }
 }
 function options(args) {
   const result = { engines: ['js', 'php', 'rs'], targets: ['html', 'md'], workers: 16 }

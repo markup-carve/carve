@@ -155,8 +155,8 @@ export const exceptionFiles = (engine, target) => ({
 
 /**
  * Gate measured rows against their exception lists. `declared(engine, target)`
- * returns `{ notIdentical, notStrict }` id arrays, or null where no list exists;
- * an unsupported row is expected to have none.
+ * returns `{ notIdentical, notStrict }` (an id array, or null for a missing
+ * file), or null where neither exists; an unsupported row is expected to have none.
  */
 export function checkExceptions(rows, declared, corpus) {
   const notices = []
@@ -172,9 +172,9 @@ export function checkExceptions(rows, declared, corpus) {
     }
     if (lists === null) { failed = true; notices.push(`${name}: supported but has no exception lists; review and --write them`); continue }
     const files = exceptionFiles(row.engine, row.target)
-    const problems = ['notIdentical', 'notStrict'].flatMap(key => compareExceptions({
-      name: `resources/roundtrip/${files[key]}`, declared: lists[key], failing: row[key] ?? [], corpus,
-    }))
+    const problems = ['notIdentical', 'notStrict'].flatMap(key => lists[key] === null
+      ? [`resources/roundtrip/${files[key]} is missing`]
+      : compareExceptions({ name: `resources/roundtrip/${files[key]}`, declared: lists[key], failing: row[key] ?? [], corpus }))
     if (problems.length) { failed = true; notices.push(...problems) }
   }
   return { failed, notices }

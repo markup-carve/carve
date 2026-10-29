@@ -168,6 +168,15 @@ test('a supported row without lists fails and skipped engines cannot write', () 
   assert.throws(() => exceptionLists([{ ...row, status: 'skipped' }]), /cannot write exception lists/)
 })
 
+test('one missing list of a pair fails a supported row and an unsupported one', () => {
+  const half = () => ({ notIdentical: [], notStrict: null })
+  const supported = checkExceptions([{ ...measurement(), notIdentical: [] }], half, ['a'])
+  assert.equal(supported.failed, true)
+  assert.match(supported.notices[0], /structure-php-md-not-strict\.txt is missing/)
+  const unsupported = { ...measurement(), status: 'unsupported', reason: 'Error' }
+  assert.equal(checkExceptions([unsupported], half, ['a']).failed, true)
+})
+
 function withBatchDriver(t, body) {
   const dir = mkdtempSync(join(tmpdir(), 'carve-test-roundtrip-'))
   t.after(() => rmSync(dir, { recursive: true, force: true }))
