@@ -7148,6 +7148,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       : -1
     // The marker-line child owns this column until an outer authored block opens.
     let headSubActive = headSubCol >= 0
+    // A sibling list at the content column has ended the marker-line child.
+    let headSubEnded = false
     let subCol = -1
     // A comment below the child's column ends it in the body parse (carve#3985).
     let commentBelowChild = false
@@ -8296,7 +8298,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         !(nestedOpaque?.kind === 'comment' && COMMENT_FENCE.exec(lm.rest)?.[1].length === nestedOpaque.run.length)
       // The task box is content (CARVE-P0-008): a line in its columns stands
       // below the marker-line child's marker and folds (carve#3976).
-      if (head.task !== undefined && headSubMarker && descendantParagraphBefore &&
+      if (head.task !== undefined && headSubMarker && !headSubEnded && descendantParagraphBefore &&
           col > contentCol &&
           col < contentCol + TASK_MARKER_SOURCE_WIDTH &&
           lm.rest !== '' && !insideFence()) {
@@ -8314,6 +8316,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           (opensAuthoredBase(lm.rest) || col >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(lm.rest)) &&
           !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
         headSubActive = false
+      }
+      // A marker at the task item's content column opens a list in the item
+      // (PART 0 S3), which ends the marker-line child and its box-column rebase.
+      if (head.task !== undefined && headSubMarker && col === contentCol && matchMarkerAt(lm) && !insideFence()) {
+        headSubActive = false
+        headSubEnded = true
       }
       if (lm.rest !== '') {
         while (noteFrames.length && col < noteFrames.at(-1).body) {
@@ -8538,7 +8546,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // one column deeper, which arrived at body column 1 instead of 0 and
         // stopped being an opener at all (carve#1772, corpus 422-8).
         // Rebase a marker-line child at its source column after the task box.
-        const localBase = head.task !== undefined && headSubMarker && openerBase !== null ? openerBase : head.task !== undefined && headSubMarker && col >= contentCol + TASK_MARKER_SOURCE_WIDTH &&
+        const localBase = head.task !== undefined && headSubMarker && openerBase !== null ? openerBase : head.task !== undefined && headSubMarker && !headSubEnded && col >= contentCol + TASK_MARKER_SOURCE_WIDTH &&
           !insideFence() ? authoredBlockBase ?? contentCol + TASK_MARKER_SOURCE_WIDTH
           // A marker-line note after a task box reads its body from its own source column.
           : head.task !== undefined && markerNoteEligible && col >= markerNoteBodyColumn
