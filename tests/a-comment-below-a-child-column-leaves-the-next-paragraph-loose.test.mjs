@@ -17,6 +17,10 @@ test('without the comment the paragraph is the child\'s', () => {
   assert.match(html('- - p\n\n    F\n'), /<li><p>p<\/p>\n        <p>F<\/p>/)
 })
 
+test('a comment span opened below the child column ends it too', () => {
+  assert.match(html('- - p\n  %%%\n  x\n    %%%\n\n    F\n'), /<\/ul>\n    <p>F<\/p>/)
+})
+
 test('a comment at the child content column keeps the child', () => {
   assert.doesNotMatch(html('- - p\n    %% c\n\n    F\n'), /<\/ul>\n    <p>F<\/p>/)
 })

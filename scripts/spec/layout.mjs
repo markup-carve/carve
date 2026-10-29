@@ -8156,7 +8156,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       }
       const descendantParagraphBefore = descLive && deepestParagraphOpen()
       if (!descendantParagraphBefore) foldedChildParagraph = false
-      if (lm.rest !== '') commentBelowChild = COMMENT_LINE.test(lm.rest) && !insideFence() && col >= contentCol && childCol >= 0 && col < childCol &&
+      if (lm.rest !== '' && !insideFence()) commentBelowChild = COMMENT_LINE.test(lm.rest) && col >= contentCol && childCol >= 0 && col < childCol &&
         !(nestedOpaque?.kind === 'comment' && COMMENT_FENCE.exec(lm.rest)?.[1].length === nestedOpaque.run.length)
       // The task box is content (CARVE-P0-008): a line in its columns stands
       // below the marker-line child's marker and folds (carve#3976).
