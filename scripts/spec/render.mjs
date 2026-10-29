@@ -1279,7 +1279,9 @@ function buildToks(children, literalDelims = '', blocked) {
     }
     const boundary = ['rawInline', 'litInline', 'shortcode'].includes(marker.ctorName)
       ? `\uE000quote-boundary:${quoteRun.key}\uE001` : ''
-    toks.push({ k: 't', h: c.h() + boundary })
+    const t = { k: 't', h: c.h() + boundary }
+    if (alt.sourceString === '{') t.braceAt = alt.source.startIdx
+    toks.push(t)
   }
   return toks
 }
@@ -1387,6 +1389,8 @@ function applyMarkerBoundary(toks, openMap, src, contentAt) {
 let unattachedAttrs = []
 // Source offsets of the delimiters that paired in the same pass, while one runs.
 let pairedDelims = null
+// Blocks that attached to a closer, with the raw `{` offsets inside the span.
+let attachedAttrs = null
 
 // E1-E5 over a token stream: which candidates pair, as `open index -> close
 // index`. Split out because the caption `#` placeholder asks the same question
@@ -1560,6 +1564,9 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
         ) {
           attrsStr = renderAttrs(toks[after].node.parseAttrs())
           consumed.add(after)
+          const braces = []
+          for (let b = i + 1; b < closeIdx; b++) if (toks[b].braceAt !== undefined) braces.push(toks[b].braceAt)
+          if (braces.length) attachedAttrs?.push({ at: toks[after].at, end: toks[after].node.source.endIdx, braces })
         }
         out += bi
           ? `<strong${attrsStr}><em>${inner}</em></strong>`
@@ -2066,12 +2073,16 @@ function renderInlineInner(text) {
   if (text.includes('`'.repeat(MAX_CODE_RUN + 1))) throw new Refuse('inline backtick run past the code span tiers')
   const saved = unattachedAttrs
   const savedPaired = pairedDelims
+  const savedAttached = attachedAttrs
   const read = (source) => {
     unattachedAttrs = []
     pairedDelims = []
+    attachedAttrs = []
     const [m, semantics] = inlineMatch(source)
     if (m.failed()) throw new Refuse(`inline: ${m.shortMessage}`)
-    return { out: semantics(m).h(), offsets: unattachedAttrs, paired: pairedDelims }
+    const out = semantics(m).h()
+    const contested = attachedAttrs.filter((a) => contestedBlock(source, a))
+    return { out, offsets: [...unattachedAttrs, ...contested], paired: pairedDelims }
   }
   try {
     let source = text
@@ -2094,13 +2105,17 @@ function renderInlineInner(text) {
       // editorial comment by escaping that delimiter instead of its brace.
       const comment = first.literalMarker && source[first.at - 1] === first.markerChar && source.startsWith('{#', first.at) && !extendsGrapheme(source, first.at + 2) && source.indexOf('#}', first.at + 2) >= 0
       const escapeAt = comment ? first.at - 1 : first.at
-      source = source.slice(0, escapeAt) + '\\' + source.slice(escapeAt)
-      for (const e of escapes) if (e.at >= escapeAt) { e.at++; e.end++ }
-      if (!comment) escapes.push({ at: escapeAt, end: first.end + 1 })
+      // A brace that opens a braced inline stays one: an empty comment parts
+      // it from the delimiter instead (carve#3940).
+      const cut = !comment && BRACED_MARKS.has(source[first.at + 1]) ? '{%%}' : '\\'
+      source = source.slice(0, escapeAt) + cut + source.slice(escapeAt)
+      for (const e of escapes) if (e.at >= escapeAt) { e.at += cut.length; e.end += cut.length }
+      if (!comment) escapes.push({ at: escapeAt, end: first.end + cut.length, len: cut.length })
     }
   } finally {
     unattachedAttrs = saved
     pairedDelims = savedPaired
+    attachedAttrs = savedAttached
   }
 
   // A block escaped because a block to its right was still opaque may follow a
@@ -2110,20 +2125,41 @@ function renderInlineInner(text) {
   function restoreAttached(source, escapes, current) {
     escapes.sort((a, b) => a.at - b.at)
     for (let k = 0; k < escapes.length; k++) {
-      const { at, end } = escapes[k]
+      const { at, end, len } = escapes[k]
       if (!SPAN_CLOSER_ENDS.has(source[at - 1])) continue
       if (current.paired.some((p) => p > at && p < end)) continue
-      const trial = source.slice(0, at) + source.slice(at + 1)
+      const trial = source.slice(0, at) + source.slice(at + len)
       const result = read(trial)
       if (result.offsets.length) continue
       source = trial
       current = result
       escapes.splice(k, 1)
-      for (let j = k; j < escapes.length; j++) { escapes[j].at--; escapes[j].end-- }
+      for (let j = k; j < escapes.length; j++) { escapes[j].at -= len; escapes[j].end -= len }
       k = -1
     }
     return current.out
   }
+}
+
+// The markers after `{` that open a braced inline (PART 9 SS22, editorial, comments).
+const BRACED_MARKS = new Set(['/', '*', '_', '~', '^', ',', '=', '+', '-', '#', '%'])
+const bracedHead = ohm.grammar(`CarveBracedHead <: ${g.name} {
+  bracedHead = (forcedSpan | editorial | bracedComment) any*
+}`, { [g.name]: g })
+const bracedHeadEnd = bracedHead.createSemantics().addOperation('headEnd', {
+  bracedHead(head, _rest) { return head.source.endIdx },
+})
+
+// PART 9 E2a, carve#3940: a braced opener between a closer's opener and the
+// closer forms first. When the `X}` it needs sits in the closer's block, the
+// outer entry is unreachable and the block attaches to nothing.
+function contestedBlock(source, block) {
+  const trial = source.slice(0, block.at) + '\\' + source.slice(block.at)
+  return block.braces.some((p) => {
+    if (!BRACED_MARKS.has(source[p + 1])) return false
+    const m = bracedHead.match(trial.slice(p), 'bracedHead')
+    return m.succeeded() && p + bracedHeadEnd(m).headEnd() > block.at + 1
+  })
 }
 
 /*

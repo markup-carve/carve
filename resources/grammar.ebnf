@@ -4874,6 +4874,9 @@ EOF = (* end of file *) ;
          direction; they are atomic. Inside a braced inline
          only its own entries are reachable, and open ones demote at its closer.
          `~{/x/}{/y~/}` -> ~<em>x</em><em>y~</em>.
+         A braced opener forms first: its closer lookahead sees an attribute
+         block before any enclosing pair's later closer can take it, so
+         `={_a={c_}` -> =<u>a={c</u> and `={_a=b_}` -> =<u>a=b</u> (carve#3940).
       E2b BRACKET-RUN BOUND. PART 8 resolves a BRACKET RUN before bare
          emphasis, forced spans and non-opaque editorial markup. Every delimiter pair,
          bare or braced, must open and close inside the same run. An opener

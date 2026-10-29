@@ -976,6 +976,7 @@ index: examples/edge-cases/index.md
   inside-a-note-a-footnote-shaped-run-is-a-bracket-run
   inside-a-note-a-nested-note-opener-is-a-caret-and-a-bracket-run
   a-block-glued-to-a-split-combined-token-or-a-forced-span-s-own-delimiter
+  a-braced-opener-forms-before-an-enclosing-closer-takes-its-block
   a-mention-or-tag-keeps-its-full-spelling-in-a-strong-child
   a-generic-extension-parses-its-captured-content-as-inline-content
 [edge-links] Links, images and references
