@@ -816,7 +816,8 @@ CarveCore {
   // rather than cut first (PART 9 SS21a): a forced span's own closer, and
   // the combined token's `*/`, are boundaries the run does not cross either.
   fSpComment<d> = sepRun "%%" (~newline ~(d "}") any)*
-  biSpComment = sepRun "%%" (~newline ~"*/" any)*
+  // It ends at the closer token only: a `*/` after whitespace or before alnum is text (THE COMBINED TOKEN).
+  biSpComment = sepRun "%%" (~newline (spaceChar+ "*/" | ~biCloser any ""))*
   sepRun     = " "+
   // The run-start form: nothing precedes it, so it carries no separator.
   initialComment = "%%" (~newline any)*

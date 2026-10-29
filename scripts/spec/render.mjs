@@ -810,7 +810,7 @@ const sem = g.createSemantics().addOperation('h', {
   fSpComment(_sp, _pp, _rest) {
     return ''
   },
-  biSpComment(_sp, _pp, _rest) {
+  biSpComment(_sp, _pp, _run, _closer) {
     return ''
   },
   bracedComment(_open, _content, _close) {
