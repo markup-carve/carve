@@ -499,3 +499,11 @@
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-11  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
 81-paragraph-interruption-19  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
 85-blockquote-lazy-continuation-stops-at-a-fenced-block-2  A code fence opener interrupts without a closer lookahead (markup-carve/carve#4018); pending in carve-js.
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-2  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-3  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-4  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-5  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-6  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-7  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-8  Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).

@@ -48,8 +48,9 @@ core.rules.closerless.body = closerless
 // A combined opener is a stack entry (PART 9 §9 THE COMBINED TOKEN), so the
 // `bold_italic` production never matches here: its `/` and `*` reach
 // `pairDelims` as candidates.
-// A `%%` comment stops before a `*/`, which ends it where it closes an open
-// combined entry (CARVE-P9-042); `buildToks` marks the rest of its line.
+// A `%%` comment stops before a `*/`, which ends it where it is the closer
+// token of a `/*` ... `*/` shape (CARVE-P9-042, carve#4042); `buildToks` marks
+// the rest of its line.
 const g = ohm.grammar(`CarveStack <: ${core.name} {
   span := ~any any
   spComment := sepRun "%%" (~newline ~"*/" any)*
@@ -1433,6 +1434,13 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
   // so each combined opener's lookahead is constant time.
   const nextCloser = new Array(toks.length + 1).fill(-1)
   for (let k = toks.length - 1; k >= 0; k--) nextCloser[k] = closerToken(k) ? k : nextCloser[k + 1]
+  // The closer token of each `/*` ... `*/` shape, read before the stack decides
+  // whether the opener forms: a comment inside the shape ends there (carve#4042).
+  const shapeCloses = new Set()
+  for (let k = 0; k + 1 < toks.length; k++) {
+    if (delimAt(k, '/') && delimAt(k + 1, '*') && toks[k + 1].at === toks[k].at + 1 && !isAlnum(src[toks[k].at - 1]) &&
+      !isWs(src[toks[k].at + 2]) && !extendsGrapheme(src, toks[k].at + 2) && nextCloser[k + 2] !== -1) shapeCloses.add(nextCloser[k + 2])
+  }
   // A combined entry counts as both `/` and `*`.
   const holds = (oi, d) => toks[oi].ch === d || (toks[oi].combined !== undefined && (d === '/' || d === '*'))
   for (let j = 0; j < toks.length; j++) {
@@ -1443,9 +1451,9 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
       continue
     }
     if (t.tailEnd !== undefined) {
-      // The comment ends at the `*/` that closes the open combined entry, and
-      // otherwise runs to the end of its line.
-      const ends = openers.some((oi) => toks[oi].combined?.close === j + 1)
+      // The comment ends at the closer token of the shape it stands in, whether
+      // or not that shape forms, and otherwise runs to the end of its line.
+      const ends = shapeCloses.has(j + 1)
       for (let k = j + 1; k < t.tailEnd; k++) toks[k].dead = !ends
       continue
     }

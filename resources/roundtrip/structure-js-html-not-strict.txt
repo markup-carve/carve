@@ -165,3 +165,10 @@
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-3
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-2
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-3
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-4
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-5
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-6
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-8

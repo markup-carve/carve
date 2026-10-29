@@ -4824,7 +4824,12 @@ EOF = (* end of file *) ;
          construct of the atom table that matches; otherwise the character
          is one inline character. An atom is opaque to P2: no delimiter
          inside it pairs with one outside it. A bracket run and an inline
-         note are atoms whose content is a new region.
+         note are atoms whose content is a new region. A `%%` comment
+         is removed before P2 runs, at the extent §21 and §21a give it:
+         inside a `/*` ... `*/` shape it ends at the shape's closer token
+         whether or not the combined token forms, and P2 reads the region as
+         if the comment were absent, so /x /*a %% b*/ y ->
+         <em>x /<strong>a</strong></em> y (carve#4042).
       P2 READING. Read each region left to right with one stack of open bare
          entries (R1 to R5). A braced or editorial opener starts a NESTED
          READING of a new region; a combined opener is a stack entry. Nothing

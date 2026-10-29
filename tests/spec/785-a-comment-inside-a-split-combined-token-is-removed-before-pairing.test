@@ -1,0 +1,55 @@
+A comment inside a split combined token is removed before pairing
+
+```
+/x /*a %% b*/ y
+.
+<p><em>x /<strong>a</strong></em> y</p>
+```
+
+```
+*x /*a %% b*/ y*
+.
+<p><strong>x /*a</strong>/ y*</p>
+```
+
+```
+p /q /*a b %% c d*/ e
+.
+<p>p <em>q /<strong>a b</strong></em> e</p>
+```
+
+```
+/x /*a %% b*/{.c} y
+.
+<p><em class="c">x /<strong>a</strong></em> y</p>
+```
+
+```
+/x
+/*a %% b*/ y
+.
+<p><em>x
+/<strong>a</strong></em> y</p>
+```
+
+```
+- /x /*a %% b*/ y
+.
+<ul>
+  <li><em>x /<strong>a</strong></em> y</li>
+</ul>
+```
+
+```
+/x /*a %% `b*/ c` d
+.
+<p><em>x /<strong>a</strong></em> c<code> d</code></p>
+```
+
+```
+> /x /*a
+> b %% c*/ y
+.
+<blockquote><p><em>x /<strong>a
+b</strong></em> y</p></blockquote>
+```

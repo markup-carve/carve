@@ -981,6 +981,7 @@ index: examples/edge-cases/index.md
   a-braced-opener-forms-before-an-enclosing-closer-takes-its-block
   an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split
   the-rest-of-a-split-combined-token-is-read-again-as-inline-content
+  a-comment-inside-a-split-combined-token-is-removed-before-pairing
   a-mention-or-tag-keeps-its-full-spelling-in-a-strong-child
   a-generic-extension-parses-its-captured-content-as-inline-content
 [edge-links] Links, images and references

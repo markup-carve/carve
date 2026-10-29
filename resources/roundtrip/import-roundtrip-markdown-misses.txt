@@ -2359,6 +2359,14 @@
 784-the-rest-of-a-split-combined-token-is-read-again-as-inline-content
 784-the-rest-of-a-split-combined-token-is-read-again-as-inline-content-2
 784-the-rest-of-a-split-combined-token-is-read-again-as-inline-content-3
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-2
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-3
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-4
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-5
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-6
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-7
+785-a-comment-inside-a-split-combined-token-is-removed-before-pairing-8
 79-two-char-delimiter-runs
 80-trailing-attribute-block-edge-cases
 80-trailing-attribute-block-edge-cases-2
