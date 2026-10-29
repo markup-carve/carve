@@ -1875,6 +1875,9 @@
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-3
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5
+784-the-rest-of-a-split-combined-token-is-read-again-as-inline-content
+784-the-rest-of-a-split-combined-token-is-read-again-as-inline-content-2
+784-the-rest-of-a-split-combined-token-is-read-again-as-inline-content-3
 81-paragraph-interruption-10
 81-paragraph-interruption-11
 81-paragraph-interruption-12
