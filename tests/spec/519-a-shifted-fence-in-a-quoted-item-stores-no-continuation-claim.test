@@ -36,8 +36,10 @@ z
   </ul>
 </blockquote>
 <p>z</p>
-<blockquote><p>b
-~~~</p></blockquote>
+<blockquote>
+  <p>b</p>
+  <pre><code></code></pre>
+</blockquote>
 ```
 
 ````
@@ -68,9 +70,10 @@ flush
 <blockquote>
   <ul>
     <li>a
-<code>
-x
-flush</code></li>
+      <pre><code>x
+</code></pre>
+    </li>
   </ul>
 </blockquote>
+<p>flush</p>
 ````

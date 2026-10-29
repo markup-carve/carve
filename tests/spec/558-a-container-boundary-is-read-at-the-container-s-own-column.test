@@ -76,8 +76,10 @@ tail
   <li>outer
     <ul>
       <li>para
-<code>
-code</code></li>
+        <pre><code>code
+
+</code></pre>
+      </li>
     </ul>
     <h1 id="h">h</h1>
     <pre><code></code></pre>
@@ -95,9 +97,11 @@ y
 .
 <ul>
   <li>a
-<code>
-b</code></li>
+    <pre><code>b
+
+</code></pre>
+  </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ````

@@ -48,11 +48,13 @@ tail
 .
 <dl>
   <dt>term</dt>
-  <dd>definition
-<code>
-c
-tail</code></dd>
+  <dd>
+    <p>definition</p>
+    <pre><code>c
+</code></pre>
+  </dd>
 </dl>
+<p>tail</p>
 ````
 
 ````

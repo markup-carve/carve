@@ -814,9 +814,10 @@ after
 ```html
 <aside class="admonition note" aria-label="Note">
   <pre><code>x
+:::
+after
 </code></pre>
 </aside>
-<p>after</p>
 ```
 
 ::::
@@ -2003,9 +2004,9 @@ code
 ````
 
 ```html
-<p>Text
-<code>
-code</code></p>
+<p>Text</p>
+<pre><code>code
+</code></pre>
 ```
 
 :::
@@ -2389,9 +2390,11 @@ lazy
 ````
 
 ````html
-<blockquote><p>text
-<code>
-lazy</code></p></blockquote>
+<blockquote>
+  <p>text</p>
+  <pre><code></code></pre>
+</blockquote>
+<p>lazy</p>
 ````
 
 :::
@@ -11522,8 +11525,8 @@ x
 
 ````html
 <p><code>	js
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11540,8 +11543,8 @@ x
 
 ````html
 <p><code> 	js
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11556,8 +11559,8 @@ x
 
 ````html
 <p><code>	 js
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11575,8 +11578,8 @@ x
 
 ````html
 <p><code>js	"T"
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11591,8 +11594,8 @@ x
 
 ````html
 <p><code>js 	"T"
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11607,8 +11610,8 @@ x
 
 ````html
 <p><code>js	 "T"
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11625,8 +11628,8 @@ x
 
 ````html
 <p><code>js "T"	[L]
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11641,8 +11644,8 @@ x
 
 ````html
 <p><code>js "T" 	[L]
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -11657,8 +11660,8 @@ x
 
 ````html
 <p><code>js "T"	 [L]
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -12053,8 +12056,8 @@ x = 1
 
 ````html
 <p><code>  php
-x = 1
-</code></p>
+x = 1</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -14017,8 +14020,8 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -14046,8 +14049,8 @@ one stripped it. Below the content column is below the content column.
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -14091,8 +14094,8 @@ x
 <blockquote>
   <pre><code></code></pre>
 </blockquote>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -14115,8 +14118,8 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-~~~</p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -14142,8 +14145,8 @@ mechanisms to pass, and only the fence-shaped rule passes both:
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -14176,8 +14179,8 @@ ways in one parse, with a paragraph open that ` y` would then have folded into.
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -16119,6 +16122,7 @@ x
 <aside class="admonition note" aria-label="Note">
   <pre><code>x
 
+:::
 </code></pre>
 </aside>
 ````
@@ -20934,8 +20938,8 @@ x
 
 ````html
 <p><code>	php
-x
-</code></p>
+x</code></p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -24721,9 +24725,10 @@ tail
 ````html
 <ul>
   <li>q
-<code>
-tail</code></li>
+    <pre><code></code></pre>
+  </li>
 </ul>
+<p>tail</p>
 ````
 
 :::
@@ -24745,10 +24750,12 @@ tail
 ````html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-tail</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>tail</p>
 ````
 
 :::
@@ -24762,9 +24769,11 @@ tail
 ````
 
 ````html
-<blockquote><p>q
-<code>
-tail</code></p></blockquote>
+<blockquote>
+  <p>q</p>
+  <pre><code></code></pre>
+</blockquote>
+<p>tail</p>
 ````
 
 :::
@@ -24785,7 +24794,9 @@ tail
 ````html
 <ul>
   <li>q
-<code></code></li>
+    <pre><code>
+</code></pre>
+  </li>
 </ul>
 <p>tail</p>
 ````
@@ -34400,11 +34411,13 @@ tail
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition
-<code>
-c
-tail</code></dd>
+  <dd>
+    <p>definition</p>
+    <pre><code>c
+</code></pre>
+  </dd>
 </dl>
+<p>tail</p>
 ```
 
 :::
@@ -35113,8 +35126,8 @@ code
     </ul>
   </dd>
 </dl>
-<p>code
-<code></code></p>
+<p>code</p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -35141,8 +35154,8 @@ code
     </ul>
   </dd>
 </dl>
-<p>code
-~~~</p>
+<p>code</p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -35169,8 +35182,8 @@ code
     </ul>
   </dd>
 </dl>
-<p>code
-<code></code></p>
+<p>code</p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -36529,8 +36542,8 @@ inside the item the same documents open the same block.
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36553,8 +36566,8 @@ inside the item the same documents open the same block.
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36718,8 +36731,8 @@ whatever block it follows* asks it (markup-carve/carve#2143).
     <pre><code></code></pre>
   </dd>
 </dl>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36769,8 +36782,8 @@ below-column line, and the body's own parse takes the same answer.
 </code></pre>
   </dd>
 </dl>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36824,13 +36837,15 @@ z
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-b
-y</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code>b
+</code></pre>
+  </dd>
 </dl>
-<p>z
-<code></code></p>
+<p>y</p>
+<p>z</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36855,11 +36870,12 @@ nothing and the lines fold into the paragraph as text (markup-carve/carve#2145).
 ```html
 <ul>
   <li>a
-<code>
-b
-y
-</code></li>
+    <pre><code>b
+</code></pre>
+  </li>
 </ul>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36877,11 +36893,12 @@ y
 ```html
 <ul>
   <li>a
-<code>
-b
-y
-</code></li>
+    <pre><code>b
+</code></pre>
+  </li>
 </ul>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36904,11 +36921,12 @@ below the content column*.
 ```html
 <ul>
   <li>a
-<code>
-b
-y
-</code></li>
+    <pre><code>b
+</code></pre>
+  </li>
 </ul>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36929,12 +36947,14 @@ A definition body reads the same way, on both sides.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-b
-y
-</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code>b
+</code></pre>
+  </dd>
 </dl>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36953,12 +36973,14 @@ y
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-b
-y
-</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code>b
+</code></pre>
+  </dd>
 </dl>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -36978,9 +37000,9 @@ play, as it does under a list item.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code></code></dd>
+  <dd>a</dd>
 </dl>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -37185,8 +37207,8 @@ y</p>
 </code></pre>
   </dd>
 </dl>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -41095,12 +41117,13 @@ keeps it.
   <li>a
     <ul>
       <li>b
-<code>
-p
-</code></li>
+        <pre><code>p
+</code></pre>
+      </li>
     </ul>
   </li>
 </ul>
+<pre><code></code></pre>
 `````
 
 :::
@@ -41120,12 +41143,13 @@ p
   <li>a
     <ul>
       <li>b
-<code>
-p
-</code></li>
+        <pre><code>p
+</code></pre>
+      </li>
     </ul>
   </li>
 </ul>
+<pre><code></code></pre>
 `````
 
 :::
@@ -41281,8 +41305,8 @@ x
     </ul>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 `````
 
 :::
@@ -41314,8 +41338,8 @@ x
     </ul>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 `````
 
 :::
@@ -41336,10 +41360,12 @@ x
   <li>a
     <ul>
       <li>b
-<code>
-p</code></li>
+        <pre><code>p
+</code></pre>
+      </li>
       <li>c
-<code></code></li>
+        <pre><code></code></pre>
+      </li>
     </ul>
   </li>
 </ul>
@@ -43066,8 +43092,10 @@ z
   </ul>
 </blockquote>
 <p>z</p>
-<blockquote><p>b
-~~~</p></blockquote>
+<blockquote>
+  <p>b</p>
+  <pre><code></code></pre>
+</blockquote>
 `````
 
 :::
@@ -43110,11 +43138,12 @@ flush
 <blockquote>
   <ul>
     <li>a
-<code>
-x
-flush</code></li>
+      <pre><code>x
+</code></pre>
+    </li>
   </ul>
 </blockquote>
+<p>flush</p>
 `````
 
 :::
@@ -45370,8 +45399,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -45395,8 +45426,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -45560,8 +45593,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-~~~</p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -45585,8 +45620,10 @@ y
       <pre><code>x
 </code></pre>
     </blockquote>
-    <blockquote><p>y
-~~~</p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -45747,8 +45784,10 @@ y
     <blockquote>
       x
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -45771,8 +45810,10 @@ y
     <blockquote>
       x
     </blockquote>
-    <blockquote><p>y
-<code></code></p></blockquote>
+    <blockquote>
+      <p>y</p>
+      <pre><code></code></pre>
+    </blockquote>
   </li>
 </ul>
 `````
@@ -46765,8 +46806,8 @@ code
     <pre><code></code></pre>
   </dd>
 </dl>
-<p>code
-<code></code></p>
+<p>code</p>
+<pre><code></code></pre>
 ````
 
 :::
@@ -48042,8 +48083,10 @@ after
 ```html
 <ul>
   <li>a
-<code></code>
-    <pre><code>code
+    <pre><code>
+~~~
+code
+~~~
 </code></pre>
   </li>
 </ul>
@@ -48064,9 +48107,11 @@ after
 ```html
 <ul>
   <li>a
-<code></code>
-    <hr>
-    <pre><code>code
+    <pre><code>
+---
+~~~
+code
+~~~
 </code></pre>
   </li>
 </ul>
@@ -48094,13 +48139,15 @@ after
 ```html
 <ul>
   <li>a
-<code></code>
-    <pre><code>code
+    <pre><code>
+~~~
+code
+~~~
+more
 </code></pre>
-    more
-after
   </li>
 </ul>
+<p>after</p>
 ```
 
 :::
@@ -48698,8 +48745,10 @@ item's column with no paragraph open, so it opens a code block of its own
   <li>outer
     <ul>
       <li>para
-<code>
-code</code></li>
+        <pre><code>code
+
+</code></pre>
+      </li>
     </ul>
     <h1 id="h">h</h1>
     <pre><code></code></pre>
@@ -48719,11 +48768,13 @@ y
 ```html
 <ul>
   <li>a
-<code>
-b</code></li>
+    <pre><code>b
+
+</code></pre>
+  </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::
@@ -49173,8 +49224,9 @@ tail
 <blockquote>
   <ul>
     <li>a
-<code></code>
-      <pre><code>code
+      <pre><code>~~~
+code
+~~~
 </code></pre>
     </li>
   </ul>
@@ -50416,6 +50468,7 @@ when that line is plain text. A `:::` inside an open code fence is code text.
           </li>
         </ul>
         <pre><code>:::bad
+:::
 </code></pre>
       </div>
     </li>
@@ -50493,10 +50546,11 @@ x
             </div>
           </li>
         </ul>
-        <pre><code></code></pre>
-      </div>
-      :::bad
+        <pre><code>:::
+:::bad
 :::
+</code></pre>
+      </div>
     </li>
   </ul>
 </blockquote>
@@ -50524,12 +50578,12 @@ after
   <ul>
     <li>a
       <ul>
-        <li>child
-<code></code>
-          <pre><code></code></pre>
-        </li>
+        <li>child</li>
       </ul>
-      <pre><code></code></pre>
+      <pre><code>
+  ```
+~~~
+</code></pre>
     </li>
   </ul>
 </blockquote>
@@ -50606,13 +50660,13 @@ after
 <ul>
   <li>a
     <ul>
-      <li>child
-<code>
-code
-after</code></li>
+      <li>child</li>
     </ul>
+    <pre><code>code
+</code></pre>
   </li>
 </ul>
+<p>after</p>
 ```
 
 ::::
@@ -50643,6 +50697,7 @@ after</code></li>
           </li>
         </ul>
         <pre><code>:::bad
+:::
 </code></pre>
       </div>
     </li>
@@ -50681,10 +50736,11 @@ after</code></li>
             </div>
           </li>
         </ul>
-        <pre><code></code></pre>
-      </div>
-      :::bad
+        <pre><code>:::
+:::bad
 :::
+</code></pre>
+      </div>
     </li>
   </ul>
 </blockquote>
@@ -50711,6 +50767,7 @@ after</code></li>
     <li>
       <div class="box">
         <pre><code>:::bad
+:::
 </code></pre>
       </div>
     </li>
@@ -52016,12 +52073,12 @@ after
   <li>a
     <ul>
       <li>child
-text
-~~~
-after</li>
+text</li>
     </ul>
+    <pre><code></code></pre>
   </li>
 </ul>
+<p>after</p>
 ```
 
 ::::
@@ -52047,6 +52104,7 @@ after
     <div class="box">
       <pre><code>x
 y
+:::
 </code></pre>
     </div>
   </li>
@@ -52071,6 +52129,7 @@ after
   <li>
     <div class="box">
       <pre><code>  z
+:::
 </code></pre>
     </div>
   </li>
@@ -52509,10 +52568,12 @@ after *b*
   <div class="inner">
     <pre><code>code
 :::
+::::
+:::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52535,10 +52596,12 @@ after *b*
   <div class="inner">
     <pre><code>code
 ::::
+:::
+::::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52558,9 +52621,10 @@ after *b*
 <aside class="admonition note" aria-label="Note">
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52612,9 +52676,10 @@ after *b*
 <aside class="admonition note" aria-label="Note">
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52638,10 +52703,12 @@ after *b*
   <div class="inner">
     <pre><code>code
 :::
+::::
+:::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52668,9 +52735,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -52694,9 +52762,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53283,14 +53352,12 @@ after *b*
 
 ```html
 <aside class="admonition note" aria-label="Note">
-  <p>para
-<code>
-code</code></p>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <p>para</p>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -53312,14 +53379,12 @@ after *b*
 
 ```html
 <aside class="admonition note" aria-label="Note">
-  <blockquote><p>quote
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <blockquote><p>quote</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -53342,15 +53407,13 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <ul>
-    <li>item
-<code>
-code</code></li>
+    <li>item</li>
   </ul>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -53568,9 +53631,10 @@ after *b*
 <aside class="admonition note" aria-label="Note">
   <pre id="x"><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53596,10 +53660,12 @@ after *b*
   <div class="inner">
     <pre class="c"><code>code
 :::
+::::
+:::
+after *b*
 </code></pre>
   </div>
 </div>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53626,9 +53692,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53652,9 +53719,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53683,9 +53751,10 @@ after *b*
   <blockquote><p>para</p></blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53708,9 +53777,10 @@ after *b*
   <blockquote><p>para</p></blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53733,11 +53803,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
-more text
-<code>
-code</code></p></blockquote>
+more text</p></blockquote>
+  <pre><code>code
+:::
+after *b*
+</code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53766,14 +53837,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
-more
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+more</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -53799,14 +53868,12 @@ after *b*
   <blockquote><p>a
 b
 c
-d
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+d</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -53861,9 +53928,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53889,9 +53957,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53917,9 +53986,10 @@ after *b*
   </ol>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53948,9 +54018,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -53975,15 +54046,13 @@ after *b*
 <aside class="admonition note" aria-label="Note">
   <ul>
     <li>para</li>
-    <li>text
-<code>
-code</code></li>
+    <li>text</li>
   </ul>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -54008,14 +54077,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <p>para
--
-<code>
-code</code></p>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+-</p>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -54037,14 +54104,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
--
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+-</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -54080,9 +54145,10 @@ after *b*
   </table>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54114,9 +54180,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54141,9 +54208,10 @@ after *b*
   <blockquote><p>para</p></blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54167,14 +54235,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
-| t
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+| t</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -54207,9 +54273,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54235,11 +54302,11 @@ after *b*
   <ul>
     <li>para</li>
   </ul>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -54272,9 +54339,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54307,9 +54375,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54342,9 +54411,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54371,9 +54441,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54400,9 +54471,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54435,9 +54507,10 @@ after *b*
   </table>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54590,6 +54663,8 @@ code
     <li>para</li>
   </ol>
 </blockquote>
+<pre><code>code
+</code></pre>
 ```
 
 ::::::
@@ -54824,9 +54899,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54856,9 +54932,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -54882,14 +54959,12 @@ after *b*
 ```html
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
--
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+-</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ```
 
@@ -55450,10 +55525,10 @@ A quoted term folds an unmarked, unclosed fence line (CARVE-P2-028).
 ```html
 <blockquote>
   <dl>
-    <dt>t
-<code></code></dt>
+    <dt>t</dt>
   </dl>
 </blockquote>
+<pre><code></code></pre>
 ```
 
 ::::::
@@ -57818,12 +57893,12 @@ gen-250
   <li>
     <blockquote>
       <dl>
-        <dt>t
-<code></code></dt>
+        <dt>t</dt>
       </dl>
     </blockquote>
   </li>
 </ul>
+<pre><code></code></pre>
 ```
 
 :::::::
@@ -58096,14 +58171,16 @@ gen-362
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58124,14 +58201,16 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-~~~
-a
-~~~</li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58152,14 +58231,16 @@ a
 
 ```html
 <ol>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ol>
 ```
@@ -58181,14 +58262,16 @@ a
 ```html
 <blockquote>
   <ul>
-    <li><p>outer</p>
+    <li>outer
       <ul>
         <li>head
-<code>
-a
-</code></li>
+          <pre><code>a
+</code></pre>
+        </li>
       </ul>
-      <p>tail</p>
+      <pre><code>
+tail
+</code></pre>
     </li>
   </ul>
 </blockquote>
@@ -58505,13 +58588,14 @@ Folded fence variant 1
 <ul>
   <li>
     <ul>
-      <li>text
-<code>
-x</code></li>
+      <li>text</li>
     </ul>
-    <p>cap</p>
+    <pre><code>x
+
+cap
+</code></pre>
   </li>
-  <li><p>c</p></li>
+  <li>c</li>
 </ul>
 ```
 
@@ -58534,13 +58618,14 @@ Folded fence variant 2
 <ul>
   <li>
     <ul>
-      <li>text
-~~~
-x</li>
+      <li>text</li>
     </ul>
-    <p>cap</p>
+    <pre><code>x
+
+cap
+</code></pre>
   </li>
-  <li><p>c</p></li>
+  <li>c</li>
 </ul>
 ```
 
@@ -58591,11 +58676,11 @@ Folded fence variant 4
 <ul>
   <li>
     <ul>
-      <li>text
-<code>
-x
-cap</code></li>
+      <li>text</li>
     </ul>
+    <pre><code>x
+cap
+</code></pre>
   </li>
   <li>c</li>
 </ul>
@@ -58619,14 +58704,16 @@ cap</code></li>
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58647,14 +58734,16 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58675,14 +58764,16 @@ a
 
 ```html
 <ol>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ol>
 ```
@@ -58704,14 +58795,16 @@ a
 ```html
 <blockquote>
   <ul>
-    <li><p>outer</p>
+    <li>outer
       <ul>
         <li>head
-<code>
-a
-</code></li>
+          <pre><code>a
+</code></pre>
+        </li>
       </ul>
-      <p>tail</p>
+      <pre><code>
+tail
+</code></pre>
     </li>
   </ul>
 </blockquote>
@@ -58734,15 +58827,17 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
 more
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58765,13 +58860,14 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+  tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58796,13 +58892,14 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+ tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58825,15 +58922,16 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
   </li>
 </ul>
+<pre><code>
+    tail
+</code></pre>
 ```
 
 :::::::
@@ -58855,13 +58953,15 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+
+  tail
+</code></pre>
   </li>
 </ul>
 ```
@@ -58884,13 +58984,14 @@ a
 <ol>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+  tail
+</code></pre>
   </li>
 </ol>
 ```
@@ -58915,14 +59016,16 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-</code></p>
-        <p>tail</p>
-        <p>more</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+  tail
+
+  more
+</code></pre>
   </li>
 </ul>
 ```
@@ -58945,15 +59048,16 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-~~~
-a
-~~~</p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
   </li>
 </ul>
+<pre><code>
+   tail
+</code></pre>
 ```
 
 :::::::
@@ -58972,16 +59076,18 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
   </li>
 </ul>
+<pre><code>
+  tail
+</code></pre>
 ```
 
 :::::::
@@ -59000,16 +59106,18 @@ a
 
 ```html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
   </li>
 </ul>
+<pre><code>
+ tail
+</code></pre>
 ```
 
 :::::::
@@ -59056,14 +59164,16 @@ a
 
 ````html
 <ul>
-  <li><p>outer</p>
+  <li>outer
     <ul>
       <li>head
-<code>
-a
-```</code></li>
+        <pre><code>a
+</code></pre>
+      </li>
     </ul>
-    <p>tail</p>
+    <pre><code>
+tail
+</code></pre>
   </li>
 </ul>
 ````
@@ -59086,13 +59196,14 @@ a
 <ul>
   <li>outer
     <ul>
-      <li><p>head
-<code>
-a
-```</code></p>
-        <p>tail</p>
+      <li>head
+        <pre><code>a
+</code></pre>
       </li>
     </ul>
+    <pre><code>
+  tail
+</code></pre>
   </li>
 </ul>
 ````
@@ -62851,10 +62962,12 @@ A closer below the definition body leaves the tabbed fence line as text
 `````html
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<pre><code></code></pre>
 `````
 
 :::::::
@@ -62914,11 +63027,13 @@ e
 `````html
 <dl>
   <dt>m</dt>
-  <dd>l
-<code>
-e
-</code></dd>
+  <dd>
+    <p>l</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>e</p>
+<pre><code></code></pre>
 `````
 
 :::::::
@@ -62938,11 +63053,13 @@ e
 `````html
 <dl>
   <dt>m</dt>
-  <dd>l
-<code>
-e
-</code></dd>
+  <dd>
+    <p>l</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>e</p>
+<pre><code></code></pre>
 `````
 
 :::::::
@@ -63056,12 +63173,13 @@ The nested description keeps the attached fence
 
 `````html
 <ul>
-  <li><p>o
-<code>
-</code></p>
-    <p>t</p>
+  <li>o
+    <pre><code></code></pre>
   </li>
 </ul>
+<pre><code>
+  t
+</code></pre>
 `````
 
 :::::::
@@ -63082,11 +63200,12 @@ The nested description keeps the attached fence
   <li>o
     <ul>
       <li>h
-<code>
-</code></li>
+        <pre><code></code></pre>
+      </li>
     </ul>
   </li>
 </ul>
+<pre><code></code></pre>
 `````
 
 :::::::
@@ -63109,12 +63228,13 @@ A closer-shaped line below the item column closes nothing, so the blank before i
 
 `````html
 <ul>
-  <li><p>h
-<code></code></p>
-    <p>b
-<code></code></p>
+  <li>h
+    <pre><code>
+b
+</code></pre>
   </li>
 </ul>
+<pre><code></code></pre>
 `````
 
 :::::::
@@ -63133,12 +63253,12 @@ x
 
 `````html
 <ul>
-  <li><p>o
-<code>
-x</code></p>
-    <p>t</p>
+  <li>o
+    <pre><code></code></pre>
   </li>
 </ul>
+<p>x</p>
+<p>t</p>
 `````
 
 :::::::
@@ -65415,8 +65535,8 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 :::
@@ -65435,8 +65555,8 @@ y
     <pre><code></code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ```
 
 :::
@@ -68574,22 +68694,11 @@ An unclosed fence-shaped line below a footnote body folds into the note paragrap
 ```html
 <ul>
   <li><p>item</p>
-    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a><a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+    <pre><code>
+See[^c][^d]
+</code></pre>
   </li>
 </ul>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-    <li id="fn2">
-      <p>para
-more
-~~~<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 :::
@@ -68607,18 +68716,11 @@ more
 ```html
 <ol>
   <li><p>item</p>
-    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+    <pre><code>
+See[^c]
+</code></pre>
   </li>
 </ol>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>para
-~~~~<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 :::
@@ -68639,18 +68741,11 @@ more
   <dt>term</dt>
   <dd>
     <p>item</p>
-    <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+    <pre><code>
+See[^c]
+</code></pre>
   </dd>
 </dl>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>para
-<code></code><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 :::
@@ -70670,8 +70765,8 @@ see[^a]
     </ul>
   </li>
 </ul>
-<p>code
-<code></code></p>
+<p>code</p>
+<pre><code></code></pre>
 ```
 
 :::

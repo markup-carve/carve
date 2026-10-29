@@ -19,9 +19,10 @@ after *b*
   </table>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -45,9 +46,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -64,9 +66,10 @@ after *b*
   <blockquote><p>para</p></blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -81,13 +84,11 @@ after *b*
 .
 <aside class="admonition note" aria-label="Note">
   <blockquote><p>para
-| t
-<code>
-code</code></p></blockquote>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+| t</p></blockquote>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ````

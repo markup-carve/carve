@@ -8,12 +8,13 @@ An unclosed fence run with no closer in its item does not hide a blank line
 ```
 .
 <ul>
-  <li><p>h
-<code></code></p>
-    <p>b
-<code></code></p>
+  <li>h
+    <pre><code>
+b
+</code></pre>
   </li>
 </ul>
+<pre><code></code></pre>
 ````
 
 ````
@@ -24,10 +25,10 @@ x
   t
 .
 <ul>
-  <li><p>o
-<code>
-x</code></p>
-    <p>t</p>
+  <li>o
+    <pre><code></code></pre>
   </li>
 </ul>
+<p>x</p>
+<p>t</p>
 ````

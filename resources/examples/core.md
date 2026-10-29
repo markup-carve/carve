@@ -1931,8 +1931,8 @@ code
 
 ```html
 <p><code>js title="x"
-code
-</code></p>
+code</code></p>
+<pre><code></code></pre>
 ```
 
 :::
@@ -1947,8 +1947,8 @@ code
 
 ```html
 <p><code>php [Composer] "x"
-code
-</code></p>
+code</code></p>
+<pre><code></code></pre>
 ```
 
 :::
@@ -2117,9 +2117,9 @@ code
 ````
 
 ````html
-<p>text
-<code>
-code</code></p>
+<p>text</p>
+<pre><code>code
+</code></pre>
 ````
 
 :::

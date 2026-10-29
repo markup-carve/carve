@@ -18,8 +18,8 @@ An item's fence is read once, whatever block it follows
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -36,6 +36,6 @@ An item's fence is read once, whatever block it follows
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ````

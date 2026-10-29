@@ -31,8 +31,9 @@ tail
 <blockquote>
   <ul>
     <li>a
-<code></code>
-      <pre><code>code
+      <pre><code>~~~
+code
+~~~
 </code></pre>
     </li>
   </ul>

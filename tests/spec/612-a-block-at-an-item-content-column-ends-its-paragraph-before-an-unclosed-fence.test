@@ -16,9 +16,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -35,11 +36,11 @@ after *b*
   <ul>
     <li>para</li>
   </ul>
-  <div>
-    <div>
-      <p>after <strong>b</strong></p>
-    </div>
-  </div>
+  <pre><code>code
+::::
+:::
+after *b*
+</code></pre>
 </aside>
 ````
 
@@ -64,9 +65,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -91,9 +93,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -120,9 +123,10 @@ after *b*
   </blockquote>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -141,9 +145,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -164,9 +169,10 @@ after *b*
   </ul>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````
 
 ````
@@ -190,7 +196,8 @@ after *b*
   </table>
   <pre><code>code
 ::::
+:::
+after *b*
 </code></pre>
 </aside>
-<p>after <strong>b</strong></p>
 ````

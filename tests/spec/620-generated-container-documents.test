@@ -182,12 +182,12 @@ tail
   <li>
     <blockquote>
       <dl>
-        <dt>t
-<code></code></dt>
+        <dt>t</dt>
       </dl>
     </blockquote>
   </li>
 </ul>
+<pre><code></code></pre>
 ````
 
 ```

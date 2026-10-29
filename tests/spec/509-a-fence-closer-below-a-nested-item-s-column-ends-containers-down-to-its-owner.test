@@ -86,12 +86,13 @@ A fence closer below a nested item's column ends containers down to its owner
   <li>a
     <ul>
       <li>b
-<code>
-p
-</code></li>
+        <pre><code>p
+</code></pre>
+      </li>
     </ul>
   </li>
 </ul>
+<pre><code></code></pre>
 ````
 
 ````
@@ -105,12 +106,13 @@ p
   <li>a
     <ul>
       <li>b
-<code>
-p
-</code></li>
+        <pre><code>p
+</code></pre>
+      </li>
     </ul>
   </li>
 </ul>
+<pre><code></code></pre>
 ````
 
 ````
@@ -236,8 +238,8 @@ x
     </ul>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -263,8 +265,8 @@ x
     </ul>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -279,10 +281,12 @@ x
   <li>a
     <ul>
       <li>b
-<code>
-p</code></li>
+        <pre><code>p
+</code></pre>
+      </li>
       <li>c
-<code></code></li>
+        <pre><code></code></pre>
+      </li>
     </ul>
   </li>
 </ul>

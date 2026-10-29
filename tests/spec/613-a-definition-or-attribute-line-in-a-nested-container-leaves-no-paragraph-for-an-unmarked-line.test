@@ -95,6 +95,8 @@ code
     <li>para</li>
   </ol>
 </blockquote>
+<pre><code>code
+</code></pre>
 ````
 
 ```

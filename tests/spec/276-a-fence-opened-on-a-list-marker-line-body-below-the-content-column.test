@@ -10,8 +10,8 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -24,8 +24,8 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -49,8 +49,8 @@ x
 <blockquote>
   <pre><code></code></pre>
 </blockquote>
-<p>x
-<code></code></p>
+<p>x</p>
+<pre><code></code></pre>
 ````
 
 ```
@@ -63,8 +63,8 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>x
-~~~</p>
+<p>x</p>
+<pre><code></code></pre>
 ```
 
 ````
@@ -79,8 +79,8 @@ x
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ````
 
 ````
@@ -96,6 +96,6 @@ x
 </code></pre>
   </li>
 </ul>
-<p>y
-<code></code></p>
+<p>y</p>
+<pre><code></code></pre>
 ````

@@ -7,9 +7,10 @@ tail
 .
 <ul>
   <li>q
-<code>
-tail</code></li>
+    <pre><code></code></pre>
+  </li>
 </ul>
+<p>tail</p>
 ````
 
 ````
@@ -20,10 +21,12 @@ tail
 .
 <dl>
   <dt>t</dt>
-  <dd>a
-<code>
-tail</code></dd>
+  <dd>
+    <p>a</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>tail</p>
 ````
 
 ````
@@ -31,9 +34,11 @@ tail</code></dd>
 > ```
 tail
 .
-<blockquote><p>q
-<code>
-tail</code></p></blockquote>
+<blockquote>
+  <p>q</p>
+  <pre><code></code></pre>
+</blockquote>
+<p>tail</p>
 ````
 
 ````
@@ -44,7 +49,9 @@ tail
 .
 <ul>
   <li>q
-<code></code></li>
+    <pre><code>
+</code></pre>
+  </li>
 </ul>
 <p>tail</p>
 ````
