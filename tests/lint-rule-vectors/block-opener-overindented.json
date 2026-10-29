@@ -1,0 +1,306 @@
+{
+  "version": 1,
+  "rule": "block-opener-overindented",
+  "vectors": [
+    {
+      "name": "document-heading",
+      "description": "A heading past the document column still opens.",
+      "source": "  # h\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "heading",
+              "the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "document-thematic-break",
+      "description": "A thematic break past the document column.",
+      "source": "para\n\n   ***\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 4,
+            "includes": [
+              "thematic break"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "document-code-fence",
+      "description": "A code fence past the document column.",
+      "source": "  ```\n  code\n  ```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "code fence"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "document-table-once",
+      "description": "A table reports once, on its first row.",
+      "source": "  | a |\n  | b |\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "table row"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "document-quote",
+      "description": "A quote marker past the document column.",
+      "source": "para\n\n >  q\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 2,
+            "includes": [
+              "block quote"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "document-term",
+      "description": "A definition term past the document column.",
+      "source": "  :: t\n  : d\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "definition term"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "interrupting-heading",
+      "description": "An indented heading interrupts the paragraph above.",
+      "source": "para\n  # h\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "tab-indent",
+      "description": "A tab before the opener counts as indentation.",
+      "source": "\t# h\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 2,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote-marker-line",
+      "description": "A heading past the quote's content column on the marker line.",
+      "source": ">   # h\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "heading",
+              "block quote"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote-later-line",
+      "description": "A heading past the quote's content column on a later line.",
+      "source": "> q\n>   # h\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 5,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "description-body",
+      "description": "A heading past a description body's column.",
+      "source": ":: t\n: d\n\n    # h\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 4,
+            "column": 5,
+            "includes": [
+              "heading",
+              "description"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "footnote-body",
+      "description": "A heading past a footnote body's column.",
+      "source": "x[^a]\n\n[^a]: n\n\n      # h\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 5,
+            "column": 7,
+            "includes": [
+              "heading",
+              "footnote"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "colon-body",
+      "description": "A heading past a colon block's column.",
+      "source": "::: note\n  # h\n:::\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "aligned-heading",
+      "description": "A heading at the document column is quiet.",
+      "source": "# h\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "aligned-in-quote",
+      "description": "One space after the quote marker is the separator.",
+      "source": "> # h\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "nested-quote",
+      "description": "A nested quote marker after one space is aligned.",
+      "source": "> > # h\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "list-marker",
+      "description": "A list marker is placed by its own rules.",
+      "source": "  - a\n  - b\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "right-aligned-numbers",
+      "description": "Right-aligned ordered markers are one list (carve#3887).",
+      "source": " 9. nine\n10. ten\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "list-item-owner",
+      "description": "Inside a list item the item rule reports instead.",
+      "source": "- a\n\n      # h\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "lazy-text",
+      "description": "An indented line that continues a paragraph is not an opener.",
+      "source": "para\n  text\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "comment",
+      "description": "A comment is not an opener.",
+      "source": "  %% note\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "definition",
+      "description": "A reference definition is not an opener.",
+      "source": "  [r]: /u\n\n[x][r]\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "attribute-line",
+      "description": "A block attribute line is not an opener.",
+      "source": "  {.x}\npara\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "fence-payload",
+      "description": "An indented heading inside fence payload is quiet.",
+      "source": "```\n  # h\n```\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

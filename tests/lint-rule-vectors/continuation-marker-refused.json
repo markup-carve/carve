@@ -799,6 +799,152 @@
       "expected": {
         "findings": []
       }
+    },
+    {
+      "name": "item-stacked-quote-first-block-end",
+      "description": "A first-block plus in a quote stacked on an item marker (carve#3992).",
+      "source": "- > +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "item-stacked-quote-first-block-blank",
+      "description": "A blank line refuses the stacked first-block plus (carve#3992).",
+      "source": "- > +\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested-item-stacked-quote-first-block-end",
+      "description": "The stacked form in a nested item (carve#3992).",
+      "source": "- a\n  - > +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 7,
+            "includes": [
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "task-stacked-quote-first-block-end",
+      "description": "The stacked form on a task item (carve#3992).",
+      "source": "- [ ] > +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 9,
+            "includes": [
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote-stacked-item-first-block-end",
+      "description": "An item stacked in a quote takes the first-block form (carve#3992).",
+      "source": "> - +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "end of the document",
+              "stays empty"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "description-stacked-quote-first-block-end",
+      "description": "A first-block plus in a quote on a description marker line (carve#3992).",
+      "source": ":: t\n: > +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 5,
+            "includes": [
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "description-stacked-quote-first-block-blank",
+      "description": "A blank line refuses it (carve#3992).",
+      "source": ":: t\n: > +\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 5,
+            "includes": [
+              "blank line"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "description-stacked-item-first-block-end",
+      "description": "An item stacked on a description marker line (carve#3992).",
+      "source": ":: t\n: - +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 5,
+            "includes": [
+              "end of the document",
+              "stays empty"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "item-stacked-quote-first-block-paragraph",
+      "description": "The stacked first-block plus attaches a paragraph at the item's content column.",
+      "source": "- > +\n  x\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "plus-text-at-description-content-column",
+      "description": "A plus at a description's content column is text under rule A, not a refusal.",
+      "source": ":: t\n: d\n  +\n\np\n",
+      "expected": {
+        "findings": []
+      }
     }
   ]
 }

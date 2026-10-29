@@ -197,7 +197,9 @@ the command-line and editor behavior stay aligned.
 | `description-separator-below-content-column` | a `:` or `::` separator below the column of a definition list it appears to continue inside an indentation container, so it adds no entry: past the item's marker column it folds into the open term or description as text, and a `:` at the marker column ends the item as a paragraph. Indent it to the definition list's column |
 | `ordered-list-split-by-indent` | consecutive ordered lists continue the same numbering style and sequence, but their first markers start in different columns, so they render as two lists |
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column. Reported once per block, on its first line; continuing table rows and quote lines do not open another block. An aligned opener stays unreported when a continuation is overindented, including when the block opens on the item's marker line. The finding also covers the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
-| `continuation-marker-refused` | a refused lone `+`, including a first-block `- +`, a sibling follower, a column-0 list below `[^a]: +` or `: +`, a follower at another column, no follower, or a `+` no container claims (at document level, only with a block below it). PART 9 §17 L4 refuses attachment; see [refused continuation markers](#refused-continuation-markers) |
+| `continuation-marker-refused` | a refused lone `+`, including a first-block `- +`, a sibling follower, a column-0 list below `[^a]: +` or `: +`, a follower at another column, the first-block form in a stacked quote (`- > +`) or a description body (`: > +`), no follower, or a `+` no container claims (at document level, only with a block below it). PART 9 §17 L4 refuses attachment; see [refused continuation markers](#refused-continuation-markers) |
+| `block-opener-overindented` | a block opener indented past the content column of the document, a quote, a definition body, a footnote body or a colon body; it still opens there, measured from its own line (`  # h` is a heading). A list marker is not reported, and a table reports once. Inside a list item the finding is `list-item-block-overindented` instead. Remove the indentation, or escape the opener to keep it as text; see [fragile spellings](#fragile-spellings) |
+| `emphasis-marker-before-attributes` | a bare `*`, `/`, `_`, `~` or `=` directly before an attribute block where the reading is not the visible one: the marker closes no span and both stay text, or the span it closes holds another same marker and the block attaches to all of it. Plain `*a*{.x}` is quiet. Brace the span or escape the marker; see [fragile spellings](#fragile-spellings) |
 | `empty-include-path` | a <code v-pre>{{ ... }}</code> run shaped like an include directive but containing no path, including empty braces and spaced directive forms containing only a `#section` or `@option`; it remains literal text, so add a path or remove the braces |
 | `region-marker-renders-as-text` | a line whose content is a `#region` or `#endregion` marker in a source-comment form (`#region name`, `// #region name`, `-- #region name`, `/* #region name */`, `<!-- #region name -->`), or a `%%` marker whose keyword is not lowercase (`%% #Region name`). In a Carve file the first kind renders as visible text and none of them is a region marker for a Carve include (CARVE-P6-001 I1b), so write `%% #region name` |
 | `include-unresolved` | a Warning for an include whose path the resolver cannot read: missing, unreadable or outside the containment root; the directive stays literal (CARVE-P6-001 I7). Reported only when lint is given an include root or resolver (I16) |
@@ -454,6 +456,44 @@ list, a `::` at the marker column (it opens a new list at that level), escaped
 separators, and separator-shaped lines inside literal payloads. The rule does
 not rewrite source. Shared positive and negative cases are in
 [`tests/lint-rule-vectors/description-separator-below-content-column.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/description-separator-below-content-column.json).
+
+### Fragile spellings
+
+Two rules report spellings that parse, but not the way a reader of the source
+is likely to expect (markup-carve/carve#3992). Neither changes the output.
+
+`block-opener-overindented` reports a block opener written past its owner's
+content column. Under PART 0 S3 leading space never stops an opener, so this
+is a heading, not paragraph text or indented code:
+
+```carve
+  # Heading
+```
+
+Write the opener at the column of its container, or escape it (`\#`) to keep
+the line as text. The rule covers the document, quotes, description bodies,
+footnote bodies and colon blocks. List markers are not reported, since a list
+may start at any indentation; inside a list item the same check is
+`list-item-block-overindented`.
+
+`emphasis-marker-before-attributes` reports a bare `*`, `/`, `_`, `~` or `=`
+glued to an attribute block when the attachment is not the visible one. Here
+the `*` closes the strong span that opens at column 1, so `{.x}` styles all of
+`a *b`, not `b`:
+
+```carve
+*a *b*{.x}
+```
+
+Write `*a {*b*}{.x}*` for the inner span, or escape the inner `*`. When the
+marker closes no span at all, as in `a*{.x} b*`, the marker and the attribute
+block both stay text, and the finding says so. A plain `*a*{.x}` is the
+canonical spelling and is not reported.
+
+The shared vectors are in
+[`tests/lint-rule-vectors/block-opener-overindented.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/block-opener-overindented.json)
+and
+[`tests/lint-rule-vectors/emphasis-marker-before-attributes.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/emphasis-marker-before-attributes.json).
 
 ### Ordered lists split by indentation
 

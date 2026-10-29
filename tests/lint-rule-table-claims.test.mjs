@@ -119,6 +119,8 @@ const NOT_IN_THE_PIN_YET = new Map([
   ['duplicate-reference-url', 'specified by the #3808 ruling; engine rollout follows'],
   ['non-descriptive-link-text', 'specified by the #3808 ruling; engine rollout follows'],
   ['emphasis-as-heading', 'specified by the #3808 ruling; engine rollout follows'],
+  ['block-opener-overindented', 'specified by the #3992 ruling; engine rollout follows'],
+  ['emphasis-marker-before-attributes', 'specified by the #3992 ruling; engine rollout follows'],
   [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',

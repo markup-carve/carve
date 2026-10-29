@@ -4736,6 +4736,34 @@ EOF = (* end of file *) ;
    first failed gate: blank, end, sibling or follower column, with the eligible
    column. Fence payload and harmless literals without a plausible host are
    quiet.
+   `continuation-marker-refused` reports every refusal PART 9 §17 names, at
+   every host and depth, including the first-block form in a stacked quote
+   (`- > +`, `> - +`) and in a description body (`: > +`, `: - +`). A `+`
+   that rule A (PART 0 S2) reads as ordinary text is not a refusal and is
+   quiet.
+   `block-opener-overindented` reports a block opener that PART 0 S3 opens
+   past its owner's content column, where the owner is the document, a
+   quote, a definition body, a footnote body or a colon body: `  # h` at
+   document level, `>   # h` in a quote. The opener still opens there; the
+   finding names the owner and how far past its column the opener stands,
+   and offers removing the indentation or escaping the opener. Openers are a
+   heading, thematic break, table row, block quote, code or raw fence, colon
+   fence and definition term. A list marker is not: PART 9 §24 C3 and C4
+   place it at any indentation, and its own rules cover a misplaced one.
+   Comments, definitions, attribute lines and captions are not openers
+   either. A table reports once, on its first row. A list item owner reports
+   under `list-item-block-overindented` instead (PART 9 §24 C3), so one line
+   never carries both. An opener at its owner's content column, and a line
+   that stays paragraph text, are quiet.
+   `emphasis-marker-before-attributes` reports a bare `*`, `/`, `_`, `~` or
+   `=` directly followed by a valid attribute block, and names the reading
+   that applies. When the marker closes no span, the marker and the block
+   stay text (`a*{.x} b*`). When it closes a span whose content also holds an
+   unescaped marker of the same character, the block attaches to that whole
+   span (`*a *b*{.x}` attaches to the strong span from column 1). The finding
+   offers the braced span (PART 9 §22) or an escape. A closer whose span holds no
+   other same marker, such as `*a*{.x}`, is the canonical spelling and is
+   quiet, as are a braced span, an escaped marker and code.
 
    AUTHORING LINT SUPPRESSION. A recognized Carve line comment whose content
    begins with `carve-lint-disable-line`, optionally followed by rule ids

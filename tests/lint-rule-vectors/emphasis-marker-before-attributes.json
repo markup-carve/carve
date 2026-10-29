@@ -1,0 +1,285 @@
+{
+  "version": 1,
+  "rule": "emphasis-marker-before-attributes",
+  "vectors": [
+    {
+      "name": "closes-no-span",
+      "description": "A marker that closes no span leaves it and the block as text.",
+      "source": "a*{.x} b*\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 2,
+            "includes": [
+              "stay text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "intraword",
+      "description": "An intraword marker before a block stays text.",
+      "source": "x*{.x}\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 2,
+            "includes": [
+              "stay text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "doubled",
+      "description": "The second of two markers closes nothing.",
+      "source": "**{.x}\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 2,
+            "includes": [
+              "stay text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "after-a-closed-span",
+      "description": "A marker after a closed span stays text.",
+      "source": "*a* *{.x}\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "stay text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "inside-braced-span",
+      "description": "A bare marker inside a braced span stays text.",
+      "source": "{*a*{.x} b*}\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 4,
+            "includes": [
+              "stay text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "other-markers",
+      "description": "Every bare emphasis character is covered.",
+      "source": "x/{.a} y_{.b} z~{.c} w={.d}\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 2,
+            "includes": [
+              "stay text"
+            ]
+          },
+          {
+            "line": 1,
+            "column": 9,
+            "includes": [
+              "stay text"
+            ]
+          },
+          {
+            "line": 1,
+            "column": 16,
+            "includes": [
+              "stay text"
+            ]
+          },
+          {
+            "line": 1,
+            "column": 23,
+            "includes": [
+              "stay text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "inner-same-marker",
+      "description": "The block attaches to the outer span that holds a literal marker.",
+      "source": "*a *b*{.x}\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 6,
+            "includes": [
+              "attaches",
+              "column 1"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "intraword-same-marker",
+      "description": "An intraword marker inside the span.",
+      "source": "*a*b*{.x}\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "attaches"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "multi-line-span",
+      "description": "The span may open on an earlier line.",
+      "source": "*a\nb *c*{.x}\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 5,
+            "includes": [
+              "attaches",
+              "line 1"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "in-a-quote",
+      "description": "The rule reads inline content in every container.",
+      "source": "> q *a *b*{.x}\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 10,
+            "includes": [
+              "attaches"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "in-a-table-cell",
+      "description": "A table cell is inline content too.",
+      "source": "| a*{.x} |\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 4,
+            "includes": [
+              "stay text"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "canonical",
+      "description": "The plain attributed span is the canonical spelling.",
+      "source": "*a*{.x}\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "braced-span",
+      "description": "A braced span is explicit.",
+      "source": "{*a*}{.x}\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "braced-inner-span",
+      "description": "A braced inner span is explicit.",
+      "source": "*a {*b*}{.x}*\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "other-kinds",
+      "description": "A plain attributed span of another kind is quiet.",
+      "source": "/a/{.x} _b_{.y} ~c~{.z} =d={.w}\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "escaped-marker",
+      "description": "An escaped marker is quiet.",
+      "source": "a\\*{.x}\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "escaped-inner-marker",
+      "description": "An escaped inner marker leaves a visible pairing.",
+      "source": "*a \\* b*{.x}\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "nested-other-kind",
+      "description": "Another marker kind inside the span is not ambiguous.",
+      "source": "*a /b/{.y} c*{.x}\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "code-span",
+      "description": "Code is quiet.",
+      "source": "`a*{.x}`\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "spaced-block",
+      "description": "A space before the brace is not adjacency.",
+      "source": "a * {.x}\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "not-an-attribute-block",
+      "description": "A brace group that is not a valid block is quiet.",
+      "source": "a*{???}\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}
