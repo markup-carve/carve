@@ -6312,7 +6312,7 @@ function fencedBlockEnd(lines, start) {
  *  block-quote form, a sibling marker ends the list form), the fence rule does
  *  not. The caller hands lines[start..end) to parseBlocks, which owns the actual
  *  block classification. */
-function oneBlockEnd(lines, start, endsBlock) {
+function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
   // A fence after a leading attribute run is still the attached block (carve#1238).
   let opener = start
   const column = indentCols(lines[start] ?? '').col
@@ -6320,7 +6320,8 @@ function oneBlockEnd(lines, start, endsBlock) {
   const fenced = fencedBlockEnd(lines, opener)
   if (fenced !== -1) return fenced + 1
   let end = start
-  while (end < lines.length && !endsBlock(end)) end++
+  const stopAt = Math.min(lines.length, cap)
+  while (end < stopAt && !endsBlock(end)) end++
   return end
 }
 
@@ -6379,6 +6380,18 @@ function markMeasuredContainerText(state, lines, from, to, ind) {
   }
 }
 
+// The marker columns of rows start..limit, shifted to the slice. The map holds
+// every marker line of the host, so read the shorter side (carve#4017).
+function measuredMarkerColumns(markerColumns, start, limit) {
+  const shifted = new Map()
+  if (markerColumns.size <= limit - start) {
+    for (const [row, col] of markerColumns) if (row >= start && row < limit) shifted.set(row - start, col)
+    return shifted
+  }
+  for (let row = start; row < limit; row++) if (markerColumns.has(row)) shifted.set(row - start, markerColumns.get(row))
+  return shifted
+}
+
 function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0) {
   if (limit - start <= 1) return limit
   // Measure the block at the column it is read at: `  # H` is a heading there.
@@ -6407,8 +6420,7 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
     footnoteDefs: new Map(),
     abbrDefs: new Map(),
     includeFiles: state.includeFiles,
-    markerLineColumns: new WeakMap(markerColumns ? [[measuredLines, new Map([...markerColumns]
-      .filter(([row]) => row >= start && row < limit).map(([row, col]) => [row - start, col]))]] : []),
+    markerLineColumns: new WeakMap(markerColumns ? [[measuredLines, measuredMarkerColumns(markerColumns, start, limit)]] : []),
     sourceHasLonePlus: state.sourceHasLonePlus,
     ordinaryPlusSentinel: state.ordinaryPlusSentinel,
     refusedSiblingSentinel: state.refusedSiblingSentinel,
@@ -6546,9 +6558,20 @@ function foldedDefinitionEnd(lines, start, end, seen) {
 const attachesFlushLeft = (firstMeas, column = 0) =>
   markerBodyPolicy(column, column).attaches(firstMeas)
 
+// A line a closer lookahead reads past: only these can move a block end from below.
+const LOOKAHEAD_SHAPE = /`{3}|~{3}|:{3}|%%|\$\$/
+
 function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas, column = 0, readColumn = 0) {
   if (!attachesFlushLeft(firstMeas, column)) return start
-  return firstBlockEnd(lines, start, oneBlockEnd(lines, start, endsAttachment), state, undefined, readColumn)
+  // Grow a window instead of measuring the whole extent per marker (carve#4017).
+  // The extent holds no blank line outside a fence, so a block that ends inside
+  // the window ends there in the full extent too, unless a closer lies beyond.
+  for (let cap = start + 16; ; cap = start + 2 * (cap - start)) {
+    const limit = oneBlockEnd(lines, start, endsAttachment, cap)
+    const end = firstBlockEnd(lines, start, limit, state, undefined, readColumn)
+    if (limit < cap || cap >= lines.length) return end
+    if (end < limit && !lines.slice(start, limit).some((line) => LOOKAHEAD_SHAPE.test(line))) return end
+  }
 }
 
 // The boundary set for a container with no marker column of its own - a block
