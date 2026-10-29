@@ -4361,7 +4361,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (isEntry(cur) && (!relativeTermColumns ||
                 (sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) >= sourceTermCol) || isBlank(cur) || cur.startsWith(LAZY) &&
                 /^: (?=[ \t]*[^ \t])/.test(unlazy(cur)) &&
-                (sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) >= sourceTermCol) break
+                // A lazy line past a missed note lies below the term it folds into.
+                (sourceColumns?.[i] ?? -1) >= sourceTermCol) break
             // A comment at the container's column ends the term. Past it the
             // comment stays a comment, fence body included, and the term goes
             // on (carve#2411). Inline content never reaches across it, so it
@@ -7501,7 +7502,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         noteListBodyColumn = null
         noteListChildColumn = null
       }
-      if (i > noteFenceEnd && (FOOTNOTE_DEF.test(lm.rest) ||
+      if (i > noteFenceEnd && ((FOOTNOTE_DEF.test(lm.rest) && lm.col < markerNoteBodyColumn) ||
           (lm.rest !== '' && lm.col < markerNoteBodyColumn && !insideFence()))) {
         markerNoteEligible = false
         noteMarkerSeen = false
@@ -7780,7 +7781,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           // Measured from the base the definition was read at: an opener in its
           // body sits past that base and must not be measured from its own column.
           const defBase = authoredBlockLimit !== null && j >= authoredBlockLimit ? null : authoredBlockBase ?? contentCol
-          if (defBodyIndent !== null && defBase !== null && jm.col - defBase >= defBodyIndent + FOOTNOTE_BODY_COLUMN) {
+          // An open note owns a line at its body column, whatever block its body ended with.
+          const noteBodyLine = noteFrames.some(frame => jm.col >= frame.body)
+          if (noteBodyLine || (defBodyIndent !== null && defBase !== null && jm.col - defBase >= defBodyIndent + FOOTNOTE_BODY_COLUMN)) {
             const defBody = defBodyIndent
             if (!descendantFence && !closedMarkerFence) {
               const blanks = CAPTION.test(jm.rest) ? visibleDistance(i, j) : 1
@@ -7912,7 +7915,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           if (frame.firstBlockPending && (col === frame.marker || col === 0) &&
               !matchMarkerAt(lm)) break
           // A lazy line continues the note's open paragraph and keeps the note open.
-          if (openPara && foldablePlainLine(lm.rest)) break
+          if (openPara && foldablePlainLine(lm.rest) && !isDefinitionOrAttributeLine(lm.rest)) break
           noteFrames.pop()
         }
       }
@@ -8109,7 +8112,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const localBase = head.task !== undefined && headSubMarker && openerBase !== null ? openerBase : head.task !== undefined && headSubMarker && col >= contentCol + TASK_MARKER_SOURCE_WIDTH &&
           !insideFence() ? authoredBlockBase ?? contentCol + TASK_MARKER_SOURCE_WIDTH
           // A marker-line note after a task box reads its body from its own source column.
-          : head.task !== undefined && markerNoteEligible && !descendantOwned && col >= markerNoteBodyColumn
+          : head.task !== undefined && markerNoteEligible && col >= markerNoteBodyColumn
           ? markerNoteBodyColumn - FOOTNOTE_BODY_COLUMN
           : descendantOwned && noteFrames.length && col >= noteFrames.at(-1).body
           ? contentCol
