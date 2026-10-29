@@ -668,6 +668,9 @@
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5
 786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-5
+788-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-2
+788-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5
+788-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-7
 788-whitespace-after-a-leading-content-tab-is-not-content-3
 789-a-line-below-a-list-item-folds-into-the-open-paragraph-of-a-div-or-an-absorbed-colon-run-2
 789-a-line-below-a-list-item-folds-into-the-open-paragraph-of-a-div-or-an-absorbed-colon-run-3
