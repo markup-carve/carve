@@ -117,7 +117,10 @@ test('the grammar has no orphan production that the ledger does not declare', ()
  * would close it. An entry whose spelling does not reach its rule would send the
  * next person to write a corpus document that changes nothing.
  */
-const CLOSING_SPELLINGS = {}
+const CLOSING_SPELLINGS = {
+  braceUnderscore: ['a {#_} b', 'inlines'],
+  eqCloseCut: ['{=a>=}', 'inlines'],
+}
 
 test('every declared GAP has a spelling, and every spelling reaches its rule', () => {
   const gaps = [...ledger].filter(([, k]) => k === 'GAP').map(([r]) => r).sort()
