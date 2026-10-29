@@ -2976,7 +2976,9 @@ function ownLines(lines, trace = null) {
       }
       const next = frames[reached + 1]
       const limit = next.kind === 'quote' ? Infinity : next.canon - 1
-      lead(Math.min(Math.max(m.col - owner.cut, owner.canon), limit))
+      // A description separator is measured from its term's own column (CARVE-P0-008).
+      const cut = form.kind === 'dd' && owner.termShift !== undefined ? owner.termShift : owner.cut
+      lead(Math.min(Math.max(m.col - cut, owner.canon), limit))
       if (FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       result.push(out + src)
       if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
@@ -3030,6 +3032,7 @@ function ownLines(lines, trace = null) {
       if (form.kind === 'term') {
         owner.para = true
         owner.termCut = col - canon
+        owner.termShift = col - owner.canon
       }
       if (form.kind === 'fence' || form.kind === 'colon') {
         frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon,

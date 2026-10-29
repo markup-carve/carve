@@ -136,7 +136,7 @@
 {"id":"roundtrip-19b21872e0a8","source":"> -[d]: u\n\n[go][d]\n+ \n</#h>\n","html":"<blockquote><p>-[d]: u</p></blockquote>\n<p>[go][d]\n+\n&lt;/#h&gt;</p>"},
 {"id":"roundtrip-19ea25c89bf1","source":"1. *[dl]: definition list\n1. > *[3D]: three dimensional\n> *[9]: nine\n\nA dl, a 3D one, and 9.\n","html":"<ol>\n  <li>*[dl]: definition list</li>\n  <li>\n    <blockquote><p>*[3D]: three dimensional</p></blockquote>\n  </li>\n</ol>\n<blockquote><p>*[9]: nine</p></blockquote>\n<p>A dl, a 3D one, and 9.</p>"},
 {"id":"roundtrip-1a3503051d97","source":"{*a </#x*}> b*}\n{*a </#x*}> b*}\n\n","html":"<p><strong>a &lt;/#x*}&gt; b</strong>\n<strong>a &lt;/#x*}&gt; b</strong></p>"},
-{"id":"roundtrip-1a6a5531cfa5","source":" >> - item\n  :: Term\n  :  Def\n : under\n","html":"<p>&gt;&gt; - item</p>\n<dl>\n  <dt>Term</dt>\n  <dd>Def\n: under</dd>\n</dl>"},
+{"id":"roundtrip-1a6a5531cfa5","source":" >> - item\n  :: Term\n  :  Def\n : under\n","html":"<p>&gt;&gt; - item</p>\n<dl>\n  <dt>Term</dt>\n  <dd>Def</dd>\n  <dd>under</dd>\n</dl>"},
 {"id":"roundtrip-1a7ef55eff20","source":"> - ::: box\n>   text\n>    ```\n>    x\n>    ```\n. >   :::\n","html":"<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <p>text</p>\n        <pre><code>x\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ol>\n  <li>\n    <blockquote>\n      <div>\n\n      </div>\n    </blockquote>\n  </li>\n</ol>"},
 {"id":"roundtrip-1a999788c82c","source":"1. [](  )\n","html":"<ol>\n  <li><a href=\"\"></a></li>\n</ol>"},
 {"id":"roundtrip-1aa5fd5c70ab","source":"-   lead\n - prose\n - [t]: /t\n\n See [t][].\n","html":"<ul>\n  <li>lead</li>\n  <li>prose</li>\n  <li></li>\n</ul>\n<p>See <a href=\"/t\">t</a>.</p>"},
