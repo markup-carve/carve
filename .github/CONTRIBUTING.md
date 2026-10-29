@@ -35,9 +35,11 @@ For this repo in particular:
 - If you change `resources/examples/*.md`, regenerate the corpus and verify the
   resulting fixture diff is intentional.
 - Round trips are gated by per-document exception lists in
-  `resources/roundtrip/`, not by committed totals. A corpus document that fails
-  a round trip is added to the matching list, sorted, in the PR that adds it;
-  one that passes after an engine change is removed. Rewrite the lists with
+  `resources/roundtrip/`, not by committed totals. Each list is a directory
+  with one empty file per corpus id (the corpus file name without `.crv`) and a
+  `.keep` file. A corpus document that fails a round trip gets its file in the
+  PR that adds it; one that passes after an engine change loses it. Rewrite the
+  lists with
   `CARVE_ROUNDTRIP_WRITE=1 npm run html-import:check` and
   `npm run roundtrip:structure -- --write`, then inspect the diff. Explain the
   changes in the commit message, not in the lists.

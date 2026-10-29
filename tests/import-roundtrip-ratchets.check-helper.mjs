@@ -17,11 +17,11 @@ const lists = new URL('../resources/roundtrip/', import.meta.url)
 // Each list names the corpus ids that do NOT pass its measure at the pinned
 // carve-js. CARVE_ROUNDTRIP_WRITE=1 rewrites them from a run; inspect the diff.
 const MEASURES = {
-  rejected: 'import-html-rejected.txt',
-  notFixedPoint: 'import-html-not-fixed-point.txt',
-  textChanged: 'import-html-text-changed.txt',
-  htmlMisses: 'import-roundtrip-html-misses.txt',
-  markdownMisses: 'import-roundtrip-markdown-misses.txt',
+  rejected: 'import-html-rejected',
+  notFixedPoint: 'import-html-not-fixed-point',
+  textChanged: 'import-html-text-changed',
+  htmlMisses: 'import-roundtrip-html-misses',
+  markdownMisses: 'import-roundtrip-markdown-misses',
 }
 
 const visibleText = (html) =>

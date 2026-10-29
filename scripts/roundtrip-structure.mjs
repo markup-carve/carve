@@ -8,7 +8,7 @@
  * and Unicode whitespace collapses in every string, including code and URLs.
  * Keep the first difference per document and at most three examples per bucket.
  * A strict count keeps the PART 10 §13 carrier fields among the identical trees.
- * --check gates every document against resources/roundtrip/structure-<engine>-<target>-*.txt:
+ * --check gates every document against the list directories resources/roundtrip/structure-<engine>-<target>-*:
  * an id not listed must be identical (and strict), and a listed id that passes fails as stale.
  * Inspect the buckets, then --write with all pinned engines to rewrite the lists.
  * Missing engines are skipped; --check and --write fail if a selected engine is missing.

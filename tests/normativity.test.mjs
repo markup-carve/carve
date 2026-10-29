@@ -241,7 +241,7 @@ const CITABLE = /\.(md|mjs|js|json|txt|ebnf)$/
  * script, the corpus README or the changelog is tracked. The test below pins
  * that this list still reaches all four.
  */
-const citationSources = execFileSync('git', ['ls-files', '-z'], { cwd: repo, encoding: 'utf8' })
+const citationSources = execFileSync('git', ['ls-files', '-z'], { cwd: repo, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
   .split('\0')
   .filter(Boolean)
   .filter((rel) => CITABLE.test(rel) && rel !== 'package-lock.json')

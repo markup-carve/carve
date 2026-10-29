@@ -97,15 +97,15 @@ test('exception gate rejects unlisted failures and skips, and stale or unknown e
   assert.deepEqual(checkExceptions([row], lists(['a'], ['b']), corpus), { failed: false, notices: [] })
   const regression = checkExceptions([{ ...row, notIdentical: ['a', 'c'] }], lists(['a'], ['b']), corpus)
   assert.equal(regression.failed, true)
-  assert.match(regression.notices[0], /structure-js-html-not-identical\.txt: c fails and is not listed/)
+  assert.match(regression.notices[0], /structure-js-html-not-identical: c fails and is not listed/)
   const improvement = checkExceptions([{ ...row, notIdentical: [] }], lists(['a'], ['b']), corpus)
   assert.equal(improvement.failed, true)
   assert.match(improvement.notices[0], /a passes now; remove it from the list/)
   const strictLoss = checkExceptions([{ ...row, notStrict: ['b', 'd'] }], lists(['a'], ['b']), corpus)
   assert.equal(strictLoss.failed, true)
-  assert.match(strictLoss.notices[0], /structure-js-html-not-strict\.txt: d fails and is not listed/)
+  assert.match(strictLoss.notices[0], /structure-js-html-not-strict: d fails and is not listed/)
   const strictGain = checkExceptions([{ ...row, notStrict: [] }], lists(['a'], ['b']), corpus)
-  assert.match(strictGain.notices[0], /not-strict\.txt: b passes now/)
+  assert.match(strictGain.notices[0], /not-strict: b passes now/)
   const unknown = checkExceptions([row], lists(['a', 'z'], ['b']), corpus)
   assert.match(unknown.notices[0], /z is not in the corpus/)
   assert.equal(checkExceptions([row], lists(['a'], ['b', 'b']), corpus).failed, true)
@@ -154,8 +154,8 @@ test('partial errors stay measured and separate from different trees', () => {
   assert.equal(row.errors, 1)
   assert.equal(row.different, 1)
   assert.deepEqual(exceptionLists([row]), [
-    { file: 'structure-php-md-not-identical.txt', ids: ['different', 'error'] },
-    { file: 'structure-php-md-not-strict.txt', ids: [] },
+    { file: 'structure-php-md-not-identical', ids: ['different', 'error'] },
+    { file: 'structure-php-md-not-strict', ids: [] },
   ])
 })
 
@@ -172,7 +172,7 @@ test('one missing list of a pair fails a supported row and an unsupported one', 
   const half = () => ({ notIdentical: [], notStrict: null })
   const supported = checkExceptions([{ ...measurement(), notIdentical: [] }], half, ['a'])
   assert.equal(supported.failed, true)
-  assert.match(supported.notices[0], /structure-php-md-not-strict\.txt is missing/)
+  assert.match(supported.notices[0], /structure-php-md-not-strict is missing/)
   const unsupported = { ...measurement(), status: 'unsupported', reason: 'Error' }
   assert.equal(checkExceptions([unsupported], half, ['a']).failed, true)
 })

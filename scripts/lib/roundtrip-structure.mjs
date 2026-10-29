@@ -149,8 +149,8 @@ export function record(stats, file, diff, error, message, strictDiff = null) {
 }
 // The ids that are not identical, and the identical ids that are not strict.
 export const exceptionFiles = (engine, target) => ({
-  notIdentical: `structure-${engine}-${target}-not-identical.txt`,
-  notStrict: `structure-${engine}-${target}-not-strict.txt`,
+  notIdentical: `structure-${engine}-${target}-not-identical`,
+  notStrict: `structure-${engine}-${target}-not-strict`,
 })
 
 /**

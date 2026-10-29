@@ -32,6 +32,7 @@ const NEVER_FETCH = [
 const files = execFileSync('git', ['ls-files', 'docs', 'resources', '*.md'], {
   cwd: repoRoot,
   encoding: 'utf8',
+  maxBuffer: 64 * 1024 * 1024,
 })
   .split('\n')
   .filter((path) => path.endsWith('.md') && !path.startsWith('docs/examples/'))

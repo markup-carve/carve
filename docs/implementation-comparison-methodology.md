@@ -746,11 +746,13 @@ collapsed or full form. Whitespace and comments are normalized as above.
 Strict differences are reported as `strictBuckets`, separate from `buckets`.
 
 CI runs `npm run roundtrip:structure -- --check` against the pinned engines.
-For each engine and target, `resources/roundtrip/structure-<engine>-<target>-not-identical.txt`
+For each engine and target, `resources/roundtrip/structure-<engine>-<target>-not-identical/`
 lists the corpus documents whose trees differ or fail, and
-`resources/roundtrip/structure-<engine>-<target>-not-strict.txt` lists the identical
-documents that lose a strict field. Every other document must pass. A listed
-document that passes now fails the check until its line is removed, and a listed
+`resources/roundtrip/structure-<engine>-<target>-not-strict/` lists the identical
+documents that lose a strict field. A list is a directory with one empty file
+per corpus id, so two changes that list different documents never touch the
+same file. Every other document must pass. A listed
+document that passes now fails the check until its file is removed, and a listed
 id that is no longer in the corpus fails as stale. The counts are computed from
 the corpus at run time, so a new corpus document that round-trips touches no
 file. A selected engine that is skipped cannot pass the check. When every

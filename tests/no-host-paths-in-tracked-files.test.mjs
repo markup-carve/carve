@@ -58,7 +58,7 @@ function findHostPath(text) {
 }
 
 function trackedFiles() {
-  const out = execFileSync('git', ['ls-files', '-z'], { cwd: repo, encoding: 'utf8' })
+  const out = execFileSync('git', ['ls-files', '-z'], { cwd: repo, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
   return out.split('\0').filter(Boolean)
 }
 

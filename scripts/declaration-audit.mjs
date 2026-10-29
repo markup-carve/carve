@@ -216,7 +216,7 @@ const MANIFEST = [
   { repo: 'spec', path: 'resources/ast-cell-wraps-acceptance.json', name: 'aheadOfPin', kind: 'json-flag', flag: 'aheadOfPin', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/an-atomic-inline-carries-its-continuation-join.test.mjs', staleness: 'is declared aheadOfPin but the pinned engine passes it: drop the flag', owner: 'tests/an-atomic-inline-carries-its-continuation-join.test.mjs' },
   // The one round-trip exception list that names an engine refusal rather than
   // a lossy target; the check fails on an id that passes now.
-  { repo: 'spec', path: 'resources/roundtrip/import-html-rejected.txt', kind: 'txt', policy: 'manual', guard: 'two-way', stalenessFile: 'scripts/lib/exception-list.mjs', staleness: 'passes now; remove it from the list', owner: 'tests/import-roundtrip-ratchets.check-helper.mjs' },
+  { repo: 'spec', path: 'resources/roundtrip/import-html-rejected', kind: 'dir', policy: 'manual', guard: 'two-way', stalenessFile: 'scripts/lib/exception-list.mjs', staleness: 'passes now; remove it from the list', owner: 'tests/import-roundtrip-ratchets.check-helper.mjs' },
 
   { repo: 'spec', path: 'resources/html-import-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'tests/html-import-contract.check.mjs', staleness: 'pinned build now reproduces it. Delete the entry', owner: 'npm run html-import:check' },
 
@@ -864,6 +864,7 @@ const LANG_OF = { js: 'js', 'js-string': 'js', php: 'php', rust: 'rust' }
 /** Live rows for one manifest entry, or an Error explaining why not. */
 function liveRows(entry, src) {
   if (entry.kind === 'txt') return txtRows(src)
+  if (entry.kind === 'dir') return txtRows(src)
   if (entry.kind === 'json' || entry.kind === 'json-flag') {
     let node
     try { node = JSON.parse(src) } catch (error) { return new Error(`invalid JSON: ${error.message}`) }
@@ -936,6 +937,15 @@ function read(repo, path) {
   } catch (error) {
     return new Error(`git show ${ref}:${path} failed in ${info.dir}: ${String(error.message).split('\n')[0]}`)
   }
+}
+
+/** A `dir` ledger's entries, one per line; the leading-dot marker files are not rows. */
+function readDir(repo, path) {
+  const info = REPOS[repo]
+  if (!info || !existsSync(info.dir)) return new Error(`checkout not found: ${info?.dir ?? repo}`)
+  const names = listFiles(repo, path).map((file) => file.slice(file.lastIndexOf('/') + 1))
+  if (names.length === 0) return new Error(`directory not found: ${path}`)
+  return names.filter((name) => !name.startsWith('.')).sort().join('\n')
 }
 
 function stalenessCheck(entry, source, reader = read) {
@@ -1072,7 +1082,7 @@ console.log(`${pad('repo', width.repo)} ${pad('file', width.path)} ${pad('consta
 console.log('-'.repeat(width.repo + width.path + width.name + width.rows + 24))
 
 for (const entry of MANIFEST) {
-  const src = read(entry.repo, entry.path)
+  const src = entry.kind === 'dir' ? readDir(entry.repo, entry.path) : read(entry.repo, entry.path)
   const label = `${pad(entry.repo, width.repo)} ${pad(entry.path, width.path)} ${pad(entry.name ?? '-', width.name)}`
   if (src instanceof Error) {
     // "There is no sibling clone of carve-rs on this machine" is a fact about
