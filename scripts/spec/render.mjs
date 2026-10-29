@@ -16,10 +16,35 @@ import { MAX_CODE_RUN, Refuse, trimWs } from './layout.mjs'
 import { findDirectives, hasInvalidLineRange } from './include-directive.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const core = ohm.grammar(readFileSync(presolve(here, '../../resources/carve-core.ohm'), 'utf8'))
+const coreSource = readFileSync(presolve(here, '../../resources/carve-core.ohm'), 'utf8')
+const base = ohm.grammar(coreSource)
 // CARVE-P3-025 names general categories Mn, Mc and Me, which Ohm's grammar
 // syntax cannot spell, so the placeholder rule is given them here.
-core.rules.markChar.body = new ohm.pexprs.Alt(['Mn', 'Mc', 'Me'].map((c) => new ohm.pexprs.UnicodeChar(c)))
+base.rules.markChar.body = new ohm.pexprs.Alt(['Mn', 'Mc', 'Me'].map((c) => new ohm.pexprs.UnicodeChar(c)))
+// A braced opener needs the closer `X}` of its mark, so one with no `X}` after
+// it fails without scanning to the end of the block (PART 9 §9 LINEAR TIME).
+// The gate only refuses what the production would refuse anyway.
+const BRACED_RULES = ['forced<d>', 'fBody<d>', 'edIns', 'edDel', 'edSub', 'edCommentBody', 'edInsBody', 'edDelBody', 'bracedComment']
+const core = ohm.grammar(`CarveGated <: ${base.name} {
+  closerless = "\\u0000"
+${BRACED_RULES.map((rule) => `  ${rule} := ~closerless ${coreSource.match(new RegExp(`^  ${rule.replace('<d>', '<d>')} *= (.*)$`, 'm'))[1]}`).join('\n')}
+}`, { [base.name]: base })
+let closerIndex = { source: null, last: null }
+const closerless = new ohm.pexprs.Terminal('')
+closerless.eval = function (state) {
+  const { source, pos } = state.inputStream
+  if (closerIndex.source !== source) {
+    const last = new Map()
+    for (let i = source.indexOf('}', 1); i !== -1; i = source.indexOf('}', i + 1)) last.set(source[i - 1], i - 1)
+    closerIndex = { source, last }
+  }
+  if (source[pos] === '{' && !((closerIndex.last.get(source[pos + 1]) ?? -1) >= pos + 2)) {
+    return ohm.pexprs.Terminal.prototype.eval.call(this, state)
+  }
+  state.processFailure(pos, this)
+  return false
+}
+core.rules.closerless.body = closerless
 // A combined opener is a stack entry (PART 9 §9 THE COMBINED TOKEN), so the
 // `bold_italic` production never matches here: its `/` and `*` reach
 // `pairDelims` as candidates.
