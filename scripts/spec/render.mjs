@@ -2084,38 +2084,84 @@ function renderInlineInner(text) {
     const contested = attachedAttrs.filter((a) => contestedBlock(source, a))
     return { out, offsets: [...unattachedAttrs, ...contested], paired: pairedDelims }
   }
+  let source = text
+  // Brace escapes this loop wrote, as offsets into `source`.
+  const escapes = []
   try {
-    let source = text
-    // Brace escapes this loop wrote, as offsets into `source`.
-    const escapes = []
-    // Each pass escapes ONE unattached block, so the number of blocks bounds the
-    // loop and a pass that finds none is the answer.
+    // One pass escapes every block of the class the old one-at-a-time loop
+    // would pick next (carve#3936): the sure blocks, or when none is sure the
+    // provisional ones. That is the same document unless an escape lets a later
+    // member attach. A member that could is one glued to a closer that pairs
+    // once the batch is text and holding a delimiter of its own; the batch is
+    // then taken back and only its leftmost block escaped.
+    let batch = null
+    const limit = 4 * (text.split('{').length + 1)
     for (let pass = 0; ; pass++) {
       const result = read(source)
       const { out, offsets } = result
-      if (offsets.length === 0 || pass > offsets.length + 1) {
+      if (batch) {
+        const paired = new Set(result.paired)
+        const active = batch.members.filter((m) => m.active)
+        const last = Math.max(...active.map((m) => m.at))
+        if (active.some((m) => paired.has(m.at - 1)) || offsets.some((o) => o.provisional ? batch.provisional && o.at < last : batch.provisional || o.at < last)) {
+          source = batch.source
+          escapes.splice(0, escapes.length, ...batch.escapes)
+          escape([batch.first])
+          batch = null
+          continue
+        }
+        batch = null
+      }
+      if (offsets.length === 0 || pass > limit) {
         if (offsets.length === 0 && escapes.length) return restoreAttached(source, escapes, result)
         return out
       }
       // A block that attaches in no reading is text first (carve#3933): only
       // then may a block whose span a guard blocked hand its closer out.
       const definite = offsets.filter((o) => !o.provisional)
-      const first = (definite.length ? definite : offsets).reduce((left, right) => left.at <= right.at ? left : right)
-      // A literal delimiter cannot carry attributes. Preserve a following
-      // editorial comment by escaping that delimiter instead of its brace.
-      const comment = first.literalMarker && source[first.at - 1] === first.markerChar && source.startsWith('{#', first.at) && !extendsGrapheme(source, first.at + 2) && source.indexOf('#}', first.at + 2) >= 0
-      const escapeAt = comment ? first.at - 1 : first.at
-      // A brace that opens a braced inline stays one: an empty comment parts
-      // it from the delimiter instead (carve#3940).
-      const cut = !comment && BRACED_MARKS.has(source[first.at + 1]) ? '{%%}' : '\\'
-      source = source.slice(0, escapeAt) + cut + source.slice(escapeAt)
-      for (const e of escapes) if (e.at >= escapeAt) { e.at += cut.length; e.end += cut.length }
-      if (!comment) escapes.push({ at: escapeAt, end: first.end + cut.length, len: cut.length })
+      const pool = (definite.length ? definite : offsets).toSorted((x, y) => x.at - y.at)
+      const picked = [pool[0]]
+      for (const o of pool) {
+        if (TOKEN_CHARS.test(source.slice(o.at + 1, o.end - 1))) break
+        if (o !== pool[0]) {
+          if (commentAfter(o)) break
+          picked.push(o)
+        }
+      }
+      if (picked.length > 1) batch = { source, escapes: escapes.map((e) => ({ ...e })), first: pool[0], provisional: !definite.length }
+      const placed = escape(picked)
+      if (batch) batch.members = placed.slice(1)
     }
   } finally {
     unattachedAttrs = saved
     pairedDelims = savedPaired
     attachedAttrs = savedAttached
+  }
+
+  // A literal delimiter cannot carry attributes. Preserve a following
+  // editorial comment by escaping that delimiter instead of its brace.
+  function commentAfter(block) {
+    return block.literalMarker && source[block.at - 1] === block.markerChar && source.startsWith('{#', block.at) && !extendsGrapheme(source, block.at + 2) && source.indexOf('#}', block.at + 2) >= 0
+  }
+
+  // Escapes `blocks` (in source order) and returns where each escape landed,
+  // with whether the block holds a delimiter besides a `key=`.
+  function escape(blocks) {
+    const placed = []
+    for (const block of blocks.toReversed()) {
+      const comment = commentAfter(block)
+      const escapeAt = comment ? block.at - 1 : block.at
+      // A brace that opens a braced inline stays one: an empty comment parts
+      // it from the delimiter instead (carve#3940).
+      const cut = !comment && BRACED_MARKS.has(source[block.at + 1]) ? '{%%}' : '\\'
+      const body = source.slice(block.at + 1, block.end - 1).replace(/[A-Za-z0-9_-]+=/g, '')
+      source = source.slice(0, escapeAt) + cut + source.slice(escapeAt)
+      for (const e of escapes) if (e.at >= escapeAt) { e.at += cut.length; e.end += cut.length }
+      for (const p of placed) p.at += cut.length
+      placed.unshift({ at: escapeAt, active: [...body].some((c) => BRACED_MARKS.has(c)) })
+      if (!comment) escapes.push({ at: escapeAt, end: block.end + cut.length, len: cut.length })
+    }
+    return placed
   }
 
   // A block escaped because a block to its right was still opaque may follow a
@@ -2124,6 +2170,42 @@ function renderInlineInner(text) {
   // it paired and the document still reads with no unattached block.
   function restoreAttached(source, escapes, current) {
     escapes.sort((a, b) => a.at - b.at)
+    // Every candidate is first taken back at once; a candidate that still
+    // reads unattached leaves the trial, and what remains needs one read
+    // (carve#3936). The one-at-a-time walk below finishes the rest.
+    for (;;) {
+      let trial = source
+      let result = current
+      let back = escapes.filter((e) => SPAN_CLOSER_ENDS.has(source[e.at - 1]) && !current.paired.some((p) => p > e.at && p < e.end))
+      while (back.length > 1) {
+        trial = source
+        for (const e of back.toReversed()) trial = trial.slice(0, e.at) + trial.slice(e.at + e.len)
+        result = read(trial)
+        if (!result.offsets.length) break
+        const loose = new Set(result.offsets.map((o) => o.at))
+        let shift = 0
+        const kept = back.filter((e) => {
+          const keep = !loose.has(e.at - shift)
+          shift += e.len
+          return keep
+        })
+        back = kept.length < back.length ? kept : []
+      }
+      if (back.length < 2) break
+      const taken = new Set(back)
+      let shift = 0
+      escapes = escapes.filter((e) => {
+        if (taken.has(e)) {
+          shift += e.len
+          return false
+        }
+        e.at -= shift
+        e.end -= shift
+        return true
+      })
+      source = trial
+      current = result
+    }
     for (let k = 0; k < escapes.length; k++) {
       const { at, end, len } = escapes[k]
       if (!SPAN_CLOSER_ENDS.has(source[at - 1])) continue
@@ -2140,6 +2222,10 @@ function renderInlineInner(text) {
     return current.out
   }
 }
+
+// Characters that, once a block is text, can start a construct swallowing the
+// text after it (a code span, a link, a nested block, an escape).
+const TOKEN_CHARS = /[`[\]{}\\<]/
 
 // The markers after `{` that open a braced inline (PART 9 SS22, editorial, comments).
 const BRACED_MARKS = new Set(['/', '*', '_', '~', '^', ',', '=', '+', '-', '#', '%'])
