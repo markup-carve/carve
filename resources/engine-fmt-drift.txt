@@ -21,3 +21,15 @@
 #
 # Format: <slug><space><space><reason>
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  The pinned writer drops indentation that rule A (markup-carve/carve#3885) now reads; markup-carve/carve-js#3874.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-11  The pinned writer respells a combined token it reads as open after a guarded opener, against the carve#3947 ruling; markup-carve/carve-js#3933.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-27  The pinned writer respells a combined token it reads as open after a guarded opener, against the carve#3947 ruling; markup-carve/carve-js#3933.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-43  The pinned writer respells a combined token it reads as open after a guarded opener, against the carve#3947 ruling; markup-carve/carve-js#3933.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-59  The pinned writer respells a combined token it reads as open after a guarded opener, against the carve#3947 ruling; markup-carve/carve-js#3933.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-2  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-10  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-23  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-26  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-39  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-42  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-55  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
+781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-58  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
