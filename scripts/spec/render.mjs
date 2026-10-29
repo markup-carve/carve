@@ -21,6 +21,35 @@ const base = ohm.grammar(coreSource)
 // CARVE-P3-025 names general categories Mn, Mc and Me, which Ohm's grammar
 // syntax cannot spell, so the placeholder rule is given them here.
 base.rules.markChar.body = new ohm.pexprs.Alt(['Mn', 'Mc', 'Me'].map((c) => new ohm.pexprs.UnicodeChar(c)))
+// `bareVal` reads to the next stop character from an index, so the blocks of a
+// `*{k=x*{k=x...` run do not each rescan the line (PART 9 §9 LINEAR TIME,
+// carve#4092). It matches exactly the run `(~(stop) any)+` in carve-core.ohm.
+const TerminalNode = ohm.grammar('T { s = "a" }').match('a')._cst.children[0].constructor
+let bareValStops = { source: null, next: null }
+const bareRun = new ohm.pexprs.Terminal('')
+bareRun.eval = function (state) {
+  const { inputStream } = state
+  const { source, pos } = inputStream
+  if (bareValStops.source !== source) {
+    const next = new Int32Array(source.length + 1)
+    next[source.length] = source.length
+    for (let i = source.length - 1; i >= 0; i--) {
+      const c = source[i]
+      const stop = c === ' ' || c === '\t' || c === '}' || c === '|' || c === '"' || c === "'" || c === '\\' || c === '\n' || (c === '\r' && source[i + 1] === '\n')
+      next[i] = stop ? i : next[i + 1]
+    }
+    bareValStops = { source, next }
+  }
+  const end = bareValStops.next[pos]
+  if (end === pos) {
+    state.processFailure(pos, this)
+    return false
+  }
+  inputStream.pos = end
+  state.pushBinding(new TerminalNode(end - pos), pos)
+  return true
+}
+base.rules.bareVal.body = bareRun
 // A braced opener needs the closer `X}` of its mark, so one with no `X}` after
 // it fails without scanning to the end of the block (PART 9 §9 LINEAR TIME).
 // The gate only refuses what the production would refuse anyway.
