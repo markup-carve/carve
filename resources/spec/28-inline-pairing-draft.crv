@@ -1,0 +1,78 @@
+# Inline pairing algorithm
+
+Status: draft for a future replacement of the inline pairing clauses. The existing clauses remain normative until this draft is approved: PART 3 (the bare templates, the guard note, `bold_italic` and the forced productions), PART 4 (the inline attribute run), PART 8 (inline precedence and its disambiguation rule), PART 9 §9 (E1 to E5), §22 (matching order, unpaired closers, `{~` disambiguation) and CARVE-P3-001 (the bracket scan). This section decides which characters pair and what each pair becomes. Element rendering, smart typography, mentions, tags and symbols keep their own clauses and run on the text this procedure leaves.
+
+The input is the inline content of one block after block structure is settled. A *region* is that content, or the content of a bracket run, braced span, editorial frame or combined span. Pairing never crosses a region boundary, in either direction. The bare delimiters are `/`, `*`, `_`, `~` and `=`. A character is *alnum* when it is an ASCII letter or digit. A delimiter followed by a grapheme extender (general category Mn, Mc or Me, U+FE00 to U+FE0F, or U+200D) is part of a larger character: it is text and takes part in no step below, and a braced opener whose mark is followed by one is text.
+
+Resolve the block in two passes.
+
+1. *Atoms.* Scan left to right. At each position, take the first construct of the atom table that matches; otherwise the character is one inline character. An atom is opaque to pass 2: no delimiter inside it pairs with one outside it. A bracket run is an atom whose content is a new region.
+2. *Reading.* Read each region left to right with one stack of open bare entries, as in the procedure below. A braced opener, an editorial opener and a combined opener each start a *nested reading* of a new region. Nothing in this pass looks past the current character, except a nested reading, which reads ahead to find its own closer, and the attribute run directly after a closer.
+
+## Pass 2 procedure
+
+For a bare delimiter d at position p, `before` is the source character at p - 1 and `after` the one at p + 1, also across a region boundary or an atom: in ``a`b`_c_`` the `_` stands after a backtick, and in `a_*x*` the `*` stands after `_`. Only the start and end of the block are START and END, which count as whitespace.
+
+- *Can close* when `before` is not whitespace and `after` is not alnum.
+- *Can open* when `after` is neither whitespace nor d, and `before` is not alnum and not d. Two further guards apply to the opener:
+  - `before` is `_`, for every d;
+  - `before` is `/`, for d of `/` or `_`.
+- *Guard exemption.* A guard character that is itself an *open entry on the stack* is markup, not text, and does not block: `_*x*_` nests. The mark of a formed braced or editorial span is markup too, so `{_*a* b_}` nests. Any other guard blocks: `a_*x*` stays text. Whether that guard entry closes later does not matter (carve#3947).
+- `=` followed by `>` never opens: it is the arrow.
+
+A region has *own kinds*: the kind of its braced span or editorial frame, or both `/` and `*` for a combined span, and none for the block or a bracket run. A bare delimiter of an own kind is text in that region.
+
+At each position of the region, in order:
+
+1. *Nested opener.* At `{X` with X one of `/ * _ ~ = ^ , + -`, or at a combined opener (below), start a nested reading at the next character. It reads exactly like this procedure, with its own stack, bounded only by the block or the enclosing bracket run, not by an enclosing nested reading, and ends at the first closer token of its kind it reaches outside its own atoms, nested readings and attached runs. A closer token is `X}` for a braced or editorial opener and `*/` for a combined one. If it ends with content between the marks, the span forms; continue after its closer. Otherwise the opener fails: `{` is text, its mark X is read as a bare candidate (for `^ , + -` as text), and reading continues at that mark. An editorial `{+` or `{-` inside a frame of its own kind is text; it starts no nested reading.
+2. *Close first.* If d can close and an entry of kind d is open on the stack, close the nearest such entry. Every entry above it is removed and becomes text. The new span is final.
+3. *Attach.* A glued attribute run (one or more valid attribute blocks with nothing between them) directly after a closer that closed a span, a formed nested span, a bracket run, a code span, math or an autolink attaches to it and is consumed. Its characters take part in nothing else. After a delimiter that closed nothing, a brace group is not an attribute run: its characters are read like any others, so a braced opener or closer in it still counts.
+4. *Open.* Otherwise, if d can open, is not an own kind and no entry of kind d is open on the stack, push d.
+5. *Text.* Otherwise d is text. A closer token `X}` that ends no nested reading is a bare X followed by a literal `}`.
+
+At the end of the region every entry still open becomes text.
+
+A *combined opener* is a `/` followed by `*`, where the `/` can open, the `*` is followed by neither whitespace nor a grapheme extender, and neither `/` nor `*` is open on the stack or an own kind (carve#3234). Its closer token is a `*` that is not after whitespace followed by a `/` that is not followed by alnum. A formed combined span renders as strong around emphasis. A failed one is two bare candidates.
+
+A `{~` span is a substitution when its content holds a `~>` at its own level, outside every atom and nested span: the first such `~>` splits it into two regions. Any other `{~` span is strike.
+
+## Atom table
+
+|= Atom                     |= Starts with                           |= Ends at                                                                                 |= Content                                          |= Unclosed                                      |
+| Escape                    | `\` and an ASCII punctuation character | that character                                                                           | the character, never a delimiter                  | no such case                                   |
+| Code span                 | a backtick run of length n             | the next run of exactly n backticks                                                      | verbatim; a glued `{=format}` makes it raw inline | the rest of the block is code, except under X5 |
+| Math                      | `$` or `$$` before a code span         | the code span's end                                                                      | verbatim                                          | as code span                                   |
+| Inline literal            | `!` before a code span                 | the code span's end                                                                      | verbatim                                          | as code span                                   |
+| Autolink, cross-reference | `<` and a valid URL, address or `/#id` | `>`                                                                                      | opaque                                            | text                                           |
+| Comment                   | `{%` or `{#`                           | the matching `%}` or `#}`                                                                | opaque; `{#` renders as an editorial comment      | text                                           |
+| Inline note               | `^[`                                   | the balanced `]`                                                                         | a region                                          | text                                           |
+| Note reference            | `[^` and a label                       | the first `]`                                                                            | none                                              | text                                           |
+| Bracket run               | `[`                                    | the balanced `]`, skipping escapes, code, literals, comments, destinations and autolinks | a region                                          | the `[` is text                                |
+| Bracket tail              | `(` after a bracket run's `]`          | the balanced `)`, title included                                                         | opaque destination; the run is a link or image    | the run is literal                             |
+
+A bracket run is a region whether it resolves to a link, an image, a span, a reference or literal brackets (PART 9 E2b): `[{+a]+}` is text, and `*[*g*] x*` holds two strong spans. Braced spans, editorial frames and combined spans are not atoms; pass 2 finds them, so an attribute block that a bare closer has not taken is visible to them: in `={_a={c_}` the `{_` forms and the `=` closes nothing (carve#3940).
+
+## Kind table
+
+|= Kind                        |= Bare |= Nested                               |= Own-kind rule                                                                                                  |= Attribute run            |
+| Emphasis                     | `/`   | `{/` `/}`                             | a bare `/` is text while an emphasis is open on the stack or the region's own kind; a nested `{/` may repeat it | after the closer          |
+| Strong                       | `*`   | `{*` `*}`                             | as emphasis                                                                                                     | after the closer          |
+| Underline                    | `_`   | `{_` `_}`                             | as emphasis                                                                                                     | after the closer          |
+| Strike                       | `~`   | `{~` `~}` without a `~>` at its level | as emphasis                                                                                                     | after the closer          |
+| Highlight                    | `=`   | `{=` `=}`                             | as emphasis                                                                                                     | after the closer          |
+| Superscript, subscript       | none  | `{^` `^}`, `{,` `,}`                  | nested only                                                                                                     | after the closer          |
+| Combined                     | none  | `/*` `*/`                             | `/` and `*` are text inside                                                                                     | after the `*/`            |
+| Substitution                 | none  | `{~` `~>` `~}`                        | two regions, split at the first `~>`                                                                            | none                      |
+| Insertion, deletion          | none  | `{+` `+}`, `{-` `-}`                  | no same-kind child                                                                                              | after the closer          |
+| Code, math, literal, comment | atom  | atom                                  | opaque                                                                                                          | code and math only        |
+| Bracket run, note reference  | atom  | atom                                  | region                                                                                                          | after the `]` or the tail |
+| Autolink                     | atom  | atom                                  | opaque                                                                                                          | after the `>`             |
+
+## Exceptions the current text needs
+
+The procedure has no lookahead in the stack itself. The current clauses add readings it cannot express. Each is stated so that an implementation of this draft can reproduce the current model; the pull request counts how often each changes an output.
+
+- *X1, guard lookahead (PART 3 note under the bare templates).* The current note says a guard counts as markup only when it opens a span *that closes*. To reproduce it, read the region; then, for every opener admitted by a guard entry that did not close, block that opener (it may still close) and read the region again, until no opener is newly blocked. Blocking only removes openers, so the loop ends. Under X1, `_*x* q` is text, and in `_*a*{c_}` the `_` closes inside the brace group because the guarded `*` cannot open first.
+- *X5, an unclosed code run inside a nested reading.* X5 overrides the atom table's unclosed column for code: pass 1 leaves an unclosed backtick run open, and pass 2 settles where it ends. An unclosed backtick run inside a braced span or editorial frame ends before the first closer token of that span's kind after it, and that closer closes the span: ``{*a `b*} c`` is strong around `a` and code `b`. In a bracket run or a combined span the unclosed run takes the rest of the block.
+- *X6, the empty brace group.* A brace group of `{`, one or two copies of one delimiter of `/ * _ ~ =`, and `}` is text as a whole: its delimiters are not candidates and its closer closes nothing, so `_a *c{_}` is text and `{*a {**} b*}` is one strong span around `a {**} b`. A group of two different delimiters, such as `{*/}`, is not covered.
+- *X3, split rest (carve#3952, open).* When the model splits a combined token, the rest of its content keeps the token's reading instead of being read again. All three engines read it again, as this procedure does. X3 is a model defect, not a rule.
