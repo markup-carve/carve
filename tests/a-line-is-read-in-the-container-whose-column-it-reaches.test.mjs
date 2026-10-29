@@ -101,9 +101,9 @@ const cases = [
     "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<dl>\n<dt>t</dt>\n<dd></dd>\n</dl>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p>para</p>\n<h1 id=\"H\">H</h1>\n<p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n</li>\n</ol>\n</section>"
   ],
   [
-    "a column-0 line leaves a dd after a closed nested block",
+    "a column-0 line folds into the note of a description-hosted item (carve#3919)",
     ":: t\n: - para\n    [^p]: n\nx\n",
-    "<dl>\n<dt>t</dt>\n<dd>\n<ul>\n<li>para</li>\n</ul>\n</dd>\n</dl>\n<p>x</p>"
+    "<dl>\n<dt>t</dt>\n<dd>\n<ul>\n<li>para</li>\n</ul>\n</dd>\n</dl>"
   ],
   [
     "a marker below a dd-hosted list folds as item text",

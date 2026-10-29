@@ -2803,10 +2803,24 @@ function ownLines(lines) {
     if (inner.kind === 'fence') frames.pop()
     let owner = frames[reached]
     const form = classify(m.rest, owner, at, m.col)
+    // Past a missed note a marker opens where an item or a description body
+    // owns it (§10 I2), or beside a missed list.
+    const missedNote = missed && frames.slice(reached + 1).some((f) => f.kind === 'note')
     if (missed && m.rest !== '' && top().para && !form.interrupts &&
-        !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes)) {
+        !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes) &&
+        !(missedNote && form.kind === 'item' && (owner.kind === 'item' || owner.kind === 'dd' || frames.slice(reached + 1).some((f) => f.kind === 'item')))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
-      // the frame it missed.
+      // the frame it missed. Past a missed note it is framed LAZY in the
+      // deepest container, so every reader folds it there (carve#3885).
+      if (missedNote && top().plus !== at - 1) {
+        lead(0)
+        for (let k = reached + 1; k < frames.length; k++) {
+          if (frames[k].kind === 'quote') out += ' '.repeat(frames[k - 1].canon) + '> '
+        }
+        const leaf = top()
+        result.push(out + ' '.repeat(leaf.kind === 'quote' ? 0 : leaf.reader) + LAZY + src)
+        continue
+      }
       const next = frames[reached + 1]
       const limit = next.kind === 'quote' ? Infinity : next.canon - 1
       lead(Math.min(Math.max(m.col - owner.cut, owner.canon), limit))
@@ -2842,7 +2856,9 @@ function ownLines(lines) {
     result.push(out + src)
 
     // `col` is where the opener starts in the source, `canon` where it lands.
-    function apply(owner, col, form, canon = owner.canon) {
+    // `reader` is the column the block readers measure the opener at: a note's
+    // marker-line content starts at its body column.
+    function apply(owner, col, form, canon = owner.canon, reader = owner.reader ?? owner.canon) {
       owner.para = false
       owner.last = form.kind
       if (form.kind === 'term') {
@@ -2850,7 +2866,7 @@ function ownLines(lines) {
         owner.termCut = col - canon
       }
       if (form.kind === 'fence' || form.kind === 'colon') {
-        frames.push({ kind: form.kind, col: owner.col, canon: owner.canon, cut: col - canon,
+        frames.push({ kind: form.kind, col: owner.col, canon: owner.canon, reader, cut: col - canon,
           closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null })
         return
       }
@@ -2862,7 +2878,7 @@ function ownLines(lines) {
         return content(quote, 0, 0)
       }
       if (form.kind === 'item' || form.kind === 'note' || form.kind === 'dd') {
-        const frame = { kind: form.kind, col: col + form.width, canon: canon + form.width,
+        const frame = { kind: form.kind, col: col + form.width, canon: canon + form.width, reader: reader + form.width,
           cut: col - canon, para: false, last: null, markerCol: col, markerCanon: canon, axes: form.axes }
         frames.push(frame)
         take(form.head)
@@ -2880,6 +2896,8 @@ function ownLines(lines) {
         lead(m.col)
         frame.absorbs = absorbsColon(m.rest)
         frame.para = true
+        // A lone `+` may attach the next line instead (§17 L3).
+        if (CONT_MARKER.test(m.rest)) frame.plus = at
         frame.last = 'para'
         return
       }
@@ -2890,7 +2908,7 @@ function ownLines(lines) {
       }
       const col = start + m.col
       lead(m.col)
-      apply(frame, col, form, canon + m.col)
+      apply(frame, col, form, canon + m.col, frame.kind === 'note' ? frame.reader : frame.reader + canon + m.col - frame.canon)
     }
   }
   return frameTextFences(result, textFences)

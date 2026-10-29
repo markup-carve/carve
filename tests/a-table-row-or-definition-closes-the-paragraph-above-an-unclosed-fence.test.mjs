@@ -33,5 +33,5 @@ test('control: a quoted pipe line with no closing pipe keeps the quote paragraph
 // A quoted footnote body takes the closerless fence as a lazy line (carve#3885).
 test('quoted footnote definition takes the closerless fence as note text', () => {
   const html = render('> para', '> [^r]: n').replace(/\s+/g, ' ').replace(/ ?(<[^>]+>) ?/g, '$1')
-  assert.equal(html, '<aside class="admonition note" aria-label="Note"><blockquote><p>para</p></blockquote><div></div></aside><p>after<strong>b</strong></p>')
+  assert.equal(html, '<aside class="admonition note" aria-label="Note"><blockquote><p>para</p></blockquote><div><div><p>after<strong>b</strong></p></div></div></aside>')
 })

@@ -54234,10 +54234,11 @@ after *b*
     <li>para</li>
   </ul>
   <div>
-
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
   </div>
 </aside>
-<p>after <strong>b</strong></p>
 ```
 
 ::::::
@@ -55318,7 +55319,7 @@ x[^c]
 
 ::::::
 
-A closed nested block leaves no paragraph to keep the column-zero line (CARVE-P0-011).
+A footnote body takes a lazy line like every container (markup-carve/carve#3885), so the column-zero line folds into the unreferenced note:
 :::::: compare
 
 ````carve
@@ -55337,7 +55338,6 @@ x
     </ul>
   </dd>
 </dl>
-<p>x</p>
 ```
 
 ::::::

@@ -41,9 +41,9 @@ for (const [name, lines, expected] of [
 
 // A footnote body takes a lazy line like every container (carve#3885): the
 // closerless fence and its payload fold into the note, and the bare `::::`
-// opens a div in the admonition (§10 I1).
+// opens a div in the admonition that `:::` does not close, as after a quote.
 test('a footnote definition at the item content column takes the closerless fence as note text', () => {
   const html = render(['- para', '  [^f]: n']).replace(/\s+/g, ' ').replace(/ ?(<[^>]+>) ?/g, '$1')
-  assert.equal(html, '<aside class="admonition note" aria-label="Note"><ul><li>para</li></ul><div></div></aside><p>after<strong>b</strong></p>')
+  assert.equal(html, '<aside class="admonition note" aria-label="Note"><ul><li>para</li></ul><div><div><p>after<strong>b</strong></p></div></div></aside>')
   assert.deepEqual(parse('- para\n  [^f]: n\n```\ncode\n').footnoteDefs.get('f')[0].lines.map((l) => l.replace(/^\u0000L\u0000/, '')), ['n', '```', 'code'])
 })

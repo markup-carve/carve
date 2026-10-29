@@ -6,8 +6,11 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const render = (src) => renderDoc(parse(src))
 const F = '\x60'.repeat(3)
 
+// The note's last item holds an open paragraph, so `after [^b]` folds into it
+// and the note, referenced only from itself, renders nothing (carve#3918).
 test('literal repro 1', () => {
-  assert.equal(render("- a\n  [^b]: text\n\n    - c2\nafter [^b]\n"), "<ul>\n  <li>a</li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text</p>\n      <ul>\n        <li>c2</li>\n      </ul>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>")
+  const source = "- a\n  [^b]: text\n\n    - c2\nafter [^b]\n"
+  assert.equal(render(source), "<ul>\n  <li>a</li>\n</ul>")
 })
 
 test('literal repro 2', () => {
@@ -42,7 +45,8 @@ test('unchanged noBlank control', () => {
   assert.equal(render("- [^a]: text\n    - child\n    [^b]: text\n      - c2\n      ~~~\n      code\n      ~~~\nafter [^a] [^b]\n"), "<ul>\n  <li></li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> <a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\n- child<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n    <li id=\"fn2\">\n      <p>text\n- c2</p>\n      <pre><code>code\n</code></pre>\n      <p><a href=\"#fnref2\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>")
 })
 
-test('a note tail list takes no document lazy line', () => {
+// Only an open paragraph in the last item takes the line (carve#3918).
+test('a note tail list takes a document lazy line only into an open paragraph', () => {
   for (const column of [2, 4]) for (const blank of ['', '\n']) {
     for (const marker of ['-', '*', '1.']) for (const run of ['', F, '~~~']) {
       for (const tailBlank of ['', '\n']) {
@@ -51,7 +55,7 @@ test('a note tail list takes no document lazy line', () => {
         const src = head + blank + ' '.repeat(column) + '[^b]: text\n\n' +
           pad + marker + ' c2\n' + (run ? pad + run + '\n' + pad + 'code\n' + pad + run + '\n' : '') +
           tailBlank + 'after [^b]\n'
-        assert.ok(render(src).includes('</ul>\n<p>after'), src)
+        assert.equal(render(src).includes('</ul>\n<p>after'), run !== '' || tailBlank !== '', src)
       }
     }
   }

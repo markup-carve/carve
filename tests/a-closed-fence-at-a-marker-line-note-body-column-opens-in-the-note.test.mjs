@@ -75,13 +75,14 @@ test('a fence below the body column stays outside after an absorbed child', () =
   }
 })
 
-test('item prose below the note body column ends the note extent', () => {
-  for (const blank of ['', '\n']) {
-    const src = `- [^n]: text\n${blank}  item para\n\n    \`\`\`\n    code\n    \`\`\`\nafter [^n]\n`
-    const html = render(src)
-    assert.match(html.slice(0, html.indexOf('<section')), /<li>[\s\S]*<pre><code>code\n/)
-    assert.doesNotMatch(html.slice(html.indexOf('<li id="fn1">')), /<pre>/)
-  }
+// Without a blank, item prose below the note body column is a lazy line of
+// the note (carve#3885), and the fence follows it there.
+test('item prose below the note body column ends the note extent after a blank', () => {
+  const html = render('- [^n]: text\n\n  item para\n\n    ```\n    code\n    ```\nafter [^n]\n')
+  assert.match(html.slice(0, html.indexOf('<section')), /<li>[\s\S]*<pre><code>code\n/)
+  assert.doesNotMatch(html.slice(html.indexOf('<li id="fn1">')), /<pre>/)
+  const lazy = render('- [^n]: text\n  item para\n\n    ```\n    code\n    ```\nafter [^n]\n')
+  assert.match(lazy.slice(lazy.indexOf('<li id="fn1">')), /<p>text\nitem para<\/p>\n      <pre><code>code\n/)
 })
 
 test('a term at the note body column opens in the note, and a later fence follows it', () => {
