@@ -1617,9 +1617,12 @@ function footnotesMarkerFloor(heading, body, depth, attrs) {
   const pad = '  '.repeat(depth)
   const contents = [heading, body].filter(Boolean).join('\n')
   let paragraphOpen = 0
+  let preOpen = 0
+  // Paragraph and code text is verbatim, and a blank line stays blank.
   const inner = contents === '' ? '' : contents.split('\n').map((line) => {
-    const prefix = paragraphOpen === 0 ? '  ' : ''
+    const prefix = paragraphOpen === 0 && preOpen === 0 && line !== '' ? '  ' : ''
     paragraphOpen += (line.match(/<p(?:\s|>)/g) ?? []).length - (line.match(/<\/p>/g) ?? []).length
+    preOpen += (line.match(/<pre(?:\s|>)/g) ?? []).length - (line.match(/<\/pre>/g) ?? []).length
     return `${prefix}${line}`
   }).join('\n')
   return `${pad}<div${attrs}>\n${inner}\n${pad}</div>`
