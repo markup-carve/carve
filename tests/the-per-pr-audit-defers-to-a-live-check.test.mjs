@@ -42,6 +42,7 @@ import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { testFiles } from '../scripts/run-tests.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
@@ -90,11 +91,11 @@ test('the per-PR workflow still gates undeclared drift, which is what the lenien
     'the roundtrip test no longer ratchets engine-fmt-drift.txt, so a stale line there excuses nothing forever',
   )
   assert.match(
-    pkg.scripts.test,
+    testFiles(repo).join(' '),
     /tests\/corpus-convert\.test\.mjs/,
     'npm test no longer checks the pinned converter drift in either direction',
   )
-  assert.match(pkg.scripts.test, /tests\/optional-corpus\.test\.mjs/,
+  assert.match(testFiles(repo).join(' '), /tests\/optional-corpus\.test\.mjs/,
     'npm test must gate the optional reference-pin window in both directions')
   assert.match(
     scheduledWorkflow,

@@ -6172,18 +6172,28 @@ function markMeasuredContainerText(state, lines, from, to, ind) {
 function firstBlockEnd(lines, start, limit, state, sourceColumns) {
   if (limit - start <= 1) return limit
   const stop = { next: limit - start }
+  const measuredLines = lines.slice(start, limit)
+  // The throwaway state still reads the document the real parse reads: its
+  // settings, and the marker-line columns of the measured rows (carve#3945).
+  const markerColumns = state.markerLineColumns?.get(lines)
   const seen = {
     linkDefs: new Map(),
     footnoteDefs: new Map(),
     abbrDefs: new Map(),
+    includeFiles: state.includeFiles,
+    markerLineColumns: new WeakMap(markerColumns ? [[measuredLines, new Map([...markerColumns]
+      .filter(([row]) => row >= start && row < limit).map(([row, col]) => [row - start, col]))]] : []),
+    sourceHasLonePlus: state.sourceHasLonePlus,
+    ordinaryPlusSentinel: state.ordinaryPlusSentinel,
+    refusedSiblingSentinel: state.refusedSiblingSentinel,
     blockDepth: state.blockDepth ?? 0,
     measuringAuthoredBlock: state.measuringAuthoredBlock ?? false,
   }
-  const measuredLines = lines.slice(start, limit)
   seen.opaqueMeasurement = { origins: new WeakMap([[measuredLines, start]]), sourceColumns, sourceLines: lines, markerFenceEnd: new WeakMap(), rows: new Set() }
   try {
     parseBlocks(measuredLines, seen, false, true, undefined, stop)
-  } catch {
+  } catch (error) {
+    if (!(error instanceof Refuse)) throw error
     // Outside the executable subset: the extent is the honest answer, and the
     // real parse of these lines raises the same refusal where it belongs.
     return limit
