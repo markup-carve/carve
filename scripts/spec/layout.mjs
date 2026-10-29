@@ -7451,6 +7451,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         !matchMarkerAt(follower)
       if (i >= n || isBlank(lines[i]) ||
           (!firstBlockAtZero && !firstBlockAtContent && !attachesFlushLeft(follower, attachmentCol))) return false
+      // A same-column item is a sibling, never the attached block (PART 9 §17).
+      if (matchMarkerAt(follower)?.indent === baseIndent) return false
       const blockColumn = firstBlockAtZero ? 0 : firstBlockAtContent ? followerCol : attachmentCol
       const closesColon = fence.colon.length > 0
       if ((fence.opaque?.kind === 'code' && fence.opaque.opens !== false) || closesColon) {
