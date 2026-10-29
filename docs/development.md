@@ -126,3 +126,13 @@ that parse5 does not report as errors. It does not prove
 AST identity, CSS behavior, accessibility or script behavior. Canonical bytes
 remain the oracle: every byte mismatch still counts as drift, including one
 marked `same structure`, and the exit status and ledger checks are unchanged.
+
+## Finding the first divergent decision
+
+An HTML mismatch often surfaces lines after the ownership decision that caused
+it. `node scripts/trace-diff.mjs <input> --engine js|php|rs` compares the spec
+model's [decision trace](./decision-trace) with the engine's and prints the
+first line they decide differently, with the PART 0 step id and clause. Engines
+without a trace mode get the model's trace alone. The
+[decision trace](./decision-trace) page lists the step ids, the record format
+and the `carve trace <file>` command an engine implements.

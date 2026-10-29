@@ -2778,6 +2778,12 @@ function walkIndent(line) {
   return { col, rest: i === 0 ? line : line.slice(i) }
 }
 
+// Decision trace vocabulary (resources/spec/decision-trace.schema.json).
+const TRACE_FRAME = { quote: 'quote', item: 'item', note: 'footnote', dd: 'dd', colon: 'div' }
+const TRACE_FORM = { 'colon-close': 'closer', colon: 'div', note: 'footnote' }
+const TRACE_OPENS = new Set(['quote', 'item', 'note', 'dd', 'term', 'colon', 'fence'])
+const TRACE_RULE = { blank: 'CARVE-P0-003', leaf: 'CARVE-P0-011' }
+
 /*
  * Block ownership, rule A (carve#3885). One walk decides the owner of every
  * line: a line belongs to the deepest open container whose content column it
@@ -2788,7 +2794,7 @@ function walkIndent(line) {
  * column. A fence's payload loses at most the indentation it has. The block
  * readers below therefore only meet openers at a content column.
  */
-function ownLines(lines) {
+function ownLines(lines, trace = null) {
   const result = []
   const frames = [{ kind: 'doc', col: 0, canon: 0, cut: 0, para: false, last: null }]
   const top = () => frames[frames.length - 1]
@@ -2808,6 +2814,7 @@ function ownLines(lines) {
     if (close > 0) {
       result.push(...lines.slice(0, close + 1))
       start = close + 1
+      if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
     }
   }
   for (let at = start; at < lines.length; at++) {
@@ -2865,6 +2872,7 @@ function ownLines(lines) {
       lead(plus.markerCanon)
       result.push(out + src)
       afterPlus = true
+      if (trace) emit(at, 'S2', ownerPath(), 'CARVE-P9-067', 'plus', { cell: 'B-plus-start' })
       continue
     }
     const plusFollower = afterPlus
@@ -2910,6 +2918,8 @@ function ownLines(lines) {
     const inner = top()
     if (inner.kind === 'fence' && !missed) {
       // Step 1: an open payload tests its closer first.
+      const payloadPath = trace ? ownerPath() : null
+      let payloadForm = 'payload'
       lead(Math.max(m.col - inner.cut, inner.canon))
       if (m.rest !== '' && inner.span) {
         const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
@@ -2918,6 +2928,7 @@ function ownLines(lines) {
       } else if (m.rest !== '' && inner.closes(m.rest, m.col)) {
         frames.pop()
         top().last = 'block'
+        payloadForm = 'closer'
       } else if (inner.lineBlock) {
         // A span in a line-block payload pairs past the column too (carve-php#3137).
         const f = FENCE.exec(m.rest)
@@ -2926,6 +2937,8 @@ function ownLines(lines) {
         else if (comment && (closerRuns().lastComment.get(comment[1].length) ?? -1) > at) inner.span = comment[1]
       }
       result.push(out + src)
+      if (trace) emit(at, 'S1', payloadPath, 'CARVE-P0-005', payloadForm,
+        { cell: `B-${inner.family}-${payloadForm === 'closer' ? 'end' : 'keep'}` })
       continue
     }
     if (inner.kind === 'fence') frames.pop()
@@ -2964,6 +2977,7 @@ function ownLines(lines) {
         }
         const leaf = top()
         result.push(out + ' '.repeat(leaf.kind === 'quote' ? 0 : leaf.reader) + LAZY + src)
+        if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
         continue
       }
       const next = frames[reached + 1]
@@ -2971,16 +2985,21 @@ function ownLines(lines) {
       lead(Math.min(Math.max(m.col - owner.cut, owner.canon), limit))
       if (FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       result.push(out + src)
+      if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
       continue
     }
+    const closed = frames.length - 1 - reached
+    const reachedPath = trace && closed > 0 ? ownerPath(reached) : undefined
     const closedColumn = frames.slice(reached + 1).some((f) => f.kind !== 'quote')
     frames.length = reached + 1
     owner = top()
+    let applied = trace ? ownerPath() : null
     if (m.rest === '') {
       owner.para = false
       lead(m.col)
     } else if (form.kind === 'colon-close') {
       lead(frames[form.frame].canon)
+      if (trace) applied = ownerPath(form.frame)
       frames.length = form.frame
       top().para = false
       top().last = 'block'
@@ -2997,8 +3016,15 @@ function ownLines(lines) {
     } else {
       lead(owner.canon, form.kind === 'term' || form.kind === 'dd')
       apply(owner, m.col, form)
+      if (trace) applied = ownerPath()
     }
     result.push(out + src)
+    if (trace) {
+      const kind = TRACE_FORM[form.kind] ?? form.family ?? form.kind
+      const cell = form.kind === 'colon-close' ? 'B-div-end' : TRACE_OPENS.has(form.kind) ? `B-${form.family ?? kind}-start` : undefined
+      emit(at, 'S5', applied, TRACE_RULE[form.kind] ?? 'CARVE-P0-024', kind,
+        { cell, closed: closed > 0 ? closed : undefined, reached: reachedPath, plus: plusFollower ? at : undefined })
+    }
 
     // `col` is where the opener starts in the source, `canon` where it lands.
     // `reader` is the column the block readers measure the opener at: a note's
@@ -3011,7 +3037,7 @@ function ownLines(lines) {
         owner.termCut = col - canon
       }
       if (form.kind === 'fence' || form.kind === 'colon') {
-        frames.push({ kind: form.kind, col: owner.col, canon: owner.canon, reader, cut: col - canon,
+        frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon,
           closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null })
         return
       }
@@ -3062,6 +3088,21 @@ function ownLines(lines) {
   walked.refusedPlus = refusedPlus
   return walked
 
+  // A decision trace record (docs/decision-trace.md). `depth` cuts the path at a frame.
+  function emit(index, step, owner, rule, form, extra = {}) {
+    // The empty string after a final newline is not a line.
+    if (index === lines.length - 1 && lines[index] === '') return
+    const record = { line: index + 1, step, owner, rule, form }
+    for (const [key, value] of Object.entries(extra)) if (value !== undefined) record[key] = value
+    trace.push(record)
+  }
+
+  function ownerPath(depth = frames.length - 1) {
+    let path = 'doc'
+    for (let k = 1; k <= depth; k++) path += `/${TRACE_FRAME[frames[k].kind] ?? frames[k].family}:${frames[k].line + 1}`
+    return path
+  }
+
   // The document column where `rest`, a suffix of `line`, starts.
   function docColumn(line, rest) {
     let col = 0
@@ -3106,7 +3147,7 @@ function ownLines(lines) {
         (COLON_CLOSER.test(rest) && !(owner === top() && owner.para && owner.absorbs))
       if (owner.para && !interrupts) return { kind: 'text', interrupts: false }
       if (parseColonOpener(colon[2]).mode === 'line-block') {
-        return { kind: 'fence', interrupts, lineBlock: true, closes: (r) => COLON_CLOSER.exec(r)?.[1].length === run }
+        return { kind: 'fence', family: 'div', interrupts, lineBlock: true, closes: (r) => COLON_CLOSER.exec(r)?.[1].length === run }
       }
       return { kind: 'colon', run, interrupts }
     }
@@ -3121,13 +3162,13 @@ function ownLines(lines) {
       // A closer below the owner's column never matches (CARVE-P0-014).
       const reachable = closerAhead(run, at, owner.col, col)
       if (owner.para && !reachable) return { kind: 'text', interrupts: false }
-      return { kind: 'fence', interrupts: reachable, closes }
+      return { kind: 'fence', family: 'code', interrupts: reachable, closes }
     }
     const comment = COMMENT_FENCE_BODY.exec(rest)
     if (comment) {
       const run = comment[1].length
       const closes = (r) => COMMENT_FENCE_BODY.exec(r)?.[1].length === run
-      if ((closerRuns().lastComment.get(run) ?? -1) > at) return { kind: 'fence', interrupts: true, closes }
+      if ((closerRuns().lastComment.get(run) ?? -1) > at) return { kind: 'fence', family: 'comment', interrupts: true, closes }
     }
     if (COMMENT_LINE.test(rest)) return { kind: 'leaf', interrupts: true }
     const note = /^\[\^[^\]]+\]: +/.exec(rest)
@@ -3367,9 +3408,9 @@ function restoreOrdinaryPlus(value, sentinel) {
  * it could not otherwise be checked by a test. Passing one changes no answer.
  * Introduced with the per-descendant question-1 state (carve#2746).
  */
-export function parse(src, { stateSink = null, includeFiles = null } = {}) {
+export function parse(src, { stateSink = null, includeFiles = null, trace = null } = {}) {
   src = normalizeSource(src)
-  const walked = ownLines(src.split('\n'))
+  const walked = ownLines(src.split('\n'), trace)
   src = walked.join('\n')
   // A private character keeps indented plus lines ordinary through recursive dedents.
   let hasOrdinaryPlus = false

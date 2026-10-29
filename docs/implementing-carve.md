@@ -23,7 +23,9 @@ repository. In rough order of usefulness when implementing:
   against.
 - **[Formal Grammar](./grammar)** - the layered specification, including
   layout, syntax, resolution and output contracts. Start block parsing with the
-  [container ownership procedure](./ownership-procedure).
+  [container ownership procedure](./ownership-procedure). Its steps have stable
+  ids, and the [decision trace](./decision-trace) compares your engine's
+  ownership decisions with the spec model's, line by line.
 - **[Case Study](./case-study/)** - the design rationale behind the rules
   (historical, not normative), including [Parsing & AST](./case-study/parsing-ast)
   and [Implementation & Reflection](./case-study/implementation).

@@ -184,6 +184,7 @@ export default defineConfig({
         items: [
           { text: 'Implementations & Tooling', link: '/ecosystem' },
           { text: 'Implement Carve', link: '/implementing-carve' },
+          { text: 'Decision Trace', link: '/decision-trace' },
         ],
       },
       { text: 'Community', link: '/community' },
@@ -302,6 +303,7 @@ export default defineConfig({
           items: [
             { text: 'Implementations & Tooling', link: '/ecosystem' },
             { text: 'Implement Carve', link: '/implementing-carve' },
+            { text: 'Decision Trace', link: '/decision-trace' },
             { text: 'Case Study', link: '/case-study/' },
           ],
         },

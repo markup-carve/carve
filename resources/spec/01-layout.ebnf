@@ -342,47 +342,61 @@
         empty or closed colon container leaves no open paragraph.
 
    FAMILIES. Every family follows S1 to S5. Each entry gives only what the
-   family adds.
+   family adds. The bracketed ids name its cells: `start` is what opens the
+   block, `keep` what continues it, `end` what ends it. A cell with no text of
+   its own follows S2 and S4 (keep) or S5 and end of input (end). The step ids
+   S1 to S5 and T, and these cell ids, are stable: a decision trace
+   (docs/decision-trace.md) cites them, so they are never renumbered.
 
-     list item        Starts with a valid bullet, task, decimal, alphabetic,
-                      roman or bare-dot marker with content; a marker with no
-                      content is text. Items in one container group when
-                      marker kind, delimiter, dialect and task state agree. A
-                      blank between items or before a second paragraph makes
-                      the list loose; a blank before a child block alone does
-                      not. Three consecutive blanks before a sibling start a
-                      new list (PART 9 §11, §17).
-     term             `:: ` with content; a leaf with inline content. It
-                      continues by the paragraph test and has no ownership of
-                      its own; it ends at anything that ends a paragraph or at
-                      a `: ` body marker in the same owner.
-     definition body  `: ` with content, directly after a term or body in the
-                      same owner. It ends at the next term or body marker in
-                      that owner, a missed line that does not fold, the host's
-                      end or end of input.
-     footnote body    `[^label]: `. Lazy lines follow S4 as in every other
-                      container. A referenced body renders as an endnote.
-     block quote      `>` then a space or line end; each `>` opens one level.
-                      An unmarked blank ends the quote; a marked blank keeps it
-                      and ends its paragraph.
-     colon fence      A valid run of three or more colons. It ends at an
-                      exact-length colon run read in the same owner, the
-                      host's end or end of input. `|` mode keeps its lines as
-                      payload; other modes read blocks and take lazy lines.
-     code, raw and    A valid code or raw opener; a comment opener with a
-       comment fence  matching closer. The payload is opaque and takes no lazy
-                      line.
-     table            A valid pipe row, or a selected CSV or TSV fence. It
-                      ends at the first line that is not a row; a continuation
-                      row needs a body row above it.
-     caption          `^ ` with content after an eligible host. One blank
-                      between host and marker is allowed, two detach.
-     `+`              A lone `+` at the marker column of the deepest open list
-                      item, quote, definition body or footnote body, or a `+`
-                      that is the whole content of such a marker line
-                      (`- +`, `> +`, `: +`, `[^a]: +`), offers the container
-                      its next block (PART 9 §17, CARVE-P9-067). A refused `+`
-                      is ordinary text in the owner S2 selected.
+     list item        [B-item-start] Starts with a valid bullet, task,
+                      decimal, alphabetic, roman or bare-dot marker with
+                      content; a marker with no content is text. [B-list-keep]
+                      Items in one container group when marker kind,
+                      delimiter, dialect and task state agree. A blank
+                      between items or before a second paragraph makes the
+                      list loose; a blank before a child block alone does
+                      not. [B-list-end] Three consecutive blanks before a
+                      sibling start a new list (PART 9 §11, §17).
+     term             [B-term-start] `:: ` with content; a leaf with inline
+                      content. [B-term-keep] It continues by the paragraph
+                      test and has no ownership of its own; [B-term-end] it
+                      ends at anything that ends a paragraph or at a `: ` body
+                      marker in the same owner.
+     definition body  [B-dd-start] `: ` with content, directly after a term
+                      or body in the same owner. [B-dd-end] It ends at the
+                      next term or body marker in that owner, a missed line
+                      that does not fold, the host's end or end of input.
+     footnote body    [B-footnote-start] `[^label]: `. [B-footnote-keep] Lazy
+                      lines follow S4 as in every other container. A
+                      referenced body renders as an endnote.
+     block quote      [B-quote-start] `>` then a space or line end; each `>`
+                      opens one level. [B-quote-end] An unmarked blank ends
+                      the quote; [B-quote-keep] a marked blank keeps it and
+                      ends its paragraph.
+     colon fence      [B-div-start] A valid run of three or more colons.
+                      [B-div-end] It ends at an exact-length colon run read in
+                      the same owner, the host's end or end of input.
+                      [B-div-keep] `|` mode keeps its lines as payload; other
+                      modes read blocks and take lazy lines.
+     code, raw and    [B-code-start] [B-comment-start] A valid code or raw
+       comment fence  opener; a comment opener with a matching closer.
+                      [B-code-keep] [B-comment-keep] The payload is opaque and
+                      takes no lazy line. [B-code-end] [B-comment-end] It ends
+                      at its closer or by S1.
+     table            [B-table-start] A valid pipe row, or a selected CSV or
+                      TSV fence. [B-table-end] It ends at the first line that
+                      is not a row; [B-table-keep] a continuation row needs a
+                      body row above it.
+     caption          [B-caption-start] `^ ` with content after an eligible
+                      host. One blank between host and marker is allowed, two
+                      detach.
+     `+`              [B-plus-start] A lone `+` at the marker column of the
+                      deepest open list item, quote, definition body or
+                      footnote body, or a `+` that is the whole content of
+                      such a marker line (`- +`, `> +`, `: +`, `[^a]: +`),
+                      offers the container its next block (PART 9 §17,
+                      CARVE-P9-067). A refused `+` is ordinary
+                      text in the owner S2 selected.
 
    OUTPUT. The layout-resolved line stream (equivalently: INDENT / DEDENT /
            CONT events plus line residues). PARTS 1-2 parse blocks over it;

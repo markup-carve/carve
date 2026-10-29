@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/decision-trace-schema.json",
+  "title": "Carve decision trace, version 1",
+  "description": "One JSON value per line. The first line is the header; every later line is one block or inline decision record. See docs/decision-trace.md.",
+  "$defs": {
+    "header": {
+      "type": "object",
+      "required": ["trace", "version", "engine"],
+      "properties": {
+        "trace": { "const": "carve-decision-trace" },
+        "version": { "const": 1 },
+        "engine": { "type": "string", "description": "Who produced the trace: spec-model, carve-js, carve-php, carve-rs or another engine name." }
+      },
+      "additionalProperties": true
+    },
+    "containerPath": {
+      "type": "string",
+      "description": "Open containers from the document down, each as <kind>:<1-based line that opened it>.",
+      "pattern": "^doc(/(quote|item|footnote|dd|div|code|comment):[1-9][0-9]*)*$"
+    },
+    "block": {
+      "type": "object",
+      "required": ["line", "step", "owner", "rule", "form"],
+      "properties": {
+        "line": { "type": "integer", "minimum": 1, "description": "1-based source line after input normalization." },
+        "step": { "enum": ["INPUT", "S1", "S2", "S4", "S5"], "description": "PART 0 step that decided the line (CARVE-P0-024). S3 classification is reported as form." },
+        "owner": { "$ref": "#/$defs/containerPath", "description": "Deepest open container holding the line once the step is applied; for a closer, the container it closes." },
+        "rule": { "type": ["string", "null"], "pattern": "^CARVE-P[0-9]+-[0-9]{3}$", "description": "Normative clause id that governs the decision, or null when none applies." },
+        "form": {
+          "enum": ["frontmatter", "plus", "payload", "closer", "lazy", "blank", "text", "leaf", "quote", "item", "footnote", "dd", "term", "div", "code", "comment"],
+          "description": "What the line is: an S3 classification, or the S1/S4 outcome."
+        },
+        "cell": { "type": "string", "pattern": "^B-[a-z]+-(start|keep|end)$", "description": "FAMILIES cell id of PART 0, when a family entry decided the line." },
+        "closed": { "type": "integer", "minimum": 1, "description": "How many open frames the line closed by missing them in S2. A closer's own container is its owner and is not counted." },
+        "reached": { "$ref": "#/$defs/containerPath", "description": "Deepest frame the line reached in S2, when it missed a deeper one." },
+        "plus": { "type": "integer", "minimum": 1, "description": "The accepted `+` line this line follows. The walk records the line where it stands; the block readers attach it to that `+`'s container (CARVE-P9-067)." }
+      },
+      "additionalProperties": false
+    },
+    "inline": {
+      "type": "object",
+      "description": "Reserved for the inline procedure; its step ids (I1 ...) land when that procedure is normative.",
+      "required": ["pos", "step", "kind", "decision"],
+      "properties": {
+        "pos": { "type": "integer", "minimum": 0, "description": "Code point offset of the delimiter in the block's inline content." },
+        "step": { "type": "string", "pattern": "^I[0-9]+$" },
+        "kind": { "type": "string", "description": "Delimiter kind, for example strong, emphasis, code, link." },
+        "decision": { "enum": ["open", "close", "text", "attach"] },
+        "pair": { "type": ["integer", "null"], "minimum": 0, "description": "pos of the matching delimiter, when paired." },
+        "rule": { "type": ["string", "null"], "pattern": "^CARVE-P[0-9]+-[0-9]{3}$" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/header" },
+    { "$ref": "#/$defs/block" },
+    { "$ref": "#/$defs/inline" }
+  ]
+}
