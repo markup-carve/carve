@@ -4913,8 +4913,12 @@ EOF = (* end of file *) ;
       `/` or `*` that does not start its closer token is text:
       /*a* b*/ -> <strong><em>a* b</em></strong>. The closer token closes the
       entry by R2, removing the entries above it, so /*a _b*/ c_ leaves `_`
-      text. Like any entry, it becomes text when a closer removes it from
-      below: in =a /*b= c*/ the `=` closes and both `/*` and `*/` are text.
+      text. When a closer would remove the entry from below, the opener did
+      not form after all: the entry is dropped and the region is read again
+      from the opener with its `/` and `*` as two bare candidates. Each
+      opener is read again at most once. So ~/*a* b~ c*/ ->
+      <s>/<strong>a</strong> b</s> c*/, and in =a /*b= c*/ the `=` closes
+      the highlight and both `/*` and `*/` are text.
       A formed combined span renders as strong around emphasis, and a
       braced child of either kind nests inside it: /*a {*b*} c*/ holds a
       strong child.
@@ -4991,15 +4995,17 @@ EOF = (* end of file *) ;
 
       LINEAR TIME (Design Principle 1, carve#3936). The result MUST be
       computed in time linear in the block; reading a range again once per
-      failed opener does not meet this. Two facts make it possible. A nested
-      reading depends only on where it starts, so each one is computed once
-      and reused when an enclosing reading meets its opener again. Whether
-      it forms is decided by the first closer token of its kind at its
-      level, which a per-kind index of closer tokens, built in one
-      right-to-left pass per region and skipping formed spans, finds. A
-      closer token inside a brace group directly after a bare delimiter
+      failed braced or editorial opener does not meet this. Two facts make
+      it possible. A nested reading depends only on where it starts, so each
+      one is computed once and reused when an enclosing reading meets its
+      opener again. Whether it forms is decided by the first closer token of
+      its kind at its level, which a per-kind index of closer tokens, built
+      in one right-to-left pass per region and skipping formed spans, finds.
+      A closer token inside a brace group directly after a bare delimiter
       counts only where the reading leaves that group unattached, and such
       groups are settled for a whole run of them at once, not one per pass.
+      A linear bound for the combined token's second reading is open
+      (carve#3987).
 
    10. PARAGRAPH INTERRUPTION -- OPERATIONAL SEMANTICS (governs
       `paragraph` in PART 2). The relation interrupts(L, P) decides whether
