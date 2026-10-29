@@ -63822,7 +63822,7 @@ b</p></blockquote>
 
 :::::::
 
-An indented quote line below a nested quote's first-block `+` is lazy text
+A quote line at the inner quote's marker column is the follower, read with the outer quote's prefix
 
 ::::::: compare
 
@@ -63839,7 +63839,7 @@ An indented quote line below a nested quote's first-block `+` is lazy text
 
 :::::::
 
-The same lines inside a list item
+The same lines inside a list item: the follower's `>` stands at document column 4, the inner quote's marker column (carve#3935)
 
 ::::::: compare
 
@@ -63853,8 +63853,7 @@ The same lines inside a list item
 <ul>
   <li>a
     <blockquote>
-      <blockquote><p>+
-q</p></blockquote>
+      <blockquote><p>q</p></blockquote>
     </blockquote>
   </li>
 </ul>

@@ -2721,6 +2721,8 @@ function ownLines(lines) {
   let afterPlus = false
   // Lines moved to a note's marker column for its first-block `+`.
   const replaced = new Set()
+  // Quote first-block `+` lines whose follower stands at an ineligible column.
+  const refusedPlus = new Set()
   let start = 0
   if (lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
     const close = lines.findIndex((line, k) => k > 0 && /^---[ \t]*$/.test(line))
@@ -2749,8 +2751,12 @@ function ownLines(lines) {
     }
     let reached = 0
     let plus = null
+    // A quote's first-block `+` reads a follower by its raw column (CARVE-P9-067).
+    const quotePlus = top().kind === 'quote' && top().plus === at - 1 ? top() : null
+    let stack = null
     for (let k = 1; k < frames.length; k++) {
       const f = frames[k]
+      if (quotePlus && !stack && f.line === at - 1) stack = { base: f, col: -1 }
       // A lone `+` reaches the marker column of an open marker container. A
       // marker body takes only a block at that column (§17 L3, L4).
       if (f.markerCol !== undefined && CONT_MARKER.test(m.rest) && m.col === f.markerCol &&
@@ -2760,6 +2766,7 @@ function ownLines(lines) {
       }
       if (f.kind === 'quote') {
         if (!QUOTE.test(m.rest)) break
+        if (stack && stack.col < 0) stack.col = docColumn(lines[at], m.rest)
         lead(frames[k - 1].canon)
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
         m = walkIndent(src)
@@ -2780,6 +2787,11 @@ function ownLines(lines) {
     const plusFollower = afterPlus
     afterPlus = false
     const missed = reached < frames.length - 1
+    // A follower carrying the prefix of a quote opened on the `+` line loses
+    // its raw column to the walk, so the walk refuses it here; the readers
+    // take every other such follower.
+    if (stack && stack.col >= 0 && missed && m.rest !== '' &&
+        stack.col !== 0 && stack.col !== stack.base.docMarker && stack.col !== quotePlus.docMarker) refusedPlus.add(at - 1)
     reach = reached
     const inner = top()
     if (inner.kind === 'fence' && !missed) {
@@ -2890,7 +2902,8 @@ function ownLines(lines) {
         return
       }
       if (form.kind === 'quote') {
-        const quote = { kind: 'quote', col: 0, canon: 0, cut: 0, para: false, last: null, markerCol: col, markerCanon: canon }
+        const quote = { kind: 'quote', col: 0, canon: 0, cut: 0, para: false, last: null, markerCol: col, markerCanon: canon,
+          docMarker: docColumn(lines[at], src), line: at }
         frames.push(quote)
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
         m = walkIndent(src)
@@ -2931,7 +2944,9 @@ function ownLines(lines) {
       apply(frame, col, form, canon + m.col, frame.kind === 'note' ? frame.reader : frame.reader + canon + m.col - frame.canon)
     }
   }
-  return frameTextFences(result, textFences)
+  const walked = frameTextFences(result, textFences)
+  walked.refusedPlus = refusedPlus
+  return walked
 
   // The document column where `rest`, a suffix of `line`, starts.
   function docColumn(line, rest) {
@@ -3240,7 +3255,8 @@ function restoreOrdinaryPlus(value, sentinel) {
  */
 export function parse(src, { stateSink = null, includeFiles = null } = {}) {
   src = normalizeSource(src)
-  src = ownLines(src.split('\n')).join('\n')
+  const walked = ownLines(src.split('\n'))
+  src = walked.join('\n')
   // A private character keeps indented plus lines ordinary through recursive dedents.
   let hasOrdinaryPlus = false
   let sentinel = '\uE100'
@@ -3515,6 +3531,12 @@ export function parse(src, { stateSink = null, includeFiles = null } = {}) {
     if (QUOTE.test(measured.rest)) quoteColumn = measured.col
     return line
   }) : sourceLines
+  for (const index of walked.refusedPlus) {
+    if (refusedPlusLines.includes(index)) continue
+    refusedPlusLines.push(index)
+    hasOrdinaryPlus = true
+    lines[index] = lines[index].replace(/\+(?=[ \t]*$)/, sentinel)
+  }
   if (lines[lines.length - 1] === '') lines.pop()
   const state = {
     linkDefs: new Map(),
@@ -5662,9 +5684,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           hostedFirstBlockPending = !qHost.fence && openComment === null && (!qOpenPara || qItemPara) &&
             !!matchMarkerAt(indentCols((qm[1] ?? '').replace(/^(?:> ?)*/, ''))) &&
             firstBlockQuoteColumn((qm[1] ?? '').replace(/^(?:> ?)*/, '')) !== undefined
+          // Below a quote opened with the `+` on this quote's opener line, the
+          // walk already refused every follower at an ineligible raw column.
           if (i > 0 && markerCarriesContinuation(lines[i - 1].trim(), prefixMemo(state, lines, i - 1).continuation))
             recordLazyFollower(inner, lazyFollowerEligible.get(lines)?.[i] ??
-            [0, markerLineQuoteColumns.get(lines), state.markerLineColumns.get(lines)?.get(0)].includes(ind(i).L?.col ?? ind(i).col))
+            ((inner.length === 2 && QUOTE.test(inner[0]) && /^[> \t]*\+[ \t]*$/.test(inner[0])) ||
+              [0, markerLineQuoteColumns.get(lines), state.markerLineColumns.get(lines)?.get(0)].includes(ind(i).L?.col ?? ind(i).col)))
           if (!qHost.fence && openComment === null) {
             const colon = COLON_FENCE.exec(qm[1] ?? '')
             if (colon && COLON_CLOSER.test(qm[1] ?? '') && colon[1].length === qColonRuns.at(-1)?.length) qColonRuns.pop()
