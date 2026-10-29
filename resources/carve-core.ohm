@@ -394,7 +394,10 @@ CarveCore {
   edSubNew   = ~"~}" (crossref | autolink | edSubAtom)
   // A `$` or `!` prefix needs no alternative of its own: the backtick run
   // behind it is what carries the arrow, and this rule skips that run.
-  edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | emptyForced | forcedSpan | overlapForced | nested | edChar
+  // A matched insertion or deletion is an E2a boundary too, so its `~>` and
+  // `~}` are its own (PART 9 SS22).
+  edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | emptyForced | forcedSpan | overlapForced
+             | edInsBody | edDelBody | nested | edChar
   edSubCode  = codeClosed | edSubCodeU
   edSubCodeU = "\u0060" "\u0060"* (~"~}" any)*
   edComment  = edCommentBody

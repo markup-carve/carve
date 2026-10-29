@@ -1,0 +1,25 @@
+A matched insertion or deletion hides a substitution's closer
+
+```
+{~a~>{+b~}+}~}
+.
+<p><del>a</del><ins><ins>b~}</ins></ins></p>
+```
+
+```
+{~a~>{-b~}-}~}
+.
+<p><del>a</del><ins><del>b~}</del></ins></p>
+```
+
+```
+{~{+b~>c+}~>a~}
+.
+<p><del><ins>b~&gt;c</ins></del><ins>a</ins></p>
+```
+
+```
+{~{-b~>c-}~}
+.
+<p><s><del>b~&gt;c</del></s></p>
+```

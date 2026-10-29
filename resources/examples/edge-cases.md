@@ -69027,3 +69027,83 @@ _*a*{title="_"} b_
 ```
 
 :::
+
+## A matched insertion or deletion hides a substitution's closer
+
+A matched `{+ +}` or `{- -}` frame is an E2a boundary, so a `~}` or `~>` inside it belongs to the frame. The substitution around it looks for its own arrow and closer past the frame.
+
+::: compare
+
+```carve
+{~a~>{+b~}+}~}
+```
+
+```html
+<p><del>a</del><ins><ins>b~}</ins></ins></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{~a~>{-b~}-}~}
+```
+
+```html
+<p><del>a</del><ins><del>b~}</del></ins></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{~{+b~>c+}~>a~}
+```
+
+```html
+<p><del><ins>b~&gt;c</ins></del><ins>a</ins></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{~{-b~>c-}~}
+```
+
+```html
+<p><s><del>b~&gt;c</del></s></p>
+```
+
+:::
+
+## A footnote label may hold a bracket
+
+A footnote label is any run of characters other than `]` and a line break, and a `[^` run is a footnote reference before bracket scanning. So `[^[g]` is a reference whether or not it resolves, it starts no bracket run, and a delimiter after its `]` can close a span opened before it.
+
+::: compare
+
+```carve
+/[^[g]/] b/
+```
+
+```html
+<p><em>[^[g]</em>] b/</p>
+```
+
+:::
+
+::: compare
+
+```carve
+*[^[g]*] b*
+```
+
+```html
+<p><strong>[^[g]</strong>] b*</p>
+```
+
+:::

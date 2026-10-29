@@ -1,0 +1,13 @@
+A footnote label may hold a bracket
+
+```
+/[^[g]/] b/
+.
+<p><em>[^[g]</em>] b/</p>
+```
+
+```
+*[^[g]*] b*
+.
+<p><strong>[^[g]</strong>] b*</p>
+```

@@ -968,6 +968,8 @@ index: examples/edge-cases/index.md
   a-nested-braced-span-hides-an-editorial-closer
   a-combined-token-inside-a-forced-span-stops-at-the-span-s-closer
   an-attribute-block-after-a-span-behind-a-guarding-opener-belongs-to-that-span
+  a-matched-insertion-or-deletion-hides-a-substitution-s-closer
+  a-footnote-label-may-hold-a-bracket
   a-mention-or-tag-keeps-its-full-spelling-in-a-strong-child
   a-generic-extension-parses-its-captured-content-as-inline-content
 [edge-links] Links, images and references
