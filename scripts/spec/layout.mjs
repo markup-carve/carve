@@ -2687,6 +2687,58 @@ function cachedForwardSearch(cache, key, from, length, visit) {
 
 // The ownership walk's one linear pass, counted apart from `scan` so the
 // rescan guards still measure only the block readers.
+// One line of a quote run at a container's content column: whether the run
+// now ends in an open paragraph. `run` carries the run's state between lines.
+function advanceQuoteRun(run, text, idx) {
+  const continues = run.at === idx - 1
+  if (!continues) run.hosts = []
+  let depth = 0
+  let opaque = false
+  let stanza = false
+  while (QUOTE.test(text) && depth < MAX_NESTING_DEPTH) {
+    text = QUOTE.exec(text)[1] ?? ''
+    const host = run.hosts[depth] ??= hostLadder()
+    if (hostFenceStep(host, text)) { opaque = true; break }
+    const { inner, blockStart, popped } = hostAdvance(host, text, continues && run.open)
+    const opener = hostFenceOpener(host, inner, () => blockStart || !continues || !run.open)
+    if (opener) {
+      host.fence = { run: opener[1], column: inner.col, host: host.columns.at(-1) }
+      opaque = true
+      break
+    }
+    if (hostedBlockAt(host, inner, popped) ||
+        (hostedDefinitionAt(host, inner) && !FOOTNOTE_DEF.test(inner.rest))) { opaque = true; break }
+    // A colon fence line of a hosted container leaves no paragraph open, except
+    // in a line block's payload.
+    if (hostColonStep(host, inner, () => false, blockStart, run.para ?? [])) {
+      if (host.colons?.at(-1)?.mode === 'line-block' && text.trim() !== '') stanza = true
+      opaque = true
+      break
+    }
+    // A quote at a hosted container's column is that container's own block.
+    if (host.columns.length > 1 && inner.col >= host.columns.at(-1) && QUOTE.test(inner.rest)) text = inner.rest
+    depth++
+  }
+  run.hosts.length = depth + Number(opaque)
+  const rowOpen = continues && run.table
+  const wasOpen = continues && run.open
+  // A bare colon run closes a div unless the open paragraph absorbs it (CARVE-P9-016).
+  const colonCloses = COLON_CLOSER.test(text) && !(wasOpen && !colonFenceInterrupts(text, run.para))
+  run.open = stanza || (!opaque && !colonCloses && text.trim() !== '' && opensParagraph(text, !wasOpen, rowOpen))
+  if (!run.open || !wasOpen) run.para = []
+  if (run.open) run.para.push(text)
+  run.table = !opaque && tableRunStep(rowOpen, text)
+  run.at = idx
+  return run.open
+}
+
+// Whether a quote's content, past any further `>` markers, is indented: such a
+// line may belong to a container the quote hosts, which one line cannot tell.
+function hostsIndentedContent(text) {
+  for (let depth = 0; QUOTE.test(text) && depth < MAX_NESTING_DEPTH; depth++) text = QUOTE.exec(text)[1] ?? ''
+  return text[0] === ' '
+}
+
 function walkIndent(line) {
   let col = 0
   let i = 0
@@ -5157,9 +5209,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           for (; j < n; j++) {
             let text = lines[j]
             let k = 0
-            while (k < markers && QUOTE.test(text)) {
+            // A nested quote's marker may stand at a hosted container's column.
+            while (k < markers && QUOTE.test(k > 0 ? text.trimStart() : text)) {
               layoutWork.quoteStrips += 1
-              text = QUOTE.exec(text)[1] ?? ''
+              text = QUOTE.exec(k > 0 ? text.trimStart() : text)[1] ?? ''
               k++
             }
             if (k < markers) break
@@ -5364,7 +5417,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             let text = lines[j]
             let k = 0
             for (; k < markers; k++) {
-              const quoted = QUOTE.exec(text)
+              const quoted = QUOTE.exec(k > 0 ? text.trimStart() : text)
               if (!quoted) break
               text = quoted[1] ?? ''
             }
@@ -5566,7 +5619,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const hostedQuoteNeedsTracking = hostedQuote && (
           qNestedHost.some(host => host?.fence) ||
           isDefinitionOrAttributeLine((hostedQuote[1] ?? '').trimStart()) ||
-          !opensParagraph(inner0.rest, true, false, prefixMemo(state, lines, idx).paragraph))
+          !opensParagraph(inner0.rest, true, false, prefixMemo(state, lines, idx).paragraph) ||
+          (qHost.columns.length > 1 && hostsIndentedContent(hostedQuote[1] ?? '')))
         // Tracking starts late for a hosted quote, so seed its ladder from the
         // lines it skipped: a definition's column is read against them.
         if (hostedQuoteNeedsTracking && !QUOTE.test(l) && qNestedHost.length === 0) {
@@ -6904,9 +6958,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const d = descendantQ1At(descendantQ1.col)
       return d === null ? true : d.open
     }
-    const seedDescendantQ1 = (col, text, memo = null) => {
+    // The quote run the deepest descendant holds, read like the item's own.
+    const descendantQuote = { at: -2, open: false, table: false, hosts: [], para: [] }
+    const seedDescendantQ1 = (col, text, memo = null, idx = -1) => {
       descendantQ1.col = col
-      descendantQ1.open = text !== '' && descendantLineOpensParagraph(text, false, -1, memo)
+      descendantQuote.at = -2
+      descendantQ1.open = text !== '' && (idx >= 0 && QUOTE.test(text)
+        ? advanceQuoteRun(descendantQuote, text, idx)
+        : descendantLineOpensParagraph(text, false, -1, memo))
       descendantQ1.para = descendantQ1.open ? [text] : []
       descendantQ1.absorbedFence = null
       descendantQ1.noteCol = null
@@ -6977,7 +7036,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (opener) descColon++
       else if (closer && descColon > 0) descColon--
       if (opener || closer || descColon > 0) { close(); return }
-      if (!descendantLineOpensParagraph(text, rowOpen, idx)) { close(); return }
+      // A quote's last block answers across its lines, as at the item's own column.
+      const opens = idx >= 0 && QUOTE.test(text)
+        ? advanceQuoteRun(descendantQuote, text, idx)
+        : descendantLineOpensParagraph(text, rowOpen, idx)
+      if (!opens) { close(); return }
       if (!descendantQ1.open) { descendantQ1.open = true; descendantQ1.para = [] }
       descendantQ1.para.push(text)
     }
@@ -6994,7 +7057,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // The SAME memoized peel the marker-line seed above uses: without it the
       // suffix is re-walked at every nesting depth, which is quadratic on a
       // line of stacked markers (tests/container-differential.test.mjs).
-      seedDescendantQ1(headSubCol, headSubMarker.text, prefixMemo(state, itemLines, 0).paragraph)
+      seedDescendantQ1(headSubCol, headSubMarker.text, prefixMemo(state, itemLines, 0).paragraph, i)
       descLive = true
     }
     // Open fence state inside the item's own content, so an interior blank line
@@ -7318,34 +7381,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     let fenceUnderAbsorbed = null
     // The quote run at this item's content column: its last line's index, and
     // whether that line left the quote a paragraph or a table open.
-    const bodyQuote = { at: -2, open: false, table: false, hosts: [] }
-    const advanceBodyQuote = (text, idx) => {
-      const continues = bodyQuote.at === idx - 1
-      if (!continues) bodyQuote.hosts = []
-      let depth = 0
-      let opaque = false
-      while (QUOTE.test(text) && depth < MAX_NESTING_DEPTH) {
-        text = QUOTE.exec(text)[1] ?? ''
-        const host = bodyQuote.hosts[depth] ??= hostLadder()
-        if (hostFenceStep(host, text)) { opaque = true; break }
-        const { inner, blockStart, popped } = hostAdvance(host, text, continues && bodyQuote.open)
-        const opener = hostFenceOpener(host, inner, () => blockStart || !continues || !bodyQuote.open)
-        if (opener) {
-          host.fence = { run: opener[1], column: inner.col, host: host.columns.at(-1) }
-          opaque = true
-          break
-        }
-        if (hostedBlockAt(host, inner, popped) ||
-            (hostedDefinitionAt(host, inner) && !FOOTNOTE_DEF.test(inner.rest))) { opaque = true; break }
-        depth++
-      }
-      bodyQuote.hosts.length = depth + Number(opaque)
-      const rowOpen = continues && bodyQuote.table
-      bodyQuote.open = !opaque && text.trim() !== '' && opensParagraph(text, !(continues && bodyQuote.open), rowOpen)
-      bodyQuote.table = !opaque && tableRunStep(rowOpen, text)
-      bodyQuote.at = idx
-      return bodyQuote.open
-    }
+    const bodyQuote = { at: -2, open: false, table: false, hosts: [], para: [] }
+    const advanceBodyQuote = (text, idx) => advanceQuoteRun(bodyQuote, text, idx)
     // Seed from an open-paragraph head only when a marked line follows; a
     // single-line nest would otherwise re-walk every level (quadratic).
     if (QUOTE.test(head.text) && (!paragraphIsOpen() || QUOTE.test(stripIndent(lines[headIndex + 1] ?? '')))) {
