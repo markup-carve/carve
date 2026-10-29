@@ -9,7 +9,7 @@ A note-claimed fence line keeps the item loose
   See[^c][^d]
 .
 <ul>
-  <li><p>item</p>
+  <li>item
     <pre><code>
 See[^c][^d]
 </code></pre>
@@ -25,7 +25,7 @@ See[^c][^d]
    See[^c]
 .
 <ol>
-  <li><p>item</p>
+  <li>item
     <pre><code>
 See[^c]
 </code></pre>

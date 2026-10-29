@@ -140,11 +140,12 @@
                        in; S3 moves its lines left
 
      S1 PAYLOAD. If a code, raw or comment fence is open, test the line
-        against its closer first. A code or raw fence with no matching closer
-        ahead in its host also ends at the host's closer, and a nonblank line
-        that misses the fence's owner in S2 ends the fence. Any other payload
-        line opens nothing and changes no frame state. A colon body is not a
-        payload: its lines go on to S2.
+        against its closer first; nothing else closes the payload from
+        inside, and no closer is looked for ahead. A nonblank line that
+        misses the fence's owner in S2 ends the fence, so an unclosed fence
+        runs to the end of its container. Any other payload line opens
+        nothing and changes no frame state. A colon body is not a payload:
+        its lines go on to S2.
 
         COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP -- NORMATIVE [CARVE-P0-005].
         Honor an active payload first. Then recognize `%%` and a matched
@@ -219,8 +220,8 @@
         The code is `code`, `less`, `  more`. `  # h` at document level is a
         heading, and a `> q` indented under a `:: t` term opens a quote in
         the enclosing container. Under an open paragraph a list marker is text
-        unless the owner is a list item, and a code or raw opener is text
-        unless a matching closer follows (PART 9 §10). A list marker at a
+        unless the owner is a list item; a code or raw opener interrupts
+        (PART 9 §10 I4). A list marker at a
         list item's content column opens a child list; a sibling marker at the
         item's marker column continues the enclosing list, and siblings group
         by the container they open in, not by the column they are written at.
@@ -257,8 +258,8 @@
         at every depth. The test is the same at every depth and in every
         family. A list marker interrupts only as the sibling of an open list.
         Headings, thematic breaks, quotes, terms, tables, valid colon openers,
-        code openers with a reachable closer, comments, attributes and
-        definitions interrupt. An invalid opener is text. A fold closes
+        code and raw openers, comments, attributes and definitions
+        interrupt. An invalid opener is text. A fold closes
         nothing and changes the leaf operation, never which container
         survives.
 
@@ -322,9 +323,8 @@
 
         FENCE KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-014].
         Code and colon bodies answer CARVE-P0-013's test alike. A code fence
-        interrupts an open paragraph only when a closer exists (PART 9 §10
-        I4); the closer lookahead searches past a below-column line and never
-        matches one. In
+        opener interrupts an open paragraph with or without a closer (PART 9
+        §10 I4). In
 
             - a
               ```
@@ -332,9 +332,8 @@
              y
               ```
 
-        the indented closer makes `b` a code block, ` y` ends it and the
-        item, and the last run is inline content of the document paragraph
-        `y`.
+        `b` is code, ` y` ends the fence and the item, and the last run, which
+        interrupts the document paragraph `y`, opens an empty code block.
 
         CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-017].
         Quotes answer CARVE-P0-013's test too. `> quote` / `> ::: note` /

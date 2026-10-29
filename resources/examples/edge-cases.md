@@ -792,14 +792,11 @@ after
 
 ::::
 
-Only a fence that CLOSES is opaque. An opener with no closer ahead opens no
-span at all, so the container's own closer stays structural and the lines after
-it are parsed normally. Without this one unclosed fence would swallow the rest
-of the document - the `:::` and `after` below would both render inside the code
-block, and the admonition would close at end of input.
-
-The `%%%` rule already worked this way; the code fence did not, in any of the
-three engines, because the spec had only ever written it down for `%%%`.
+An unclosed fence is opaque too. It runs to the end of its container, and
+inside a `:::` body its payload holds the colon lines as well, so the `:::` and
+`after` below are code and the admonition closes at end of input (PART 0 S1,
+markup-carve/carve#4018). A `%%%` comment fence still needs an exact closer
+ahead; without one it is a `%%` line.
 
 :::: compare
 
@@ -822,9 +819,8 @@ after
 
 ::::
 
-A fence with nothing to take structure away from is unaffected: alone, or as
-the whole content of a blockquote, an unterminated fence still opens a code
-block that runs to the end.
+Alone, or as the whole content of a blockquote, an unterminated fence opens a
+code block that runs to the end the same way.
 
 :::: compare
 
@@ -1644,14 +1640,15 @@ a paragraph and stays literal.
 A paragraph ends at a blank line — or at a line that begins an interrupting
 block. Under the Markdown-like rule (§10) a **visible** block interrupts an open
 paragraph with no blank line before it, at the top level and inside nested
-content. Three carve-outs keep common prose safe: **list markers never
+content. Two carve-outs keep common prose safe: **list markers never
 interrupt** — neither a bullet (`- `/`* `) nor an ordered marker, in any dialect
 or value, so a list always needs a blank line before it (symmetric, Djot-like);
-a code or raw fence interrupts only when it has a matching closer ahead; and a
-bare image is never a block. A `:::` opener interrupts with or without a closer
-and closes at its container boundary or end of input. Invisible constructs
-(reference definitions, comments, block-attribute lines) interrupt as they
-always have.
+and a bare image is never a block. A valid code or raw fence opener interrupts
+whether or not a closer follows, and an unclosed one runs to the end of its
+container (PART 9 §10 I4, markup-carve/carve#4018). A `:::` opener interrupts
+with or without a closer and closes at its container boundary or end of input.
+Invisible constructs (reference definitions, comments, block-attribute lines)
+interrupt as they always have.
 
 A heading marker after a prose line interrupts.
 
@@ -1990,10 +1987,9 @@ text
 
 :::
 
-An **unterminated** code fence opener does not interrupt a paragraph (§10
-closer lookahead): with no matching closer ahead, the ` ``` ` line stays
-paragraph text. It is then an unclosed inline verbatim run, which renders as a `<code>`
-span to the end of the block (matching the `code_span` maximal-run rule).
+An **unterminated** code fence opener interrupts a paragraph too (PART 9 §10
+I4): no closer is looked for, and the code block runs to the end of its
+container, here the end of the input.
 
 ::: compare
 
@@ -2011,11 +2007,10 @@ code
 
 :::
 
-A `:::` opener goes the other way: its closer is optional (PART 9 §12), so
-there is nothing to look ahead for. The opener interrupts, and the container it
-opens closes at the end of the input. That is the counterweight to the exact
-closer - a mistyped closer costs the container's extent, not the rest of the
-document.
+A `:::` opener behaves the same way, and its closer is optional too (PART 9
+§12). The opener interrupts, and the container it opens closes at the end of the
+input. That is the counterweight to the exact closer - a mistyped closer costs
+the container's extent, not the rest of the document.
 
 :::: compare
 
@@ -2359,7 +2354,7 @@ A heading inside a container is a heading line too.
 
 ## Blockquote lazy continuation stops at a fenced block
 
-Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code. After the quote ends, `b` starts a paragraph and the trailing `> c` interrupts it into a fresh block quote (§10 — a `>` marker interrupts a paragraph). In the second example the mid-paragraph ` ``` ` has no closer, so it does not interrupt (§10 closer lookahead); it is then an unclosed inline verbatim run that renders as a `<code>` span to the end of the block (matching djot and carve-php), and the lazy line still folds in.
+Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code. After the quote ends, `b` starts a paragraph and the trailing `> c` interrupts it into a fresh block quote (§10 — a `>` marker interrupts a paragraph). In the second example the mid-paragraph ` ``` ` has no closer but still interrupts (PART 9 §10 I4, markup-carve/carve#4018), so the lazy line lands in an open fence and ends the quote too.
 
 ::: compare
 
@@ -11507,7 +11502,9 @@ padding and all three take a space.
 
 The fallback here is the INVALID-FENCE FALLBACK the grammar already names: the
 opener is not a fence opener, so the run is read as an inline verbatim span in
-a paragraph and every character of it survives.
+a paragraph and every character of it survives. The bare run below it is a valid
+opener, so it interrupts that paragraph and opens an empty code block (PART 9
+§10 I4).
 
 Each slot is pinned separately, because implementations decide them in three
 places and a document carrying a tab in all three cannot tell a partial fix
@@ -12040,7 +12037,8 @@ distinguishes narrowing the slot from breaking it.
 opener slot as exactly one character. A second space reaches `language_info`,
 whose character class holds no space, so the opener matches no shape and the
 INVALID-FENCE FALLBACK applies: the run is an inline verbatim span in a
-paragraph.
+paragraph. The bare run below it interrupts that paragraph as a fence of its
+own.
 
 The two metadata slots INSIDE `code_fence_info` are spelled `space+` and are
 unaffected. The productions differ, so the cardinality differs, and carve#912
@@ -14026,10 +14024,8 @@ x
 
 :::::
 
-The trailing delimiter becoming EMPTY INLINE CODE is pinned deliberately rather
-than inherited. It is not part of the rule - it is what a backtick run means once
-the line is ordinary paragraph text - but it is the kind of output nobody would
-write down on purpose, so it is stated.
+The trailing delimiter is a valid opener at document level, so it interrupts `x`
+and opens an empty, unclosed code block (PART 9 §10 I4).
 
 One column in is the same answer, and it is a separate row because the two
 broken readings differed here: one kept the leading space in the code text and
@@ -14100,9 +14096,8 @@ x
 
 :::::
 
-A tilde fence takes the same route, and the residue shows the empty inline code
-above was a property of the BACKTICK run rather than of this rule: `~~~` in
-paragraph text is just text.
+A tilde fence takes the same route, and its trailing delimiter opens an empty
+code block the same way.
 
 ::::: compare
 
@@ -14152,15 +14147,10 @@ mechanisms to pass, and only the fence-shaped rule passes both:
 :::::
 
 The same clause reaches one shape further: a fence opened on a CONTINUATION line,
-after `a` has opened a paragraph. §10 I4 decides first whether the fence
-interrupts `a`, and its closer lookahead does not stop at the below-column line
-(PART 1, THE CLOSER LOOKAHEAD DOES NOT STOP AT A BELOW-COLUMN LINE), so it finds
-the closer and a real code block opens. That open body is what makes ` y` end
-the item, and the block runs to the item's end with its closer left outside.
-
-The item's own parse takes the same answer. Asking I4 again over the truncated
-item would find no closer and read the run as paragraph text - one line read two
-ways in one parse, with a paragraph open that ` y` would then have folded into.
+after `a` has opened a paragraph. The fence interrupts `a` without looking for a
+closer (PART 9 §10 I4, markup-carve/carve#4018), and that open body is what makes
+` y` end the item. The block runs to the item's end with its closer left outside,
+and the item's own parse takes the same answer.
 
 ::::: compare
 
@@ -16106,7 +16096,8 @@ x
 
 :::
 
-A container's closer ends the fence the same way its own closer would.
+Inside a `:::` body the unclosed fence is opaque, so the colon line is code too
+and the blank before it stays content (PART 0 S1).
 
 :::: compare
 
@@ -20925,8 +20916,8 @@ opener. Read that way the two clauses never overlap, so neither needs an
 exception written into it to protect the other.
 
 A code fence whose info string is preceded by a tab is not a fence opener. The
-backtick run is then an ordinary inline verbatim run, and it reaches the end of
-the block:
+backtick run is then an ordinary inline verbatim run that reaches the end of its
+paragraph, and the bare run below interrupts it as a fence of its own:
 
 ::: compare
 
@@ -24704,15 +24695,13 @@ b
 
 ## An unterminated fence at a content column opens no block, so the paragraph stays open
 
-Section 10 I4 decides whether a code fence interrupts an open paragraph, and it
-is a question about the CLOSER: without one the fence line is ordinary paragraph
-text. That is what every reader already does at document level, where `q` over a
-bare fence run over `b` is one paragraph holding an unclosed inline verbatim run
-rather than a code block.
+PART 9 §10 I4 lets a code fence interrupt an open paragraph whether or not a
+closer follows (markup-carve/carve#4018). At document level `q` over a bare
+fence run is a paragraph followed by a code block that runs to the end.
 
-At a container's content column the same line does the same thing, so PART 1 S4
-finds an open paragraph and a flush-left line below folds into it. The container
-does not end, because nothing closed the paragraph (carve#1387).
+At a container's content column the same line opens a code block, so PART 1 S4
+finds no open paragraph: the flush-left line below ends the fence and the
+container (PART 0 S2) and renders after them (carve#1387).
 
 ::: compare
 
@@ -24734,9 +24723,7 @@ tail
 :::
 
 The container is not a parameter. A definition body's content column answers the
-same way, and so does a block quote's - the quote spelling is the one every
-reader already folded, which is what made the list spelling a contradiction
-inside each of them rather than a disagreement between them.
+same way, and so does a block quote's.
 
 ::: compare
 
@@ -24778,9 +24765,8 @@ tail
 
 :::
 
-CONTROL. A blank line closes the paragraph, so S4's other half governs and the
-item ends whatever container is still waiting for its closer. This is the
-document the reading above must not swallow.
+CONTROL. A blank line after the fence changes nothing: it is code content, and
+`tail` still ends the item.
 
 ::: compare
 
@@ -24803,13 +24789,10 @@ tail
 
 :::
 
-CONTROL. AT BLOCK START a fence opens a body whether or not it is terminated -
-there is no paragraph for section 10 I4 to protect, and the body runs to the end
-of the container. The flush-left line then has nothing to fold into and the item
-ends, which is the fenced-body clause with its premise intact. Nothing in the
-corpus pinned this shape before, and a reading that made every unterminated
-fence at a content column absorb its container's following lines passed all 1267
-documents without it.
+CONTROL. AT BLOCK START a fence opens a body whether or not it is terminated,
+as it does under a paragraph, and the body runs to the end of the container. The
+flush-left line then has nothing to fold into and the item ends, which is the
+fenced-body clause with its premise intact.
 
 ::: compare
 
@@ -24833,9 +24816,8 @@ tail
 
 :::
 
-CONTROL. A fence WITH its closer is a block, and a block leaves no paragraph
-open, so the item ends on the flush-left line for the ordinary reason. The
-premise the clause turns on is the closer, and this is the shape where it holds.
+CONTROL. A fence WITH its closer is a block too, and a block leaves no paragraph
+open, so the item ends on the flush-left line for the same reason.
 
 ::: compare
 
@@ -34393,10 +34375,9 @@ tail
 
 :::
 
-CONTROL -- an UNTERMINATED fence is the opposite answer, and the reason the rule
-is about the closed fence rather than about the fence line: an unterminated
-fence opens no block, so the paragraph above it is still open and the flush-left
-line folds into the body.
+CONTROL -- an UNTERMINATED fence gives the same answer: it interrupts the
+paragraph above it (PART 9 §10 I4, markup-carve/carve#4018), its body holds no
+paragraph, and the flush-left line leaves the body.
 
 ::: compare
 
@@ -36512,13 +36493,12 @@ block after either one is text.
 
 ## An item's fence is read once, whatever block it follows
 
-A fence on an item's continuation line whose closer sits past a below-column line
-opens a code block (see *A fence opened on a list marker line, body below the
-content column*), and that holds after a caption or a quote as it does after a
-paragraph. Each reader that asks §10 I4 about the fence line takes the answer the
-item collector gave, so the fence is not folded into the caption or the quoted
-paragraph while the item ends at ` y` as though it had opened. With the closer
-inside the item the same documents open the same block.
+A fence on an item's continuation line opens a code block whether or not its
+closer is inside the item (PART 9 §10 I4), and that holds after a caption or a
+quote as it does after a paragraph. The fence is not folded into the caption or
+the quoted paragraph, the item ends at ` y`, and the run after it opens an empty
+block at document level. With the closer inside the item the same documents
+open the same block.
 
 ::::: compare
 
@@ -36711,9 +36691,8 @@ decides whether a caption line below finds its image.
 
 A FENCED BODY IS NOT A PARAGRAPH (PART 1, CARVE-P0-013), in a definition body as
 in a list item: a line below the body's column has no paragraph to fold into,
-so the body ends there and the line is read at document level. Whether the
-fence opened is §10 I4's question, asked the way *An item's fence is read once,
-whatever block it follows* asks it (markup-carve/carve#2143).
+so the body ends there and the line is read at document level. The fence opens
+whether or not a closer follows (PART 9 §10 I4, markup-carve/carve#4018).
 
 ::::: compare
 
@@ -36759,8 +36738,8 @@ whatever block it follows* asks it (markup-carve/carve#2143).
 
 :::::
 
-After a paragraph the fence opens because its closer follows, past the
-below-column line, and the body's own parse takes the same answer.
+After a paragraph the fence opens too, and the body's own parse takes the same
+answer. The run below ` y` opens an empty block at document level.
 
 ::::: compare
 
@@ -36816,10 +36795,9 @@ y</p>
 
 :::::
 
-The closer has to be reachable. A blank line followed by a line below the
-column ends the body (carve#1379), and a fence-shaped line past that is not
-this fence's closer, so the fence opened nothing and ` y` folds into the
-paragraph it stayed part of.
+A blank line and a later fence-shaped line change nothing: the fence opened
+under `a`, ` y` ends the body, and the run after `z` opens its own empty block
+at document level.
 
 ::::: compare
 
@@ -36852,10 +36830,10 @@ z
 
 ## A closer below the container's column does not count
 
-The closer lookahead runs past a line below the content column but never matches
-one (PART 1, A BELOW-COLUMN LINE IS SEARCHED PAST, NEVER MATCHED). A flush-left
-run, or one a column short, is not written inside the item, so the fence opens
-nothing and the lines fold into the paragraph as text (markup-carve/carve#2145).
+A fence-shaped run below the content column is not written inside the item, so
+it closes nothing. The fence under `a` opens without a closer (PART 9 §10 I4),
+` y` ends the item, and a flush-left run, or one a column short, opens its own
+empty code block below it (markup-carve/carve#2145).
 
 ::::: compare
 
@@ -36903,10 +36881,10 @@ nothing and the lines fold into the paragraph as text (markup-carve/carve#2145).
 
 :::::
 
-A run past the content column is inside the item but is no closer either: a fence
-delimiter sits exactly at its container's content column (CARVE-P2-006). The one
-that counts is at the column, as in *A fence opened on a list marker line, body
-below the content column*.
+A run past the content column is no closer either: a fence delimiter sits
+exactly at its container's content column (CARVE-P2-006), and ` y` has already
+ended the item. The one that counts is at the column, as in *A fence opened on a
+list marker line, body below the content column*.
 
 ::::: compare
 
@@ -36985,9 +36963,10 @@ A definition body reads the same way, on both sides.
 
 :::::
 
-The flush-left run folds because §10 I4 lets a fence interrupt a paragraph only
-when a closer follows it. That holds in a definition body with nothing else in
-play, as it does under a list item.
+The flush-left run interrupts the paragraph, closer or not (PART 9 §10 I4). It
+is below the body's column, so the description ends and the fence opens at
+document level. That holds in a definition body with nothing else in play, as it
+does under a list item.
 
 ::::: compare
 
@@ -37007,8 +36986,8 @@ play, as it does under a list item.
 
 :::::
 
-CONTROL. With a closer after it the same run does interrupt, so the description
-ends and the fence opens a block at document level.
+CONTROL. With a closer after it the run interrupts the same way, and the fence
+holds `b`.
 
 ::::: compare
 
@@ -40996,18 +40975,16 @@ document, column 2 reaches the outer item. Every container between the fence's
 host and that owner closes, the fence ends unterminated, and the run is
 classified in the owner at its own column.
 
-`CARVE-P0-014` names the deciding parameter, so the branch inverts where a
-container does hold an open paragraph: without the blank line the fence
-interrupts nothing and the run folds as text. The two fence kinds and the raw
-form answer alike, and `%%%` keeps the rule written for itself.
+`CARVE-P0-014` gives the same answer where a container holds an open paragraph:
+without the blank line the fence still interrupts it (PART 9 §10 I4,
+markup-carve/carve#4018), and the run below the base selects its owner the same
+way. The two fence kinds and the raw form answer alike, and `%%%` keeps the rule
+written for itself.
 
-The last two cases are the parameter rather than the blank line: the fence has a
-closer, so it interrupts the paragraph under CARVE-P0-014's closer-lookahead rule,
-and the line below the base then finds no open paragraph and selects the document.
-The host keeps its fenced body at either depth, which is the rule the same clause
-works at one level. The control after them writes the second run inside a SIBLING
-item, where it is not a closer at all: the fence opens nothing and the paragraph
-keeps it.
+In the cases with an unmarked `x` between, `x` ends both items and the fence,
+and the later run opens its own block at document level. The control after them
+writes the second run inside a SIBLING item, where it is not a closer at all: it
+opens a new fence in that item.
 
 ::: compare
 
@@ -41408,10 +41385,10 @@ not ordinary lines either, so the unmarked line leaves every quote it was
 written under. Each nesting level is asked on its own, which is what the nested
 spellings below turn on.
 
-§10 I4 decides whether the fence opened: at a block start it does, under a
-paragraph only when a closer follows. *Blockquote lazy continuation stops at a
-fenced block* pins the other arm, where a fence with no closer stays paragraph
-text and the lazy line folds in.
+A valid fence opener opens at a block start and under a paragraph alike, closer
+or not (PART 9 §10 I4). *Blockquote lazy continuation stops at a fenced block*
+pins the unclosed arm under a paragraph, where the lazy line ends the quote as
+well.
 
 ::: compare
 
@@ -43044,7 +43021,8 @@ a%%b and 50%% stay
 `CARVE-P0-014` gives an unmarked column-0 line to the document when a code or
 raw fence is open, even when the opener sits past the quoted item's content
 column. Quote depth and opener indentation do not preserve a continuation claim.
-A run that remains paragraph text still permits lazy continuation.
+A shifted run under the item's paragraph opens a fence too (PART 9 §10 I4), so
+it gives `flush` to the document the same way.
 
 ::: compare
 
@@ -48062,11 +48040,10 @@ line closes the list and begins a new block, and no surviving frame adopts it.
 These documents pin the answer in the shapes where a reader kept the line in a
 frame that had ended (markup-carve/carve#2925).
 
-A closed code block after a failed fence opener. The first run has no closer, so
-it is paragraph text (§10 I4) and the paragraph ends at the blank. The tilde
-block below it is closed, the item holds no paragraph, and `after` is a document
-paragraph (markup-carve/carve#2949). A thematic break between the two changes
-nothing.
+A shifted fence run under the item's paragraph. It interrupts `a` with no closer
+(PART 9 §10 I4), so the blank, the tilde lines and a thematic break between are
+all its content. The item holds no paragraph, and `after` is a document
+paragraph (markup-carve/carve#2949).
 
 ::: compare
 
@@ -48120,8 +48097,8 @@ code
 
 :::
 
-The control. With a line of prose after the closed block the item does hold an
-open paragraph, and `after` folds into it.
+The control answers the same way: `more` is content of the open fence, so the
+item holds no paragraph and `after` leaves it.
 
 ::: compare
 
@@ -48721,12 +48698,12 @@ tail
 
 ::::
 
-A fence run after a nested item has ended. The blank and the heading at the
-outer item's column end the child item, so the later run is not inside it and
-closes nothing: the first run has no closer and is paragraph text
-(`CARVE-P0-014`, markup-carve/carve#2961). The later run is past the outer
-item's column with no paragraph open, so it opens a code block of its own
-(`CARVE-P0-004`). The top-level spelling already read the first run this way.
+A fence run after a nested item has ended. The first run interrupts `para` with
+no closer (PART 9 §10 I4), so it holds the rest of the child item, and the blank
+and the heading at the outer item's column end both. The later run is past the
+outer item's column with no paragraph open, so it opens a code block of its own
+(`CARVE-P0-004`). In the top-level spelling `y` ends the item and the later run
+opens an empty block at document level.
 
 ::: compare
 
@@ -49184,8 +49161,8 @@ tail
 An opener past a nested item's content column inside a quote. The heading is
 rebased into the item (`CARVE-P0-004`), which then holds no paragraph, so no
 frame of the quote adopts the line below (`CARVE-P0-009`,
-markup-carve/carve#2960). The second document has a fence under an absorbed
-run of the other fence character: the tilde fence has a closer and opens.
+markup-carve/carve#2960). In the second document the backtick run opens a fence
+under `a`, and the tilde lines are its content.
 
 ::::: compare
 
@@ -50433,14 +50410,13 @@ after <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p></blockq
 ## A fence that leaves a closed nested item opens in the host it lands in
 
 A closed block leaves no paragraph open, so a fence run below a nested item's
-column leaves that item and is read in the enclosing host (CARVE-P0-009). With
-nothing to interrupt and no closer to take, an unclosed fence opens a code block
-that runs to the end of that host, and a bare `:::` past a box's column is
-text, not the box's closer (PART 2 `admonition`, A CLOSER IS REQUIRED).
-A fence below the sublist's column interrupts its paragraph only when a closer
-follows (CARVE-P0-014); without one it stays sublist text.
-A fence-shaped line-block payload line opens nothing, so the box reads the same
-when that line is plain text. A `:::` inside an open code fence is code text.
+column leaves that item and is read in the enclosing host (CARVE-P0-009). An
+unclosed fence there opens a code block that runs to the end of that host, and
+its payload is opaque: a colon line inside it, the box's own `:::` included, is
+code (PART 0 S1, markup-carve/carve#4018). A fence below the sublist's column
+interrupts the sublist's paragraph too, with or without a closer, and opens in
+the enclosing item. A fence-shaped line-block payload line opens nothing, so the
+box reads the same when that line is plain text.
 
 :::: compare
 
@@ -51971,7 +51947,7 @@ marker extends, and no rule fills blank cells (T5):
 
 ## A closed fence in a nested child leaves no paragraph open
 
-A closed child code block leaves no paragraph open. An unclosed fence at the enclosing item column opens there, and a column-zero line ends that item (CARVE-P0-014). A heading closes the child paragraph too. An open child paragraph retains a lazy line.
+A closed child code block leaves no paragraph open. An unclosed fence at the enclosing item column opens there, and a column-zero line ends that item (CARVE-P0-014). A heading closes the child paragraph too. An open child paragraph retains a lazy line, and an unclosed fence below it interrupts it and opens in the enclosing item all the same (PART 9 §10 I4).
 
 :::: compare
 
@@ -52085,7 +52061,7 @@ text</li>
 
 ## A code line left of an authored-base fence opener is measured from that base
 
-A fence past the box content column establishes its own authored base. Payload left of that base loses its available prefix, while payload to the right keeps its extra spaces (CARVE-P0-004). A fence at the box content column uses that column as its base.
+A fence past the box content column establishes its own authored base. Payload left of that base loses its available prefix, while payload to the right keeps its extra spaces (CARVE-P0-004). A fence at the box content column uses that column as its base. The box's own `:::` is code inside the unclosed fence (PART 0 S1).
 
 :::: compare
 
@@ -52544,11 +52520,11 @@ cross-reference cannot close a forced span opened before it (PART 9 §9 E2a).
 
 ## Inside an unclosed fence only the innermost container's closer is structural
 
-A code fence with no closer ahead opens no span, and it ends at the closer of
-the container it sits in. Every other colon line before that closer is fence
-content, whatever its width: an ancestor's closer closes nothing there and a
-wider or narrower run opens nothing. A fence that closes stays opaque to every
-colon line inside it (PART 2, A CLOSER IS REQUIRED).
+An unclosed code fence runs to the end of its container, and its payload is
+opaque: every colon line after it is fence content, whatever its width, so no
+container closes and the fence runs to the end of input (PART 0 S1,
+markup-carve/carve#4018). A fence that closes is opaque the same way, and the
+lines after its closer are read normally.
 
 :::::: compare
 
@@ -52656,9 +52632,8 @@ after *b*
 
 ::::::
 
-A comment line above the fence leaves no paragraph open, so the fence still
-has nothing to interrupt and the same closer ends it, in one container or
-nested.
+A comment line above the fence changes nothing: the fence is opaque to the
+colon lines below it, in one container or nested.
 
 :::::: compare
 
@@ -52713,8 +52688,7 @@ after *b*
 
 ::::::
 
-A quote or an item whose only content is a comment leaves no paragraph open
-either:
+A quote or an item whose only content is a comment answers the same way:
 
 :::::: compare
 
@@ -53330,13 +53304,10 @@ A braced span nests inside a bare span of its own kind:
 
 ## An unclosed fence under an open paragraph in a container opens nothing
 
-A code fence with no closer ahead cannot interrupt an open paragraph (PART 9
-§10 I4), and that holds inside a container too: the fence line and the lines
-after it continue the paragraph, lazily where it is a quote's or an item's.
-With no fence open, A CLOSER IS REQUIRED does not apply and every colon line
-below is read normally. A bare run that does not match the innermost
-container's width opens a block (PART 2), so `::::` opens a child, `:::`
-opens a child of that, and the paragraph after them stays inside the note.
+A code fence interrupts an open paragraph whether or not a closer follows (PART
+9 §10 I4, markup-carve/carve#4018), and that holds inside a container too: the
+fence opens a code block after the paragraph. Its payload is opaque, so every
+colon line below is code and the note runs to the end of input (PART 0 S1).
 
 :::::: compare
 
@@ -53363,7 +53334,8 @@ after *b*
 
 ::::::
 
-The paragraph can be a quote's, continued lazily:
+The paragraph can be a quote's, and the fence line ends the quote instead of
+continuing it:
 
 :::::: compare
 
@@ -53609,11 +53581,10 @@ autolink (CARVE-P3-001), so each label below closes at its last `]`.
 
 ## An unclosed fence after an attribute line in a container ends at its closer
 
-A block-attribute line is not paragraph text, so it leaves nothing for an
-unclosed fence below it to interrupt: A CLOSER IS REQUIRED applies, and the
-fence ends at the innermost container's own closer. A colon line of any other
-width before it is code. The attribute floats onto
-the code block (PART 9 §15).
+A block-attribute line is not paragraph text, and an unclosed fence below it
+opens as it would under a paragraph. Its payload is opaque, so every colon line
+below it is code and the note runs to the end of input (PART 0 S1,
+markup-carve/carve#4018). The attribute floats onto the code block (PART 9 §15).
 
 :::::: compare
 
@@ -53639,7 +53610,7 @@ after *b*
 
 ::::::
 
-Nested, only the inner container's closer ends the fence:
+Nested, no container's closer ends the fence:
 
 :::::: compare
 
@@ -53670,8 +53641,7 @@ after *b*
 
 ::::::
 
-A quote or an item whose only content is an attribute line leaves no paragraph
-open either:
+A quote or an item whose only content is an attribute line reads the same:
 
 :::::: compare
 
@@ -53730,8 +53700,8 @@ after *b*
 ## A quoted comment or attribute line closes the quote's paragraph
 
 A comment or a block-attribute line inside a quote closes the quoted paragraph,
-as it does outside one. An unclosed fence on the next line then has nothing to
-interrupt, so A CLOSER IS REQUIRED ends it at the note's own closer:
+as it does outside one. The unclosed fence on the next line ends the quote and
+opens a code block whose opaque payload runs to the end of input (PART 0 S1):
 
 :::::: compare
 
@@ -53785,8 +53755,8 @@ after *b*
 
 ::::::
 
-Quoted text keeps the paragraph open, so the fence line folds into it and opens
-nothing:
+Quoted text keeps the paragraph open, and the fence line still ends the quote
+and opens the same code block (PART 9 §10 I4):
 
 :::::: compare
 
@@ -53816,10 +53786,9 @@ after *b*
 ## An unclosed fence under a multi-line quote paragraph in a container opens nothing
 
 A quote paragraph that runs over several quoted lines is still open at the
-fence line, so the fence continues it lazily and opens nothing (PART 9 §10
-I4). Every quoted line carries paragraph text, so none of them closes the
-paragraph above it. The colon lines below are read as openers, as in the
-one-line case.
+fence line, and the fence ends it all the same: it interrupts without looking
+for a closer (PART 9 §10 I4, markup-carve/carve#4018). The colon lines below are
+code, as in the one-line case.
 
 :::::: compare
 
@@ -53902,10 +53871,10 @@ x \</#x~>y> y
 ## An item comment or attribute line closes the item's paragraph
 
 An item line under an item's paragraph starts the next item and reads its
-content. A comment or block-attribute line there closes the paragraph, so an
-unclosed fence on the next line has something to interrupt, and A CLOSER IS
-REQUIRED ends it at the note's own closer. Bullet, ordered and nested items
-all read it:
+content. A comment or block-attribute line there closes the paragraph, and the
+unclosed fence on the next line opens a code block whose opaque payload holds
+every colon line below it (PART 0 S1). Bullet, ordered and nested items all read
+it:
 
 :::::: compare
 
@@ -54026,8 +53995,8 @@ after *b*
 
 ::::::
 
-Item text keeps the paragraph open, so the fence line folds into it and opens
-nothing; the colon lines below it are then openers:
+Item text keeps the paragraph open, and the fence interrupts it the same way
+(PART 9 §10 I4), so the colon lines below it are code too:
 
 :::::: compare
 
@@ -54059,7 +54028,8 @@ after *b*
 ::::::
 
 Under a plain paragraph an item line is lazy text (PART 9 §10 I2) and reads no
-content, so a comment there keeps the paragraph open too, quoted or not:
+content, so a comment there keeps the paragraph open too, quoted or not. The
+fence still interrupts it:
 
 :::::: compare
 
@@ -54118,9 +54088,9 @@ after *b*
 ## A table row or a definition under a paragraph ends it before an unclosed fence
 
 A valid table row (PART 9 §10 I1) and a reference definition (I5) close the
-paragraph above them, bare or inside a quote. An unclosed fence on the next
-line then has nothing to fold into, so A CLOSER IS REQUIRED ends it at the
-note's own closer and `::::` stays fence content:
+paragraph above them, bare or inside a quote. The unclosed fence on the next
+line opens a code block whose opaque payload holds `::::` and every line below
+it (PART 0 S1):
 
 :::::: compare
 
@@ -54217,7 +54187,7 @@ after *b*
 ::::::
 
 A pipe line without a closing pipe is not a table row (T2), so the quoted
-paragraph stays open and the fence line folds into it as text:
+paragraph stays open, and the fence interrupts it all the same (PART 9 §10 I4):
 
 :::::: compare
 
@@ -54250,9 +54220,9 @@ after *b*
 
 A link or footnote definition at a list item's content column ends the
 item's paragraph (CARVE-P0-010), and so does any other block there
-(CARVE-P0-011). The unclosed fence on the next line reaches no paragraph to
-fold into, so the item closes, A CLOSER IS REQUIRED ends the fence at the
-note's own closer, and `::::` stays fence content:
+(CARVE-P0-011). The unclosed fence on the next line closes the item and opens a
+code block whose opaque payload holds `::::` and every line below it (PART 0
+S1):
 :::::: compare
 
 ````carve
@@ -54479,9 +54449,8 @@ after *b*
 
 ::::::
 
-One column short of the content column, the row is lazy paragraph text, so
-the fence line folds into the paragraph and the colon lines below it are
-read as openers:
+One column short of the content column, the row is lazy paragraph text, and
+the fence interrupts that paragraph the same way (PART 9 §10 I4):
 :::::: compare
 
 ````carve
@@ -54871,10 +54840,9 @@ tail</li>
 ## A quoted item comment ends the quote before an unclosed fence
 
 An item line under an item's paragraph starts the next item, so a comment or
-attribute item closes that paragraph inside a quote too. No paragraph is then
-open for the unquoted fence line to continue, so the quote ends, the fence
-opens in the note's body, and A CLOSER IS REQUIRED ends it at the note's own
-closer:
+attribute item closes that paragraph inside a quote too. The unquoted fence line
+then ends the quote, opens in the note's body, and its opaque payload holds the
+note's closer and every line below it (PART 0 S1):
 
 :::::: compare
 
@@ -54941,7 +54909,8 @@ after *b*
 ::::::
 
 Under a quoted plain paragraph the item line is lazy text, so the paragraph
-stays open and the fence line folds into it:
+stays open, and the fence line still ends the quote and opens the same code
+block (PART 9 §10 I4):
 
 :::::: compare
 
@@ -55514,7 +55483,7 @@ b</p></blockquote>
 
 ::::::
 
-A quoted term folds an unmarked, unclosed fence line (CARVE-P2-028).
+A quoted term does not fold an unmarked, unclosed fence line: the line is an opener, so it ends the quote and the fence opens at document level (PART 9 §10 I4, CARVE-P2-028).
 :::::: compare
 
 ````carve
@@ -62925,7 +62894,7 @@ c</li>
 
 These examples pin the ruled owner columns in carve#3446, carve#3448, and carve#3452.
 
-A tabbed fence opens in a definition body when its closer reaches the body
+A tabbed fence in a definition body closes at a closer in the body
 
 ::::::: compare
 
@@ -62948,7 +62917,7 @@ A tabbed fence opens in a definition body when its closer reaches the body
 
 :::::::
 
-A closer below the definition body leaves the tabbed fence line as text
+A closer below the definition body does not close the tabbed fence and opens its own block
 
 ::::::: compare
 
@@ -63012,7 +62981,7 @@ A marker below the invisible footnote body belongs to the list item
 
 :::::::
 
-A later closer at a definition fence base owns its payload
+A later run at a definition fence base, after a line below the body, opens its own block
 
 ::::::: compare
 
@@ -63212,9 +63181,9 @@ The nested description keeps the attached fence
 
 ## An unclosed fence run with no closer in its item does not hide a blank line
 
-These rows follow up the folded fence run section (carve#3495). A fence-shaped line with no closer inside its item is paragraph text (PART 9 §10 I4), so a blank line after it separates two paragraphs and the list is loose (§17 L1), whether a closer-shaped line or a letter follows below the item column.
+These rows follow up the folded fence run section (carve#3495). A fence-shaped line opens a code block even with no closer inside its item (PART 9 §10 I4), so a blank line after it is code content and the list stays tight, whether a closer-shaped line or a letter follows below the item column.
 
-A closer-shaped line below the item column closes nothing, so the blank before it separates two paragraphs
+A closer-shaped line below the item column closes nothing; the blank before it is code content and the run opens its own block
 
 ::::::: compare
 
@@ -63239,7 +63208,7 @@ b
 
 :::::::
 
-A lazy letter after an unclosed fence run reads the same way
+A letter below the item column after an unclosed fence run ends the fence and the item
 
 ::::::: compare
 
@@ -65519,7 +65488,7 @@ $`x⁦y`
 
 ## A fence with no host prefix leaves an inline run
 
-A fence opener inside a list item owns no flush-left body line. The closing backticks then form an unclosed inline code run in the document paragraph.
+A fence opener inside a list item owns no flush-left body line. The closing backticks are then a valid opener under the document paragraph, so they interrupt it and open an empty code block (PART 9 §10 I4).
 
 ::: compare
 
@@ -68678,7 +68647,7 @@ tail
 
 ## A note-claimed fence line keeps the item loose
 
-An unclosed fence-shaped line below a footnote body folds into the note paragraph. It opens no fence in the item, so the blank before the item's second paragraph still makes the list loose.
+An unclosed fence-shaped line below a footnote body interrupts the note's paragraph and opens a code block in the item (PART 9 §10 I4). The blank and the line after it are that block's content, so no blank separates two blocks and a list item stays tight. A description body still wraps its paragraph.
 
 ::: compare
 
@@ -68693,7 +68662,7 @@ An unclosed fence-shaped line below a footnote body folds into the note paragrap
 
 ```html
 <ul>
-  <li><p>item</p>
+  <li>item
     <pre><code>
 See[^c][^d]
 </code></pre>
@@ -68715,7 +68684,7 @@ See[^c][^d]
 
 ```html
 <ol>
-  <li><p>item</p>
+  <li>item
     <pre><code>
 See[^c]
 </code></pre>
@@ -70993,6 +70962,58 @@ A `+` continuation extends the cell (CARVE-P2-019 rule 2). A verbatim run left o
     <tr><td>a <code>c x </code> y</td><td>b z</td></tr>
   </tbody>
 </table>
+```
+
+:::
+
+## A paragraph line that would open a fence is written so it does not
+
+A code or raw fence opener interrupts a paragraph whether or not a closer
+follows (PART 9 §10 I4), so the canonical writer must not emit a paragraph
+line that reads as one (CARVE-P11-078). An authored escape keeps the text
+line from opening, and a code span's last line keeps its closer glued on or
+padded, which makes the info string invalid.
+
+::: compare
+
+```carve
+a
+\~~~
+b
+```
+
+```html
+<p>a
+~~~
+b</p>
+```
+
+:::
+
+::: compare
+
+````carve
+p `a
+```js`
+````
+
+```html
+<p>p <code>a
+```js</code></p>
+```
+
+:::
+
+::: compare
+
+````carve
+p ` a
+``` `
+````
+
+```html
+<p>p <code>a
+```</code></p>
 ```
 
 :::

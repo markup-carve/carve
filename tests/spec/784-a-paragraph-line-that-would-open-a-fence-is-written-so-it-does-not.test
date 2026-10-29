@@ -1,0 +1,27 @@
+A paragraph line that would open a fence is written so it does not
+
+```
+a
+\~~~
+b
+.
+<p>a
+~~~
+b</p>
+```
+
+````
+p `a
+```js`
+.
+<p>p <code>a
+```js</code></p>
+````
+
+````
+p ` a
+``` `
+.
+<p>p <code>a
+```</code></p>
+````

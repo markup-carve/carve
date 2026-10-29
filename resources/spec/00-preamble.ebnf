@@ -106,7 +106,7 @@
    Decide within the current host after testing the complete opener:
    | Case | Recovery |
    | Visible colon opener, optional closer | Open; close at host end, innermost first. |
-   | Code/raw opener, optional closer | Retain payload to host end, subject to paragraph interruption. |
+   | Code/raw opener, optional closer | Open, also under a paragraph; retain payload to host end. |
    | `%%%` without exact closer ahead | Classify opener as `%%` for layout and ownership. |
    | Paired inline form without required closer | Keep declining extent literal; an unclosed backtick run consumes to block end. |
    | Invalid or incomplete opener | Use its own literal/paragraph fallback; a recognized typed prefix may retain its container and drop bad metadata. |

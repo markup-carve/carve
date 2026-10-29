@@ -6771,6 +6771,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     let pendingSeparation = false
     let noteOpenerLine = null
     const noteClaimsLazyLine = (at) => {
+      // A code opener interrupts the note's paragraph (§10 I4), so it is never a lazy line.
+      if (isCodeBlockOpener(ind(at)?.rest ?? '')) return false
       const markerNote = noteOpenerLine === null && markerNoteEligible
       if (!markerNote && (noteOpenerLine === null || noteBodyBoundary === null)) return false
       const opener = FOOTNOTE_DEF.exec(markerNote ? head.text : ind(noteOpenerLine).rest)

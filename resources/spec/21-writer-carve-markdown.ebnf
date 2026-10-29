@@ -746,6 +746,11 @@
 
         - a last line that is a COLON RUN ALONE is written with its closer on
           it, `:::` followed by the closer, and opens no fence in any host.
+        - a last line that is a CODE OR RAW FENCE OPENER, which interrupts the
+          paragraph (PART 9 §10 I4), is written with the closer glued to it,
+          so the info string carries a backtick and is not valid: `` ```js` ``,
+          `` ~~~` ``. A bare backtick run takes a padded span instead, `` ` a ``
+          over `` ``` ` ``.
 
       A LIST MARKER IN AN ITEM is written one column below the item's content
       column, where the line is a lazy continuation of the item's paragraph,
@@ -766,12 +771,19 @@
           definition, a `%%` comment line, a `%%%` fence line and a term line
           (`:: t`);
         - on a line that is not the last: a bare `>`, a link definition, a
-          colon fence or colon run, a block attribute line, a pipe-table row
-          and a thematic break;
+          colon fence or colon run, a code or raw fence opener, a block
+          attribute line, a pipe-table row and a thematic break;
         - in a list item, a marker of the item's own list (`- b` in a `-`
           list, `1. b` and `. b` in an ordered list);
         - in a paragraph directly in the document, an abbreviation
           definition.
+
+      THE FIRST LINE OPENS WITH THE SPAN. A span that starts a paragraph
+      line with a run of three or more backticks, because its value holds
+      both shorter runs, reads as a fence opener when its first value line
+      is a valid info string. No width or padding avoids that, so the writer
+      refuses the value. Text that would open a fence at a line's content
+      position is escaped by §2 instead, the whole run: `\~\~\~`.
 
       `tests/fixtures/verbatim-opener-line-fmt.json` pins the spelled rows
       and, per refused shape, the candidate spellings that do not read back.

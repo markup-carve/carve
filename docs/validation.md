@@ -292,12 +292,15 @@ until something else ends it, and all of them are code:
 
 - the end of the input;
 - the end of the container holding the fence: a list item, a definition
-  description, a block quote, a footnote body or a `:::` container;
+  description, a block quote or a footnote body. A `:::` closer inside the
+  fence is code, so it does not end it;
 - a `+` continuation marker at the host's marker column, which ends a
   preceding fence before the attached block begins (PART 9 §17 L3).
 
 Each case is legal (PART 2 `code_block`, CARVE-P12-064), and none is what an
-author usually meant. Here the fence opened on the item's marker line takes
+author usually meant. An opener under an open paragraph interrupts it whether
+or not a closer follows (PART 9 §10 I4), so a missing closer there turns the
+rest of the container into code too. Here the fence opened on the item's marker line takes
 `x` and the blank line as code, and the `+` ends it:
 
 ````carve
@@ -320,7 +323,7 @@ doc.crv:1:3 unclosed-code-fence — The ``` fence opened here has no closing fen
 Not reported:
 
 - a fence-shaped line that does not open a code block, such as an opener
-  folded into an open paragraph as text; `fence-opener-fallback` and
+  whose info string is invalid; `fence-opener-fallback` and
   `fence-delimiter-indentation` cover those;
 - a `:::` container, which `unclosed-container-fence` covers;
 - a `%%%` comment fence.

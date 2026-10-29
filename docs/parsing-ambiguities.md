@@ -548,13 +548,13 @@ of this matches Djot; the heading half deliberately does not.
 
 **Other carve-outs:**
 
-1. **Closer lookahead** — a code or raw fence (`` ``` ``/`~~~`) interrupts only
-   when a matching closer exists ahead. An unterminated opener stays paragraph
-   text, so a stray marker never swallows the rest of the block. A `:::` opener
-   is different: it opens without a closer and closes at its container boundary
-   or end of input (§12).
-2. **Image excluded** — a bare image `![alt](url)` is inline content, not a
+1. **Image excluded** — a bare image `![alt](url)` is inline content, not a
    block, so it renders inside the paragraph.
+
+Fences are not a carve-out: a code or raw fence (`` ``` ``/`~~~`) interrupts
+like any other opener, with or without a closer, and an unclosed one runs to
+the end of its container, as in CommonMark (markup-carve/carve#4018). A `:::`
+opener does the same (§12).
 
 **Invisible constructs** (link/footnote/abbreviation reference definitions,
 `%%`/`%%%` comments, and `{…}` block-attribute lines) interrupt with no blank

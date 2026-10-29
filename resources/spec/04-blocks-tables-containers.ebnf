@@ -272,12 +272,9 @@ admonition = admonition_open, newline,
    the span closes, resume normal colon-body parsing. A raw-line body
    scanner MUST make the same decision.
 
-   If a code opener has NO MATCHING code closer ahead, the host's
-   exact-length colon closer ends the code block and stays structural,
-   closing the colon body. This is the host-boundary rule below, not a
-   colon closer found inside an opaque span. Example: `::: note` / ``` /
-   `x` / `:::` / `after` renders a note containing a code block with `x`,
-   then `after` as a top-level paragraph.
+   A code or raw opener with no closer is an opaque span to the end of its
+   host (PART 0 S1): no colon closer inside it is structural, and nothing
+   looks ahead for one (markup-carve/carve#4018).
 
    TOOLING FOR NEAR MATCHES. Exact length remains a parse rule,
    not a recoverable syntax error. A processor with diagnostics SHOULD report
@@ -294,10 +291,8 @@ admonition = admonition_open, newline,
    ranges from parser structure; proximity alone never licenses resizing a
    nested fence.
 
-   A ``` or ~~~ opener with no code closer ahead opens a code block that ends
-   at the innermost container's exact-length closer. That closer stays
-   structural. Every other colon line before it is code content, and lines
-   after it parse normally. In
+   A ``` or ~~~ opener with no code closer opens a code block whose payload
+   is every later line of its host, colon lines included. In
 
        ::: note
        ```
@@ -305,15 +300,9 @@ admonition = admonition_open, newline,
        :::
        after
 
-   the `:::` closes the admonition and `after` is a top-level paragraph.
-
-   This does NOT change a fence with nothing to interrupt: `` ``` `` alone,
-   or as the whole content of a blockquote, still opens a code block that
-   runs to the end. PART 9 §10 I4 and this clause both gate a fence that would take
-   structure away from something else, not a fence that is the content.
-   Nor does it reach a ``` or ~~~ line that continues an open paragraph:
-   under PART 9 §10 I4 that line is paragraph text, not an opener, so the
-   colon lines after it are read under PART 2 as usual. *)
+   the code block holds `x`, `:::` and `after`, and the admonition has no
+   closer. The same holds under an open paragraph, which the opener
+   interrupts (PART 9 §10 I4). *)
 
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
    is colon_fence, type, an optional quoted "header", an optional [label],

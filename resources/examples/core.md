@@ -864,8 +864,8 @@ A blank line between items produces a loose list — each item wraps in a paragr
 
 A paragraph ends at a blank line — or at a line that begins an interrupting
 block. A continuation line that starts with `>`, a valid `|…|` table row, a
-heading `#`, a thematic break, or a fence with a closer interrupts the
-paragraph and starts that block, with no blank line required (the
+heading `#`, a thematic break, or a code fence opener (closed or not) interrupts
+the paragraph and starts that block, with no blank line required (the
 Markdown-like rule; §10). A **list marker is the exception**: neither a
 bullet (`- ` / `* `) nor an ordered marker (`1.`, `1)`, `a.`, …) interrupts —
 a list needs a blank line before it (symmetric, Djot-like). So a
@@ -1919,7 +1919,7 @@ code
 
 :::
 
-Anything else after the language token — a bare second word, a `key="value"` pair, an inline `{…}` block, or a header and label in the wrong order — is **not** a fenced code block. There is no error: the backtick run falls back to ordinary inline parsing (an inline code span). Quotes and brackets are the only delimiters that admit metadata, and only in the order header-then-label.
+Anything else after the language token — a bare second word, a `key="value"` pair, an inline `{…}` block, or a header and label in the wrong order — is **not** a fenced code block. There is no error: the backtick run falls back to ordinary inline parsing (an inline code span), and the bare run below it is a valid opener that interrupts that paragraph. Quotes and brackets are the only delimiters that admit metadata, and only in the order header-then-label.
 
 ::: compare
 
@@ -2106,7 +2106,7 @@ Use `ls | grep foo` to filter.
 
 :::
 
-The opener is a maximal run of backticks and closes only on a run of the same length. A run with no matching closer is not literal text: it opens a verbatim span that runs to the end of the block. (A fence-looking ` ``` ` mid-paragraph is the common case.)
+The opener is a maximal run of backticks and closes only on a run of the same length. A run with no matching closer is not literal text: it opens a verbatim span that runs to the end of the block. A fence-looking ` ``` ` on its own line is not such a run: it is a fence opener and interrupts the paragraph (PART 9 §10 I4).
 
 ::: compare
 
