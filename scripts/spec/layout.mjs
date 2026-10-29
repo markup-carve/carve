@@ -6311,10 +6311,26 @@ function markMeasuredContainerText(state, lines, from, to, ind) {
   }
 }
 
-function firstBlockEnd(lines, start, limit, state, sourceColumns) {
+function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0) {
   if (limit - start <= 1) return limit
+  // Measure the block at the column it is read at: `  # H` is a heading there.
+  // A line below that column can only fold lazily (§10 I2), and a fence there
+  // folds only without a closer (§10 I4); any other line ends the block.
+  let measuredLines = lines.slice(start, limit)
+  if (readColumn > 0) {
+    const read = []
+    for (const line of measuredLines) {
+      const measured = indentCols(line)
+      if (measured.rest === '' || measured.col >= readColumn) read.push(dedentParts(line, readColumn).text)
+      else if (foldablePlainLine(measured.rest)) read.push(lazyFrame(measured.rest))
+      else if (isCodeBlockOpener(measured.rest)) read.push(measured.rest)
+      else break
+    }
+    if (read.length <= 1) return start + read.length
+    limit = start + read.length
+    measuredLines = read
+  }
   const stop = { next: limit - start }
-  const measuredLines = lines.slice(start, limit)
   // The throwaway state still reads the document the real parse reads: its
   // settings, and the marker-line columns of the measured rows (carve#3945).
   const markerColumns = state.markerLineColumns?.get(lines)
@@ -6462,9 +6478,9 @@ function foldedDefinitionEnd(lines, start, end, seen) {
 const attachesFlushLeft = (firstMeas, column = 0) =>
   markerBodyPolicy(column, column).attaches(firstMeas)
 
-function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas, column = 0) {
+function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas, column = 0, readColumn = 0) {
   if (!attachesFlushLeft(firstMeas, column)) return start
-  return firstBlockEnd(lines, start, oneBlockEnd(lines, start, endsAttachment), state)
+  return firstBlockEnd(lines, start, oneBlockEnd(lines, start, endsAttachment), state, undefined, readColumn)
 }
 
 // The boundary set for a container with no marker column of its own - a block
@@ -7663,7 +7679,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // sibling marker to the shared one (carve#1782).
       let end = attachedBlockEnd(lines, i, state, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-        matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i), blockColumn)
+        matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i), blockColumn, Math.min(ind(i).col, blockColumn))
       const attached = lines.slice(i, end)
       const codeMatch = FENCE.exec(attached[0] ?? '')
       const code = codeMatch && parseFenceInfo(codeMatch[2]) !== null ? codeMatch : null
@@ -7732,7 +7748,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const column = lm.col >= contentCol ? lm.col : nestedAttachmentColumn
         nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
           ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-          matchMarkerAt(ind(idx))?.indent === baseIndent, lm, column)
+          matchMarkerAt(ind(idx))?.indent === baseIndent, lm, column, Math.min(lm.col, column))
       }
       // A descendant's first-block marker has spent its one attached block.
       // A later line at this item's marker column belongs to the enclosing
