@@ -3143,6 +3143,9 @@ function ownLines(lines, trace = null) {
     // Past a missed note a marker opens only beside a missed list; the note's
     // open paragraph is not the item's own, so no owner takes a sublist (carve#4160).
     const missedNote = missed && frames.slice(reached + 1).some((f) => f.kind === 'note')
+    // A note's marker-line item refuses its `+` to a line that misses it, which then folds into none of them (CARVE-P9-067, carve#4222).
+    if (missed && top().kind === 'item' && top().plus === at - 1 && m.rest !== '' && !CONT_MARKER.test(m.rest) && form.kind !== 'item' &&
+        frames.some((f) => f.kind === 'note' && f.line === top().line)) top().para = false
     // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
     const interruptsPlus = plusNote && form.kind === 'item'
     // A `: ` description is a sibling at any column where its list's owner reads it (CARVE-P0-024 S3).
@@ -3353,6 +3356,8 @@ function ownLines(lines, trace = null) {
         frames.push(frame)
         take(form.head)
         m = walkIndent(src)
+        // The readers set a note's marker-line content at its body column.
+        if (form.kind === 'note') return content(frame, frame.col - m.col, frame.canon - m.col)
         return content(frame, col + form.head, canon + form.head)
       }
     }
@@ -4590,6 +4595,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // pulled-in block (SS17 L4). It is a distinct signal from an empty body
       // line, so an empty note (`[^a]:`) never swallows the following block.
       let pullPending = false
+      const nestedFirstBlock = !CONT_MARKER.test(m[2]) && markerCarriesContinuation(m[2].trim(), new Map())
       let afterComment = false
       let commentScanFrom = 0
       let retainedParagraph = false
@@ -4628,6 +4634,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured)) break
         if (CONT_MARKER.test(m[2]) && bodyLines.length === 1 &&
             measured.col === 0 && matchMarkerAt(measured)) break
+        // A marker-line item's first-block `+` takes no block below the body column (CARVE-P9-067, carve#4222).
+        if (nestedFirstBlock && bodyLines.length === 1 && !isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN) break
         if (isBlank(lines[i])) afterComment = false
         if (measured.col >= FOOTNOTE_BODY_COLUMN || isBlank(lines[i])) {
           retainedParagraph = false
@@ -4749,6 +4757,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lazyParagraphOpen = true
           i++
         } else break
+      }
+      // Nor one between the body and the item's content columns: it stays the note's (carve#4222).
+      if (nestedFirstBlock && bodyLines.length > 1 && bodyLines[1] !== '' && !bodyLines[1].startsWith(LAZY) &&
+          !matchMarkerAt(indentCols(bodyLines[1]))) {
+        const follower = ind(defLine + 1).col
+        if (follower < FOOTNOTE_BODY_COLUMN + (matchMarkerAt(indentCols(m[2]))?.markerWidth ?? 0)) {
+          bodyLines.splice(1, 0, '')
+          if (follower > FOOTNOTE_BODY_COLUMN) bodyLines[2] = lazyFrame(stripIndent(bodyLines[2]))
+        }
       }
       // PART 0 S2: a blank run reaches the body, so it is payload of a fence the
       // body leaves open. A block a `+` attached is bounded by §17, not by the run.
