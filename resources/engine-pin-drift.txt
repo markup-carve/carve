@@ -588,3 +588,5 @@
 826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus-4  markup-carve/carve#4307, the pinned carve-js folds a column-0 line into an item whose first-block + took a comment at its content column; fix pending in carve-js
 822-an-id-dropped-with-an-unresolved-reference-reserves-nothing  markup-carve/carve#4349, the pinned carve-js reserves an id an unresolved reference drops, so the heading takes -2; fix pending in carve-js
 822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2  markup-carve/carve#4349, the pinned carve-js reserves an id an unresolved reference drops, so the heading takes -2; fix pending in carve-js
+837-a-description-s-one-attributed-paragraph-keeps-its-p  markup-carve/carve#4309, the pinned carve-js drops a one-paragraph description's attributes; fix pending in carve-js
+837-a-description-s-one-attributed-paragraph-keeps-its-p-2  markup-carve/carve#4309, the pinned carve-js drops a one-paragraph description's attributes; fix pending in carve-js
