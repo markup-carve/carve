@@ -1,0 +1,81 @@
+A description's first-block plus leaves its paragraph open for the next entry
+
+```
+:: t
+: +
+after
+: b
+.
+<dl>
+  <dt>t</dt>
+  <dd>after</dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+:: t
+: +
+after
+- y
+.
+<dl>
+  <dt>t</dt>
+  <dd>after
+- y</dd>
+</dl>
+```
+
+```
+> :: t
+> : +
+> after
+> - y
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>after
+- y</dd>
+  </dl>
+</blockquote>
+```
+
+```
+- x
+
+  :: t
+  : +
+  after
+  : b
+.
+<ul>
+  <li>x
+    <dl>
+      <dt>t</dt>
+      <dd>after</dd>
+      <dd>b</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+:: t
+: d
+  :: u
+  : v
+ : e
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <dl>
+      <dt>u</dt>
+      <dd>v</dd>
+    </dl>
+  </dd>
+  <dd>e</dd>
+</dl>
+```
