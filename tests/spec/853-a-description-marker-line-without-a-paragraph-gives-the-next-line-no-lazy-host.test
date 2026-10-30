@@ -1,0 +1,21 @@
+A description marker line without a paragraph gives the next line no lazy host
+
+```
+- a
+
+  :: T
+  : # h
+after
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>T</dt>
+      <dd>
+        <h1 id="h">h</h1>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>after</p>
+```

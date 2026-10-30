@@ -1,0 +1,45 @@
+A whitespace run after a tab sets the content column where the content starts
+
+```
+- 	 e
+
+	f
+.
+<ul>
+  <li>e</li>
+</ul>
+<p>f</p>
+```
+
+```
+-    e
+
+    f
+.
+<ul>
+  <li>e</li>
+</ul>
+<p>f</p>
+```
+
+```
+- 	e
+	> q
+.
+<ul>
+  <li>e
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+-   e
+    > q
+.
+<ul>
+  <li>e
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```

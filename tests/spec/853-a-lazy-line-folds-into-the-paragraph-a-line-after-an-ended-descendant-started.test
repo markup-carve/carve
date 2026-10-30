@@ -1,0 +1,25 @@
+A lazy line folds into the paragraph a line after an ended descendant started
+
+````
+- - - ```
+    x
+    y
+l
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+        x
+y
+l
+      </li>
+    </ul>
+  </li>
+</ul>
+````
