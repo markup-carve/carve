@@ -178,8 +178,10 @@
    35. A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV -- NORMATIVE
       [CARVE-P12-057]. An ordinary `:::` container produces one of three
       types after the reserved openers have been recognized. Bare `::: figure`
-      produces `figure_group`; `::: |`, `::: \`, and `::: >` produce their
-      own block types (PART 2). An ANONYMOUS or attribute-only ordinary
+      produces `figure_group`; `::: |` and `::: >` produce their own block
+      types (PART 2). `::: \` produces a `div` with class `hardbreaks`, and
+      each soft break in a paragraph directly inside it is a `hard_break`
+      node. An ANONYMOUS or attribute-only ordinary
       container is a `div`. A named one whose kind names
       GENERATED CONTENT - `bibliography`, `footnotes`, `glossary`, `index`,
       `references`, `toc` - is a `directive`. Every other named container is

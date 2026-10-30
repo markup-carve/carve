@@ -394,7 +394,8 @@
         handler that can launch a binary or open a macro-bearing document, so
         they are blanked like `javascript:`. Ordinary web and contact schemes
         -- `http`, `https`, `mailto`, `tel`, `ftp`, `sms` -- remain allowed.
-        Scheme detection MUST first strip leading ASCII control characters
+        Scheme detection MUST first strip ASCII control characters anywhere
+        in the value (`java` + U+0001 + `script:` is `javascript:`)
         AND ALL UNICODE WHITESPACE -- not just ASCII space/tab/newline but
         every Unicode space separator, including NARROW NO-BREAK SPACE
         (U+202F), NBSP (U+00A0), the U+2000..U+200A spaces, MEDIUM
@@ -455,11 +456,11 @@
         names `srcdoc` and `formaction`; MUST blank any attribute value whose
         scheme (control/space-stripped) is `javascript`/`vbscript`/`data`/
         `file`; and MUST blank any `style` value containing `expression(`,
-        `url(`, `@import`, `behavior:`, or `-moz-binding` (whitespace
-        collapsed first). This applies to author attribute blocks AND to
-        attributes an extension copies onto its wrapper element: an extension
-        MUST route authored attributes through the same hardening and MUST NOT
-        emit them raw.
+        `url(`, `@import`, `behavior:`, or `-moz-binding` (all whitespace
+        removed first, so `ex pression(` matches). This applies to author
+        attribute blocks AND to attributes an extension copies onto its
+        wrapper element: an extension MUST route authored attributes through
+        the same hardening and MUST NOT emit them raw.
 
         A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD --
         NORMATIVE [CARVE-P9-055]. Four attributes carry a LIST of URLs: `srcset`,

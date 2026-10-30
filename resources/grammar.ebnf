@@ -436,7 +436,8 @@
             ```
 
         `x` misses the item, so the fence and the item end with an empty code
-        block; `x` is document text and the trailing run is inline content.
+        block; `x` is document text, and the trailing run opens an empty code
+        block (PART 9 §10 I4).
 
         FENCE KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-014].
         Code and colon bodies answer CARVE-P0-013's test alike. A code fence
@@ -665,8 +666,10 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        through unchanged (`Café` -> `Café`, `日本語` unchanged). The text IS
        NFC-normalized before slugging (CARVE-P9-058), so a precomposed `é` and a
        decomposed `e` + U+0301 give the SAME id;
-     - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
-       id but an invalid CSS selector); an empty result becomes `s`;
+     - a result that starts with a Unicode number (`\p{N}`, not only an ASCII
+       digit: `# ½ cup` gives `s-½-cup`) is prefixed `s-` (a bare leading digit
+       is a valid HTML id but an invalid CSS selector); an empty result becomes
+       `s`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
    An explicit {#id} is used verbatim (case preserved). Implementations MAY
    offer OPT-IN, orthogonal lowercasing and ASCII-folding transforms; neither
@@ -6585,7 +6588,8 @@ EOF = (* end of file *) ;
         handler that can launch a binary or open a macro-bearing document, so
         they are blanked like `javascript:`. Ordinary web and contact schemes
         -- `http`, `https`, `mailto`, `tel`, `ftp`, `sms` -- remain allowed.
-        Scheme detection MUST first strip leading ASCII control characters
+        Scheme detection MUST first strip ASCII control characters anywhere
+        in the value (`java` + U+0001 + `script:` is `javascript:`)
         AND ALL UNICODE WHITESPACE -- not just ASCII space/tab/newline but
         every Unicode space separator, including NARROW NO-BREAK SPACE
         (U+202F), NBSP (U+00A0), the U+2000..U+200A spaces, MEDIUM
@@ -6646,11 +6650,11 @@ EOF = (* end of file *) ;
         names `srcdoc` and `formaction`; MUST blank any attribute value whose
         scheme (control/space-stripped) is `javascript`/`vbscript`/`data`/
         `file`; and MUST blank any `style` value containing `expression(`,
-        `url(`, `@import`, `behavior:`, or `-moz-binding` (whitespace
-        collapsed first). This applies to author attribute blocks AND to
-        attributes an extension copies onto its wrapper element: an extension
-        MUST route authored attributes through the same hardening and MUST NOT
-        emit them raw.
+        `url(`, `@import`, `behavior:`, or `-moz-binding` (all whitespace
+        removed first, so `ex pression(` matches). This applies to author
+        attribute blocks AND to attributes an extension copies onto its
+        wrapper element: an extension MUST route authored attributes through
+        the same hardening and MUST NOT emit them raw.
 
         A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD --
         NORMATIVE [CARVE-P9-055]. Four attributes carry a LIST of URLs: `srcset`,
@@ -12301,6 +12305,8 @@ EOF = (* end of file *) ;
       in HTML, where the three ranges render as `thead`, `tbody`, and `tfoot`.
       Invalid counts or overlapping ranges synthesize no partition. HTML then
       renders the rows in one body group instead of aborting conversion.
+      Without `body-rows`, an invalid `header-rows` or `footer-rows` is
+      consumed in HTML like a valid one.
       Promotion changes the HTML cell kind and row group, not the source
       marker run: a plain `|>` in an explicit header row remains a cell-only
       override and creates no column default. A native `|=>` still sets its
@@ -13034,8 +13040,10 @@ EOF = (* end of file *) ;
    35. A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV -- NORMATIVE
       [CARVE-P12-057]. An ordinary `:::` container produces one of three
       types after the reserved openers have been recognized. Bare `::: figure`
-      produces `figure_group`; `::: |`, `::: \`, and `::: >` produce their
-      own block types (PART 2). An ANONYMOUS or attribute-only ordinary
+      produces `figure_group`; `::: |` and `::: >` produce their own block
+      types (PART 2). `::: \` produces a `div` with class `hardbreaks`, and
+      each soft break in a paragraph directly inside it is a `hard_break`
+      node. An ANONYMOUS or attribute-only ordinary
       container is a `div`. A named one whose kind names
       GENERATED CONTENT - `bibliography`, `footnotes`, `glossary`, `index`,
       `references`, `toc` - is a `directive`. Every other named container is
