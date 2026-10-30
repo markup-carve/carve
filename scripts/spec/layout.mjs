@@ -3012,6 +3012,9 @@ function ownLines(lines, trace = null) {
     // A line that misses a quote does not reach a note inside it (carve#4097).
     const missesQuote = frames.slice(reached + 1).some((f) => f.kind === 'quote')
     if (plusNote && missesQuote && m.rest !== '' && form.kind !== 'item' && !CONT_MARKER.test(m.rest)) refusedPlus.add(at - 1)
+    // An intervening column refuses the marker in every host group (CARVE-P9-067, carve#4212).
+    if (plusNote && missed && !missesQuote && m.rest !== '' && docCol !== 0 && docCol !== plusNote.docMarker &&
+        form.kind !== 'item' && !CONT_MARKER.test(m.rest)) refusedPlus.add(at - 1)
     if (plusNote && !(host.kind !== 'quote' && host.line === plusNote.line) && missed && !missesQuote && m.rest !== '' && docCol === 0 && form.kind !== 'item' && !CONT_MARKER.test(m.rest) && !replaced.has(at)) {
       replaced.add(at)
       let prefix = out
