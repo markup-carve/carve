@@ -482,7 +482,7 @@ roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
    - `-{` and `1.{` / `1){` are not list markers: each requires a space.
    - A trailing `{…}` line folded onto a tight item is not a
      list-item attribute. *)
-item_attributes = attributes ;
+item_attributes = attributes | empty_attributes ;
 
 list_item_content = first_block_content
                   | (inline_content, newline, {list_continuation | nested_list | continuation_marker_block}) ;

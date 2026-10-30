@@ -1084,7 +1084,7 @@ roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
    - `-{` and `1.{` / `1){` are not list markers: each requires a space.
    - A trailing `{…}` line folded onto a tight item is not a
      list-item attribute. *)
-item_attributes = attributes ;
+item_attributes = attributes | empty_attributes ;
 
 list_item_content = first_block_content
                   | (inline_content, newline, {list_continuation | nested_list | continuation_marker_block}) ;
@@ -1286,7 +1286,10 @@ table_row = standard_row | continuation_row ;
 
 standard_row = '|', table_cell, {'|', table_cell}, '|', [row_attributes], newline ;
 
-continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
+continuation_row = '+', continuation_cell, {'|', continuation_cell}, '|', newline ;
+(* A continuation fragment reads no cell marker: `+ < | ^ |` appends a literal
+   `<` and `^` (PART 9 §5 T6). *)
+continuation_cell = {space}, cell_content, {space} ;
 
 (* THE ROW TERMINATOR AND AN OPEN RUN -- NORMATIVE [CARVE-P2-019].
    Cells are cut from the line BEFORE any inline parsing, so what an inline run
@@ -1328,7 +1331,7 @@ row_attributes = attributes ;
    (the first line, or any row after the second) is an ordinary standard_row --
    its `-` runs are inline content (smart typography may render `---` as an em
    dash). See PART 9 §5 (GFM DELIMITER ROW) for header promotion + alignment. *)
-delimiter_row = '|', delimiter_cell, {'|', delimiter_cell}, '|', newline ;
+delimiter_row = '|', delimiter_cell, {'|', delimiter_cell}, '|', [row_attributes], newline ;
 delimiter_cell = {space}, [':'], '-', {'-'}, [':'], {space} ;
 (* at least one '-'; only optional leading/trailing ':' and surrounding
    padding. An EMPTY cell is NOT a delimiter_cell, so a row containing one
@@ -1598,7 +1601,10 @@ admonition = admonition_open, newline,
        convention (those stay supported, deprecated). The `selected`
        default-tab marker is NOT a label -- it remains a boolean attribute on
        the preceding `{...}` line. *)
-(* The same line carries both roles, and both take `space`. The first
+(* The same line carries both roles, and both take `space`. In every colon
+   opener this `space` is the first of a run: further ASCII spaces before the
+   type token belong to the same separator, so `:::  note "T"` opens (corpus
+   254). The first
    separator is what makes this an admonition rather than a div, a line block
    or a local hard-break block, so it is a MARKER SEPARATOR; once
    `admonition_type` has been read the block is decided and the "title" and
@@ -1686,11 +1692,11 @@ div_open = colon_fence:open, [[space], label] ;
    PARAGRAPH, not a line block. Normative rendering: PART 9 §23. *)
 line_block = line_block_open, newline, line_block_body, [admonition_close, newline] ;
 line_block_open = colon_fence:open, space, "|" ;
-(* The body is a sequence of stanzas separated by blank lines; each stanza is
-   a run of consecutive non-blank lines. Inline content parses normally; the
+(* The body is a possibly empty sequence of stanzas separated by one or more
+   blank lines; each stanza is a run of consecutive non-blank lines. Inline content parses normally; the
    per-line leading whitespace is retained and the intra-stanza newlines are
    hard breaks (PART 9 §23). *)
-line_block_body = stanza, {blank_line, stanza} ;
+line_block_body = {blank_line}, [stanza, {blank_line, {blank_line}, stanza}, {blank_line}] ;
 stanza = line_block_line, {line_block_line} ;
 line_block_line = {whitespace}, inline_content, newline ;
 (* the leading whitespace is PRESERVED in output -- PART 9 §23 *)
@@ -2323,7 +2329,7 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    character after ']': '(' -> inline_link, '[' -> reference link, '{' ->
    inline_span. A bare '[text]' with none of those is literal text (carve
    has no shortcut reference links). See PART 9 §14. *)
-inline_span = '[', inline_content, ']', span_attribute_run ;
+inline_span = '[', [inline_content], ']', span_attribute_run ;
 (* A span's run also takes the blessed empty block as an ordinary member
    that contributes no attribute (PART 9 §14 CARVE-P9-021): `[a]{}{.b}`,
    `[a]{}{}{.b}` and `[a]{.b}{}` all give `<span class="b">a</span>`. Every
@@ -2480,7 +2486,7 @@ math_display = "$$", code_span ;
    NOTATION, header) instantiated for every bare delimiter
    d in { '/', '*', '_', '~', '=' } (all single-char): *)
 
-bare_opener(d) = <!(alnum | '_' | d | slash_if(d)), d, !(ws | d | grapheme_extender) ;
+bare_opener(d) = <!(alnum | '_' | d | slash_if(d)), d, !(ws | d | grapheme_extender | gt_if(d)) ;
 bare_closer(d) = <&(non_ws), d, !(alnum | grapheme_extender) ;
 (* A DELIMITER IS A WHOLE GRAPHEME -- NORMATIVE [CARVE-P3-025]. A delimiter
    character counts only when it is a whole grapheme. A d followed by a
@@ -2505,6 +2511,8 @@ grapheme_extender = (* a character of Unicode general category Mn, Mc or Me *)
    before an opener is markup rather than a guard is PART 9 §9 GUARD
    EXEMPTION. *)
 
+(* gt_if(d) = '>' when d = '=', otherwise nothing: `=>` is never a highlight
+   opener (CARVE-P3-022), so `=>y=` is text. *)
 (* slash_if(d) = '/' when d in { '/', '_' }, otherwise nothing: italic and
    underline additionally never open when the char immediately before d is `/`
    (path protection, PART 9 §9: /a/_b_, snake_/case/, a_/_a_). For d = '/'
@@ -2709,7 +2717,7 @@ editorial_markup = addition | deletion | substitution | editorial_comment ;
 
 addition = "{+", !(grapheme_extender), inline_content, "+}", [attribute_run] ;
 deletion = "{-", !(grapheme_extender), inline_content, "-}", [attribute_run] ;
-substitution = "{~", !(grapheme_extender), inline_content, "~>", inline_content, "~}" ;
+substitution = "{~", !(grapheme_extender), [inline_content], "~>", [inline_content], "~}" ;
 editorial_comment = "{#", !(grapheme_extender), comment_content, "#}" ;
 comment_content = (* any text until the matching `#}`, preserved literally;
                      at least one character -- see the empty-brace clause,
@@ -3305,7 +3313,7 @@ include_directive = "{{", space+, include_path, [[space+], include_section], [in
    closer is again the first "}}" - which is what leaves a malformed directive
    as the literal text CARVE-P6-001 says it is. *)
 include_path = bare_include_path | quoted_include_path ;
-bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
+bare_include_path = character - ('"' | '#' | '@' | '}' | ' ' | newline), {character - ('#' | '@' | '}' | ' ' | newline)} ;
 (* A path carrying a space is DOUBLE-QUOTED, and only then: the bare form stops
    at the first space, so an unquoted `my chapter.crv` ends the path at `my`
    and the rest is read as the option slot it is not. Inside the quoted form a
@@ -3847,7 +3855,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    I12 THE WRITER PRESERVES A DIRECTIVE VERBATIM. A Carve writer MUST NOT
       escape the braces of a well-formed directive; it writes the directive
       as spelled, including one whose shape is well-formed but whose option
-      is unknown or whose `#section` is not a valid identifier. Inside a
+      is unknown or whose `#section` names no id. Inside a
       verbatim context `{{ … }}` is not a directive (I9).
 
    I15 A PROCESSOR TARGETING CARVE SOURCE DOES NOT EXPAND. When the output
@@ -4542,7 +4550,8 @@ EOF = (* end of file *) ;
            2. set per-column alignment from the colons (`:--` left, `--:`
               right, `:-:` center, bare `---` none), applied to the WHOLE
               column (header + body cells);
-           3. CONSUME the row (no `<tr>`).
+           3. CONSUME the row (no `<tr>`), and with it any row attributes
+              glued to it, which have no `<tr>` to set (T8).
          Column-count mismatch: unmatched columns promote with default
          alignment. POSITION IS STRICT: a delimiter-shaped row anywhere
          else (first line, or after the second) is an ordinary row whose

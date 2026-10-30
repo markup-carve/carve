@@ -16,7 +16,10 @@ table_row = standard_row | continuation_row ;
 
 standard_row = '|', table_cell, {'|', table_cell}, '|', [row_attributes], newline ;
 
-continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
+continuation_row = '+', continuation_cell, {'|', continuation_cell}, '|', newline ;
+(* A continuation fragment reads no cell marker: `+ < | ^ |` appends a literal
+   `<` and `^` (PART 9 §5 T6). *)
+continuation_cell = {space}, cell_content, {space} ;
 
 (* THE ROW TERMINATOR AND AN OPEN RUN -- NORMATIVE [CARVE-P2-019].
    Cells are cut from the line BEFORE any inline parsing, so what an inline run
@@ -58,7 +61,7 @@ row_attributes = attributes ;
    (the first line, or any row after the second) is an ordinary standard_row --
    its `-` runs are inline content (smart typography may render `---` as an em
    dash). See PART 9 §5 (GFM DELIMITER ROW) for header promotion + alignment. *)
-delimiter_row = '|', delimiter_cell, {'|', delimiter_cell}, '|', newline ;
+delimiter_row = '|', delimiter_cell, {'|', delimiter_cell}, '|', [row_attributes], newline ;
 delimiter_cell = {space}, [':'], '-', {'-'}, [':'], {space} ;
 (* at least one '-'; only optional leading/trailing ':' and surrounding
    padding. An EMPTY cell is NOT a delimiter_cell, so a row containing one
@@ -328,7 +331,10 @@ admonition = admonition_open, newline,
        convention (those stay supported, deprecated). The `selected`
        default-tab marker is NOT a label -- it remains a boolean attribute on
        the preceding `{...}` line. *)
-(* The same line carries both roles, and both take `space`. The first
+(* The same line carries both roles, and both take `space`. In every colon
+   opener this `space` is the first of a run: further ASCII spaces before the
+   type token belong to the same separator, so `:::  note "T"` opens (corpus
+   254). The first
    separator is what makes this an admonition rather than a div, a line block
    or a local hard-break block, so it is a MARKER SEPARATOR; once
    `admonition_type` has been read the block is decided and the "title" and
@@ -416,11 +422,11 @@ div_open = colon_fence:open, [[space], label] ;
    PARAGRAPH, not a line block. Normative rendering: PART 9 §23. *)
 line_block = line_block_open, newline, line_block_body, [admonition_close, newline] ;
 line_block_open = colon_fence:open, space, "|" ;
-(* The body is a sequence of stanzas separated by blank lines; each stanza is
-   a run of consecutive non-blank lines. Inline content parses normally; the
+(* The body is a possibly empty sequence of stanzas separated by one or more
+   blank lines; each stanza is a run of consecutive non-blank lines. Inline content parses normally; the
    per-line leading whitespace is retained and the intra-stanza newlines are
    hard breaks (PART 9 §23). *)
-line_block_body = stanza, {blank_line, stanza} ;
+line_block_body = {blank_line}, [stanza, {blank_line, {blank_line}, stanza}, {blank_line}] ;
 stanza = line_block_line, {line_block_line} ;
 line_block_line = {whitespace}, inline_content, newline ;
 (* the leading whitespace is PRESERVED in output -- PART 9 §23 *)

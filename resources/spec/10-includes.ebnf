@@ -27,7 +27,7 @@ include_directive = "{{", space+, include_path, [[space+], include_section], [in
    closer is again the first "}}" - which is what leaves a malformed directive
    as the literal text CARVE-P6-001 says it is. *)
 include_path = bare_include_path | quoted_include_path ;
-bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
+bare_include_path = character - ('"' | '#' | '@' | '}' | ' ' | newline), {character - ('#' | '@' | '}' | ' ' | newline)} ;
 (* A path carrying a space is DOUBLE-QUOTED, and only then: the bare form stops
    at the first space, so an unquoted `my chapter.crv` ends the path at `my`
    and the rest is read as the option slot it is not. Inside the quoted form a
@@ -569,7 +569,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    I12 THE WRITER PRESERVES A DIRECTIVE VERBATIM. A Carve writer MUST NOT
       escape the braces of a well-formed directive; it writes the directive
       as spelled, including one whose shape is well-formed but whose option
-      is unknown or whose `#section` is not a valid identifier. Inside a
+      is unknown or whose `#section` names no id. Inside a
       verbatim context `{{ … }}` is not a directive (I9).
 
    I15 A PROCESSOR TARGETING CARVE SOURCE DOES NOT EXPAND. When the output
