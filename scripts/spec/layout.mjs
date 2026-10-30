@@ -3052,7 +3052,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // frames the walk closed when it read that block where it stands.
     if (attachedTo && CONT_MARKER.test(trimWs(src).replace(/^(?:> ?)*/, ''))) {
       const stands = stripQuotes(src, attachedTo.depth)
-      if (stands && CONT_MARKER.test(trimWs(stands.rest)) && attachedTo.endsAt(at)) {
+      if (stands && CONT_MARKER.test(trimWs(stands.rest)) && walkIndent(stands.rest).col === attachedTo.host.markerCol && attachedTo.endsAt(at)) {
         frames.length = 0
         frames.push(...attachedTo.frames)
       }

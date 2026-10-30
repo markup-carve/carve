@@ -1,0 +1,40 @@
+A refused plus after an attached block ends nothing
+
+```
+- o
++
+> q
+  +
+  > r
+.
+<ul>
+  <li>o
+    <blockquote><p>q
++
+r</p></blockquote>
+  </li>
+</ul>
+```
+
+````
+- a
+  - b
+  +
+  ```
+```
++
+ ```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre><code></code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<pre><code>+
+ ```
+</code></pre>
+````

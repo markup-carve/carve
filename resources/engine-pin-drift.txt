@@ -103,6 +103,8 @@
 381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 396-an-idle-escape-does-not-spread-from-the-block-that-needed-one  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 403-an-idle-escape-does-not-spread-from-the-occurrence-that-needed-one  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+855-a-refused-plus-after-an-attached-block-ends-nothing  The pinned carve-js predates this (markup-carve/carve#4495); the spec model is correct.
+855-a-refused-plus-after-an-attached-block-ends-nothing-2  The pinned carve-js predates this (markup-carve/carve#4495); the spec model is correct.
 415-a-floating-attribute-does-not-widen-a-list-item-s-content-column-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 415-a-floating-attribute-does-not-widen-a-list-item-s-content-column-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 415-a-floating-attribute-does-not-widen-a-list-item-s-content-column-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
