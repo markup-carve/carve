@@ -160,7 +160,15 @@ core.rules.closerless.body = closerless
 // A `%%` comment stops before a `*/`, which ends it where it is the closer
 // token of a `/*` ... `*/` shape (CARVE-P9-042, carve#4042); `buildToks` marks
 // the rest of its line.
+// A bracket opener with no `]` after it fails without recursing into the
+// openers behind it, so a long run of them stays literal text instead of
+// overflowing the stack (PART 9 §25, carve#4134).
+const BRACKET_RULES = ['bracketed', 'nested', 'altNested', 'inlineNote']
 const g = ohm.grammar(`CarveStack <: ${core.name} {
+  codeClosed += codeLong
+  codeLong = "\\u0000" "\\u0000" "\\u0000"
+  bracketless = "\\u0000"
+${BRACKET_RULES.map((rule) => `  ${rule} := ~bracketless ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1]}`).join('\n')}
   span := ~any any
   spComment := sepRun "%%" (~newline ~"*/" any)*
   fSpComment<d> := sepRun "%%" (~newline ~(d "}") ~"*/" any)*
@@ -177,6 +185,73 @@ markupContent.eval = function (state) {
   return false
 }
 g.rules.markupContent.body = markupContent
+let lastCloser = { source: null, at: -1 }
+const bracketless = new ohm.pexprs.Terminal('')
+bracketless.eval = function (state) {
+  const { source, pos } = state.inputStream
+  if (lastCloser.source !== source) lastCloser = { source, at: source.lastIndexOf(']') }
+  if (lastCloser.at < pos) return ohm.pexprs.Terminal.prototype.eval.call(this, state)
+  state.processFailure(pos, this)
+  return false
+}
+g.rules.bracketless.body = bracketless
+// A code span whose run is longer than the last `codeRun` tier, closed by the
+// next run of exactly its length (PART 3 code_span sets no bound, carve#4134).
+// A PEG cannot compare run lengths, so the opener, body and closer read the
+// lengths from an index of the source's maximal runs.
+let longRuns = { source: null, byLength: null }
+let longOpen = 0
+const runsOf = (source) => {
+  if (longRuns.source !== source) {
+    const byLength = new Map()
+    for (const m of source.matchAll(/`+/g)) {
+      if (m[0].length <= MAX_CODE_RUN) continue
+      if (!byLength.has(m[0].length)) byLength.set(m[0].length, [])
+      byLength.get(m[0].length).push(m.index)
+    }
+    longRuns = { source, byLength }
+  }
+  return longRuns.byLength
+}
+const codeLongPart = (step) => {
+  const part = new ohm.pexprs.Terminal('')
+  part.eval = function (state) {
+    const { inputStream } = state
+    const { source, pos } = inputStream
+    const end = step(source, pos)
+    if (end === -1) {
+      state.processFailure(pos, this)
+      return false
+    }
+    inputStream.pos = end
+    state.pushBinding(new TerminalNode(end - pos), pos)
+    return true
+  }
+  // Every part consumes at least one character.
+  part._isNullable = () => false
+  return part
+}
+g.rules.codeLong.body = new ohm.pexprs.Seq([
+  codeLongPart((source, pos) => {
+    let end = pos
+    while (source[end] === '`') end++
+    if (end - pos <= MAX_CODE_RUN) return -1
+    longOpen = end - pos
+    return end
+  }),
+  codeLongPart((source, pos) => {
+    const starts = runsOf(source).get(longOpen) ?? []
+    let lo = 0
+    let hi = starts.length
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1
+      if (starts[mid] < pos) lo = mid + 1
+      else hi = mid
+    }
+    return lo < starts.length && starts[lo] > pos ? starts[lo] : -1
+  }),
+  codeLongPart((_source, pos) => pos + longOpen),
+])
 // The close of a bracketed run, for the layout pass: the index just past the
 // `]` that `brContent*` (or `altContent*` in an image alt) stops at, or -1.
 const bracketScan = ohm.grammar(`CarveBracketScan <: ${g.name} {
@@ -695,6 +770,7 @@ const sem = g.createSemantics().addOperation('h', {
     return run.h()
   },
   codeRun: codeOp,
+  codeLong: codeOp,
   codeU(_o, _r, content) {
     return unclosedCode(content)
   },
@@ -1890,6 +1966,8 @@ const MAX_NESTING_DEPTH = 200
 // escapes and verbatim spans) and REFUSE past the bound -- a legitimate
 // refusal, not a crash.
 function bracketDepthExceeds(text, limit) {
+  // An opener with no `]` after it does not recurse (`bracketless`).
+  const lastClose = text.lastIndexOf(']')
   let depth = 0
   for (let i = 0; i < text.length; i++) {
     const c = text[i]
@@ -1904,7 +1982,7 @@ function bracketDepthExceeds(text, limit) {
       i = close === -1 ? text.length : close + run - 1
       continue
     }
-    if (c === '[') {
+    if (c === '[' && i < lastClose) {
       depth++
       if (depth > limit) return true
     } else if (c === ']') {
@@ -2388,7 +2466,6 @@ function renderInlineInner(text) {
   // Emphasis is resolved by the PART 9 SS9 delimiter stack in the `inlines`
   // semantic (resolveEmphasis) -- no pre-scan / refusal needed here.
   if (bracketDepthExceeds(text, MAX_NESTING_DEPTH)) throw new Refuse('inline nesting exceeds MAX_NESTING_DEPTH')
-  if (text.includes('`'.repeat(MAX_CODE_RUN + 1))) throw new Refuse('inline backtick run past the code span tiers')
   const saved = unattachedAttrs
   const savedPaired = pairedDelims
   const savedAttached = attachedAttrs

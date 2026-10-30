@@ -66,7 +66,8 @@ test('discarded heading comments do not trigger inline parser limits', () => {
 })
 
 test('live heading content still refuses beyond inline parser limits', () => {
-  for (const text of ['`'.repeat(9) + 'x %% y', '['.repeat(2000) + 'x %% y']) {
+  // A long backtick run, or openers with no `]` after them, no longer hit a limit (carve#4134).
+  for (const text of ['['.repeat(2000) + 'x] %% y']) {
     assert.throws(() => html(`# ${text}\n`), Refuse)
   }
 })

@@ -129,7 +129,7 @@
       "seeds": 120,
       "cases": 1200,
       "skipped": {
-        "refused": 1,
+        "refused": 0,
         "error": 0
       },
       "shards": [

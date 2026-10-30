@@ -372,8 +372,8 @@ const CAPTION = /^\^ +(?=.*[^ \t\n\r\f])(.*?)[ \t]*$/
 // first `]` at any depth (carve#1197). An UNCLOSED backtick run opens a
 // verbatim span to the end of the block (PART 3 code_span), so the run has no
 // close on this line: -1.
-// The longest run `codeClosed` in resources/carve-core.ohm pairs; the inline
-// pass refuses a longer one, and so does the bracket scan.
+// The longest run a `codeRun` tier in resources/carve-core.ohm pairs; render.mjs
+// pairs a longer one with `codeLong`.
 export const MAX_CODE_RUN = 8
 // PART 7's four whitespace characters (CARVE-P7-003). JS `trim()` and `\s`
 // also take a form feed, a vertical tab and the Unicode spaces, all content.
@@ -386,8 +386,6 @@ export function bracketRunEnd(line, open, slot = 'label') {
   if (line[open] !== '[') return -1
   const rel = bracketScanEnd(line.slice(open), slot)
   if (rel === -1) return -1
-  // The inline pass refuses a run past the tiers wherever it sits; so does this.
-  if (line.slice(open, open + rel).includes('`'.repeat(MAX_CODE_RUN + 1))) throw new Refuse('backtick run past the code span tiers')
   return open + rel
 }
 // THE `[label]` SLOT, read from the two openers that carry it: a colon fence and

@@ -253,8 +253,7 @@ CarveCore {
   // single-space strip
   codeU      = "\u0060" "\u0060"* any*
   // A PEG cannot compare two run lengths, so each length is its own tier. A
-  // run past the last tier is refused before the match (render.mjs), rather
-  // than reaching `codeU` as an unclosed span it may not be.
+  // run past the last tier is paired by `codeLong` in render.mjs.
   codeClosed = codeRun<"````````"> | codeRun<"```````"> | codeRun<"``````">
              | codeRun<"`````"> | codeRun<"````"> | codeRun<"```"> | codeRun<"``">
              | codeRun<"`">
