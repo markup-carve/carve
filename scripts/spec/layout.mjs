@@ -3119,15 +3119,15 @@ function ownLines(lines, trace = null) {
       at--
       continue
     }
-    // Past a missed note a marker opens where an item owns it (§10 I2), or
-    // beside a missed list; a description body is no exception (carve#4160).
+    // Past a missed note a marker opens only beside a missed list; the note's
+    // open paragraph is not the item's own, so no owner takes a sublist (carve#4160).
     const missedNote = missed && frames.slice(reached + 1).some((f) => f.kind === 'note')
     // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
     const interruptsPlus = plusNote && form.kind === 'item'
     // A `: ` description is a sibling at any column where its list's owner reads it (CARVE-P0-024 S3).
     if (missed && m.rest !== '' && top().para && !form.interrupts && !interruptsPlus && form.kind !== 'dd' &&
         !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes) &&
-        !(missedNote && form.kind === 'item' && (owner.kind === 'item' || frames.slice(reached + 1).some((f) => f.kind === 'item')))) {
+        !(missedNote && form.kind === 'item' && frames.slice(reached + 1).some((f) => f.kind === 'item'))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
       // the frame it missed. Past a missed note it is framed LAZY in the
       // deepest container, so every reader folds it there (carve#3885).

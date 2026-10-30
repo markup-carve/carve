@@ -1,0 +1,43 @@
+A caption bucket key keeps a symbol and drops a comment
+
+```
+||
+^ Fig :smile: #: a
+
+||
+^ Fig #: b
+.
+<table>
+  <caption>Fig :smile: 1: a</caption>
+  <tbody>
+    <tr><td></td></tr>
+  </tbody>
+</table>
+<table>
+  <caption>Fig 1: b</caption>
+  <tbody>
+    <tr><td></td></tr>
+  </tbody>
+</table>
+```
+
+```
+||
+^ Fig #: a
+
+||
+^ Fig {#c#} #: b
+.
+<table>
+  <caption>Fig 1: a</caption>
+  <tbody>
+    <tr><td></td></tr>
+  </tbody>
+</table>
+<table>
+  <caption>Fig <span class="critic-comment">c</span> 2: b</caption>
+  <tbody>
+    <tr><td></td></tr>
+  </tbody>
+</table>
+```

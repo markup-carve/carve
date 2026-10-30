@@ -1,0 +1,28 @@
+The scheme denylist blanks authored attribute values, not text
+
+```
+{title="Shell: bash" lang="ms-word:z"}
+para
+.
+<p title="" lang="">para</p>
+```
+
+```
+[a](u "javascript:x") [b](u "Shell: x")
+.
+<p><a href="u" title="javascript:x">a</a> <a href="u" title="Shell: x">b</a></p>
+```
+
+```
+![Shell: x](i.png)
+.
+<img src="i.png" alt="Shell: x">
+```
+
+```
+- [ ] shell: x
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="shell: x"> shell: x</li>
+</ul>
+```

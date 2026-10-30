@@ -277,20 +277,33 @@
          document's, or an enclosing quote's content). So `- - +` / `para`
          gives the inner item the paragraph `para`, `[^a]: +` / `  flush`
          gives a note holding `<p>flush</p>`, and `: +` / `    flush` a
-         description holding `flush`. A block in an enclosing item's column
-         stays with that item. A sibling list item stays a sibling. A block
-         quote accepts a non-list block at column zero of its quote level or
-         at its own marker column; an intervening column refuses the marker.
+         description holding `flush`. A list at column zero is never pulled
+         into a footnote body or a description body: `[^a]: +` / `- a list`
+         keeps `+` as the note's text and opens the list after the note, and
+         `: +` / `- a list` leaves the description empty. A block in an
+         enclosing item's column stays with that item. A sibling list item
+         stays a sibling. The group is one for attachment only: a refused `+`
+         still leaves a list item or description body empty and stays text
+         in a footnote body. A block quote accepts a non-list block at column
+         zero of its quote level or at its own marker column; an intervening
+         column refuses the marker.
 
          A line reaches a host inside a quote only through that quote's
-         prefix (rule A, PART 0 S2). An unprefixed line therefore refuses the
-         `+` of a list item, a description body or a footnote body inside a
-         quote, and then closes the quote as usual: `> [^b]: +` / `# H` keeps
-         `+` as the note's text and opens the heading after the quote, while
-         `> [^b]: +` / `> # H` gives the note the heading. Only a quote's own
-         `+` pulls an unprefixed column-zero block in ahead of that line's
-         ordinary closure of an enclosing quote (§10 I5): `> > +` / `# H`
-         nests the heading in the inner quote.
+         prefix (rule A, PART 0 S2). A quoted marker body takes its block
+         through the prefix, at the quote's content column or at its own
+         content column: `> [^b]: +` / `>   flush` gives a note holding
+         `<p>flush</p>`, and `> [^b]: +` / `> # H` gives the note the
+         heading. An unprefixed line refuses the `+` of a list item, a
+         description body or a footnote body inside a quote, and the refused
+         `+` then reads like a letter. A line that interrupts a
+         paragraph (a heading, a fence, a div) closes the quote: `> [^b]: +` /
+         `# H` keeps `+` as the note's text and opens the heading after the
+         quote. A paragraph line folds lazily instead: `> [^b]: +` / `para`
+         gives a note holding `+` and `para` in one paragraph, as
+         `> [^b]: x` / `para` does. Only a quote's own `+` pulls an
+         unprefixed column-zero block in ahead of that line's ordinary
+         closure of an enclosing quote (§10 I5): `> > +` / `# H` nests the
+         heading in the inner quote.
 
          With no eligible block, a first-block `+` is refused. In a list item
          or description it leaves that body empty; in a quote or footnote body

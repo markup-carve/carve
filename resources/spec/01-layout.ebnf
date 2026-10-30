@@ -222,10 +222,13 @@
         the enclosing container. Under an open paragraph a list marker is text
         unless the owner is a list item, and a valid code or raw opener
         interrupts it (PART 9 §10 I4). The list item is the only exception
-        (the tight sublist of PART 9 §24 C3): a description body, a quote
-        and a footnote body take none, so in `:: t` / `:  [^q]: note` /
-        `   * child` the line reaches the description, misses the note, and
-        `* child` is text of the note's open paragraph. A list marker at a
+        (the tight sublist of PART 9 §24 C3), and it covers only the item's
+        own open paragraph. A description body, a quote and a footnote body
+        take none, and an open paragraph of a note inside an item is not the
+        item's own: in `:: t` / `:  [^q]: note` / `   * child` the line
+        reaches the description, misses the note, and `* child` is text of
+        the note's open paragraph, and `- [^q]: note` / `  * child` folds the
+        same way. A list marker at a
         list item's content column opens a child list; a sibling marker at the
         item's marker column continues the enclosing list, and siblings group
         by the container they open in, not by the column they are written at.

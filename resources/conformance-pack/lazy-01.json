@@ -377,7 +377,7 @@
 {"id":"lazy-4dc22e33ac7c","source":"- - x\n+   > a\n+  d\n+   > b\n","html":"<ul>\n  <li>\n    <ul>\n      <li>x\n+   &gt; a\n+  d\n+   &gt; b</li>\n    </ul>\n  </li>\n</ul>"},
 {"id":"lazy-4dc9a90b779f","source":"> - a\n  lazy\n>   {.c\n> }\n para\n","html":"<blockquote>\n  <ul>\n    <li>a\nlazy</li>\n  </ul>\n</blockquote>\n<p>para</p>"},
 {"id":"lazy-4e624c82a1fd","source":"> :  d\ntail\n","html":"<blockquote><p>:  d\ntail</p></blockquote>"},
-{"id":"lazy-4ef9ea1e14a9","source":"> - a\n>     [^f]: n\n>   -  para\n\ntail\n","html":"<blockquote>\n  <ul>\n    <li>a\n      <ul>\n        <li>para</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>\n<p>tail</p>"},
+{"id":"lazy-4ef9ea1e14a9","source":"> - a\n>     [^f]: n\n>   -  para\n\ntail\n","html":"<blockquote>\n  <ul>\n    <li>a</li>\n  </ul>\n</blockquote>\n<p>tail</p>"},
 {"id":"lazy-4efc2b7a1c03","source":"> > a\n> > ```\n> > ```\n> > c\n> > ```\ny\n","html":"<blockquote>\n  <blockquote>\n    <p>a</p>\n    <pre><code></code></pre>\n    <p>c</p>\n    <pre><code></code></pre>\n  </blockquote>\n</blockquote>\n<p>y</p>"},
 {"id":"lazy-4f2cddd8dc28","source":"tail\n- %% c\n","html":"<p>tail\n-</p>"},
 {"id":"lazy-4f3faa4b6f6d","source":"> [^f]: t\n>\n>   ```\n>   x\nflush\nflush\n","html":"<blockquote>\n\n</blockquote>\n<p>flush\nflush</p>"},

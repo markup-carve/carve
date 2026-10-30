@@ -453,14 +453,21 @@
       - ATTRIBUTE NAME/VALUE HARDENING. On EVERY rendered element -- including
         elements emitted by extensions -- an HTML renderer MUST drop
         attributes whose name begins with `on` (case-insensitive) and the
-        names `srcdoc` and `formaction`; MUST blank any attribute value whose
-        scheme (control/space-stripped) is `javascript`/`vbscript`/`data`/
-        `file`; and MUST blank any `style` value containing `expression(`,
+        names `srcdoc` and `formaction`; MUST blank an attribute value
+        authored in an attribute block, or copied onto an element by an
+        extension, whose scheme (control/space-stripped) is on the URL SINK
+        SCHEME DENYLIST above, the four schemes and the OS protocol-handler
+        class alike (`{title="Shell: bash"}` gives `title=""`); and MUST
+        blank any `style` value containing `expression(`,
         `url(`, `@import`, `behavior:`, or `-moz-binding` (all whitespace
         removed first, so `ex pression(` matches). This applies to author
         attribute blocks AND to attributes an extension copies onto its
         wrapper element: an extension MUST route authored attributes through
-        the same hardening and MUST NOT emit them raw.
+        the same hardening and MUST NOT emit them raw. A value the renderer
+        derives from inline text is text, not an authored attribute value,
+        and the scheme probe does not blank it: a link or image title
+        (`[a](u "javascript:x")` keeps `title="javascript:x"`), an image's
+        alt text and a derived name such as a task box's `aria-label`.
 
         A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD --
         NORMATIVE [CARVE-P9-055]. Four attributes carry a LIST of URLs: `srcset`,

@@ -1,0 +1,17 @@
+A task box names an unresolved image by its alt as written
+
+```
+- [ ] ![x][r]
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="x"> ![x][r]</li>
+</ul>
+```
+
+```
+- [ ] ![/x/ y][r] z
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="/x/ y z"> ![/x/ y][r] z</li>
+</ul>
+```

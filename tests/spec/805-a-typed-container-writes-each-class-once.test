@@ -1,0 +1,45 @@
+A typed container writes each class once
+
+```
+{.calculation}
+::: calculation
+42
+:::
+.
+<div class="calculation">
+  <p>42</p>
+</div>
+```
+
+```
+{.note}
+::: note
+42
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p>42</p>
+</aside>
+```
+
+```
+{.admonition}
+::: note
+42
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p>42</p>
+</aside>
+```
+
+```
+{.x .note .y}
+::: note
+42
+:::
+.
+<aside class="admonition note x y" aria-label="Note">
+  <p>42</p>
+</aside>
+```

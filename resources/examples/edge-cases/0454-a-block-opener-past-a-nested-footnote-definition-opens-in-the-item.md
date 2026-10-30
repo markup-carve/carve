@@ -89,11 +89,7 @@ after
 
 ```html
 <ul>
-  <li>body
-    <ul>
-      <li>item</li>
-    </ul>
-  </li>
+  <li>body</li>
 </ul>
 <p>after</p>
 ```

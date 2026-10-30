@@ -67,7 +67,7 @@ An invisible footnote keeps a marker at its body column
 
 :::::::
 
-A marker below the invisible footnote body belongs to the list item
+A marker below the invisible footnote body is text of the note's open paragraph, not a sublist of the item (carve#4160)
 
 ::::::: compare
 
@@ -79,11 +79,7 @@ A marker below the invisible footnote body belongs to the list item
 
 `````html
 <ol>
-  <li>d
-    <ul>
-      <li>a</li>
-    </ul>
-  </li>
+  <li>d</li>
 </ol>
 `````
 
