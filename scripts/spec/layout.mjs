@@ -2497,6 +2497,20 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) 
  *
  * A code fence's payload is opaque, so a `%%%` written inside one is content.
  */
+function lastCommentCloserIn(state, lines, run) {
+  const arrays = state.markerCommentClosers ??= new WeakMap()
+  let closers = arrays.get(lines)
+  if (!closers) {
+    closers = new Map()
+    for (let k = 0; k < lines.length; k++) {
+      const end = COMMENT_FENCE.exec(lines[k])
+      if (end) closers.set(end[1].length, k)
+    }
+    arrays.set(lines, closers)
+  }
+  return closers.get(run.length) ?? -1
+}
+
 function bodyHoldsOpenCommentSpan(bodyLines, closerAhead = null) {
   return bodyOpenCommentRun(bodyLines, closerAhead) !== null
 }
@@ -4766,7 +4780,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lazyParagraphOpen = null
           pullPending = false
           i = end
-        } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom))) {
+        } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom), (run) => lastCommentCloserIn(state, lines, run) >= i)) {
           // carve#2488, the same arm the `dd` carries. This body ends at a
           // comment below column 2, and a comment INSIDE a span the body already
           // holds is not one - see `bodyHoldsOpenCommentSpan`. carve#2488 reads
@@ -5168,6 +5182,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           let ddScanFrom = 0
           let retainedParagraph = false
           const sinceComment = () => commentTailSince(bodyLines, ddScanFrom)
+          const bodyHoldsLiveSpan = () => bodyHoldsOpenCommentSpan(sinceComment(), (run) => lastCommentCloserIn(state, lines, run) >= i)
           let openFence = -1
           const nestedLeadFenceUnterminated = descriptionLeadHasUnterminatedNestedFence(
             bodyLines[0] ?? '', lines, i, bodyColumn, endsBodyAt,
@@ -5357,7 +5372,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 !reachesBody(i) &&
                 matchMarkerAt(indentCols(dedented)) &&
                 !quoteParagraphClaim) break
-            if (COMMENT_LINE.test(dedented) && !bodyHoldsOpenCommentSpan(sinceComment())) {
+            if (COMMENT_LINE.test(dedented) && !bodyHoldsLiveSpan()) {
               openFence = bodyHasFenceCandidate
                 ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt)
                 : -1
@@ -5365,7 +5380,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             // carve#2488: a comment inside a span this body already holds is not
             // "a comment below the column" - see `bodyHoldsOpenCommentSpan`.
-            if (COMMENT_LINE.test(dedented) && bodyHoldsOpenCommentSpan(sinceComment())) {
+            if (COMMENT_LINE.test(dedented) && bodyHoldsLiveSpan()) {
               pushBody(keptCommentDelimiter(cur))
               i++
               continue
@@ -8063,19 +8078,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // Otherwise a stacked marker line is walked again at every item depth.
     // All openers in this source array share one delimiter index, so unmatched
     // siblings do not each scan the remaining document.
-    const lastCommentCloser = (run) => {
-      const arrays = state.markerCommentClosers ??= new WeakMap()
-      let closers = arrays.get(lines)
-      if (!closers) {
-        closers = new Map()
-        for (let k = 0; k < lines.length; k++) {
-          const end = COMMENT_FENCE.exec(lines[k])
-          if (end) closers.set(end[1].length, k)
-        }
-        arrays.set(lines, closers)
-      }
-      return closers.get(run.length) ?? -1
-    }
+    const lastCommentCloser = (run) => lastCommentCloserIn(state, lines, run)
     const markerComment = (text, idx, col = 0) => {
       const memo = prefixMemo(state, lines, idx).markerComment ??=
         new Map()
