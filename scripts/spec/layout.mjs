@@ -2712,18 +2712,18 @@ function descriptionLeadHasUnterminatedNestedFence(line, lines, start, bodyColum
     contentColumn += marker.markerWidth
     text = marker.text
   }
-  if (!nested) return false
+  if (!nested) return 0
   const fence = FENCE.exec(text)
-  if (!fence || parseFenceInfo(fence[2]) === null) return false
+  if (!fence || parseFenceInfo(fence[2]) === null) return 0
   for (let k = start; k < lines.length; k++) {
     if (endsBodyAt(k)) break
     const measured = indentCols(lines[k] ?? '')
     if (measured.col < contentColumn) continue
     const candidate = dedentMeasured(measured, lines[k], contentColumn).text
     const closer = PURE_FENCE.exec(candidate)
-    if (closer && closer[1][0] === fence[1][0] && closer[1].length >= fence[1].length) return false
+    if (closer && closer[1][0] === fence[1][0] && closer[1].length >= fence[1].length) return 0
   }
-  return true
+  return contentColumn
 }
 
 // The colon fence opened at `openIdx` closes on a BARE run of its own length
@@ -4915,13 +4915,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const sinceComment = () => commentTailSince(bodyLines, ddScanFrom)
           const bodyHoldsLiveSpan = () => bodyHoldsOpenCommentSpan(sinceComment(), (run) => lastCommentCloserIn(state, lines, run) >= i)
           let openFence = -1
-          const nestedLeadFenceUnterminated = descriptionLeadHasUnterminatedNestedFence(
+          let nestedLeadFenceColumn = descriptionLeadHasUnterminatedNestedFence(
             bodyLines[0] ?? '', lines, i, bodyColumn, endsBodyAt,
           )
           while (i < n) {
             const cur = lines[i] ?? ''
             if (reachesBody(i) || isBlank(cur)) retainedParagraph = false
-            if (nestedLeadFenceUnterminated) {
+            // A line in the body below that fence's column ends it (§24 C3), at every depth (carve#4162).
+            if (!isBlank(cur) && reachesBody(i) && indentCols(cur).col < nestedLeadFenceColumn) nestedLeadFenceColumn = 0
+            if (nestedLeadFenceColumn) {
               if (endsBodyAt(i)) break
               const measured = indentCols(cur)
               if (measured.rest !== '' && measured.col < bodyColumn) break

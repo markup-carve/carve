@@ -772,3 +772,6 @@
 854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter-2  The pinned carve-js predates this: a sibling behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.
 854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter-3  The pinned carve-js predates this: a sibling behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.
 854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter-4  The pinned carve-js predates this: a sibling behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.
+855-a-line-below-an-unclosed-fence-in-a-described-item-keeps-its-lazy-line  The pinned carve-js predates this: a line below an unclosed fence in a described item keeps its lazy line (markup-carve/carve#4468); the spec model is correct.
+855-a-line-below-an-unclosed-fence-in-a-described-item-keeps-its-lazy-line-2  The pinned carve-js predates this: a line below an unclosed fence in a described item keeps its lazy line (markup-carve/carve#4468); the spec model is correct.
+855-a-line-below-an-unclosed-fence-in-a-described-item-keeps-its-lazy-line-3  The pinned carve-js predates this: a line below an unclosed fence in a described item keeps its lazy line (markup-carve/carve#4468); the spec model is correct.
