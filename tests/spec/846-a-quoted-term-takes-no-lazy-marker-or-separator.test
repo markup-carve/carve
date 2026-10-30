@@ -1,0 +1,45 @@
+A quoted term takes no lazy marker or separator
+
+```
+> - :: t
+ - x
+.
+<blockquote>
+  <ul>
+    <li>
+      <dl>
+        <dt>t</dt>
+      </dl>
+    </li>
+  </ul>
+</blockquote>
+<ul>
+  <li>x</li>
+</ul>
+```
+
+```
+> :: t
+ : d
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+  </dl>
+</blockquote>
+<p>: d</p>
+```
+
+```
+> > :: t
+ : d
+.
+<blockquote>
+  <blockquote>
+    <dl>
+      <dt>t</dt>
+    </dl>
+  </blockquote>
+</blockquote>
+<p>: d</p>
+```
