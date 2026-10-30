@@ -12,7 +12,7 @@ const rows = [
   {
     "id": "gen-249",
     "source": "> 1. :: t\n   : para",
-    "html": "<blockquote>\n  <ol>\n    <li>\n      <dl>\n        <dt>t\n: para</dt>\n      </dl>\n    </li>\n  </ol>\n</blockquote>\n"
+    "html": "<blockquote>\n  <ol>\n    <li>\n      <dl>\n        <dt>t</dt>\n      </dl>\n    </li>\n  </ol>\n</blockquote>\n<p>: para</p>\n"
   },
   {
     "id": "gen-250",
@@ -22,7 +22,7 @@ const rows = [
   {
     "id": "gen-299",
     "source": "> - :: term\n  : definition",
-    "html": "<blockquote>\n  <ul>\n    <li>\n      <dl>\n        <dt>term\n: definition</dt>\n      </dl>\n    </li>\n  </ul>\n</blockquote>\n"
+    "html": "<blockquote>\n  <ul>\n    <li>\n      <dl>\n        <dt>term</dt>\n      </dl>\n    </li>\n  </ul>\n</blockquote>\n<p>: definition</p>\n"
   },
   {
     "id": "gen-346",
