@@ -912,7 +912,7 @@
 {"id":"ownership-c5f8e6d62262","source":":: a\n: b\n  :: c\n\n\n  # H\n","html":"<dl>\n  <dt>a</dt>\n  <dd>\n    <p>b</p>\n    <dl>\n      <dt>c</dt>\n    </dl>\n    <h1 id=\"H\">H</h1>\n  </dd>\n</dl>"},
 {"id":"ownership-c5fbd9d123a3","source":"- item\n\n  :: c\n    %% note\n*     more\n","html":"<ul>\n  <li>item\n    <dl>\n      <dt>c</dt>\n    </dl>\n  </li>\n</ul>\n<ul>\n  <li>more</li>\n</ul>"},
 {"id":"ownership-c621ab282e00","source":"\t    > [d]: uy\n- > # H\n","html":"<blockquote>\n\n</blockquote>\n<ul>\n  <li>\n    <blockquote>\n      <h1 id=\"H\">H</h1>\n    </blockquote>\n  </li>\n</ul>"},
-{"id":"ownership-c6653d52941b","source":" - - +\n b\n","html":"<ul>\n  <li>\n    <ul>\n      <li></li>\n    </ul>\n  </li>\n</ul>\n<p>b</p>"},
+{"id":"ownership-c6653d52941b","source":" - - +\n b\n","html":"<ul>\n  <li>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul>"},
 {"id":"ownership-c6a9f258f880","source":"::a\n: b\n  :: c\n  %% note\n  more\n","html":"<p>::a\n: b</p>\n<dl>\n  <dt>c</dt>\n</dl>\n<p>more</p>"},
 {"id":"ownership-c71270b77c2b","source":"- intro\n\n    :  definition\n        # H\n  tail\n  tail\n","html":"<ul>\n  <li><p>intro</p>\n    <p>:  definition</p>\n    <h1 id=\"H\">H</h1>\n    <p>tail\ntail</p>\n  </li>\n</ul>"},
 {"id":"ownership-c7430166d507","source":"*b*\n\n- a\n  [r]: /u\n\nsee [t][r]\n","html":"<p><strong>b</strong></p>\n<ul>\n  <li>a</li>\n</ul>\n<p>see <a href=\"/u\">t</a></p>"},
