@@ -620,9 +620,9 @@ CarveCore {
   // ASCII too, per `email_char = letter | digit | '.' | '-' | '_' | '+'`.
   // `scheme` was narrowed in carve#844 and the address beside it was not, so
   // `<me@exämple.com>` autolinked here and stayed literal in all three engines.
-  emailBody  = emailLocal "@" (emailSeg ".")+ asciiLetter+
+  emailBody  = emailLocal "@" (~emailEnd emailChar)+ emailEnd
   emailLocal = emailChar+
-  emailSeg   = (asciiLetter | digit | "-" | "_")+
+  emailEnd   = "." asciiLetter+ &">"
   emailChar  = asciiLetter | digit | "-" | "_" | "." | "+"
   // The ASCII enumeration of `url_char`, plus every character outside ASCII
   // that is neither whitespace nor a FORMAT character (carve#844). The ASCII
