@@ -6143,7 +6143,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       //
       // This used to break on every caption line. The paragraph then ended and
       // the caret line opened a second one, and only the indented spelling was
-      // in the corpus (158-indented-image-and-caption-stay-literal), where both
+      // in the corpus (158-an-indented-image-and-caption-form-a-figure), where both
       // readings agree because an indented line opens nothing. The flush-left
       // form went unpinned until the canonical writer stopped force-escaping a
       // line-initial caret and `oracle(fmt(x))` parted from `oracle(x)` on a

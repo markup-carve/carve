@@ -1,0 +1,77 @@
+A first-block marker in a footnote body or a quote attaches only at its marker column
+
+```
+[^a]: +
+flush
+
+see[^a]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^a]: +
+ flush
+
+see[^a]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>+
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^a]: +
+  flush
+
+see[^a]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>+
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> +
+flush
+.
+<blockquote><p>flush</p></blockquote>
+```
+
+```
+> +
+ flush
+.
+<blockquote><p>+
+flush</p></blockquote>
+```
+
+```
+> +
+  flush
+.
+<blockquote><p>+
+flush</p></blockquote>
+```

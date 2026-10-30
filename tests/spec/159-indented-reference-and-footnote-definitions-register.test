@@ -1,0 +1,25 @@
+Indented reference and footnote definitions register
+
+```
+ Read [intro][x].
+
+ [x]: /intro "T"
+.
+<p>Read <a href="/intro" title="T">intro</a>.</p>
+```
+
+```
+ Note[^fn].
+
+ [^fn]: body.
+.
+<p>Note<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>body.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

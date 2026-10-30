@@ -1,0 +1,110 @@
+A continuation marker attaches a block only at its owner's marker column
+
+```
+* * +
+x
+.
+<ul>
+  <li>
+    <ul>
+      <li>+
+x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+* * +
+  x
+.
+<ul>
+  <li>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+* * +
+ x
+.
+<ul>
+  <li>
+    <ul>
+      <li>+
+x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- +
+x
+.
+<ul>
+  <li>x</li>
+</ul>
+```
+
+```
+- +
+  x
+.
+<ul>
+  <li>+
+x</li>
+</ul>
+```
+
+```
+- a
+  - b
+  +
+  c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        c
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- x
+  - L
++
+  p
+.
+<ul>
+  <li>x
+    <ul>
+      <li>L
++
+p</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- x
+  - L
+ +
+.
+<ul>
+  <li>x
+    <ul>
+      <li>L
++</li>
+    </ul>
+  </li>
+</ul>
+```

@@ -1,0 +1,16 @@
+A follower at a body-hosted item's marker column attaches to the item
+
+```
+:: t
+: - +
+  x
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>x</li>
+    </ul>
+  </dd>
+</dl>
+```

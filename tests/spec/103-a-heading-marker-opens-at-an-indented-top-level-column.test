@@ -1,0 +1,17 @@
+A heading marker opens at an indented top-level column
+
+```
+   # H
+.
+<section id="H">
+  <h1>H</h1>
+</section>
+```
+
+```
+  ## H
+.
+<section id="H">
+  <h2>H</h2>
+</section>
+```

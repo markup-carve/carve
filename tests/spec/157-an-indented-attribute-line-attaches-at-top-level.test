@@ -1,0 +1,26 @@
+An indented attribute line attaches at top level
+
+```
+ {.note}
+ This paragraph.
+.
+<p class="note">This paragraph.</p>
+```
+
+```
+ {.todo}
+ - one
+ - two
+.
+<ul class="todo">
+  <li>one</li>
+  <li>two</li>
+</ul>
+```
+
+```
+{.note}
+Para
+.
+<p class="note">Para</p>
+```

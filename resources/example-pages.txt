@@ -209,7 +209,7 @@ source: examples-tier3.md
 > Alignment, spans, multi-line cells, ragged rows and the pipe rules that decide whether a table exists at all.
 out: examples/edge-cases/tables.md
 index: examples/edge-cases/index.md
-  an-indented-line-after-a-table-is-a-paragraph
+  an-indented-row-after-a-table-continues-it
   an-indented-continuation-row-continues-the-table-above
   escaped-table-hyphens-stay-literal
   escaped-hyphen-run-in-a-table-cell
@@ -332,32 +332,32 @@ index: examples/edge-cases/index.md
   628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-2
   628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-3
   628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-4
-  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one
-  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-2
-  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-3
-  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4
-  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-5
-  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-6
-  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-7
-  629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-2
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-3
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-4
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-5
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-6
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-7
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-8
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-9
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-10
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-11
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-12
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-13
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-14
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-15
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-16
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-17
-  630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-18
+  629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one
+  629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-2
+  629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-3
+  629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4
+  629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-5
+  629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-6
+  629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-7
+  629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-2
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-3
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-4
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-5
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-6
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-7
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-8
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-9
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-10
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-11
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-12
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-13
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-14
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-15
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-16
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-17
+  630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-18
   631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox
   631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-2
   631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-3
@@ -396,45 +396,45 @@ index: examples/edge-cases/index.md
   632-a-continuation-marker-uses-its-container-column-32
   632-a-continuation-marker-uses-its-container-column-33
   632-a-continuation-marker-uses-its-container-column-34
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-2
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-3
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-4
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-5
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-6
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-7
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-8
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-9
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-10
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-11
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-12
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-13
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-14
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-15
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-16
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-17
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-18
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-19
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-20
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-21
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-22
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-23
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-24
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-25
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-26
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-27
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-28
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-29
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-30
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-31
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-32
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-33
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-34
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-35
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-36
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-37
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-38
-  633-a-first-block-marker-on-an-indented-opener-reads-two-columns-39
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-2
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-3
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-4
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-5
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-6
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-7
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-8
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-9
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-10
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-11
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-12
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-13
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-14
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-15
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-16
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-17
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-18
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-19
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-20
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-21
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-22
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-23
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-24
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-25
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-26
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-27
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-28
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-29
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-30
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-31
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-32
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-33
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-34
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-35
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-36
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-37
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-38
+  633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-39
   806-a-marker-folds-into-the-paragraph-a-first-block-plus-took
   806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-2
   806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-3
@@ -496,8 +496,8 @@ index: examples/edge-cases/index.md
   642-a-lazy-colon-shaped-line-in-a-quote-paragraph-keeps-no-indentation
   642-a-lazy-colon-shaped-line-in-a-quote-paragraph-keeps-no-indentation-2
   642-a-lazy-colon-shaped-line-in-a-quote-paragraph-keeps-no-indentation-3
-  643-a-first-block-marker-does-not-pull-a-column-zero-list-into-a-note-or-description
-  643-a-first-block-marker-does-not-pull-a-column-zero-list-into-a-note-or-description-2
+  643-a-first-block-marker-takes-a-list-at-a-note-s-or-description-s-marker-column
+  643-a-first-block-marker-takes-a-list-at-a-note-s-or-description-s-marker-column-2
   644-a-separate-plus-after-content-attaches-a-list-to-a-note-or-description
   644-a-separate-plus-after-content-attaches-a-list-to-a-note-or-description-2
   a-quote-on-a-description-body-marker-line-takes-a-plus-at-its-column
@@ -530,12 +530,12 @@ index: examples/edge-cases/index.md
   650-a-wrapped-attribute-line-interrupts-like-a-one-line-attribute-line-2
   650-a-wrapped-attribute-line-interrupts-like-a-one-line-attribute-line-3
   650-a-wrapped-attribute-line-interrupts-like-a-one-line-attribute-line-4
-  651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column
-  651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column-2
-  651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column-3
-  652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host
-  652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host-2
-  652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host-3
+  651-a-stacked-first-block-plus-takes-a-follower-only-at-its-innermost-opener-s-marker-column
+  651-a-stacked-first-block-plus-takes-a-follower-only-at-its-innermost-opener-s-marker-column-2
+  651-a-stacked-first-block-plus-takes-a-follower-only-at-its-innermost-opener-s-marker-column-3
+  652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column
+  652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column-2
+  652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column-3
   653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct
   653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-2
   653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-3
@@ -546,15 +546,15 @@ index: examples/edge-cases/index.md
   653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-8
   653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-9
   653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-10
-  787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text
-  787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-2
-  787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-3
-  787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-4
+  787-a-wrapped-attribute-opener-indented-in-a-body-is-an-attribute-line
+  787-a-wrapped-attribute-opener-indented-in-a-body-is-an-attribute-line-2
+  787-a-wrapped-attribute-opener-indented-in-a-body-is-an-attribute-line-3
+  787-a-wrapped-attribute-opener-indented-in-a-body-is-an-attribute-line-4
   654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column
   654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column-2
-  655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero
-  655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero-2
-  655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero-3
+  655-a-hosted-quote-s-first-block-plus-refuses-a-block-without-the-host-quote-s-prefix
+  655-a-hosted-quote-s-first-block-plus-refuses-a-block-without-the-host-quote-s-prefix-2
+  655-a-hosted-quote-s-first-block-plus-refuses-a-block-without-the-host-quote-s-prefix-3
   656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth
   656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth-2
   656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth-3
@@ -642,7 +642,7 @@ index: examples/edge-cases/index.md
   a-marker-line-link-definition-is-collected-where-no-paragraph-is-open
   a-lazy-marker-line-s-definition-defines-nothing-in-any-container
   a-marker-folds-only-strictly-between-the-item-s-base-and-content-column
-  a-continuation-marker-attaches-only-a-flush-left-block
+  a-continuation-marker-attaches-a-block-only-at-its-owner-s-marker-column
   a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines
   407-one-consumed-boolean-spells-the-looseness-no-blank-line-can
   408-the-writer-spells-looseness-only-where-a-blank-line-cannot
@@ -651,10 +651,10 @@ index: examples/edge-cases/index.md
   the-continuation-marker-attaches-one-block-in-every-container
   the-continuation-marker-s-column-gate-reaches-every-container
   a-block-that-opens-a-tight-item-is-written-on-the-marker-line
-  an-empty-description-body-claims-no-line-below-column-0
+  a-refused-description-plus-folds-a-line-below-column-0-and-a-comment-does-not
   an-empty-description-body-is-written-with-the-empty-sentinel
   a-colon-followed-by-only-whitespace-is-not-a-description
-  a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text
+  a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column
   a-band-paragraph-after-an-invisible-line-leaves-the-item-loose
   a-paragraph-in-a-held-container-does-not-loosen-the-item
   a-description-marker-followed-by-a-no-break-space-has-content
@@ -691,7 +691,7 @@ index: examples/edge-cases/index.md
   fenced-code-language-with-punctuation
   blockquote-lazy-continuation-stops-at-a-fenced-block
   nested-comment-fences
-  indented-colon-fence-blocks-stay-literal
+  indented-colon-fence-blocks-open
   below-content-column-div-body-in-a-list-item-stays-literal
   comment-fence-with-trailing-text
   unterminated-comment-fence
@@ -801,11 +801,11 @@ index: examples/edge-cases/index.md
   a-second-plus-starts-its-own-paragraph-after-attachment
   compact-single-paragraph-quote
   consecutive-continuation-markers-in-a-div-hosted-quote
-  a-first-block-item-takes-the-next-owned-block
-  a-nested-first-block-item-releases-the-next-root-block
+  a-refused-first-block-plus-folds-its-content-column-line-and-the-next-root-block-ends-the-item
+  a-nested-item-whose-plus-is-refused-releases-the-next-root-block
   an-enclosing-closer-ends-a-tag-name
   a-contentless-description-marker-folds-under-a-quoted-term
-  an-overindented-colon-opener-keeps-the-quote-paragraph-open
+  an-overindented-colon-opener-ends-the-quote-paragraph
   a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it
 
 [edge-blocks] Paragraphs, breaks and captions
@@ -1026,13 +1026,13 @@ index: examples/edge-cases/index.md
   autolink-display-keeps-the-raw-content
   link-reference-definition-separator-must-be-a-space
   a-reference-definition-cannot-take-its-destination-from-the-next-line
-  indented-image-and-caption-stay-literal
+  an-indented-image-and-caption-form-a-figure
   a-lone-indented-image-is-a-paragraph-and-its-html-cannot-say-so
   a-lone-reference-image-at-column-0-in-every-spelling
   a-promoted-image-leaves-the-task-checkbox-unnamed
   a-resolved-reference-image-also-leaves-the-checkbox-unnamed
   an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not
-  indented-reference-and-footnote-definitions-stay-literal
+  indented-reference-and-footnote-definitions-register
   a-repeated-definition-which-one-wins
   a-collapsed-reference-is-matched-by-the-label-the-author-wrote
   a-definition-inside-a-container-is-collected-at-that-container-s-content-column
@@ -1152,13 +1152,13 @@ index: examples/edge-cases/index.md
   abbreviation-definition-separator-must-be-a-space
   definition-list-as-a-first-class-block-opener
   abbreviation-title-escapes-its-markup-characters
-  under-indented-definition-attaches-over-indented-definition-folds
+  an-over-indented-definition-attaches-an-under-indented-one-folds
   wrapped-definition-term-continuation-below-the-content-column-strips-leading-whitespace
   two-abbreviation-definitions
   an-abbreviation-definition-is-recognized-only-at-document-level
   a-list-item-does-not-define-an-abbreviation-either
   a-div-does-not-define-an-abbreviation-either
-  a-definition-below-every-content-column-folds-as-text
+  a-definition-below-every-content-column-ends-the-item-and-registers
   an-abbreviation-at-a-list-item-s-content-column-is-still-not-a-definition
   an-abbreviation-definition-in-an-item-body-is-paragraph-text
   a-description-line-needs-a-term-above-it
@@ -1190,7 +1190,7 @@ index: examples/edge-cases/index.md
   a-column-0-line-after-a-description-hosted-note-is-a-document-sibling
   an-empty-unterminated-container-ends-at-a-flush-left-line
   an-abbreviation-definition-outside-document-level-is-not-an-invisible-line
-  a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth
+  a-block-opener-indented-under-a-definition-term-ends-the-term-at-every-depth
   a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth
   an-info-string-does-not-change-how-a-flush-left-fence-folds-into-a-description-body
   a-description-body-whose-own-block-is-a-fence-keeps-no-line-below-its-column
@@ -1217,7 +1217,7 @@ index: examples/edge-cases/index.md
   leading-attribute-brace-before-an-inline-span-stays-literal
   attribute-block-after-a-mention-stays-literal
   image-trailing-attribute-is-strict-about-the-glue
-  indented-attribute-line-stays-literal
+  an-indented-attribute-line-attaches-at-top-level
   attribute-braces-on-a-list-item-marker-line
   a-floating-attribute-stops-at-the-item-boundary
   an-attribute-line-under-an-attributed-sub-item-stays-in-that-item
@@ -1259,7 +1259,7 @@ index: examples/edge-cases/index.md
 out: examples/edge-cases/headings.md
 index: examples/edge-cases/index.md
   single-line-headings
-  heading-marker-column-zero
+  a-heading-marker-opens-at-an-indented-top-level-column
   cyclic-cross-reference-resolves-to-one-level
   only-the-id-hoists-to-the-section-wrapper
   headings-inside-containers-are-not-wrapped
@@ -1398,7 +1398,7 @@ index: examples/edge-cases/index.md
   a-table-ends-a-footnote-paragraph-claim
   a-footnote-heading-does-not-loosen-its-host-item
   a-promoted-gfm-header-keeps-following-native-headers-before-the-body
-  a-below-column-line-returns-to-its-definition-body
+  a-follower-at-a-body-hosted-item-s-marker-column-attaches-to-the-item
   a-lazy-line-keeps-its-plus-through-three-quote-levels
   a-task-item-uses-its-authored-term-base-one-column-past-a-child-marker
   a-task-item-keeps-a-lazy-term-one-column-below-its-child-marker
@@ -1408,7 +1408,7 @@ index: examples/edge-cases/index.md
   an-intervening-column-refuses-a-description-hosted-first-block
   a-hosted-footnote-keeps-a-heading-at-its-body-floor
   invalid-body-row-metadata-leaves-one-table-body
-  a-heading-inside-the-intervening-band-stays-description-text
+  a-heading-past-a-body-hosted-item-s-marker-column-refuses-its-plus-and-opens-in-the-description
   a-below-column-term-stays-in-the-footnote-paragraph
   a-closed-footnote-child-releases-a-flush-line
   a-note-claimed-fence-line-keeps-the-item-loose

@@ -7,39 +7,39 @@ js/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup
 js/287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-js#3769, footnote body ownership pending
 js/435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-js#3769, footnote body ownership pending
 js/435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-js#3769, footnote body ownership pending
-js/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-js#3769, footnote body ownership pending
+js/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-2  markup-carve/carve-js#3769, footnote body ownership pending
 js/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-js#3769, footnote body ownership pending
 js/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-js#3769, footnote body ownership pending
 js/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-14  markup-carve/carve-js#3769, footnote body ownership pending
 js/620-generated-container-documents-16  markup-carve/carve-js#3769, footnote body ownership pending
-js/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, footnote body ownership pending
-js/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, footnote body ownership pending
+js/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, footnote body ownership pending
+js/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, footnote body ownership pending
 php/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-php#4118, footnote body ownership pending
 php/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-php#4118, footnote body ownership pending
 php/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-php#4118, footnote body ownership pending
 php/287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-php#4118, footnote body ownership pending
 php/435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-php#4118, footnote body ownership pending
 php/435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-php#4118, footnote body ownership pending
-php/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-php#4118, footnote body ownership pending
+php/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-2  markup-carve/carve-php#4118, footnote body ownership pending
 php/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-php#4118, footnote body ownership pending
 php/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-php#4118, footnote body ownership pending
 php/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-14  markup-carve/carve-php#4118, footnote body ownership pending
 php/620-generated-container-documents-16  markup-carve/carve-php#4118, footnote body ownership pending
-php/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-php#4118, footnote body ownership pending
-php/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-php#4118, footnote body ownership pending
+php/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-php#4118, footnote body ownership pending
+php/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-php#4118, footnote body ownership pending
 rust/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-rs#3383, footnote body ownership pending
-rust/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-rs#3383, footnote body ownership pending
+rust/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-2  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-14  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/620-generated-container-documents-16  markup-carve/carve-rs#3383, footnote body ownership pending
-rust/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-rs#3383, footnote body ownership pending
-rust/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-rs#3383, footnote body ownership pending
+rust/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-rs#3383, footnote body ownership pending
+rust/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
 js/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  markup-carve/carve-js#3874, the pinned writer drops indentation that rule A now reads
 php/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  markup-carve/carve#3885, rule A rollout pending in carve-php
@@ -55,8 +55,8 @@ js/383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-4  marku
 js/383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-5  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 js/428-a-wrapped-attribute-line-leaves-no-paragraph-open  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 js/428-a-wrapped-attribute-line-leaves-no-paragraph-open-3  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
-js/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-5  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
-js/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-6  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
+js/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-5  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
+js/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-6  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 js/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 js/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-4  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 js/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-8  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
@@ -68,7 +68,7 @@ js/585-a-comment-in-a-marker-line-note-changes-nothing  markup-carve/carve#4409,
 js/585-a-comment-in-a-marker-line-note-changes-nothing-2  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 js/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 js/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
-js/652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host-3  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
+js/652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column-3  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 php/326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-7  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 php/326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 php/379-a-reference-definition-cannot-take-its-destination-from-the-next-line-2  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
@@ -77,8 +77,8 @@ php/383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-4  mark
 php/383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-5  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 php/428-a-wrapped-attribute-line-leaves-no-paragraph-open  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 php/428-a-wrapped-attribute-line-leaves-no-paragraph-open-3  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
-php/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-5  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
-php/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-6  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
+php/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-5  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
+php/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-6  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 php/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 php/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-4  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 php/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-8  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
@@ -90,7 +90,7 @@ php/585-a-comment-in-a-marker-line-note-changes-nothing  markup-carve/carve#4409
 php/585-a-comment-in-a-marker-line-note-changes-nothing-2  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 php/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 php/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
-php/652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host-3  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
+php/652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column-3  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 rust/326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-7  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 rust/326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 rust/379-a-reference-definition-cannot-take-its-destination-from-the-next-line-2  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
@@ -99,8 +99,8 @@ rust/383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-4  mar
 rust/383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-5  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 rust/428-a-wrapped-attribute-line-leaves-no-paragraph-open  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 rust/428-a-wrapped-attribute-line-leaves-no-paragraph-open-3  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
-rust/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-5  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
-rust/437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-6  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
+rust/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-5  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
+rust/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-6  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 rust/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 rust/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-4  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 rust/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-8  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
@@ -112,4 +112,4 @@ rust/585-a-comment-in-a-marker-line-note-changes-nothing  markup-carve/carve#440
 rust/585-a-comment-in-a-marker-line-note-changes-nothing-2  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 rust/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
 rust/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
-rust/652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host-3  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses
+rust/652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column-3  markup-carve/carve#4409, the engine writer spells a + the one attach rule refuses

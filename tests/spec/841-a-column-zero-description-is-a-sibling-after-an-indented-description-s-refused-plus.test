@@ -1,0 +1,95 @@
+A column-zero description is a sibling after an indented description's refused plus
+
+```
+:: t
+ : +
+l
+: b
+.
+<dl>
+  <dt>t</dt>
+  <dd>+
+l</dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+:: t
+ : +
+> q
+: b
+.
+<dl>
+  <dt>t</dt>
+  <dd>+</dd>
+</dl>
+<blockquote><p>q
+: b</p></blockquote>
+```
+
+```
+:: t
+  :  +
+l
+: b
+.
+<dl>
+  <dt>t</dt>
+  <dd>+
+l</dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+- x
+
+  :: t
+   : +
+  l
+  : b
+.
+<ul>
+  <li>x
+    <dl>
+      <dt>t</dt>
+      <dd>+
+l</dd>
+      <dd>b</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+> :: t
+>  : +
+> l
+> : b
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>+
+l</dd>
+    <dd>b</dd>
+  </dl>
+</blockquote>
+```
+
+```
+:: t
+ : +
+l
+: b
+  p
+.
+<dl>
+  <dt>t</dt>
+  <dd>+
+l</dd>
+  <dd>b
+p</dd>
+</dl>
+```
