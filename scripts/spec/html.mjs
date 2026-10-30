@@ -899,13 +899,16 @@ function standaloneImage(line, ctx, blockAttrs = null) {
   const html = renderInline(line)
   if (!IMG_ONLY.test(html) || !IMG_ONLY.test(renderInlineWithoutRaw(line))) return null
   if (!blockAttrs?.length) return html
-  let imageSource = line
+  // A trailing comment renders nothing, so it must not hide the inline attribute list before it.
+  let source = line
+  for (let m; (m = /\{%(?:(?!%\})[\s\S])*%\}\s*$/.exec(source)) !== null;) source = source.slice(0, m.index)
+  let imageSource = source
   let inlineAttrs = []
   // lastIndexOf clamps a negative start to 0, so stepping past column 0 must stop here.
-  for (let at = line.lastIndexOf('{'); at >= 0; at = at > 0 ? line.lastIndexOf('{', at - 1) : -1) {
-    const parsed = parseAttrList(line.slice(at))
+  for (let at = source.lastIndexOf('{'); at >= 0; at = at > 0 ? source.lastIndexOf('{', at - 1) : -1) {
+    const parsed = parseAttrList(source.slice(at))
     if (parsed === null) continue
-    imageSource = line.slice(0, at)
+    imageSource = source.slice(0, at)
     inlineAttrs = parsed
     break
   }
