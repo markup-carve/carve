@@ -119,7 +119,19 @@ const g = ohm.grammar(`CarveStack <: ${core.name} {
   span := ~any any
   spComment := sepRun "%%" (~newline ~"*/" any)*
   fSpComment<d> := sepRun "%%" (~newline ~(d "}") ~"*/" any)*
+  initialComment := ~markupContent "%%" (~newline any)*
+  markupContent = ""
 }`, { [core.name]: core })
+// Insert and delete content is markup INSIDE an inline run, not a run of its
+// own, so a `%%` at its start is text (CARVE-P9-041, carve#4178).
+let inMarkupContent = false
+const markupContent = new ohm.pexprs.Terminal('')
+markupContent.eval = function (state) {
+  if (inMarkupContent) return ohm.pexprs.Terminal.prototype.eval.call(this, state)
+  state.processFailure(state.inputStream.pos, this)
+  return false
+}
+g.rules.markupContent.body = markupContent
 // The close of a bracketed run, for the layout pass: the index just past the
 // `]` that `brContent*` (or `altContent*` in an image alt) stops at, or -1.
 const bracketScan = ohm.grammar(`CarveBracketScan <: ${g.name} {
@@ -795,13 +807,13 @@ const sem = g.createSemantics().addOperation('h', {
     return `<${tag}${a}>${body}</${tag}>`
   },
   edIns(_o, content, _c, attrs) {
-    return `<ins${renderAttrs(attrsOf(attrs))}>${renderInline(content.sourceString, '{')}</ins>`
+    return `<ins${renderAttrs(attrsOf(attrs))}>${renderInline(content.sourceString, '{', false, true)}</ins>`
   },
   edDel(_o, content, _c, attrs) {
-    return `<del${renderAttrs(attrsOf(attrs))}>${renderInline(content.sourceString, '{')}</del>`
+    return `<del${renderAttrs(attrsOf(attrs))}>${renderInline(content.sourceString, '{', false, true)}</del>`
   },
   edSub(_o, oldC, _ar, newC, _c) {
-    return `<del>${renderInline(oldC.sourceString, '{')}</del><ins>${renderInline(newC.sourceString, '{')}</ins>`
+    return `<del>${renderInline(oldC.sourceString, '{', false, true)}</del><ins>${renderInline(newC.sourceString, '{', false, true)}</ins>`
   },
   edComment(body) {
     // CARVE-P2-004: a comment is about the text, not part of it (carve#3899).
@@ -2254,8 +2266,10 @@ export function deTypography(s) {
   return out
 }
 
-export function renderInline(text, prevCtx = '', separateQuoteScope = false) {
+export function renderInline(text, prevCtx = '', separateQuoteScope = false, markup = false) {
   const saved = quotePrevCtx
+  const outerMarkup = inMarkupContent
+  inMarkupContent = markup
   const outerPairs = spanPairs
   spanPairs = null
   const outerRun = quoteRun
@@ -2310,6 +2324,7 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false) {
     quotePrevCtx = saved
     quoteRun.depth--
     quoteRun = outerRun
+    inMarkupContent = outerMarkup
   }
 }
 

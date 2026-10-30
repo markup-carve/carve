@@ -842,8 +842,10 @@ function splitRow(line, openRun = 0, openRunAt = 0) {
   while (closerIdx >= 0 && (s[closerIdx] === ' ' || s[closerIdx] === '\t')) closerIdx--
   while (i < s.length) {
     const c = s[i]
-    if (c === '\\' && s[i + 1] === '|' && !inCode) {
-      cur += '\\|'
+    // T1 is an escape scan: `\\` and `\`` are escapes too (CARVE-P7-004), so
+    // the `|` or backtick after one is unescaped (carve#4174).
+    if (c === '\\' && /^[!-/:-@[-`{-~]$/.test(s[i + 1] ?? '') && !inCode) {
+      cur += c + s[i + 1]
       i += 2
       continue
     }
