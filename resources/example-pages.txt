@@ -497,6 +497,7 @@ index: examples/edge-cases/index.md
   643-a-first-block-marker-does-not-pull-a-column-zero-list-into-a-note-or-description-2
   644-a-separate-plus-after-content-attaches-a-list-to-a-note-or-description
   644-a-separate-plus-after-content-attaches-a-list-to-a-note-or-description-2
+  a-quote-on-a-description-body-marker-line-takes-a-plus-at-its-column
   645-a-comment-line-leaves-a-description-s-list-item-open-for-a-fence
   645-a-comment-line-leaves-a-description-s-list-item-open-for-a-fence-2
   646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote
