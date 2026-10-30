@@ -8638,8 +8638,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         !isCodeBlockOpener(dedentMeasured(lm, lines[i], col).text)
       // A line past the child's marker column that folds lazily into its open
       // paragraph or term opens nothing here, so the child keeps its column (carve#3950).
-      const foldsIntoChild = headSubActive && descendantParagraphBefore && reach > headSubCol - headSubMarker.markerWidth &&
-        DEFLIST_SEPARATOR.test(lm.rest)
+      // At the marker column only a paragraph takes it: with no term open the
+      // separator opens nothing (PART 0 S4, carve#4175).
+      const foldsIntoChild = headSubActive && childParagraphOpen && DEFLIST_SEPARATOR.test(lm.rest) &&
+        (reach > headSubCol - headSubMarker.markerWidth || descendantQ1.para.length > 0 && !/^::? /.test(descendantQ1.para[0]))
       if (headSubActive && reach < headSubCol && !foldsIntoChild &&
           (opensAuthoredBase(lm.rest) || reach >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(lm.rest)) &&
           !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
@@ -9069,7 +9071,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
               if (foldedChildFence) foldedChildParagraph = true
               if (!foldedChildParagraph || !descendantParagraphBefore || mayOpenAuthoredBlock) {
                 // The child's paragraph stays the deepest one for the box columns (PART 0 S4).
-                childParagraphLazy = childParagraphOpen && !mayOpenAuthoredBlock && foldablePlainLine(dmeas.rest)
+                childParagraphLazy = childParagraphOpen && !mayOpenAuthoredBlock && (foldablePlainLine(dmeas.rest) || foldsIntoChild)
                 descLive = false
                 foldedChildParagraph = false
               }
