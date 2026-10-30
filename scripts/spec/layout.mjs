@@ -3026,7 +3026,7 @@ function ownLines(lines, trace = null) {
     // A note's first-block `+` takes a non-list block at document column zero
     // as at its marker column (CARVE-P9-067): read the line again there.
     const plusNote = top().kind === 'note' && top().plus === at - 1 ? top() : null
-    const docCol = plusNote ? docColumn(lines[at], m.rest) : -1
+    const docCol = plusNote ? noteLevelColumn(lines[at], m.rest, plusNote) : -1
     // Stacked on an item's marker line, the `+` already reads column zero there.
     const host = plusNote ? frames[frames.length - 2] : null
     // A line that misses a quote does not reach a note inside it (carve#4097).
@@ -3453,6 +3453,24 @@ function ownLines(lines, trace = null) {
     let path = 'doc'
     for (let k = 1; k <= depth; k++) path += `/${TRACE_FRAME[frames[k].kind] ?? frames[k].family}:${frames[k].line + 1}`
     return path
+  }
+
+  // A note's follower behind as many quote markers as the note's line stands
+  // at the note's quote level wherever its prefix puts it (PART 0 S2): column
+  // zero there reads as the marker column, any other column as neither (carve#4229).
+  function noteLevelColumn(line, rest, note) {
+    const col = docColumn(line, rest)
+    const own = quotePrefix(line.slice(0, line.length - rest.length))
+    if (own.depth === 0 || own.depth !== quotePrefix(lines[note.line]).depth) return col
+    return col === own.col ? note.docMarker : -1
+  }
+
+  // The quote markers a line starts with, and the column after the last one.
+  function quotePrefix(line) {
+    const run = /^(?:[ \t]*>[ ]?)*/.exec(line)[0]
+    let depth = 0
+    for (const ch of run) if (ch === '>') depth++
+    return { depth, col: docColumn(run, '') }
   }
 
   // The document column where `rest`, a suffix of `line`, starts.
