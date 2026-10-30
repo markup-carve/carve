@@ -372,7 +372,7 @@
   {
     "name": "quote-comment-attachment",
     "source": "> %%%\n+\n%%%\n",
-    "html": "<blockquote>\n\n</blockquote>"
+    "html": "<blockquote>\n\n</blockquote>\n<p>+</p>"
   },
   {
     "name": "list-attached-code-opener",

@@ -65,11 +65,10 @@ A refused plus before an attribute run and a sibling is a letter
 .
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>a</p>
-    <ul x="">
-      <li>c</li>
-    </ul>
-  </dd>
+  <dd>a
++</dd>
 </dl>
+<ul x="">
+  <li>c</li>
+</ul>
 ```

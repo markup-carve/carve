@@ -8,13 +8,13 @@ const html = (source) => renderDoc(parse(source)).replace(/\s*\n\s*/g, '')
 
 const letter = (source) => html(source.replace('+', 'Z')).replace('Z', '+')
 
-test('an invisible line a nested + takes does not take the closer of the open div', () => {
+test('a closer after the invisible lines refuses a nested + and stays the div\'s, carve#4449', () => {
   for (const line of ['%%', '%% c', '{.c}', '[l]: /u', '{.c}\n%%']) {
     const held = line.replace(/^/gm, '  ')
     assert.equal(html(`::: d\n- a\n  - +\n${held}\n:::\nafter\n`),
-      '<div class="d"><ul><li>a<ul><li></li></ul></li></ul></div><p>after</p>', line)
+      '<div class="d"><ul><li>a<ul><li>+</li></ul></li></ul></div><p>after</p>', line)
     assert.equal(html(`::: d\n- :: t\n  : +\n${held}\n:::\nafter\n`),
-      '<div class="d"><ul><li><dl><dt>t</dt><dd></dd></dl></li></ul></div><p>after</p>', line)
+      '<div class="d"><ul><li><dl><dt>t</dt><dd>+</dd></dl></li></ul></div><p>after</p>', line)
   }
 })
 

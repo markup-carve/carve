@@ -88,7 +88,7 @@ A description reads a `: ` sibling behind the run the same way (CARVE-P9-085).
 
 :::
 
-A description takes a list, so the run still leads it there.
+A description takes a list, but this one stands at the content column, so the `+` is refused (carve#4449).
 
 ::: compare
 
@@ -103,13 +103,12 @@ A description takes a list, so the run still leads it there.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>a</p>
-    <ul x="">
-      <li>c</li>
-    </ul>
-  </dd>
+  <dd>a
++</dd>
 </dl>
+<ul x="">
+  <li>c</li>
+</ul>
 ```
 
 :::

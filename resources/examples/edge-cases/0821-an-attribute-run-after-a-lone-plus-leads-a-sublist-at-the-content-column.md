@@ -4,7 +4,7 @@ page: edge-lists
 
 ## An attribute run after a lone plus leads a sublist at the content column
 
-The maintainer overruled this row's title (carve#4278): a list does not attach to a list item (CARVE-P9-067), and an attribute line changes nothing about that, so the sibling test reads the block the run leads. The `+` is a letter that continues the paragraph, and the attribute line ends the item and labels the list outside it (carve#4278, carve#4447). A sublist is written with an indented attribute line.
+The maintainer overruled this row's title (carve#4278, carve#4449): an attribute line is invisible, so the `+` test reads the line after it (CARVE-P9-067). That line stands at the content column, so the `+` is refused and shows as a letter, and the attribute line labels the list outside the item.
 
 ::: compare
 
