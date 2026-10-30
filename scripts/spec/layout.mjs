@@ -4401,7 +4401,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (CONT_MARKER.test(bodyLines[0]) && bodyLines.length === 1) {
         let k = i
         while (k < n && isBlank(lines[k])) k++
-        if (k < n && !lines[k].includes(LAZY) && (ind(k).L?.col ?? ind(k).col) >= sourceDefCol + FOOTNOTE_BODY_COLUMN) bodyLines[0] = ''
+        // Measured in this frame: on an item's marker line the definition's
+        // source column is the line's own, not the item's.
+        if (k < n && !lines[k].includes(LAZY) && ind(k).col >= ind(defLine).col + FOOTNOTE_BODY_COLUMN) bodyLines[0] = ''
       }
       // `pullPending` is set by a `+` marker: the NEXT flush-left line begins a
       // pulled-in block (SS17 L4). It is a distinct signal from an empty body
