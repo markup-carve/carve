@@ -1,0 +1,27 @@
+A row attribute block follows the last closing pipe
+
+```
+| a |{~|{.c}
+.
+<table>
+  <tbody>
+    <tr class="c"><td>a</td><td>{~</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|{=|{#r}
+.
+<table>
+  <tbody>
+    <tr id="r"><td>{=</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a |{bad!!}
+.
+<p>| a |{bad!!}</p>
+```
