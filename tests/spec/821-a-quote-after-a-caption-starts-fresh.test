@@ -1,0 +1,76 @@
+A quote after a caption starts fresh
+
+```
+> - t
+^ p
+>   # h
+l
+.
+<figure>
+  <blockquote>
+    <ul>
+      <li>t</li>
+    </ul>
+  </blockquote>
+  <figcaption>p</figcaption>
+</figure>
+<blockquote>
+  <h1 id="h">h</h1>
+</blockquote>
+<p>l</p>
+```
+
+```
+> - t
+^ p
+>   [^f]: n
+l
+
+r[^f]
+.
+<figure>
+  <blockquote>
+    <ul>
+      <li>t</li>
+    </ul>
+  </blockquote>
+  <figcaption>p</figcaption>
+</figure>
+<blockquote>
+
+</blockquote>
+<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n
+l<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> 1. t
+^ p
+>   ||
+l
+.
+<figure>
+  <blockquote>
+    <ol>
+      <li>t</li>
+    </ol>
+  </blockquote>
+  <figcaption>p</figcaption>
+</figure>
+<blockquote>
+  <table>
+    <tbody>
+      <tr><td></td></tr>
+    </tbody>
+  </table>
+</blockquote>
+<p>l</p>
+```

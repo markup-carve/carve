@@ -3178,7 +3178,11 @@ function ownLines(lines, trace = null) {
     // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
     const interruptsPlus = plusNote && form.kind === 'item'
     // A `: ` description is a sibling at any column where its list's owner reads it (CARVE-P0-024 S3).
-    if (missed && m.rest !== '' && top().para && !form.interrupts && !interruptsPlus && form.kind !== 'dd' &&
+    // A caption at its owner's block column attaches to a quote it follows and is never its
+    // lazy line (CARVE-P2-008, carve#4312); an indented one (§10 I7) or one past a note folds.
+    const missedFrames = frames.slice(reached + 1)
+    const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames.some((f) => f.kind === 'quote') && !missedFrames.some((f) => f.kind === 'note')
+    if (missed && m.rest !== '' && top().para && !form.interrupts && !interruptsPlus && !captionsQuote && form.kind !== 'dd' &&
         !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes) &&
         !(missedNote && form.kind === 'item' && frames.slice(reached + 1).some((f) => f.kind === 'item'))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
