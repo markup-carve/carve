@@ -2808,6 +2808,9 @@ function ownLines(lines, trace = null) {
   // The trace path of a block the walk opens in a parent although an item's
   // first-block `+` took it, and the item path the trace records it under.
   let reown = null
+  // After the block a marker-line `+` takes, the item keeps a blank or a text
+  // line at its content column, as the readers do (§17 L3, carve#4167).
+  let afterPlusBlock = null
   let start = 0
   if (lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
     const close = lines.findIndex((line, k) => k > 0 && /^---[ \t]*$/.test(line))
@@ -2852,6 +2855,7 @@ function ownLines(lines, trace = null) {
           return ' '.repeat(Math.max(0, ind.col - col)) + ind.rest
         })
         frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, para: false, last: null, once: end }
+        if (trace) afterPlusBlock = { end, path: ownerPath(), col: plusHost.col }
       }
     }
     let reached = 0
@@ -3274,6 +3278,19 @@ function ownLines(lines, trace = null) {
   function emit(index, step, owner, rule, form, extra = {}) {
     // The empty string after a final newline is not a line.
     if (index === lines.length - 1 && lines[index] === '') return
+    if (afterPlusBlock && index >= afterPlusBlock.end) {
+      const blank = isBlank(lines[index])
+      // A blank run goes with the line after it.
+      let next = index
+      while (next < lines.length && isBlank(lines[next])) next++
+      const ind = walkIndent(lines[next] ?? '')
+      if ((form === 'blank' || form === 'text' || form === 'payload') && next < lines.length &&
+          ind.col >= afterPlusBlock.col && (form === 'text' || foldablePlainLine(ind.rest))) {
+        trace.push({ line: index + 1, step: 'S5', owner: afterPlusBlock.path, rule: blank ? 'CARVE-P0-003' : 'CARVE-P0-024', form: blank ? 'blank' : 'text' })
+        return
+      }
+      afterPlusBlock = null
+    }
     if (reown && reown.attribute && form === 'blank') reown = null
     if (reown && (owner === reown.from || owner.startsWith(`${reown.from}/`))) owner = reown.to + owner.slice(reown.from.length)
     else reown = null
