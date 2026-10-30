@@ -13,7 +13,7 @@ export const rawPassthrough = content => /^\n*$/.test(content) ? content : conte
  * disagreement before (carve#646).
  */
 
-import { Refuse, TIER1, TERM_COMMENT, bracketRunEnd } from './layout.mjs'
+import { Refuse, TIER1, TERM_COMMENT } from './layout.mjs'
 import { labelKey } from './label-key.mjs'
 import { delimitedRowCount } from './delimited-table.mjs'
 
@@ -886,30 +886,13 @@ export function promoteBlockImages(doc, ctx) {
 function standaloneImage(line, ctx, blockAttrs = null) {
   // Resolve reference images before paragraph serialization, so PART 10's
   // standalone-image shape is a block decision rather than a final HTML rewrite.
-  // The alt run is scanned, not matched: the close is balanced and a
-  // `[^\]]*` spelling of it stops at the first `]` at any depth, so
-  // `![t[z]][r]` on a line of its own missed this branch and fell through to
-  // the inline pass (carve#1197). The LABEL half stays a pattern - a
-  // `reference_label` really does stop at the first `]`.
-  // The ALT may hold a line boundary and the TAIL may not (carve#1352), and
-  // this pattern is deliberately NOT tightened for it: `[^\]]` does match a
-  // newline, but a label carrying one resolves against no definition - a
-  // definition marker is one line - so the branch declines and the paragraph
-  // falls through to the inline pass either way. Tightening it here changed no
-  // document and would have read as a guard doing work it never does. The
-  // reachable half of the same rule IS guarded, in `isCaptionableParagraph`.
-  const altEnd = line.startsWith('![') ? bracketRunEnd(line, 1, 'alt') : -1
-  const ref = altEnd === -1 ? null : /^\[([^\]]*)\](\{[^}]*\})?$/.exec(line.slice(altEnd))
-  if (ref) {
-    const attrSrc = ref[2] ?? ''
-    const attrList = attrSrc === '' ? [] : parseAttrList(attrSrc)
-    if (attrList === null) return null
-    const image = resolveImageRef({
-      alt: line.slice(2, altEnd - 1),
-      label: ref[1] === '' ? null : ref[1],
-      attrList,
-      attrSrc,
-    }, ctx, '', blockAttrs)
+  // The inline renderer's frame is read rather than the source, so a construct
+  // that renders nothing (a braced comment) does not hide the image (PART 9R R7).
+  const frame = /^\uE000ref:(\{[^\uE000\uE001]*?\})\uE001$/.exec(renderInline(line))
+  if (frame) {
+    const parsed = JSON.parse(frame[1])
+    if (!parsed.img) return null
+    const image = resolveImageRef(parsed, ctx, '', blockAttrs)
     return IMG_ONLY.test(image) ? image : null
   }
 
@@ -918,7 +901,8 @@ function standaloneImage(line, ctx, blockAttrs = null) {
   if (!blockAttrs?.length) return html
   let imageSource = line
   let inlineAttrs = []
-  for (let at = line.lastIndexOf('{'); at >= 0; at = line.lastIndexOf('{', at - 1)) {
+  // lastIndexOf clamps a negative start to 0, so stepping past column 0 must stop here.
+  for (let at = line.lastIndexOf('{'); at >= 0; at = at > 0 ? line.lastIndexOf('{', at - 1) : -1) {
     const parsed = parseAttrList(line.slice(at))
     if (parsed === null) continue
     imageSource = line.slice(0, at)

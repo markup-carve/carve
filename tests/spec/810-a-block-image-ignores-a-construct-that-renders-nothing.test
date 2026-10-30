@@ -1,0 +1,25 @@
+A block image ignores a construct that renders nothing
+
+```
+{.c}
+{%%}![a](x.png)
+.
+<img src="x.png" alt="a" class="c">
+```
+
+```
+{%%}![a][r]
+
+[r]: y.png
+.
+<img src="y.png" alt="a">
+```
+
+```
+{.c}
+![a][r]{%%}
+
+[r]: y.png
+.
+<img src="y.png" alt="a" class="c">
+```
