@@ -106,7 +106,10 @@ the `+` line: the walk keeps its column and the block readers attach it to the
 line has no record of its own: the block it takes at the marker column is
 recorded inside that item or description. After that block, a blank line and a
 paragraph line at its content column are recorded in it too, as the readers
-keep them there; any other line after the block is recorded in its parent. A block it takes at column zero below an indented
+keep them there. When that block is an unclosed fence, the readers end it at
+the block, and every line at the content column after it is recorded as the
+item's or description's own body (a sub-list, a quote, a heading). Any other
+line after the block is recorded in its parent. A block it takes at column zero below an indented
 marker is recorded inside the item or description too, with `plus` set to the
 marker line. So is a block other than a paragraph that an item's or a
 description's `+` takes between its marker and content columns. A paragraph
