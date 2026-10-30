@@ -695,6 +695,12 @@ function reachedBefore(lines, i, markerLine, reaches) {
   return k === markerLine || reaches(lines[k], k)
 }
 
+// A comment line leads an attached block like an attribute run; the block decides how it ends.
+const isOneLineComment = (line) => line !== undefined && COMMENT_LINE.test(line) && !COMMENT_FENCE.test(line)
+
+// A fence a `+` attached below the body column ends at its block (SS17 L3), so the run after it is the host's.
+const attachedFenceOpen = (body, from) => from !== -1 && leavesFenceOpen(body.slice(from))
+
 function footnoteBlankRunEnd(lines, i, n) {
   const body = markerBodyPolicy(FOOTNOTE_BODY_COLUMN)
   const k = body.blankRunEnd(lines, i, n)
@@ -4747,6 +4753,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const bodyLines = [m[2]]
       const inheritedFenceOpens = new Set()
       const defLine = i
+      let attachedFrom = -1
       i++
       // A note on a description's marker line: a follower authored at the body
       // column stands between the note's columns and refuses the `+` (CARVE-P9-067).
@@ -4769,6 +4776,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // A follower the frame pass framed LAZY stands at the note's reader
         // column; the body reads it from column 0 like every other body line.
         const taken = lines.slice(i, next).map(stripLazyLead)
+        attachedFrom = bodyLines.length
         bodyLines.push(...taken)
         if (!leavesFenceOpen(taken)) bodyLines.push('')
         i = next
@@ -4909,6 +4917,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         } else if (pullPending && !isBlank(lines[i] ?? '')) {
           // the whole flush-left block pulled in by the preceding `+` marker
           const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i), pullColumn)
+          attachedFrom = bodyLines.length
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           lazyParagraphOpen = null
           pullPending = false
@@ -4964,7 +4973,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       }
       // PART 0 S2: a blank run reaches the body, so it is payload of a fence the
       // body leaves open. A block a `+` attached is bounded by §17, not by the run.
-      if (i < n && isBlank(lines[i]) && reachedBefore(lines, i, defLine, isFootnoteContinuationLine)) {
+      if (i < n && isBlank(lines[i]) && reachedBefore(lines, i, defLine, isFootnoteContinuationLine) && !attachedFenceOpen(bodyLines, attachedFrom)) {
         const end = markerBodyPolicy(FOOTNOTE_BODY_COLUMN).blankRunEnd(lines, i, n)
         for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
       }
@@ -5299,6 +5308,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // This is a distinct signal from an empty definition body, so an empty
           // `:  ` never swallows the following flush-left block.
           let pullPending = CONT_MARKER.test(trimWs(dm[2]))
+          let attachedFrom = -1
           // A bare `+` is the description's own marker, not a nested body's (CARVE-P0-006).
           const nestedFirstBlock = !pullPending && markerCarriesContinuation(trimWs(dm[2]), new Map())
           if (!pullPending) {
@@ -5341,7 +5351,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // The whole blank run belongs to a continuation at the body column.
               if (reachesBody(afterBlankRun(i))) { pushBody(dedent(cur, bodyColumn)); i++; continue }
               // PART 0 S2, as for a footnote body.
-              if (reachedBefore(lines, i, descriptionStart, (_, at) => reachesBody(at))) {
+              if (reachedBefore(lines, i, descriptionStart, (_, at) => reachesBody(at)) && !attachedFenceOpen(bodyLines, attachedFrom)) {
                 for (let k = i; k < afterBlankRun(i); k++) pushBody(dedent(lines[k], bodyColumn), k)
               }
               break
@@ -5420,6 +5430,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // In an item the source columns are the item's, so a column-zero follower reads below 0 (carve#4166).
               const end = attachedBlockEnd(lines, i, state, (k) => attachmentBoundary(lines)(k) || siblingAt(k), { col: sourceColumn },
                 sourceColumn <= 0 ? sourceColumn : sourceDescriptionCol)
+              attachedFrom = bodyLines.length
               for (let k = i; k < end; k++) pushBody(lines[k], k)
               pullPending = false
               i = end
@@ -6742,7 +6753,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
 // A block that opens a code fence, after any attribute lines, and never closes it.
 const leavesFenceOpen = (block) => {
   let at = 0
-  for (let attrs; (attrs = tryAttrLine(block, at)); ) at = attrs.next
+  for (let attrs; ; ) {
+    if (isOneLineComment(block[at])) at++
+    else if ((attrs = tryAttrLine(block, at))) at = attrs.next
+    else break
+  }
   const m = FENCE.exec(block[at] ?? '')
   return !!m && parseFenceInfo(m[2]) !== null && findCloser(block, at, m[1]) === -1
 }
@@ -8445,8 +8460,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const attached = lines.slice(i, end)
       // The block an attribute run leads decides how it ends, not the run (carve#4271).
       let opener = 0
-      for (let attrs; (attrs = tryAttrLine(dedentedWindow(attached, opener, ind(i).col), 0)) &&
-        opener + attrs.next < attached.length; ) opener += attrs.next
+      for (let attrs; ; ) {
+        if (isOneLineComment(attached[opener]) && opener + 1 < attached.length) opener++
+        else if ((attrs = tryAttrLine(dedentedWindow(attached, opener, ind(i).col), 0)) && opener + attrs.next < attached.length) opener += attrs.next
+        else break
+      }
       const codeMatch = FENCE.exec(attached[opener] ?? '')
       const code = codeMatch && parseFenceInfo(codeMatch[2]) !== null ? codeMatch : null
       const colon = COLON_FENCE.exec(attached[opener] ?? '')
