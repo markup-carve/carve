@@ -1,0 +1,87 @@
+A line below an unclosed fence in a described item keeps its lazy line
+
+```
+:: t
+: - ~~~
+  x
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    <p>x
+tail</p>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: - - ~~~
+  x
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <p>x
+tail</p>
+  </dd>
+</dl>
+```
+
+```
+- :: t
+  : - ~~~
+    x
+tail
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+        <p>x
+tail</p>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+:: t
+: - ~~~
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>tail</p>
+```
