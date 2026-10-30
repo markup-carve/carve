@@ -1341,8 +1341,9 @@ function renderTable(node, depth, ctx) {
     if (cell.rowspan) a += ` rowspan="${cell.rowspan}"`
     if (cell.colspan) a += ` colspan="${cell.colspan}"`
     a += parsed
-    const align = cell.empty ? null : (cell.align ?? colAlign[c] ?? null)
-    const valign = cell.empty ? null : (cell.valign ?? colValign[c] ?? null)
+    // An empty span-marker cell has no alignment of its own, but still takes its column's (carve#4277).
+    const align = (cell.empty ? null : cell.align) ?? colAlign[c] ?? null
+    const valign = (cell.empty ? null : cell.valign) ?? colValign[c] ?? null
     if (align || valign) {
       const declarations = []
       if (align) declarations.push(`text-align: ${align};`)
