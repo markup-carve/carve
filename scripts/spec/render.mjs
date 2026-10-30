@@ -1048,6 +1048,8 @@ const sem = g.createSemantics().addOperation('h', {
     return ''
   },
   bracedComment(_open, _content, _close) {
+    if (readComments.src !== this.source.sourceString) readComments = { src: this.source.sourceString, opens: new Map() }
+    readComments.opens.set(this.source.endIdx, this.source.startIdx)
     return ''
   },
   arrow(tok) {
@@ -2195,11 +2197,14 @@ export function renderBlockAttrs(lists, structuralUrl = null) {
 // CLOSING otherwise. A single quote directly before a digit is always an
 // apostrophe ('70s, '24).
 // Comments emit nothing; step back over them when checking an emphasis boundary.
+let readComments = { src: '', opens: new Map() }
 function quotePrevIdx(src, at) {
   let i = at
   while (i >= 4 && src[i - 1] === '}' && src[i - 2] === '%') {
-    const open = src.lastIndexOf('{%', i - 3)
-    if (open < 0 || src[open - 1] === '\\' || extendsGrapheme(src, open + 2) || src.slice(open + 2, i - 2).includes('%}')) break
+    // The comment the grammar read opens at the leftmost `{%`, not the nearest.
+    const read = readComments.src === src ? readComments.opens.get(i) : undefined
+    const open = read ?? src.lastIndexOf('{%', i - 3)
+    if (read === undefined && (open < 0 || src[open - 1] === '\\' || extendsGrapheme(src, open + 2) || src.slice(open + 2, i - 2).includes('%}'))) break
     i = open
   }
   return i
@@ -2514,6 +2519,33 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false, mar
   }
 }
 
+// A `{%` with no `%}` after it is text, but the `{%%}` an escape inserts would
+// close it. Write it `{\\%`, unless that shows (a `{%` inside code, say).
+function quietOpenComments(text, read) {
+  const open = []
+  const last = text.lastIndexOf('%}')
+  for (let i = text.indexOf('{%'); i >= 0; i = text.indexOf('{%', i + 1)) {
+    if (i + 2 > last && (i === 0 || text[i - 1] !== '\\')) open.push(i)
+  }
+  if (!open.length || !text.includes('{', open[0] + 2)) return text
+  // Quote and opaque placeholders number per read, so compare what they stand for.
+  const plain = (source) => {
+    try {
+      return read(source).out.replace(/\uE000quote(-opaque)?:[^:]*:(\d+)\uE001/g, (_, opaque, id) =>
+        JSON.stringify(opaque ? quoteRun.opaque[id] : quoteRun.records[id]))
+    } catch { return null }
+  }
+  const quieted = (list) => {
+    let source = text
+    for (const i of list.toReversed()) source = source.slice(0, i + 1) + '\\' + source.slice(i + 1)
+    return source
+  }
+  const now = plain(text)
+  if (now === null) return text
+  if (plain(quieted(open)) === now) return quieted(open)
+  return quieted(open.filter((i) => plain(quieted([i])) === now))
+}
+
 function renderInlineInner(text) {
   // Emphasis is resolved by the PART 9 SS9 delimiter stack in the `inlines`
   // semantic (resolveEmphasis) -- no pre-scan / refusal needed here.
@@ -2531,7 +2563,7 @@ function renderInlineInner(text) {
     const contested = attachedAttrs.filter((a) => contestedBlock(source, a))
     return { out, offsets: [...unattachedAttrs, ...contested], paired: pairedDelims }
   }
-  let source = text
+  let source = quietOpenComments(text, read)
   // Brace escapes this loop wrote, as offsets into `source`.
   const escapes = []
   try {

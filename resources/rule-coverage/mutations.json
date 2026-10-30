@@ -1126,8 +1126,8 @@
       "edits": [
         {
           "file": "scripts/spec/render.mjs",
-          "find": "  bracedComment(_open, _content, _close) {\n    return ''",
-          "replace": "  bracedComment(_open, _content, _close) {\n    return this.sourceString"
+          "find": "    readComments.opens.set(this.source.endIdx, this.source.startIdx)\n    return ''",
+          "replace": "    readComments.opens.set(this.source.endIdx, this.source.startIdx)\n    return this.sourceString"
         }
       ]
     },
