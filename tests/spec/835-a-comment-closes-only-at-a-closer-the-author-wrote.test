@@ -1,0 +1,25 @@
+A comment closes only at a closer the author wrote
+
+```
+{%~{#i}
+.
+<p>{%~{<span class="tag"><strong>#i</strong></span>}</p>
+```
+
+```
+{% ^{#i}*-}{#c#}
+.
+<p>{% ^<span class="critic-comment">i}*-}{#c</span></p>
+```
+
+```
+`{%`^{#i .c}~{#c#}
+.
+<p><code>{%</code>^<span class="critic-comment">i .c}~{#c</span></p>
+```
+
+```
+{%**a*{%z%}"
+.
+<p>“</p>
+```
