@@ -3060,7 +3060,7 @@ function ownLines(lines, trace = null) {
     // content column alike, so the walk moves the block there and owns it as
     // the readers do. An item stacked on its parent's marker line reads its
     // follower otherwise (corpus 651, 750).
-    const plusBody = top().kind === 'item' && top().plus === at - 1 &&
+    const plusBody = (top().kind === 'item' || top().kind === 'dd') && top().plus === at - 1 &&
       frames[frames.length - 2].line !== top().line ? top() : null
     // Between the marker and content columns the readers attach any block but
     // a paragraph (CARVE-P9-067, corpus 633). The walk already hands them the
@@ -5096,7 +5096,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // A sibling description ends the pulled block, as a sibling marker ends an item's (carve#4080).
               const siblingAt = (k) => DESCRIPTION_TEXT.test(ind(k)?.rest ?? '') &&
                 (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceDescriptionCol
-              const end = attachedBlockEnd(lines, i, state, (k) => attachmentBoundary(lines)(k) || siblingAt(k), { col: sourceColumn }, sourceDescriptionCol)
+              // In an item the source columns are the item's, so a column-zero follower reads below 0 (carve#4166).
+              const end = attachedBlockEnd(lines, i, state, (k) => attachmentBoundary(lines)(k) || siblingAt(k), { col: sourceColumn },
+                sourceColumn <= 0 ? sourceColumn : sourceDescriptionCol)
               for (let k = i; k < end; k++) pushBody(lines[k], k)
               pullPending = false
               i = end
@@ -6604,6 +6606,8 @@ function measuredMarkerColumns(markerColumns, start, limit) {
 }
 
 const DESCRIPTION_TEXT = /^: (?=[ \t]*[^ \t\n\r])/
+const DESCRIPTION_PLUS = /^:[ \t]+\+[ \t]*$/
+const DESCRIPTION_RUN = /^::? /
 
 function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0, quoteHost = false) {
   if (limit - start <= 1) return limit
@@ -9027,6 +9031,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
               ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
               matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i + 1), ind(i + 1).col, ind(i + 1).col)
           }
+        } else if (!nm && DESCRIPTION_PLUS.test(lm.rest) && i > 0 && DESCRIPTION_RUN.test(ind(i - 1).rest) && ind(i - 1).col === lm.col) {
+          // A description body's first-block `+` carries a flush-left block the same way (§17 L4, carve#4166).
+          carriesBareContinuation = true
+          nestedAttachmentColumn = lm.L?.col ?? lm.col
+          nestedAttachmentEnd = -1
+          nestedSiblingIndent = lm.col
+          spentOnSublist = false
         }
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
