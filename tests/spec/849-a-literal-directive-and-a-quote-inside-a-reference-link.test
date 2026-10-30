@@ -1,0 +1,25 @@
+A literal directive and a quote inside a reference link
+
+```
+[a {{ x @lines:0 }} b][r]
+
+[r]: /r
+.
+<p><a href="/r">a {{ x @lines:0 }} b</a></p>
+```
+
+```
+[a [b {{ x @lines:0 }}][r] c][r]
+
+[r]: /r
+.
+<p><a href="/r">a b {{ x @lines:0 }} c</a></p>
+```
+
+```
+[a [b "c"][r] d][r]
+
+[r]: /r
+.
+<p><a href="/r">a b “c” d</a></p>
+```

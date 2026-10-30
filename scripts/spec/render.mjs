@@ -2355,16 +2355,31 @@ function settleQuotes(html, run, prevCtx) {
   }
   scan(html)
   if (span?.demote) span.record.glyph = '’'
-  // Reference frames JSON-escape their sentinels, so replace both representations.
-  return html.replace(/(?:\uE000|\\u[eE]000)quote-boundary:([0-9a-f-]+)(?:\uE001|\\u[eE]001)/g,
-    (marker, key) => key === run.key ? '' : marker).replace(/(?:\uE000|\\u[eE]000)quote:([0-9a-f-]+):(\d+)(?:\uE001|\\u[eE]001)/g,
+  // A frame JSON-escapes its sentinels, and a frame nested in a frame doubles the
+  // backslashes, so a sentinel reads at any depth.
+  return html.replace(/(?:\uE000|\\+u[eE]000)quote-boundary:([0-9a-f-]+)(?:\uE001|\\+u[eE]001)/g,
+    (marker, key) => key === run.key ? '' : marker).replace(/(?:\uE000|\\+u[eE]000)quote:([0-9a-f-]+):(\d+)(?:\uE001|\\+u[eE]001)/g,
     (marker, key, id) => key === run.key ? run.records[Number(id)].glyph : marker)
-    .replace(/(\uE000|\\u[eE]000)quote-opaque:([0-9a-f-]+):(\d+)(?:\uE001|\\u[eE]001)/g,
+    .replace(/(\uE000|\\+u[eE]000)quote-opaque:([0-9a-f-]+):(\d+)(?:\uE001|\\+u[eE]001)/g,
       (marker, prefix, key, id) => {
         if (key !== run.key) return marker
-        const value = run.opaque[Number(id)]
-        return prefix === '\uE000' ? value : JSON.stringify(value).slice(1, -1)
+        let value = run.opaque[Number(id)]
+        for (let n = prefix.indexOf('u'); n >= 1; n /= 2) value = JSON.stringify(value).slice(1, -1)
+        return value
       })
+}
+
+// Replaces in a frame's decoded strings too: the replacement holds sentinels,
+// which a frame's payload may carry only in its own escaped spelling.
+function replaceThroughFrames(html, pattern, to) {
+  const inValue = (value) => typeof value === 'string' ? replaceThroughFrames(value, pattern, to)
+    : Array.isArray(value) ? value.map(inValue)
+    : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([k, v]) => [k, inValue(v)]))
+    : value
+  return html
+    .replace(REF_FRAME, (_, json) => refFrame(inValue(JSON.parse(json))))
+    .replace(NOTE_FRAME, (_, json) => noteFrame(inValue(JSON.parse(json))))
+    .replace(pattern, to)
 }
 
 let quotePrevCtx = '' // preceding character for recursive inline parses
@@ -2534,23 +2549,17 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false, mar
         while (text.includes(key)) key = randomUUID().replaceAll('-', '')
         let at = 0
         let masked = ''
-        const replacements = []
+        const sentinels = []
         for (const directive of literals) {
           if (directive.start < at) continue
           // The mask keeps the literal's `{` and `}` edges and opens nothing, so
           // a neighbor (`#`, `@`, an escaping backslash) reads it as it reads the literal.
-          const marker = `{!CARVEINVALIDINCLUDE${key}X${replacements.length}X}`
-          masked += text.slice(at, directive.start) + marker
-          replacements.push([marker, text.slice(directive.start, directive.end)])
+          masked += text.slice(at, directive.start) + `{!CARVEINVALIDINCLUDE${key}X${sentinels.length}X}`
+          sentinels.push(quoteOpaque(escapeHtml(text.slice(directive.start, directive.end))))
           at = directive.end
         }
         html = renderInlineInner(masked + text.slice(at))
-        const rendered = new Map(replacements.map(([marker, literal]) => [marker, quoteOpaque(escapeHtml(literal))]))
-        const markers = new RegExp(`\\{!CARVEINVALIDINCLUDE${key}X\\d+X\\}`, 'g')
-        // A reference frame holds JSON, so a literal goes in escaped like its other text.
-        html = html.replace(REF_FRAME, (frame) => frame.replace(markers, (marker) =>
-          refFrame(rendered.get(marker)).slice('\uE000ref:"'.length, -'"\uE001'.length)))
-        html = html.replace(markers, (marker) => rendered.get(marker))
+        html = replaceThroughFrames(html, new RegExp(`\\{!CARVEINVALIDINCLUDE${key}X(\\d+)X\\}`, 'g'), (_, id) => sentinels[Number(id)])
       }
     }
     html ??= renderInlineInner(text)
