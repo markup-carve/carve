@@ -2585,7 +2585,8 @@ function renderInlineInner(text) {
       const result = read(source)
       const { out, offsets } = result
       if (batch) {
-        const paired = new Set(result.paired)
+        // `paired` lists opener, closer pairs; a block glued to an opener attaches to nothing.
+        const closers = new Set(result.paired.filter((_, k) => k % 2))
         const active = batch.members.filter((m) => m.active)
         const last = Math.max(...active.map((m) => m.at))
         if (offsets.some((o) => o.provisional ? batch.provisional && o.at < last : batch.provisional || o.at < last)) {
@@ -2595,7 +2596,7 @@ function renderInlineInner(text) {
           batch = null
           continue
         }
-        const glued = active.filter((m) => paired.has(m.at - 1))
+        const glued = active.filter((m) => closers.has(m.at - 1))
         if (glued.length) {
           for (const m of glued.toReversed()) takeBack(m, batch.members)
           batch.members = batch.members.filter((m) => !glued.includes(m))
