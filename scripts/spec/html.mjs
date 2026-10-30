@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { idSlot, renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -136,7 +136,7 @@ function reserveHeadingIds(blocks) {
     if (Array.isArray(value.battrs)) {
       let effectiveId = null
       for (const list of value.battrs) {
-        for (const attr of list) if (attr[0] === 'id') effectiveId = attr[1]
+        for (const attr of list) if (idSlot(attr) !== null) effectiveId = idSlot(attr)
       }
       if (effectiveId !== null) authoredIds.push(effectiveId)
     }
@@ -147,7 +147,7 @@ function reserveHeadingIds(blocks) {
   const authoredId = (heading) => {
     let id = null
     for (const list of heading.battrs ?? []) {
-      for (const attr of list) if (attr[0] === 'id') id = attr[1]
+      for (const attr of list) if (idSlot(attr) !== null) id = idSlot(attr)
     }
     return id
   }
@@ -249,7 +249,7 @@ function renderDocPass(doc, footnoteProbe) {
         for (const list of b.battrs) {
           const keep = []
           for (const a of list) {
-            if (a[0] === 'id') id = a[1]
+            if (idSlot(a) !== null) id = idSlot(a)
             else keep.push(a)
           }
           if (keep.length) rest.push(keep)
@@ -367,9 +367,8 @@ function renderBlock(b, depth, ctx) {
   const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
   switch (b.t) {
     case 'includeLiteral':
-      // Quoted paths still carry core inline syntax when resolution is absent.
-      // Bare paths keep the literal spelling pinned by corpus 715.
-      return `${pad}<p${renderTextBlockAttrs(b.battrs, 'p')}>${b.quotedPath ? renderInline(b.text) : escapeHtml(b.text)}</p>`
+      // A directive invalid on its face keeps its spelling, pinned by corpus 715.
+      return `${pad}<p${renderTextBlockAttrs(b.battrs, 'p')}>${b.inline ? renderInline(b.text) : escapeHtml(b.text)}</p>`
     case 'para': {
       // PART 11 SS1c IS ALREADY SETTLED WHEN THIS RUNS (carve#1784). `blockImage`
       // is set by the promotion phase, the one place allowed to ask whether a
@@ -769,7 +768,7 @@ function renderBlock(b, depth, ctx) {
       // appended after everything the author wrote.
       let authored = null
       for (const list of b.battrs ?? []) {
-        for (const a of list) if (a[0] === 'id') authored = a[1]
+        for (const a of list) if (idSlot(a) !== null) authored = idSlot(a)
       }
       const attrStr = renderTextBlockAttrs(b.battrs, `h${b.level}`)
       const id = authored ?? ctx.headingIdByBlock.get(b)
@@ -935,7 +934,7 @@ function renderList(list, depth, ctx) {
   if (list.ord) {
     tag = 'ol'
     if (list.ord.type) structural += ` type="${list.ord.type}"`
-    if (list.ord.start) structural += ` start="${list.ord.start}"`
+    if (list.ord.start != null) structural += ` start="${list.ord.start}"`
     // CARVE-P10-014: the recorded delimiter, which HTML has no attribute for,
     // trailing `type` and `start` and only where it is not the default `.`.
     if (list.ord.delim === ')') structural += ` data-delim="${escapeAttr(list.ord.delim)}"`
@@ -1124,10 +1123,10 @@ function numberCaption(text, ctx, id, panelIds) {
   const n = (ctx.captionSeq.get(key) ?? 0) + 1
   ctx.captionSeq.set(key, n)
   const shown = label === '' ? '' : flattenInnerLinks(renderInline(label)).replace(/\uE000(?!ref:)[\s\S]*?\uE001/g, '')
-  if (id) ctx.captionIds.set(id, `${shown} ${n}`)
+  if (id && !ctx.captionIds.has(id)) ctx.captionIds.set(id, shown === '' ? `${n}` : `${shown} ${n}`)
   if (panelIds) {
     panelIds.forEach((pid, k) => {
-      if (pid) ctx.captionIds.set(pid, `${shown} ${n}${panelLetter(k)}`)
+      if (pid && !ctx.captionIds.has(pid)) ctx.captionIds.set(pid, `${shown === '' ? '' : `${shown} `}${n}${panelLetter(k)}`)
     })
   }
   return text.slice(0, at) + n + text.slice(at + 1)
@@ -1340,8 +1339,12 @@ function renderTable(node, depth, ctx) {
     if (isHeader && !/ scope="/i.test(parsed)) {
       a += contexts[r].header ? ' scope="col"' : ' scope="row"'
     }
-    if (cell.rowspan) a += ` rowspan="${cell.rowspan}"`
-    if (cell.colspan) a += ` colspan="${cell.colspan}"`
+    // PART 5: a computed span is authoritative, so an author copy of its key is dropped.
+    for (const key of ['rowspan', 'colspan']) {
+      if (!cell[key]) continue
+      a += ` ${key}="${cell[key]}"`
+      parsed = parsed.replace(new RegExp(` ${key}="[^"]*"`, 'gi'), '')
+    }
     a += parsed
     // An empty span-marker cell has no alignment of its own, but still takes its column's (carve#4277).
     const align = (cell.empty ? null : cell.align) ?? colAlign[c] ?? null
@@ -1833,7 +1836,7 @@ function resolveCrossrefs(html, ctx) {
       // unresolved: literal source text (PART 9 SS19), HTML-escaped -- an
       // unresolved id may carry `<`/`>`/`&` (e.g. `</#<script>`) which must not
       // reach the output raw.
-      const esc = id.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+      const esc = id.replace(/[\u202A-\u202E\u2066-\u2069]/g, '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
       return `&lt;/#${esc}&gt;`
     }
     // ONE LEVEL (R4): the cloned text is not re-expanded, so every PART 9R

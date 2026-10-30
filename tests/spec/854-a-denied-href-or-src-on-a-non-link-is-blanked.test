@@ -1,0 +1,14 @@
+A denied href or src on a non-link is blanked
+
+```
+{src=javascript:x}
+p
+.
+<p src="">p</p>
+```
+
+```
+[a]{href=javascript:x}
+.
+<p><span href="">a</span></p>
+```

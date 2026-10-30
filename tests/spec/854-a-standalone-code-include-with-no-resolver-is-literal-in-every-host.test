@@ -1,0 +1,19 @@
+A standalone code include with no resolver is literal in every host
+
+```
+x {{ a @code:a,b }} y
+.
+<p>x {{ a @code:a,b }} y</p>
+```
+
+```
+> {{ a @code:a,b }}
+.
+<blockquote><p>{{ a @code:a,b }}</p></blockquote>
+```
+
+```
+> {{ _a_ @code:js }}
+.
+<blockquote><p>{{ _a_ @code:js }}</p></blockquote>
+```

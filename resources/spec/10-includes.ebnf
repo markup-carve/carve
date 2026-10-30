@@ -69,8 +69,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    existed. A bare-path directive
    with no active inline markers emits verbatim (corpus "Include directive
    with no resolver renders literal"). A directive that is invalid on its
-   face, an `@lines` value that is not a valid I1 range or a bare-path
-   directive with a bare `@code` option, is emitted as its source text with
+   face, an `@lines` value that is not a valid I1 range, a `@code:lang` value
+   that is not a `language_info` token, or a bare-path directive with a bare
+   `@code` option, is emitted as its source text with
    no inline parse of its tokens (carve#3803, corpus 715 and 735); emphasis
    or a link around it may still pair across it (carve#3804), and a token
    inside it opens and closes nothing, in either direction (carve#4296). The rules a conforming PROCESSOR that

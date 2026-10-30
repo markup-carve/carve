@@ -1,0 +1,26 @@
+An id key spells the id slot
+
+```
+> {id=q}
+> # Heading
+.
+<blockquote>
+  <h1 id="q">Heading</h1>
+</blockquote>
+```
+
+```
+{#i id=j}
+para
+.
+<p id="j">para</p>
+```
+
+```
+{id=q}
+# Heading
+.
+<section id="q">
+  <h1>Heading</h1>
+</section>
+```

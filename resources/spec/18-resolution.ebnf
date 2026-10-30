@@ -224,7 +224,8 @@
       both keep it, and the reference resolves to the first in the order R1's
       heading index takes them (carve#4450). The link text is LABEL + NUMBER,
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
-      equation's label is a string.
+      equation's label is a string. With an empty label the link text is the
+      number alone.
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so a
       self-reference (`# A </#A>`) and a mutual cycle (`# A </#B>` +
       `# B </#A>`) each resolve once (corpus "Cyclic cross-reference resolves

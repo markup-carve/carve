@@ -1,0 +1,25 @@
+An indented dash line neither opens nor closes frontmatter
+
+```
+ ---
+a
+---
+x
+.
+<hr>
+<p>a</p>
+<hr>
+<p>x</p>
+```
+
+```
+---
+a
+ ---
+x
+.
+<hr>
+<p>a</p>
+<hr>
+<p>x</p>
+```

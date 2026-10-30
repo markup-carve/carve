@@ -1,0 +1,13 @@
+A computed span drops the author copy of its key
+
+```
+|={colspan=3} a | < | b |
+| c | d | e |
+.
+<table>
+  <tbody>
+    <tr><th scope="row" colspan="2">a</th><td>b</td></tr>
+    <tr><td>c</td><td>d</td><td>e</td></tr>
+  </tbody>
+</table>
+```
