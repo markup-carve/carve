@@ -1191,6 +1191,20 @@ function paragraphOpenSince(bodyLines, from) {
   return last >= 0 && noteBodyParagraphOpen(tail)
 }
 
+// Whether the body's last line, past the lazy lines that continue it, is a term behind its openers.
+function bodyEndsInTerm(bodyLines) {
+  let k = bodyLines.length - 1
+  while (k >= 0 && bodyLines[k].startsWith(LAZY)) k--
+  if (k < 0) return false
+  let m = indentCols(bodyLines[k])
+  for (;;) {
+    const marker = matchMarkerAt(m)
+    const quote = marker ? null : QUOTE.exec(m.rest)
+    if (!marker && !quote) return DEFLIST_TERM.test(m.rest)
+    m = indentCols(marker ? marker.text : quote[1] ?? '')
+  }
+}
+
 // A fenced body is not a paragraph (CARVE-P0-013): does the body end inside a
 // code fence it opened and did not close?
 function bodyEndsInOpenFence(bodyLines) {
@@ -4460,6 +4474,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // the note's paragraph.
         if ((inItem || descriptionOwnerColumn !== null) &&
             measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !attachPending) break
+        // PART 0 [B-term-keep]: a marker that misses the note's body leaves a term (carve#4300).
+        if (measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !attachPending && bodyEndsInTerm(bodyLines)) break
         if (isBlank(lines[i])) afterComment = false
         if (measured.col >= FOOTNOTE_BODY_COLUMN || isBlank(lines[i])) {
           retainedParagraph = false

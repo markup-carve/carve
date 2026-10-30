@@ -79,6 +79,7 @@
 161-below-content-column-div-body-in-a-list-item-stays-literal  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+855-a-marker-past-a-term-ends-its-note-2  The pinned carve-js predates this (markup-carve/carve#4478); the spec model is correct.
 178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-7  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 183-a-comment-is-recognized-at-any-column  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 184-a-definition-below-every-content-column-folds-as-text  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
