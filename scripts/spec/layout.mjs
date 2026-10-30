@@ -5868,7 +5868,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const here = depthOf(lines[i])
             if (CONT_MARKER.test(here.rest) && here.d > (qLastMarked < 0 ? 0 : depthOf(lines[qLastMarked]).d)) {
               const attached = takeOneBlock(lines, i + 1, state, ind(i + 1),
-                firstBlockAtZero ? 0 : quoteColFollower ? markerQuoteCol : firstBlockQuoteCol)
+                firstBlockAtZero ? 0 : quoteColFollower ? markerQuoteCol : firstBlockQuoteCol, true)
               // The innermost quote owns the `+`: a follower at its column is read at that quote's column 0.
               const shift = here.d > 1 && quoteColFollower ? ind(i + 1).col : 0
               inner.push(here.d > 1 ? qm[1] : '',
@@ -5922,7 +5922,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // A refused marker adds no blank separator, which would close the
           // quote's open paragraph: it folds into that paragraph, or the
           // enclosing parse reads it as text (§17 L3).
-          const attached = takeOneBlock(lines, i, state, ind(i), ind(i - 1).L?.col ?? sourceQuoteCol)
+          const attached = takeOneBlock(lines, i, state, ind(i), ind(i - 1).L?.col ?? sourceQuoteCol, true)
           if (attached.next > i) {
             const colonMode = qColonRuns.at(-1)?.mode
             const insideColon = colonMode && colonMode !== 'line-block' && !qHost.fence
@@ -5966,6 +5966,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const attached = takeOneBlock(lines, i, state, ind(i), 0)
           inner.push(...attached.rawMarker)
           hostedFirstBlockPending = false
+          // Only an attached paragraph leaves one open for a lazy line (PART 0 S4).
+          if (!foldablePlainLine(ind(i).rest)) qOpenPara = qItemPara = false
           i = attached.next
           continue
         }
@@ -6353,7 +6355,7 @@ function measuredMarkerColumns(markerColumns, start, limit) {
 
 const DESCRIPTION_TEXT = /^: (?=[ \t]*[^ \t\n\r])/
 
-function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0) {
+function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0, quoteHost = false) {
   if (limit - start <= 1) return limit
   // Measure the block at the column it is read at: `  # H` is a heading there.
   // A line below that column can only fold lazily (§10 I2), and a fence there
@@ -6405,7 +6407,8 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
   }
   seen.opaqueMeasurement = { origins: new WeakMap([[measuredLines, start]]), sourceColumns, sourceLines: lines, markerFenceEnd: new WeakMap(), rows: new Set() }
   try {
-    parseBlocks(measuredLines, seen, false, true, undefined, stop)
+    // A quote body folds a list marker lazily where an item body ends at it (PART 0 S4).
+    parseBlocks(measuredLines, seen, false, !quoteHost, undefined, stop)
   } catch (error) {
     if (!(error instanceof Refuse)) throw error
     // Outside the executable subset: the extent is the honest answer, and the
@@ -6537,14 +6540,14 @@ const attachesFlushLeft = (firstMeas, column = 0) =>
 // A line a closer lookahead reads past: only these can move a block end from below.
 const LOOKAHEAD_SHAPE = /`{3}|~{3}|:{3}|%%|\$\$/
 
-function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas, column = 0, readColumn = 0) {
+function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas, column = 0, readColumn = 0, quoteHost = false) {
   if (!attachesFlushLeft(firstMeas, column)) return start
   // Grow a window instead of measuring the whole extent per marker (carve#4017).
   // The extent holds no blank line outside a fence, so a block that ends inside
   // the window ends there in the full extent too, unless a closer lies beyond.
   for (let cap = start + 16; ; cap = start + 2 * (cap - start)) {
     const limit = oneBlockEnd(lines, start, endsAttachment, cap)
-    const end = firstBlockEnd(lines, start, limit, state, undefined, readColumn)
+    const end = firstBlockEnd(lines, start, limit, state, undefined, readColumn, quoteHost)
     if (limit < cap || cap >= lines.length) return end
     if (end < limit && !lines.slice(start, limit).some((line) => LOOKAHEAD_SHAPE.test(line))) return end
   }
@@ -6623,11 +6626,11 @@ const recordLazyFollower = (target, eligible) => {
   rows[target.length - 1] = eligible
 }
 // A refused marker leaves an empty attached range for ordinary column rules.
-function takeOneBlock(lines, start, state, firstMeas, column = 0) {
+function takeOneBlock(lines, start, state, firstMeas, column = 0, quoteHost = false) {
   const startsList = !!matchMarkerAt(indentCols(lines[start] ?? ''))
   const boundary = (idx) => attachmentBoundary(lines)(idx) ||
     (startsList && idx > start && indentCols(lines[idx]).col === column && QUOTE.test(indentCols(lines[idx]).rest))
-  const one = attachedBlockEnd(lines, start, state, boundary, firstMeas, column)
+  const one = attachedBlockEnd(lines, start, state, boundary, firstMeas, column, 0, quoteHost)
   return { rawMarker: lines.slice(start, one), next: one }
 }
 
@@ -7742,6 +7745,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // a terminated span. A comment-shaped line inside its code fence is payload.
     let markerNoteCommentEnd = -1
     let markerNoteCommentSeen = false
+    let attachedLeavesNoParagraph = null
     while (i < n) {
       if (captureParagraphState) paragraphOpenBeforeComments = deepestParagraphOpen()
       const line = lines[i]
@@ -8956,8 +8960,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent), lm, attachmentColumn)
         }
         if (i < nestedAttachmentEnd) {
+          // Only an attached paragraph leaves one open for a lazy line (PART 0 S4).
+          attachedLeavesNoParagraph ??= !foldablePlainLine(lm.rest)
           pushLine(line, lm)
           i++
+          if (i === nestedAttachmentEnd && attachedLeavesNoParagraph) closePara()
           continue
         }
       }
