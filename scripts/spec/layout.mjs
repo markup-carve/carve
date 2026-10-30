@@ -3055,8 +3055,8 @@ function ownLines(lines, trace = null) {
     // Between the marker and content columns the readers attach any block but
     // a paragraph (CARVE-P9-067, corpus 633). The walk already hands them the
     // line they attach; only the trace records it under the item (carve#4147).
-    // An item on its quote's marker line takes the block the same way.
-    const pullingItem = top().kind === 'item' && top().plus === at - 1 &&
+    // So does a description's, and an item's on its quote's marker line.
+    const pullingItem = (top().kind === 'item' || top().kind === 'dd') && top().plus === at - 1 &&
       (frames[frames.length - 2].line !== top().line || frames[frames.length - 2].kind === 'quote') ? top() : null
     const pulledInto = trace && pullingItem && missed && m.rest !== '' && !replaced.has(at) &&
       !['item', 'dd', 'term', 'text'].includes(form.kind) && m.rest[0] !== '+' &&
@@ -3142,7 +3142,15 @@ function ownLines(lines, trace = null) {
       lead(Math.min(Math.max(m.col - cut, owner.canon), limit))
       if (FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       result.push(out + src)
-      if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
+      // Between the marker and content columns the `+` refuses a paragraph
+      // (corpus 633): the readers close the item and the paragraph is the
+      // parent's, which the trace records for it and what follows (carve#4190).
+      const refusedBy = trace && pullingItem === top() && form.kind === 'text' &&
+        m.col > pullingItem.markerCol && m.col < pullingItem.col && !frames.slice(reached + 1).some((f) => f.kind === 'quote')
+      if (refusedBy) {
+        emit(at, 'S5', ownerPath(reached), 'CARVE-P0-024', 'text', { closed: frames.length - 1 - reached, reached: ownerPath(reached) })
+        reown = { from: ownerPath(), to: ownerPath(reached), refused: true }
+      } else if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
       continue
     }
     const closed = frames.length - 1 - reached
@@ -3277,8 +3285,16 @@ function ownLines(lines, trace = null) {
     // The empty string after a final newline is not a line.
     if (index === lines.length - 1 && lines[index] === '') return
     if (reown && reown.attribute && form === 'blank') reown = null
-    if (reown && (owner === reown.from || owner.startsWith(`${reown.from}/`))) owner = reown.to + owner.slice(reown.from.length)
-    else reown = null
+    const moved = reown && (owner === reown.from || owner.startsWith(`${reown.from}/`))
+    if (moved) owner = reown.to + owner.slice(reown.from.length)
+    // A line the walk folds into the refused item continues the paragraph.
+    if (moved && reown.refused && owner === reown.to && form === 'lazy') {
+      step = 'S5'
+      rule = 'CARVE-P0-024'
+      form = 'text'
+      extra = {}
+    }
+    if (!moved) reown = null
     const record = { line: index + 1, step, owner, rule, form }
     for (const [key, value] of Object.entries(extra)) if (value !== undefined) record[key] = value
     trace.push(record)
