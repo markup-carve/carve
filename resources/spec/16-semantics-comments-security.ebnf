@@ -16,6 +16,9 @@
         from the text before it, and ALL remaining characters to the END OF THE
         RUN are consumed and produce no output. The separating run goes in
         full. A tab is content: `a⇥ %% c` renders `a⇥` (⇥ is a tab).
+      - An escaped space (`\ `) is a space before the marker too: `x\ %% c`
+        renders `x&nbsp;`. The escape keeps its no-break space; it is not part
+        of the consumed separating run (carve#4274).
       - A RUN'S OWN CLOSER ENDS IT, and the line break ends a run that has
         none: `[a %% c](/u) t` renders `<p><a href="/u">a</a> t</p>`.
       - `%%` is NEVER recognized inside a code span or raw inline (PART 9 §20);

@@ -162,7 +162,7 @@ CarveCore {
   // first so their literal payload stays opaque, which is why the comment is
   // its own alternative here instead of being reached through `inline`.
   headingInlines = initialComment? headingInline*
-  headingInline = spComment | inline
+  headingInline = spComment | escComment | inline
 
   // ORDER IS TUNED FOR SPEED (byte-exactness preserved). The three most common
   // tokens -- `word`, `spComment`, `inlineSpace` -- are hoisted to the FRONT:
@@ -179,7 +179,7 @@ CarveCore {
              | eqArrow | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | bracedDash | forcedSpan
-             | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escapedCrossref | escape | imageRef | image | bracketed
+             | mathD | mathI | litInline | codeA | escComment | nbspEsc | hardBreak | escapedCrossref | escape | imageRef | image | bracketed
              | autolink | bang | dollar
              | ellipsis | dashRun | dot | dash | plus | pct | lt | gt
              | dquote | squote | hash | nl | other | anyChar
@@ -224,7 +224,7 @@ CarveCore {
   // stops the run.
   // Any other character is content, as `bi_content` says (carve#2159); a
   // space or tab only where no closer follows it.
-  biInner    = ~biCloser (~dRun<"*"> rich | word | biSpComment | spaceChar ~("*/") | nl | nbspEsc | hardBreak
+  biInner    = ~biCloser (~dRun<"*"> rich | word | biSpComment | spaceChar ~("*/") | nl | biEscComment | nbspEsc | hardBreak
              | litDelim | other | bracedComment | ~spaceChar anyChar)
 
   // constructs allowed inside any span (everything except spans themselves,
@@ -363,7 +363,7 @@ CarveCore {
   // An unclosed code run takes the rest of the block here too, so the span
   // cannot close (carve#3973 X5).
   fInner<d>  = ~(d "}") (editorial | bracedDash | eqCloseCut<d> | ~(~"==>" dRun<d>) rich
-             | ~(~fSpan<d> "/*") span | nbspEsc | hardBreak | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | ~(d attrs) litDelim
+             | ~(~fSpan<d> "/*") span | fEscComment<d> | nbspEsc | hardBreak | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | ~(d attrs) litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
   // The span's closer ranks above smart typography (PART 8 items 7 and 11),
@@ -820,6 +820,10 @@ CarveCore {
   // It ends at the closer token only: a `*/` after whitespace or before alnum is text (THE COMBINED TOKEN).
   biSpComment = sepRun "%%" (~newline (spaceChar+ "*/" | ~biCloser any ""))*
   sepRun     = " "+
+  // An escaped space before `%%` separates it too and keeps its no-break space (carve#4274).
+  escComment = nbspEsc "%%" (~newline any)*
+  fEscComment<d> = nbspEsc "%%" (~newline ~(d "}") any)*
+  biEscComment = nbspEsc "%%" (~newline (spaceChar+ "*/" | ~biCloser any ""))*
   // The run-start form: nothing precedes it, so it carries no separator.
   initialComment = "%%" (~newline any)*
   // {% ... %} consumes through the FIRST closer, including soft line breaks.

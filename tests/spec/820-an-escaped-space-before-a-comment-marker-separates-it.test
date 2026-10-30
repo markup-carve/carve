@@ -1,0 +1,13 @@
+An escaped space before a comment marker separates it
+
+```
+x\ %% c
+.
+<p>x&nbsp;</p>
+```
+
+```
+{=a\ %% c=} t and b \ %% d
+.
+<p><mark>a&nbsp;</mark> t and b &nbsp;</p>
+```
