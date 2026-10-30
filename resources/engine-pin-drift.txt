@@ -618,3 +618,5 @@
 841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-4  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
 841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-5  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
 841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-6  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
+846-a-description-left-of-its-term-measures-its-own-plus-follower  markup-carve/carve#4410, the pinned carve-js predates the #4180 ruling on a description list's columns; carve-js main already renders this
+846-a-description-left-of-its-term-measures-its-own-plus-follower-2  markup-carve/carve#4410, the pinned carve-js predates the #4180 ruling on a description list's columns; carve-js main already renders this
