@@ -579,3 +579,4 @@
 630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-9  markup-carve/carve#4162, a lazy line after a third-level fence folds into the middle item; pending in the pinned engine
 815-a-line-below-an-empty-div-after-a-first-block-plus-is-not-lazy-4  markup-carve/carve#4269, the pinned carve-js folds a column-zero line into the div after an attribute line; carve-js main already ends the item
 820-a-lazy-line-into-a-descendant-s-paragraph-keeps-the-descendant-the-deepest-frame-4  The pinned JS renderer keeps a column-0 line in the outer item after a lazy line between the content columns and a heading in the nested item (markup-carve/carve#4291, carve-js line).
+823-a-fence-in-a-list-a-quote-attaches-takes-no-separator-line-3  markup-carve/carve#4313, the pinned carve-js gives a later fence in a quote-attached list the separator line as payload; fix pending in carve-js

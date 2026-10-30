@@ -1,0 +1,88 @@
+A fence in a list a quote attaches takes no separator line
+
+````
+> t
++
+- ```
+.
+<blockquote>
+  <p>t</p>
+  <ul>
+    <li>
+      <pre><code></code></pre>
+    </li>
+  </ul>
+</blockquote>
+````
+
+````
+> t
++
+- ```
+> b
+.
+<blockquote>
+  <p>t</p>
+  <ul>
+    <li>
+      <pre><code></code></pre>
+    </li>
+  </ul>
+  <p>b</p>
+</blockquote>
+````
+
+````
+> t
++
+- x
+  ```
+> b
+.
+<blockquote>
+  <p>t</p>
+  <ul>
+    <li>x
+      <pre><code></code></pre>
+    </li>
+  </ul>
+  <p>b</p>
+</blockquote>
+````
+
+````
+> t
++
+:: t
+: ```
+.
+<blockquote>
+  <p>t</p>
+  <dl>
+    <dt>t</dt>
+    <dd>
+      <pre><code></code></pre>
+    </dd>
+  </dl>
+</blockquote>
+````
+
+````
+> t
++
+- ```
+  c
+  ```
+> b
+.
+<blockquote>
+  <p>t</p>
+  <ul>
+    <li>
+      <pre><code>c
+</code></pre>
+    </li>
+  </ul>
+  <p>b</p>
+</blockquote>
+````
