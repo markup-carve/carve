@@ -3719,8 +3719,14 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
         const firstBlockFollower = next?.depth < quoted.depth &&
           (next.measured.col === 0 || next.depth === 0 && next.measured.col === measured.col) &&
           quoted.measured.col === 0 && !matchMarkerAt(next.measured) && quoteOpenedHere
+        // A deeper quote follower also stands where its `>` does at this level:
+        // padding after that `>` does not move it (`> >  r`).
+        const followerLevel = quoteFollower ? stripQuotes(sourceLines[index + 1], quoted.depth)?.rest : undefined
+        const sourceColumn = (source, rest) => indentCols(source.slice(0, source.length - rest.length).replace(/[^\t]/g, ' ')).col
+        const atQuoteColumn = followerLevel !== undefined &&
+          sourceColumn(sourceLines[index + 1], indentCols(followerLevel).rest) === sourceColumn(line, quoted.measured.rest)
         const refused = (!sameLevel && !quoteFollower && !firstBlockFollower) ||
-          !next.measured.rest || (!firstBlockFollower && next.measured.col !== quoted.measured.col)
+          !next.measured.rest || (!firstBlockFollower && next.measured.col !== quoted.measured.col && !atQuoteColumn)
         if (sibling) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, refusedSiblingSentinel) }
         if (refused || missingInnerPrefix) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, sentinel) }
         return line
