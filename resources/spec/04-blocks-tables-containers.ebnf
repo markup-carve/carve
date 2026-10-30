@@ -509,7 +509,7 @@ braced_comment = "{%", !(grapheme_extender), {character - "%}"}, "%}" ;
 (* --- Raw Blocks --- *)
 raw_block = code_fence_open, [space], "=", format_name, newline,
             raw_content,
-            code_fence_close, newline ;
+            [code_fence_close, newline] ;
 (* The opener is a code fence (backticks or tildes) whose info string is `=`
    immediately followed by a format name (```=html). The leading `=` is the
    block parallel of the inline raw `{=format}` attribute; it never starts a
@@ -518,7 +518,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    format name must be adjacent -- ```= html (space after `=`) is NOT a raw block. Leading
    whitespace before the `=` is permitted (```=html and ``` =html both open
    raw). The closer follows the PART 9 §2 rule: same fence character, length
-   >= opener. Content is verbatim; it is emitted UNESCAPED when the format
+   >= opener, and an unclosed raw block runs to the end of its host as a code
+   block does. Content is verbatim; it is emitted UNESCAPED when the format
    matches the output format (html) and DROPPED otherwise -- the block parallel
    of raw inline (PART 9 §20).
 

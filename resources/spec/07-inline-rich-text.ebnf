@@ -157,7 +157,8 @@ inline_footnote = "^[", inline_content, ']', [attribute_run] ;
 
 footnote_definition = "[^", footnote_label, "]:", space+, inline_content, newline,
                       {footnote_continuation | continuation_marker_block
-                      | lazy_continuation_line} ;
+                      | lazy_continuation_line}
+                    | "[^", footnote_label, "]:", space+, first_block_content ;
 footnote_continuation = (footnote_indent, inline_content, newline) | blank_line ;
 footnote_indent = whitespace, {whitespace} ;
 (* A footnote definition has the `[^label]: ` marker and renders as an endnote.

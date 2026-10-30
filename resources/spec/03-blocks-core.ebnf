@@ -100,13 +100,14 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        an id the document renders takes part: an id dropped with an unresolved
        reference's attributes (PART 9R) reserves nothing, so `x[^n]{#i}` above
        `## {#i}` leaves the heading `id="i"` (carve#4288).
-   An explicit {#id} is used verbatim (case preserved). Implementations MAY
-   offer OPT-IN, orthogonal lowercasing and ASCII-folding transforms; neither
-   is the default. ASCII-folding has TWO modes: BEST-EFFORT keeps characters
-   its shared transliteration table cannot map, while STRICT drops that residue
-   so the id matches `[0-9A-Za-z-]`. The table is not normative, but engines
-   MUST use the same table. Cross-references match the id table EXACTLY, case
-   included (PART 9R R4). *)
+   An explicit {#id} is used verbatim (case preserved), so two headings may
+   carry the same id; a cross-reference resolves to the first (PART 9R R4,
+   carve#4450). Implementations MAY offer OPT-IN, orthogonal lowercasing and
+   ASCII-folding transforms; neither is the default. ASCII folding is
+   HOST-DEFINED: its table, and what it does with a character the table cannot
+   map, belong to the host, and a folded id is outside conformance (carve#4451).
+   The default rule above is what conformance tests. Cross-references match the
+   id table EXACTLY, case included (PART 9R R4). *)
 
 (* MARKDOWN MIGRATION FRAGMENTS -- NORMATIVE [CARVE-P2-031]. An importer
    rewriting an inline Markdown link destination's local fragment, within one file or a
@@ -209,7 +210,9 @@ code_block = fenced_code_block, [caption_slot] ;
 
 fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
                     code_content,
-                    code_fence_close, newline ;
+                    [code_fence_close, newline] ;
+(* The closer is optional: an unclosed fence runs to the end of its host
+   (PART 0 S1, PART 9 §10 I4, carve#4018). *)
 (* The optional info-string padding is exactly one space (CARVE-P7-002).
    The glued form is canonical; ```` ```<TAB>php ```` and
    ```` ```<SP><SP>php ```` fall back to text. A trailing tab with no info

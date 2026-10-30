@@ -44,7 +44,8 @@
          `sourceLine` render option), which records where a block was written.
 
       An authored attribute replaces a generated attribute of the same name,
-      compared ASCII case-insensitively. The generated one is omitted.
+      compared ASCII case-insensitively. The generated one is omitted. These
+      examples are quoted, so their headings do not wrap (CARVE-P9-019):
 
         > {k=v .attr}  -> <ol type="a" k="v" class="attr">
         > a. alpha
@@ -60,7 +61,10 @@
 
       A top-level heading's id moves to <section> and its other attributes do
       not (CARVE-P9-019); with the `sections` option off, or for a heading
-      inside a container, the id stays on the <h*> with the rest.
+      inside a container, the id stays on the <h*> with the rest:
+
+        {#x a=b}       -> <section id="x"><h1 a="b">
+        # Written
 
       A MENTION OR TAG IS THE STATED EXCEPTION: its structural class leads and
       the link form's `href` is second (PART 3, ATTRIBUTES ON A MENTION OR

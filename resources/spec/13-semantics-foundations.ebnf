@@ -9,7 +9,9 @@
 
    2. MATCHING FENCES -- FORMALIZED. Stated as `where` guards on the
       productions (GUARD NOTATION, header):
-      - code_fence_close: same fence character, len(close) >= len(open);
+      - code_fence_close: same fence character, len(close) >= len(open); the
+        closer is optional and an unclosed fence runs to the end of its host
+        (PART 0 S1, §10 I4);
       - colon_fence_close (§12): len(close) = len(open), matched against the
         INNERMOST open colon fence; the closer is optional and an unclosed
         container ends at end of input;
