@@ -6497,8 +6497,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 firstBlockAtZero ? 0 : quoteColFollower ? markerQuoteCol : firstBlockQuoteCol, true)
               // The innermost quote owns the `+`: a follower at its column is read at that quote's column 0.
               const shift = here.d > 1 && quoteColFollower ? ind(i + 1).col : 0
+              // A fence at column zero keeps the payload an enclosing item stripped (CARVE-P0-024).
+              const zeroMatch = ind(i + 1)?.L?.col === 0 ? FENCE.exec(attached.rawMarker[0]) : null
+              const zeroFence = zeroMatch && parseFenceInfo(zeroMatch[2]) !== null ? zeroMatch : null
+              const raw = zeroFence ? attached.rawMarker.map((line, k) => k > 0 && !closesFence(zeroFence, line) ? ind(i + 1 + k)?.L?.src ?? line : line) : attached.rawMarker
               inner.push(here.d > 1 ? qm[1] : '',
-                ...(shift ? attached.rawMarker.map((line) => line.replace(new RegExp(`^ {0,${shift}}`), '')) : attached.rawMarker))
+                ...(shift ? raw.map((line) => line.replace(new RegExp(`^ {0,${shift}}`), '')) : raw))
               if (!attachedLeavesFenceOpen(attached.rawMarker)) inner.push('')
               if (here.d > 1 && QUOTE.test(lines[i + 1])) quotePulledFollowers.add(inner)
               qLastMarked = i
@@ -6826,6 +6830,11 @@ function hasCloser(lines, idx) {
   const m = FENCE.exec(lines[idx])
   if (!m || parseFenceInfo(m[2]) === null) return false
   return findCloser(lines, idx, m[1]) !== -1
+}
+
+const closesFence = (open, line) => {
+  const c = PURE_FENCE.exec(line)
+  return !!c && c[1][0] === open[1][0] && c[1].length >= open[1].length
 }
 
 function findCloser(lines, openIdx, run) {
@@ -8528,7 +8537,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // source column; a nested item's lines are measured from its parent's.
         const measured = ind(i)
         const shift = (measured.L?.col ?? measured.col) - measured.col
-        const body = dedentMeasured(measured, lines[i], Math.max(0, blockColumn - shift))
+        // A fence left of the parent's column keeps the payload the parent stripped (CARVE-P0-024).
+        const offset = i - (end - attached.length)
+        const payload = code && offset > opener && blockColumn < shift && measured.L && !closesFence(code, lines[i])
+        const body = payload
+          ? dedentMeasured(rootView(measured.L), measured.L.src, blockColumn)
+          : dedentMeasured(measured, lines[i], Math.max(0, blockColumn - shift))
         pushLine(body.text, body.meas)
         taken.push(body.text)
       }

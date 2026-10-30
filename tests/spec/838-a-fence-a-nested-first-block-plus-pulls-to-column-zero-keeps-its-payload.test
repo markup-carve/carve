@@ -1,0 +1,76 @@
+A fence a nested first-block plus pulls to column zero keeps its payload
+
+````
+- - +
+```
+  x
+```
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>  x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- a
+  - +
+```
+  x
+```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code>  x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- > +
+```
+  x
+```
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>  x
+</code></pre>
+    </blockquote>
+  </li>
+</ul>
+````
+
+````
+- - - +
+```
+      x
+```
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code>      x
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
