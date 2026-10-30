@@ -1,0 +1,19 @@
+A hyphen run at the start of a span is a flag
+
+```
+a *--x* b, a /--x/ b, a _---x_ b and a */--x/* b
+.
+<p>a <strong>--x</strong> b, a <em>--x</em> b, a <u>---x</u> b and a <strong><em>--x</em></strong> b</p>
+```
+
+```
+a {*--x*} b and a {=---x=} b
+.
+<p>a <strong>--x</strong> b and a <mark>---x</mark> b</p>
+```
+
+```
+a *-- x* b, a *x--y* b and 2*--x
+.
+<p>a <strong>– x</strong> b, a <strong>x–y</strong> b and 2*–x</p>
+```

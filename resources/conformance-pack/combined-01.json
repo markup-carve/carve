@@ -772,7 +772,7 @@
 {"id":"combined-ac8a5cc6479a","source":"/*a*/ b\n/*a*/ b\n/****/\n/****/\n","html":"<p><strong><em>a</em></strong> b\n<strong><em>a</em></strong> b\n<strong><em>**</em></strong>\n<strong><em>**</em></strong></p>"},
 {"id":"combined-acd4f12efc08","source":"- /*\fx*/ y\n/*{*a*/*} b*/\n/*a %%c\n","html":"<ul>\n  <li><strong><em>\fx</em></strong> y\n<strong><em><strong>a*/</strong> b</em></strong>\n/*a</li>\n</ul>"},
 {"id":"combined-ad02b07b7b2c","source":"  /***/\n  /***/\n","html":"<p><strong><em>*</em></strong>\n<strong><em>*</em></strong></p>"},
-{"id":"combined-ad5cfc8e81bf","source":"/---*multi\nl* ine*/\n","html":"<p><em>—<strong>multi\nl</strong> ine*</em></p>"},
+{"id":"combined-ad5cfc8e81bf","source":"/---*multi\nl* ine*/\n","html":"<p><em>---<strong>multi\nl</strong> ine*</em></p>"},
 {"id":"combined-ad8f09e1232b","source":"/**\n/**/\n","html":"<p><strong><em>*\n/*</em></strong></p>"},
 {"id":"combined-ada56677590b","source":"/*a\\ b*/ y\n#tag\n","html":"<p><strong><em>a&nbsp;b</em></strong> y\n<span class=\"tag\"><strong>#tag</strong></span></p>"},
 {"id":"combined-adb3d6829d22","source":" /*x*/and  /b/\n","html":"<p><em><strong>x</strong>/and  /b</em></p>"},
