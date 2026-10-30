@@ -1676,7 +1676,8 @@ function markerCarriesContinuation(text, memo) {
     if (marker?.leadTab) break
     if (!marker) {
       const quote = QUOTE.exec(text)
-      if (!quote) break
+      // A `+` or inner quote past the one space after `>` is the quote's text (corpus 646).
+      if (!quote || /^[ \t]/.test(quote[1] ?? '') && !matchMarkerAt({ col: 0, rest: trimWs(quote[1]) })) break
       text = trimWs(quote[1] ?? '')
     } else text = trimWs(marker.text)
     if (path.length === MAX_NESTING_DEPTH) return false
@@ -3607,7 +3608,7 @@ function ownLines(lines, trace = null) {
         frame.absorbs = absorbsColon(m.rest)
         frame.para = true
         // A lone `+` may attach the next line instead (§17 L3).
-        if (!leadTab && CONT_MARKER.test(m.rest)) frame.plus = at
+        if (!leadTab && CONT_MARKER.test(m.rest) && !(frame.kind === 'quote' && m.col > 0)) frame.plus = at
         frame.last = 'para'
         return
       }

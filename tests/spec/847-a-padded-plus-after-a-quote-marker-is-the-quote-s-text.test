@@ -1,0 +1,37 @@
+A padded plus after a quote marker is the quote's text
+
+```
+- >  +
+# H
+.
+<ul>
+  <li>
+    <blockquote><p>+</p></blockquote>
+  </li>
+</ul>
+<section id="H">
+  <h1>H</h1>
+</section>
+```
+
+```
+- >  +
+> q
+.
+<ul>
+  <li>
+    <blockquote><p>+</p></blockquote>
+  </li>
+</ul>
+<blockquote><p>q</p></blockquote>
+```
+
+```
+> >  +
+  s
+.
+<blockquote>
+  <blockquote><p>+
+s</p></blockquote>
+</blockquote>
+```
