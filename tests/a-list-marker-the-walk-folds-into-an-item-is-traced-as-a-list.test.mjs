@@ -1,0 +1,39 @@
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+import { parse } from '../scripts/spec/layout.mjs'
+import { renderDoc } from '../scripts/spec/html.mjs'
+import { modelTrace } from '../scripts/spec/decision-trace.mjs'
+
+// carve#4193: a list marker the readers open as a new list, but the ownership
+// walk folds into an item's paragraph, was traced as a lazy line of that item.
+const steps = (source) => modelTrace(source).map((r) => `${r.line} ${r.step} ${r.owner} ${r.form}`)
+
+test('a list a first-block + refuses between its columns is traced in the parent', () => {
+  const source = '1. +\n - s\n - t\n'
+  assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item', '3 S5 doc/item:3 item'])
+  assert.equal(modelTrace(source)[1].closed, 1)
+  assert.equal(modelTrace(source)[1].reached, 'doc')
+  assert.equal(renderDoc(parse(source)), '<ol>\n  <li></li>\n</ol>\n<ul>\n  <li>s</li>\n  <li>t</li>\n</ul>')
+})
+
+test('a refused list keeps its continuation, lazy and nested lines', () => {
+  assert.deepEqual(steps('1. +\n - s\n   more\n  lazy\n').slice(1), ['2 S5 doc/item:2 item', '3 S5 doc/item:2 text', '4 S4 doc/item:2 lazy'])
+  assert.equal(steps('- a\n  - +\n * w\n')[2], '3 S5 doc/item:3 item')
+  assert.deepEqual(steps('1. +\n - s\n\nafter\n').slice(2), ['3 S5 doc/item:2 blank', '4 S5 doc text'])
+  assert.deepEqual(steps('1. +\n - s\n* t\n').slice(1), ['2 S5 doc/item:2 item', '3 S5 doc/item:3 item'])
+  assert.deepEqual(steps('- +\n + w\n* z\n').slice(1), ['2 S5 doc text', '3 S5 doc text'])
+})
+
+test('a marker of another list kind under an item paragraph is traced as a new list', () => {
+  const source = '* s\n- t\n'
+  assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item'])
+  assert.equal(renderDoc(parse(source)), '<ul>\n  <li>s</li>\n</ul>\n<ul>\n  <li>t</li>\n</ul>')
+  assert.deepEqual(steps('- a\n  * w\n  1. v\n    - u\n').slice(2), ['3 S5 doc/item:1/item:3 item', '4 S5 doc/item:1/item:3/item:4 item'])
+  assert.deepEqual(steps('- a\n* w\n1. v\n').slice(1), ['2 S5 doc/item:2 item', '3 S5 doc/item:3 item'])
+})
+
+test('a marker of another kind off the parent column still folds', () => {
+  const source = '- a\n - w\n * v\n'
+  assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item', '3 S4 doc/item:2 lazy'])
+  assert.equal(renderDoc(parse(source)), '<ul>\n  <li>a</li>\n  <li>w\n* v</li>\n</ul>')
+})

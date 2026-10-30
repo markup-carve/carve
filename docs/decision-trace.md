@@ -114,7 +114,13 @@ marker is recorded inside the item or description too, with `plus` set to the
 marker line. So is a block other than a paragraph that an item's or a
 description's `+` takes between its marker and content columns. A paragraph
 there is refused: it is recorded in the parent, and so are the lines the walk
-folds after it.
+folds after it. A list marker there, or below it, is refused too: it opens a
+list in the parent, recorded as an item there.
+
+A list marker of another kind under an item's paragraph, at the content column
+of the item's parent, starts a new list (PART 9 §10 I2). The walk folds it into
+the paragraph, but the trace records it as an item in the parent, and the
+markers after it as that list's items.
 
 The trace covers the ownership walk. The block readers that build the final
 tree run after it, so a difference that only they make, such as how a table row

@@ -3154,7 +3154,36 @@ function ownLines(lines, trace = null) {
       // parent's, which the trace records for it and what follows (carve#4190).
       const refusedBy = trace && pullingItem === top() && form.kind === 'text' &&
         m.col > pullingItem.markerCol && m.col < pullingItem.col && !frames.slice(reached + 1).some((f) => f.kind === 'quote')
-      if (refusedBy) {
+      // A marker of another list kind under an item's paragraph opens a list
+      // at the parent's content column (§10 I2), and so does any marker the
+      // `+` refuses between its columns. The walk folds it, and the markers
+      // after it, into that paragraph; the trace records the lists (carve#4193).
+      const list = trace && reown?.levels && reown.from === ownerPath() ? reown : null
+      let parent = null
+      let levels = list?.levels ?? []
+      if (list && form.kind === 'item') {
+        const k = levels.findIndex((l) => m.col === l.col)
+        if (k >= 0) {
+          parent = levels[k].parent
+          levels = levels.slice(0, k)
+        } else if (m.col >= levels.at(-1).content) parent = levels.at(-1).path
+        else if (m.col === frames[reached].col) {
+          parent = ownerPath(reached)
+          levels = []
+        }
+      } else if (trace && !list && form.kind === 'item' && frames[reached + 1].kind === 'item' &&
+          !(reown?.refused && reown.from === ownerPath()) &&
+          !frames.slice(reached + 1).some((f) => f.kind === 'quote') &&
+          (m.col === frames[reached].col || (pullingItem === top() && m.col < pullingItem.col))) {
+        parent = ownerPath(reached)
+      }
+      if (parent !== null) {
+        const path = `${parent}/item:${at + 1}`
+        const closed = list ? list.levels.length - levels.length : frames.length - 1 - reached
+        emit(at, 'S5', path, 'CARVE-P0-024', 'item', { cell: 'B-item-start', closed: closed || undefined, reached: closed ? parent : undefined })
+        reown = { from: list?.from ?? ownerPath(), to: path, levels: [...levels, { path, parent, col: m.col, content: m.col + form.head }] }
+      } else if (list && m.col >= list.levels.at(-1).content) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'text')
+      else if (refusedBy) {
         emit(at, 'S5', ownerPath(reached), 'CARVE-P0-024', 'text', { closed: frames.length - 1 - reached, reached: ownerPath(reached) })
         reown = { from: ownerPath(), to: ownerPath(reached), refused: true }
       } else if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
