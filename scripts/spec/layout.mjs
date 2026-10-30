@@ -7366,6 +7366,16 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     let nestedAttachmentEnd = -1
     // A marker at the descendant's own indent is its sibling and bounds its block (SS17 L3).
     let nestedSiblingIndent = -1
+    // A marker-line chain (`- - +`) has a sibling column per level, any of which closes the `+` item.
+    let nestedSiblingMax = -1
+    let headPlusContent = -1
+    if (carriesBareContinuation) {
+      nestedSiblingIndent = nestedSiblingMax = contentCol
+      for (let rest = head.text.trim(), col = contentCol, mk; (mk = matchMarkerAt({ col, rest })); rest = mk.text.trim(), col = mk.indent + mk.markerWidth) {
+        nestedSiblingMax = mk.indent
+        if (/^(\[[^\]]\][ \t]+)?\+$/.test(trimWs(mk.text))) headPlusContent = mk.indent + mk.markerWidth
+      }
+    }
     // The spent attachment is a sublist, whose open paragraph a lazy line may still reach.
     let spentOnSublist = false
     const item = { }
@@ -8244,11 +8254,21 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
           [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent), lm, column, Math.min(lm.col, column))
       }
+      // A marker-line chain's `+` spends itself on a sublist at its content column, as below.
+      if (i === headIndex + 1 && carriesBareContinuation && nestedAttachmentEnd < 0 && headPlusContent >= 0 &&
+          matchMarkerAt(lm)?.indent >= headPlusContent) {
+        spentOnSublist = true
+        nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
+          ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
+          matchMarkerAt(ind(idx))?.indent === baseIndent, lm, lm.col, lm.col)
+      }
       // The descendant's sibling marker closes it, and its spent `+` with it.
-      if (nestedAttachmentEnd === i && nestedSiblingIndent >= 0 && matchMarkerAt(lm)?.indent === nestedSiblingIndent) {
+      const siblingAt = matchMarkerAt(lm)?.indent ?? -1
+      if ((nestedAttachmentEnd === i || nestedAttachmentEnd < 0) && nestedSiblingIndent >= 0 &&
+          siblingAt >= nestedSiblingIndent && siblingAt <= nestedSiblingMax) {
         carriesBareContinuation = false
         nestedAttachmentEnd = -1
-        nestedSiblingIndent = -1
+        nestedSiblingIndent = nestedSiblingMax = -1
       }
       // A descendant's first-block marker has spent its one attached block.
       // A later line at this item's marker column belongs to the enclosing
@@ -9179,7 +9199,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           carriesBareContinuation = true
           nestedAttachmentColumn = lm.L?.col ?? lm.col
           nestedAttachmentEnd = -1
-          nestedSiblingIndent = nm.indent
+          nestedSiblingIndent = nestedSiblingMax = nm.indent
           // The descendant's `+` spends itself on a sublist at its content column.
           const sub = i + 1 < n ? matchMarkerAt(ind(i + 1)) : null
           spentOnSublist = /^(\[[^\]]\][ \t]+)?\+$/.test(trimWs(lm.rest.slice(nm.markerWidth))) && sub && sub.indent >= nm.indent + nm.markerWidth
@@ -9193,7 +9213,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           carriesBareContinuation = true
           nestedAttachmentColumn = lm.L?.col ?? lm.col
           nestedAttachmentEnd = -1
-          nestedSiblingIndent = lm.col
+          nestedSiblingIndent = nestedSiblingMax = lm.col
           spentOnSublist = false
         }
         // does the deepest structure now hold an OPEN paragraph that lazy
