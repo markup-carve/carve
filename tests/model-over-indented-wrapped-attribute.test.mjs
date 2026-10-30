@@ -5,16 +5,17 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = (src) => renderDoc(parse(src)).trim()
 
-test('an over-indented wrapped attribute in a description is text a lazy line continues (carve#4081)', () => {
-  assert.equal(html(':: t\n: d\n   {c\n}\na\n'), '<dl>\n  <dt>t</dt>\n  <dd>d\n{c\n}\na</dd>\n</dl>')
+test('an over-indented wrapped attribute in a description is an attribute line (carve#4089)', () => {
+  assert.equal(html(':: t\n: d\n   {c\n}\na\n'), '<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>\n<p>a</p>')
 })
 
-test('a wrapped attribute below a description column folds instead of being dropped (carve#4081)', () => {
-  assert.equal(html(':: t\n: d\n {c\n}\n'), '<dl>\n  <dt>t</dt>\n  <dd>d\n{c\n}</dd>\n</dl>')
+test('a wrapped attribute below a description column reads like the one-line form (carve#4089)', () => {
+  assert.equal(html(':: t\n: d\n {c\n}\n'), '<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>')
+  assert.equal(html(':: t\n: d\n {c\n}\n'), html(':: t\n: d\n {c}\n'))
 })
 
-test('an over-indented wrapped attribute in a list item is text a lazy line continues (carve#4081)', () => {
-  assert.equal(html('- d\n   {.c\n}\npara\n'), '<ul>\n  <li>d\n{.c\n}\npara</li>\n</ul>')
+test('an over-indented wrapped attribute in a list item is an attribute line (carve#4089)', () => {
+  assert.equal(html('- d\n   {.c\n}\npara\n'), '<ul>\n  <li>d</li>\n</ul>\n<p>para</p>')
 })
 
 test('a wrapped attribute at a content column is still one construct', () => {

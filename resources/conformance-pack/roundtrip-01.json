@@ -999,7 +999,7 @@
 {"id":"roundtrip-d1f9fa04915c","source":"- a\n\n  - b\n    +\n^ cap\n     c\n","html":"<ul>\n  <li>a\n    <ul>\n      <li>b\n+\n^ cap\nc</li>\n    </ul>\n  </li>\n</ul>"},
 {"id":"roundtrip-d1fd43bfa75b","source":"# :smile:\n\n\n[:smile:][]\n","html":"<section id=\"s\">\n  <h1>:smile:</h1>\n  <p>[:smile:][]</p>\n</section>"},
 {"id":"roundtrip-d25ac38c4c65","source":"::: |\ntab\tgap\n%%\n%%\n:::\n","html":"<div class=\"line-block\">\n  <p>tab gap<br>\n<br>\n</p>\n</div>"},
-{"id":"roundtrip-d27a8c0b8e38","source":"  {.a\n  .b}\ntai{l\n","html":"<p>{.a\n.b}\ntai{l</p>"},
+{"id":"roundtrip-d27a8c0b8e38","source":"  {.a\n  .b}\ntai{l\n","html":"<p class=\"a b\">tai{l</p>"},
 {"id":"roundtrip-d2d8e3a1eafb","source":"::: |\n tab\tgap\n%%\n:::\n","html":"<div class=\"line-block\">\n  <p>&nbsp;tab&nbsp;&nbsp;&nbsp;&nbsp;gap<br>\n</p>\n</div>"},
 {"id":"roundtrip-d326e3ce1d77","source":":: t\nA [danger]{style=\"x:expression(steal())\"} span.\n:/i/  - a\n","html":"<dl>\n  <dt>t\nA <span style=\"\">danger</span> span.\n:<em>i</em>  - a</dt>\n</dl>"},
 {"id":"roundtrip-d32e5e55df06","source":"> a\n >\n> ```=htm\n\nb\n","html":"<blockquote><p>a</p></blockquote>\n<p>b</p>"},

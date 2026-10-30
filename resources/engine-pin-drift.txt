@@ -6,23 +6,18 @@
 # lands here, the engine has not shipped it yet, and the corpus is ahead of
 # the pin until someone moves it. That window is normal and the report exists
 # to describe it.
-#
 # What is NOT normal is not knowing which window you are in. carve#533 found
 # the pinned build three documents behind with nothing reporting it, because
 # `engine:report` was an npm script that no CI job ran.
-#
 # So the window is DECLARED rather than tolerated. This file lists the slugs
 # the pin is knowingly behind on, one per line, each with the reason.
 # `npm run engine:report -- --check` fails when the real set differs in
 # EITHER direction:
-#
 #   - a slug mismatches and is not listed  -> new drift, or a corpus fixture
 #     that does not match any engine. Red immediately, which is the point.
 #   - a slug is listed and now reproduces  -> the pin moved past it. Delete
 #     the line in the same commit that moves the pin.
-#
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
-#
 # Format: <slug><space><space><reason>
 739-opaque-reference-and-inline-bounds-7  The pinned JS renderer drops a U+2029 quote body; tracked at markup-carve/carve-js#3764.
 739-opaque-reference-and-inline-bounds-8  The pinned JS renderer drops a U+2028 quote body; tracked at markup-carve/carve-js#3764.
@@ -511,3 +506,15 @@
 791-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-3  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.
 791-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.
 792-a-glued-attribute-run-is-one-physical-line-3  Pinned JavaScript reads a block glued after a wrapped block as one attribute line (markup-carve/carve#4078); pending in carve-js.
+793-an-indented-attribute-block-that-wraps-across-lines-is-an-attribute-line  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+793-an-indented-attribute-block-that-wraps-across-lines-is-an-attribute-line-2  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+793-an-indented-attribute-block-that-wraps-across-lines-is-an-attribute-line-4  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+793-an-indented-attribute-block-that-wraps-across-lines-is-an-attribute-line-5  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+793-an-indented-attribute-block-that-wraps-across-lines-is-an-attribute-line-6  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+793-an-indented-attribute-block-that-wraps-across-lines-is-an-attribute-line-7  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+793-an-indented-attribute-block-that-wraps-across-lines-is-an-attribute-line-8  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+740-lazy-quote-owners  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-2  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-3  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-4  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.

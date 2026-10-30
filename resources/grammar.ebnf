@@ -5683,7 +5683,15 @@ EOF = (* end of file *) ;
          or after any block of a longer run leaves the lines literal
          paragraph text. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
-         follows PART 4 `block_attributes` and PART 0 S4.
+         follows PART 4 `block_attributes` and PART 0 S4. The opener's
+         indentation does not change what a wrapped block is (rule A,
+         CARVE-P0-024): an indented block that wraps is an attribute line
+         exactly like ` {.c}` and `{.c` + newline + ` }`. Its continuation
+         lines belong to it at any column, so it interrupts an open
+         paragraph (A1), and the line after its `}` is not lazy (PART 0 T:
+         an attribute line leaves no paragraph open). `- a` / `   {.c` /
+         `   }` / `para` ends the item's paragraph, drops the attribute in
+         the item (A4) and reads `para` as a document paragraph.
       A6 NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE. A `{…}` line whose
          braces do not parse as an attribute list is ordinary paragraph
          content under normal inline rules (a `{#a #}` line is an editorial
