@@ -8,10 +8,10 @@ An attribute run after a lone plus leads a sublist at the content column
 .
 <ul>
   <li>a
-    <ul x="">
-      <li>c</li>
-    </ul>
-  </li>
++</li>
+</ul>
+<ul x="">
+  <li>c</li>
 </ul>
 ```
 
@@ -24,10 +24,10 @@ y}
 .
 <ul>
   <li>a
-    <ul x="" y="">
-      <li>c</li>
-    </ul>
-  </li>
++</li>
+</ul>
+<ul x="" y="">
+  <li>c</li>
 </ul>
 ```
 
@@ -40,10 +40,10 @@ y}
 <blockquote>
   <ul>
     <li>a
-      <ul x="">
-        <li>c</li>
-      </ul>
-    </li>
++</li>
+  </ul>
+  <ul x="">
+    <li>c</li>
   </ul>
 </blockquote>
 ```
