@@ -107,8 +107,10 @@ line has no record of its own: the block it takes at the marker column is
 recorded inside that item or description, and the lines after that block are
 recorded in its parent. A block it takes at column zero below an indented
 marker is recorded inside the item or description too, with `plus` set to the
-marker line. So is a block other than a paragraph that an item's `+` takes
-between its marker and content columns; a paragraph there is not attached.
+marker line. So is a block other than a paragraph that an item's or a
+description's `+` takes between its marker and content columns. A paragraph
+there is refused: it is recorded in the parent, and so are the lines the walk
+folds after it.
 
 The trace covers the ownership walk. The block readers that build the final
 tree run after it, so a difference that only they make, such as how a table row
