@@ -1,0 +1,139 @@
+A nested unclosed fence keeps every blank line
+
+````
+- - - ```
+      x
+
+
+    q
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code>x
+
+
+</code></pre>
+          </li>
+        </ul>
+        <p>q</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- - - ```
+      x
+
+
+
+    q
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code>x
+
+
+
+</code></pre>
+          </li>
+        </ul>
+        <p>q</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- - - - ```
+        x
+
+
+      q
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <ul>
+              <li>
+                <pre><code>x
+
+
+</code></pre>
+              </li>
+            </ul>
+            <p>q</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- - - ```
+      x
+
+
+      y
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code>x
+
+
+y
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- a
+
+  - - ```
+      x
+
+
+    q
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code>x
+
+
+</code></pre>
+          </li>
+        </ul>
+        <p>q</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
