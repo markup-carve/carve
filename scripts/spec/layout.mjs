@@ -3182,7 +3182,9 @@ function ownLines(lines, trace = null) {
       m.col > pullingItem.markerCol && m.col < pullingItem.col && !frames.slice(reached + 1).some((f) => f.kind === 'quote')
       ? ownerPath() : null
     // An open div's closer is never a block, so no `+` takes it (PART 9 §12, carve#4254).
-    if (plusBody && missed && m.rest !== '' && !replaced.has(at) && !['item', 'dd', 'term', 'colon-close'].includes(form.kind) && m.rest[0] !== '+' &&
+    // A line comment or link definition there is not the body's and leaves the `+` unspent (carve#4307).
+    const invisibleLine = !COMMENT_FENCE_BODY.test(m.rest) && COMMENT_LINE.test(m.rest) || isLinkDef(m.rest) && !FOOTNOTE_DEF.test(m.rest)
+    if (plusBody && missed && m.rest !== '' && !replaced.has(at) && !['item', 'dd', 'term', 'colon-close'].includes(form.kind) && m.rest[0] !== '+' && !invisibleLine &&
         m.col === 0 && plusBody.markerCol > 0 && !frames.slice(reached + 1).some((f) => f.kind === 'quote')) {
       const depth = frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length
       const shift = ' '.repeat(plusBody.col - m.col)
@@ -6986,6 +6988,11 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
         readMeasures.push(null)
       } else break
     }
+    // A comment or link definition at the read column is the body's first
+    // block, though it renders nothing (carve#4307).
+    const comment = read.length > 0 ? classifyLayoutComment(read, 0) : null
+    if (comment && !(comment.kind === 'line_comment' && commentFenceOpensSpan(lines, start))) return start + comment.end
+    if (read.length > 1 && isLinkDef(indentCols(read[0]).rest) && !FOOTNOTE_DEF.test(indentCols(read[0]).rest)) return start + 1
     if (read.length <= 1) return start + read.length
     limit = start + read.length
     measuredLines = read

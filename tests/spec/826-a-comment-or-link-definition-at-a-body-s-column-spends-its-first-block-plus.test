@@ -1,0 +1,89 @@
+A comment or link definition at a body's column spends its first-block plus
+
+```
+- a
+  * +
+    %% c
+after
+.
+<ul>
+  <li>a
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>after</p>
+```
+
+```
+- +
+  %% c
+after
+.
+<ul>
+  <li></li>
+</ul>
+<p>after</p>
+```
+
+```
+- a
+  * +
+    [r]: /u
+after
+.
+<ul>
+  <li>a
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>after</p>
+```
+
+````
+- +
+  %% c
+  %% d
+```
+z
+```
+.
+<ul>
+  <li></li>
+</ul>
+<pre><code>z
+</code></pre>
+````
+
+```
+- a
+  * +
+[r]: /u
+  after
+.
+<ul>
+  <li>a
+    <ul>
+      <li>after</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  * +
+%% c
+  after
+.
+<ul>
+  <li>a
+    <ul>
+      <li>after</li>
+    </ul>
+  </li>
+</ul>
+```
