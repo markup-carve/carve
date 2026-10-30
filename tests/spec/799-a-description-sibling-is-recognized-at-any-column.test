@@ -1,0 +1,98 @@
+A description sibling is recognized at any column
+
+```
+:: t
+ :: u
+: d
+ : e
+.
+<dl>
+  <dt>t</dt>
+  <dt>u</dt>
+  <dd>d</dd>
+  <dd>e</dd>
+</dl>
+```
+
+```
+:: t
+: a
+ : b
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+:: t
+: a
+  : b
+.
+<dl>
+  <dt>t</dt>
+  <dd>a
+: b</dd>
+</dl>
+```
+
+```
+:: t
+:  a
+  : b
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+  :: t
+  : a
+ : b
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+:: outer
+:  :: inner
+   : a
+  : b
+.
+<dl>
+  <dt>outer</dt>
+  <dd>
+    <dl>
+      <dt>inner</dt>
+      <dd>a</dd>
+    </dl>
+  </dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+- item
+  :: t
+  : a
+ : b
+.
+<ul>
+  <li>item
+    <dl>
+      <dt>t</dt>
+      <dd>a
+: b</dd>
+    </dl>
+  </li>
+</ul>
+```

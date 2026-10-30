@@ -57,8 +57,9 @@
         {~~a~ b~>c~} the second `~` opens. Any other
         guard blocks: a_*x* stays text.
       - `=` followed by `>` never opens: it starts the arrow (§8). The `=`
-        of a comparison `<=` or `>=` is part of that symbol and neither
-        opens nor closes: =a <= b= -> <mark>a ≤ b</mark>.
+        of a comparison (`!=`, `<=`, `>=`) is part of that symbol and neither
+        opens nor closes: =a <= b= -> <mark>a ≤ b</mark>, and
+        =a != b= -> <mark>a ≠ b</mark>.
 
       OWN KINDS. A region has the kind of its braced span or editorial
       frame, and none for the block, a bracket run, an inline note, an

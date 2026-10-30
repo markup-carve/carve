@@ -23,13 +23,13 @@ test('a forced highlight closer ends an arrow', () => {
 })
 
 test('the first = of an arrow that can close a bare highlight closes it', () => {
-  // The = of a comparison `<=` or `>=` never closes (PART 9 §9, #4131).
+  // The = of a comparison `!=`, `<=` or `>=` never closes (PART 9 §9, #4131, #4177).
   assert.equal(html('=a>=\n'), '<p>=a≥</p>')
   assert.equal(html('=a<== b\n'), '<p><mark>a&lt;</mark>= b</p>')
   assert.equal(html('=a<=> b\n'), '<p><mark>a&lt;</mark>&gt; b</p>')
   assert.equal(html('=a ==> b=\n'), '<p><mark>a =</mark>&gt; b=</p>')
   assert.equal(html('=a<=>=\n'), '<p><mark>a&lt;</mark>≥</p>')
-  assert.equal(html('=a!={.c} x\n'), '<p><mark class="c">a!</mark> x</p>')
+  assert.equal(html('=a!={.c} x\n'), '<p>=a≠{.c} x</p>')
   // No open highlight, or no valid closer: the arrow stands.
   assert.equal(html('a >= b\n'), '<p>a ≥ b</p>')
   assert.equal(html('=a>=b\n'), '<p>=a≥b</p>')

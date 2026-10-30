@@ -22,8 +22,8 @@ for (const [host, src] of [
   })
 }
 
-test('a description marker past the owner column is still lazy note text', () => {
+test('a description marker past the owner column opens the sibling too (carve#4180)', () => {
   const doc = parse(':: m\n: [^c]: a\n : b\n')
-  assert.equal(html(':: m\n: [^c]: a\n : b\n'), '<dl>\n  <dt>m</dt>\n  <dd></dd>\n</dl>')
-  assert.deepEqual(doc.footnoteDefs.get('c'), [{ t: 'para', lines: ['a', ': b'] }])
+  assert.equal(html(':: m\n: [^c]: a\n : b\n'), '<dl>\n  <dt>m</dt>\n  <dd></dd>\n  <dd>b</dd>\n</dl>')
+  assert.deepEqual(doc.footnoteDefs.get('c'), [{ t: 'para', lines: ['a'] }])
 })
