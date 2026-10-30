@@ -8,8 +8,9 @@
       `content` is the verbatim span text, HTML-escaped (`&`,`<`,`>`).
       Display math alone on a line renders inside its own paragraph. A
       standalone display-math block carrying a trailing caption (PART 9 §4)
-      is a numbered EQUATION: the math paragraph is wrapped in a figure and a
-      `</#id>` to it resolves to "Equation N" (§19).
+      is wrapped in a figure. It is numbered only when the caption has a `#`
+      placeholder, and a `</#id>` to it then resolves to that label and number
+      (PART 9R R4, R5).
       Author `{attrs}` after the span merge onto the <span> (the base
       `math …` class is kept; see PART 10 §1).
 
@@ -81,7 +82,7 @@
         social resolver per parsed node and MUST NOT rescan a returned value.
       - FILE INCLUSION / TRANSCLUSION (`{{ … }}`) is a PROCESSOR-LEVEL
         directive, NOT part of the core parser: PART 6 states its syntax and
-        its semantics (CARVE-P6-001, I1 to I15).
+        its semantics (CARVE-P6-001, I1 to I16; I13 and I14 are unassigned).
 
    20. RAW PASSTHROUGH -- NORMATIVE [CARVE-P9-040] (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT

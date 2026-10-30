@@ -119,7 +119,7 @@
       like a PART 7 violation, which is why it is written down here rather
       than left as an implementation habit.
 
-      THE SUBJECT IS A CLASS, NOT TWO CHARACTERS. After the
+      THE SUBJECT IS A CLASS, NOT TWO CHARACTERS. The
       whitespace of this language is exactly U+0020, U+0009, U+000A and
       U+000D. EVERY OTHER C0 CONTROL -- U+0001..U+0008, U+000B, U+000C,
       U+000E..U+001F -- is ordinary CONTENT: it parses as content, it
@@ -152,7 +152,7 @@
 
       T5 DEL (U+007F) AND THE C1 CONTROLS: Markdown, plain text and ANSI
          strip them (PART 9 §25, NON-HTML TARGETS). The canonical `carve` writer is a source
-         serializer (PART 9 §26, CARVE-P9-054) and preserves them, like other
+         serializer (PART 9 §26, CARVE-P9-058) and preserves them, like other
          authored content characters.
 *)
 

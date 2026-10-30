@@ -43,7 +43,9 @@ include_section = id_attribute ;
 include_options = {[space+], '@', identifier, [':', include_option_value]}+ ;
 (* The value is optional in the shape so a bare `@code` (I1c) is well formed.
    Every other option takes a value: a bare `@shift` or `@region` is a
-   malformed option (Warning + literal, I7). *)
+   malformed option (Warning + literal, I7). Every other `@key` is reserved: a
+   processor that does not recognize one SHOULD treat the directive the same
+   way. *)
 include_option_value = include_unquoted_value | quoted_value ;
 include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' - '\t' - newline )+ ;
 (* `unquoted_value` (PART 4) less the `@`. An unquoted value ends at the next
@@ -93,8 +95,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       the last line and ends past it selects through the last line. A final
       line ending does not begin a further line, so an empty file has no
       lines, and neither has a file holding only its leading U+FEFF, which
-      is not content (I1c). The three
-      SELECTION mechanisms, including `@rows:N-M` (I1d), are MUTUALLY EXCLUSIVE: a directive MUST use at
+      is not content (I1c). The
+      SELECTION mechanisms, these three and `@rows:N-M` (I1d), are MUTUALLY EXCLUSIVE: a directive MUST use at
       most one; a directive carrying two is an ERROR (Warning + literal,
       per I7). TRANSFORM options reshape already-selected content and are
       orthogonal to selection: `@cols` (I1d) projects delimited table columns;
@@ -243,7 +245,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       and `@region`; a combination gives `include-selection-conflict`.
       The file remains an I11 dependency on every Warning + literal path.
 
-      `@cols:"Name,Other"` is a TRANSFORM on the same table include. It
+      `@cols:"Name,Other"` is a TRANSFORM on the same table include.
       The name form is double-quoted. It selects columns by exact header
       name and writes them in the given
       order, so it may reorder columns. A backslash quotes a comma or a
@@ -270,7 +272,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       `include-lines-table-rows-hint` (Hint) suggesting `@rows`.
       The directive's caption slot attaches to the resulting table (I1c).
       If delimited quoting is malformed, the include falls back to a code
-      block holding the full source with `delimited-table-malformed` as usual. Markdown
+      block holding the selected source, the full source when nothing selects,
+      with `delimited-table-malformed` as usual. Markdown
       export writes the selected cells in order as a plain GFM pipe table;
       a caption becomes a following paragraph.
 

@@ -23,8 +23,9 @@
    4. CAPTION PLACEMENT -- ONE RULE, TWO SPELLINGS (caption_slot in PART 2).
       A `^ ` caption attaches to exactly seven captionable hosts: an image
       paragraph, a blockquote, a table, a fenced code block
-      (a captioned code block is a numbered LISTING), a standalone
-      display-math block (a numbered EQUATION; the block must be solely the
+      (numbered, like every host, only when the caption has a `#` placeholder,
+      PART 9R R5), a standalone
+      display-math block (the block must be solely the
       `$$`…`` span), the CLOSING fence of a bare `::: figure` container
       (a composite FIGURE GROUP -- CARVE-P9-001), or the CLOSING fence of a
       `quote_block`. The allowance is the same for all
@@ -79,8 +80,8 @@
       other content in place, including paragraphs, lists, uncaptioned quotes
       and nested containers; a strict profile lints it. Renderers MUST NOT
       drop or reattach it. An uncaptioned quote may therefore share the group's
-      caption without becoming a panel. A table panel keeps its `<caption>`;
-      the panel wrapper adds no caption.
+      caption without becoming a panel. A table panel keeps its `<caption>` and its attributes on the `table`
+      element; the panel wrapper adds no caption.
 
       THE GROUP CAPTION ATTACHES AT THE CLOSER, THIS KIND ONLY. A caption,
       including its normal multiline form, attaches adjacent to or one blank
@@ -185,7 +186,8 @@
          `table` node rather than a `code_block`. The flag is consumed; other
          table attributes, including `header-rows`, `footer-rows`, `aligns`,
          `valigns` and `widths`, apply to that table. An unmarked fence stays
-         code. A caption after the fence becomes the table's caption and is
+         code. A title or label on the fence has no table slot and is
+         discarded. A caption after the fence becomes the table's caption and is
          numbered by its own label. An empty-valued `table=""` is
          equivalent to the boolean flag under the attribute rules.
 
@@ -198,7 +200,11 @@
          empty cell. Fields are LITERAL text: no Carve inline parsing, smart
          typography, span markers, or per-cell attributes are recognized.
          The first row is a header unless `header-rows=0` is supplied; an
-         explicit positive `header-rows` marks that many leading rows. The
+         explicit positive `header-rows` marks that many leading rows. A value
+         that is no count is absent for this rule, so the first row stays a
+         header. A count past the last row marks every row a header cell and
+         synthesizes no partition (CARVE-P12), so they render in one body group
+         at row scope. The
          implicit header uses zero rows when the table is empty or the footer
          consumes every row; an explicit overlapping header and footer is
          invalid under the ordinary table partition rule.
@@ -301,7 +307,7 @@
              (`^`) (corpus 106-blocked-span-marker-renders-as-empty-cell,
              107-colspan-marker-scans-left-past-a-consumed-cell).
          A 2x2 cell is `| a | < |` over `| ^ | < |` (or `| ^ | ^ |`).
-      T6 CONTINUATION ROWS (`+` in the first column instead of `|`).
+      T6 CONTINUATION ROWS (`+` as the first non-indent character instead of `|`).
          Appends per-column onto the row ABOVE: each non-empty cell joins
          its column's cell content with a single space (soft wrap); empty
          cells append nothing; no `<tr>` is produced. Under rowspan the
