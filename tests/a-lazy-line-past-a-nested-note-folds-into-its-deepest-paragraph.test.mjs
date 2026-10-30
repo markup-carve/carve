@@ -51,9 +51,9 @@ test('a marker below a hosted note is text of the note, not a sublist (carve#416
   assert.match(out, /<p>n\n- item<a href="#fnref1"/)
 })
 
-test('a lone plus on a note marker line still attaches a column-zero block', () => {
+test('a lone plus on a note marker line folds a column-zero list marker as a letter does (carve#4396)', () => {
   const out = html(['[^a]: +', '- a list', '', 'see[^a]'])
-  assert.match(out, /^<ul>\n  <li>a list<\/li>/)
+  assert.match(out, /<p>\+\n- a list/)
 })
 
 // A note's first-block `+` takes a non-list block at column zero of its quote

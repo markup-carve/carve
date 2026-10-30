@@ -3,8 +3,8 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
-// carve#4235: list markers never interrupt (§10 I2); only a refused `+`'s
-// one-line paragraph is the exception, and a `+` that took its paragraph is not refused.
+// carve#4235, carve#4396: list markers never interrupt (§10 I2), whether a `+`
+// took the paragraph above or was refused into it.
 const html = (source) => renderDoc(parse(source))
 
 test('a marker between the columns folds into the paragraph a first-block + took', () => {

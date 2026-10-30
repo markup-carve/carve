@@ -37,14 +37,13 @@ for (const host of ['', '- a\n  ', '- a\n  - x\n    ', '> ']) {
   }
 }
 
-// carve#3959 shape 3, §10 I2: a list item interrupts the one-line paragraph a
-// note's refused `+` forms, in a quote as at document level.
+// carve#4396: a note's refused `+` reads like a letter, so a list marker folds
+// into its paragraph, in a quote as at document level.
 for (const host of ['> ', '> > ', '> - x\n>   ', '- > ']) {
   for (const marker of ['- after', '* after', '1. after', '    1. after', ' * after']) {
     test(`${JSON.stringify(host)}[^b]: + then ${JSON.stringify(marker)}`, () => {
-      const out = html(`${host}[^b]: +\n${marker}\n\nr[^b]\n`)
-      assert.match(notes(`${host}[^b]: +\n${marker}\n\nr[^b]\n`), /<p>\+<a href/)
-      assert.match(out, /<li>after<\/li>/)
+      const source = (letter) => `${host}[^b]: ${letter}\n${marker}\n\nr[^b]\n`
+      assert.equal(html(source('+')), html(source('Q')).replaceAll('Q', '+'))
     })
   }
 }

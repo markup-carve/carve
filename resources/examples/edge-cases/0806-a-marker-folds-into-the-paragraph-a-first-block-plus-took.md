@@ -1,6 +1,6 @@
 ## A marker folds into the paragraph a first-block plus took
 
-List markers never interrupt a paragraph (PART 9 §10 I2). The exception is the one-line paragraph a refused `+` forms; a first-block `+` that takes its paragraph is not refused, so a list marker of another kind between the item's marker and content columns folds into that paragraph as it does after `- b` (carve#4235).
+List markers never interrupt a paragraph (PART 9 §10 I2). A first-block `+` that takes its paragraph is not refused, and a list marker of another kind between the item's marker and content columns folds into that paragraph as it does after `- b` (carve#4235).
 
 :::: compare
 
