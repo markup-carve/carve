@@ -1,0 +1,29 @@
+A description's one attributed paragraph keeps its p
+
+```
+:: T
+: {.c}
+  q
+.
+<dl>
+  <dt>T</dt>
+  <dd><p class="c">q</p></dd>
+</dl>
+```
+
+```
+:: T
+: +
+{#d}
+q
+
+:: U
+: r
+.
+<dl>
+  <dt>T</dt>
+  <dd><p id="d">q</p></dd>
+  <dt>U</dt>
+  <dd>r</dd>
+</dl>
+```
