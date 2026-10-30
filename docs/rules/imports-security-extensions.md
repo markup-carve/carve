@@ -15,11 +15,11 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 
 | Rule | Part | Clause |
 |---|---:|---|
-| [`CARVE-P2-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L245) | 2 | AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE |
-| [`CARVE-P2-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L146) | 2 | A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING |
-| [`CARVE-P2-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L108) | 2 | MARKDOWN MIGRATION FRAGMENTS |
-| [`CARVE-P2-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L136) | 2 | UNRESOLVED MARKDOWN REFERENCES KEEP THEIR SYNTAX ON IMPORT |
-| [`CARVE-P2-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L338) | 2 | A GITHUB ALERT IMPORTS AS AN ADMONITION |
+| [`CARVE-P2-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L248) | 2 | AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE |
+| [`CARVE-P2-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L149) | 2 | A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING |
+| [`CARVE-P2-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L111) | 2 | MARKDOWN MIGRATION FRAGMENTS |
+| [`CARVE-P2-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L139) | 2 | UNRESOLVED MARKDOWN REFERENCES KEEP THEIR SYNTAX ON IMPORT |
+| [`CARVE-P2-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L341) | 2 | A GITHUB ALERT IMPORTS AS AN ADMONITION |
 | [`CARVE-P2-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/22b-writer-render-loss.ebnf#L2) | 2 | RENDER-LOSS REPORTING |
 | [`CARVE-P4-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L239) | 4 | AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED |
 | [`CARVE-P6-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/10-includes.ebnf#L61) | 6 | FILE INCLUSION SEMANTICS |

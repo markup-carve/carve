@@ -1,0 +1,23 @@
+An id dropped with an unresolved reference reserves nothing
+
+```
+x[^n]{#i}
+
+## {#i}
+.
+<p>x[^n]</p>
+<section id="i">
+  <h2>{<span class="tag"><strong>#i</strong></span>}</h2>
+</section>
+```
+
+```
+x[^n]{#i}
+
+## i
+.
+<p>x[^n]</p>
+<section id="i">
+  <h2>i</h2>
+</section>
+```
