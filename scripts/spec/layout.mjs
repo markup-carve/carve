@@ -3363,7 +3363,10 @@ function ownLines(lines, trace = null) {
       if (m.col < listCol) next.leftOfList = true
       const outer = owner.closedList && m.col < listCol && m.col >= owner.closedList.col ? owner.closedList.shift : 0
       const shift = m.col >= listCol && !next.leftOfList ? Math.min(next.listShift, next.markerCol - next.markerCanon) : outer
-      const cut = owner.termShift !== undefined && (owner.last === 'dd' || owner.last === 'term') ? owner.termShift : Math.max(owner.cut, shift, carried(owner))
+      // A description left of its term is measured from its own line (CARVE-P0-024 S3, carve#4180).
+      const cut = owner.termShift !== undefined && owner.last === 'term' ? owner.termShift
+        : owner.termShift !== undefined && owner.last === 'dd' ? Math.min(owner.termShift, owner.ddShift)
+          : Math.max(owner.cut, shift, carried(owner))
       // Moved to the owner's column, a paragraph line after a `: +` would read as the block it takes (CARVE-P9-067).
       const refused = form.kind === 'text' && top().kind === 'dd' && top().plus === at - 1 && m.col > 0 && m.col < top().markerCol
       const foldedAt = Math.min(Math.max(m.col - cut, owner.canon + (refused ? 1 : 0)), limit, m.col)
@@ -3567,6 +3570,7 @@ function ownLines(lines, trace = null) {
         owner.termCut = col - canon
         owner.termShift = col - owner.canon
       }
+      if (form.kind === 'dd') owner.ddShift = col - owner.canon
       if (form.kind === 'fence' || form.kind === 'colon') {
         frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon,
           closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null })

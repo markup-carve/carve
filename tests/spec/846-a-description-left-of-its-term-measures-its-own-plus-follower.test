@@ -1,0 +1,24 @@
+A description left of its term measures its own plus follower
+
+```
+ :: t
+: +
+ h
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>h</p>
+```
+
+```
+  :: t
+: +
+  h
+.
+<dl>
+  <dt>t</dt>
+  <dd>h</dd>
+</dl>
+```
