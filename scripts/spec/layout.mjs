@@ -4076,6 +4076,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
     }
     return false
   }
+  const quotedTaskColumns = new Map()
   const lines = sourceHasLonePlus ? sourceLines.map((line, index) => {
     const stackedFollower = sourceLines[index + 1] === undefined
       ? null : indentCols(sourceLines[index + 1])
@@ -4140,7 +4141,10 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
         const atQuoteColumn = followerLevel !== undefined &&
           sourceColumn(sourceLines[index + 1], indentCols(followerLevel).rest) === sourceColumn(line, quoted.measured.rest)
         const refused = (!sameLevel && !quoteFollower && !firstBlockFollower) ||
-          !next.measured.rest || (!firstBlockFollower && next.measured.col !== quoted.measured.col && !atQuoteColumn)
+          !next.measured.rest || (!firstBlockFollower && next.measured.col !== quoted.measured.col && !atQuoteColumn) ||
+          // Past a task box's sublist only that sublist's literal column reaches (CARVE-P0-008).
+          (sameLevel && quotedTaskColumns.get(quoted.depth) !== undefined && stack.length > 0 &&
+            quoted.measured.col > 0 && !stack.includes(quoted.measured.col) && owner.depth === quoted.depth)
         if (sibling) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, refusedSiblingSentinel) }
         if (refused || missingInnerPrefix) { refusedPlusLines.push(index); hasOrdinaryPlus = true; return line.replace(/\+(?=[ \t]*$)/, sentinel) }
         return line
@@ -4151,7 +4155,8 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
       for (let depth = 0; opener && depth < MAX_NESTING_DEPTH; depth++) {
         stack.push(openerCol)
         const nested = indentCols(opener.text)
-        openerCol += opener.markerWidth + nested.col
+        if (opener.task !== undefined) quotedTaskColumns.set(quoted.depth, openerCol)
+        openerCol += opener.markerWidth + (opener.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH) + nested.col
         opener = matchMarkerAt(nested)
       }
       if (FOOTNOTE_DEF.test(quoted.measured.rest) || /^:{1,2} /.test(quoted.measured.rest)) stack.push(quoted.measured.col)
@@ -4192,7 +4197,8 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
         stack.push(hosted.measured.col)
         quotedMarkerColumns.set(hosted.depth, stack)
       }
-      openerCol += opener.markerWidth + nested.col
+      // A task box is content, so a marker after it stands at its literal column (CARVE-P0-008).
+      openerCol += opener.markerWidth + (opener.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH) + nested.col
       if (hosted.depth > 0) quoteColumn = openerCol
       opener = matchMarkerAt(nested)
       if (!opener) tail = nested
@@ -4208,7 +4214,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
       openerCol = note ? openerCol + FOOTNOTE_BODY_COLUMN : openerCol + description[0].length + body.col
       for (let inner = matchMarkerAt(body); inner; inner = matchMarkerAt(indentCols(inner.text))) {
         markerColumns.push(openerCol)
-        openerCol += inner.markerWidth + indentCols(inner.text).col
+        openerCol += inner.markerWidth + (inner.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH) + indentCols(inner.text).col
         tail = indentCols(inner.text)
       }
       if (matchMarkerAt(body) === null) tail = body
@@ -7603,7 +7609,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     if (sourceQuoteCol !== undefined) markerLineQuoteColumns.set(itemLines, sourceQuoteCol)
     if (matchMarkerAt(indentCols(head.text))) state.markerLineColumns.set(itemLines, new Map([[0,
       head.text.includes('+') && markerCarriesContinuation(trimWs(head.text), prefixMemo(state, itemLines, 0).continuation)
-        ? sourceMarkerCol : sourceMarkerCol + head.markerWidth]]))
+        ? sourceMarkerCol : sourceMarkerCol + head.markerWidth + (head.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH)]]))
     else if (QUOTE.test(head.text) && head.text.includes('+') && markerCarriesContinuation(trimWs(head.text),
         prefixMemo(state, itemLines, 0).continuation)) {
       state.markerLineColumns.set(itemLines, new Map([[0, sourceMarkerCol]]))
@@ -8983,6 +8989,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // separator opens nothing (PART 0 S4, carve#4175).
       const foldsIntoChild = headSubActive && childParagraphOpen && DEFLIST_SEPARATOR.test(lm.rest) &&
         (reach > headSubCol - headSubMarker.markerWidth || descendantQ1.para.length > 0 && !/^::? /.test(descendantQ1.para[0]))
+      // A `+` at the box-column child's marker column ends that child's open fence (§17 L3).
+      const taskPlusColumn = head.task !== undefined && headSubMarker ? headSubCol - headSubMarker.markerWidth : -1
       if (headSubActive && reach < headSubCol && !foldsIntoChild &&
           (opensAuthoredBase(lm.rest) || reach >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(lm.rest)) &&
           !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
@@ -9225,7 +9233,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // stopped being an opener at all (carve#1772, corpus 422-8).
         // Rebase a marker-line child at its source column after the task box.
         const localBase = head.task !== undefined && headSubMarker && openerBase !== null ? openerBase : head.task !== undefined && headSubMarker && !headSubEnded && col >= contentCol + TASK_MARKER_SOURCE_WIDTH &&
-          !insideFence() ? authoredBlockBase ?? contentCol + TASK_MARKER_SOURCE_WIDTH
+          (!insideFence() || col === taskPlusColumn && CONT_MARKER.test(lm.rest)) ? authoredBlockBase ?? contentCol + TASK_MARKER_SOURCE_WIDTH
           // A marker-line note after a task box reads its body from its own source column.
           : head.task !== undefined && markerNoteEligible && col >= markerNoteBodyColumn
           ? markerNoteBodyColumn - FOOTNOTE_BODY_COLUMN
