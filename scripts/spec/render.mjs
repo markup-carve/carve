@@ -66,6 +66,54 @@ const NESTING_MARKS = new Set(['/', '*', '_', '~', '^', ',', '='])
 // Characters that can start a construct hiding a delimiter (code, math, an
 // escape, a link, an autolink, a comment, a line break) or extend one.
 const HIDING = /[`$\\[\]<%\n\r\p{M}\u200D\uFE00-\uFE0F]/u
+// A code span or bracket run that closes and holds no brace cannot hide a
+// closer, so its characters do not count as hiding. Read left to right as the
+// atom table reads them; an unclosed code run ends the scan.
+function opensExtension(source, at) {
+  let j = at
+  while (j > 0 && /[A-Za-z0-9_-]/.test(source[j - 1])) j--
+  return j < at && source[j - 1] === ':' && /[A-Za-z_]/.test(source[j])
+}
+function softHiding(source) {
+  const soft = new Uint8Array(source.length)
+  const braces = [0]
+  for (let i = 0; i < source.length; i++) braces.push(braces[i] + (source[i] === '{' || source[i] === '}' ? 1 : 0))
+  // An inline extension ends at its first unescaped `]`, so no bracket in it
+  // pairs.
+  const nextClose = new Int32Array(source.length + 1).fill(-1)
+  for (let i = source.length - 1; i >= 0; i--) {
+    nextClose[i] = source[i] === ']' && source[i - 1] !== '\\' ? i : nextClose[i + 1]
+  }
+  const open = []
+  for (let i = 0; i < source.length; ) {
+    const c = source[i]
+    if (c === '\\') {
+      i += 2
+    } else if (c === '[' && opensExtension(source, i) && nextClose[i] !== -1) {
+      i = nextClose[i] + 1
+    } else if (c === '`') {
+      let n = 1
+      while (source[i + n] === '`') n++
+      let end = -1
+      for (let j = i + n; j < source.length && end === -1; ) {
+        let m = 0
+        while (source[j + m] === '`') m++
+        if (m === n) end = j
+        j += m || 1
+      }
+      if (end === -1) break
+      if (braces[end] === braces[i + n]) soft.fill(1, i, end + n)
+      i = end + n
+    } else if (c === '[') {
+      open.push(i++)
+    } else if (c === ']') {
+      const at = open.pop()
+      if (at !== undefined && braces[i] === braces[at] && !'([{'.includes(source[i + 1] ?? '.')) soft[at] = soft[i] = 1
+      i++
+    } else i++
+  }
+  return soft
+}
 let closerIndex = { source: null, unpaired: null }
 const closerless = new ohm.pexprs.Terminal('')
 closerless.eval = function (state) {
@@ -75,18 +123,15 @@ closerless.eval = function (state) {
     const unpaired = new Set()
     const openers = []
     const last = new Map()
+    const soft = softHiding(source)
     const otherBefore = [0]
-    for (let i = 0; i < source.length; i++) otherBefore.push(otherBefore[i] + (HIDING.test(source[i]) ? 1 : 0))
+    for (let i = 0; i < source.length; i++) otherBefore.push(otherBefore[i] + (!soft[i] && HIDING.test(source[i]) ? 1 : 0))
     for (let i = 0; i < source.length; i++) {
       if (source[i] === '{' && source[i - 1] !== '\\') {
         const mark = source[i + 1]
         if (!stacks.has(mark)) stacks.set(mark, [])
         stacks.get(mark).push(i)
         openers.push(i)
-      } else if (source[i] === '~' && source[i + 1] === '>') {
-        // A `{~` before an arrow may be a substitution, which ends at the
-        // first `~}` after it.
-        stacks.get('~')?.splice(0)
       } else if (source[i + 1] === '}' && stacks.has(source[i])) {
         last.set(source[i], i)
         const stack = stacks.get(source[i])

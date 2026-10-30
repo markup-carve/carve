@@ -997,6 +997,7 @@ index: examples/edge-cases/index.md
   a-comment-inside-a-split-combined-token-is-removed-before-pairing
   a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span
   a-braced-opener-whose-closers-the-spans-inside-it-take-stays-text
+  a-code-span-bracket-run-or-arrow-inside-an-inner-pair-keeps-the-outer-opener-text
   a-mention-or-tag-keeps-its-full-spelling-in-a-strong-child
   a-generic-extension-parses-its-captured-content-as-inline-content
 [edge-links] Links, images and references

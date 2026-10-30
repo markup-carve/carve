@@ -1,0 +1,19 @@
+A code span, bracket run or arrow inside an inner pair keeps the outer opener text
+
+```
+{*a {*b `c` *} {*a {*b `c` *} {*a {*b `c` *}
+.
+<p>{*a <strong>b <code>c</code> </strong> {*a <strong>b <code>c</code> </strong> {*a <strong>b <code>c</code> </strong></p>
+```
+
+```
+{*a {*b [c] *} {*a {*b [c] *} {*a {*b [c] *}
+.
+<p>{*a <strong>b [c] </strong> {*a <strong>b [c] </strong> {*a <strong>b [c] </strong></p>
+```
+
+```
+{~a ~> {~b ~} {~a ~> {~b ~} {~a ~> {~b ~}
+.
+<p>{~a ~&gt; <s>b </s> {~a ~&gt; <s>b </s> {~a ~&gt; <s>b </s></p>
+```
