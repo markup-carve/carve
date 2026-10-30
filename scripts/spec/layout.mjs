@@ -3171,7 +3171,7 @@ function ownLines(lines, trace = null) {
           if (frames[k].kind === 'quote') out += ' '.repeat(frames[k - 1].reader ?? frames[k - 1].canon) + '> '
         }
         const leaf = top()
-        result.push(out + ' '.repeat(leaf.kind === 'quote' ? 0 : leaf.reader) + LAZY + src)
+        result.push(out + ' '.repeat(leaf.kind === 'quote' ? 0 : leaf.listContent ?? leaf.reader) + LAZY + src)
         if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
         continue
       }
@@ -3179,9 +3179,12 @@ function ownLines(lines, trace = null) {
       const limit = next.kind === 'quote' ? Infinity : next.canon - 1
       // A lazy line in a description list is measured from its term's own column (CARVE-P0-008).
       const cut = owner.termShift !== undefined && (owner.last === 'dd' || owner.last === 'term') ? owner.termShift : owner.cut
-      lead(Math.min(Math.max(m.col - cut, owner.canon), limit))
+      const foldedAt = Math.min(Math.max(m.col - cut, owner.canon), limit, m.col)
+      lead(foldedAt)
       if (FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       result.push(out + src)
+      // The readers open a list at a folded marker (§10 I2); a lazy line framed later belongs to its item (carve#4259).
+      if (form.kind === 'item') top().listContent = foldedAt + form.width
       // Between the marker and content columns the `+` refuses a paragraph
       // (corpus 633): the readers close the item and the paragraph is the
       // parent's, which the trace records for it and what follows (carve#4190).
