@@ -59,7 +59,9 @@
       - `=` followed by `>` never opens: it starts the arrow (§8). The `=`
         of a comparison (`!=`, `<=`, `>=`) is part of that symbol and neither
         opens nor closes: =a <= b= -> <mark>a ≤ b</mark>, and
-        =a != b= -> <mark>a ≠ b</mark>.
+        =a != b= -> <mark>a ≠ b</mark>. An arrow whose `=` closes a span is
+        gone, and its remaining characters read with what follows, so they
+        can form a comparison: =a<=>=b= -> <mark>a&lt;</mark>≥b=.
 
       OWN KINDS. A region has the kind of its braced span or editorial
       frame, and none for the block, a bracket run, an inline note, an

@@ -1852,6 +1852,11 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
         }
         openMap.set(openers[k], j)
         openers.length = k // demote the entries above the matched opener
+        // The cut leaves the rest of the arrow to read with what follows (PART 9 §9).
+        if (t.ofArrow && COMPARISONS.has(t.ofArrow.raw.at(-1) + '=')) {
+          const next = toks.slice(j + 1, j + 2 * t.ofArrow.raw.length + 2).find((n) => n.k === 'd' && n.ch === '=' && n.at === t.ofArrow.end)
+          if (next) next.canOpen = next.canClose = false
+        }
         continue
       }
     }

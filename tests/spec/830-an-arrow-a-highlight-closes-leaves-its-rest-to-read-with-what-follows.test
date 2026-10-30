@@ -1,0 +1,25 @@
+An arrow a highlight closes leaves its rest to read with what follows
+
+```
+=a<=>=b=
+.
+<p><mark>a&lt;</mark>≥b=</p>
+```
+
+```
+=a ==>=b=
+.
+<p><mark>a =</mark>≥b=</p>
+```
+
+```
+=a<=> =b=
+.
+<p><mark>a&lt;</mark>&gt; <mark>b</mark></p>
+```
+
+```
+=a<=>*b*
+.
+<p><mark>a&lt;</mark>&gt;<strong>b</strong></p>
+```
