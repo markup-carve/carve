@@ -1,0 +1,21 @@
+The equals of a comparison neither opens nor closes a highlight
+
+```
+=a <= b=
+=a >= b=
+.
+<p><mark>a ≤ b</mark>
+<mark>a ≥ b</mark></p>
+```
+
+```
+=a>= b
+.
+<p>=a≥ b</p>
+```
+
+```
+=a <= b= and =c=
+.
+<p><mark>a ≤ b</mark> and <mark>c</mark></p>
+```

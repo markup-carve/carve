@@ -23,7 +23,8 @@ test('a forced highlight closer ends an arrow', () => {
 })
 
 test('the first = of an arrow that can close a bare highlight closes it', () => {
-  assert.equal(html('=a>=\n'), '<p><mark>a&gt;</mark></p>')
+  // The = of a comparison `<=` or `>=` never closes (PART 9 §9, #4131).
+  assert.equal(html('=a>=\n'), '<p>=a≥</p>')
   assert.equal(html('=a<== b\n'), '<p><mark>a&lt;</mark>= b</p>')
   assert.equal(html('=a<=> b\n'), '<p><mark>a&lt;</mark>&gt; b</p>')
   assert.equal(html('=a ==> b=\n'), '<p><mark>a =</mark>&gt; b=</p>')

@@ -617,6 +617,7 @@ const ARROWS = {
   '<->': '\u2194', '->': '\u2192', '<-': '\u2190',
   '!=': '\u2260', '<=': '\u2264', '>=': '\u2265', '+-': '\u00b1',
 }
+const COMPARISONS = new Set(['<=', '>='])
 
 const sem = g.createSemantics().addOperation('h', {
   inlines(_initial, items) {
@@ -1273,8 +1274,10 @@ function buildToks(children, literalDelims = '') {
       const loose = marker.child(1).children[0]
       const held = literalDelims.includes('=')
       const attrs = loose && { k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h(), heldMarker: held, markerAt: tok.source.endIdx - 1, markerChar: '=' }
-      // Each `=` may close; the first that does splits the arrow.
-      for (let k = 0; !held && k < raw.length; k++) {
+      // Each `=` may close; the first that does splits the arrow. The `=` of a
+      // comparison is part of the symbol and never closes (PART 9 §9).
+      const cuttable = !held && !COMPARISONS.has(raw)
+      for (let k = 0; cuttable && k < raw.length; k++) {
         if (raw[k] !== '=') continue
         const cut = { k: 'd', ch: '=', at: tok.source.startIdx + k, closeOnly: true, ofArrow: t, idx: k, seg: { k: 't', h: '' } }
         t.arrowCuts.push(cut)
@@ -1283,7 +1286,7 @@ function buildToks(children, literalDelims = '') {
         if (attrs && k === raw.length - 1) push(attrs)
         push(cut.seg)
       }
-      if (attrs && (held || raw.at(-1) !== '=')) push(attrs)
+      if (attrs && (!cuttable || raw.at(-1) !== '=')) push(attrs)
       continue
     }
     if (MARKER_RULES.has(marker.ctorName)) {
