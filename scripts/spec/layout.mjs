@@ -6771,11 +6771,15 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
     const read = []
     // A code fence the block opens takes no lazy line: S4 folds into a paragraph only.
     let fence = null
+    // A colon fence or attribute line leaves no paragraph for a lazy line (PART 0 S4).
+    let paragraphOpen = false
     for (const line of measuredLines) {
       const measured = indentCols(line)
       if (measured.rest === '' || measured.col >= readColumn) {
         const text = dedentParts(line, readColumn).text
         const at = indentCols(text)
+        paragraphOpen = at.rest !== '' && !COLON_FENCE.test(at.rest) &&
+          !(at.rest[0] === '{' && tryAttrLine([at.rest], 0))
         if (read.length === 0) {
           const open = FENCE.exec(at.rest)
           if (open && parseFenceInfo(open[2]) !== null) fence = { run: open[1], col: at.col }
@@ -6787,7 +6791,7 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
       } else if (fence) break
       else if (measured.rest[0] === '{' && tryAttrLine([measured.rest], 0)) break
       // A description marker with no term opens nothing, so it folds (PART 0 S4).
-      else if (foldablePlainLine(measured.rest) || DESCRIPTION_TEXT.test(measured.rest)) read.push(lazyFrame(measured.rest))
+      else if (paragraphOpen && (foldablePlainLine(measured.rest) || DESCRIPTION_TEXT.test(measured.rest))) read.push(lazyFrame(measured.rest))
       else if (isCodeBlockOpener(measured.rest)) read.push(measured.rest)
       else break
     }
