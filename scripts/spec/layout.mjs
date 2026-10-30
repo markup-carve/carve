@@ -3201,6 +3201,8 @@ function ownLines(lines, trace = null) {
         if (rest === undefined) return null
         const ind = walkIndent(rest)
         if (ind.rest === '' || line === lines[at]) return ' '.repeat(Math.max(0, ind.col - from)) + ind.rest
+        // The block an invisible line leads is measured with it, but an open div's closer is no block.
+        if (classifyAt(reached, ind.rest, frames[reached], at, ind.col).kind === 'colon-close') return null
         if (ind.col < base || (!fenced && (ind.col < from || ind.col >= floor || (ind.col === from && matchMarkerAt(indentCols(rest)))))) return null
         return ind.col < from ? rest : ' '.repeat(ind.col - from) + ind.rest
       })
@@ -7214,6 +7216,10 @@ function ledLine(measure, k, limit) {
 }
 
 // A line a closer lookahead reads past: only these can move a block end from below.
+// An unclosed code fence reads its payload to the block boundary, so a marker line is payload.
+const readsOpenFence = (lines, at, measured) => FENCE.test(measured.rest) && fencedBlockEnd(lines, at) === -1 &&
+  !lines.slice(at + 1).some(isBlank)
+
 const LOOKAHEAD_SHAPE = /`{3}|~{3}|:{3}|%%|\$\$/
 
 function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas, column = 0, readColumn = 0, quoteHost = false) {
@@ -8474,9 +8480,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           !matchMarkerAt(lm) &&
           (lm.col >= contentCol || attachesFlushLeft(lm, nestedAttachmentColumn))) {
         const column = lm.col >= contentCol ? lm.col : nestedAttachmentColumn
+        const openFence = readsOpenFence(lines, i, lm)
         nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
-          ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-          [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent), lm, column, Math.min(lm.col, column))
+          ind(idx).rest === '' || !openFence && (CONT_MARKER.test(lines[idx]) ||
+          [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent)), lm, column, Math.min(lm.col, column))
       }
       // A marker-line chain's `+` spends itself on a sublist at its content column, as below.
       if (i === headIndex + 1 && carriesBareContinuation && nestedAttachmentEnd < 0 && headPlusContent >= 0 &&
@@ -8545,7 +8552,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         i++
         continue
       }
-      if (CONT_MARKER.test(lm.rest) && lm.col === baseIndent) {
+      // A `+` inside a descendant's attached block is its payload: the extent stops at any other.
+      if (CONT_MARKER.test(lm.rest) && lm.col === baseIndent && i >= nestedAttachmentEnd) {
         if ((fence.opaque?.kind === 'code' ||
             (nestedOpaque?.kind === 'code' && (nestedOpaque.hostCol ?? nestedOpaque.col) === lm.col)) &&
             (i + 1 === n || isBlank(lines[i + 1]))) {
@@ -9707,9 +9715,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const firstBlockAtZero = (lm.L?.col ?? lm.col) === 0 && !matchMarkerAt(lm)
         const attachmentColumn = firstBlockAtZero ? 0 : nestedAttachmentColumn
         if (nestedAttachmentEnd < 0 && attachesFlushLeft(lm, attachmentColumn)) {
+          const openFence = readsOpenFence(lines, i, lm)
           nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
-            ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-            [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent), lm, attachmentColumn)
+            ind(idx).rest === '' || !openFence && (CONT_MARKER.test(lines[idx]) ||
+            [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent)), lm, attachmentColumn)
         }
         if (i < nestedAttachmentEnd) {
           // Only an attached paragraph leaves one open for a lazy line (PART 0 S4).
