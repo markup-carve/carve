@@ -1,0 +1,35 @@
+A frontmatter opener's rest is a format token or nothing
+
+```
+--- <
+k: v
+---
+p
+.
+<p>— &lt;
+k: v</p>
+<hr>
+<p>p</p>
+```
+
+```
+--- yaml x
+k: v
+---
+p
+.
+<p>— yaml x
+k: v</p>
+<hr>
+<p>p</p>
+```
+
+```
+--- é
+k: v
+---
+.
+<p>— é
+k: v</p>
+<hr>
+```

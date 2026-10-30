@@ -3873,7 +3873,7 @@ export const replaceNulls = (src) => src.replace(/\u0000/g, '\uFFFD')
  * The frontmatter OPENER line, bare or typed. Exported so the one artifact that
  * asks this question outside the layout keeps asking it the same way.
  */
-export const FRONTMATTER_OPENER = /^---(?:[ \t]*$|(?! *[^\S ])( (?! )|[A-Za-z0-9]+[ \t]*$))/
+export const FRONTMATTER_OPENER = /^---(?:[ \t]*$| ?[A-Za-z0-9]+[ \t]*$)/
 
 /**
  * Whether a SOURCE opens frontmatter at all: an opener line AND a closing dash
