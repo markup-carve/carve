@@ -319,7 +319,8 @@
             ```
 
         `x` misses the item, so the fence and the item end with an empty code
-        block; `x` is document text and the trailing run is inline content.
+        block; `x` is document text, and the trailing run opens an empty code
+        block (PART 9 §10 I4).
 
         FENCE KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-014].
         Code and colon bodies answer CARVE-P0-013's test alike. A code fence

@@ -92,8 +92,10 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        through unchanged (`Café` -> `Café`, `日本語` unchanged). The text IS
        NFC-normalized before slugging (CARVE-P9-058), so a precomposed `é` and a
        decomposed `e` + U+0301 give the SAME id;
-     - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
-       id but an invalid CSS selector); an empty result becomes `s`;
+     - a result that starts with a Unicode number (`\p{N}`, not only an ASCII
+       digit: `# ½ cup` gives `s-½-cup`) is prefixed `s-` (a bare leading digit
+       is a valid HTML id but an invalid CSS selector); an empty result becomes
+       `s`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
    An explicit {#id} is used verbatim (case preserved). Implementations MAY
    offer OPT-IN, orthogonal lowercasing and ASCII-folding transforms; neither
