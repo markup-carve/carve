@@ -3044,7 +3044,10 @@ function ownLines(lines, trace = null) {
     }
     if (inner.kind === 'fence') frames.pop()
     let owner = frames[reached]
-    if (m.rest !== '') for (const f of frames) if (f.plusShift && m.col < f.plusShift.col) f.plusShift = undefined
+    if (m.rest !== '') for (const f of frames) {
+      if (f.plusShift && m.col < f.plusShift.col) f.plusShift = undefined
+      if (f.closedList && m.col < f.closedList.col) f.closedList = undefined
+    }
     const form = classify(m.rest, owner, at, m.col)
     // A note's first-block `+` takes a non-list block at document column zero
     // as at its marker column (CARVE-P9-067): read the line again there.
@@ -3199,7 +3202,8 @@ function ownLines(lines, trace = null) {
       // (PART 0 S3), until one left of it starts what the readers reopen.
       const listCol = Math.min(next.listCol, next.markerCol)
       if (m.col < listCol) next.leftOfList = true
-      const shift = m.col >= listCol && !next.leftOfList ? Math.min(next.listShift, next.markerCol - next.markerCanon) : 0
+      const outer = owner.closedList && m.col < listCol && m.col >= owner.closedList.col ? owner.closedList.shift : 0
+      const shift = m.col >= listCol && !next.leftOfList ? Math.min(next.listShift, next.markerCol - next.markerCanon) : outer
       const cut = owner.termShift !== undefined && (owner.last === 'dd' || owner.last === 'term') ? owner.termShift : Math.max(owner.cut, shift, carried(owner))
       const foldedAt = Math.min(Math.max(m.col - cut, owner.canon), limit, m.col)
       lead(foldedAt)
@@ -3283,6 +3287,9 @@ function ownLines(lines, trace = null) {
     const sibling = frames[reached + 1]
     frames.length = reached + 1
     owner = top()
+    // A list opened right of an indented list it closes leaves the lines left
+    // of it at the closed list's shift (PART 0 S3, carve#4304).
+    if (form.kind === 'item' && sibling?.listShift > 0 && m.col >= sibling.listCol) owner.closedList = { col: sibling.listCol, shift: sibling.listShift }
     let applied = trace ? ownerPath() : null
     if (m.rest === '') {
       owner.para = false
