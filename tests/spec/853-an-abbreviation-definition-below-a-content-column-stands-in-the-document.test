@@ -1,0 +1,134 @@
+An abbreviation definition below a content column stands in the document
+
+```
+- n
+ *[A]: b
+
+A
+.
+<ul>
+  <li>n</li>
+</ul>
+<p><abbr title="b">A</abbr></p>
+```
+
+```
+10. n
+   *[A]: b
+
+A
+.
+<ol start="10">
+  <li>n</li>
+</ol>
+<p><abbr title="b">A</abbr></p>
+```
+
+```
+- - n
+ *[A]: b
+
+A
+.
+<ul>
+  <li>
+    <ul>
+      <li>n</li>
+    </ul>
+  </li>
+</ul>
+<p><abbr title="b">A</abbr></p>
+```
+
+```
+:: t
+: n
+ *[A]: b
+
+A
+.
+<dl>
+  <dt>t</dt>
+  <dd>n</dd>
+</dl>
+<p><abbr title="b">A</abbr></p>
+```
+
+```
+:: t
+:  n
+  *[A]: b
+
+A
+.
+<dl>
+  <dt>t</dt>
+  <dd>n</dd>
+</dl>
+<p><abbr title="b">A</abbr></p>
+```
+
+```
+[^f]: n
+ *[A]: b
+
+A[^f]
+.
+<p><abbr title="b">A</abbr><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+10. n
+    *[A]: b
+
+A
+.
+<ol start="10">
+  <li>n
+*[A]: b</li>
+</ol>
+<p>A</p>
+```
+
+```
+- - n
+  *[A]: b
+
+A
+.
+<ul>
+  <li>
+    <ul>
+      <li>n
+*[A]: b</li>
+    </ul>
+  </li>
+</ul>
+<p>A</p>
+```
+
+```
+[^f]: n
+  *[A]: b
+
+A[^f]
+.
+<p>A<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n
+*[A]: b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

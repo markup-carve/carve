@@ -260,9 +260,9 @@
         document level. Below every open content column a definition
         interrupts (S4), so `- a` / ` [r]: /u` / `tail` closes the item and
         registers `r` in the document. Abbreviation definitions are recognized
-        only at document level (CARVE-P12-026), which is where a line at column 0
-        stands: `- a` / `*[A]: b` closes the item and defines
-        `A`, while `- a` / `  *[A]: b` stays item text. A definition either registers
+        only at document level (CARVE-P12-026), which is where a line that misses
+        every frame stands: `- a` / `*[A]: b` and `- a` / ` *[A]: b` close the item
+        and define `A`, while `- a` / `  *[A]: b` stays item text. A definition either registers
         or remains visible text; it never disappears from both.
 
         A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN --
