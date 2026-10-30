@@ -337,19 +337,19 @@
   },
   "d3-bt-p0-b0-tail": {
     "source": "- - - ```\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code></code></pre>\n          </li>\n        </ul>\n        +\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code></code></pre>\n          </li>\n        </ul>\n        +\ntail\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-bt-p0-b1-tail": {
     "source": "- - - ```\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-bt-p0-b2-tail": {
     "source": "- - - ```\n\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-bt-p1-b0-tail": {
     "source": "- - - ```\n      x\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\n</code></pre>\n          </li>\n        </ul>\n        +\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\n</code></pre>\n          </li>\n        </ul>\n        +\ntail\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-bt-p1-b0-item": {
     "source": "- - - ```\n      x\n    +\n- y\n",
@@ -373,7 +373,7 @@
   },
   "d3-bt-p1-b1-tail": {
     "source": "- - - ```\n      x\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-bt-p1-b1-item": {
     "source": "- - - ```\n      x\n\n    +\n- y\n",
@@ -397,7 +397,7 @@
   },
   "d3-bt-p1-b2-tail": {
     "source": "- - - ```\n      x\n\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-bt-p1-b2-item": {
     "source": "- - - ```\n      x\n\n\n    +\n- y\n",
@@ -421,87 +421,87 @@
   },
   "d3-bt-p2-b0-tail": {
     "source": "- - - ```\n      x\n      x\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\nx\n</code></pre>\n          </li>\n        </ul>\n        +\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\nx\n</code></pre>\n          </li>\n        </ul>\n        +\ntail\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-bt-p2-b1-tail": {
     "source": "- - - ```\n      x\n      x\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\nx\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\nx\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-bt-p2-b2-tail": {
     "source": "- - - ```\n      x\n      x\n\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\nx\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code>x\nx\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-info-p0-b0-tail": {
     "source": "- - - ```js\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\"></code></pre>\n          </li>\n        </ul>\n        +\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\"></code></pre>\n          </li>\n        </ul>\n        +\ntail\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-info-p0-b1-tail": {
     "source": "- - - ```js\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-info-p0-b2-tail": {
     "source": "- - - ```js\n\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-info-p1-b0-tail": {
     "source": "- - - ```js\n      x\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\n</code></pre>\n          </li>\n        </ul>\n        +\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\n</code></pre>\n          </li>\n        </ul>\n        +\ntail\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-info-p1-b1-tail": {
     "source": "- - - ```js\n      x\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-info-p1-b2-tail": {
     "source": "- - - ```js\n      x\n\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-info-p2-b0-tail": {
     "source": "- - - ```js\n      x\n      x\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\nx\n</code></pre>\n          </li>\n        </ul>\n        +\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\nx\n</code></pre>\n          </li>\n        </ul>\n        +\ntail\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-info-p2-b1-tail": {
     "source": "- - - ```js\n      x\n      x\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\nx\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\nx\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-info-p2-b2-tail": {
     "source": "- - - ```js\n      x\n      x\n\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\nx\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code class=\"language-js\">x\nx\n\n</code></pre>\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-raw-p0-b0-tail": {
     "source": "- - - ```=html\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            \n          </li>\n        </ul>\n        +\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            \n          </li>\n        </ul>\n        +\ntail\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-raw-p0-b1-tail": {
     "source": "- - - ```=html\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            \n\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            \n\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-raw-p0-b2-tail": {
     "source": "- - - ```=html\n\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            \n\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            \n\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-raw-p1-b0-tail": {
     "source": "- - - ```=html\n      x\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\n          </li>\n        </ul>\n        +\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\n          </li>\n        </ul>\n        +\ntail\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-raw-p1-b1-tail": {
     "source": "- - - ```=html\n      x\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\n\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\n\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-raw-p1-b2-tail": {
     "source": "- - - ```=html\n      x\n\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\n\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\n\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-raw-p2-b0-tail": {
     "source": "- - - ```=html\n      x\n      x\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\nx\n          </li>\n        </ul>\n        +\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\nx\n          </li>\n        </ul>\n        +\ntail\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-raw-p2-b1-tail": {
     "source": "- - - ```=html\n      x\n      x\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\nx\n\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\nx\n\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "d3-raw-p2-b2-tail": {
     "source": "- - - ```=html\n      x\n      x\n\n\n    +\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\nx\n\n          </li>\n        </ul>\n        <p>+</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            x\nx\n\n          </li>\n        </ul>\n        <p>+\ntail</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   "ord2-bt-p0-b0-tail": {
     "source": "1. - ```\n   +\ntail\n",
