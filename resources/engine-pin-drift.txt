@@ -564,3 +564,4 @@
 807-a-description-lead-under-a-marker-line-child-folds-into-its-paragraph  The pinned JS renderer ends a marker-line child at a lazy `: ` line on its marker column; carve-js main (68ec736e) folds it, the pin is behind (carve#4175).
 807-a-description-lead-under-a-marker-line-child-folds-into-its-paragraph-2  The pinned JS renderer ends a marker-line child at a lazy `: ` line on its marker column; carve-js main (68ec736e) folds it, the pin is behind (carve#4175).
 807-a-description-lead-under-a-marker-line-child-folds-into-its-paragraph-3  The pinned JS renderer ends a marker-line child at a lazy `: ` line on its marker column; carve-js main (68ec736e) folds it, the pin is behind (carve#4175).
+809-a-description-s-first-block-plus-leaves-its-paragraph-open-for-the-next-entry-5  Pinned JavaScript folds a shifted : line into the nested description instead of opening the outer list's next description (markup-carve/carve#4180 ruling C); pending in carve-js.

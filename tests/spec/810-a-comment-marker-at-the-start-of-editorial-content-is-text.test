@@ -1,0 +1,19 @@
+A comment marker at the start of editorial content is text
+
+```
+{+%% b+}
+.
+<p><ins>%% b</ins></p>
+```
+
+```
+{-%% b-}
+.
+<p><del>%% b</del></p>
+```
+
+```
+{~%% b~>x~}
+.
+<p><del>%% b</del><ins>x</ins></p>
+```
