@@ -3201,7 +3201,7 @@ function ownLines(lines, trace = null) {
         // An item's paragraph the `+` refused takes a sublist at its content column.
         parent = reown.to
       } else if (trace && !list && form.kind === 'item' && frames[reached + 1].kind === 'item' &&
-          !(reown?.refused && reown.from === ownerPath() && reown.to === ownerPath(reached)) &&
+          !(reown?.refused && reown.from === ownerPath() && !(reown.to !== ownerPath(reached) && underPath(reown.to, ownerPath(reached)))) &&
           !frames.slice(reached + 1).some((f) => f.kind === 'quote') &&
           (m.col === frames[reached].col || (pullingItem === top() && m.col < pullingItem.col))) {
         parent = ownerPath(reached)
@@ -3211,7 +3211,7 @@ function ownLines(lines, trace = null) {
         const closed = list ? list.levels.length - levels.length : frames.length - 1 - reached
         emit(at, 'S5', path, 'CARVE-P0-024', 'item', { cell: 'B-item-start', closed: closed || undefined, reached: closed ? parent : undefined, as: !!list })
         const col = leadColumn(result.at(-1))
-        reown = { from: list?.from ?? ownerPath(), to: path, levels: [...levels, { path, parent, col, content: col + form.head }], aliases: list?.aliases ?? [] }
+        reown = { from: list?.from ?? ownerPath(), to: path, levels: [...levels, { path, parent, col, content: col + form.head }], aliases: list?.aliases ?? new Map() }
       } else if (list && wc >= list.levels.at(-1).content) emit(at, 'S5', list.to, 'CARVE-P0-024', 'text', { as: true })
       else if (refusedBy) {
         emit(at, 'S5', ownerPath(reached), 'CARVE-P0-024', 'text', { closed: frames.length - 1 - reached, reached: ownerPath(reached) })
@@ -3283,7 +3283,7 @@ function ownLines(lines, trace = null) {
       // The paragraph the `+` refused is the parent's, and only an item's
       // paragraph takes a sublist: the marker continues it.
       emit(at, 'S5', reown.to, 'CARVE-P0-024', 'text', { as: true })
-      reown = { ...reown, aliases: [...(reown.aliases ?? []), [blockPath, reown.to]] }
+      reown = { ...reown, aliases: (reown.aliases ?? new Map()).set(blockPath, reown.to) }
     } else if (trace && form.kind === 'item' && reown?.levels && !pulledInto && !underPath(blockPath, reown.to) &&
         underPath(blockPath.slice(0, blockPath.lastIndexOf('/')), reown.levels[0].parent) &&
         blockPath.lastIndexOf('/') > reown.levels[0].parent.length) {
@@ -3296,7 +3296,7 @@ function ownLines(lines, trace = null) {
       const closed = reown.levels.length - levels.length
       if (parent === null) emit(at, 'S5', path, 'CARVE-P0-024', 'text', { as: true })
       else emit(at, 'S5', path, 'CARVE-P0-024', 'item', { cell: 'B-item-start', closed: closed || undefined, reached: closed ? parent : undefined, as: true })
-      reown = { ...reown, to: path, aliases: [...reown.aliases, [blockPath, path]],
+      reown = { ...reown, to: path, aliases: reown.aliases.set(blockPath, path),
         levels: parent === null ? reown.levels : [...levels, { path, parent, col: wc, content: wc + form.head }] }
     } else if (trace) {
       const kind = TRACE_FORM[form.kind] ?? form.family ?? form.kind
@@ -3414,10 +3414,10 @@ function ownLines(lines, trace = null) {
     // `as` records the owner the readers give the line, keeping the list open.
     const fixed = extra.as
     extra = { ...extra, as: undefined }
-    const moved = reown && (fixed || underPath(owner, reown.from) || reown.aliases?.some(([walk]) => underPath(owner, walk)))
+    const alias = reown && !fixed ? aliasOf(owner) : null
+    const moved = reown && (fixed || alias || underPath(owner, reown.from))
     if (moved && !fixed) {
       // A frame the walk opened inside the list goes where the readers put its line.
-      const alias = reown.aliases?.findLast(([walk]) => underPath(owner, walk))
       owner = alias ? alias[1] + owner.slice(alias[0].length) : reown.to + owner.slice(reown.from.length)
     }
     // A line the walk folds into the refused item continues the paragraph.
@@ -3431,6 +3431,15 @@ function ownLines(lines, trace = null) {
     const record = { line: index + 1, step, owner, rule, form }
     for (const [key, value] of Object.entries(extra)) if (value !== undefined) record[key] = value
     trace.push(record)
+  }
+
+  // The innermost walk frame on `owner`'s path the readers put elsewhere.
+  function aliasOf(owner) {
+    if (!reown.aliases?.size) return null
+    for (let walk = owner; walk.includes('/'); walk = walk.slice(0, walk.lastIndexOf('/'))) {
+      if (reown.aliases.has(walk)) return [walk, reown.aliases.get(walk)]
+    }
+    return null
   }
 
   function ownerPath(depth = frames.length - 1) {
