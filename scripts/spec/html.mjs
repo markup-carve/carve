@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -523,9 +523,8 @@ function renderBlock(b, depth, ctx) {
             // Left for the second pass they reached it with the slot already
             // claimed, and it wrote a second `class` attribute (carve#2457).
             if (isClass(a)) {
-              const value = classValue(a)
               // CARVE-P4-002: the derived classes and the authored ones are one list (carve#4143).
-              if (value !== '' && !baseCls.includes(value) && !extra.includes(value)) extra.push(value)
+              for (const value of classTokens(a)) if (value !== '' && !baseCls.includes(value) && !extra.includes(value)) extra.push(value)
             } else keep.push(a)
           }
           if (keep.length) rest.push(keep)

@@ -621,8 +621,8 @@
       "edits": [
         {
           "file": "scripts/spec/render.mjs",
-          "find": "classValue(a)\n      if (value !== '' && !classes.includes(value)) classes.push(value)",
-          "replace": "classValue(a)\n      if (value !== '') classes.push(value)"
+          "find": "      }\n      for (const value of classTokens(a)) if (value !== '' && !classes.includes(value)) classes.push(value)",
+          "replace": "      }\n      for (const value of classTokens(a)) if (value !== '') classes.push(value)"
         }
       ]
     },

@@ -3108,7 +3108,15 @@ class_attribute = '.', explicit_identifier ;
    spellings are not interchangeable in source, because `class_attribute` reads
    the `explicit_identifier` the fence word does while `attribute_value` reaches
    past it: `-col` and `w-1/2` are classes only the key-value form can spell.
-   PART 4's three spellings of `lang` likewise share one slot. *)
+   PART 4's three spellings of `lang` likewise share one slot.
+
+   THE VALUE IS A LIST OF CLASS TOKENS. A parser splits the value on ASCII
+   whitespace (space, tab, LF, FF, CR) and appends each token as its own
+   class, the way HTML reads a `class` attribute, so the CARVE-P4-002 dedup
+   compares tokens: `{class="a b" .a}` parses to the classes `a`, `b` and
+   renders `class="a b"`. A value that holds no token
+   (`class=""`) stays one empty entry. Each token is an authored value of its
+   own for CARVE-P9-054. *)
 key_value_attribute = identifier, '=', attribute_value ;
 (* A bare identifier is a VALUE-LESS BOOLEAN attribute in source. It has the same
    empty-string AST value as `name=""` and renders `name=""` (a carve

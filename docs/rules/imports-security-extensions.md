@@ -21,7 +21,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P2-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L136) | 2 | UNRESOLVED MARKDOWN REFERENCES KEEP THEIR SYNTAX ON IMPORT |
 | [`CARVE-P2-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L338) | 2 | A GITHUB ALERT IMPORTS AS AN ADMONITION |
 | [`CARVE-P2-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/22b-writer-render-loss.ebnf#L2) | 2 | RENDER-LOSS REPORTING |
-| [`CARVE-P4-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L231) | 4 | AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED |
+| [`CARVE-P4-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L239) | 4 | AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED |
 | [`CARVE-P6-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/10-includes.ebnf#L61) | 6 | FILE INCLUSION SEMANTICS |
 | [`CARVE-P9-070`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L47) | 9 | SOCIAL LINK RESOLUTION |
 | [`CARVE-P9-071`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L284) | 9 | THE MEDIA TYPE AND THE FILE EXTENSION |

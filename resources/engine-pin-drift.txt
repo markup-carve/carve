@@ -552,3 +552,8 @@
 805-an-invalid-table-count-keeps-native-header-cells-in-the-body  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
 805-an-invalid-table-count-keeps-native-header-cells-in-the-body-2  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
 805-an-invalid-table-count-keeps-native-header-cells-in-the-body-3  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
+800-a-class-key-value-splits-into-class-tokens  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
+800-a-class-key-value-splits-into-class-tokens-2  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
+800-a-class-key-value-splits-into-class-tokens-3  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
+800-a-class-key-value-splits-into-class-tokens-4  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
+800-a-class-key-value-splits-into-class-tokens-6  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
