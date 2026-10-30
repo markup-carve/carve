@@ -2567,6 +2567,13 @@ function bodyOpenCommentRun(bodyLines, closerAhead = null) {
   return opaque !== null && opaque.kind === 'comment' ? opaque.run : null
 }
 
+// §17 L3: an accepted `+` ends any code, raw or colon fence its body holds, so
+// the fence parse stops at the separator the marker inserts next.
+function markAttachmentBoundary(state, bodyLines) {
+  const bounds = state.attachmentBoundaries ??= new WeakMap()
+  bounds.set(bodyLines, [...(bounds.get(bodyLines) ?? []), bodyLines.length])
+}
+
 /** A line's content with every leading list marker walked off. */
 function markerFreeContent(line) {
   let measured = { col: 0, rest: line, tabs: false }
@@ -4669,6 +4676,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // ever being asked.
           i++
           if (!attachesFlushLeft(ind(i), sourceDefCol)) break
+          markAttachmentBoundary(state, bodyLines)
           bodyLines.push('')
           lazyParagraphOpen = false
           pullPending = true
@@ -5119,6 +5127,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // A nested description was rebased to column zero. Its marker
               // and follower still meet at their authored column (carve#3482).
               if ((sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) !== sourceDescriptionCol) break
+              markAttachmentBoundary(state, bodyLines)
               pushBody('')
               pullPending = true
               continue
