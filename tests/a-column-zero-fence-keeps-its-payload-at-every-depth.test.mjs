@@ -24,3 +24,7 @@ for (const host of hosts) {
 test('a block that is not a code fence keeps its local reading', () => {
   assert.match(renderDoc(parse('- - +\n%%%\n  > y\n')), /<blockquote>/)
 })
+
+test('a fence an attribute line leads strips its own indentation from the payload', () => {
+  assert.equal(payload(`- a\n  - +\n{.c}\n  ${fence}\n  z\n`), 'z\n')
+})
