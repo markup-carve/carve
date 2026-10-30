@@ -6,7 +6,7 @@ renders `<p># H</p>`. A block image is a top-level block construct, so an
 indented one is not one - the leading space cannot be inert for an image and
 decisive for a heading.
 
-`158-indented-image-and-caption-stay-literal` pins the indented image WITH its
+`158-an-indented-image-and-caption-form-a-figure` pins the indented image WITH its
 caption, `-2` the same pair under a block-attribute line, and `-3` the flush-left
 figure. All three carry a SECOND line, and that is the whole reason this section
 exists. The lone-image promotion only fires on a paragraph whose entire content

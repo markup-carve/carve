@@ -1,0 +1,55 @@
+A refused first-block plus folds its content-column line, and the next root block ends the item
+
+```
+- +
+  x
+>
+.
+<ul>
+  <li>+
+x</li>
+</ul>
+<blockquote>
+
+</blockquote>
+```
+
+```
+- +
+  x
+# h
+.
+<ul>
+  <li>+
+x</li>
+</ul>
+<section id="h">
+  <h1>h</h1>
+</section>
+```
+
+```
+- +
+  x
+---
+.
+<ul>
+  <li>+
+x</li>
+</ul>
+<hr>
+```
+
+```
+- +
+	x
+>
+.
+<ul>
+  <li>+
+x</li>
+</ul>
+<blockquote>
+
+</blockquote>
+```

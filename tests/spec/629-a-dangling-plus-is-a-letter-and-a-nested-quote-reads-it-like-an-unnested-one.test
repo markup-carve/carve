@@ -1,0 +1,101 @@
+A dangling plus is a letter, and a nested quote reads it like an unnested one
+
+```
+> q
++
+
+para
+.
+<blockquote><p>q
++</p></blockquote>
+<p>para</p>
+```
+
+```
+> q
++
+.
+<blockquote><p>q
++</p></blockquote>
+```
+
+```
+- a
++
+
+para
+.
+<ul>
+  <li>a
++</li>
+</ul>
+<p>para</p>
+```
+
+```
+x[^a]
+
+[^a]: note
++
+
+para
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p>para</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note
++<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> > q
+> +
+> para
+.
+<blockquote>
+  <blockquote>
+    <p>q</p>
+    <p>para</p>
+  </blockquote>
+</blockquote>
+```
+
+```
+> > q
+> +
+para
+.
+<blockquote>
+  <blockquote><p>q
++
+para</p></blockquote>
+</blockquote>
+```
+
+```
+> > q
+> +
+.
+<blockquote>
+  <blockquote><p>q
++</p></blockquote>
+</blockquote>
+```
+
+```
+> [^a]: n
+> +
+
+para
+.
+<blockquote>
+
+</blockquote>
+<p>para</p>
+```

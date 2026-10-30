@@ -19,7 +19,7 @@
 #     the line in the same commit that moves the pin.
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 # Format: <slug><space><space><reason>
-643-a-first-block-marker-does-not-pull-a-column-zero-list-into-a-note-or-description  markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)
+643-a-first-block-marker-takes-a-list-at-a-note-s-or-description-s-marker-column  markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)
 739-opaque-reference-and-inline-bounds-7  The pinned JS renderer drops a U+2029 quote body; tracked at markup-carve/carve-js#3764.
 739-opaque-reference-and-inline-bounds-8  The pinned JS renderer drops a U+2028 quote body; tracked at markup-carve/carve-js#3764.
 741-visible-footnote-headings-2  The pinned JS renderer indexes a heading in an unused footnote; tracked at markup-carve/carve-js#3775.
@@ -33,12 +33,12 @@
 374-a-collected-definition-closes-the-item-paragraph-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-2  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 620-generated-container-documents-16  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
-629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
+629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 744-a-task-item-uses-the-ordered-item-column-rule  Task ownership differs in pinned engines; markup-carve/carve-js#3801 and markup-carve/carve-rs#3407.
 745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes  O3 lazy quote ownership differs in pinned engines; markup-carve/carve-js#3800 and markup-carve/carve-rs#3406.
 745-the-deepest-quoted-paragraph-takes-a-lazy-line-across-missed-prefixes-3  O3 lazy quote ownership differs in pinned engines; markup-carve/carve-js#3800 and markup-carve/carve-rs#3406.
@@ -56,8 +56,8 @@
 771-an-attribute-block-after-a-span-behind-a-guarding-opener-belongs-to-that-span-2  Pinned JavaScript leaves the attribute block of a span behind a guarding opener unattached; markup-carve/carve-js#3894.
 05-lists-10  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 05-lists-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-103-heading-marker-column-zero  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-103-heading-marker-column-zero-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+103-a-heading-marker-opens-at-an-indented-top-level-column  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+103-a-heading-marker-opens-at-an-indented-top-level-column-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 11-fenced-code-16  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 132-thematic-break-requires-contiguous-markers-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 143-post-blank-list-continuation-content-column-model  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
@@ -66,22 +66,22 @@
 146-table-as-a-block-opener-in-a-list-item-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 148-colon-fence-as-a-block-opener-in-a-list-item  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 151-indented-ordered-marker-content-column-includes-the-marker-indent  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-154-under-indented-definition-attaches-over-indented-definition-folds-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-157-indented-attribute-line-stays-literal  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-157-indented-attribute-line-stays-literal-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-158-indented-image-and-caption-stay-literal  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-158-indented-image-and-caption-stay-literal-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-159-indented-reference-and-footnote-definitions-stay-literal  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-159-indented-reference-and-footnote-definitions-stay-literal-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-160-indented-colon-fence-blocks-stay-literal  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-160-indented-colon-fence-blocks-stay-literal-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-160-indented-colon-fence-blocks-stay-literal-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+154-an-over-indented-definition-attaches-an-under-indented-one-folds-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+157-an-indented-attribute-line-attaches-at-top-level  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+157-an-indented-attribute-line-attaches-at-top-level-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+158-an-indented-image-and-caption-form-a-figure  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+158-an-indented-image-and-caption-form-a-figure-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+159-indented-reference-and-footnote-definitions-register  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+159-indented-reference-and-footnote-definitions-register-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+160-indented-colon-fence-blocks-open  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+160-indented-colon-fence-blocks-open-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+160-indented-colon-fence-blocks-open-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 161-below-content-column-div-body-in-a-list-item-stays-literal  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-7  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 183-a-comment-is-recognized-at-any-column  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-184-a-definition-below-every-content-column-folds-as-text  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+184-a-definition-below-every-content-column-ends-the-item-and-registers  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 187-a-comment-fence-is-a-comment-at-any-column-too  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 189-a-comment-under-a-nested-item-does-not-close-it  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 192-a-comment-fence-under-a-nested-item-does-not-close-it-either  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
@@ -149,12 +149,12 @@
 480-a-bare-colon-opener-in-a-description-body-is-an-opener  An indented bare `:::` under a paragraph opens a div (§10 I1, markup-carve/carve#3894); the pinned engine keeps it as text, tracked at markup-carve/carve-js#3888.
 591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base-3  An indented bare `:::` under a paragraph opens a div (§10 I1, markup-carve/carve#3894); the pinned engine keeps it as text, tracked at markup-carve/carve-js#3888.
 482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+503-a-block-opener-indented-under-a-definition-term-ends-the-term-at-every-depth  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+503-a-block-opener-indented-under-a-definition-term-ends-the-term-at-every-depth-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+503-a-block-opener-indented-under-a-definition-term-ends-the-term-at-every-depth-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+503-a-block-opener-indented-under-a-definition-term-ends-the-term-at-every-depth-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+503-a-block-opener-indented-under-a-definition-term-ends-the-term-at-every-depth-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+503-a-block-opener-indented-under-a-definition-term-ends-the-term-at-every-depth-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-10  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-11  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
@@ -240,15 +240,15 @@
 620-generated-container-documents-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 620-generated-container-documents-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 620-generated-container-documents-6  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-10  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-12  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-16  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-18  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-20  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-24  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-28  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-30  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-10  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-12  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-16  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-18  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-20  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-24  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-28  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-30  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-4  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 637-definition-body-note-and-fence-owner-boundaries-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
@@ -258,10 +258,10 @@
 649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-5  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 658-a-definition-marker-line-keeps-a-straddling-tab-s-residual-columns  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 678-a-below-column-fence-stays-in-a-definition-paragraph  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-680-an-indented-line-after-a-table-is-a-paragraph  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+680-an-indented-row-after-a-table-continues-it  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 697-a-final-tab-does-not-change-list-ownership-in-a-description  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 709-a-blank-ends-the-old-quote-s-child-column  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
-724-an-overindented-colon-opener-keeps-the-quote-paragraph-open  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+724-an-overindented-colon-opener-ends-the-quote-paragraph  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 75-list-nesting-and-looseness-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-8  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 350-a-definition-at-a-container-s-content-column-2  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
@@ -286,7 +286,7 @@
 616-a-line-is-read-in-the-container-whose-column-it-reaches-12  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 616-a-line-is-read-in-the-container-whose-column-it-reaches-26  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 616-a-line-is-read-in-the-container-whose-column-it-reaches-4  A footnote body takes a lazy line in every host (markup-carve/carve#3885); the pinned engine refuses it in a description-hosted item, markup-carve/carve#3919.
-760-a-heading-inside-the-intervening-band-stays-description-text  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+760-a-heading-past-a-body-hosted-item-s-marker-column-refuses-its-plus-and-opens-in-the-description  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 772-a-matched-insertion-or-deletion-hides-a-substitution-s-closer-3  Pinned JavaScript ends a substitution's old half at a `~>` inside a nested insertion; markup-carve/carve-js#3902.
 772-a-matched-insertion-or-deletion-hides-a-substitution-s-closer-4  Pinned JavaScript ends a substitution's old half at a `~>` inside a nested deletion; markup-carve/carve-js#3902.
 773-a-footnote-label-may-hold-a-bracket  Pinned JavaScript reads a footnote reference whose label holds `[` as a bracket run for emphasis pairing; markup-carve/carve-js#3903.
@@ -517,10 +517,10 @@
 793-an-indented-attribute-block-that-wraps-across-lines-is-an-attribute-line-7  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
 793-an-indented-attribute-block-that-wraps-across-lines-is-an-attribute-line-8  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
 740-lazy-quote-owners  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
-787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
-787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-2  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
-787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-3  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
-787-a-wrapped-attribute-opener-indented-in-a-body-is-paragraph-text-4  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+787-a-wrapped-attribute-opener-indented-in-a-body-is-an-attribute-line  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+787-a-wrapped-attribute-opener-indented-in-a-body-is-an-attribute-line-2  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+787-a-wrapped-attribute-opener-indented-in-a-body-is-an-attribute-line-3  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
+787-a-wrapped-attribute-opener-indented-in-a-body-is-an-attribute-line-4  Pinned JavaScript reads an indented attribute block that wraps across lines as paragraph text (markup-carve/carve#4089); pending in carve-js.
 794-the-equals-of-a-comparison-neither-opens-nor-closes-a-highlight  Pinned JavaScript closes a bare highlight at the = of a <= or >= (markup-carve/carve#4131); pending in carve-js.
 794-the-equals-of-a-comparison-neither-opens-nor-closes-a-highlight-2  Pinned JavaScript closes a bare highlight at the = of a <= or >= (markup-carve/carve#4131); pending in carve-js.
 794-the-equals-of-a-comparison-neither-opens-nor-closes-a-highlight-3  Pinned JavaScript closes a bare highlight at the = of a <= or >= (markup-carve/carve#4131); pending in carve-js.
@@ -543,13 +543,13 @@
 800-a-list-marker-under-a-note-paragraph-in-a-description-is-text  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
 800-a-list-marker-under-a-note-paragraph-in-a-description-is-text-2  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
 800-a-list-marker-under-a-note-paragraph-in-a-description-is-text-3  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
-801-a-footnote-body-takes-its-first-block-at-its-body-column-4  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
+801-a-footnote-body-refuses-a-first-block-at-its-body-column-4  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
 802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-3  Pinned JavaScript lets an unprefixed line reach a quoted note first-block + (markup-carve/carve#4097); pending in carve-js.
 454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-4  Pinned JavaScript opens a sublist under a note paragraph inside a list item (markup-carve/carve#4160); pending in carve-js.
 637-definition-body-note-and-fence-owner-boundaries-4  Pinned JavaScript opens a sublist under a note paragraph inside a list item (markup-carve/carve#4160); pending in carve-js.
 800-a-list-marker-under-a-note-paragraph-in-a-description-is-text-5  Pinned JavaScript opens a sublist under a note paragraph inside a list item (markup-carve/carve#4160); pending in carve-js.
 802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-6  Pinned JavaScript closes the quote at a paragraph line instead of folding it into a quoted note's refused + (markup-carve/carve#4097); pending in carve-js.
-801-a-footnote-body-takes-its-first-block-at-its-body-column-7  Pinned JavaScript does not fold a paragraph line below the body column into a note's refused + (markup-carve/carve#4152); pending in carve-js.
+801-a-footnote-body-refuses-a-first-block-at-its-body-column-7  Pinned JavaScript does not fold a paragraph line below the body column into a note's refused + (markup-carve/carve#4152); pending in carve-js.
 805-an-invalid-table-count-keeps-native-header-cells-in-the-body  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
 805-an-invalid-table-count-keeps-native-header-cells-in-the-body-2  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
 805-an-invalid-table-count-keeps-native-header-cells-in-the-body-3  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
@@ -558,10 +558,10 @@
 800-a-class-key-value-splits-into-class-tokens-3  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
 800-a-class-key-value-splits-into-class-tokens-4  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
 800-a-class-key-value-splits-into-class-tokens-6  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
-806-a-description-body-in-an-item-takes-a-column-zero-block-after-its-first-block-plus  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
-806-a-description-body-in-an-item-takes-a-column-zero-block-after-its-first-block-plus-2  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
-806-a-description-body-in-an-item-takes-a-column-zero-block-after-its-first-block-plus-3  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
-806-a-description-body-in-an-item-takes-a-column-zero-block-after-its-first-block-plus-4  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
+806-a-description-body-in-an-item-refuses-a-column-zero-block-after-its-first-block-plus  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
+806-a-description-body-in-an-item-refuses-a-column-zero-block-after-its-first-block-plus-2  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
+806-a-description-body-in-an-item-refuses-a-column-zero-block-after-its-first-block-plus-3  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
+806-a-description-body-in-an-item-refuses-a-column-zero-block-after-its-first-block-plus-4  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
 807-a-description-lead-under-a-marker-line-child-folds-into-its-paragraph  The pinned JS renderer ends a marker-line child at a lazy `: ` line on its marker column; carve-js main (68ec736e) folds it, the pin is behind (carve#4175).
 807-a-description-lead-under-a-marker-line-child-folds-into-its-paragraph-2  The pinned JS renderer ends a marker-line child at a lazy `: ` line on its marker column; carve-js main (68ec736e) folds it, the pin is behind (carve#4175).
 807-a-description-lead-under-a-marker-line-child-folds-into-its-paragraph-3  The pinned JS renderer ends a marker-line child at a lazy `: ` line on its marker column; carve-js main (68ec736e) folds it, the pin is behind (carve#4175).
@@ -574,7 +574,7 @@
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-2  markup-carve/carve#4162, a lazy line after a third-level fence folds into the middle item; pending in the pinned engine
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-4  markup-carve/carve#4162, a lazy line after a third-level fence folds into the middle item; pending in the pinned engine
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-6  markup-carve/carve#4162, a lazy line after a third-level fence folds into the middle item; pending in the pinned engine
-630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-9  markup-carve/carve#4162, a lazy line after a third-level fence folds into the middle item; pending in the pinned engine
+630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-9  markup-carve/carve#4162, a lazy line after a third-level fence folds into the middle item; pending in the pinned engine
 815-a-line-below-an-empty-div-after-a-first-block-plus-is-not-lazy-4  markup-carve/carve#4269, the pinned carve-js folds a column-zero line into the div after an attribute line; carve-js main already ends the item
 820-a-lazy-line-into-a-descendant-s-paragraph-keeps-the-descendant-the-deepest-frame-4  The pinned JS renderer keeps a column-0 line in the outer item after a lazy line between the content columns and a heading in the nested item (markup-carve/carve#4291, carve-js line).
 823-a-fence-in-a-list-a-quote-attaches-takes-no-separator-line-3  markup-carve/carve#4313, the pinned carve-js gives a later fence in a quote-attached list the separator line as payload; fix pending in carve-js
@@ -582,14 +582,14 @@
 821-a-quote-after-a-caption-starts-fresh-2  The pinned JS renderer carries a captioned quote's list into the quote after the caption (markup-carve/carve#4312, carve-js line).
 821-a-quote-after-a-caption-starts-fresh-3  The pinned JS renderer carries a captioned quote's list into the quote after the caption (markup-carve/carve#4312, carve-js line).
 831-a-token-inside-a-literal-include-directive-opens-nothing  markup-carve/carve#4296, the pinned carve-js parses a backtick inside a literal directive; fix pending in carve-js
-826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus-2  markup-carve/carve#4307, the pinned carve-js folds a column-0 line into an item whose first-block + took a comment at its content column; fix pending in carve-js
-826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus-4  markup-carve/carve#4307, the pinned carve-js folds a column-0 line into an item whose first-block + took a comment at its content column; fix pending in carve-js
+826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-2  markup-carve/carve#4307, the pinned carve-js folds a column-0 line into an item whose first-block + took a comment at its content column; fix pending in carve-js
+826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-4  markup-carve/carve#4307, the pinned carve-js folds a column-0 line into an item whose first-block + took a comment at its content column; fix pending in carve-js
 822-an-id-dropped-with-an-unresolved-reference-reserves-nothing  markup-carve/carve#4349, the pinned carve-js reserves an id an unresolved reference drops, so the heading takes -2; fix pending in carve-js
 822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2  markup-carve/carve#4349, the pinned carve-js reserves an id an unresolved reference drops, so the heading takes -2; fix pending in carve-js
 837-a-description-s-one-attributed-paragraph-keeps-its-p  markup-carve/carve#4309, the pinned carve-js drops a one-paragraph description's attributes; fix pending in carve-js
 837-a-description-s-one-attributed-paragraph-keeps-its-p-2  markup-carve/carve#4309, the pinned carve-js drops a one-paragraph description's attributes; fix pending in carve-js
 838-an-open-div-s-closer-is-not-absorbed  markup-carve/carve#4397, the pinned carve-js folds a line below a closed div into the item; fix pending in carve-js
-838-an-item-on-a-body-s-marker-line-takes-a-column-zero-block-after-its-plus-2  markup-carve/carve#4372, the pinned carve-js leaves the column-0 block outside a note's marker-line item; fix pending in carve-js
+838-an-item-on-a-body-s-marker-line-refuses-a-column-zero-block-after-its-plus-2  markup-carve/carve#4372, the pinned carve-js leaves the column-0 block outside a note's marker-line item; fix pending in carve-js
 838-an-unresolved-reference-keeps-its-whole-attribute-run-as-text-2  markup-carve/carve#4320, the pinned carve-js drops every block after the first in an unresolved reference's attribute run; fix pending in carve-js
 838-an-unresolved-reference-keeps-its-whole-attribute-run-as-text-3  markup-carve/carve#4320, the pinned carve-js drops every block after the first in an unresolved reference's attribute run; fix pending in carve-js
 838-an-unresolved-reference-keeps-its-whole-attribute-run-as-text-4  markup-carve/carve#4320, the pinned carve-js drops every block after the first in an unresolved reference's attribute run; fix pending in carve-js
@@ -609,55 +609,55 @@
 846-a-quoted-term-takes-no-lazy-marker-or-separator-3  carve#4300 ruling B: carve-js and carve-php fold the separator into the term
 842-a-plus-at-a-stacked-item-s-marker-column-reaches-it-2  markup-carve/carve#4355, the pinned carve-js does not attach a + at a stacked item's marker column; spec first, port pending
 842-a-plus-at-a-stacked-item-s-marker-column-reaches-it  markup-carve/carve#4355, the pinned carve-js does not attach a + at a stacked item's marker column; spec first, port pending
-841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-2  markup-carve/carve#4407, the pinned carve-js formats a quote after an indented first-block + so that the oracle reads another document
-841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
-841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-3  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
-841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-4  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
-841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-5  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
-841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-6  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
+841-a-column-zero-description-is-a-sibling-after-an-indented-description-s-refused-plus-2  markup-carve/carve#4407, the pinned carve-js formats a quote after an indented first-block + so that the oracle reads another document
+841-a-column-zero-description-is-a-sibling-after-an-indented-description-s-refused-plus  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
+841-a-column-zero-description-is-a-sibling-after-an-indented-description-s-refused-plus-3  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
+841-a-column-zero-description-is-a-sibling-after-an-indented-description-s-refused-plus-4  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
+841-a-column-zero-description-is-a-sibling-after-an-indented-description-s-refused-plus-5  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
+841-a-column-zero-description-is-a-sibling-after-an-indented-description-s-refused-plus-6  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
 846-a-description-left-of-its-term-measures-its-own-plus-follower  markup-carve/carve#4410, the pinned carve-js predates the #4180 ruling on a description list's columns; carve-js main already renders this
 846-a-description-left-of-its-term-measures-its-own-plus-follower-2  markup-carve/carve#4410, the pinned carve-js predates the #4180 ruling on a description list's columns; carve-js main already renders this
-384-a-continuation-marker-attaches-only-a-flush-left-block  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-384-a-continuation-marker-attaches-only-a-flush-left-block-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-384-a-continuation-marker-attaches-only-a-flush-left-block-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-384-a-continuation-marker-attaches-only-a-flush-left-block-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-436-an-empty-description-body-claims-no-line-below-column-0-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-436-an-empty-description-body-claims-no-line-below-column-0-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-436-an-empty-description-body-claims-no-line-below-column-0-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+384-a-continuation-marker-attaches-a-block-only-at-its-owner-s-marker-column  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+384-a-continuation-marker-attaches-a-block-only-at-its-owner-s-marker-column-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+384-a-continuation-marker-attaches-a-block-only-at-its-owner-s-marker-column-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+384-a-continuation-marker-attaches-a-block-only-at-its-owner-s-marker-column-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+436-a-refused-description-plus-folds-a-line-below-column-0-and-a-comment-does-not-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+436-a-refused-description-plus-folds-a-line-below-column-0-and-a-comment-does-not-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+436-a-refused-description-plus-folds-a-line-below-column-0-and-a-comment-does-not-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 588-a-block-quote-and-a-footnote-body-take-the-first-block-form-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-13  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-14  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-16  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-18  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-13  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-14  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-16  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-18  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 632-a-continuation-marker-uses-its-container-column-28  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 632-a-continuation-marker-uses-its-container-column-29  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 632-a-continuation-marker-uses-its-container-column-30  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 632-a-continuation-marker-uses-its-container-column-31  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 632-a-continuation-marker-uses-its-container-column-33  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-10  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-11  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-14  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-15  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-19  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-22  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-23  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-26  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-27  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-31  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-33  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-34  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-35  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-36  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-37  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-38  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-39  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-633-a-first-block-marker-on-an-indented-opener-reads-two-columns-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-10  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-11  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-14  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-15  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-19  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-22  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-23  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-26  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-27  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-31  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-33  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-34  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-35  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-36  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-37  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-38  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-39  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 634-a-refused-continuation-plus-remains-text-23  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 634-a-refused-continuation-plus-remains-text-24  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 634-a-refused-continuation-plus-remains-text-25  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
@@ -676,51 +676,51 @@
 634-a-refused-continuation-plus-remains-text-39  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 634-a-refused-continuation-plus-remains-text-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 634-a-refused-continuation-plus-remains-text-40  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-643-a-first-block-marker-does-not-pull-a-column-zero-list-into-a-note-or-description-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+643-a-first-block-marker-takes-a-list-at-a-note-s-or-description-s-marker-column-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+651-a-stacked-first-block-plus-takes-a-follower-only-at-its-innermost-opener-s-marker-column-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+651-a-stacked-first-block-plus-takes-a-follower-only-at-its-innermost-opener-s-marker-column-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+655-a-hosted-quote-s-first-block-plus-refuses-a-block-without-the-host-quote-s-prefix  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+655-a-hosted-quote-s-first-block-plus-refuses-a-block-without-the-host-quote-s-prefix-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+655-a-hosted-quote-s-first-block-plus-refuses-a-block-without-the-host-quote-s-prefix-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-728-a-first-block-item-takes-the-next-owned-block  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-728-a-first-block-item-takes-the-next-owned-block-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-728-a-first-block-item-takes-the-next-owned-block-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-728-a-first-block-item-takes-the-next-owned-block-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-734-a-nested-first-block-item-releases-the-next-root-block  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-734-a-nested-first-block-item-releases-the-next-root-block-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-734-a-nested-first-block-item-releases-the-next-root-block-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-734-a-nested-first-block-item-releases-the-next-root-block-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-734-a-nested-first-block-item-releases-the-next-root-block-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-750-a-below-column-line-returns-to-its-definition-body  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+728-a-refused-first-block-plus-folds-its-content-column-line-and-the-next-root-block-ends-the-item  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+728-a-refused-first-block-plus-folds-its-content-column-line-and-the-next-root-block-ends-the-item-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+728-a-refused-first-block-plus-folds-its-content-column-line-and-the-next-root-block-ends-the-item-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+728-a-refused-first-block-plus-folds-its-content-column-line-and-the-next-root-block-ends-the-item-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+734-a-nested-item-whose-plus-is-refused-releases-the-next-root-block  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+734-a-nested-item-whose-plus-is-refused-releases-the-next-root-block-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+734-a-nested-item-whose-plus-is-refused-releases-the-next-root-block-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+734-a-nested-item-whose-plus-is-refused-releases-the-next-root-block-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+734-a-nested-item-whose-plus-is-refused-releases-the-next-root-block-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+750-a-follower-at-a-body-hosted-item-s-marker-column-attaches-to-the-item  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-10  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-12  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-9  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-801-a-footnote-body-takes-its-first-block-at-its-body-column-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-801-a-footnote-body-takes-its-first-block-at-its-body-column-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+801-a-footnote-body-refuses-a-first-block-at-its-body-column-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+801-a-footnote-body-refuses-a-first-block-at-its-body-column-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 801-a-quote-on-a-description-body-marker-line-takes-a-plus-at-its-column-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-806-a-description-body-in-an-item-takes-a-column-zero-block-after-its-first-block-plus-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+806-a-description-body-in-an-item-refuses-a-column-zero-block-after-its-first-block-plus-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 806-a-marker-folds-into-the-paragraph-a-first-block-plus-took  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 811-a-first-block-plus-does-not-take-the-closer-of-its-div  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 811-a-first-block-plus-does-not-take-the-closer-of-its-div-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 811-a-first-block-plus-does-not-take-the-closer-of-its-div-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 815-a-line-below-an-empty-div-after-a-first-block-plus-is-not-lazy  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-838-a-fence-a-nested-first-block-plus-pulls-to-column-zero-keeps-its-payload  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-838-a-fence-a-nested-first-block-plus-pulls-to-column-zero-keeps-its-payload-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-838-a-fence-a-nested-first-block-plus-pulls-to-column-zero-keeps-its-payload-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-838-a-fence-a-nested-first-block-plus-pulls-to-column-zero-keeps-its-payload-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
-838-an-item-on-a-body-s-marker-line-takes-a-column-zero-block-after-its-plus  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+838-a-column-zero-fence-below-a-refused-nested-first-block-plus-keeps-its-payload  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+838-a-column-zero-fence-below-a-refused-nested-first-block-plus-keeps-its-payload-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+838-a-column-zero-fence-below-a-refused-nested-first-block-plus-keeps-its-payload-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+838-a-column-zero-fence-below-a-refused-nested-first-block-plus-keeps-its-payload-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+838-an-item-on-a-body-s-marker-line-refuses-a-column-zero-block-after-its-plus  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 848-a-description-a-plus-filled-stays-open-for-a-sibling  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 848-a-description-a-plus-filled-stays-open-for-a-sibling-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 848-a-description-a-plus-filled-stays-open-for-a-sibling-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first

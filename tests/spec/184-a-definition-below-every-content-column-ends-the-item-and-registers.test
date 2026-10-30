@@ -1,0 +1,14 @@
+A definition below every content column ends the item and registers
+
+```
+- - a
+ [^f]: x
+.
+<ul>
+  <li>
+    <ul>
+      <li>a</li>
+    </ul>
+  </li>
+</ul>
+```

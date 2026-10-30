@@ -92,7 +92,7 @@
       }
     },
     {
-      "file": "tests/corpus/384-a-continuation-marker-attaches-only-a-flush-left-block-2.crv",
+      "file": "tests/corpus/384-a-continuation-marker-attaches-a-block-only-at-its-owner-s-marker-column-2.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
@@ -108,7 +108,7 @@
       }
     },
     {
-      "file": "tests/corpus/384-a-continuation-marker-attaches-only-a-flush-left-block-8.crv",
+      "file": "tests/corpus/384-a-continuation-marker-attaches-a-block-only-at-its-owner-s-marker-column-8.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
@@ -250,7 +250,7 @@
       }
     },
     {
-      "file": "tests/corpus/629-a-dangling-plus-marker-adds-nothing-and-a-nested-quote-reads-it-like-an-unnested-one-2.crv",
+      "file": "tests/corpus/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-2.crv",
       "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
@@ -272,7 +272,7 @@
       }
     },
     {
-      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-two-columns-36.crv",
+      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-36.crv",
       "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
@@ -425,7 +425,7 @@
       }
     },
     {
-      "file": "tests/corpus/651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column-2.crv",
+      "file": "tests/corpus/651-a-stacked-first-block-plus-takes-a-follower-only-at-its-innermost-opener-s-marker-column-2.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
@@ -441,7 +441,7 @@
       }
     },
     {
-      "file": "tests/corpus/652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host.crv",
+      "file": "tests/corpus/652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
@@ -573,7 +573,7 @@
       }
     },
     {
-      "file": "tests/corpus/728-a-first-block-item-takes-the-next-owned-block-4.crv",
+      "file": "tests/corpus/728-a-refused-first-block-plus-folds-its-content-column-line-and-the-next-root-block-ends-the-item-4.crv",
       "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {

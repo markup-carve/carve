@@ -9,7 +9,7 @@ captionable hosts; for the two it spells in prose that means a paragraph whose
 WHOLE content is one image or one display-math span. Everywhere else the `^ `
 line is ordinary paragraph text and folds in, caret and all.
 
-`158-indented-image-and-caption-stay-literal` pins the INDENTED spelling, where
+`158-an-indented-image-and-caption-form-a-figure` pins the INDENTED spelling, where
 both readings agree because an indented line opens no top-level block at all. The
 flush-left spelling was pinned nowhere, and the two readers in this repository
 answered it differently: every engine folded the line in, the executable spec
@@ -71,7 +71,7 @@ container, so a quoted caret line folds the same way.
 :::
 
 Control - when the paragraph IS the image, §4 attaches and the pair is a figure.
-`158-indented-image-and-caption-stay-literal-3` already pins this shape; it is
+`158-an-indented-image-and-caption-form-a-figure-3` already pins this shape; it is
 repeated here because the rule above is only half a claim without it. The
 mutation that folds every caret line in leaves this row untouched, and a reader
 that stopped attaching captions altogether - the opposite defect - fails here

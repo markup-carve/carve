@@ -1,0 +1,13 @@
+An overindented colon opener ends the quote paragraph
+
+```
+>  ::: |
+x
+.
+<blockquote>
+  <div class="line-block">
+
+  </div>
+</blockquote>
+<p>x</p>
+```

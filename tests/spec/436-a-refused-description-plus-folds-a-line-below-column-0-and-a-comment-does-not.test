@@ -1,0 +1,80 @@
+A refused description plus folds a line below column 0, and a comment does not
+
+```
+:: t
+:  %% c
+ flush
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+:  +
+ flush
+.
+<dl>
+  <dt>t</dt>
+  <dd>+
+flush</dd>
+</dl>
+```
+
+```
+:: t
+:  %% c
+  flush
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+:  +
+  flush
+.
+<dl>
+  <dt>t</dt>
+  <dd>+
+flush</dd>
+</dl>
+```
+
+```
+:: t
+:  +
+flush
+.
+<dl>
+  <dt>t</dt>
+  <dd>flush</dd>
+</dl>
+```
+
+```
+- %% c
+ flush
+.
+<ul>
+  <li></li>
+</ul>
+<p>flush</p>
+```
+
+```
+- +
+ flush
+.
+<ul>
+  <li>+
+flush</li>
+</ul>
+```
