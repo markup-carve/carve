@@ -1,0 +1,4 @@
+:: outer
+:  :: inner
+   : a
+  : b

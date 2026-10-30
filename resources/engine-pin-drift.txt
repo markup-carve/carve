@@ -523,3 +523,12 @@
 794-the-equals-of-a-comparison-neither-opens-nor-closes-a-highlight-3  Pinned JavaScript closes a bare highlight at the = of a <= or >= (markup-carve/carve#4131); pending in carve-js.
 797-an-indented-continuation-row-continues-the-table-above  Pinned JavaScript reads a continuation row indented past its table as paragraph text (markup-carve/carve#4161); pending in carve-js.
 797-an-indented-continuation-row-continues-the-table-above-2  Pinned JavaScript reads a continuation row indented past its table as paragraph text (markup-carve/carve#4161); pending in carve-js.
+799-a-description-sibling-is-recognized-at-any-column  markup-carve/carve#4180 (carve-js), a shifted `: ` sibling description pending in the pinned engine
+799-a-description-sibling-is-recognized-at-any-column-2  markup-carve/carve#4180 (carve-js), a shifted `: ` sibling description pending in the pinned engine
+799-a-description-sibling-is-recognized-at-any-column-4  markup-carve/carve#4180 (carve-js), a shifted `: ` sibling description pending in the pinned engine
+799-a-description-sibling-is-recognized-at-any-column-5  markup-carve/carve#4180 (carve-js), a shifted `: ` sibling description pending in the pinned engine
+799-a-description-sibling-is-recognized-at-any-column-6  markup-carve/carve#4180 (carve-js), a shifted `: ` sibling description pending in the pinned engine
+798-the-equals-of-a-not-equal-sign-neither-opens-nor-closes-a-highlight  markup-carve/carve#4131 (carve-js), the `=` of `!=` as a comparison pending in the pinned engine
+798-the-equals-of-a-not-equal-sign-neither-opens-nor-closes-a-highlight-2  markup-carve/carve#4131 (carve-js), the `=` of `!=` as a comparison pending in the pinned engine
+798-the-equals-of-a-not-equal-sign-neither-opens-nor-closes-a-highlight-3  markup-carve/carve#4131 (carve-js), the `=` of `!=` as a comparison pending in the pinned engine
+798-the-equals-of-a-not-equal-sign-neither-opens-nor-closes-a-highlight-4  markup-carve/carve#4131 (carve-js), the `=` of `!=` as a comparison pending in the pinned engine

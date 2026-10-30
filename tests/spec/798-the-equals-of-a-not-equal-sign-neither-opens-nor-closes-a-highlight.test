@@ -1,0 +1,25 @@
+The equals of a not-equal sign neither opens nor closes a highlight
+
+```
+=a != b=
+.
+<p><mark>a ≠ b</mark></p>
+```
+
+```
+=a!= b
+.
+<p>=a≠ b</p>
+```
+
+```
+=a != b= and =c=
+.
+<p><mark>a ≠ b</mark> and <mark>c</mark></p>
+```
+
+```
+=a !== b=
+.
+<p><mark>a ≠</mark> b=</p>
+```

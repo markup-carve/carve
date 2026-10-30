@@ -674,7 +674,7 @@ const ARROWS = {
   '<->': '\u2194', '->': '\u2192', '<-': '\u2190',
   '!=': '\u2260', '<=': '\u2264', '>=': '\u2265', '+-': '\u00b1',
 }
-const COMPARISONS = new Set(['<=', '>='])
+const COMPARISONS = new Set(['!=', '<=', '>='])
 
 const sem = g.createSemantics().addOperation('h', {
   inlines(_initial, items) {

@@ -342,6 +342,13 @@
         list item's content column opens a child list; a sibling marker at the
         item's marker column continues the enclosing list, and siblings group
         by the container they open in, not by the column they are written at.
+        A `: ` description is such a sibling too: where the owner S2 selects
+        holds an open term or description, a `: ` line opens the next
+        description of that list at any column and is not a lazy line, so
+        `:: t` / `: a` / ` : b` gives two descriptions. A line at or past an
+        open description's body column is read inside that body (`:: t` /
+        `: a` / `  : b`), and one whose owner holds no open term or
+        description folds lazily (`- item` / `  :: t` / `  : a` / ` : b`).
 
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
         UNDER -- NORMATIVE [CARVE-P0-011]. A block read in a container, at or
@@ -4890,8 +4897,9 @@ EOF = (* end of file *) ;
         {~~a~ b~>c~} the second `~` opens. Any other
         guard blocks: a_*x* stays text.
       - `=` followed by `>` never opens: it starts the arrow (§8). The `=`
-        of a comparison `<=` or `>=` is part of that symbol and neither
-        opens nor closes: =a <= b= -> <mark>a ≤ b</mark>.
+        of a comparison (`!=`, `<=`, `>=`) is part of that symbol and neither
+        opens nor closes: =a <= b= -> <mark>a ≤ b</mark>, and
+        =a != b= -> <mark>a ≠ b</mark>.
 
       OWN KINDS. A region has the kind of its braced span or editorial
       frame, and none for the block, a bracket run, an inline note, an
