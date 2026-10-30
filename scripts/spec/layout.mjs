@@ -1634,6 +1634,8 @@ function markerCarriesContinuation(text, memo) {
     if (text === '+') { result = true; break }
     const marker = text[0] !== ' ' && text[0] !== '\t'
       ? matchMarkerAt({ col: 0, rest: text }) : null
+    // Content behind a lead tab is paragraph text, so its `+` is a letter (corpus 684, 736).
+    if (marker?.leadTab) break
     if (!marker) {
       const quote = QUOTE.exec(text)
       if (!quote) break
@@ -1831,6 +1833,8 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
     // marker character - so the order is belt and braces.
     if (atBlockPosition && text[0] !== ' ' && text[0] !== '\t') {
       const nm = matchMarkerAt({ col: 0, rest: text })
+      // Content behind a lead tab is paragraph text, whatever it spells (corpus 684, 736).
+      if (nm?.leadTab) return finish(true)
       if (nm) {
         text = trimWs(nm.text)
         openTable = false
@@ -3547,21 +3551,22 @@ function ownLines(lines, trace = null) {
         m = walkIndent(src)
         // The readers set a note's marker-line content at its body column.
         if (form.kind === 'note') return content(frame, frame.col - m.col, frame.canon - m.col)
-        return content(frame, col + form.head, canon + form.head)
+        return content(frame, col + form.head, canon + form.head, form.leadTab)
       }
     }
 
     // The rest of a marker line. Only a quote starts new coordinates, so only
     // there can its content be moved.
-    function content(frame, start, canon) {
+    function content(frame, start, canon, leadTab = false) {
       if (m.rest === '' || frames.length > MAX_NESTING_DEPTH) return
-      const form = classify(m.rest, frame, at, frame.kind === 'quote' ? m.col : start + m.col)
+      // Content behind a lead tab is paragraph text, whatever it spells (corpus 684, 736).
+      const form = leadTab ? { kind: 'text' } : classify(m.rest, frame, at, frame.kind === 'quote' ? m.col : start + m.col)
       if (form.kind === 'text') {
         lead(m.col)
         frame.absorbs = absorbsColon(m.rest)
         frame.para = true
         // A lone `+` may attach the next line instead (§17 L3).
-        if (CONT_MARKER.test(m.rest)) frame.plus = at
+        if (!leadTab && CONT_MARKER.test(m.rest)) frame.plus = at
         frame.last = 'para'
         return
       }
@@ -3771,7 +3776,7 @@ function ownLines(lines, trace = null) {
     if (marker && owner.para && owner.kind !== 'item' && owner.last !== 'term') return { kind: 'text', interrupts: false }
     if (marker) {
       return { kind: 'item', width: marker.markerWidth, head: rest.length - marker.text.length, interrupts: false,
-        axes: marker.isOrdered ? `${marker.delim}` : marker.bullet }
+        axes: marker.isOrdered ? `${marker.delim}` : marker.bullet, leadTab: marker.leadTab }
     }
     if (DEFLIST_TERM.test(rest)) return { kind: 'term', interrupts: true }
     const dd = /^:( +)(?=[ \t]*[^ \t])/.exec(rest)
@@ -7389,6 +7394,7 @@ const firstBlockQuoteColumn = (source) => {
   let rest = source
   for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
     const marker = matchMarkerAt(indentCols(rest))
+    if (marker?.leadTab) return undefined
     if (marker) { rest = marker.text; continue }
     const measured = indentCols(rest)
     const quote = QUOTE.exec(measured.rest)
