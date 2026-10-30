@@ -8,8 +8,9 @@ identifier = (letter | '_'), {letter | digit | '_' | '-'} ;
 explicit_identifier = (letter | digit | '_'), {letter | digit | '_' | '-'} ;
 (* Explicit ids and classes additionally admit an ASCII digit first. This is a
    preservation rule for authored/imported HTML-valid values; generated heading
-   ids remain conservative and prefix a digit-leading slug with `s-`. Attribute
-   keys, boolean attributes and inline-extension names still use `identifier`. *)
+   ids remain conservative and prefix a number-leading slug (a first character
+   of general category N, PART 2) with `s-`. Attribute keys, boolean
+   attributes and inline-extension names still use `identifier`. *)
 
 letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j'
        | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't'
