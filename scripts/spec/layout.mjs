@@ -3340,7 +3340,7 @@ function ownLines(lines, trace = null) {
     }
     // An attribute run after it leads the `+`'s one block, so the item stays open
     // for the line after the run (CARVE-P0-008, corpus 325, carve#4278).
-    // A description's readers refuse that `+` (#4237), so its list keeps the old reading.
+    // A description-hosted list's readers refuse that `+`, so it keeps its reading.
     const runEnd = at + 1 + (form.attrLines ?? 0)
     const quoteDepth = frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length
     const runNext = ledLine((k) => {
