@@ -7,9 +7,9 @@ A description left of its term measures its own plus follower
 .
 <dl>
   <dt>t</dt>
-  <dd></dd>
+  <dd>+
+h</dd>
 </dl>
-<p>h</p>
 ```
 
 ```
@@ -19,6 +19,7 @@ A description left of its term measures its own plus follower
 .
 <dl>
   <dt>t</dt>
-  <dd>h</dd>
+  <dd>+
+h</dd>
 </dl>
 ```

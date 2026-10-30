@@ -72,8 +72,8 @@ after
 
 :::
 
-A nested quote needs no rule of its own: the inner quote's first line is the
-lone `+`, so the fence is the inner quote's body.
+A nested quote's follower needs the outer quote's prefix. The fence has none, so
+the `+` stays the inner quote's text and the fence stands outside (carve#4409).
 
 ::: compare
 
@@ -86,11 +86,10 @@ x
 
 ```html
 <blockquote>
-  <blockquote>
-    <pre><code>x
-</code></pre>
-  </blockquote>
+  <blockquote><p>+</p></blockquote>
 </blockquote>
+<pre><code>x
+</code></pre>
 ```
 
 :::

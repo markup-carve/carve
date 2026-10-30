@@ -155,7 +155,8 @@ tail
   > +
 q
 .
-<blockquote><p>q</p></blockquote>
+<blockquote><p>+
+q</p></blockquote>
 ```
 
 ```
@@ -181,7 +182,8 @@ para
 <ul>
   <li>
     <ul>
-      <li>para</li>
+      <li>+
+para</li>
     </ul>
   </li>
 </ul>
@@ -193,7 +195,8 @@ para
 .
 <ul>
   <li>
-    <blockquote><p>para</p></blockquote>
+    <blockquote><p>+
+para</p></blockquote>
   </li>
 </ul>
 ```
@@ -216,7 +219,8 @@ para
 <ol>
   <li>
     <ul>
-      <li>para</li>
+      <li>+
+para</li>
     </ul>
   </li>
 </ol>
@@ -246,7 +250,8 @@ para
 <ul>
   <li>a
     <ul>
-      <li>para</li>
+      <li>+
+para</li>
     </ul>
   </li>
 </ul>

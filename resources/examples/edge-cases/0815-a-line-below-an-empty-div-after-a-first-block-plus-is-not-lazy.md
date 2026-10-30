@@ -24,7 +24,7 @@ after
       <ul>
         <li>e
           <ul>
-            <li></li>
+            <li>+</li>
           </ul>
         </li>
       </ul>
@@ -102,7 +102,7 @@ after
 
 ````html
 <ul>
-  <li>
+  <li>+
     <div class="d">
 
     </div>

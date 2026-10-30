@@ -7,12 +7,13 @@ A hosted quote's first-block plus attaches any non-list block at column zero
 <blockquote>
   <ul>
     <li>
-      <blockquote>
-        <h1 id="h">h</h1>
-      </blockquote>
+      <blockquote><p>+</p></blockquote>
     </li>
   </ul>
 </blockquote>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 ```
@@ -22,16 +23,15 @@ A hosted quote's first-block plus attaches any non-list block at column zero
 <blockquote>
   <ul>
     <li>
-      <blockquote>
-        <table>
-          <tbody>
-            <tr><td>c</td></tr>
-          </tbody>
-        </table>
-      </blockquote>
+      <blockquote><p>+</p></blockquote>
     </li>
   </ul>
 </blockquote>
+<table>
+  <tbody>
+    <tr><td>c</td></tr>
+  </tbody>
+</table>
 ```
 
 ```
@@ -43,10 +43,11 @@ A hosted quote's first-block plus attaches any non-list block at column zero
   <ul>
     <li>a</li>
     <li>
-      <blockquote>
-        <h1 id="h">h</h1>
-      </blockquote>
+      <blockquote><p>+</p></blockquote>
     </li>
   </ul>
 </blockquote>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```

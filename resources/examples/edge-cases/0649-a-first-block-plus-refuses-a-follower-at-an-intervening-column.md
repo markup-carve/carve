@@ -1,6 +1,6 @@
 ## A first-block plus refuses a follower at an intervening column
 
-A first-block `+` pulls a block from column 0, from the opener line's own column, or from the column of the quote it opens (CARVE-P9-067, carve#3421). A follower at any other column refuses the marker, and the `+` then reads like a letter at its column: the follower folds lazily into the paragraph the `+` starts.
+A first-block `+` takes a follower only at its host's marker column, read through the prefixes of the quotes around the host (CARVE-P9-067, carve#3421, carve#4409). A follower at any other column refuses the marker, and the `+` then reads like a letter at its column: the follower folds lazily into the paragraph the `+` starts.
 
 A stacked list and quote opener refuses a follower one column in, and the `+` folds with it
 
@@ -72,7 +72,7 @@ b</p></blockquote>
 
 :::::::
 
-A quote line at the inner quote's marker column is the follower, read with the outer quote's prefix
+A `>` at the inner quote's marker column is no outer prefix, so the follower is refused
 
 ::::::: compare
 
@@ -83,13 +83,14 @@ A quote line at the inner quote's marker column is the follower, read with the o
 
 `````html
 <blockquote>
-  <blockquote><p>q</p></blockquote>
+  <blockquote><p>+
+q</p></blockquote>
 </blockquote>
 `````
 
 :::::::
 
-The same lines inside a list item: the follower's `>` stands at document column 4, the inner quote's marker column (carve#3935)
+The same lines inside a list item are refused the same way: the follower's `>` stands at document column 4, the inner quote's marker column (carve#3935)
 
 ::::::: compare
 
@@ -103,7 +104,8 @@ The same lines inside a list item: the follower's `>` stands at document column 
 <ul>
   <li>a
     <blockquote>
-      <blockquote><p>q</p></blockquote>
+      <blockquote><p>+
+q</p></blockquote>
     </blockquote>
   </li>
 </ul>

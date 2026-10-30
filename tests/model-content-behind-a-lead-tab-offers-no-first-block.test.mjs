@@ -25,5 +25,5 @@ test('a marker or quote behind a lead tab stays open for a lazy line in a quote'
 test('a separator space keeps the first-block +', () => {
   assert.equal(html('- +\nx\n'), '<ul><li>x</li></ul>')
   assert.equal(html('-  +\nx\n'), '<ul><li>x</li></ul>')
-  assert.equal(html('- - +\nx\n'), '<ul><li><ul><li>x</li></ul></li></ul>')
+  assert.equal(html('- - +\n  x\n'), '<ul><li><ul><li>x</li></ul></li></ul>')
 })

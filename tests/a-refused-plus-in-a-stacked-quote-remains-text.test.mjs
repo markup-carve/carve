@@ -14,22 +14,25 @@ test('a letter keeps a follower at the owning quote column as text', () => {
   assert.match(html('> > z\n  y'), /<blockquote><blockquote><p>z\ny<\/p>/)
 })
 
-// carve#3421 ruling of 22 October, item 4: the owning quote's column is eligible.
-test('a follower at the owning quote column attaches', () => {
-  assert.match(html('> > +\n  y'), /<blockquote><blockquote><p>y<\/p><\/blockquote><\/blockquote>$/)
+test('a follower at the owning quote column attaches only under the outer prefix', () => {
+  assert.match(html('> > +\n> y'), /<blockquote><blockquote><p>y<\/p><\/blockquote><\/blockquote>$/)
+  assert.match(html('> > +\n  y'), /<blockquote><blockquote><p>\+\ny<\/p><\/blockquote><\/blockquote>$/)
 })
 
 test('a fence after a description fence attaches at the owning quote column', () => {
-  assert.match(html(':: term\n: body\n  ```\n> > +\n  ```\nnext'),
+  assert.match(html(':: term\n: body\n  ```\n> > +\n> ```\n> next'),
     /<\/dl><blockquote><blockquote><pre><code>next<\/code><\/pre><\/blockquote><\/blockquote>$/)
+  assert.match(html(':: term\n: body\n  ```\n> > +\n  ```\nnext'),
+    /<\/dl><blockquote><blockquote><p>\+<\/p><\/blockquote><\/blockquote><pre><code>next<\/code><\/pre>$/)
 })
 
-test('a document-column follower attaches to the stacked quote', () => {
-  assert.match(html('> > +\ny'), /<blockquote><blockquote><p>y<\/p><\/blockquote><\/blockquote>$/)
+test('a document-column follower is refused by the stacked quote', () => {
+  assert.match(html('> > +\ny'), /<blockquote><blockquote><p>\+\ny<\/p><\/blockquote><\/blockquote>$/)
 })
 
-test('a follower at the item opener column attaches to the innermost item', () => {
-  assert.match(html('- a\n  - - +\n  y'), /<li>y<\/li>/)
+test('a follower at the innermost marker column attaches, one at the opener column does not', () => {
+  assert.match(html('- a\n  - - +\n    y'), /<li>y<\/li>/)
+  assert.match(html('- a\n  - - +\n  y'), /<li>\+\ny<\/li>/)
 })
 
 test('a first-block quote at document column takes its flush follower', () => {
@@ -40,7 +43,6 @@ test('a quoted plus and its list follower read the same inside and outside an it
   const nested = renderDoc(parse('- > - > a\n  >   +\n  >   - s\n'))
   const top = renderDoc(parse('> - > a\n>   +\n>   - s\n'))
   for (const html of [nested, top]) {
-    assert.match(html, /<blockquote><p>a\n\+\n- s<\/p><\/blockquote>/)
-    assert.doesNotMatch(html, /<li>s<\/li>/)
+    assert.match(html, /<blockquote>\s*<p>a<\/p>\s*<ul>\s*<li>s<\/li>\s*<\/ul>\s*<\/blockquote>/)
   }
 })

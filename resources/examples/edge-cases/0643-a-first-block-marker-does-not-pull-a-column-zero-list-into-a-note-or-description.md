@@ -1,8 +1,8 @@
 ## A first-block marker does not pull a column-zero list into a note or description
 
-The first-block form takes one non-list block (CARVE-P9-067). A list at column zero starts after a description, which remains empty. The refused `+` in a note reads like a letter, so the list marker folds into it (carve#4396) (carve#3482).
+Reversed by carve#4409: a list attaches in every host except a list item (CARVE-P9-067), so a list at the marker column under `[^a]: +` or `: +` is the body.
 
-A footnote keeps the refused marker and folds the list marker
+A footnote takes the list
 
 ::::::: compare
 
@@ -19,8 +19,10 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-- a list<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <ul>
+        <li>a list</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -28,7 +30,7 @@ see[^a]
 
 :::::::
 
-A description stays empty before the following list
+A description takes the list
 
 ::::::: compare
 
@@ -41,11 +43,12 @@ A description stays empty before the following list
 `````html
 <dl>
   <dt>t</dt>
-  <dd></dd>
+  <dd>
+    <ul>
+      <li>a list</li>
+    </ul>
+  </dd>
 </dl>
-<ul>
-  <li>a list</li>
-</ul>
 `````
 
 :::::::

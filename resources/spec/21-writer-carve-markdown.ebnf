@@ -579,22 +579,22 @@
       The sentinel, the reason it must be a valid attribute block and the
       reason it is inert are CARVE-P11-019's.
 
-      TWO OTHER SPELLINGS REACH AN EMPTY `<dd>` AND NEITHER IS WRITTEN:
+      ONE OTHER SPELLING REACHES AN EMPTY `<dd>` AND IS NOT WRITTEN:
 
         : {empty}   claims no line below it at any column        -- CANONICAL
-        : +         claims a following flush-left block          -- not written
         : %%        holds a `comment` child                      -- not written
 
-      `: +` is the first-block form (PART 9 §17 L4): it attaches a following
-      column-0 block, so it spells an empty body only when a blank line
-      follows. `: %%` renders alike and fails §1: its description carries a
-      `comment` child the source does not have.
+      `: %%` renders alike and fails §1: its description carries a `comment`
+      child the source does not have. `: +` does not spell an empty body: with
+      no block at its marker column it is a letter (PART 9 §17 L3). An empty
+      list item takes the same sentinel, `- {empty}` or `- [ ] {empty}`, for the
+      same reason.
 
    7e. A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE -- NORMATIVE [CARVE-P11-042].
       Where a tight list item's first block must be followed by a continuation
       marker, the writer puts that block on the marker line and the `+` on the
       next line (`- > p`, then `+`) for a top-level item, never a bare `- +`
-      with the block at column 0 below it. For a nested tight item it first
+      with the block at its marker column below it. For a nested tight item it first
       writes the block at the item's content column with a blank line before
       it, as L2 permits. It MAY write a `+` at the nested item's marker column
       only when that blank-line spelling would change the parsed tree, including

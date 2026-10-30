@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A fence a nested first-block plus pulls to column zero keeps its payload
 
-A code fence a first-block `+` takes at column zero starts left of every enclosing item, so no item's content column is stripped from its payload. The depth of the `+` and a quote on the marker line change nothing (carve#4389).
+A code fence at column zero refuses a nested first-block `+` (carve#4409) and stands at document level. It starts left of every enclosing item, so no item's content column is stripped from its payload. The depth of the `+` and a quote on the marker line change nothing (carve#4389).
 
 ::::: compare
 
@@ -19,13 +19,12 @@ A code fence a first-block `+` takes at column zero starts left of every enclosi
 <ul>
   <li>
     <ul>
-      <li>
-        <pre><code>  x
-</code></pre>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<pre><code>  x
+</code></pre>
 ```
 
 :::::
@@ -44,13 +43,12 @@ A code fence a first-block `+` takes at column zero starts left of every enclosi
 <ul>
   <li>a
     <ul>
-      <li>
-        <pre><code>  x
-</code></pre>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<pre><code>  x
+</code></pre>
 ```
 
 :::::
@@ -67,12 +65,11 @@ A code fence a first-block `+` takes at column zero starts left of every enclosi
 ```html
 <ul>
   <li>
-    <blockquote>
-      <pre><code>  x
-</code></pre>
-    </blockquote>
+    <blockquote><p>+</p></blockquote>
   </li>
 </ul>
+<pre><code>  x
+</code></pre>
 ```
 
 :::::
@@ -92,15 +89,14 @@ A code fence a first-block `+` takes at column zero starts left of every enclosi
     <ul>
       <li>
         <ul>
-          <li>
-            <pre><code>      x
-</code></pre>
-          </li>
+          <li>+</li>
         </ul>
       </li>
     </ul>
   </li>
 </ul>
+<pre><code>      x
+</code></pre>
 ```
 
 :::::

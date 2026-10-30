@@ -51,26 +51,26 @@ test('a marker below a hosted note is text of the note, not a sublist (carve#416
   assert.match(out, /<p>n\n- item<a href="#fnref1"/)
 })
 
-test('a lone plus on a note marker line folds a column-zero list marker as a letter does (carve#4396)', () => {
+test('a lone plus on a note marker line attaches a list at its marker column', () => {
   const out = html(['[^a]: +', '- a list', '', 'see[^a]'])
-  assert.match(out, /<p>\+\n- a list/)
+  assert.match(out, /<li id="fn1">\s*<ul>\s*<li>a list<\/li>/)
 })
 
-// A note's first-block `+` takes a non-list block at column zero of its quote
-// level or at its own marker column; any other column refuses it, and the `+`
-// stays text the follower folds into (CARVE-P9-067, carve#3928). An unprefixed
-// line does not reach a quoted note at all (carve#4097).
+// A note's `+` takes a block only at its own marker column, through the prefixes
+// of the quotes around it; otherwise the `+` is text the follower folds into (carve#4409).
 const noteBody = (out) => out.slice(out.indexOf('<li id="fn1">'))
 for (const [name, lines, attached] of [
-  ['an item, follower at column zero', ['- x', '  [^b]: +', 'after'], true],
+  ['an item, follower at column zero', ['- x', '  [^b]: +', 'after'], false],
   ['an item, follower at the marker column', ['- x', '  [^b]: +', '  after'], true],
   ['an item, follower at column one', ['- x', '  [^b]: +', ' after'], false],
   ['a quote, follower at column zero', ['> [^b]: +', 'after'], false],
   ['a quote, follower at the marker column', ['> [^b]: +', '  after'], false],
   ['a quote, prefixed follower at column zero', ['> [^b]: +', '> after'], true],
   ['a quote, follower at column one', ['> [^b]: +', ' after'], false],
-  ['an ordered item, follower at column zero', ['1. x', '   [^b]: +', 'after'], true],
-  ['a description, follower at column zero', [':: t', ': [^b]: +', 'after'], true],
+  ['an ordered item, follower at column zero', ['1. x', '   [^b]: +', 'after'], false],
+  ['an ordered item, follower at the marker column', ['1. x', '   [^b]: +', '   after'], true],
+  ['a description, follower at column zero', [':: t', ': [^b]: +', 'after'], false],
+  ['a description, follower at the marker column', [':: t', ': [^b]: +', '  after'], true],
 ]) {
   test(`a note's first-block plus in ${name} ${attached ? 'attaches' : 'is refused'}`, () => {
     const out = html([...lines, '', 'r[^b]'])
@@ -85,7 +85,8 @@ test('a quoted note plus leaves an unprefixed heading to the document', () => {
   assert.match(out, /<\/blockquote>\n<section id="after">/, out)
 })
 
-test('a stacked note plus takes a column-zero follower and refuses column one', () => {
-  assert.doesNotMatch(noteBody(html(['- [^b]: +', 'after', '', 'r[^b]'])), /<p>\+/)
+test('a stacked note plus takes its marker column and refuses the others', () => {
+  assert.doesNotMatch(noteBody(html(['- [^b]: +', '  after', '', 'r[^b]'])), /<p>\+/)
+  assert.match(noteBody(html(['- [^b]: +', 'after', '', 'r[^b]'])), /<p>\+\nafter/)
   assert.match(noteBody(html(['- [^b]: +', ' after', '', 'r[^b]'])), /<p>\+\nafter/)
 })

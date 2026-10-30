@@ -1,6 +1,6 @@
 /*
- * A footnote definition at a `+` body's content column is that body's first
- * block, so a code fence below the column ends the item (carve#4347).
+ * A footnote definition at a `+` body's content column refuses the `+`, and a
+ * code fence below the column still ends the item (carve#4347, carve#4409).
  */
 
 import { test } from 'node:test'
@@ -11,12 +11,12 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (src) => renderDoc(parse(src)).trim()
 
 test('the reported shape', () => {
-  assert.equal(html('- +\n  [^n]: x\n```\nz\n```\n'), '<ul>\n  <li></li>\n</ul>\n<pre><code>z\n</code></pre>')
+  assert.equal(html('- +\n  [^n]: x\n```\nz\n```\n'), '<ul>\n  <li>+</li>\n</ul>\n<pre><code>z\n</code></pre>')
 })
 
 test('the nested spelling', () => {
   assert.equal(html('- a\n  * +\n    [^n]: x\n```\nz\n```\n'),
-    '<ul>\n  <li>a\n    <ul>\n      <li></li>\n    </ul>\n  </li>\n</ul>\n<pre><code>z\n</code></pre>')
+    '<ul>\n  <li>a\n    <ul>\n      <li>+</li>\n    </ul>\n  </li>\n</ul>\n<pre><code>z\n</code></pre>')
 })
 
 const heads = [['- +', '  '], ['* +', '  '], ['1. +', '   '], ['- [ ] +', '      '], ['- a\n  * +', '    ']]

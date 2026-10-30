@@ -11,8 +11,10 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-- a list<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <ul>
+        <li>a list</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -25,9 +27,10 @@ see[^a]
 .
 <dl>
   <dt>t</dt>
-  <dd></dd>
+  <dd>
+    <ul>
+      <li>a list</li>
+    </ul>
+  </dd>
 </dl>
-<ul>
-  <li>a list</li>
-</ul>
 ```

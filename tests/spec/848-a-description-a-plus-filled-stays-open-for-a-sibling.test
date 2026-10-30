@@ -1,0 +1,60 @@
+A description a plus filled stays open for a sibling
+
+```
+:: t
+: +
+l
+ : b
+.
+<dl>
+  <dt>t</dt>
+  <dd>l</dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+:: t
+: +
+# H
+ : b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <h1 id="H">H</h1>
+  </dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+:: t
+ : +
+l
+ : b
+.
+<dl>
+  <dt>t</dt>
+  <dd>+
+l</dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+> :: t
+> : +
+> # H
+>  : b
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>
+      <h1 id="H">H</h1>
+    </dd>
+    <dd>b</dd>
+  </dl>
+</blockquote>
+```

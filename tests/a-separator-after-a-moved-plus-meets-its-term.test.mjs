@@ -6,8 +6,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = source => renderDoc(parse(source))
 const indent = (source, by) => source.split('\n').map(l => l === '' ? '' : by + l).join('\n')
 
-// CARVE-P0-024 S3: an indented description list reads as the unindented one,
-// including a separator after a `+` the walk moved onto its owner (carve#4101).
+// CARVE-P0-024 S3: an indented description list reads as the unindented one (carve#4101).
 const shapes = [
   ':: t\n: ```\n  code\n  ```\n +\n: c\n',
   ':: t\n: a\n\n +\n: c\n',
@@ -21,8 +20,8 @@ for (const source of shapes) {
   }
 }
 
-test('the reproduction opens the separator after the + as its own description', () => {
-  assert.match(html('  :: t\n  : ```\n    code\n    ```\n   +\n  : c\n'), /<dd>c<\/dd>/)
+test('a refused + keeps the separator after it as text (carve#4409)', () => {
+  assert.match(html('  :: t\n  : ```\n    code\n    ```\n   +\n  : c\n'), /<\/dl>\n<p>\+\n: c<\/p>/)
 })
 
 test('a task item reads the shape as a plain item does', () => {

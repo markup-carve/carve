@@ -23,9 +23,8 @@ b</p></blockquote>
 <ul>
   <li>
     <ul>
-      <li></li>
+      <li>b</li>
     </ul>
-    b
   </li>
 </ul>
 ```
@@ -41,7 +40,8 @@ b</p></blockquote>
       <li>
         <ul>
           <li>
-            <blockquote><p>b</p></blockquote>
+            <blockquote><p>+
+b</p></blockquote>
           </li>
         </ul>
       </li>

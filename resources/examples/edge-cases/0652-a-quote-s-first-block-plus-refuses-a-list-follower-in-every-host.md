@@ -1,8 +1,8 @@
 ## A quote's first-block plus refuses a list follower in every host
 
-The first-block form takes one non-list block (CARVE-P9-067). A list below a quote's first-block `+` is refused in every host: the `+` reads like a letter and the list line folds into its paragraph, as `> q` / `> > +` / `> - s` reads at document level (carve#3421).
+Reversed by carve#4409: a list attaches in every host except a list item (CARVE-P9-067), so a quote's `+` takes a list at its marker column that carries the prefixes of the quotes around it. A list line without them refuses the `+`, which reads like a letter, and folds into its paragraph.
 
-Inside a host quote's list item, a nested quote's `+` above a list stays text, as in the item and quote twins
+Inside a host quote's list item, a list with every prefix at the nested quote's marker column attaches
 
 ::::::: compare
 
@@ -18,8 +18,11 @@ Inside a host quote's list item, a nested quote's `+` above a list stays text, a
     <li>
       <blockquote>
         <p>q</p>
-        <blockquote><p>+
-- s</p></blockquote>
+        <blockquote>
+          <ul>
+            <li>s</li>
+          </ul>
+        </blockquote>
       </blockquote>
     </li>
   </ul>

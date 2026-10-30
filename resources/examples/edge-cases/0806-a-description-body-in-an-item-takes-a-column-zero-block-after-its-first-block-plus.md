@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A description body in an item takes a column-zero block after its first-block plus
 
-A description body takes its next owned block the way a list item does (PART 9 §17 L4, CARVE-P9-067, carve#4166): under an indented `: +` in an item, a block at document column 0 is the description's, at any depth.
+Reversed by carve#4409: a description body's `+` takes a follower only at its marker column (PART 9 §17 L3, CARVE-P9-067). Under an indented `: +` in an item, a block at document column 0 refuses it at any depth: the `+` stays the description's text and the block stands after the list.
 
 ::: compare
 
@@ -22,13 +22,12 @@ x
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>
-        <pre><code>x
-</code></pre>
-      </dd>
+      <dd>+</dd>
     </dl>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ```
 
 :::
@@ -52,15 +51,14 @@ x
       <li>b
         <dl>
           <dt>t</dt>
-          <dd>
-            <pre><code>x
-</code></pre>
-          </dd>
+          <dd>+</dd>
         </dl>
       </li>
     </ul>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ```
 
 :::
@@ -79,12 +77,11 @@ x
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>
-        <blockquote><p>q</p></blockquote>
-      </dd>
+      <dd>+</dd>
     </dl>
   </li>
 </ol>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::
@@ -103,12 +100,13 @@ x
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>
-        <h1 id="H">H</h1>
-      </dd>
+      <dd>+</dd>
     </dl>
   </li>
 </ul>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 :::
@@ -130,14 +128,14 @@ see
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>
-        <pre><code>x
-</code></pre>
-      </dd>
+      <dd>+</dd>
     </dl>
   </li>
 </ul>
-<p>see</p>
+<pre><code>x
+
+see
+</code></pre>
 ```
 
 :::

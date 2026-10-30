@@ -20,7 +20,6 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  The pinned writer drops indentation that rule A (markup-carve/carve#3885) now reads; markup-carve/carve-js#3874.
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-11  The pinned writer respells a combined token it reads as open after a guarded opener, against the carve#3947 ruling; markup-carve/carve-js#3933.
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-27  The pinned writer respells a combined token it reads as open after a guarded opener, against the carve#3947 ruling; markup-carve/carve-js#3933.
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-43  The pinned writer respells a combined token it reads as open after a guarded opener, against the carve#3947 ruling; markup-carve/carve-js#3933.
@@ -33,9 +32,36 @@
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-42  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-55  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-58  The pinned writer respells a combined token whose closer sits in an unattached block; markup-carve/carve-js#3925.
-782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-7  The pinned writer moves a below-column `+` out of the item and drops the fence it reads there; carve-js main 6ce5d0f8f writes it back intact.
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
 783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5  The pinned writer pads the continuation row with an empty cell inside the open verbatim run; markup-carve/carve-js#3976 (also on carve-js main).
 763-a-note-claimed-fence-line-keeps-the-item-loose  The pinned writer respells the fence line below the note so it no longer opens in the item; the carve#4018 ruling is pending in carve-js.
+117-footnote-definition-inside-a-container-is-collected-2  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+16-reference-link-4  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-7  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+379-a-reference-definition-cannot-take-its-destination-from-the-next-line-2  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-4  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-5  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+428-a-wrapped-attribute-line-leaves-no-paragraph-open  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+428-a-wrapped-attribute-line-leaves-no-paragraph-open-3  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+436-an-empty-description-body-claims-no-line-below-column-0-2  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+436-an-empty-description-body-claims-no-line-below-column-0-4  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-5  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-6  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-4  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-8  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+556-a-closed-block-leaves-no-frame-for-the-line-below-11  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+556-a-closed-block-leaves-no-frame-for-the-line-below-12  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note-2  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+585-a-comment-in-a-marker-line-note-changes-nothing  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+585-a-comment-in-a-marker-line-note-changes-nothing-2  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host-3  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+801-a-footnote-body-takes-its-first-block-at-its-body-column-8  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+847-a-padded-plus-after-a-quote-marker-is-the-quote-s-text-3  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before

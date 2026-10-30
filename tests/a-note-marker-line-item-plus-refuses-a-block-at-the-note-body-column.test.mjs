@@ -8,9 +8,9 @@ const flat = (src) => html(src).replace(/\n *(?=<)/g, '').replace(/>\n *(?=\S)/g
 const note = (src) => flat(src).replace(/^[^]*<li id="fn1">/, '').replace(/<\/li><\/ol><\/section>$/, '')
 
 test('a block at the note body column refuses a marker-line item + (carve#4222)', () => {
-  assert.equal(note('[^a]: - - +\n  para\ntail\n\nr[^a]\n'), '<ul><li><ul><li></li></ul></li></ul><p>para\ntail</p>')
-  assert.equal(note('[^a]: - +\n  para\ntail\n\nr[^a]\n'), '<ul><li></li></ul><p>para\ntail</p>')
-  assert.equal(note('[^a]: - +\n   # h\n\nr[^a]\n'), '<ul><li></li></ul><h1 id="h">h</h1><p></p>')
+  assert.equal(note('[^a]: - - +\n  para\ntail\n\nr[^a]\n'), '<ul><li><ul><li>+\npara\ntail</li></ul></li></ul><p></p>')
+  assert.equal(note('[^a]: - +\n  para\ntail\n\nr[^a]\n'), '<ul><li>+\npara\ntail</li></ul><p></p>')
+  assert.equal(note('[^a]: - +\n   # h\n\nr[^a]\n'), '<ul><li>+</li></ul><h1 id="h">h</h1><p></p>')
 })
 
 test('no walk frame reaches the output (carve#4222)', () => {
@@ -22,19 +22,20 @@ test('no walk frame reaches the output (carve#4222)', () => {
   }
 })
 
-test('the item content column still takes the block, as for the description twin', () => {
-  assert.equal(note('[^a]: - +\n    para\ntail\n\nr[^a]\n'), '<ul><li>para\ntail</li></ul><p></p>')
+test('the item marker column takes the block, as for the description twin', () => {
+  assert.equal(note('[^a]: - +\n      para\ntail\n\nr[^a]\n'), '<ul><li>para\ntail</li></ul><p></p>')
+  assert.equal(note('[^a]: - +\n    para\ntail\n\nr[^a]\n'), '<ul><li>+\npara\ntail</li></ul><p></p>')
   assert.equal(note('[^a]: - +\n      # h\n\nr[^a]\n'), '<ul><li><h1 id="h">h</h1></li></ul><p></p>')
-  assert.equal(note('[^a]: - - +\n    para\n\nr[^a]\n'), '<ul><li><ul><li></li></ul>para</li></ul><p></p>')
+  assert.equal(note('[^a]: - - +\n        para\n\nr[^a]\n'), '<ul><li><ul><li>para</li></ul></li></ul><p></p>')
   for (const c of [0, 2, 3, 4, 6]) {
-    const body = `${' '.repeat(c)}para\ntail\n`
-    const dd = flat(`:: t\n: - - +\n${body}`).replace(/^<dl><dt>t<\/dt><dd>|<\/dd><\/dl>$/g, '')
-    const fn = note(`[^a]: - - +\n${body}\nr[^a]\n`).replace(/<p><\/p>$/, '')
+    // The note's markers stand four columns right of the description's.
+    const dd = flat(`:: t\n: - - +\n${' '.repeat(c)}para\ntail\n`).replace(/^<dl><dt>t<\/dt><dd>|<\/dd><\/dl>$/g, '')
+    const fn = note(`[^a]: - - +\n${' '.repeat(c + 4)}para\ntail\n\nr[^a]\n`).replace(/<p><\/p>$/, '')
     if (c >= 2) assert.equal(fn, dd, `column ${c}`)
   }
 })
 
-test('a non-list block at column zero is the item\'s block, as in the description (carve#4356)', () => {
+test('a paragraph at column zero refuses the item + and folds into it (carve#4356)', () => {
   const out = flat('[^a]: - +\npara\ntail\n\nr[^a]\n')
-  assert.match(out, /^<p>r.*<li id="fn1"><ul><li>para\ntail<\/li>/s)
+  assert.match(out, /^<p>r.*<li id="fn1"><ul><li>\+\npara\ntail<\/li>/s)
 })

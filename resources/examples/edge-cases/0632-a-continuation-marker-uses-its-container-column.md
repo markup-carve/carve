@@ -632,12 +632,11 @@ x[^a]
 <ul>
   <li>a
     <ul>
-      <li>
-        <blockquote><p>b</p></blockquote>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<blockquote><p>b</p></blockquote>
 ```
 
 :::::::
@@ -653,12 +652,11 @@ x[^a]
 <ul>
   <li>
     <ul>
-      <li>
-        <blockquote><p>q</p></blockquote>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::::::
@@ -674,12 +672,11 @@ x[^a]
 <ul>
   <li>
     <ul class="task-list">
-      <li><input type="checkbox" disabled> 
-        <blockquote><p>q</p></blockquote>
-      </li>
+      <li><input type="checkbox" disabled aria-label="+"> +</li>
     </ul>
   </li>
 </ul>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::::::
@@ -694,11 +691,10 @@ x[^a]
 ```html
 <ul>
   <li>
-    <blockquote>
-      <blockquote><p>q</p></blockquote>
-    </blockquote>
+    <blockquote><p>+</p></blockquote>
   </li>
 </ul>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::::::
@@ -731,12 +727,11 @@ x[^a]
 <ol>
   <li>
     <ul>
-      <li>
-        <blockquote><p>q</p></blockquote>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ol>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::::::

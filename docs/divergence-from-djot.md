@@ -157,12 +157,13 @@ content**. A content-less `-`, `- `, or `-   ` is ordinary paragraph text.
 **Djot / CommonMark:** `+`, `-`, and `*` are all bullet markers.
 
 **Carve:** bullets are `-` and `*` only. `+` is reserved as the **continuation
-marker**: a lone `+` at an open container's marker column or directly after a
-quote prefix attaches the next block at that column. A first-block `+` after
-stacked openers belongs to the innermost container opened on that line. A
-following list item at an open list item's marker column is a sibling, so the `+` is ordinary
-text and the refused-marker lint reports it (markup-carve/carve#3421). One
-block attaches in either form, and a list
+marker**: a lone `+` at an open container's marker column, or last on a marker
+line, attaches the next line's block when that line stands at the marker column
+and carries the prefixes of the quotes around the host. On a line of stacked
+openers the innermost one owns the `+`. A following list item under a list item
+is a sibling, so the `+` is ordinary text and the refused-marker lint reports it
+(markup-carve/carve#3421). Every other refused `+` is a plain letter too
+(markup-carve/carve#4409). One block attaches in either form, and a list
 stays tight. A list item, block quote, footnote body, and definition description
 can take the marker. The quote form follows the quote spacing rule: `> +` and `> > +`
 are markers, while `>+`, `>>+` and `>> +` read as text and `> >+` is a quote holding the text `>+`.
@@ -358,8 +359,8 @@ to a single block. Both forms work:
 - **form A** - a blank line then an indented block folds in. This is *exactly
   djot's* indentation-scoped body, so any djot loose definition body carries
   over.
-- **form B** - a lone `+` attaches the following flush-left block with no
-  indentation (the same continuation marker lists, block quotes and footnote
+- **form B** - a lone `+` attaches the following block at the marker column,
+  with no indentation (the same continuation marker lists, block quotes and footnote
   bodies use). This is a Carve addition on top of the djot model.
 
 So multi-paragraph definitions are fully supported - the divergence is the
@@ -461,8 +462,8 @@ before the block; the blank only decides whether the item is tight or loose.
 indent and treats its authored column as that block's temporary base. Unlike
 Djot, Carve still requires the line to reach its canonical content column: a
 block one space under `-` is below column 2 and does not nest. Top-level
-openers remain column-strict. The `+` continuation marker (§3) still attaches a
-flush-left block regardless.
+openers remain column-strict. The `+` continuation marker (§3) attaches a block
+only at the marker column.
 
 ## 12. Smart punctuation is one leaf node, not three container types
 

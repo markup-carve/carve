@@ -9,13 +9,12 @@ A fence a nested first-block plus pulls to column zero keeps its payload
 <ul>
   <li>
     <ul>
-      <li>
-        <pre><code>  x
-</code></pre>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<pre><code>  x
+</code></pre>
 ````
 
 ````
@@ -28,13 +27,12 @@ A fence a nested first-block plus pulls to column zero keeps its payload
 <ul>
   <li>a
     <ul>
-      <li>
-        <pre><code>  x
-</code></pre>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<pre><code>  x
+</code></pre>
 ````
 
 ````
@@ -45,12 +43,11 @@ A fence a nested first-block plus pulls to column zero keeps its payload
 .
 <ul>
   <li>
-    <blockquote>
-      <pre><code>  x
-</code></pre>
-    </blockquote>
+    <blockquote><p>+</p></blockquote>
   </li>
 </ul>
+<pre><code>  x
+</code></pre>
 ````
 
 ````
@@ -64,13 +61,12 @@ A fence a nested first-block plus pulls to column zero keeps its payload
     <ul>
       <li>
         <ul>
-          <li>
-            <pre><code>      x
-</code></pre>
-          </li>
+          <li>+</li>
         </ul>
       </li>
     </ul>
   </li>
 </ul>
+<pre><code>      x
+</code></pre>
 ````

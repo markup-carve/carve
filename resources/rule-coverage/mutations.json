@@ -61,8 +61,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "(qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&\n            !bodyEndsWrappedAttr(inner)",
-          "replace": "(true || qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&\n            !bodyEndsWrappedAttr(inner)"
+          "find": "(qOpenPara || qTermOpen || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)",
+          "replace": "(true || qOpenPara || qTermOpen || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)"
         }
       ]
     },
@@ -226,7 +226,7 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "(qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&\n            !bodyEndsWrappedAttr(inner)",
+          "find": "(qOpenPara || qTermOpen || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)",
           "replace": "false &&\n            !bodyEndsWrappedAttr(inner)"
         }
       ]
@@ -701,8 +701,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "else if (ch === '\\t') { col = (Math.floor(col / 4) + 1) * 4; tabs = true }",
-          "replace": "else if (ch === '\\t') { col = (Math.floor(col / 8) + 1) * 8; tabs = true }"
+          "find": "else if (line[i] === '\\t') col = (Math.floor(col / 4) + 1) * 4\n    else break\n  }\n  layoutWork.ownership += i",
+          "replace": "else if (line[i] === '\\t') col = (Math.floor(col / 8) + 1) * 8\n    else break\n  }\n  layoutWork.ownership += i"
         }
       ]
     },
@@ -1041,8 +1041,18 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "const firstBlockPlus = /^[> \\t]*\\+[ \\t]*$/.test(qm[1] ?? '')",
-          "replace": "const firstBlockPlus = false"
+          "find": "const markerLinePlus = /^[> \\t]*\\+[ \\t]*$/.test(qm[1] ?? '')",
+          "replace": "const markerLinePlus = false"
+        }
+      ]
+    },
+    {
+      "rule": "CARVE-P9-085",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "const hasOrdinaryPlus = refusedPlusLines.length > 0",
+          "replace": "const hasOrdinaryPlus = false"
         }
       ]
     },

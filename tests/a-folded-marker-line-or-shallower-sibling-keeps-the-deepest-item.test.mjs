@@ -8,9 +8,10 @@ const flat = (source) => renderDoc(parse(source)).replace(/\s*\n\s*/g, ' ').repl
 // carve#4348: a third-level item's + paragraph takes a column-0 lazy line (PART 0 S4).
 test('a nested first-block + paragraph takes a lazy line at any depth', () => {
   const cases = [
-    ['- a\n  * b\n    - +\n      q\nafter\n', '<ul><li>a <ul><li>b <ul><li>q after</li></ul></li></ul></li></ul>'],
-    ['- a\n  * b\n    * c\n      - +\n        q\nafter\n', '<ul><li>a <ul><li>b <ul><li>c <ul><li>q after</li></ul></li></ul></li></ul></li></ul>'],
-    ['- a\n  * b\n    - +\n      q\n      r\nafter\n', '<ul><li>a <ul><li>b <ul><li>q r after</li></ul></li></ul></li></ul>'],
+    ['- a\n  * b\n    - +\n    q\nafter\n', '<ul><li>a <ul><li>b <ul><li>q after</li></ul></li></ul></li></ul>'],
+    ['- a\n  * b\n    - +\n      q\nafter\n', '<ul><li>a <ul><li>b <ul><li>+ q after</li></ul></li></ul></li></ul>'],
+    ['- a\n  * b\n    * c\n      - +\n      q\nafter\n', '<ul><li>a <ul><li>b <ul><li>c <ul><li>q after</li></ul></li></ul></li></ul></li></ul>'],
+    ['- a\n  * b\n    - +\n    q\n    r\nafter\n', '<ul><li>a <ul><li>b <ul><li>q r after</li></ul></li></ul></li></ul>'],
   ]
   for (const [source, expected] of cases) assert.equal(flat(source), expected, source)
 })

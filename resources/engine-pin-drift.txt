@@ -536,15 +536,11 @@
 798-the-equals-of-a-not-equal-sign-neither-opens-nor-closes-a-highlight-2  markup-carve/carve#4131 (carve-js), the `=` of `!=` as a comparison pending in the pinned engine
 798-the-equals-of-a-not-equal-sign-neither-opens-nor-closes-a-highlight-3  markup-carve/carve#4131 (carve-js), the `=` of `!=` as a comparison pending in the pinned engine
 798-the-equals-of-a-not-equal-sign-neither-opens-nor-closes-a-highlight-4  markup-carve/carve#4131 (carve-js), the `=` of `!=` as a comparison pending in the pinned engine
-437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-3  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
 461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
 756-a-description-keeps-a-list-marker-below-its-hosted-footnote  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
 800-a-list-marker-under-a-note-paragraph-in-a-description-is-text  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
 800-a-list-marker-under-a-note-paragraph-in-a-description-is-text-2  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
 800-a-list-marker-under-a-note-paragraph-in-a-description-is-text-3  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
-801-a-footnote-body-takes-its-first-block-at-its-body-column  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
-801-a-footnote-body-takes-its-first-block-at-its-body-column-2  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
-801-a-footnote-body-takes-its-first-block-at-its-body-column-3  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
 801-a-footnote-body-takes-its-first-block-at-its-body-column-4  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
 802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-3  Pinned JavaScript lets an unprefixed line reach a quoted note first-block + (markup-carve/carve#4097); pending in carve-js.
 454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-4  Pinned JavaScript opens a sublist under a note paragraph inside a list item (markup-carve/carve#4160); pending in carve-js.
@@ -552,7 +548,6 @@
 800-a-list-marker-under-a-note-paragraph-in-a-description-is-text-5  Pinned JavaScript opens a sublist under a note paragraph inside a list item (markup-carve/carve#4160); pending in carve-js.
 802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-6  Pinned JavaScript closes the quote at a paragraph line instead of folding it into a quoted note's refused + (markup-carve/carve#4097); pending in carve-js.
 801-a-footnote-body-takes-its-first-block-at-its-body-column-7  Pinned JavaScript does not fold a paragraph line below the body column into a note's refused + (markup-carve/carve#4152); pending in carve-js.
-801-a-footnote-body-takes-its-first-block-at-its-body-column-8  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
 805-an-invalid-table-count-keeps-native-header-cells-in-the-body  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
 805-an-invalid-table-count-keeps-native-header-cells-in-the-body-2  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
 805-an-invalid-table-count-keeps-native-header-cells-in-the-body-3  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
@@ -620,3 +615,111 @@
 841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-6  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
 846-a-description-left-of-its-term-measures-its-own-plus-follower  markup-carve/carve#4410, the pinned carve-js predates the #4180 ruling on a description list's columns; carve-js main already renders this
 846-a-description-left-of-its-term-measures-its-own-plus-follower-2  markup-carve/carve#4410, the pinned carve-js predates the #4180 ruling on a description list's columns; carve-js main already renders this
+384-a-continuation-marker-attaches-only-a-flush-left-block  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+384-a-continuation-marker-attaches-only-a-flush-left-block-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+384-a-continuation-marker-attaches-only-a-flush-left-block-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+384-a-continuation-marker-attaches-only-a-flush-left-block-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+436-an-empty-description-body-claims-no-line-below-column-0-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+436-an-empty-description-body-claims-no-line-below-column-0-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+436-an-empty-description-body-claims-no-line-below-column-0-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+588-a-block-quote-and-a-footnote-body-take-the-first-block-form-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-13  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-14  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-16  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-18  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+632-a-continuation-marker-uses-its-container-column-28  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+632-a-continuation-marker-uses-its-container-column-29  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+632-a-continuation-marker-uses-its-container-column-30  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+632-a-continuation-marker-uses-its-container-column-31  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+632-a-continuation-marker-uses-its-container-column-33  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-10  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-11  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-14  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-15  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-19  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-22  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-23  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-26  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-27  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-31  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-33  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-34  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-35  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-36  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-37  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-38  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-39  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+633-a-first-block-marker-on-an-indented-opener-reads-two-columns-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-23  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-24  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-25  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-26  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-27  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-28  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-30  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-31  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-32  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-33  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-35  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-36  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-37  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-38  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-39  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+634-a-refused-continuation-plus-remains-text-40  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+643-a-first-block-marker-does-not-pull-a-column-zero-list-into-a-note-or-description-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+651-a-stacked-first-block-plus-takes-a-follower-only-at-column-zero-or-its-line-s-column-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+652-a-quote-s-first-block-plus-refuses-a-list-follower-in-every-host  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+654-a-quote-follower-below-stacked-quote-openers-in-an-item-is-read-at-its-raw-column-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+655-a-hosted-quote-s-first-block-plus-attaches-any-non-list-block-at-column-zero-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+656-the-column-of-the-quote-that-owns-a-first-block-plus-stays-eligible-at-every-depth-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+728-a-first-block-item-takes-the-next-owned-block  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+728-a-first-block-item-takes-the-next-owned-block-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+728-a-first-block-item-takes-the-next-owned-block-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+728-a-first-block-item-takes-the-next-owned-block-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+734-a-nested-first-block-item-releases-the-next-root-block  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+734-a-nested-first-block-item-releases-the-next-root-block-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+734-a-nested-first-block-item-releases-the-next-root-block-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+734-a-nested-first-block-item-releases-the-next-root-block-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+734-a-nested-first-block-item-releases-the-next-root-block-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+750-a-below-column-line-returns-to-its-definition-body  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-10  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-12  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-9  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+801-a-footnote-body-takes-its-first-block-at-its-body-column-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+801-a-footnote-body-takes-its-first-block-at-its-body-column-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+801-a-quote-on-a-description-body-marker-line-takes-a-plus-at-its-column-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+806-a-description-body-in-an-item-takes-a-column-zero-block-after-its-first-block-plus-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+806-a-marker-folds-into-the-paragraph-a-first-block-plus-took  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+811-a-first-block-plus-does-not-take-the-closer-of-its-div  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+811-a-first-block-plus-does-not-take-the-closer-of-its-div-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+811-a-first-block-plus-does-not-take-the-closer-of-its-div-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+815-a-line-below-an-empty-div-after-a-first-block-plus-is-not-lazy  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus-5  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+826-a-comment-or-link-definition-at-a-body-s-column-spends-its-first-block-plus-6  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+838-a-fence-a-nested-first-block-plus-pulls-to-column-zero-keeps-its-payload  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+838-a-fence-a-nested-first-block-plus-pulls-to-column-zero-keeps-its-payload-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+838-a-fence-a-nested-first-block-plus-pulls-to-column-zero-keeps-its-payload-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+838-a-fence-a-nested-first-block-plus-pulls-to-column-zero-keeps-its-payload-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+838-an-item-on-a-body-s-marker-line-takes-a-column-zero-block-after-its-plus  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+848-a-description-a-plus-filled-stays-open-for-a-sibling  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+848-a-description-a-plus-filled-stays-open-for-a-sibling-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+848-a-description-a-plus-filled-stays-open-for-a-sibling-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+848-a-description-a-plus-filled-stays-open-for-a-sibling-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first

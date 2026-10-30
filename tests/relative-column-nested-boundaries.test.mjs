@@ -29,9 +29,9 @@ test('a refused marker in a quote folds like letter text', () => {
   assert.equal(html(source), html(source.replace('>     +', '>     q')).replace('q\n', '+\n'))
 })
 
-test('a blank before a refused marker leaves ordinary text at its column', () => {
-  assert.equal(html('- a\n\n+\n- b'), '<ul>\n  <li>a</li>\n</ul>\n<p>+</p>\n<ul>\n  <li>b</li>\n</ul>')
-  assert.equal(html('> - a\n>\n> +\n> - b'), '<blockquote>\n  <ul>\n    <li>a</li>\n  </ul>\n  <p>+</p>\n  <ul>\n    <li>b</li>\n  </ul>\n</blockquote>')
+test('a blank before a refused marker leaves ordinary text the sibling folds into', () => {
+  assert.equal(html('- a\n\n+\n- b'), '<ul>\n  <li>a</li>\n</ul>\n<p>+\n- b</p>')
+  assert.equal(html('> - a\n>\n> +\n> - b'), '<blockquote>\n  <ul>\n    <li>a</li>\n  </ul>\n  <p>+\n- b</p>\n</blockquote>')
 })
 
 test('a closed list leaves no refused sibling marker behind', () => {

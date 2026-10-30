@@ -1,6 +1,6 @@
 ## A marker folds into the paragraph a first-block plus took
 
-List markers never interrupt a paragraph (PART 9 §10 I2). A first-block `+` that takes its paragraph is not refused, and a list marker of another kind between the item's marker and content columns folds into that paragraph as it does after `- b` (carve#4235).
+List markers never interrupt a paragraph (PART 9 §10 I2). A list marker of another kind between the item's marker and content columns folds into the paragraph a first-block `+` took, as it does after `- b` (carve#4235). It folds the same way when a refused `+` opened the paragraph (carve#4409).
 
 :::: compare
 
@@ -12,7 +12,8 @@ List markers never interrupt a paragraph (PART 9 §10 I2). A first-block `+` tha
 
 ```html
 <ul>
-  <li>b
+  <li>+
+b
 * w1</li>
 </ul>
 ```

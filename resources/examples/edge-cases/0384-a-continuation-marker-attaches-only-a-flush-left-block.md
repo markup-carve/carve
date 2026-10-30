@@ -13,7 +13,8 @@ x
 <ul>
   <li>
     <ul>
-      <li>x</li>
+      <li>+
+x</li>
     </ul>
   </li>
 </ul>
@@ -21,8 +22,7 @@ x
 
 ::::
 
-At the outer item's content column, the paragraph belongs to the outer item;
-the inner item stays empty.
+Column 2 is the inner item's marker column, so the inner item takes the paragraph.
 
 :::: compare
 
@@ -35,17 +35,15 @@ the inner item stays empty.
 <ul>
   <li>
     <ul>
-      <li></li>
+      <li>x</li>
     </ul>
-    x
   </li>
 </ul>
 ```
 
 ::::
 
-A column below every open container ends both items and leaves the paragraph at
-document level.
+Column 1 is no marker column: the `+` is refused and the line folds into it.
 
 :::: compare
 
@@ -58,17 +56,17 @@ document level.
 <ul>
   <li>
     <ul>
-      <li></li>
+      <li>+
+x</li>
     </ul>
   </li>
 </ul>
-<p>x</p>
 ```
 
 ::::
 
-The single-level controls are unchanged: column 0 attaches, while the item's
-own content column reaches the item through the ordinary column rule.
+At one level, column 0 is the marker column and attaches. The item's content
+column is refused, so the line folds into the `+` (carve#4409).
 
 :::: compare
 
@@ -94,7 +92,8 @@ x
 
 ```html
 <ul>
-  <li>x</li>
+  <li>+
+x</li>
 </ul>
 ```
 
@@ -127,10 +126,9 @@ attaches `c` to that item (markup-carve/carve#3421).
 :::
 
 The same reading one column out. The marker sits at the outer item's marker
-column, so only a column-0 block could attach; the payload at column 2 is placed
-by its own column, which leaves it in the sub-list item whose paragraph is still
-open. The output is byte-identical to the same document without the marker line
-(markup-carve/carve#2322).
+column, so only a column-0 block could attach. The line at column 2 refuses it:
+the `+` is a letter in the sub-list item's open paragraph, and the line folds in
+after it (carve#4409).
 
 ::: compare
 

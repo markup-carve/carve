@@ -24,7 +24,7 @@ test('a column-0 fence with a closer keeps the blank inside', () => {
 })
 
 test("a descendant's attached fence runs through its closer past a blank", () => {
-  assert.equal(html('- foo\n  1. +\n```\nx\n\n```\n'),
+  assert.equal(html('- foo\n  1. +\n  ```\n  x\n\n  ```\n'),
     '<ul>\n  <li>foo\n    <ol>\n      <li>\n        <pre><code>x\n\n</code></pre>\n      </li>\n    </ol>\n  </li>\n</ul>')
 })
 

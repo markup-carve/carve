@@ -23,15 +23,21 @@ for (const unit of ['  - 1. +\n  > q\n', '  - > +\n  > q\n', '  - - +\n  > q\n  
 }
 
 const inPlace = [
-  ['- o\n  - 1. +\n  s\n  - z\ntail\n', '- o\n  - 1. s\n  - z\ntail\n'],
-  ['- o\n  - 1. +\n  s\n  * z\ntail\n', '- o\n  - 1. s\n  * z\ntail\n'],
-  ['- o\n  - 1. +\n  # h\n  - z\ntail\n', '- o\n  - 1. # h\n  - z\ntail\n'],
-  ['- o\n  - 1. +\n  > q\n  - z\ntail\n', '- o\n  - 1. > q\n  - z\ntail\n'],
-  ['> - o\n>   - 1. +\n>   s\n>   * z\ntail\n', '> - o\n>   - 1. s\n>   * z\ntail\n'],
+  ['- o\n  - 1. +\n    s\n  - z\ntail\n', '- o\n  - 1. s\n  - z\ntail\n'],
+  ['- o\n  - 1. +\n    s\n  * z\ntail\n', '- o\n  - 1. s\n  * z\ntail\n'],
+  ['- o\n  - 1. +\n    # h\n  - z\ntail\n', '- o\n  - 1. # h\n  - z\ntail\n'],
+  ['- o\n  - 1. +\n    > q\n  - z\ntail\n', '- o\n  - 1. > q\n  - z\ntail\n'],
+  ['> - o\n>   - 1. +\n>     s\n>   * z\ntail\n', '> - o\n>   - 1. s\n>   * z\ntail\n'],
 ]
 
 for (const [plus, written] of inPlace) {
   test(`${JSON.stringify(plus)} reads like the block written in place`, () => {
     assert.equal(html(plus), html(written))
+  })
+
+  // Off the marker column the `+` is refused and reads as a plain letter.
+  const refused = plus.replace(/^(>? *)  ( *)(s|# h|> q)$/m, '$1$2$3')
+  test(`${JSON.stringify(refused)} reads like a letter in place of the +`, () => {
+    assert.equal(html(refused), html(refused.replace('+', 'x')).replace('x', '+'))
   })
 }

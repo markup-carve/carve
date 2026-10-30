@@ -439,7 +439,7 @@ Some other text
 ```carve
 - item
 +                              # List-continuation marker (lone +): attaches
-> note                         #   the following flush-left block to `item`
+> note                         #   the following block at its column to `item`
 
 | Cell |
 + cont |                       # Table continuation (+ line WITH pipe structure)

@@ -745,7 +745,13 @@
     {
       "id": "CARVE-P9-067",
       "part": "9",
-      "title": "EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM",
+      "title": "ONE ATTACH RULE FOR EVERY HOST",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P9-085",
+      "part": "9",
+      "title": "A REFUSED `+` IS A PLAIN LETTER AND ENDS NOTHING",
       "scope": "resolution-rendering"
     },
     {

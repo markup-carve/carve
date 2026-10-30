@@ -13,9 +13,8 @@
   <dt>t</dt>
   <dd>
     <ul>
-      <li></li>
+      <li>x</li>
     </ul>
-    <p>x</p>
   </dd>
 </dl>
 ```

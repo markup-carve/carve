@@ -32,8 +32,8 @@ test('a chain near the nesting cap stays in budget', () => {
 })
 
 test('the measurement still attaches the block and registers a definition in it', () => {
-  const nested = (body) => `<ul>\n  <li>\n    <ul>\n      <li>${body}\n      </li>\n    </ul>\n  </li>\n</ul>`
-  assert.equal(renderDoc(parse(chain(2, '- +', '```\nx\n```\n'))).trim(),
+  const nested = (body) => `<ul>\n  <li>+\n    <ul>\n      <li>${body}\n      </li>\n    </ul>\n  </li>\n</ul>`
+  assert.equal(renderDoc(parse(chain(2, '- +', '  ```\n  x\n  ```\n'))).trim(),
     nested('\n        <pre><code>x\n</code></pre>'))
-  assert.match(renderDoc(parse(chain(3, '- +', '  [r]: /u\n\n[r][]\n'))), /<a href="\/u">r<\/a>/)
+  assert.match(renderDoc(parse(chain(3, '- +', '    [r]: /u\n\n[r][]\n'))), /<a href="\/u">r<\/a>/)
 })

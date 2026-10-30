@@ -51,7 +51,8 @@ b</p></blockquote>
   > q
 .
 <blockquote>
-  <blockquote><p>q</p></blockquote>
+  <blockquote><p>+
+q</p></blockquote>
 </blockquote>
 ```
 
@@ -63,7 +64,8 @@ b</p></blockquote>
 <ul>
   <li>a
     <blockquote>
-      <blockquote><p>q</p></blockquote>
+      <blockquote><p>+
+q</p></blockquote>
     </blockquote>
   </li>
 </ul>

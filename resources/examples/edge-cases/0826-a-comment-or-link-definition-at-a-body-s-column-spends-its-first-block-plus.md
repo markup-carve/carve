@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A comment or link definition at a body's column spends its first-block plus
 
-A first-block `+` takes one block (CARVE-P9-067). A line comment or a link definition at the marker body's content column is that block even though it renders nothing, so a column-zero line after it is not the body's and starts its own block (carve#4307). A comment or link definition at column zero is not at the body's column, so it is not the body's block and the `+` still takes the next one.
+A first-block `+` takes a block only at its marker column (CARVE-P9-067, carve#4409). A line comment or a link definition at the body's content column or at column zero refuses it, and the `+` stays the item's text. The comment or definition renders nothing and ends that paragraph, so the line after it starts its own block (carve#4307).
 
 ::::: compare
 
@@ -19,7 +19,7 @@ after
 <ul>
   <li>a
     <ul>
-      <li></li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
@@ -38,7 +38,7 @@ after
 
 ```html
 <ul>
-  <li></li>
+  <li>+</li>
 </ul>
 <p>after</p>
 ```
@@ -58,7 +58,7 @@ after
 <ul>
   <li>a
     <ul>
-      <li></li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
@@ -80,7 +80,7 @@ z
 
 ```html
 <ul>
-  <li></li>
+  <li>+</li>
 </ul>
 <pre><code>z
 </code></pre>
@@ -101,10 +101,11 @@ z
 <ul>
   <li>a
     <ul>
-      <li>after</li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<p>after</p>
 ```
 
 :::::
@@ -122,10 +123,11 @@ z
 <ul>
   <li>a
     <ul>
-      <li>after</li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<p>after</p>
 ```
 
 :::::

@@ -1,6 +1,6 @@
 ## A continuation marker stands alone at column zero or right after a block opener
 
-A `+` at column 0 of its quote level or first after the last opener on the same line attaches the next column-0 block. An indented `+` stays text or fence payload (markup-carve/carve#3421).
+A `+` on its own line at an open marker column, or last on a line of openers, attaches a follower at that marker column, read through the prefixes of the quotes around it. Any other `+` is a letter, or fence payload at a fence's content column (markup-carve/carve#3421, carve#4409).
 
 ::::::: compare
 
@@ -206,7 +206,8 @@ q
 `````
 
 ```html
-<blockquote><p>q</p></blockquote>
+<blockquote><p>+
+q</p></blockquote>
 ```
 
 :::::::
@@ -238,7 +239,7 @@ q</p>
 
 :::::::
 
-The last opener is the nested item, so it takes the paragraph.
+The last opener is the nested item, whose marker column is 2, so the line at column 0 folds into the refused `+`.
 
 ::::::: compare
 
@@ -251,7 +252,8 @@ para
 <ul>
   <li>
     <ul>
-      <li>para</li>
+      <li>+
+para</li>
     </ul>
   </li>
 </ul>
@@ -259,7 +261,7 @@ para
 
 :::::::
 
-The quote opened inside the item takes the paragraph.
+The quote opened inside the item owns the `+`. Its marker column is 2, so the line folds into the refused `+`.
 
 ::::::: compare
 
@@ -271,7 +273,8 @@ para
 ```html
 <ul>
   <li>
-    <blockquote><p>para</p></blockquote>
+    <blockquote><p>+
+para</p></blockquote>
   </li>
 </ul>
 ```
@@ -297,7 +300,7 @@ The item opened inside the quote takes the paragraph.
 
 :::::::
 
-An ordered outer item also gives the paragraph to its nested item.
+An ordered outer item reads the same: its nested item owns the `+` and refuses column 0.
 
 ::::::: compare
 
@@ -310,7 +313,8 @@ para
 <ol>
   <li>
     <ul>
-      <li>para</li>
+      <li>+
+para</li>
     </ul>
   </li>
 </ol>
@@ -342,7 +346,7 @@ para
 
 :::::::
 
-The indented opener's `+` keeps today's reading: the nested item is empty and the paragraph is outside the list.
+The indented opener's `+` is refused at column 0, and the line folds into it.
 
 ::::::: compare
 
@@ -356,7 +360,8 @@ para
 <ul>
   <li>a
     <ul>
-      <li>para</li>
+      <li>+
+para</li>
     </ul>
   </li>
 </ul>

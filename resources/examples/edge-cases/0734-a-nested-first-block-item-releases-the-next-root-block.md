@@ -1,6 +1,6 @@
 ## A nested first-block item releases the next root block
 
-The inner item takes one paragraph. The next block begins at the document root.
+A line at the inner item's content column refuses the `+` and folds into it (carve#4409). The next block begins at the document root.
 
 ::: compare
 
@@ -14,7 +14,8 @@ The inner item takes one paragraph. The next block begins at the document root.
 <ul>
   <li>
     <ul>
-      <li>x</li>
+      <li>+
+x</li>
     </ul>
   </li>
 </ul>
@@ -35,7 +36,8 @@ The inner item takes one paragraph. The next block begins at the document root.
 <ul>
   <li>
     <ul>
-      <li>x</li>
+      <li>+
+x</li>
     </ul>
   </li>
 </ul>
@@ -58,7 +60,8 @@ The inner item takes one paragraph. The next block begins at the document root.
 <ul>
   <li>
     <ul>
-      <li>x</li>
+      <li>+
+x</li>
     </ul>
   </li>
 </ul>
@@ -81,7 +84,8 @@ tail
 <ul>
   <li>
     <ul>
-      <li>x</li>
+      <li>+
+x</li>
     </ul>
   </li>
 </ul>
@@ -105,7 +109,8 @@ tail
 <ul>
   <li>
     <ul>
-      <li>x</li>
+      <li>+
+x</li>
     </ul>
   </li>
 </ul>

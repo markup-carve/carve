@@ -6,23 +6,29 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (src) => renderDoc(parse(src)).trim()
 const note = (src, label = 'q') => parse(src).footnoteDefs.get(label)
 
-test('a follower at the description body column refuses a marker-line note + (carve#4227)', () => {
-  assert.deepEqual(note(':: t\n: [^q]: +\n  para\n\nr[^q]\n'), [{ t: 'para', lines: ['+', 'para'] }])
+test('a follower off the note marker column refuses a marker-line note + (carve#4227)', () => {
+  assert.deepEqual(note(':: t\n: [^q]: +\npara\n\nr[^q]\n'), [{ t: 'para', lines: ['+', 'para'] }])
   assert.deepEqual(note(':: t\n: [^q]: +\n   para\n\nr[^q]\n'), [{ t: 'para', lines: ['+', 'para'] }])
+  assert.deepEqual(note(':: t\n: [^q]: +\n    para\n\nr[^q]\n'), [{ t: 'para', lines: ['+', 'para'] }])
 })
 
-test('column zero and the note body column still take the block (carve#4227)', () => {
-  assert.deepEqual(note(':: t\n: [^q]: +\npara\n\nr[^q]\n'), [{ t: 'para', lines: ['para'] }])
-  assert.deepEqual(note(':: t\n: [^q]: +\n    para\n\nr[^q]\n'), [{ t: 'para', lines: ['para'] }])
+test('the note marker column takes the block (carve#4227)', () => {
+  assert.deepEqual(note(':: t\n: [^q]: +\n  para\n\nr[^q]\n'), [{ t: 'para', lines: ['para'] }])
   assert.deepEqual(note(':: t\n: x\n  [^q]: +\n  para\n\nr[^q]\n'), [{ t: 'para', lines: ['para'] }])
 })
 
-// carve#4396: the refused `+` reads like a letter, so a marker that misses the note folds.
-for (const follower of ['- y', ' - y', '  - y', '> - y']) {
-  for (const head of [':: t\n: ', '> :: t\n> : ']) {
-    const src = (letter) => `${head}[^q]: ${letter}\n${follower}\n\nr[^q]\n`
-    test(`a marker below a hosted note reads as under a letter: ${JSON.stringify(src('+'))}`, () => {
-      assert.equal(html(src('+')), html(src('Q')).replaceAll('Q', '+'))
-    })
-  }
+for (const src of [':: t\n: [^q]: +\n- y\n\nr[^q]\n', ':: t\n: [^q]: +\n - y\n\nr[^q]\n']) {
+  test(`a list off the note marker column folds into the refused +: ${JSON.stringify(src)} (carve#4228)`, () => {
+    assert.match(html(src), /^<dl>\n {2}<dt>t<\/dt>\n {2}<dd><\/dd>\n<\/dl>\n<p>r/)
+    assert.deepEqual(note(src), [{ t: 'para', lines: ['+', '- y'] }])
+  })
 }
+
+test('inside a quote the note marker column is measured through the prefix (carve#4228)', () => {
+  assert.deepEqual(note('> :: t\n> : [^q]: +\n> - y\n\nr[^q]\n'), [{ t: 'para', lines: ['+', '- y'] }])
+  assert.match(html('> :: t\n> : [^q]: +\n>   - y\n\nr[^q]\n'), /<li id="fn1">\s*<ul>\s*<li>y<\/li>/)
+})
+
+test('a list at the note marker column opens in the note (carve#4228)', () => {
+  assert.match(html(':: t\n: [^q]: +\n  - y\n\nr[^q]\n'), /<dd><\/dd>[^]*<li id="fn1">\s*<ul>\s*<li>y<\/li>/)
+})

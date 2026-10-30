@@ -6,11 +6,17 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = source => renderDoc(parse(source))
 const indent = (source, by) => source.split('\n').map(l => l === '' ? '' : by + l).join('\n')
 
-// PART 0 S3: a lone `+` past an indented list's marker column is that list's
-// marker, so the lines it attaches move with the list (carve#4120).
-test('the ruled carve#4120 shape reads the same indented by two', () => {
-  const source = ':: t\n: ```\n +\n> q\n: a\n'
+// PART 0 S3: a lone `+` at an indented list's marker column attaches, and the lines move with the list.
+test('the carve#4120 shape reads the same indented by two', () => {
+  const source = ':: t\n: ```\n+\n> q\n: a\n'
   const expected = '<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code></code></pre>\n    <blockquote><p>q</p></blockquote>\n  </dd>\n  <dd>a</dd>\n</dl>'
+  assert.equal(html(source), expected)
+  assert.equal(html(indent(source, '  ')), expected)
+})
+
+test('a + past the marker column is refused at every indent', () => {
+  const source = ':: t\n: ```\n +\n> q\n: a\n'
+  const expected = '<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code></code></pre>\n  </dd>\n</dl>\n<p>+</p>\n<blockquote><p>q\n: a</p></blockquote>'
   assert.equal(html(source), expected)
   assert.equal(html(indent(source, '  ')), expected)
 })

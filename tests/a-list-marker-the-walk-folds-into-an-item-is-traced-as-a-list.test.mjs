@@ -8,20 +8,25 @@ import { modelTrace } from '../scripts/spec/decision-trace.mjs'
 // walk folds into an item's paragraph, was traced as a lazy line of that item.
 const steps = (source) => modelTrace(source).map((r) => `${r.line} ${r.step} ${r.owner} ${r.form}`)
 
-test('a list a first-block + refuses between its columns is traced in the parent', () => {
+test('a list marker off the marker column folds into the paragraph of a refused +', () => {
   const source = '1. +\n - s\n - t\n'
-  assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item', '3 S5 doc/item:3 item'])
-  assert.equal(modelTrace(source)[1].closed, 1)
+  assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S4 doc/item:1 lazy', '3 S4 doc/item:1 lazy'])
+  assert.equal(modelTrace(source)[1].closed, undefined)
   assert.equal(modelTrace(source)[1].reached, 'doc')
-  assert.equal(renderDoc(parse(source)), '<ol>\n  <li></li>\n</ol>\n<ul>\n  <li>s</li>\n  <li>t</li>\n</ul>')
+  assert.equal(renderDoc(parse(source)), '<ol>\n  <li>+\n- s\n- t</li>\n</ol>')
 })
 
-test('a refused list keeps its continuation, lazy and nested lines', () => {
-  assert.deepEqual(steps('1. +\n - s\n   more\n  lazy\n').slice(1), ['2 S5 doc/item:2 item', '3 S5 doc/item:2 text', '4 S4 doc/item:2 lazy'])
-  assert.equal(steps('- a\n  - +\n * w\n')[2], '3 S5 doc/item:3 item')
-  assert.deepEqual(steps('1. +\n - s\n\nafter\n').slice(2), ['3 S5 doc/item:2 blank', '4 S5 doc text'])
-  assert.deepEqual(steps('1. +\n - s\n* t\n').slice(1), ['2 S5 doc/item:2 item', '3 S5 doc/item:3 item'])
-  assert.deepEqual(steps('- +\n + w\n* z\n').slice(1), ['2 S5 doc text', '3 S5 doc text'])
+test('a list marker at the marker column of a refused + is traced as a new list', () => {
+  assert.deepEqual(steps('1. +\n- s\n'), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item'])
+  assert.equal(renderDoc(parse('1. +\n- s\n')), '<ol>\n  <li>+</li>\n</ol>\n<ul>\n  <li>s</li>\n</ul>')
+})
+
+test('a folded marker keeps its continuation, lazy and nested lines', () => {
+  assert.deepEqual(steps('1. +\n - s\n   more\n  lazy\n').slice(1), ['2 S4 doc/item:1 lazy', '3 S5 doc/item:1 text', '4 S4 doc/item:1 lazy'])
+  assert.equal(steps('- a\n  - +\n * w\n')[2], '3 S4 doc/item:1/item:2 lazy')
+  assert.deepEqual(steps('1. +\n - s\n\nafter\n').slice(2), ['3 S5 doc/item:1 blank', '4 S5 doc text'])
+  assert.deepEqual(steps('1. +\n - s\n* t\n').slice(1), ['2 S4 doc/item:1 lazy', '3 S5 doc/item:3 item'])
+  assert.deepEqual(steps('- +\n + w\n* z\n').slice(1), ['2 S4 doc/item:1 lazy', '3 S5 doc/item:3 item'])
 })
 
 test('a marker of another list kind under an item paragraph is traced as a new list', () => {
@@ -38,13 +43,13 @@ test('a marker of another kind off the parent column still folds', () => {
   assert.equal(renderDoc(parse(source)), '<ul>\n  <li>a</li>\n  <li>w\n* v</li>\n</ul>')
 })
 
-// carve#4214: below the marker column the `+` refuses a paragraph too, except
-// at the parent's content column and column zero, where it takes the block.
-test('a paragraph the + refuses below its marker column is traced in the parent', () => {
+// carve#4214, carve#4409: off the marker column the `+` is a letter and the
+// paragraph folds into it; at the marker column the `+` takes the paragraph.
+test('a paragraph off the marker column of a nested + is traced as lazy in the item', () => {
   const source = '- a\n  - +\n para\n'
-  assert.deepEqual(steps(source).slice(2), ['3 S5 doc text'])
-  assert.equal(modelTrace(source)[2].closed, 2)
-  assert.deepEqual(steps('  - +\n  para\n* z\n').slice(1), ['2 S5 doc text', '3 S5 doc text'])
+  assert.deepEqual(steps(source).slice(2), ['3 S4 doc/item:1/item:2 lazy'])
+  assert.equal(modelTrace(source)[2].closed, undefined)
+  assert.deepEqual(steps('  - +\n  para\n* z\n').slice(1), ['2 S5 doc/item:1 text', '3 S5 doc/item:3 item'])
   assert.equal(modelTrace('- a\n  - +\n  para\n')[2].owner, 'doc/item:1/item:2')
-  assert.equal(steps('  - +\npara\n')[1].startsWith('2 S5 doc/item:1'), true)
+  assert.equal(steps('  - +\npara\n')[1], '2 S4 doc/item:1 lazy')
 })

@@ -6,7 +6,8 @@ A first-block item takes the next owned block
 >
 .
 <ul>
-  <li>x</li>
+  <li>+
+x</li>
 </ul>
 <blockquote>
 
@@ -19,7 +20,8 @@ A first-block item takes the next owned block
 # h
 .
 <ul>
-  <li>x</li>
+  <li>+
+x</li>
 </ul>
 <section id="h">
   <h1>h</h1>
@@ -32,7 +34,8 @@ A first-block item takes the next owned block
 ---
 .
 <ul>
-  <li>x</li>
+  <li>+
+x</li>
 </ul>
 <hr>
 ```
@@ -43,7 +46,8 @@ A first-block item takes the next owned block
 >
 .
 <ul>
-  <li>x</li>
+  <li>+
+x</li>
 </ul>
 <blockquote>
 

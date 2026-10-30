@@ -1344,16 +1344,16 @@ uses for an empty footnote definition body; it is an attribute block, and PART 9
 §15 A4 drops a block-attribute line with no following block inside its own
 container, so it reaches neither the `<dd>` nor anything after it.
 
-**Two other spellings reach an empty `<dd>` and the import uses neither.**
+**One other spelling reaches an empty `<dd>` and the import does not use it.**
 
 `: %%` renders an empty `<dd>`, but its `definition_description` carries a
 `comment` child the source does not have, and this section's own rule permits no
 additions.
 
-`: +` is the first-block form (PART 9 §17 L4) with nothing flush-left under it.
-It attaches a following column-0 block - `:: term` / `: +` / `text` is a
-description whose body is `text` - so it spells an empty body only when a blank
-line follows it. The sentinel claims no line below it at any column.
+`: +` spells no empty body. It attaches a block at the description's marker
+column (PART 9 §17 L3): `:: term` / `: +` / `text` is a description whose body is
+`text`. Over a blank line the `+` is refused and stays a letter, `<dd>+</dd>`
+(markup-carve/carve#4409). The sentinel claims no line below it at any column.
 
 **Nothing that is not an attribute block spells it.** A description marker takes
 a separator space and non-empty content (PART 2, MARKER REQUIRES CONTENT), so a

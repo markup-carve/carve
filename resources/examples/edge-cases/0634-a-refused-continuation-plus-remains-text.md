@@ -1,6 +1,6 @@
 ## A refused continuation plus remains text
 
-A refused `+` on its own line stays text, or fence payload at the fence content column. A first-block `+` that attaches nothing (`- +`, `- [ ] +`) leaves its item empty instead (markup-carve/carve#3421).
+A refused `+` on its own line stays text, or fence payload at the fence content column. A refused `+` on a marker line (`- +`, `- [ ] +`) is the same letter (markup-carve/carve#3421, carve#4409).
 
 ::::::: compare
 
@@ -59,10 +59,8 @@ tail</li>
 <ul>
   <li>a</li>
 </ul>
-<p>+</p>
-<ul>
-  <li>s</li>
-</ul>
+<p>+
+- s</p>
 ```
 
 :::::::
@@ -81,10 +79,8 @@ tail</li>
     <pre><code></code></pre>
   </li>
 </ul>
-<p>+</p>
-<ul>
-  <li>s</li>
-</ul>
+<p>+
+- s</p>
 ```
 
 :::::::
@@ -508,7 +504,7 @@ left</li>
 
 ```html
 <ul>
-  <li></li>
+  <li>+</li>
 </ul>
 ```
 
@@ -524,7 +520,7 @@ para
 
 ```html
 <ul>
-  <li></li>
+  <li>+</li>
 </ul>
 <p>para</p>
 ```
@@ -540,7 +536,7 @@ para
 
 ```html
 <ul>
-  <li></li>
+  <li>+</li>
   <li>b</li>
 </ul>
 ```
@@ -555,7 +551,7 @@ para
 
 ```html
 <ol>
-  <li></li>
+  <li>+</li>
 </ol>
 ```
 
@@ -569,7 +565,7 @@ para
 
 ```html
 <ul class="task-list">
-  <li><input type="checkbox" disabled> </li>
+  <li><input type="checkbox" disabled aria-label="+"> +</li>
 </ul>
 ```
 
@@ -587,7 +583,7 @@ para
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>+</li>
       <li>b</li>
     </ul>
   </li>
@@ -618,7 +614,8 @@ flush
 
 ```html
 <blockquote>
-  <blockquote><p>flush</p></blockquote>
+  <blockquote><p>+
+flush</p></blockquote>
 </blockquote>
 ```
 
@@ -638,12 +635,11 @@ flush
     <ul>
       <li>
         <ul>
-          <li>
-            <blockquote><p>b</p></blockquote>
-          </li>
+          <li>+</li>
         </ul>
       </li>
     </ul>
+    <blockquote><p>b</p></blockquote>
   </li>
 </ul>
 ```
@@ -664,14 +660,13 @@ flush
     <ul>
       <li>
         <ul>
-          <li>
-            <blockquote><p>b</p></blockquote>
-          </li>
+          <li>+</li>
         </ul>
       </li>
     </ul>
   </li>
 </ul>
+<blockquote><p>b</p></blockquote>
 ```
 
 :::::::
@@ -689,7 +684,8 @@ flush
   <li>a
     <ul>
       <li>
-        <blockquote><p>b</p></blockquote>
+        <blockquote><p>+
+b</p></blockquote>
       </li>
     </ul>
   </li>
@@ -723,11 +719,12 @@ flush
 ```html
 <ul>
   <li>
-    <blockquote>
-      <h1 id="h">h</h1>
-    </blockquote>
+    <blockquote><p>+</p></blockquote>
   </li>
 </ul>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 :::::::
@@ -744,12 +741,11 @@ x
 ```html
 <ul>
   <li>
-    <blockquote>
-      <pre><code>x
-</code></pre>
-    </blockquote>
+    <blockquote><p>+</p></blockquote>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ```
 
 :::::::
@@ -764,15 +760,14 @@ x
 ```html
 <ul>
   <li>
-    <blockquote>
-      <table>
-        <tbody>
-          <tr><td>a</td></tr>
-        </tbody>
-      </table>
-    </blockquote>
+    <blockquote><p>+</p></blockquote>
   </li>
 </ul>
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
 ```
 
 :::::::
@@ -787,11 +782,10 @@ x
 ```html
 <ul>
   <li>
-    <blockquote>
-      <blockquote><p>q</p></blockquote>
-    </blockquote>
+    <blockquote><p>+</p></blockquote>
   </li>
 </ul>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::::::
@@ -809,13 +803,14 @@ x
   <li>a
     <ul>
       <li>
-        <blockquote>
-          <h1 id="h">h</h1>
-        </blockquote>
+        <blockquote><p>+</p></blockquote>
       </li>
     </ul>
   </li>
 </ul>
+<section id="h">
+  <h1>h</h1>
+</section>
 ```
 
 :::::::
@@ -833,11 +828,10 @@ x
   <li>a
     <ul>
       <li>
-        <blockquote>
-          <h1 id="h">h</h1>
-        </blockquote>
+        <blockquote><p>+</p></blockquote>
       </li>
     </ul>
+    <h1 id="h">h</h1>
   </li>
 </ul>
 ```

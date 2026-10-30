@@ -1,8 +1,8 @@
 ## A hosted quote's first-block plus attaches any non-list block at column zero
 
-Below `> - > +` the first-block `+` pulls a non-list block at column 0 into the inner quote whatever its kind, as it already pulls a paragraph line (CARVE-P9-033, CARVE-P9-067). The pull takes precedence over the host quote ending at an unprefixed line (§10 I5, carve#3421).
+Reversed by carve#4409: below `> - > +` a block at column 0 lacks the host quote's prefix, so the `+` is refused (CARVE-P9-067). The unprefixed line ends the host quote (§10 I5) and the block stands outside it.
 
-A heading at column 0 attaches to the inner quote
+A heading at column 0 stands outside the host quote
 
 ::::::: compare
 
@@ -15,17 +15,18 @@ A heading at column 0 attaches to the inner quote
 <blockquote>
   <ul>
     <li>
-      <blockquote>
-        <h1 id="h">h</h1>
-      </blockquote>
+      <blockquote><p>+</p></blockquote>
     </li>
   </ul>
 </blockquote>
+<section id="h">
+  <h1>h</h1>
+</section>
 `````
 
 :::::::
 
-A table row at column 0 attaches to the inner quote
+A table row at column 0 stands outside the host quote
 
 ::::::: compare
 
@@ -38,21 +39,20 @@ A table row at column 0 attaches to the inner quote
 <blockquote>
   <ul>
     <li>
-      <blockquote>
-        <table>
-          <tbody>
-            <tr><td>c</td></tr>
-          </tbody>
-        </table>
-      </blockquote>
+      <blockquote><p>+</p></blockquote>
     </li>
   </ul>
 </blockquote>
+<table>
+  <tbody>
+    <tr><td>c</td></tr>
+  </tbody>
+</table>
 `````
 
 :::::::
 
-A stacked opener on a sibling item's line pulls the heading the same way
+A stacked opener on a sibling item's line refuses the heading the same way
 
 ::::::: compare
 
@@ -67,12 +67,13 @@ A stacked opener on a sibling item's line pulls the heading the same way
   <ul>
     <li>a</li>
     <li>
-      <blockquote>
-        <h1 id="h">h</h1>
-      </blockquote>
+      <blockquote><p>+</p></blockquote>
     </li>
   </ul>
 </blockquote>
+<section id="h">
+  <h1>h</h1>
+</section>
 `````
 
 :::::::
