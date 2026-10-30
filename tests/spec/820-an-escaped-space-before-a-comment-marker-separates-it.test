@@ -11,3 +11,9 @@ x\ %% c
 .
 <p><mark>a&nbsp;</mark> t and b &nbsp;</p>
 ```
+
+```
+/*x\ %% c*/ t
+.
+<p><strong><em>x&nbsp;</em></strong> t</p>
+```

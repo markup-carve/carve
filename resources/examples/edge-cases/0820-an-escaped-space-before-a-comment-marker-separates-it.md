@@ -31,3 +31,17 @@ The same holds in a forced span, which the comment ends at its closer, and after
 ```
 
 :::
+
+The combined token ends the comment at its closer.
+
+::: compare
+
+```carve
+/*x\ %% c*/ t
+```
+
+```html
+<p><strong><em>x&nbsp;</em></strong> t</p>
+```
+
+:::
