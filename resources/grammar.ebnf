@@ -1129,9 +1129,11 @@ task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
    a <label>, not an aria-label - so without a name a reader meets an
    unlabeled disabled checkbox. The box takes an `aria-label` naming it with
    the item's own visible text: the DERIVED TEXT of the item's first block
-   (PART 9R R4's derivation). A name is ONE line, so each run of ASCII
-   whitespace in the derived text collapses to a single space and the result is
-   trimmed; a NO-BREAK space is content and survives.
+   (PART 9R R4's derivation). An unresolved reference image contributes its
+   alt as written, as it does to a heading id: `- [ ] ![x][r]` is named `x`,
+   and `- [ ] ![/x/ y][r] z` is named `/x/ y z`. A name is ONE line, so each
+   run of ASCII whitespace in the derived text collapses to a single space and
+   the result is trimmed; a NO-BREAK space is content and survives.
      `- [ ] unchecked`   ->  `<input type="checkbox" disabled
                               aria-label="unchecked">`
      `- [x] done with `c``  ->  `... checked disabled aria-label="done with c"`
@@ -3844,8 +3846,9 @@ identifier = (letter | '_'), {letter | digit | '_' | '-'} ;
 explicit_identifier = (letter | digit | '_'), {letter | digit | '_' | '-'} ;
 (* Explicit ids and classes additionally admit an ASCII digit first. This is a
    preservation rule for authored/imported HTML-valid values; generated heading
-   ids remain conservative and prefix a digit-leading slug with `s-`. Attribute
-   keys, boolean attributes and inline-extension names still use `identifier`. *)
+   ids remain conservative and prefix a number-leading slug (a first character
+   of general category N, PART 2) with `s-`. Attribute keys, boolean
+   attributes and inline-extension names still use `identifier`. *)
 
 letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j'
        | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't'
