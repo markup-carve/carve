@@ -725,3 +725,4 @@
 848-a-description-a-plus-filled-stays-open-for-a-sibling-2  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 848-a-description-a-plus-filled-stays-open-for-a-sibling-3  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 848-a-description-a-plus-filled-stays-open-for-a-sibling-4  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+848-a-reference-link-around-a-literal-directive-renders-2  markup-carve/carve#4426, the pinned carve-js reads a bare @code directive as a mention; carve-js main renders the expected output
