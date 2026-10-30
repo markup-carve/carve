@@ -6299,7 +6299,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               const shift = here.d > 1 && quoteColFollower ? ind(i + 1).col : 0
               inner.push(here.d > 1 ? qm[1] : '',
                 ...(shift ? attached.rawMarker.map((line) => line.replace(new RegExp(`^ {0,${shift}}`), '')) : attached.rawMarker))
-              if (!leavesFenceOpen(attached.rawMarker.map((line) => trimWsStart(line)))) inner.push('')
+              if (!attachedLeavesFenceOpen(attached.rawMarker)) inner.push('')
               if (here.d > 1 && QUOTE.test(lines[i + 1])) quotePulledFollowers.add(inner)
               qLastMarked = i
               i = attached.next
@@ -6369,7 +6369,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             if (!insideColon || qOpenPara) inner.push('')
             inner.push(...attached.rawMarker)
-            if (!leavesFenceOpen(attached.rawMarker.map((line) => trimWsStart(line)))) inner.push('')
+            if (!attachedLeavesFenceOpen(attached.rawMarker)) inner.push('')
             qOpenPara = false
             qItemPara = false
             qTermOpen = false
@@ -6587,6 +6587,22 @@ const leavesFenceOpen = (block) => {
   for (let attrs; (attrs = tryAttrLine(block, at)); ) at = attrs.next
   const m = FENCE.exec(block[at] ?? '')
   return !!m && parseFenceInfo(m[2]) !== null && findCloser(block, at, m[1]) === -1
+}
+// The same for a quote's attached block: a list's fence may stand behind its
+// markers or on a later line, and a separator would become that fence's payload.
+const attachedLeavesFenceOpen = (block) => {
+  if (leavesFenceOpen(block.map((line) => trimWsStart(line)))) return true
+  const read = block.map((line) => {
+    for (let marker; (marker = matchMarkerAt(indentCols(line))); ) line = marker.text
+    return trimWsStart(line).replace(DESCRIPTION_TEXT, '')
+  })
+  for (let at = 0; at < read.length; at++) {
+    const m = FENCE.exec(read[at])
+    if (!m || parseFenceInfo(m[2]) === null) continue
+    at = findCloser(read, at, m[1])
+    if (at === -1) return true
+  }
+  return false
 }
 
 // A closer cannot turn invalid metadata into a block opener. Interruption
