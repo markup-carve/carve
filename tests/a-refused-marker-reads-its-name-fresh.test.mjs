@@ -17,6 +17,11 @@ test('the ruling cases', () => {
   assert.equal(html('b#-->\n'), '<p>b#→</p>')
 })
 
+test('the rest reads its first dash run after the marker', () => {
+  assert.equal(html('_b_#--_\n'), '<p><u>b</u>#–_</p>')
+  assert.equal(html('_b_@---x\n'), '<p><u>b</u>@—x</p>')
+})
+
 test('a tag that opens keeps its dash', () => {
   assert.equal(html('x #->\n'), '<p>x <span class="tag"><strong>#-</strong></span>&gt;</p>')
 })

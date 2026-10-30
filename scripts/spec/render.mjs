@@ -1742,7 +1742,8 @@ function applyMarkerBoundary(toks, openMap, src, contentAt, literalDelims) {
     if (!isWordCh(at > contentAt ? src[at - 1] : undefined)) continue
     // An enclosing span's held `_` stays literal in the rest it leaves.
     const rest = t.raw === t.full ? arrowTail(toks, i, src, t.raw.slice(1)) : t.raw.slice(1)
-    t.h = escapeHtml(t.raw[0]) + renderInline(literalDelims.includes('_') ? rest.replaceAll('_', '\\_') : rest, t.raw[0])
+    // Read behind the escaped marker, so the rest's first run sees it (`_b_#--_`).
+    t.h = renderInline('\\' + t.raw[0] + (literalDelims.includes('_') ? rest.replaceAll('_', '\\_') : rest), src[at - 1] ?? '')
     failed.push(t)
   }
   return failed
