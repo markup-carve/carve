@@ -2805,6 +2805,9 @@ function ownLines(lines, trace = null) {
   const refusedPlus = new Set()
   // Lines an item's or a description's first-block `+` moved onto its body.
   const firstBlockLines = new Set()
+  // The trace path of a block the walk opens in a parent although an item's
+  // first-block `+` took it, and the item path the trace records it under.
+  let reown = null
   let start = 0
   if (lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
     const close = lines.findIndex((line, k) => k > 0 && /^---[ \t]*$/.test(line))
@@ -3047,6 +3050,16 @@ function ownLines(lines, trace = null) {
     // follower otherwise (corpus 651, 750).
     const plusBody = top().kind === 'item' && top().plus === at - 1 &&
       frames[frames.length - 2].line !== top().line ? top() : null
+    // Between the marker and content columns the readers attach any block but
+    // a paragraph (CARVE-P9-067, corpus 633). The walk already hands them the
+    // line they attach; only the trace records it under the item (carve#4147).
+    // An item on its quote's marker line takes the block the same way.
+    const pullingItem = top().kind === 'item' && top().plus === at - 1 &&
+      (frames[frames.length - 2].line !== top().line || frames[frames.length - 2].kind === 'quote') ? top() : null
+    const pulledInto = trace && pullingItem && missed && m.rest !== '' && !replaced.has(at) &&
+      !['item', 'dd', 'term', 'text'].includes(form.kind) && m.rest[0] !== '+' &&
+      m.col > pullingItem.markerCol && m.col < pullingItem.col && !frames.slice(reached + 1).some((f) => f.kind === 'quote')
+      ? ownerPath() : null
     if (plusBody && missed && m.rest !== '' && !replaced.has(at) && !['item', 'dd', 'term'].includes(form.kind) && m.rest[0] !== '+' &&
         m.col === 0 && plusBody.markerCol > 0 && !frames.slice(reached + 1).some((f) => f.kind === 'quote')) {
       const depth = frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length
@@ -3168,11 +3181,16 @@ function ownLines(lines, trace = null) {
       if (trace) applied = ownerPath()
     }
     result.push(out + src)
+    const parentPath = pulledInto ? ownerPath(reached) : null
+    const blockPath = applied
+    if (pulledInto) applied = pulledInto + applied.slice(parentPath.length)
     if (trace) {
       const kind = TRACE_FORM[form.kind] ?? form.family ?? form.kind
       const cell = form.kind === 'colon-close' ? 'B-div-end' : TRACE_OPENS.has(form.kind) ? `B-${form.family ?? kind}-start` : undefined
       emit(at, 'S5', applied, TRACE_RULE[form.kind] ?? 'CARVE-P0-024', kind,
-        { cell, closed: closed > 0 ? closed : undefined, reached: reachedPath, plus: plusFollower || firstBlockLines.has(at) ? at : undefined })
+        pulledInto ? { cell, plus: at } : { cell, closed: closed > 0 ? closed : undefined, reached: reachedPath, plus: plusFollower || firstBlockLines.has(at) ? at : undefined })
+      // An attribute line attaches with the block it decorates.
+      if (pulledInto && (blockPath !== parentPath || m.rest[0] === '{')) reown = { from: blockPath, to: applied, attribute: blockPath === parentPath }
     }
 
     // `col` is where the opener starts in the source, `canon` where it lands.
@@ -3255,6 +3273,9 @@ function ownLines(lines, trace = null) {
   function emit(index, step, owner, rule, form, extra = {}) {
     // The empty string after a final newline is not a line.
     if (index === lines.length - 1 && lines[index] === '') return
+    if (reown && reown.attribute && form === 'blank') reown = null
+    if (reown && (owner === reown.from || owner.startsWith(`${reown.from}/`))) owner = reown.to + owner.slice(reown.from.length)
+    else reown = null
     const record = { line: index + 1, step, owner, rule, form }
     for (const [key, value] of Object.entries(extra)) if (value !== undefined) record[key] = value
     trace.push(record)
