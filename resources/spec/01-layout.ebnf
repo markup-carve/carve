@@ -244,7 +244,7 @@
         instead, as a list marker there does, and with no open term in the
         surviving context it is paragraph text: `- item` / `  :: t` /
         `  : a` / `: b` renders `: b` as a paragraph after the list (corpus
-        657). Under an open quote paragraph it folds at every column (X2).
+        657). Under an open quote paragraph it folds at every column (S4).
 
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
         UNDER -- NORMATIVE [CARVE-P0-011]. A block read in a container, at or
@@ -424,7 +424,7 @@
                       such a marker line (`- +`, `> +`, `: +`, `[^a]: +`),
                       offers the container its next block (PART 9 §17,
                       CARVE-P9-067). A refused `+` is a plain letter
-                      and ends nothing (carve#4396).
+                      (carve#4396).
 
    OUTPUT. The layout-resolved line stream (equivalently: INDENT / DEDENT /
            CONT events plus line residues). PARTS 1-2 parse blocks over it;

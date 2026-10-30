@@ -283,14 +283,23 @@
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.
          - `- +` / `- b` is refused: `<li>+</li>` and a sibling item.
 
-         A REFUSED `+` IS A PLAIN LETTER AND ENDS NOTHING -- NORMATIVE [CARVE-P9-085].
-         Rulings carve#3421 and carve#4396. It does not close a fence, quote, item, description, note
-         or paragraph, it does not spend or block another marker, and it does
-         not change which owner a later line belongs to. Replacing a refused
-         `+` with a letter changes the output only in that character. So it
-         folds into an open paragraph when that paragraph can continue and a
-         following list marker folds with it (§10 I2), and otherwise it starts
-         a paragraph where a letter would. The `continuation-marker-refused`
+         A `+` on the next line at the marker column is a marker for the same
+         host. If it attaches, its block is the one the earlier marker offered
+         and both markers are consumed: `- +` / `+` / `x` gives the item `x`.
+         If it is refused it is a letter and is itself the attached block:
+         `- +` / `+` / a blank line / `x` gives `<li>+</li>` and a paragraph
+         after the list.
+
+         A REFUSED `+` IS A PLAIN LETTER -- NORMATIVE [CARVE-P9-085].
+         Rulings carve#3421 and carve#4396. It has no effect of its own: it
+         closes only what that letter would close, it does not spend or block
+         another marker, and a later line has the owner it would have after
+         that letter. Replacing a refused `+` with a letter changes the output
+         only in that character. So it folds into an open paragraph when that
+         paragraph can continue, a following list marker reads as it does after
+         that letter (it folds under an open paragraph unless it is a sibling,
+         PART 0 S4), and otherwise the `+` starts a paragraph where a letter
+         would. The `continuation-marker-refused`
          lint reports a recognized refusal.
 
          A `+` at a container's marker column is outside that container's code,

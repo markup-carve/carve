@@ -500,8 +500,8 @@ indent = whitespace, {whitespace} ;
    a further block of the open nested item (it reaches its content column). This matches
    reference djot.js (`@djot/djot`) and CommonMark. *)
 (* Continuation marker (PART 9 §17): a lone `+` at an open container's marker column,
-   or directly after a quote prefix, attaches one block starting at that
-   column. A first-block `+` after the last opener on its line attaches to
+   measured through the prefixes of its enclosing quotes, attaches one block
+   starting at that column. A first-block `+` after the last opener on its line attaches to
    that innermost opener when the next line stands at the opener's marker
    column, through the prefixes of its enclosing quotes. At a list item's
    marker column a list marker is a sibling and a description's `: ` line is a
