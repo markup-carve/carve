@@ -104,8 +104,9 @@ The line after an accepted `+` is recorded where it stands, with `plus` set to
 the `+` line: the walk keeps its column and the block readers attach it to the
 `+`'s container (CARVE-P9-067). A `+` on an item's or description's own marker
 line has no record of its own: the block it takes at the marker column is
-recorded inside that item or description, and the lines after that block are
-recorded in its parent. A block it takes at column zero below an indented
+recorded inside that item or description. After that block, a blank line and a
+paragraph line at its content column are recorded in it too, as the readers
+keep them there; any other line after the block is recorded in its parent. A block it takes at column zero below an indented
 marker is recorded inside the item or description too, with `plus` set to the
 marker line. So is a block other than a paragraph that an item's or a
 description's `+` takes between its marker and content columns. A paragraph
