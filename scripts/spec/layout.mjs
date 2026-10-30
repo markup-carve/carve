@@ -3869,6 +3869,8 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
     if (bodyLead) {
       hostedMarkerDepth = quoteLeaf(rest.slice(bodyLead[0].length)).depth
       hostedMarkerSourceColumn = indentCols(line).col + bodyLead[0].length
+      hostedQuoteColumn = hostedMarkerSourceColumn
+      hostedMarkerQuote = true
     }
   }
   const openSiblingList = (index, col, depth) => {
@@ -4021,6 +4023,9 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
     }
     if (FOOTNOTE_DEF.test(measured.rest) || /^:{1,2} /.test(measured.rest)) markerColumns.push(measured.col)
     if (QUOTE.test(measured.rest)) quoteColumn = measured.col
+    // A quote opened on a description or footnote body's marker line stands where its `>` does.
+    const bodyQuote = /^(?::|\[\^[^\]]+\]:) +(?=> )/.exec(measured.rest)
+    if (bodyQuote) quoteColumn = measured.col + bodyQuote[0].length
     return line
   }) : sourceLines
   for (const index of walked.refusedPlus) {

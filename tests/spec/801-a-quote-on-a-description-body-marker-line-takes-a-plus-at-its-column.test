@@ -1,0 +1,51 @@
+A quote on a description body marker line takes a plus at its column
+
+```
+:: t
+: > a
+  +
+  para
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote>
+      <p>a</p>
+      <p>para</p>
+    </blockquote>
+  </dd>
+</dl>
+```
+
+```
+:: t
+:  > a
+   +
+   > q
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote>
+      <p>a</p>
+      <blockquote><p>q</p></blockquote>
+    </blockquote>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: > a
+  +
+  . e
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>a
++
+. e</p></blockquote>
+  </dd>
+</dl>
+```
