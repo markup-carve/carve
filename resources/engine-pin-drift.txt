@@ -510,3 +510,4 @@
 791-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-2  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.
 791-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-3  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.
 791-the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run-5  Pinned JavaScript ends a bracketed span's attribute run at an empty block (markup-carve/carve#4077); pending in carve-js.
+792-a-glued-attribute-run-is-one-physical-line-3  Pinned JavaScript reads a block glued after a wrapped block as one attribute line (markup-carve/carve#4078); pending in carve-js.

@@ -862,7 +862,10 @@
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
          one block: id `id`, class `foo`). A BLANK line inside the braces
          ends the attempt -- the text is then literal, not a
-         block_attributes. A quoted value containing a literal `}` across
+         block_attributes. A glued run of blocks (`{.a}{.b}`) is one
+         physical line: only a lone block may wrap, so a line break inside
+         or after any block of a longer run leaves the lines literal
+         paragraph text. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
          follows PART 4 `block_attributes` and PART 0 S4.
       A6 NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE. A `{…}` line whose
