@@ -4182,6 +4182,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
     let opener = matchMarkerAt(measured)
     if (opener) while (markerColumns.length && markerColumns.at(-1) >= measured.col) markerColumns.pop()
     let openerCol = measured.col
+    let tail = measured
     for (let depth = 0; opener && depth < MAX_NESTING_DEPTH; depth++) {
       markerColumns.push(openerCol)
       const nested = indentCols(opener.text)
@@ -4194,8 +4195,24 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
       openerCol += opener.markerWidth + nested.col
       if (hosted.depth > 0) quoteColumn = openerCol
       opener = matchMarkerAt(nested)
+      if (!opener) tail = nested
     }
-    if (FOOTNOTE_DEF.test(measured.rest) || /^:{1,2} /.test(measured.rest)) markerColumns.push(measured.col)
+    // A description or note opened on a marker line nests like a list, and its own marker line can open more (§17 L3).
+    for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+      const note = FOOTNOTE_DEF.exec(tail.rest)
+      const description = note ? null : /^:{1,2} +/.exec(tail.rest)
+      if (!note && !description) break
+      markerColumns.push(openerCol)
+      const body = indentCols(note ? note[2] : tail.rest.slice(description[0].length))
+      // A note's content reads from its body column, whatever its label's width (CARVE-P0-024 S3).
+      openerCol = note ? openerCol + FOOTNOTE_BODY_COLUMN : openerCol + description[0].length + body.col
+      for (let inner = matchMarkerAt(body); inner; inner = matchMarkerAt(indentCols(inner.text))) {
+        markerColumns.push(openerCol)
+        openerCol += inner.markerWidth + indentCols(inner.text).col
+        tail = indentCols(inner.text)
+      }
+      if (matchMarkerAt(body) === null) tail = body
+    }
     if (QUOTE.test(measured.rest)) quoteColumn = measured.col
     // A quote opened on a description or footnote body's marker line stands where its `>` does.
     const bodyQuote = /^(?::|\[\^[^\]]+\]:) +(?=> )/.exec(measured.rest)
@@ -4735,6 +4752,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // pulled-in block (SS17 L4). It is a distinct signal from an empty body
       // line, so an empty note (`[^a]:`) never swallows the following block.
       let pullPending = false
+      let pullColumn = sourceDefCol
       const nestedFirstBlock = !CONT_MARKER.test(m[2]) && markerCarriesContinuation(trimWs(m[2]), new Map())
       let afterComment = false
       let commentScanFrom = 0
@@ -4846,14 +4864,17 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // kept it through the continuation branch without the pull branch
           // ever being asked.
           i++
-          if (!attachesFlushLeft(ind(i), sourceDefCol)) break
+          // An item rebases its lines, so a marker-line note's follower is met where the item put it (§17 L3).
+          const rebased = i < n && !isBlank(lines[i]) && ind(i).col === ind(defLine).col
+          if (!attachesFlushLeft(ind(i), sourceDefCol) && !rebased) break
+          if (rebased) pullColumn = ind(i).L?.col ?? ind(i).col
           markAttachmentBoundary(state, bodyLines)
           bodyLines.push('')
           lazyParagraphOpen = false
           pullPending = true
         } else if (pullPending && !isBlank(lines[i] ?? '')) {
           // the whole flush-left block pulled in by the preceding `+` marker
-          const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i), sourceDefCol)
+          const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i), pullColumn)
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           lazyParagraphOpen = null
           pullPending = false
