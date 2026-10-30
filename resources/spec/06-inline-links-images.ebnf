@@ -8,7 +8,7 @@ inline_content = {inline_element | text_run | literal_special}+ ;
    precedence + PART 9 conditions is literal text. Without this production
    the grammar cannot represent "a/b/c", "x = a*b", or an inner delimiter
    such as the middle '/' of /usr/local/ -- yet these are canonical outputs
-   (edge-cases.md §1, corpus 01-emphasis). The "is this a construct?"
+   (corpus 01-emphasis). The "is this a construct?"
    decision is the semantic constraint in PART 9, not a context-free one. *)
 literal_special = special_char ;
 
@@ -77,7 +77,8 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
 (* UNCLOSED RUN. An opener with no equal-length closer ANYWHERE LATER IN THE
    BLOCK is NOT literal text: it opens a verbatim span that runs to
    END_OF_BLOCK (the block's trailing whitespace is stripped; no surrounding
-   single-space strip, which applies only to a closed span). Nothing bounds
+   single-space strip, which applies only to a closed span). Nothing but an
+   extension's first `]` bounds
    it earlier, a forced or editorial `X}` included: an unclosed run inside a
    braced span or an editorial frame takes the rest of the block too, so that
    span has no closer and its opener is text (carve#3973 X5). `{*a `b*} c` is
@@ -281,7 +282,8 @@ link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' -
    title: `[t]( "T")` has href "" and title T; `[t]("T")` has the
    nonempty destination `"T"` and no title. Multiple spaces before
    a quote do not open a title. A nonempty destination keeps its existing
-   one-space title separator and accepts the same trailing ASCII spaces. Unicode
+   one-space title separator and accepts trailing ASCII spaces only after a
+   title: `[t](/u "T"  )` links and `[t](/u )` stays literal. Unicode
    whitespace and tabs cannot fill the empty destination's padding slot.
 
    Empty children, an empty destination, and title presence are independent.
@@ -321,8 +323,9 @@ reference_label = (character - ']' - '@' - newline), {character - ']' - newline}
 
    THE CONTROL CARRIES THE RULE. `[@a]` on its own IS a citation with the
    extension on, and that is the REASON the label slot rejects it. The same
-   exclusion makes `[@key]: …` a citation definition (`citation_definition`)
-   and never a link definition, whether or not the extension is enabled.
+   exclusion keeps `[@key]: …` from ever being a link definition. It is a
+   citation definition (`citation_definition`) only with the extension on;
+   with it off the line is ordinary text (corpus 717).
 
    THE TREE SHAPE for a declining `[t][@a]` is left open here; the rendering is
    the verbatim source run either way. *)
@@ -431,8 +434,8 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    every resolved reference. *)
 (* THE DEFINITION MARKER SEPARATOR -- NORMATIVE [CARVE-P3-009]. The marker-to-content
    separator is the `space` terminal (U+0020) ONLY, in all four definition
-   markers: `reference_definition`, `footnote_definition` and
-   `abbreviation_definition`. A tab does NOT satisfy `space` (`space = ' '`),
+   markers: `reference_definition`, `footnote_definition`,
+   `citation_definition` and `abbreviation_definition`. A tab does NOT satisfy `space` (`space = ' '`),
    so `[^a]:<TAB>x`, `[a]:<TAB>/url` and `*[HTML]:<TAB>x` are ordinary
    paragraphs, not definitions -- the marker line is preserved as text. This
    mirrors the heading, list and task markers, which likewise require a

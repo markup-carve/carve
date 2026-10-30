@@ -95,7 +95,7 @@
       and DROPPED otherwise. The `{=format}` tag is consumed, not rendered.
       A code span with any OTHER trailing `{…}` is a generic attributed code
       span (PART 3 `code_span` note), not raw inline. The corpus pins this
-      (tests/corpus/50-raw-inline):
+      (tests/corpus/30-raw-inline):
         `<br>`{=html}   -> <br>            (emitted verbatim)
         `\foo`{=latex}  ->                (dropped in HTML output)
 

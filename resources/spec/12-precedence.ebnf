@@ -23,6 +23,9 @@
    Recognition order is NOT interruption: which of these may interrupt an
    open paragraph is PART 9 §10.
 
+   Trailing line comments (%%, PART 9 §21) are cut from a run before its
+   inline passes, so `*a %% c* d` renders `*a`.
+
    Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
    the order of its atom table (escapes, code spans, math, inline
    literals, autolinks and cross-references, comments, inline notes, note
@@ -31,9 +34,9 @@
    Prefer literal text over markup: a delimiter that pairs with nothing
    under §9 is literal. What remains is read afterwards, in this order:
    1. Mentions and tags (@user, #tag)
-   2. Smart typography (--, ---, etc.; `=>` is ordinary text, never a
+   2. Symbols (`:name:`, PART 9 §7)
+   3. Smart typography (--, ---, etc.; `=>` is ordinary text, never a
       highlight opener, CARVE-P3-022)
-   3. Trailing line comments (%%, PART 9 §21)
    4. Plain text
 *)
 

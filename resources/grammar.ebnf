@@ -1866,7 +1866,7 @@ inline_content = {inline_element | text_run | literal_special}+ ;
    precedence + PART 9 conditions is literal text. Without this production
    the grammar cannot represent "a/b/c", "x = a*b", or an inner delimiter
    such as the middle '/' of /usr/local/ -- yet these are canonical outputs
-   (edge-cases.md §1, corpus 01-emphasis). The "is this a construct?"
+   (corpus 01-emphasis). The "is this a construct?"
    decision is the semantic constraint in PART 9, not a context-free one. *)
 literal_special = special_char ;
 
@@ -1935,7 +1935,8 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
 (* UNCLOSED RUN. An opener with no equal-length closer ANYWHERE LATER IN THE
    BLOCK is NOT literal text: it opens a verbatim span that runs to
    END_OF_BLOCK (the block's trailing whitespace is stripped; no surrounding
-   single-space strip, which applies only to a closed span). Nothing bounds
+   single-space strip, which applies only to a closed span). Nothing but an
+   extension's first `]` bounds
    it earlier, a forced or editorial `X}` included: an unclosed run inside a
    braced span or an editorial frame takes the rest of the block too, so that
    span has no closer and its opener is text (carve#3973 X5). `{*a `b*} c` is
@@ -2139,7 +2140,8 @@ link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' -
    title: `[t]( "T")` has href "" and title T; `[t]("T")` has the
    nonempty destination `"T"` and no title. Multiple spaces before
    a quote do not open a title. A nonempty destination keeps its existing
-   one-space title separator and accepts the same trailing ASCII spaces. Unicode
+   one-space title separator and accepts trailing ASCII spaces only after a
+   title: `[t](/u "T"  )` links and `[t](/u )` stays literal. Unicode
    whitespace and tabs cannot fill the empty destination's padding slot.
 
    Empty children, an empty destination, and title presence are independent.
@@ -2179,8 +2181,9 @@ reference_label = (character - ']' - '@' - newline), {character - ']' - newline}
 
    THE CONTROL CARRIES THE RULE. `[@a]` on its own IS a citation with the
    extension on, and that is the REASON the label slot rejects it. The same
-   exclusion makes `[@key]: …` a citation definition (`citation_definition`)
-   and never a link definition, whether or not the extension is enabled.
+   exclusion keeps `[@key]: …` from ever being a link definition. It is a
+   citation definition (`citation_definition`) only with the extension on;
+   with it off the line is ordinary text (corpus 717).
 
    THE TREE SHAPE for a declining `[t][@a]` is left open here; the rendering is
    the verbatim source run either way. *)
@@ -2289,8 +2292,8 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    every resolved reference. *)
 (* THE DEFINITION MARKER SEPARATOR -- NORMATIVE [CARVE-P3-009]. The marker-to-content
    separator is the `space` terminal (U+0020) ONLY, in all four definition
-   markers: `reference_definition`, `footnote_definition` and
-   `abbreviation_definition`. A tab does NOT satisfy `space` (`space = ' '`),
+   markers: `reference_definition`, `footnote_definition`,
+   `citation_definition` and `abbreviation_definition`. A tab does NOT satisfy `space` (`space = ' '`),
    so `[^a]:<TAB>x`, `[a]:<TAB>/url` and `*[HTML]:<TAB>x` are ordinary
    paragraphs, not definitions -- the marker line is preserved as text. This
    mirrors the heading, list and task markers, which likewise require a
@@ -2709,8 +2712,8 @@ deletion = "{-", !(grapheme_extender), inline_content, "-}", [attribute_run] ;
 substitution = "{~", !(grapheme_extender), inline_content, "~>", inline_content, "~}" ;
 editorial_comment = "{#", !(grapheme_extender), comment_content, "#}" ;
 comment_content = (* any text until the matching `#}`, preserved literally;
-                     at least one character -- see the empty-brace clause under
-                     Forced Intraword Emphasis *) ;
+                     at least one character -- see the empty-brace clause,
+                     CARVE-P3-014 *) ;
 (* EDITORIAL COMMENT CONTENT IS LITERAL -- NORMATIVE [CARVE-P3-016]. Nothing inside is parsed as markup, spaces
    are preserved, and no escape is resolved: `{# a *b* c #}` holds the eight
    characters ` a *b* c ` and renders them, asterisks included. It is also what
@@ -2773,7 +2776,7 @@ name_word = (letter | digit | '_' | '-')+ ;
    character continues the name (`@john.doe`, `#release-1.0`); a dot at the
    end of the run is sentence punctuation, never part of the name
    (`ping @markus.` -> mention `markus` + literal `.`). Pinned by corpus
-   91-mention-and-tag-name-boundaries / 31-mention-ignores-email-addresses.
+   91-mention-and-tag-name-boundaries / 59-mention-ignores-email-addresses.
    When an enclosing inline frame has a closer beginning with a name character,
    that closer ends the mention or tag name before the name consumes it. Thus
    `{-{#x-}` closes the deletion and leaves `#x` as the tag, while a bare `#x-`
@@ -2860,7 +2863,7 @@ ellipsis = "..." ;    (* → … *)
    `x ---, y` are all refused by that rule.
 
    `{---}` is `<del>-</del>` and `{-x-}` is `<del>x</del>`. Every other empty brace pair forms no span and no
-   dash (see the empty-brace clause under Forced Intraword Emphasis).
+   dash (see the empty-brace clause, CARVE-P3-014).
    There is NO braced EM dash -- `{---}` is a deletion of a hyphen -- so a
    tight em dash still has no shorthand and is written as the literal
    character. *)
@@ -2874,6 +2877,8 @@ ellipsis = "..." ;    (* → … *)
    nothing is the preceding character, so `2*--x` converts. A span's closing
    delimiter is not a following character: nothing follows a run at the end
    of a span's content, so `*a --*` converts as `a --` does.
+   Unlike quote direction, this clause reads SOURCE neighbors, so the closing
+   brace of a braced comment is the preceding character: `{% c %}--x` converts.
 
    THE RULE IS DELIBERATELY NARROW. Requiring whitespace on BOTH sides removes
    every canonical dash use, which is unspaced -- `pages 1--10`, `the Mon--Fri
@@ -2918,6 +2923,8 @@ smart_quote = '"' | "'" ;
    quote there OPENS: `x.="q"=`, `x.*"q"*` and `x.*/"q"/*` all render `“q”`.
    Letters and digits are judged by Unicode code point, so a character
    outside the Basic Multilingual Plane is a letter like any other.
+   An unattributed symbol is text here, its last character the previous one:
+   `:a:"q"` renders `:a:“q”`, while `:a:{.x}"q"` closes after the span.
 
    A quote OPENS after start-of-content, a `typography_flank` character,
    or `( [ { = : - – — /`, or
@@ -2958,7 +2965,8 @@ smart_quote = '"' | "'" ;
    or next is an ASCII digit) never closes it: `'Jane's dog'` is `‘Jane’s dog’`.
    At the END OF CONTENT, demote a still-open span's opener to an apostrophe
    if it was followed by a letter or number. EXCEPTIONS: retain an opener at
-   the start of the content or directly after `“`. Thus `say 'word` renders
+   the start of the block's whole inline content (the start of a span's
+   content does not count: `*'word*` gives `’word`) or directly after `“`. Thus `say 'word` renders
    `say ’word`, while `'word` keeps `‘word` and `"'word` keeps `“‘word`.
 
    An APOSTROPHE is U+2019 IN EVERY LOCALE. Opening and closing quotes use
@@ -2970,7 +2978,9 @@ arrow = "<--" | "-->" | "<-->"      (* → ← → ↔, canonical *)
       | "<-" | "->" | "<->" ;       (* deprecated, still rendered *)
 (* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE [CARVE-P3-022].
    Matched longest-first, as `<->` already beats `<-`, so `<==` beats `<=` and
-   `-->` beats the hyphen run.
+   `-->` beats the hyphen run. A right arrow does not start inside a longer
+   hyphen run: `a--->b` is an em dash and `>`, and `a ---> b` stays a flag. `=`
+   has no run rule, so `a ===> b` is `=` and the arrow.
 
    `<=` KEEPS ≤. `->`, `<-` AND `<->` ARE DEPRECATED, NOT REMOVED: they
    still render, with the doubled forms canonical.
@@ -4131,6 +4141,9 @@ EOF = (* end of file *) ;
    Recognition order is NOT interruption: which of these may interrupt an
    open paragraph is PART 9 §10.
 
+   Trailing line comments (%%, PART 9 §21) are cut from a run before its
+   inline passes, so `*a %% c* d` renders `*a`.
+
    Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
    the order of its atom table (escapes, code spans, math, inline
    literals, autolinks and cross-references, comments, inline notes, note
@@ -4139,9 +4152,9 @@ EOF = (* end of file *) ;
    Prefer literal text over markup: a delimiter that pairs with nothing
    under §9 is literal. What remains is read afterwards, in this order:
    1. Mentions and tags (@user, #tag)
-   2. Smart typography (--, ---, etc.; `=>` is ordinary text, never a
+   2. Symbols (`:name:`, PART 9 §7)
+   3. Smart typography (--, ---, etc.; `=>` is ordinary text, never a
       highlight opener, CARVE-P3-022)
-   3. Trailing line comments (%%, PART 9 §21)
    4. Plain text
 *)
 
@@ -4636,6 +4649,8 @@ EOF = (* end of file *) ;
    7. MENTION/TAG BOUNDARIES
       - @ and # only start mentions/tags at word boundaries
       - email@domain.com is NOT a mention
+      - The opening `_` of a formed span is start of content and a closing
+        `_` is a guard character: `_@a_` holds a mention, `_a_#b` has no tag
       - The name runs over letters, digits, `_`, `-`, and INTERIOR dots
         (a dot followed by another name character: `@john.doe`,
         `#release-1.0`); a trailing dot is sentence punctuation, not part
@@ -4985,7 +5000,8 @@ EOF = (* end of file *) ;
          becomes text; spans nest, never overlap. The new span is final.
       R3 ATTACH. A glued attribute_run (PART 4) directly after a closer that
          closed a span, a formed nested span, a bracket run, an extension, a
-         code span, math or an autolink attaches to it and is consumed; its
+         code span, math, an inline literal, a symbol, an inline note, a note
+         reference or an autolink attaches to it and is consumed; its
          characters take part in nothing else. The run is read on the source
          characters, through any atom P1 found in them, and an atom that
          starts inside an attached run is dissolved: *a*{#b} c #} attaches
@@ -5044,7 +5060,8 @@ EOF = (* end of file *) ;
                          (escaped_char), the character and never a
                          delimiter; or a backslash and a space
                          (escaped_space), a non-breaking space; or a
-                         backslash at a line end (hard_break).
+                         backslash at a line end, at the end of the
+                         document or of a trimmed table cell (hard_break).
         code span        a backtick run of length n, to the next run of
                          exactly n backticks; verbatim, and a glued
                          `{=format}` makes it raw inline. Unclosed, the rest
@@ -5088,7 +5105,10 @@ EOF = (* end of file *) ;
         insertion       none   {+ +}      after the closer
         deletion        none   {- -}      after the closer
         code, math      atom              after the atom
-        literal         atom              none
+        literal         atom              after the atom
+        symbol          atom              after the atom
+        inline note     atom              after the `]`, on the reference
+        note reference  atom              after the `]`, on the reference
         comment         atom              none
         bracket run     atom              after the `]` or its tail (§14)
         extension       atom              after the `]`
@@ -5323,7 +5343,9 @@ EOF = (* end of file *) ;
       CARVE-P10-001 (PART 10 §4).
 
       INLINE OPENER ATTRIBUTES. None. The opener's shape and the recovery of
-      a malformed one are PART 2's (STRICT, under `admonition_open`). To
+      a malformed one are PART 2's (STRICT, under `admonition_open`). A title
+      is inline content, unlike a code fence's literal title:
+      `::: note "T *b*"` holds a strong span. To
       attribute a div or admonition, use a PRECEDING block-attribute line,
       which floats onto the block (§15): `{.x #id}` then `::: note` yields
       `<aside class="admonition note x" id="id" aria-label="Note">`.
@@ -5694,11 +5716,9 @@ EOF = (* end of file *) ;
       (CARVE-P11-012).
       A COLON is not an `identifier` character, so a colon-bearing name is
       unrecognized in every form -- `{xml:lang="en"}`, `{.sm:hover}`, `{#a:b}`
-      and a bare `{a:b}` all leave the run literal. It stays legal one position
+      and a bare `{a:b}` are no attribute block, and their characters read as
+      inline content, so the `#a` of `{#a:b}` is a tag (CARVE-P3-027). It stays legal one position
       over, inside an unquoted VALUE (`{k=a:b}`), which `unquoted_value` admits.
-      (A `{% ... %}` block is NOT a comment in Carve -- comments are `%%` /
-      `%%%` only, PART 9 -- and a `%`-bearing attribute block is an invalid
-      attribute that renders literally in ALL impls.)
 
    15. BLOCK ATTRIBUTE LINES -- OPERATIONAL SEMANTICS (governs
       `block_attributes` in PART 2; matches djot). STATE: pending := the
@@ -6301,7 +6321,7 @@ EOF = (* end of file *) ;
       and DROPPED otherwise. The `{=format}` tag is consumed, not rendered.
       A code span with any OTHER trailing `{…}` is a generic attributed code
       span (PART 3 `code_span` note), not raw inline. The corpus pins this
-      (tests/corpus/50-raw-inline):
+      (tests/corpus/30-raw-inline):
         `<br>`{=html}   -> <br>            (emitted verbatim)
         `\foo`{=latex}  ->                (dropped in HTML output)
 
@@ -6316,7 +6336,8 @@ EOF = (* end of file *) ;
         cell, a figure caption, an admonition header, a container, link, span
         or fence label. Nothing else holds a run -- not markup INSIDE one, so
         an emphasis span's first content character does not start one; not a
-        slot the grammar declares literal (`alt_text`, a `quoted_title`); and
+        slot the grammar declares literal (`alt_text`, a code fence's
+        `quoted_title`); and
         not a label matched verbatim as a key (a reference or footnote label).
         A paragraph's run starts at a line start, where PART 2's `%%` line
         reaches the case first.
@@ -6346,6 +6367,9 @@ EOF = (* end of file *) ;
       `/*...*/` token at its `*/`, and the rest of the braced family the same
       way. Plain prose supplies none, and this is the form for it:
       `foo {% bar %} baz` renders `<p>foo  baz</p>`.
+      - A paragraph holding only braced comments renders empty and takes
+        pending attributes: `{% c %}` gives `<p></p>` and `- {% c %}` an empty
+        `<li>`.
       - SPELLING. `{%` opens, the FIRST `%}` closes. One character per meaning,
         like the rest of the braced family ({^x^}, {,x,}, {+x+}, {-x-}), and the
         same spelling Djot uses, so a Djot document's comments keep working.
@@ -6556,7 +6580,7 @@ EOF = (* end of file *) ;
         the break that already separates it from the line before: `a` over
         `%% c` is `a<br>` and a stanza that is nothing but a comment is an
         EMPTY paragraph. Anything else would put two breaks on one boundary,
-        which is what A BACKSLASH BREAK IS NOT ADDITIVE refuses above.
+        which is what CARVE-P9-045 refuses above.
 
       (corpus 41-line-blocks*.)
 
@@ -6948,10 +6972,12 @@ EOF = (* end of file *) ;
         exposes lint diagnostics SHOULD report a preserved control with the
         rule id `bidi-control-in-source` so an author can remove or explicitly
         accept it before publishing.
-      - PRESERVED in rendered text: the directional MARKS LRM (U+200E) and
-        RLM (U+200F), and the zero-width characters (U+200B etc.) -- these are
-        stripped from IDS (above) but kept in TEXT, since they can be
-        legitimate content and are not an override/isolate injection. (So
+      - PRESERVED: the directional MARKS LRM (U+200E), RLM (U+200F) and ALM
+        (U+061C), in both rendered text and IDS; and the zero-width characters
+        (U+200B etc.), which are stripped from IDS (above) but kept in TEXT.
+        They can be legitimate content and are not an override/isolate
+        injection. A destination and raw passthrough are outside the
+        presentation strip above: `[a](/u<U+202E>b)` keeps the control. (So
         `# A<U+202E>B<U+200B>C` renders text `AB<U+200B>C` -- override gone,
         zero-width kept -- with id `ABC`.)
 
@@ -7407,7 +7433,8 @@ EOF = (* end of file *) ;
       be re-referenced). If definitions normalize to one key, the FIRST
       footnote definition wins and every later collision receives the same
       raw-spellings-and-key diagnostic required by R1.
-      Unresolved reference -> literal source text;
+      Unresolved reference -> the literal `[^label]`, a trailing attribute
+      run consumed;
       unreferenced definition -> dropped.
       A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE -- NORMATIVE [CARVE-P9R-004].
       R1 degrades an unresolved reference to its literal

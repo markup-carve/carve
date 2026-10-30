@@ -26,10 +26,12 @@
         exposes lint diagnostics SHOULD report a preserved control with the
         rule id `bidi-control-in-source` so an author can remove or explicitly
         accept it before publishing.
-      - PRESERVED in rendered text: the directional MARKS LRM (U+200E) and
-        RLM (U+200F), and the zero-width characters (U+200B etc.) -- these are
-        stripped from IDS (above) but kept in TEXT, since they can be
-        legitimate content and are not an override/isolate injection. (So
+      - PRESERVED: the directional MARKS LRM (U+200E), RLM (U+200F) and ALM
+        (U+061C), in both rendered text and IDS; and the zero-width characters
+        (U+200B etc.), which are stripped from IDS (above) but kept in TEXT.
+        They can be legitimate content and are not an override/isolate
+        injection. A destination and raw passthrough are outside the
+        presentation strip above: `[a](/u<U+202E>b)` keeps the control. (So
         `# A<U+202E>B<U+200B>C` renders text `AB<U+200B>C` -- override gone,
         zero-width kept -- with id `ABC`.)
 
