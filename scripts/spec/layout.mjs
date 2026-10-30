@@ -1482,6 +1482,8 @@ function tryAttrLine(lines, i) {
       li++
       layoutWork.attrScan++
       if (li >= lines.length || isBlank(lines[li])) return null // A5
+      // A continuation starts a token or closes, and no token starts with `{`.
+      if (/^[ \t]*\{/.test(lines[li])) return null
       line = lines[li]
       // No attribute list continues on a line that opens a block, so a run of
       // openers is scanned once (PART 9 SS9 LINEAR TIME).
@@ -2778,6 +2780,8 @@ function ownLines(lines, trace = null) {
   const textFences = []
   // The line after an accepted `+` keeps its column: the marker reads it.
   let afterPlus = false
+  // The continuation lines of a wrapped attribute block the walk opened.
+  let attrRest = null
   // Lines moved to a note's marker column for its first-block `+`.
   const replaced = new Set()
   // Quote first-block `+` lines whose follower stands at an ineligible column.
@@ -2859,6 +2863,21 @@ function ownLines(lines, trace = null) {
       if (m.rest !== '' && m.col < f.col) break
       reached = k
     }
+    if (attrRest && !(reached < frames.length - 1 && frames.slice(reached + 1).some((f) => f.kind === 'quote'))) {
+      // A continuation stays in the block's owner at any column; padding
+      // between attribute tokens is insignificant, so it may gain columns.
+      const col = Math.max(m.col - attrRest.cut, top().canon)
+      if (col <= m.col) lead(col)
+      else {
+        lead(0)
+        out += ' '.repeat(col)
+      }
+      result.push(out + src)
+      if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf')
+      if (--attrRest.left === 0) attrRest = null
+      continue
+    }
+    attrRest = null
     // The container closes after that block, at the first line that goes no deeper.
     const once = frames[reached]
     if (once.once !== undefined && at >= once.once && !plus) {
@@ -3075,6 +3094,7 @@ function ownLines(lines, trace = null) {
       // A caption spills onto following lines like a paragraph (CARVE-P2-021).
       owner.para = !!form.caption
       owner.last = form.kind
+      if (form.attrLines) attrRest = { left: form.attrLines, cut: col - canon }
       if (form.kind === 'term') {
         owner.para = true
         owner.termCut = col - canon
@@ -3241,6 +3261,20 @@ function ownLines(lines, trace = null) {
     if (HEADING.test(rest) || HR.test(rest) || isTableRow(rest) || isLinkDef(rest) ||
         FOOTNOTE_DEF.test(rest) || ABBR_DEF.test(rest) || (rest[0] === '{' && tryAttrLine([rest], 0))) {
       return { kind: 'leaf', interrupts: true }
+    }
+    // A wrapped attribute block is the same leaf at any column (carve#4089):
+    // its continuations carry the owner's quote prefix (PART 4) and stay its own.
+    if (rest[0] === '{') {
+      const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
+      const attr = tryAttrLine(new Proxy([], {
+        get(_, key) {
+          if (key === 'length') return lines.length - at
+          if (key === '0') return rest
+          const j = typeof key === 'string' && /^\d+$/.test(key) ? at + Number(key) : -1
+          return j < 0 || j >= lines.length ? undefined : (stripQuotes(lines[j], depth)?.rest ?? '')
+        },
+      }), 0)
+      if (attr) return { kind: 'leaf', interrupts: true, attrLines: attr.next - 1 }
     }
     if (CAPTION.test(rest)) return { kind: 'leaf', interrupts: false, caption: true }
     return { kind: 'text', interrupts: false }

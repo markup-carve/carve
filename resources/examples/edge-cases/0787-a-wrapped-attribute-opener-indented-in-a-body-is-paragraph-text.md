@@ -1,6 +1,6 @@
 ## A wrapped attribute opener indented in a body is paragraph text
 
-A wrapped `{` ... `}` attribute whose opening line is indented in its owner, past a list item's or description's content column or below it, is paragraph text, as the same lines are at document level. Its `}` line and a following line below the column fold into that paragraph lazily (PART 0 S4, PART 9 §15 A5, carve#4081). Nothing is dropped (carve#3421).
+A wrapped `{` ... `}` attribute whose opening line is indented in its owner, past a list item's or description's content column or below it, is an attribute line like the one-line form (PART 9 §15 A5, ruled on carve#4089). Its `}` line belongs to it at any column, and the line after it is not lazy. With nothing to attach to in the owner, the attribute is dropped (A4); the line after it is a document paragraph.
 
 ::: compare
 
@@ -15,11 +15,9 @@ a
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-{c
-}
-a</dd>
+  <dd>d</dd>
 </dl>
+<p>a</p>
 ```
 
 :::
@@ -36,9 +34,7 @@ a</dd>
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-{c
-}</dd>
+  <dd>d</dd>
 </dl>
 ```
 
@@ -55,11 +51,9 @@ para
 
 ```html
 <ul>
-  <li>d
-{.c
-}
-para</li>
+  <li>d</li>
 </ul>
+<p>para</p>
 ```
 
 :::
@@ -75,11 +69,9 @@ para</li>
 
 ```html
 <ul>
-  <li>a
-{.c
-}
-}</li>
+  <li>a</li>
 </ul>
+<p>}</p>
 ```
 
 :::

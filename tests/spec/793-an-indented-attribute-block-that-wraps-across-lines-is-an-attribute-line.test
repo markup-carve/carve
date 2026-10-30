@@ -1,0 +1,101 @@
+An indented attribute block that wraps across lines is an attribute line
+
+```
+a
+ {.c}
+para
+.
+<p>a</p>
+<p class="c">para</p>
+```
+
+```
+a
+ {.c
+ }
+para
+.
+<p>a</p>
+<p class="c">para</p>
+```
+
+```
+a
+{.c
+ }
+para
+.
+<p>a</p>
+<p class="c">para</p>
+```
+
+```
+ {.c
+ }
+para
+.
+<p class="c">para</p>
+```
+
+```
+- a
+   {.c
+   }
+para
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>para</p>
+```
+
+```
+- a
+   {.c
+   }
+  para
+.
+<ul>
+  <li>a
+    <p class="c">para</p>
+  </li>
+</ul>
+```
+
+```
+:: t
+: a
+   {.c
+}
+para
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+</dl>
+<p>para</p>
+```
+
+```
+> a
+>  {.c
+> }
+> para
+.
+<blockquote>
+  <p>a</p>
+  <p class="c">para</p>
+</blockquote>
+```
+
+```
+> a
+>  {.c
+}
+para
+.
+<blockquote><p>a
+{.c
+}
+para</p></blockquote>
+```

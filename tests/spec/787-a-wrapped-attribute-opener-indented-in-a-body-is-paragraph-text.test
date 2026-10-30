@@ -9,11 +9,9 @@ a
 .
 <dl>
   <dt>t</dt>
-  <dd>d
-{c
-}
-a</dd>
+  <dd>d</dd>
 </dl>
+<p>a</p>
 ```
 
 ```
@@ -24,9 +22,7 @@ a</dd>
 .
 <dl>
   <dt>t</dt>
-  <dd>d
-{c
-}</dd>
+  <dd>d</dd>
 </dl>
 ```
 
@@ -37,11 +33,9 @@ a</dd>
 para
 .
 <ul>
-  <li>d
-{.c
-}
-para</li>
+  <li>d</li>
 </ul>
+<p>para</p>
 ```
 
 ```
@@ -51,9 +45,7 @@ para</li>
 }
 .
 <ul>
-  <li>a
-{.c
-}
-}</li>
+  <li>a</li>
 </ul>
+<p>}</p>
 ```
