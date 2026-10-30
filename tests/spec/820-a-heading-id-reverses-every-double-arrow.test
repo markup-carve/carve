@@ -1,0 +1,25 @@
+A heading id reverses every double arrow
+
+```
+# a <== b
+.
+<section id="a-b">
+  <h1>a ⇐ b</h1>
+</section>
+```
+
+```
+# a <=> b
+.
+<section id="a-b">
+  <h1>a ⇔ b</h1>
+</section>
+```
+
+```
+# x <==b and y<=>z
+.
+<section id="x-b-and-y-z">
+  <h1>x ⇐b and y⇔z</h1>
+</section>
+```
