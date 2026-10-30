@@ -360,7 +360,7 @@
 {"id":"attributes-4c74fdfa120e","source":"$$`E=mc^2`{#eq-1}\n^ cap\n\n","html":"<figure>\n  <p><span class=\"math display\" id=\"eq-1\" role=\"math\">\\[E=mc^2\\]</span></p>\n  <figcaption>cap</figcaption>\n</figure>"},
 {"id":"attributes-4d7b5488183b","source":" a ^[t{# ] #}z] b\n","html":"<p>a <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> b</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>t<span class=\"critic-comment\"> ] </span>z<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"},
 {"id":"attributes-4d9743c53a9e","source":"- a\n  {.k}\n> tail\n> tail\n","html":"<ul>\n  <li>a</li>\n</ul>\n<blockquote><p>tail\ntail</p></blockquote>"},
-{"id":"attributes-4db504145296","source":"- a\n+\n{.x}}\n  > q\n- c\n","html":"<ul>\n  <li>a\n    {.x}}\n  </li>\n</ul>\n<blockquote><p>q\n- c</p></blockquote>"},
+{"id":"attributes-4db504145296","source":"- a\n+\n{.x}}\n  > q\n- c\n","html":"<ul>\n  <li>a\n    {.x}}\n    <blockquote><p>q</p></blockquote>\n  </li>\n  <li>c</li>\n</ul>"},
 {"id":"attributes-4dbbeb08b741","source":">::: note aa\n> {.c}\n> text\n","html":"<p>&gt;::: note aa</p>\n<blockquote><p class=\"c\">text</p></blockquote>"},
 {"id":"attributes-4e624e4789d8","source":" | |{.ro}\n","html":"<table>\n  <tbody>\n    <tr class=\"ro\"><td></td></tr>\n  </tbody>\n</table>"},
 {"id":"attributes-4e77328b38e7","source":"{.line-block\n:::\none\ntwo\n:---::\n","html":"<p>{.line-block</p>\n<div>\n  <p>one\ntwo\n:---::</p>\n</div>"},
