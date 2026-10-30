@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -1129,8 +1129,9 @@ function numberCaption(text, ctx, id, panelIds) {
   // PART 7 whitespace, not the host language's Unicode class.
   const label = text.slice(0, at).replace(/[ \t\n\r]+$/, '')
   // CARVE-P2-022 buckets by the label's plain text and R4 links its rendered
-  // markup; neither reads the source, so `\{` and `{` are one label.
-  const key = derivedText(label, renderInline)
+  // markup; neither reads the source, so `\{` and `{` are one label. A comment
+  // contributes nothing to the key (carve#4111).
+  const key = derivedText(label, renderInlineWithoutComments).replace(/[ \t\n\r]+$/, '')
   const n = (ctx.captionSeq.get(key) ?? 0) + 1
   ctx.captionSeq.set(key, n)
   const shown = label === '' ? '' : flattenInnerLinks(renderInline(label)).replace(/\uE000(?!ref:)[\s\S]*?\uE001/g, '')
