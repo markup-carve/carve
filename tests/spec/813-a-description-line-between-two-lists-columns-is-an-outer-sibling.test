@@ -1,0 +1,68 @@
+A description line between two lists' columns is an outer sibling
+
+```
+:: t
+: d
+  :: u
+  : v
+ : e
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <dl>
+      <dt>u</dt>
+      <dd>v</dd>
+    </dl>
+  </dd>
+  <dd>e</dd>
+</dl>
+```
+
+```
+:: t
+: d
+  :: u
+  : v
+
+ : e
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <dl>
+      <dt>u</dt>
+      <dd>v</dd>
+    </dl>
+  </dd>
+  <dd>e</dd>
+</dl>
+```
+
+```
+- x
+
+  :: t
+  :  d
+     :: u
+     : v
+    : e
+.
+<ul>
+  <li>x
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <p>d</p>
+        <dl>
+          <dt>u</dt>
+          <dd>v</dd>
+        </dl>
+      </dd>
+      <dd>e</dd>
+    </dl>
+  </li>
+</ul>
+```
