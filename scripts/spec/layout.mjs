@@ -7017,7 +7017,9 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
       else if (paragraphOpen && (foldablePlainLine(measured.rest) || DESCRIPTION_TEXT.test(measured.rest))) {
         read.push(lazyFrame(measured.rest))
         readMeasures.push(LAZY_MEAS(measured.rest))
-      } else if (isCodeBlockOpener(measured.rest)) {
+      // A footnote definition the read opened is no code block, so a fence
+      // below the column ends it (carve#4347).
+      } else if (isCodeBlockOpener(measured.rest) && !FOOTNOTE_DEF.test(readMeasures[0]?.rest ?? '')) {
         read.push(measured.rest)
         readMeasures.push(null)
       } else break
