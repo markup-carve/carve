@@ -2,7 +2,7 @@
 
 A definition term continues lazily only with plain text. An unprefixed list
 marker ends the quote and reads as it would without it, and so does a `: `
-separator when the quote holds the term directly, at any quote depth and column
+separator, at any quote depth and column, with or without an item between
 (`[B-term-keep]`, markup-carve/carve#4300).
 
 ::: compare

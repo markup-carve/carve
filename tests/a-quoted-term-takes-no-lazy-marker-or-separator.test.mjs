@@ -23,8 +23,8 @@ for (const head of quoteHeads) {
     assert.equal(render(`${head}\n${pad}: d\n`), `${quoted}<p>: d</p>`)
   })
 }
-test('a term in a quoted item keeps an indented separator', () => {
-  assert.equal(render('> - :: t\n : d\n'), '<blockquote><ul><li><dl><dt>t\n: d</dt></dl></li></ul></blockquote>')
+test('a term in a quoted item takes no indented separator', () => {
+  assert.equal(render('> - :: t\n : d\n'), '<blockquote><ul><li><dl><dt>t</dt></dl></li></ul></blockquote><p>: d</p>')
 })
 
 test('a prefixed separator still opens the description', () => {

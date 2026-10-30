@@ -259,12 +259,12 @@ gen-249
   <ol>
     <li>
       <dl>
-        <dt>t
-: para</dt>
+        <dt>t</dt>
       </dl>
     </li>
   </ol>
 </blockquote>
+<p>: para</p>
 ```
 
 :::::::
@@ -334,12 +334,12 @@ gen-299
   <ul>
     <li>
       <dl>
-        <dt>term
-: definition</dt>
+        <dt>term</dt>
       </dl>
     </li>
   </ul>
 </blockquote>
+<p>: definition</p>
 ```
 
 :::::::

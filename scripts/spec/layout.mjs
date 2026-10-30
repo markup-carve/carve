@@ -3138,7 +3138,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // lazy line (CARVE-P2-008, carve#4312); an indented one (§10 I7) or one past a note folds.
     const missedFrames = frames.slice(reached + 1)
     const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames.some((f) => f.kind === 'quote') && !missedFrames.some((f) => f.kind === 'note')
-    if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && form.kind !== 'dd' &&
+    // PART 0 [B-term-keep]: past a missed quote or note a marker leaves a term, and past a quote a separator too (carve#4300).
+    const termRefuses = top().last === 'term' && (matchMarkerAt(m) ? missedFrames.some((f) => f.kind === 'quote' || f.kind === 'note') :
+      DESCRIPTION_LEAD.test(m.rest) && missedFrames.some((f) => f.kind === 'quote'))
+    if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && !termRefuses && form.kind !== 'dd' &&
         !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes) &&
         !(missedNote && form.kind === 'item' && frames.slice(reached + 1).some((f) => f.kind === 'item'))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
@@ -5327,7 +5330,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qItemPara = false // and is that paragraph an item's?
       let qTermOpen = false
-      let qTermInQuote = false
       let qDescriptionBodyCol = null
       let qNoteBodyCol = null
       let qPara = [] // its lines, for SS12's absorption test below
@@ -5851,17 +5853,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qPara.push(l)
         }
         let leaf = l
-        let termInItem = false
         for (let depth = 0; (qTermOpen || l.includes(':: ')) && depth < MAX_NESTING_DEPTH; depth++) {
           const quote = QUOTE.exec(leaf)
           const marker = matchMarkerAt(indentCols(leaf))
+          const note = FOOTNOTE_DEF.exec(leaf)
           if (quote) leaf = quote[1] ?? ''
-          else if (marker) {
-            leaf = marker.text
-            termInItem = true
-          } else break
+          if (quote) leaf = quote[1] ?? ''
+          else if (marker) leaf = marker.text
+          else if (note) leaf = note[2]
+          else break
         }
-        if (DEFLIST_TERM.test(leaf)) qTermInQuote = !termInItem && indentCols(leaf).col === 0
         // PART 0 T leaves a term open for plain lazy text.
         qTermOpen = !/^:( +)/.test(trimWsStart(leaf)) &&
           (DEFLIST_TERM.test(leaf) || qTermOpen)
@@ -5960,8 +5961,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const nestedMarkerFold = !qTermOpen && qNestedPara.some(Boolean) && !!matchMarkerAt(indentCols(unmarked))
         if (lines[i] !== undefined && (qOpenPara || qTermOpen || foldedColon) &&
             !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
-            // A quote's own term takes no lazy separator (carve#4300); under an item it folds (corpus 620).
-            !(qTermOpen && qTermInQuote && DEFLIST_SEPARATOR.test(stripIndent(unmarked))) &&
+            // A term takes no lazy separator past its quote (carve#4300).
+            !(qTermOpen && DEFLIST_SEPARATOR.test(stripIndent(unmarked))) &&
             !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(unmarked) ||
               // A term continues by the paragraph test, so a folded caret line is text (§10 I7).
               (lines[i].startsWith(LAZY) && CAPTION.test(unmarked)) ||
