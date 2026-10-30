@@ -1,0 +1,33 @@
+A marker under a quoted description paragraph in an item is text
+
+```
+- > :: t
+  > : d
+  > - z
+.
+<ul>
+  <li>
+    <blockquote>
+      <dl>
+        <dt>t</dt>
+        <dd>d
+- z</dd>
+      </dl>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+> :: t
+> : d
+> - z
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>d
+- z</dd>
+  </dl>
+</blockquote>
+```

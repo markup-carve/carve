@@ -1,0 +1,22 @@
+A line after a marker line folded into a sublist item folds too
+
+```
+1. - a
+     - y
+      1. ~~~
+z
+.
+<ol>
+  <li>
+    <ul>
+      <li>a
+        <ul>
+          <li>y
+1. ~~~
+z</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+```

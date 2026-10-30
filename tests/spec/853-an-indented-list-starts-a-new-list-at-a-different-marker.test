@@ -1,0 +1,31 @@
+An indented list starts a new list at a different marker
+
+```
+ * a
+ - x
+.
+<ul>
+  <li>a</li>
+</ul>
+<ul>
+  <li>x</li>
+</ul>
+```
+
+```
+- p
+
+   * x
+   - y
+.
+<ul>
+  <li>p
+    <ul>
+      <li>x</li>
+    </ul>
+    <ul>
+      <li>y</li>
+    </ul>
+  </li>
+</ul>
+```

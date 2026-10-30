@@ -1,0 +1,6 @@
+- [^a]: text
+    [^b]: text
+    ::: n
+    x
+    :::
+after [^a] [^b]
