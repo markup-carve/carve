@@ -8,7 +8,8 @@
         cell, a figure caption, an admonition header, a container, link, span
         or fence label. Nothing else holds a run -- not markup INSIDE one, so
         an emphasis span's first content character does not start one; not a
-        slot the grammar declares literal (`alt_text`, a `quoted_title`); and
+        slot the grammar declares literal (`alt_text`, a code fence's
+        `quoted_title`); and
         not a label matched verbatim as a key (a reference or footnote label).
         A paragraph's run starts at a line start, where PART 2's `%%` line
         reaches the case first.
@@ -38,6 +39,9 @@
       `/*...*/` token at its `*/`, and the rest of the braced family the same
       way. Plain prose supplies none, and this is the form for it:
       `foo {% bar %} baz` renders `<p>foo  baz</p>`.
+      - A paragraph holding only braced comments renders empty and takes
+        pending attributes: `{% c %}` gives `<p></p>` and `- {% c %}` an empty
+        `<li>`.
       - SPELLING. `{%` opens, the FIRST `%}` closes. One character per meaning,
         like the rest of the braced family ({^x^}, {,x,}, {+x+}, {-x-}), and the
         same spelling Djot uses, so a Djot document's comments keep working.
@@ -248,7 +252,7 @@
         the break that already separates it from the line before: `a` over
         `%% c` is `a<br>` and a stanza that is nothing but a comment is an
         EMPTY paragraph. Anything else would put two breaks on one boundary,
-        which is what A BACKSLASH BREAK IS NOT ADDITIVE refuses above.
+        which is what CARVE-P9-045 refuses above.
 
       (corpus 41-line-blocks*.)
 

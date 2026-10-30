@@ -489,6 +489,8 @@
    7. MENTION/TAG BOUNDARIES
       - @ and # only start mentions/tags at word boundaries
       - email@domain.com is NOT a mention
+      - The opening `_` of a formed span is start of content and a closing
+        `_` is a guard character: `_@a_` holds a mention, `_a_#b` has no tag
       - The name runs over letters, digits, `_`, `-`, and INTERIOR dots
         (a dot followed by another name character: `@john.doe`,
         `#release-1.0`); a trailing dot is sentence punctuation, not part

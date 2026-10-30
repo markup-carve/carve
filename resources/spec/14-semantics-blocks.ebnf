@@ -101,7 +101,8 @@
          becomes text; spans nest, never overlap. The new span is final.
       R3 ATTACH. A glued attribute_run (PART 4) directly after a closer that
          closed a span, a formed nested span, a bracket run, an extension, a
-         code span, math or an autolink attaches to it and is consumed; its
+         code span, math, an inline literal, a symbol, an inline note, a note
+         reference or an autolink attaches to it and is consumed; its
          characters take part in nothing else. The run is read on the source
          characters, through any atom P1 found in them, and an atom that
          starts inside an attached run is dissolved: *a*{#b} c #} attaches
@@ -160,7 +161,8 @@
                          (escaped_char), the character and never a
                          delimiter; or a backslash and a space
                          (escaped_space), a non-breaking space; or a
-                         backslash at a line end (hard_break).
+                         backslash at a line end, at the end of the
+                         document or of a trimmed table cell (hard_break).
         code span        a backtick run of length n, to the next run of
                          exactly n backticks; verbatim, and a glued
                          `{=format}` makes it raw inline. Unclosed, the rest
@@ -204,7 +206,10 @@
         insertion       none   {+ +}      after the closer
         deletion        none   {- -}      after the closer
         code, math      atom              after the atom
-        literal         atom              none
+        literal         atom              after the atom
+        symbol          atom              after the atom
+        inline note     atom              after the `]`, on the reference
+        note reference  atom              after the `]`, on the reference
         comment         atom              none
         bracket run     atom              after the `]` or its tail (§14)
         extension       atom              after the `]`
@@ -439,7 +444,9 @@
       CARVE-P10-001 (PART 10 §4).
 
       INLINE OPENER ATTRIBUTES. None. The opener's shape and the recovery of
-      a malformed one are PART 2's (STRICT, under `admonition_open`). To
+      a malformed one are PART 2's (STRICT, under `admonition_open`). A title
+      is inline content, unlike a code fence's literal title:
+      `::: note "T *b*"` holds a strong span. To
       attribute a div or admonition, use a PRECEDING block-attribute line,
       which floats onto the block (§15): `{.x #id}` then `::: note` yields
       `<aside class="admonition note x" id="id" aria-label="Note">`.
@@ -810,11 +817,9 @@
       (CARVE-P11-012).
       A COLON is not an `identifier` character, so a colon-bearing name is
       unrecognized in every form -- `{xml:lang="en"}`, `{.sm:hover}`, `{#a:b}`
-      and a bare `{a:b}` all leave the run literal. It stays legal one position
+      and a bare `{a:b}` are no attribute block, and their characters read as
+      inline content, so the `#a` of `{#a:b}` is a tag (CARVE-P3-027). It stays legal one position
       over, inside an unquoted VALUE (`{k=a:b}`), which `unquoted_value` admits.
-      (A `{% ... %}` block is NOT a comment in Carve -- comments are `%%` /
-      `%%%` only, PART 9 -- and a `%`-bearing attribute block is an invalid
-      attribute that renders literally in ALL impls.)
 
    15. BLOCK ATTRIBUTE LINES -- OPERATIONAL SEMANTICS (governs
       `block_attributes` in PART 2; matches djot). STATE: pending := the

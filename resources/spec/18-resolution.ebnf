@@ -190,7 +190,8 @@
       be re-referenced). If definitions normalize to one key, the FIRST
       footnote definition wins and every later collision receives the same
       raw-spellings-and-key diagnostic required by R1.
-      Unresolved reference -> literal source text;
+      Unresolved reference -> the literal `[^label]`, a trailing attribute
+      run consumed;
       unreferenced definition -> dropped.
       A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE -- NORMATIVE [CARVE-P9R-004].
       R1 degrades an unresolved reference to its literal
