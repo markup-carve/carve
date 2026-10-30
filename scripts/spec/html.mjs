@@ -524,7 +524,8 @@ function renderBlock(b, depth, ctx) {
             // claimed, and it wrote a second `class` attribute (carve#2457).
             if (isClass(a)) {
               const value = classValue(a)
-              if (value !== '' && !extra.includes(value)) extra.push(value)
+              // CARVE-P4-002: the derived classes and the authored ones are one list (carve#4143).
+              if (value !== '' && !baseCls.includes(value) && !extra.includes(value)) extra.push(value)
             } else keep.push(a)
           }
           if (keep.length) rest.push(keep)

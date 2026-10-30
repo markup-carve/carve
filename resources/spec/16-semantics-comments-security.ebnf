@@ -453,14 +453,20 @@
       - ATTRIBUTE NAME/VALUE HARDENING. On EVERY rendered element -- including
         elements emitted by extensions -- an HTML renderer MUST drop
         attributes whose name begins with `on` (case-insensitive) and the
-        names `srcdoc` and `formaction`; MUST blank any attribute value whose
-        scheme (control/space-stripped) is `javascript`/`vbscript`/`data`/
-        `file`; and MUST blank any `style` value containing `expression(`,
-        `url(`, `@import`, `behavior:`, or `-moz-binding` (all whitespace
-        removed first, so `ex pression(` matches). This applies to author
-        attribute blocks AND to attributes an extension copies onto its
-        wrapper element: an extension MUST route authored attributes through
-        the same hardening and MUST NOT emit them raw.
+        names `srcdoc` and `formaction`; MUST blank any AUTHORED attribute
+        value whose scheme, probed as above (control characters and Unicode
+        whitespace stripped), is on the URL SINK SCHEME DENYLIST above: the
+        four schemes and the OS protocol-handler class alike, so
+        `{title="Shell: bash"}` renders `title=""`; and MUST blank any `style`
+        value containing `expression(`, `url(`, `@import`, `behavior:`, or
+        `-moz-binding` (all whitespace removed first, so `ex pression(`
+        matches). An authored value is one written in an attribute block or
+        one an extension copies onto its wrapper element: an extension MUST
+        route authored attributes through the same hardening and MUST NOT
+        emit them raw. A value the renderer derives from text is not an
+        authored value and is not blanked: a link title (`[a](u "Shell: x")`
+        keeps `title="Shell: x"`), an image's alt text, and a task box's
+        accessible name stay as written.
 
         A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD --
         NORMATIVE [CARVE-P9-055]. Four attributes carry a LIST of URLs: `srcset`,
