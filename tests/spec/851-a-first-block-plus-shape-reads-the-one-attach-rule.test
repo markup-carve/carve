@@ -1,0 +1,167 @@
+A first-block plus shape reads the one attach rule
+
+```
+- - +
+:: l
+  x
+.
+<ul>
+  <li>
+    <ul>
+      <li>+</li>
+    </ul>
+  </li>
+</ul>
+<dl>
+  <dt>l
+  x</dt>
+</dl>
+```
+
+````
+- a
+  - +
+ ```
+x
+```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>+</li>
+    </ul>
+  </li>
+</ul>
+<pre><code>x
+</code></pre>
+````
+
+````
+- - +
+```
++
+z
+
+q
+.
+<ul>
+  <li>
+    <ul>
+      <li>+</li>
+    </ul>
+  </li>
+</ul>
+<pre><code>+
+z
+
+q
+</code></pre>
+````
+
+````
+- - +
+```
++
+z
+.
+<ul>
+  <li>
+    <ul>
+      <li>+</li>
+    </ul>
+  </li>
+</ul>
+<pre><code>+
+z
+</code></pre>
+````
+
+```
+  - a
+  +
+  p
+.
+<ul>
+  <li>a
+    p
+  </li>
+</ul>
+```
+
+```
+> :: t
+> : +
+para
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>+
+para</dd>
+  </dl>
+</blockquote>
+```
+
+```
+> [^b]: +
+  > para
+
+r[^b]
+.
+<blockquote>
+
+</blockquote>
+<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>+
+para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: t
+: [^q]: +
+- y
+
+r[^q]
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>+
+- y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^b]: +
+ # H
+
+r[^b]
+.
+<section id="H">
+  <h1>H</h1>
+  <p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+</section>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
