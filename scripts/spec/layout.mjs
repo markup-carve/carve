@@ -8804,6 +8804,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // Read with the paragraph state this line ARRIVED with, exactly as
         // `bodyFenceOpens` above is; the chain below then answers for the line.
         const wasNested = nestedOpaque
+        // A line below a code body's column ends that body and is read afresh.
+        const endedBelow = wasNested?.kind === 'code' && dmeas.col < wasNested.col
         // Only a descendant LIST ITEM's fence, which is the host carve#2490
         // rules. An indented fence inside a colon container is that container's
         // question, and CARVE-P0-014 answers it the other way: a colon body CAN
@@ -8836,7 +8838,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             // A line that opens, carries or closes an opaque descendant body is
             // verbatim, and a verbatim body holds no paragraph.
             advanceDescendantQ1(dmeas.rest, absorbedFenceSeen,
-              nestedOpaque !== null || wasNested !== null, i, dmeas.col)
+              nestedOpaque !== null || (wasNested !== null && !endedBelow), i, dmeas.col)
           }
           if (dmeas.rest !== '') {
             if (nm && nm.indent >= contentCol && !inDefBody) descLive = true
@@ -9091,7 +9093,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // fence on that line leaves no claim, even if the old descendant was
         // still open when the line arrived.
         if ((descendantOwned || isCodeBlockOpener(dedented)) &&
-            (nestedVerbatim() || wasNested?.kind === 'code')) closePara()
+            (nestedVerbatim() || (wasNested?.kind === 'code' && !endedBelow))) closePara()
         // The note body keeps its reach past the closed paragraph (CARVE-P0-013).
         if (markerNoteCommentSeen && inNoteBody) {
           const noteBody = defBodyIndent
