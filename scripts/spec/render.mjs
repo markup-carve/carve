@@ -2490,7 +2490,9 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false, mar
         const replacements = []
         for (const directive of literals) {
           if (directive.start < at) continue
-          const marker = `CARVEINVALIDINCLUDE${key}X${replacements.length}X}`
+          // The mask keeps the literal's `{` and `}` edges and opens nothing, so
+          // a neighbor (`#`, `@`, an escaping backslash) reads it as it reads the literal.
+          const marker = `{!CARVEINVALIDINCLUDE${key}X${replacements.length}X}`
           masked += text.slice(at, directive.start) + marker
           replacements.push([marker, text.slice(directive.start, directive.end)])
           at = directive.end
