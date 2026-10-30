@@ -71,8 +71,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "      if (nm) {\n        text = nm.text.trim()\n",
-          "replace": "      if (false) {\n        text = nm.text.trim()\n"
+          "find": "      if (nm) {\n        text = trimWs(nm.text)\n",
+          "replace": "      if (false) {\n        text = trimWs(nm.text)\n"
         }
       ]
     },
@@ -231,8 +231,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "(${ATTR_BLOCK})?( +)(?:\\\\[([ xX_>/!?-])\\\\] )?(.+)$`)",
-          "replace": "(${ATTR_BLOCK})?( +|$)(?:\\\\[([ xX_>/!?-])\\\\] )?(.*)$`)"
+          "find": "(${ATTR_BLOCK})?( +)(?:\\\\[([ xX_>/!?-])\\\\] )?(.+)$`, 's')",
+          "replace": "(${ATTR_BLOCK})?( +|$)(?:\\\\[([ xX_>/!?-])\\\\] )?(.*)$`, 's')"
         }
       ]
     },
@@ -241,8 +241,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "if ((dm = /^:( +)(?=[ \\t]*[^ \\t])(.*)$/.exec(cur0))) {",
-          "replace": "if ((dm = /^:( *)(.*)$/.exec(cur0))) {"
+          "find": "if ((dm = /^:( +)(?=[ \\t]*[^ \\t])(.*)$/s.exec(cur0))) {",
+          "replace": "if ((dm = /^:( *)(.*)$/s.exec(cur0))) {"
         }
       ]
     },
@@ -251,8 +251,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "if ((dm = /^:( +)(?=[ \\t]*[^ \\t])(.*)$/.exec(cur0))) {",
-          "replace": "if ((dm = /^:( +)(?=[^ ])(.*)$/.exec(cur0))) {"
+          "find": "if ((dm = /^:( +)(?=[ \\t]*[^ \\t])(.*)$/s.exec(cur0))) {",
+          "replace": "if ((dm = /^:( +)(?=[^ ])(.*)$/s.exec(cur0))) {"
         },
         {
           "file": "scripts/spec/layout.mjs",
@@ -441,8 +441,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "(?: (\\{.*\\}))?[ \\t]*$/u",
-          "replace": "(?: (\\{.*\\}))?(?: .*)?$/u"
+          "find": "(?: (\\{.*\\}))?[ \\t]*$/su",
+          "replace": "(?: (\\{.*\\}))?(?: .*)?$/su"
         }
       ]
     },
@@ -1046,8 +1046,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "if (trimmed.join('').trim() !== '') blocks.push({ t: 'para', lines: trimmed })",
-          "replace": "if (trimmed.join('').trim() !== '') blocks.push({ t: 'para', lines: trimmed.slice(1) })"
+          "find": "if (trimWs(trimmed.join('')) !== '') blocks.push({ t: 'para', lines: trimmed })",
+          "replace": "if (trimWs(trimmed.join('')) !== '') blocks.push({ t: 'para', lines: trimmed.slice(1) })"
         }
       ]
     },
@@ -1256,8 +1256,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "    if (line.trim() === '') { flush(); continue }\n    run.push(line)\n",
-          "replace": "    if (line.trim() === '') { flush(); continue }\n    run.push(line)\n    flush()\n"
+          "find": "    if (trimWs(line) === '') { flush(); continue }\n    run.push(line)\n",
+          "replace": "    if (trimWs(line) === '') { flush(); continue }\n    run.push(line)\n    flush()\n"
         }
       ]
     },

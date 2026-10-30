@@ -571,3 +571,4 @@
 811-a-lazy-line-after-a-narrower-list-in-a-note-folds-into-its-item  The pinned JS writer moves a lazy line after a narrower note list out of the note; carve-js main (68ec736e) keeps it in the item, the pin is behind (carve#4259).
 811-a-lazy-line-after-a-narrower-list-in-a-note-folds-into-its-item-2  The pinned JS writer moves a lazy line after a narrower note list out of the note; carve-js main (68ec736e) keeps it in the item, the pin is behind (carve#4259).
 811-a-lazy-line-after-a-narrower-list-in-a-note-folds-into-its-item-3  The pinned JS writer moves a lazy line after a narrower note list out of the note; carve-js main (68ec736e) keeps it in the item, the pin is behind (carve#4259).
+819-block-reading-uses-only-carve-whitespace-5  The pinned JS renderer trims a U+2028 off a task box's name with String.prototype.trim (markup-carve/carve#4252, carve-js line).
