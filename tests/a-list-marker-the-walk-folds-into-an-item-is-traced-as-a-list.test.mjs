@@ -28,7 +28,7 @@ test('a marker of another list kind under an item paragraph is traced as a new l
   const source = '* s\n- t\n'
   assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item'])
   assert.equal(renderDoc(parse(source)), '<ul>\n  <li>s</li>\n</ul>\n<ul>\n  <li>t</li>\n</ul>')
-  assert.deepEqual(steps('- a\n  * w\n  1. v\n    - u\n').slice(2), ['3 S5 doc/item:1/item:3 item', '4 S5 doc/item:1/item:3/item:4 item'])
+  assert.deepEqual(steps('- a\n  * w\n  1. v\n    - u\n').slice(2), ['3 S5 doc/item:1/item:3 item', '4 S5 doc/item:1/item:3 text'])
   assert.deepEqual(steps('- a\n* w\n1. v\n').slice(1), ['2 S5 doc/item:2 item', '3 S5 doc/item:3 item'])
 })
 

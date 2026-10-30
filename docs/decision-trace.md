@@ -123,6 +123,16 @@ of the item's parent, starts a new list (PART 9 §10 I2). The walk folds it into
 the paragraph, but the trace records it as an item in the parent, and the
 markers after it as that list's items.
 
+The readers measure each later line of that list at the column the walk wrote
+it, and the walk may have opened a frame for it inside an item they already
+closed. A marker at one of the list's columns is a sibling, one at or past the
+deepest content column is a child, one left of the list's own column, at the
+parent's content column or right of it, starts a new list in the parent, and
+any other marker is text of the deepest item's paragraph. A marker after a
+paragraph the `+` refused continues that paragraph, unless the paragraph is an
+item's and the marker stands at that item's content column, or the marker
+returns past the paragraph's owner.
+
 The trace covers the ownership walk. The block readers that build the final
 tree run after it, so a difference that only they make, such as how a table row
 splits into cells, shows up in the output and not in the trace.
