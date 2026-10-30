@@ -32,7 +32,7 @@ math_display = "$$", code_span ;
    NOTATION, header) instantiated for every bare delimiter
    d in { '/', '*', '_', '~', '=' } (all single-char): *)
 
-bare_opener(d) = <!(alnum | '_' | d | slash_if(d)), d, !(ws | d | grapheme_extender) ;
+bare_opener(d) = <!(alnum | '_' | d | slash_if(d)), d, !(ws | d | grapheme_extender | gt_if(d)) ;
 bare_closer(d) = <&(non_ws), d, !(alnum | grapheme_extender) ;
 (* A DELIMITER IS A WHOLE GRAPHEME -- NORMATIVE [CARVE-P3-025]. A delimiter
    character counts only when it is a whole grapheme. A d followed by a
@@ -57,6 +57,8 @@ grapheme_extender = (* a character of Unicode general category Mn, Mc or Me *)
    before an opener is markup rather than a guard is PART 9 §9 GUARD
    EXEMPTION. *)
 
+(* gt_if(d) = '>' when d = '=', otherwise nothing: `=>` is never a highlight
+   opener (CARVE-P3-022), so `=>y=` is text. *)
 (* slash_if(d) = '/' when d in { '/', '_' }, otherwise nothing: italic and
    underline additionally never open when the char immediately before d is `/`
    (path protection, PART 9 §9: /a/_b_, snake_/case/, a_/_a_). For d = '/'
@@ -261,7 +263,7 @@ editorial_markup = addition | deletion | substitution | editorial_comment ;
 
 addition = "{+", !(grapheme_extender), inline_content, "+}", [attribute_run] ;
 deletion = "{-", !(grapheme_extender), inline_content, "-}", [attribute_run] ;
-substitution = "{~", !(grapheme_extender), inline_content, "~>", inline_content, "~}" ;
+substitution = "{~", !(grapheme_extender), [inline_content], "~>", [inline_content], "~}" ;
 editorial_comment = "{#", !(grapheme_extender), comment_content, "#}" ;
 comment_content = (* any text until the matching `#}`, preserved literally;
                      at least one character -- see the empty-brace clause,

@@ -375,7 +375,8 @@
            2. set per-column alignment from the colons (`:--` left, `--:`
               right, `:-:` center, bare `---` none), applied to the WHOLE
               column (header + body cells);
-           3. CONSUME the row (no `<tr>`).
+           3. CONSUME the row (no `<tr>`), and with it any row attributes
+              glued to it, which have no `<tr>` to set (T8).
          Column-count mismatch: unmatched columns promote with default
          alignment. POSITION IS STRICT: a delimiter-shaped row anywhere
          else (first line, or after the second) is an ordinary row whose
