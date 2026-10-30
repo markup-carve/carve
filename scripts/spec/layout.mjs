@@ -699,13 +699,25 @@ function reachedBefore(lines, i, markerLine, reaches) {
 const isOneLineComment = (line) => line !== undefined && COMMENT_LINE.test(line) && !COMMENT_FENCE.test(line)
 
 // Does a fence open at `at`, behind any comment and attribute lines?
-const leadsFence = (lines, at) => {
+const leadRunEnd = (lines, at) => {
   for (let attrs; ; ) {
     if (isOneLineComment(lines[at])) at++
     else if ((attrs = tryAttrLine(lines, at))) at = attrs.next
-    else break
+    else return at
   }
-  return FENCE.test(lines[at] ?? '')
+}
+const opensCodeFence = (line) => {
+  const m = FENCE.exec(line ?? '')
+  return !!m && parseFenceInfo(m[2]) !== null
+}
+const leadsFence = (lines, at) => opensCodeFence(lines[leadRunEnd(lines, at)])
+// The same over framed lines, reading only as far as the run reaches.
+const framedLeadsFence = (lines, at, read) => {
+  for (let width = 32; ; width *= 2) {
+    const window = lines.slice(at, at + width).map(read)
+    const end = leadRunEnd(window, 0)
+    if (at + width >= lines.length || end < window.length && window[end][0] !== '{') return opensCodeFence(window[end])
+  }
 }
 
 // A fence a `+` attached below the body column ends at its block (SS17 L3), so the run after it is the host's.
@@ -3215,7 +3227,8 @@ function ownLines(lines, trace = null) {
       const shift = ' '.repeat(plusBody.col - m.col)
       const from = m.col
       const fence = FENCE.exec(m.rest)
-      const fenced = fence && parseFenceInfo(fence[2]) !== null || COMMENT_FENCE_BODY.test(m.rest)
+      const fenced = fence && parseFenceInfo(fence[2]) !== null || COMMENT_FENCE_BODY.test(m.rest) ||
+        m.rest[0] === '{' && framedLeadsFence(lines, at, (line) => walkIndent(stripQuotes(line, depth)?.rest ?? '').rest)
       // A line below the frame the block stands in is not the block's. Nor,
       // outside a fence, is one below the block's column, a list marker at it,
       // or one at the column of an item the block missed.
