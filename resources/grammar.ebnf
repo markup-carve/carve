@@ -2833,7 +2833,10 @@ ellipsis = "..." ;    (* → … *)
    NORMATIVE [CARVE-P3-021]. A run of hyphens PRECEDED by whitespace (or the
    start of the inline content) and FOLLOWED by a non-whitespace character
    does not convert. It is literal text. Every other position converts as
-   before. The case is a long CLI flag: `git log --oneline`.
+   before. The case is a long CLI flag: `git log --oneline`. The start of an
+   inline span's content is the start of the inline content, as for quote
+   direction (CARVE-P3-023): `*--x*` keeps its run, while a `*` that opens
+   nothing is the preceding character, so `2*--x` converts.
 
    THE RULE IS DELIBERATELY NARROW. Requiring whitespace on BOTH sides removes
    every canonical dash use, which is unspaced -- `pages 1--10`, `the Mon--Fri

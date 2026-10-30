@@ -1339,6 +1339,7 @@ function buildToks(children, literalDelims = '') {
       ? `\uE000quote-boundary:${quoteRun.key}\uE001` : ''
     const t = { k: 't', h: c.h() + boundary }
     if (alt.sourceString === '{') t.braceAt = alt.source.startIdx
+    if (marker.ctorName === 'dashRun') t.dash = { at: marker.source.startIdx, raw: marker.sourceString }
     push(t)
   }
   if (comment) comment.tok.tailEnd = toks.length
@@ -1719,12 +1720,26 @@ function applyQuotes(toks, openMap, src, contentAt, spanContent) {
   }
 }
 
+// CARVE-P3-021 with CARVE-P3-023: a run at the start of a span's content follows
+// start-of-content, so it stays literal before a non-flank (carve#4170).
+function applyDashStarts(toks, openMap, src, contentAt, spanContent) {
+  const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
+  for (const t of toks) {
+    if (!t.dash) continue
+    const { at, raw } = t.dash
+    if (!opens.has(at - 1) && !(spanContent && at === contentAt)) continue
+    const next = src[at + raw.length] ?? ''
+    if (next !== '' && !isTypographyFlank(next)) t.h = escapeHtml(raw)
+  }
+}
+
 // `spanContent`: `contentAt` starts a braced span's content.
 function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanContent = false) {
   const toks = build()
   const openMap = pairDelims(toks, src, literalDelims, contentAt)
   const tentative = new Set([...openMap.values()].map((i) => toks[i].at))
   applyQuotes(toks, openMap, src, contentAt, spanContent)
+  applyDashStarts(toks, openMap, src, contentAt, spanContent)
   resolveNameRun(toks, openMap)
   resolveArrowCuts(toks, openMap)
   // A bare marker that is no mention or tag leaves the `_` it borrowed an
