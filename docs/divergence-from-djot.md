@@ -460,8 +460,8 @@ before the block; the blank only decides whether the item is tight or loose.
 **Difference.** Like Djot, Carve accepts a recognized opener at any deeper
 indent and treats its authored column as that block's temporary base. Unlike
 Djot, Carve still requires the line to reach its canonical content column: a
-block one space under `-` is below column 2 and does not nest. Top-level
-openers remain column-strict. The `+` continuation marker (§3) attaches a block
+block one space under `-` is below column 2 and does not nest. A top-level
+opener has no such column to reach, so it opens when indented. The `+` continuation marker (§3) attaches a block
 only at the marker column.
 
 ## 12. Smart punctuation is one leaf node, not three container types

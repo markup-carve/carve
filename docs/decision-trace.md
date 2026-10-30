@@ -109,14 +109,11 @@ paragraph line at its content column are recorded in it too, as the readers
 keep them there. When that block is an unclosed fence, the readers end it at
 the block, and every line at the content column after it is recorded as the
 item's or description's own body (a sub-list, a quote, a heading). Any other
-line after the block is recorded in its parent. A block it takes at column zero below an indented
-marker is recorded inside the item or description too, with `plus` set to the
-marker line. So is a block other than a paragraph that an item's or a
-description's `+` takes between its marker and content columns. A paragraph
-below the content column is refused, unless it starts at column zero or at the
-parent's content column: it is recorded in the parent, and so are the lines the
-walk folds after it. A list marker there is refused too: it opens a list in the
-parent, recorded as an item there.
+line after the block is recorded in its parent. A line at any other column
+refuses the `+` (CARVE-P9-067). The `+` then traces like any letter, so the line
+is recorded where a line after that letter would be, with no `plus`: `- +` /
+` # h` records the heading in the parent, and `- +` / `  x` records `x` in the
+item.
 
 A list marker of another kind under an item's paragraph, at the content column
 of the item's parent, starts a new list (PART 9 §10 I2). The walk folds it into

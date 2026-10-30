@@ -543,26 +543,30 @@ paragraph; both need a blank line):
 
 A **list marker** (bullet or ordered) is **gated by the content column** - and
 bullet and ordered behave identically here. A marker **at or past** the parent's
-content column opens a sub-list; one **below** it is lazy paragraph text that
-folds into the item:
+content column opens a sub-list. One **below** it is a sibling item when it is
+the same kind of marker, and lazy paragraph text that folds into the item when
+it is another kind:
 
 ```
 - a
   - b          →  nested            (column 2 = content column)
 
 - a
- - b           →  "- b" is lazy text of item a   (column 1, below it)
+ - b           →  sibling of item a              (column 1, below it)
 
 1. a
    1. b        →  nested            (column 3 = content column)
 
 1. a
-  1. b         →  "1. b" is lazy text of item a  (column 2, below it)
+  1. b         →  sibling of item a              (column 2, below it)
+
+1. a
+  - b          →  "- b" is lazy text of item a   (column 2, another kind)
 ```
 
-Every recognized block opener uses the same ownership test. At the top level it
-must start at column 0. Inside containers it must reach the innermost container's
-minimum content column. An opener written deeper is still structural: its
+Every recognized block opener uses the same ownership test. Inside containers it
+must reach the innermost container's minimum content column; at the top level
+every column reaches it. An opener written deeper is still structural: its
 authored column becomes the local base of that complete block, and `fmt` moves
 the block back to the minimum column. A line below the minimum can only continue
 an already-open paragraph; it cannot open a nested block.
