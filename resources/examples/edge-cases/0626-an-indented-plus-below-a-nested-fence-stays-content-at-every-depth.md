@@ -21,11 +21,11 @@ tail
           </li>
         </ul>
         +
+tail
       </li>
     </ul>
   </li>
 </ul>
-<p>tail</p>
 ```
 
 :::::::
@@ -49,11 +49,11 @@ tail
           </li>
         </ul>
         +
+tail
       </li>
     </ul>
   </li>
 </ul>
-<p>tail</p>
 ```
 
 :::::::
@@ -108,11 +108,11 @@ tail
           </li>
         </ul>
         +
+tail
       </li>
     </ul>
   </li>
 </ul>
-<p>tail</p>
 ```
 
 :::::::
@@ -167,12 +167,12 @@ tail
 </code></pre>
           </li>
         </ul>
-        <p>+</p>
+        <p>+
+tail</p>
       </li>
     </ul>
   </li>
 </ul>
-<p>tail</p>
 ```
 
 :::::::
