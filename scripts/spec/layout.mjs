@@ -3152,8 +3152,9 @@ function ownLines(lines, trace = null) {
       // Between the marker and content columns the `+` refuses a paragraph
       // (corpus 633): the readers close the item and the paragraph is the
       // parent's, which the trace records for it and what follows (carve#4190).
-      const refusedBy = trace && pullingItem === top() && form.kind === 'text' &&
-        m.col > pullingItem.markerCol && m.col < pullingItem.col && !frames.slice(reached + 1).some((f) => f.kind === 'quote')
+      const refusedBy = trace && pullingItem === top() && form.kind === 'text' && m.col > 0 && m.col < pullingItem.col &&
+        m.col !== frames[frames.length - 2].col &&
+        !frames.slice(reached + 1).some((f) => f.kind === 'quote')
       // A marker of another list kind under an item's paragraph opens a list
       // at the parent's content column (§10 I2), and so does any marker the
       // `+` refuses between its columns. The walk folds it, and the markers

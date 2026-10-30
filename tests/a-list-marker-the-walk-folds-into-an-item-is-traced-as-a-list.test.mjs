@@ -37,3 +37,14 @@ test('a marker of another kind off the parent column still folds', () => {
   assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item', '3 S4 doc/item:2 lazy'])
   assert.equal(renderDoc(parse(source)), '<ul>\n  <li>a</li>\n  <li>w\n* v</li>\n</ul>')
 })
+
+// carve#4214: below the marker column the `+` refuses a paragraph too, except
+// at the parent's content column and column zero, where it takes the block.
+test('a paragraph the + refuses below its marker column is traced in the parent', () => {
+  const source = '- a\n  - +\n para\n'
+  assert.deepEqual(steps(source).slice(2), ['3 S5 doc text'])
+  assert.equal(modelTrace(source)[2].closed, 2)
+  assert.deepEqual(steps('  - +\n  para\n* z\n').slice(1), ['2 S5 doc text', '3 S5 doc text'])
+  assert.equal(modelTrace('- a\n  - +\n  para\n')[2].owner, 'doc/item:1/item:2')
+  assert.equal(steps('  - +\npara\n')[1].startsWith('2 S5 doc/item:1'), true)
+})
