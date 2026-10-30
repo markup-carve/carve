@@ -4283,7 +4283,10 @@ EOF = (* end of file *) ;
       AND THE CONTAINER IT OPENS TAKES NO CAPTION OF ITS OWN WHILE IT HAS NO
       CONTENT. A host whose extent is delimited by its OWN structural prefix
       -- a `>` blockquote -- and whose every line is structural-only holds
-      nothing a caption could be about, so it is not a captionable host. This
+      nothing a caption could be about, so it is not a captionable host.
+      Comment, definition and attribute lines hold no content for this test
+      either (CARVE-P0-011): `> %%` / `^ cap` captions nothing, as a bare
+      `>` does, while `> a %% c` still captions. This
       says nothing about hosts delimited by an explicit closing fence, whose
       caption attaches at the closer: a zero-panel `::: figure` still carries
       its group caption (CARVE-P9-001).
@@ -6061,8 +6064,12 @@ EOF = (* end of file *) ;
          into a footnote body or a description body: `[^a]: +` / `- a list`
          keeps `+` as the note's text and opens the list after the note, and
          `: +` / `- a list` leaves the description empty. A block in an
-         enclosing item's column stays with that item. A sibling list item
-         stays a sibling. The group is one for attachment only: a refused `+`
+         enclosing item's column stays with that item. A non-paragraph,
+         non-list block written between an enclosing item's marker and
+         content columns reaches a nested body's first-block `+`: `- a` /
+         `  - +` / ` > q` gives the inner item the quote (corpus 633). A
+         paragraph line there folds lazily, and a list marker there is a
+         sibling. A sibling list item stays a sibling. The group is one for attachment only: a refused `+`
          still leaves a list item or description body empty and stays text
          in a footnote body. A block quote accepts a non-list block at column
          zero of its quote level or at its own marker column; an intervening
