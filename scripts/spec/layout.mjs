@@ -3226,6 +3226,12 @@ function ownLines(lines, trace = null) {
       } else if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
       continue
     }
+    // The block a `+` attaches at its marker's column moves with the marker,
+    // and so does every line after it (PART 0 S3): the owner reads them by
+    // the marker's shift, not its own (carve#4245).
+    if (plusFollower && m.rest !== '' && reached < frames.length - 1 && top().markerCol === m.col) {
+      frames[reached].cut = Math.max(frames[reached].cut, top().markerCol - top().markerCanon)
+    }
     // A lone `+` at an item's marker column attaches a paragraph written there,
     // and the readers keep it in the item (§17 L3). S4 tests the lines after it
     // against that paragraph, so a sibling marker interrupts it (carve#4080).
