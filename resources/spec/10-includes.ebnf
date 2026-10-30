@@ -66,7 +66,11 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    source is parsed as ordinary inline content, as if no include feature
    existed. A bare-path directive
    with no active inline markers emits verbatim (corpus "Include directive
-   with no resolver renders literal"). The rules a conforming PROCESSOR that
+   with no resolver renders literal"). A directive that is invalid on its
+   face, an `@lines` value that is not a valid I1 range or a bare-path
+   directive with a bare `@code` option, is emitted as its source text with
+   no inline parse of its tokens (carve#3803, corpus 715 and 735); emphasis
+   or a link around it may still pair across it (carve#3804). The rules a conforming PROCESSOR that
    DOES expand includes MUST follow:
 
    I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
@@ -412,7 +416,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       two bounds therefore limit reads as well as emitted output.
 
    I7 ERRORS. Each include error emits a Warning and leaves the directive
-      literal. Inclusion NEVER silently drops a directive. See PART 9 §25
+      literal, as CARVE-P6-001 defines it: a directive invalid on its face
+      keeps its source text with no inline parse of its tokens. Inclusion
+      NEVER silently drops a directive. See PART 9 §25
       (File inclusion) for the security model: parser stays pure, resolver is host-supplied and MUST enforce
       canonical path containment after symlink resolution and MUST NOT
       fetch remote URLs without an explicit allowlist. Included content

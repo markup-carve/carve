@@ -493,8 +493,9 @@
      colon fence      [B-div-start] A valid run of three or more colons.
                       [B-div-end] It ends at an exact-length colon run read in
                       the same owner, the host's end or end of input.
-                      [B-div-keep] `|` mode keeps its lines as payload; other
-                      modes read blocks and take lazy lines.
+                      [B-div-keep] `|` mode keeps its lines as payload and,
+                      like the other modes, which read blocks, takes a lazy
+                      line while its stanza is open (PART 2 `line_block`).
      code, raw and    [B-code-start] [B-comment-start] A valid code or raw
        comment fence  opener; a comment opener with a matching closer.
                       [B-code-keep] [B-comment-keep] The payload is opaque and
@@ -507,13 +508,13 @@
      caption          [B-caption-start] `^ ` with content after an eligible
                       host. One blank between host and marker is allowed, two
                       detach.
-     `+`              [B-plus-start] A lone `+` at the marker column of the
-                      deepest open list item, quote, definition body or
+     `+`              [B-plus-start] A lone `+` at the marker column of an
+                      open list item, quote, definition body or
                       footnote body, or a `+` that is the whole content of
                       such a marker line (`- +`, `> +`, `: +`, `[^a]: +`),
                       offers the container its next block (PART 9 §17,
-                      CARVE-P9-067). A refused `+` is ordinary
-                      text in the owner S2 selected.
+                      CARVE-P9-067). A refused `+` is read as a
+                      letter at the same column would be (carve#3421).
 
    OUTPUT. The layout-resolved line stream (equivalently: INDENT / DEDENT /
            CONT events plus line residues). PARTS 1-2 parse blocks over it;
@@ -1905,9 +1906,10 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    it earlier, a forced or editorial `X}` included: an unclosed run inside a
    braced span or an editorial frame takes the rest of the block too, so that
    span has no closer and its opener is text (carve#3973 X5). `{*a `b*} c` is
-   the text `{*a ` and the code `b*} c`. Line breaks are stripped with the
-   rest, except in a line block
-   (PART 9 §23), where a line break is content. Such an unclosed run is
+   the text `{*a ` and the code `b*} c`. A line break that is part of the
+   trailing whitespace is stripped with it, except in a line block (PART 9
+   §23), where a line break is content; a line break inside the run is
+   content (carve#2089). Such an unclosed run is
    OPAQUE -- an
    emphasis delimiter or link tail after it is verbatim content, so the
    surrounding construct never closes. Matches djot upstream. *)
@@ -3282,7 +3284,11 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    source is parsed as ordinary inline content, as if no include feature
    existed. A bare-path directive
    with no active inline markers emits verbatim (corpus "Include directive
-   with no resolver renders literal"). The rules a conforming PROCESSOR that
+   with no resolver renders literal"). A directive that is invalid on its
+   face, an `@lines` value that is not a valid I1 range or a bare-path
+   directive with a bare `@code` option, is emitted as its source text with
+   no inline parse of its tokens (carve#3803, corpus 715 and 735); emphasis
+   or a link around it may still pair across it (carve#3804). The rules a conforming PROCESSOR that
    DOES expand includes MUST follow:
 
    I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
@@ -3628,7 +3634,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       two bounds therefore limit reads as well as emitted output.
 
    I7 ERRORS. Each include error emits a Warning and leaves the directive
-      literal. Inclusion NEVER silently drops a directive. See PART 9 §25
+      literal, as CARVE-P6-001 defines it: a directive invalid on its face
+      keeps its source text with no inline parse of its tokens. Inclusion
+      NEVER silently drops a directive. See PART 9 §25
       (File inclusion) for the security model: parser stays pure, resolver is host-supplied and MUST enforce
       canonical path containment after symlink resolution and MUST NOT
       fetch remote URLs without an explicit allowlist. Included content
@@ -4376,7 +4384,8 @@ EOF = (* end of file *) ;
          alike (corpus 101-table-header-cell-rowspan). PART 10 §7 puts every
          row in one `<tbody>` when a rowspan crosses a row-group boundary.
          NO origin -> the marker renders as an EMPTY cell (`<td></td>` /
-         `<th></th>`, no content, no span); never dropped, never literal.
+         `<th></th>`, no content except the continuation fragments T6 gives
+         it, no span); never dropped, never literal.
          Covers uniformly:
            * ORPHAN -- `^` in the FIRST row / `<` in the FIRST column
              (corpus 98-table-span-marker-in-first-column);
@@ -4393,10 +4402,9 @@ EOF = (* end of file *) ;
          stands before or after the `^` row (corpus
          64-table-rowspan-with-multi-line-content). A `+` fragment on a span
          marker joins the cell the T5 walk resolves the marker into, in
-         row-major order. A BLOCKED marker (T5) is a cell of its own: it renders
-         no marker, and the fragments on it are its content
-. A
-         table cannot BEGIN with a continuation row (PART 2 `table`). The AST
+         row-major order. A marker with no origin, ORPHAN or BLOCKED (T5), is
+         a cell of its own: it renders no marker, and the fragments on it are
+         its content (carve#3151). A table cannot BEGIN with a continuation row (PART 2 `table`). The AST
          keeps each join as a `cell_wrap` marker, so a writer can put the
          `+` lines back (CARVE-P12-069).
 
@@ -5826,8 +5834,10 @@ EOF = (* end of file *) ;
       - A BODY WHOSE EVERY BLOCK RENDERS NOTHING IS AN EMPTY BODY -- NORMATIVE
         [CARVE-P9-077]. Render the body's visible block elements on their own
         lines (PART 10 §4), then the synthesized backlink paragraph. If all
-        blocks render nothing, open the `<li>` directly on that paragraph:
-        comments, comment fences and target-mismatched raw blocks add no line.
+        blocks render nothing, the backlink paragraph is the `<li>`'s first
+        line, on its own line inside it with no blank or slot line before it
+        (carve#2570, corpus 528): comments, comment fences and
+        target-mismatched raw blocks add no line.
         With visible and invisible blocks together, emit only the visible
         blocks' lines. This uses CARVE-P10-001's render-based emptiness test,
         but an empty note keeps no blank line because it has a backlink;
@@ -5966,7 +5976,8 @@ EOF = (* end of file *) ;
          reaches. Quote prefixes select their quote level (`> +`, not `>+`).
          An accepted marker interrupts an open paragraph, its grant ends at the
          attached block's boundary, and a sibling list item cannot be attached.
-         A refused `+` is ordinary text in the owner S2 selected.
+         A refused `+` is read as a letter at the same column would be
+         (carve#3421).
 
          A marker at a container's marker column is outside its code,
          raw or colon fence. That fence ends before the attached block begins.
@@ -7450,9 +7461,10 @@ EOF = (* end of file *) ;
          other structural attributes.
       R2 A MANDATORY BASE CLASS, where the author wrote no class: math's
          `math inline|display`, an admonition's, a task list's `task-list`
-         (§11) and a core div's directive-kind class. Where the author did
-         write a class, the base class is prepended inside that class slot
-         instead.
+         (§11) and a core div's directive-kind class, the type word of its
+         opener (`::: foo` gives `foo`). `line-block` is not a directive-kind
+         class; it is R4's marker-derived class. Where the author did write a
+         class, the base class is prepended inside that class slot instead.
       R3 AUTHORED, in the author's source order (the recorded `order`; PART
          4 RENDER ORDER). All classes accumulate, space-joined, into one
          `class` slot at its first-appearance position. An Attrs built
@@ -7468,7 +7480,10 @@ EOF = (* end of file *) ;
          auto-slug id an unwrapped heading carries (CARVE-P9-019) and, where
          the author wrote no class, a marker-derived class such as
          `line-block` or a diagram fence's class, and an extension wrapper's
-         `toc`, `glossary`, `index`, `tabs` or `code-group` class.
+         `toc`, `glossary`, `index`, `tabs` or `code-group` class. Where the
+         author did write a class, the marker-derived class is appended after
+         the authored classes inside that class slot: `{.verse}` over
+         `::: |` gives `class="verse line-block"` (carve#2328, carve#2338).
       R5 A RENDER ANNOTATION. The one in the core is `data-source-line` (the
          `sourceLine` render option), which records where a block was written.
 
@@ -7544,6 +7559,13 @@ EOF = (* end of file *) ;
       child indentation or inserted newline: `<blockquote><p>q</p></blockquote>`.
       Invisible children do not prevent this compact form. A block image,
       captioned paragraph, or second visible block takes the multiline form.
+
+      A BLOCK IMAGE (CARVE-P9R-007) is a bare `<img …>` on its own line, with
+      no `<p>` around it. A captioned host other than a table is a `<figure>`
+      holding the host element and then its `<figcaption>`, and the host's
+      block attributes, its id included, go on the `<figure>` (corpus
+      47-numbered-cross-references-8). A table keeps its attributes on
+      `<table>` and holds its caption as `<caption>` (§7).
 
       The HTML API returns a fragment with no final LF. A caller writing an
       output file may add its own line ending after the fragment.
@@ -7628,8 +7650,11 @@ EOF = (* end of file *) ;
         > ```
 
    7. TABLES. Alignment renders as `style="text-align: VALUE;"` (one
-      space after the colon, trailing semicolon); a cell with no effective
-      alignment emits NO style attribute. `rowspan`/`colspan` are emitted
+      space after the colon, trailing semicolon). Vertical alignment adds
+      `vertical-align: VALUE;` to the same `style`, after `text-align` and
+      one space from it when both are present: `style="text-align: right;
+      vertical-align: top;"` (PART 12 §19 and §20). A cell with no effective
+      alignment on either axis emits NO style attribute. `rowspan`/`colspan` are emitted
       only when their count is > 1.
       A visible resolved rowspan that crosses a row-group boundary cannot occupy its
       authored slots if those groups become separate HTML sections. In that

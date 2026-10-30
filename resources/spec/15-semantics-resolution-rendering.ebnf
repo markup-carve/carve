@@ -99,8 +99,10 @@
       - A BODY WHOSE EVERY BLOCK RENDERS NOTHING IS AN EMPTY BODY -- NORMATIVE
         [CARVE-P9-077]. Render the body's visible block elements on their own
         lines (PART 10 §4), then the synthesized backlink paragraph. If all
-        blocks render nothing, open the `<li>` directly on that paragraph:
-        comments, comment fences and target-mismatched raw blocks add no line.
+        blocks render nothing, the backlink paragraph is the `<li>`'s first
+        line, on its own line inside it with no blank or slot line before it
+        (carve#2570, corpus 528): comments, comment fences and
+        target-mismatched raw blocks add no line.
         With visible and invisible blocks together, emit only the visible
         blocks' lines. This uses CARVE-P10-001's render-based emptiness test,
         but an empty note keeps no blank line because it has a backlink;
@@ -239,7 +241,8 @@
          reaches. Quote prefixes select their quote level (`> +`, not `>+`).
          An accepted marker interrupts an open paragraph, its grant ends at the
          attached block's boundary, and a sibling list item cannot be attached.
-         A refused `+` is ordinary text in the owner S2 selected.
+         A refused `+` is read as a letter at the same column would be
+         (carve#3421).
 
          A marker at a container's marker column is outside its code,
          raw or colon fence. That fence ends before the attached block begins.

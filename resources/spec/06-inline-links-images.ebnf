@@ -81,9 +81,10 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    it earlier, a forced or editorial `X}` included: an unclosed run inside a
    braced span or an editorial frame takes the rest of the block too, so that
    span has no closer and its opener is text (carve#3973 X5). `{*a `b*} c` is
-   the text `{*a ` and the code `b*} c`. Line breaks are stripped with the
-   rest, except in a line block
-   (PART 9 §23), where a line break is content. Such an unclosed run is
+   the text `{*a ` and the code `b*} c`. A line break that is part of the
+   trailing whitespace is stripped with it, except in a line block (PART 9
+   §23), where a line break is content; a line break inside the run is
+   content (carve#2089). Such an unclosed run is
    OPAQUE -- an
    emphasis delimiter or link tail after it is verbatim content, so the
    surrounding construct never closes. Matches djot upstream. *)

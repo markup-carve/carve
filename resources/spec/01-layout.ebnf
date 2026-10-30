@@ -376,8 +376,9 @@
      colon fence      [B-div-start] A valid run of three or more colons.
                       [B-div-end] It ends at an exact-length colon run read in
                       the same owner, the host's end or end of input.
-                      [B-div-keep] `|` mode keeps its lines as payload; other
-                      modes read blocks and take lazy lines.
+                      [B-div-keep] `|` mode keeps its lines as payload and,
+                      like the other modes, which read blocks, takes a lazy
+                      line while its stanza is open (PART 2 `line_block`).
      code, raw and    [B-code-start] [B-comment-start] A valid code or raw
        comment fence  opener; a comment opener with a matching closer.
                       [B-code-keep] [B-comment-keep] The payload is opaque and
@@ -390,13 +391,13 @@
      caption          [B-caption-start] `^ ` with content after an eligible
                       host. One blank between host and marker is allowed, two
                       detach.
-     `+`              [B-plus-start] A lone `+` at the marker column of the
-                      deepest open list item, quote, definition body or
+     `+`              [B-plus-start] A lone `+` at the marker column of an
+                      open list item, quote, definition body or
                       footnote body, or a `+` that is the whole content of
                       such a marker line (`- +`, `> +`, `: +`, `[^a]: +`),
                       offers the container its next block (PART 9 §17,
-                      CARVE-P9-067). A refused `+` is ordinary
-                      text in the owner S2 selected.
+                      CARVE-P9-067). A refused `+` is read as a
+                      letter at the same column would be (carve#3421).
 
    OUTPUT. The layout-resolved line stream (equivalently: INDENT / DEDENT /
            CONT events plus line residues). PARTS 1-2 parse blocks over it;
