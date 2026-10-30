@@ -35,5 +35,5 @@ test('a lazy line after a blank and a later paragraph still folds as in the desc
 
 test('the reproduction folds tail into the bullet item', () => {
   const note = noteBody(render('[^a]: 1. +\n  - y\ntail\n\nr[^a]\n'))
-  assert.equal(note, '<ol>\n<li></li>\n</ol>\n<ul>\n<li>y\ntail</li>\n</ul>')
+  assert.equal(note, '<ol>\n<li>+</li>\n</ol>\n<ul>\n<li>y\ntail</li>\n</ul>')
 })

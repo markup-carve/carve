@@ -618,7 +618,7 @@ line is optional for a recognized opener; when present, it affects layout and
 looseness, not whether the opener is structural.
 
 **List continuation marker** (Carve addition): a lone `+` at the marker column
-attaches the following flush-left block to the current item with no blank line,
+attaches the following block at that column to the current item with no blank line,
 keeping the list tight (handy for code/tables you would rather not indent).
 Because `+` is not a Carve bullet (unlike Markdown/djot, which treat `+` as a
 list marker), this is unambiguous: there is no `+` list it could be mistaken

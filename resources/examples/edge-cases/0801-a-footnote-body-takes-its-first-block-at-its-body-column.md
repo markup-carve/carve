@@ -4,7 +4,7 @@ page: edge-footnotes
 
 ## A footnote body takes its first block at its body column
 
-A footnote body is a marker body like a list item: a first-block `+` takes the next owned block, at or past the body column or at column zero (CARVE-P9-067, carve#4152).
+Reversed by carve#4409: like a list item, a footnote body's first-block `+` takes a follower only at its marker column, which is column zero for a top-level note (CARVE-P9-067). A line at the body column refuses the `+` and folds into it.
 
 ::: compare
 
@@ -21,7 +21,8 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>+
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -45,11 +46,9 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <ul>
-        <li>x</li>
-        <li>y</li>
-      </ul>
-      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>+
+- x
+- y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -73,6 +72,7 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
+      <p>+</p>
       <p>later<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
@@ -116,7 +116,8 @@ para
 <ul>
   <li>
     <ul>
-      <li>para</li>
+      <li>+
+para</li>
     </ul>
   </li>
 </ul>
@@ -135,7 +136,8 @@ para
 ```html
 <dl>
   <dt>t</dt>
-  <dd>flush</dd>
+  <dd>+
+flush</dd>
 </dl>
 ```
 
@@ -159,8 +161,7 @@ r[^q]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -186,7 +187,8 @@ r[^q]
   <hr>
   <ol>
     <li id="fn1">
-      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>+
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

@@ -7,12 +7,11 @@ A quote follower below stacked quote openers in an item is read at its raw colum
 <ul>
   <li>
     <blockquote>
-      <blockquote>
-        <blockquote><p>q</p></blockquote>
-      </blockquote>
+      <blockquote><p>+</p></blockquote>
     </blockquote>
   </li>
 </ul>
+<blockquote><p>q</p></blockquote>
 ```
 
 ```
@@ -22,8 +21,7 @@ A quote follower below stacked quote openers in an item is read at its raw colum
 <ul>
   <li>
     <blockquote>
-      <blockquote><p>+
-q</p></blockquote>
+      <blockquote><p>q</p></blockquote>
     </blockquote>
   </li>
 </ul>

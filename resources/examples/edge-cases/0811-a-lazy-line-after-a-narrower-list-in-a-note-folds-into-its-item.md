@@ -23,7 +23,7 @@ r[^a]
   <ol>
     <li id="fn1">
       <ol>
-        <li></li>
+        <li>+</li>
       </ol>
       <ul>
         <li>y

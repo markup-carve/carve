@@ -4,7 +4,7 @@ page: edge-lists
 
 ## An item on a body's marker line takes a column-zero block after its plus
 
-A list item on a description's or note's marker line is a marker body like any other. Its first-block `+` takes a non-list block at column zero of its quote level (CARVE-P9-067, carve#4356).
+A list item on a description's or note's marker line is a marker body like any other. Its first-block `+` takes a follower at the item's marker column. A line at column zero refuses it and folds into the `+` (CARVE-P9-067, carve#4409).
 
 ::: compare
 
@@ -19,7 +19,8 @@ p
   <dt>t</dt>
   <dd>
     <ul>
-      <li>p</li>
+      <li>+
+p</li>
     </ul>
   </dd>
 </dl>
@@ -45,7 +46,8 @@ r[^n]
   <ol>
     <li id="fn1">
       <ul>
-        <li>p</li>
+        <li>+
+p</li>
       </ul>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>

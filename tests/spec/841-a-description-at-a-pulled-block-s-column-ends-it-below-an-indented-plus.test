@@ -8,7 +8,8 @@ l
 .
 <dl>
   <dt>t</dt>
-  <dd>l</dd>
+  <dd>+
+l</dd>
   <dd>b</dd>
 </dl>
 ```
@@ -21,11 +22,10 @@ l
 .
 <dl>
   <dt>t</dt>
-  <dd>
-    <blockquote><p>q</p></blockquote>
-  </dd>
-  <dd>b</dd>
+  <dd>+</dd>
 </dl>
+<blockquote><p>q
+: b</p></blockquote>
 ```
 
 ```
@@ -36,7 +36,8 @@ l
 .
 <dl>
   <dt>t</dt>
-  <dd>l</dd>
+  <dd>+
+l</dd>
   <dd>b</dd>
 </dl>
 ```
@@ -53,7 +54,8 @@ l
   <li>x
     <dl>
       <dt>t</dt>
-      <dd>l</dd>
+      <dd>+
+l</dd>
       <dd>b</dd>
     </dl>
   </li>
@@ -69,7 +71,8 @@ l
 <blockquote>
   <dl>
     <dt>t</dt>
-    <dd>l</dd>
+    <dd>+
+l</dd>
     <dd>b</dd>
   </dl>
 </blockquote>
@@ -84,7 +87,8 @@ l
 .
 <dl>
   <dt>t</dt>
-  <dd>l</dd>
+  <dd>+
+l</dd>
   <dd>b
 p</dd>
 </dl>

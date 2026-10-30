@@ -22,8 +22,14 @@ test('a stacked + and a + below the item keep their reading', () => {
   assert.equal(html(':: t\n: - a\n +\n x\n'), '<dl><dt>t</dt><dd><ul><li>a + x</li></ul></dd></dl>')
 })
 
-test('a + at the description\'s marker column reaches the description past an empty first-block item', () => {
-  assert.equal(html(':: t\n: - +\n+\nx\n'), '<dl><dt>t</dt><dd><ul><li></li></ul><p>x</p></dd></dl>')
-  assert.equal(html(':: t\n: 1. +\n+\n> q\n'), '<dl><dt>t</dt><dd><ol><li></li></ol><blockquote><p>q</p></blockquote></dd></dl>')
-  assert.equal(html(':: t\n: - +\n+\n- y\n'), '<dl><dt>t</dt><dd><ul><li></li><li><p>y</p></li></ul></dd></dl>')
+test('a + at the description\'s marker column reaches the description past an empty item', () => {
+  assert.equal(html(':: t\n: - {empty}\n+\nx\n'), '<dl><dt>t</dt><dd><ul><li></li></ul><p>x</p></dd></dl>')
+  assert.equal(html(':: t\n: 1. {empty}\n+\n> q\n'), '<dl><dt>t</dt><dd><ol><li></li></ol><blockquote><p>q</p></blockquote></dd></dl>')
+  assert.equal(html(':: t\n: - {empty}\n+\n- y\n'), '<dl><dt>t</dt><dd><ul><li></li><li><p>y</p></li></ul></dd></dl>')
+})
+
+test('a + the item refused stays its letter and the description still takes the next +', () => {
+  assert.equal(html(':: t\n: - +\n+\nx\n'), '<dl><dt>t</dt><dd><ul><li>+</li></ul><p>x</p></dd></dl>')
+  assert.equal(html(':: t\n: 1. +\n+\n> q\n'), '<dl><dt>t</dt><dd><ol><li>+</li></ol><blockquote><p>q</p></blockquote></dd></dl>')
+  assert.equal(html(':: t\n: - +\n+\n- y\n'), '<dl><dt>t</dt><dd><ul><li><p>+</p></li><li><p>y</p></li></ul></dd></dl>')
 })

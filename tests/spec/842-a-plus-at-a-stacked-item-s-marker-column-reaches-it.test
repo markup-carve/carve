@@ -24,7 +24,7 @@ A plus at a stacked item's marker column reaches it
     <ul>
       <li>
         <ul>
-          <li></li>
+          <li>+</li>
         </ul>
         x
       </li>

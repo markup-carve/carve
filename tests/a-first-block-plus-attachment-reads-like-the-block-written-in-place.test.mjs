@@ -7,12 +7,13 @@ const html = (source) => renderDoc(parse(source))
 const notes = (source) => (html(source).match(/<section role="doc-endnotes"[\s\S]*<\/section>/) ?? ['none'])[0]
 
 // CARVE-P9-067 (carve#3966): a quote's `+` attaches an unclosed fence with no
-// separator line in its payload, as the fence written in the quote reads.
-for (const [plus, direct] of [['> +\n', '> '], ['> > +\n', '> > ']]) {
+// separator line in its payload, as the fence written in the quote reads. The
+// follower carries the prefixes of the quotes around the host (carve#4409).
+for (const [plus, direct, carried] of [['> +\n', '> ', ''], ['> > +\n', '> > ', '> ']]) {
   for (const fence of ['```', '``` x', '~~~', '````']) {
     for (const payload of [[], ['y'], ['y', 'z']]) {
       test(`"${plus.trim()}" then an unclosed "${fence}" with ${payload.length} payload lines`, () => {
-        const attached = plus + [fence, ...payload].join('\n') + '\n'
+        const attached = plus + [fence, ...payload].map((line) => carried + line).join('\n') + '\n'
         const written = [fence, ...payload].map((line) => direct + line).join('\n') + '\n'
         assert.equal(html(attached), html(written))
       })
@@ -20,13 +21,17 @@ for (const [plus, direct] of [['> +\n', '> '], ['> > +\n', '> > ']]) {
   }
 }
 
+test('a fence without the outer quote prefix is refused by "> > +"', () => {
+  assert.equal(html('> > +\n```\ny\n'), html('> > Z\n```\ny\n').replace('Z', '+'))
+})
+
 // carve#3959 shape 2: a note's `+` moves its whole attached fence, so the
 // payload and the closer stay the fence's at every nesting depth. An
 // unprefixed fence does not reach a note in a quote (carve#4097).
-for (const host of ['', '- a\n  ', '- a\n  - x\n    ', '> ']) {
+for (const [host, pad] of [['', ''], ['- a\n  ', '  '], ['- a\n  - x\n    ', '    '], ['> ', '']]) {
   for (const [open, close] of [['```', '```'], ['~~~', '~~~'], ['``` x', '```']]) {
     test(`${JSON.stringify(host)}[^b]: + then a closed "${open}"`, () => {
-      const source = `${host}[^b]: +\n${open}\nc\n${close}\n\nr[^b]\n`
+      const source = `${host}[^b]: +\n${pad}${open}\n${pad}c\n${pad}${close}\n\nr[^b]\n`
       const out = notes(source)
       if (host === '> ') {
         assert.match(out, /<p>\+<a href/)
@@ -37,16 +42,30 @@ for (const host of ['', '- a\n  ', '- a\n  - x\n    ', '> ']) {
   }
 }
 
-// carve#4396: a note's refused `+` reads like a letter, so a list marker folds
-// into its paragraph, in a quote as at document level.
+test('a fence off the marker column of a hosted note is refused', () => {
+  const source = '- a\n  [^b]: +\n```\nc\n```\n\nr[^b]\n'
+  assert.match(notes(source), /<p>\+<a href/)
+  assert.match(html(source), /<\/ul>\n<pre><code>c\n<\/code><\/pre>/)
+})
+
+test('a prefixed fence reaches a note in a quote', () => {
+  assert.match(notes('> [^b]: +\n> ```\n> c\n> ```\n\nr[^b]\n'), /<pre><code>c\n<\/code><\/pre>/)
+})
+
+// A note's refused `+` is a letter, so a marker line below it reads as it does
+// below any letter.
 for (const host of ['> ', '> > ', '> - x\n>   ', '- > ']) {
   for (const marker of ['- after', '* after', '1. after', '    1. after', ' * after']) {
     test(`${JSON.stringify(host)}[^b]: + then ${JSON.stringify(marker)}`, () => {
-      const source = (letter) => `${host}[^b]: ${letter}\n${marker}\n\nr[^b]\n`
-      assert.equal(html(source('+')), html(source('Q')).replaceAll('Q', '+'))
+      const source = (end) => `${host}[^b]: ${end}\n${marker}\n\nr[^b]\n`
+      assert.equal(html(source('+')), html(source('Z')).replace('Z', '+'))
     })
   }
 }
+
+test('a list carrying the quote prefix is the block of a note in that quote', () => {
+  assert.match(notes('> [^b]: +\n> - after\n\nr[^b]\n'), /<ul>\s*<li>after<\/li>\s*<\/ul>/)
+})
 
 // carve#3959 shape 1, CARVE-P0-014: a note fence whose closer lies past a
 // below-column line opens in an item host as it does at document level.

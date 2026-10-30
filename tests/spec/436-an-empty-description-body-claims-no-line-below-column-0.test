@@ -19,9 +19,9 @@ An empty description body claims no line below column 0
 .
 <dl>
   <dt>t</dt>
-  <dd></dd>
+  <dd>+
+flush</dd>
 </dl>
-<p>flush</p>
 ```
 
 ```
@@ -43,9 +43,9 @@ An empty description body claims no line below column 0
 .
 <dl>
   <dt>t</dt>
-  <dd></dd>
+  <dd>+
+flush</dd>
 </dl>
-<p>flush</p>
 ```
 
 ```
@@ -74,7 +74,7 @@ flush
  flush
 .
 <ul>
-  <li></li>
+  <li>+
+flush</li>
 </ul>
-<p>flush</p>
 ```

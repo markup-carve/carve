@@ -1,7 +1,7 @@
 /*
- * A lazy line below a quote whose stacked item `+` took a paragraph folds into
- * that paragraph, as it does when the line carries the prefix (PART 9 §10 I6,
- * carve#3972 case lazy-478d76f7299c).
+ * A lazy line below a quote whose stacked item holds a paragraph folds into it,
+ * as it does when the line carries the prefix, whether the `+` took the paragraph
+ * or was refused into it (PART 9 §10 I6, carve#3972 case lazy-478d76f7299c).
  */
 
 import { test } from 'node:test'
@@ -21,5 +21,10 @@ for (const quote of ['> ', '> > ']) {
 
 test('the conformance-pack case', () => {
   const out = html('_u_\n> 1. - +\n> para\n- - > q\ntail\n')
+  assert.match(out, /<li>\+\npara\n- - &gt; q\ntail<\/li>/, out)
+})
+
+test('the conformance-pack case with the paragraph at the marker column', () => {
+  const out = html('_u_\n> 1. - +\n>    para\n- - > q\ntail\n')
   assert.match(out, /<li>para\n- - &gt; q\ntail<\/li>/, out)
 })

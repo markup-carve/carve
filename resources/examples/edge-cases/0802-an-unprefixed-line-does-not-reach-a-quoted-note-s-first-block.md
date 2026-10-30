@@ -4,7 +4,7 @@ page: edge-footnotes
 
 ## An unprefixed line does not reach a quoted note's first block
 
-A line reaches a note inside a quote only through the quote's prefix (CARVE-P9-067, carve#4097). An unprefixed follower refuses the note's `+`, which stays text, and closes the quote; a paragraph line folds into that text. A prefixed follower is the note's block.
+A line reaches a note inside a quote only through the quote's prefix (CARVE-P9-067, carve#4097). An unprefixed follower refuses the note's `+`, which stays text, and closes the quote; a paragraph line folds into that text. A prefixed follower at the note's marker column is the note's block.
 
 ::: compare
 
@@ -204,7 +204,8 @@ r[^b]
   <hr>
   <ol>
     <li id="fn1">
-      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>+
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

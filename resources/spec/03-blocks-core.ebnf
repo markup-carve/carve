@@ -502,26 +502,22 @@ indent = whitespace, {whitespace} ;
 (* Continuation marker (PART 9 §17): a lone `+` at an open container's marker column,
    or directly after a quote prefix, attaches one block starting at that
    column. A first-block `+` after the last opener on its line attaches to
-   that innermost opener when a non-list block starts at column 0 of its quote
-   level (the document's, or an enclosing quote's content) or at the opener
-   line's own column. At an open list item's marker column, a following
-   same-column list item is a sibling, so the `+` is ordinary text and the
-   refused-marker lint reports it. *)
+   that innermost opener when the next line stands at the opener's marker
+   column, through the prefixes of its enclosing quotes. At a list item's
+   marker column a list marker is a sibling and a description's `: ` line is a
+   sibling at its marker column, so the `+` is a letter and the refused-marker
+   lint reports it. *)
 continuation_marker = '+', newline ;
 (* CARVE-P7-001 item 5 removes a line-final space/tab run before this
    production is matched, so that source spelling remains a marker. A
    vertical tab or form feed is not a marker separator. *)
 continuation_marker_block = continuation_marker, block ;
-(* First-block form (Carve addition; see PART 9 §17 L4): a lone `+` as the
+(* First-block form (Carve addition; see PART 9 §17 L3): a lone `+` as the
    sole content right after a container's last opener (`- +`, `1. +`, `: +`,
    `> +`, `[^a]: +`, `- - +`) opens a body that is the one block starting at
-   column 0 of its quote level or that opener line's column, with no inline lead;
-   a list item, footnote body or description body also takes its next owned
-   block at or past its content column (PART 9 §17 L4, CARVE-P9-067);
-   a list item at a column owned by an open list remains a sibling.
-   `- + text` keeps `+ text` as literal
-   inline content -- only a bare `+` triggers this. With no block at that column
-   after it, `> +` and `[^a]: +` keep the `+` as text. *)
+   that opener's marker column, with no inline lead (CARVE-P9-067).
+   `- + text` keeps `+ text` as literal inline content -- only a bare `+`
+   triggers this. Any other `+` is a letter. *)
 (* One block, exactly as `continuation_marker_block` above: the two forms
    differ in WHERE the marker sits, never in how much it takes. *)
 first_block_content = continuation_marker, block ;

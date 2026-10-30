@@ -6,18 +6,19 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (src) => renderDoc(parse(src)).trim()
 
 test('a description marker below a first-block item folds into its paragraph (carve#4080)', () => {
-  assert.equal(html('- +\n  x\n: `\n'), '<ul>\n  <li>x\n: <code></code></li>\n</ul>')
+  assert.equal(html('- +\nx\n: `\n'), '<ul>\n  <li>x\n: <code></code></li>\n</ul>')
 })
 
 test('an attribute line below a first-block item closes it (carve#4080)', () => {
-  assert.equal(html('- +\n  x\n{e}\n`\n'), '<ul>\n  <li>x</li>\n</ul>\n<p e=""><code></code></p>')
+  assert.equal(html('- +\nx\n{e}\n`\n'), '<ul>\n  <li>x</li>\n</ul>\n<p e=""><code></code></p>')
 })
 
 test('plain lazy text still folds after a first-block item', () => {
-  assert.equal(html('- +\n  x\ny\n'), '<ul>\n  <li>x\ny</li>\n</ul>')
+  assert.equal(html('- +\nx\ny\n'), '<ul>\n  <li>x\ny</li>\n</ul>')
+  assert.equal(html('- +\n  x\ny\n'), '<ul>\n  <li>+\nx\ny</li>\n</ul>')
 })
 
-test('a description marker folds into a first-block sublist\'s paragraph (carve#4080)', () => {
+test('a description marker folds into the paragraph of a sublist below a refused + (carve#4080)', () => {
   assert.equal(html('- a\n  - +\n    - y\n: y\n'),
-    '<ul>\n  <li>a\n    <ul>\n      <li>\n        <ul>\n          <li>y\n: y</li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>')
+    '<ul>\n  <li>a\n    <ul>\n      <li>+\n        <ul>\n          <li>y\n: y</li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>')
 })

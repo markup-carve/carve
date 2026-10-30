@@ -53,8 +53,8 @@ the `>`.
 
 :::
 
-A list item at the quote's column is refused, as in a list item host, so the
-`+` and the item fold into the quote's paragraph.
+A list at the quote's column attaches too: only a list item host refuses one
+(carve#4409).
 
 ::: compare
 
@@ -69,9 +69,12 @@ A list item at the quote's column is refused, as in a list item host, so the
 <dl>
   <dt>t</dt>
   <dd>
-    <blockquote><p>a
-+
-. e</p></blockquote>
+    <blockquote>
+      <p>a</p>
+      <ol>
+        <li>e</li>
+      </ol>
+    </blockquote>
   </dd>
 </dl>
 ```

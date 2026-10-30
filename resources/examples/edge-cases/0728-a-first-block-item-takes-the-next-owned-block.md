@@ -1,7 +1,7 @@
 ## A first-block item takes the next owned block
 
-The content-column paragraph is the one block attached by `- +`. The next
-root block begins after the item.
+A line at the content column refuses `- +` and folds into the `+` (carve#4409). The
+next root block begins after the item.
 
 ::: compare
 
@@ -13,7 +13,8 @@ root block begins after the item.
 
 ```html
 <ul>
-  <li>x</li>
+  <li>+
+x</li>
 </ul>
 <blockquote>
 
@@ -32,7 +33,8 @@ root block begins after the item.
 
 ```html
 <ul>
-  <li>x</li>
+  <li>+
+x</li>
 </ul>
 <section id="h">
   <h1>h</h1>
@@ -51,7 +53,8 @@ root block begins after the item.
 
 ```html
 <ul>
-  <li>x</li>
+  <li>+
+x</li>
 </ul>
 <hr>
 ```
@@ -68,7 +71,8 @@ root block begins after the item.
 
 ```html
 <ul>
-  <li>x</li>
+  <li>+
+x</li>
 </ul>
 <blockquote>
 

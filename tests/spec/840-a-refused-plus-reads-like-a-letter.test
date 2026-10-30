@@ -11,8 +11,10 @@ r[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-- b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <ul>
+        <li>b</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

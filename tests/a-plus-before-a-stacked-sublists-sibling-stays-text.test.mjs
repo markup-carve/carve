@@ -21,8 +21,8 @@ for (const source of [
   test(JSON.stringify(source), () => assert.match(render(source), kept))
 }
 
-test('the stacked list reads like the unstacked one at top level', () => {
-  assert.match(render('- x\n\n+\n- y\n'), kept)
+test('at top level the marker folds into the refused +', () => {
+  assert.match(render('- x\n\n+\n- y\n'), /<ul><li>x<\/li><\/ul><p>\+ - y<\/p>/)
 })
 
 test('a + before a paragraph still attaches it', () => {

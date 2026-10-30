@@ -11,7 +11,7 @@ after
   <ul>
     <li>d
       <ul>
-        <li></li>
+        <li>+</li>
       </ul>
     </li>
   </ul>
@@ -35,7 +35,7 @@ after
       <p>d</p>
       <dl>
         <dt>u</dt>
-        <dd></dd>
+        <dd>+</dd>
       </dl>
     </dd>
   </dl>
@@ -51,7 +51,7 @@ after
 .
 <div class="d">
   <ul>
-    <li></li>
+    <li>+</li>
   </ul>
 </div>
 <p>after</p>

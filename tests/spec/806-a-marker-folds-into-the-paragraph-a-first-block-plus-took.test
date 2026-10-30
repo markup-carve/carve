@@ -6,7 +6,8 @@ A marker folds into the paragraph a first-block plus took
  * w1
 .
 <ul>
-  <li>b
+  <li>+
+b
 * w1</li>
 </ul>
 ```

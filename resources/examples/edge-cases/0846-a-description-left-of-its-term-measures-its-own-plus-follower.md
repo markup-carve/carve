@@ -17,9 +17,9 @@ A description has no list column: it is measured from its own line, even when it
 ```html
 <dl>
   <dt>t</dt>
-  <dd></dd>
+  <dd>+
+h</dd>
 </dl>
-<p>h</p>
 ```
 
 :::
@@ -37,7 +37,8 @@ A line at the description's own body column still reaches it.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>h</dd>
+  <dd>+
+h</dd>
 </dl>
 ```
 

@@ -14,13 +14,8 @@
  * ITEM TEXT and named the box `aria-label="+"`, while carve-js c330d9a,
  * carve-php 684c0e30 and carve-rs c149919 all opened the form. Nothing in the
  * corpus pinned the seam, so the disagreement only ever surfaced from the
- * WRITER side: a canonical writer has no other way to spell an EMPTY task item
- * than `- [x] +` - `- [x]` alone is not a task item at all, it is an item whose
- * text is `[x]` - so every `fmt` of such an item read back through the oracle
- * as an item whose body was a plus sign. That is what
- * resources/engine-fmt-drift.txt carried for corpus document
- * 415-a-floating-attribute-does-not-widen-a-list-item-s-content-column-7, and
- * deleting the row is what this change buys (markup-carve/carve-js#1491).
+ * WRITER side (markup-carve/carve-js#1491). An EMPTY task item is now written
+ * `- [x] {empty}`; `- [x] +` with no follower holds a literal `+` (carve#4409).
  *
  * The seam is pinned here rather than in the corpus because the corpus numbers
  * are append-only across concurrent spec branches; these rows gate on every PR
@@ -48,10 +43,10 @@ test('the box still carries the state the author wrote', () => {
   )
 })
 
-test('a task item whose whole content is a bare + is empty, and that is how a writer spells one', () => {
-  // The row the drift ledger was carrying. An empty task item has no other
-  // spelling: `- [x]` is an item whose TEXT is `[x]`, asserted below.
-  assert.equal(html('-{#k} [x] +\n'), '<ul class="task-list"><li data-task-state="x" id="k"><input type="checkbox" checked disabled></li></ul>')
+test('an empty task item is spelled with {empty}, and a bare + with no follower is its text', () => {
+  // `- [x]` is an item whose TEXT is `[x]`, asserted below.
+  assert.equal(html('-{#k} [x] {empty}\n'), '<ul class="task-list"><li data-task-state="x" id="k"><input type="checkbox" checked disabled></li></ul>')
+  assert.equal(html('-{#k} [x] +\n'), '<ul class="task-list"><li data-task-state="x" id="k"><input type="checkbox" checked disabled aria-label="+"> +</li></ul>')
   assert.equal(html('-{#k} [x]\n'), '<ul><li id="k">[x]</li></ul>')
 })
 
@@ -72,5 +67,6 @@ test('the plain-bullet form is unchanged', () => {
     html('- +\n| a | b |\n'),
     '<ul><li><table><tbody><tr><td>a</td><td>b</td></tr></tbody></table></li></ul>',
   )
-  assert.equal(html('- +\n'), '<ul><li></li></ul>')
+  assert.equal(html('- {empty}\n'), '<ul><li></li></ul>')
+  assert.equal(html('- +\n'), '<ul><li>+</li></ul>')
 })

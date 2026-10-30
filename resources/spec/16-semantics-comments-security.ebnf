@@ -168,7 +168,7 @@
         indent, not absolute column 0: a `line-block` nested in a list has the
         container's structural indent stripped first (the list dedents to its
         content column), so only the author's intra-verse indent survives. The
-        `+` first-block form (fence at column 0) is the canonical way to nest a
+        `+` first-block form (fence at the marker column) is the canonical way to nest a
         `line-block` without the container consuming indentation.
       - INLINE CONTENT parses normally (emphasis, links, code, ...); only the
         whitespace and soft-break handling differ from an ordinary div.
@@ -306,8 +306,8 @@
          and is read in the nearest surviving owner. This applies to footnotes
          as it does to list items, including flush-left ordinary text without
          a blank. A lone `+` at the live marker column, including the opener's
-         sole first-block content, uses §17 L3 and L4 to attach one eligible
-         block; refusal keeps the marker as text. These decisions are
+         sole first-block content, uses §17 L3 to attach one
+         block; refusal keeps the marker as a letter. These decisions are
          independent of the marker spelling and the rendered element.
 
          A child -- a LIST MARKER (bullet `-`/`*`,

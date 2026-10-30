@@ -1,7 +1,7 @@
 ## A first-block marker on an indented opener reads two columns
 
-An indented first-block opener takes one non-list block at document column 0
-or its own column. A list follower at an open list's column is a sibling
+An indented first-block opener takes one block at its own marker column and no
+other (carve#4409). A list marker at that column never attaches under a list item
 (markup-carve/carve#3421).
 
 ::: compare
@@ -16,7 +16,7 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>+</li>
     </ul>
   </li>
   <li>x</li>
@@ -106,12 +106,11 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul>
-      <li>
-        <blockquote><p>b</p></blockquote>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<blockquote><p>b</p></blockquote>
 ```
 
 :::
@@ -128,11 +127,11 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>+
+x</li>
     </ul>
   </li>
 </ul>
-<p>x</p>
 ```
 
 :::
@@ -149,12 +148,11 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul>
-      <li>
-        <blockquote><p>b</p></blockquote>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<blockquote><p>b</p></blockquote>
 ```
 
 :::
@@ -171,12 +169,11 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul>
-      <li>
-        <blockquote><p>b</p></blockquote>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<blockquote><p>b</p></blockquote>
 ```
 
 :::
@@ -215,7 +212,7 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul>
-      <li>
+      <li>+
         <blockquote><p>b</p></blockquote>
       </li>
     </ul>
@@ -237,12 +234,11 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled> 
-        <blockquote><p>b</p></blockquote>
-      </li>
+      <li><input type="checkbox" disabled aria-label="+"> +</li>
     </ul>
   </li>
 </ul>
+<blockquote><p>b</p></blockquote>
 ```
 
 :::
@@ -259,12 +255,11 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled> 
-        <blockquote><p>b</p></blockquote>
-      </li>
+      <li><input type="checkbox" disabled aria-label="+"> +</li>
     </ul>
   </li>
 </ul>
+<blockquote><p>b</p></blockquote>
 ```
 
 :::
@@ -303,7 +298,7 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled> 
+      <li><input type="checkbox" disabled aria-label="+"> +
         <blockquote><p>b</p></blockquote>
       </li>
     </ul>
@@ -325,12 +320,11 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ol>
-      <li>
-        <blockquote><p>b</p></blockquote>
-      </li>
+      <li>+</li>
     </ol>
   </li>
 </ul>
+<blockquote><p>b</p></blockquote>
 ```
 
 :::
@@ -347,12 +341,11 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ol>
-      <li>
-        <blockquote><p>b</p></blockquote>
-      </li>
+      <li>+</li>
     </ol>
   </li>
 </ul>
+<blockquote><p>b</p></blockquote>
 ```
 
 :::
@@ -391,10 +384,9 @@ or its own column. A list follower at an open list's column is a sibling
 <ul>
   <li>foo
     <ol>
-      <li>
-        <blockquote><p>b</p></blockquote>
-      </li>
+      <li>+</li>
     </ol>
+    <blockquote><p>b</p></blockquote>
   </li>
 </ul>
 ```
@@ -415,13 +407,12 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>
-        <pre><code>x
-</code></pre>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ```
 
 :::
@@ -440,13 +431,12 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>
-        <pre><code>x
-</code></pre>
-      </li>
+      <li>+</li>
     </ul>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ```
 
 :::
@@ -490,7 +480,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>
+      <li>+
         <pre><code>x
 </code></pre>
       </li>
@@ -515,13 +505,12 @@ x
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled> 
-        <pre><code>x
-</code></pre>
-      </li>
+      <li><input type="checkbox" disabled aria-label="+"> +</li>
     </ul>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ```
 
 :::
@@ -540,13 +529,12 @@ x
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled> 
-        <pre><code>x
-</code></pre>
-      </li>
+      <li><input type="checkbox" disabled aria-label="+"> +</li>
     </ul>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ```
 
 :::
@@ -590,7 +578,7 @@ x
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled> 
+      <li><input type="checkbox" disabled aria-label="+"> +
         <pre><code>x
 </code></pre>
       </li>
@@ -615,13 +603,12 @@ x
 <ul>
   <li>foo
     <ol>
-      <li>
-        <pre><code>x
-</code></pre>
-      </li>
+      <li>+</li>
     </ol>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ```
 
 :::
@@ -640,13 +627,12 @@ x
 <ul>
   <li>foo
     <ol>
-      <li>
-        <pre><code>x
-</code></pre>
-      </li>
+      <li>+</li>
     </ol>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ```
 
 :::
@@ -690,11 +676,10 @@ x
 <ul>
   <li>foo
     <ol>
-      <li>
-        <pre><code>x
-</code></pre>
-      </li>
+      <li>+</li>
     </ol>
+    <pre><code>x
+</code></pre>
   </li>
 </ul>
 ```
@@ -713,7 +698,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>+</li>
       <li>x</li>
     </ul>
   </li>
@@ -754,7 +739,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>+</li>
     </ul>
     <ul>
       <li>x</li>
@@ -777,7 +762,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>+</li>
     </ul>
     <ol>
       <li>x</li>
@@ -800,7 +785,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li></li>
+      <li>+</li>
     </ul>
     <ul class="task-list">
       <li><input type="checkbox" disabled aria-label="x"> x</li>
@@ -823,7 +808,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>
+      <li>+
         <ul>
           <li>x</li>
         </ul>
@@ -849,10 +834,8 @@ x
 <ul>
   <li>a</li>
 </ul>
-<p>+</p>
-<ul>
-  <li>s</li>
-</ul>
+<p>+
+- s</p>
 ```
 
 :::
@@ -871,10 +854,8 @@ x
     <pre><code></code></pre>
   </li>
 </ul>
-<p>+</p>
-<ul>
-  <li>s</li>
-</ul>
+<p>+
+- s</p>
 ```
 
 :::
@@ -894,10 +875,8 @@ x
       <pre><code></code></pre>
     </li>
   </ul>
-  <p>+</p>
-  <ul>
-    <li>s</li>
-  </ul>
+  <p>+
+- s</p>
 </blockquote>
 ```
 

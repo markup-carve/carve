@@ -4,7 +4,7 @@ page: edge-definitions
 
 ## A description at a pulled block's column ends it below an indented plus
 
-A first-block `: +` written past its term pulls a block at column zero (CARVE-P9-067), and a `: ` line at that same column is the next description, as it is below a `: +` at column zero (carve#4407).
+A first-block `: +` written past its term refuses a block at column zero and reads as a letter (carve#4409), and a `: ` line at that column is still the next description (carve#4408).
 
 :::: compare
 
@@ -18,7 +18,8 @@ l
 ```html
 <dl>
   <dt>t</dt>
-  <dd>l</dd>
+  <dd>+
+l</dd>
   <dd>b</dd>
 </dl>
 ```
@@ -37,11 +38,10 @@ l
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <blockquote><p>q</p></blockquote>
-  </dd>
-  <dd>b</dd>
+  <dd>+</dd>
 </dl>
+<blockquote><p>q
+: b</p></blockquote>
 ```
 
 ::::
@@ -58,7 +58,8 @@ l
 ```html
 <dl>
   <dt>t</dt>
-  <dd>l</dd>
+  <dd>+
+l</dd>
   <dd>b</dd>
 </dl>
 ```
@@ -81,7 +82,8 @@ l
   <li>x
     <dl>
       <dt>t</dt>
-      <dd>l</dd>
+      <dd>+
+l</dd>
       <dd>b</dd>
     </dl>
   </li>
@@ -103,7 +105,8 @@ l
 <blockquote>
   <dl>
     <dt>t</dt>
-    <dd>l</dd>
+    <dd>+
+l</dd>
     <dd>b</dd>
   </dl>
 </blockquote>
@@ -124,7 +127,8 @@ l
 ```html
 <dl>
   <dt>t</dt>
-  <dd>l</dd>
+  <dd>+
+l</dd>
   <dd>b
 p</dd>
 </dl>

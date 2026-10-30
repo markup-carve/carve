@@ -5,10 +5,8 @@ FIRST-BLOCK position (§17 L4): `- +`, `:  +`, `> +` and `[^a]: +` open a body
 whose content is the following flush-left block. In a footnote body and a
 block quote, a `+` with no flush-left block under it is ordinary text, and a
 line below it that is not flush-left lands wherever the ordinary column rules
-put it (markup-carve/carve#1821, markup-carve/carve#3105). A footnote body is a
-marker body like a list item, so a line at its body column is its next owned
-block and takes the `+` (CARVE-P9-067, markup-carve/carve#4152); the third
-pair moved with that ruling.
+put it (markup-carve/carve#1821, markup-carve/carve#3105). That includes a line
+at the note's body column (CARVE-P9-067, carve#4409).
 
 A footnote body whose first line is a lone `+` over a flush-left line. The
 `+` is the marker, and the note holds the paragraph `flush`.
@@ -36,8 +34,8 @@ see[^a]
 
 :::
 
-Column 1 is not flush-left, so the `+` is the note's text, and the line is
-below the body's column, so it ends the note.
+Column 1 is not flush-left, so the `+` is the note's text, and the line folds
+into it.
 
 ::: compare
 
@@ -81,7 +79,8 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>+
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

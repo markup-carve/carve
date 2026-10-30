@@ -12,13 +12,12 @@ x
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>
-        <pre><code>x
-</code></pre>
-      </dd>
+      <dd>+</dd>
     </dl>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ````
 
 ````
@@ -36,15 +35,14 @@ x
       <li>b
         <dl>
           <dt>t</dt>
-          <dd>
-            <pre><code>x
-</code></pre>
-          </dd>
+          <dd>+</dd>
         </dl>
       </li>
     </ul>
   </li>
 </ul>
+<pre><code>x
+</code></pre>
 ````
 
 ```
@@ -57,12 +55,11 @@ x
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>
-        <blockquote><p>q</p></blockquote>
-      </dd>
+      <dd>+</dd>
     </dl>
   </li>
 </ol>
+<blockquote><p>q</p></blockquote>
 ```
 
 ```
@@ -75,12 +72,13 @@ x
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>
-        <h1 id="H">H</h1>
-      </dd>
+      <dd>+</dd>
     </dl>
   </li>
 </ul>
+<section id="H">
+  <h1>H</h1>
+</section>
 ```
 
 ````
@@ -96,12 +94,12 @@ see
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>
-        <pre><code>x
-</code></pre>
-      </dd>
+      <dd>+</dd>
     </dl>
   </li>
 </ul>
-<p>see</p>
+<pre><code>x
+
+see
+</code></pre>
 ````

@@ -40,7 +40,7 @@ A lone `+` at the marker column of an open list item reaches that item, and the 
     <ul>
       <li>
         <ul>
-          <li></li>
+          <li>+</li>
         </ul>
         x
       </li>

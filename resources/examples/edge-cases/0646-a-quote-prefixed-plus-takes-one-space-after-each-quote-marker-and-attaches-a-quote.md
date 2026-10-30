@@ -1,6 +1,6 @@
 ## A quote-prefixed plus takes one space after each quote marker and attaches a quote
 
-A `+` after quote prefixes is a marker only when every `>` is followed by one space, as on any quote line. `>+`, `>>+` and `>> +` are not quote lines and read as text, and `> >+` is a quote holding the text `>+` (markup-carve/carve#3421). A marker that addresses an open container at its quote level attaches a following quote, which nests like every other block (PART 9 §17 L4). With no container there, as in the last example, the `+` stays text.
+A `+` after quote prefixes is a marker only when every `>` is followed by one space, as on any quote line. `>+`, `>>+` and `>> +` are not quote lines and read as text, and `> >+` is a quote holding the text `>+` (markup-carve/carve#3421). A marker that addresses an open container at its quote level attaches a following quote, which nests like every other block (PART 9 §17 L4). With no container there, as in `> a` / `> +` / `> > q`, the `+` stays text.
 
 ::::::: compare
 
@@ -24,7 +24,8 @@ q
 
 ```html
 <blockquote>
-  <blockquote><p>q</p></blockquote>
+  <blockquote><p>+
+q</p></blockquote>
 </blockquote>
 ```
 

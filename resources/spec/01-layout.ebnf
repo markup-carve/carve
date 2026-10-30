@@ -169,8 +169,8 @@
         consumes its marker; any other frame consumes indentation up to its
         content column (PART 9 §24 C5). Stop at the first frame the line does
         not reach. A lone `+` at the marker column of an open list item,
-        quote, definition body or footnote body reaches that frame (PART 9
-        §17). The owner is the deepest frame reached. A blank line reaches
+        quote, definition body or footnote body reaches that frame when PART 9
+        §17 L3 attaches its next line; any other `+` is a letter. The owner is the deepest frame reached. A blank line reaches
         every indentation frame and no unmarked quote: without its `>` it
         ends a quote and the containers opened inside it.
 
@@ -233,9 +233,10 @@
         item's marker column continues the enclosing list, and siblings group
         by the container they open in, not by the column they are written at.
         A `: ` description is such a sibling too: where the owner S2 selects
-        holds an open term or description, a `: ` line opens the next
-        description of that list at any column and is not a lazy line, so
-        `:: t` / `: a` / ` : b` gives two descriptions. A line at or past an
+        holds an open term or description, a `+`-filled one included
+        (carve#4408), a `: ` line opens the next description of that list at
+        any column and is not a lazy line, so `:: t` / `: a` / ` : b` and
+        `:: t` / `: +` / `# H` / ` : b` each give two descriptions. A line at or past an
         open description's body column is read inside that body (`:: t` /
         `: a` / `  : b`), and one whose owner holds no open term or
         description folds lazily (`- item` / `  :: t` / `  : a` / ` : b`).
@@ -420,8 +421,8 @@
                       footnote body, or a `+` that is the whole content of
                       such a marker line (`- +`, `> +`, `: +`, `[^a]: +`),
                       offers the container its next block (PART 9 §17,
-                      CARVE-P9-067). A refused `+` is read as a
-                      letter at the same column would be (carve#3421).
+                      CARVE-P9-067). A refused `+` is a plain letter
+                      and ends nothing (carve#4396).
 
    OUTPUT. The layout-resolved line stream (equivalently: INDENT / DEDENT /
            CONT events plus line residues). PARTS 1-2 parse blocks over it;

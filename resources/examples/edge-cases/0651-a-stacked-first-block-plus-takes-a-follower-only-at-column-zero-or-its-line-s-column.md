@@ -1,6 +1,6 @@
 ## A stacked first-block plus takes a follower only at column zero or its line's column
 
-On a line of stacked openers, a first-block `+` pulls a block from document column 0 or from the column the line starts at. A block at an inner opener's column is at an intervening column: the `+` is refused and reads like a letter at its column (CARVE-P9-067, carve#3421).
+On a line of stacked openers the innermost opener owns the `+`, and only its marker column takes a follower (CARVE-P9-067, carve#4409). Column 0 and the line's own column have no reach of their own. At any other column the `+` is refused and reads like a letter at its column (carve#3421).
 
 A follower at the inner item's column refuses the quote's `+`, which then folds with it like a letter
 
@@ -26,7 +26,7 @@ b</p></blockquote>
 
 :::::::
 
-The same follower below a stacked list opener: the inner item stays empty and `b` stays in the outer item
+The same follower below a stacked list opener stands at the inner item's marker column and attaches
 
 ::::::: compare
 
@@ -39,16 +39,15 @@ The same follower below a stacked list opener: the inner item stays empty and `b
 <ul>
   <li>
     <ul>
-      <li></li>
+      <li>b</li>
     </ul>
-    b
   </li>
 </ul>
 `````
 
 :::::::
 
-Nested one level, a follower at the opener line's own column attaches
+Nested one level, a follower at the opener line's own column is refused, since the quote owns the `+`
 
 ::::::: compare
 
@@ -65,7 +64,8 @@ Nested one level, a follower at the opener line's own column attaches
       <li>
         <ul>
           <li>
-            <blockquote><p>b</p></blockquote>
+            <blockquote><p>+
+b</p></blockquote>
           </li>
         </ul>
       </li>

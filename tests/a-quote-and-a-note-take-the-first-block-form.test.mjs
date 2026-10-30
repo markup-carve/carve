@@ -21,7 +21,7 @@ test('quote first-block markers accept trailing whitespace at every depth', () =
   for (const marker of ['> + ', '> > + ', '> > +\t']) {
     const depth = marker.match(/>/g).length
     const expected = '<blockquote>'.repeat(depth) + '<p>flush</p>' + '</blockquote>'.repeat(depth)
-    assert.equal(html(`${marker}\nflush`), expected)
+    assert.equal(html(`${marker}\n${'> '.repeat(depth - 1)}flush`), expected)
   }
 })
 
@@ -37,8 +37,9 @@ test('a quote keeps + at end of input or before a blank', () => {
   assert.equal(html('> +\n\nafter'), '<blockquote><p>+</p></blockquote><p>after</p>')
 })
 
-test('the inner quote takes the fenced block', () => {
-  assert.equal(html('> > +\n```\nx\n```'), '<blockquote><blockquote><pre><code>x\n</code></pre></blockquote></blockquote>')
+test('the inner quote takes the fenced block behind the outer prefix', () => {
+  assert.equal(html('> > +\n> ```\n> x\n> ```'), '<blockquote><blockquote><pre><code>x\n</code></pre></blockquote></blockquote>')
+  assert.equal(html('> > +\n```\nx\n```'), '<blockquote><blockquote><p>+</p></blockquote></blockquote><pre><code>x\n</code></pre>')
 })
 
 test('a note takes one fenced block and keeps the document body separate', () => {
@@ -54,22 +55,22 @@ test('a note keeps + at end of input or before a blank', () => {
   assert.equal(html('[^a]: +\n\nsee[^a]'), see + note('<p>+' + back + '</p>'))
 })
 
-test('non-flush-left lines retain their quote and note ownership', () => {
+test('a line off the marker column refuses the + and folds', () => {
   assert.equal(html('> +\n flush'), '<blockquote><p>+\nflush</p></blockquote>')
   assert.equal(html('> +\n  flush'), '<blockquote><p>+\nflush</p></blockquote>')
   assert.equal(html('[^a]: +\n flush\n\nsee[^a]'), see + note('<p>+\nflush' + back + '</p>'))
-  // A footnote body takes its next owned block like a list item (carve#4152).
-  assert.equal(html('[^a]: +\n  flush\n\nsee[^a]'), see + note('<p>flush' + back + '</p>'))
+  assert.equal(html('[^a]: +\n  flush\n\nsee[^a]'), see + note('<p>+\nflush' + back + '</p>'))
 })
 
-test('other marker positions retain their behavior', () => {
-  assert.equal(html('> +\n> x'), '<blockquote><p>+\nx</p></blockquote>')
+test('other marker positions attach at their own column', () => {
+  assert.equal(html('> +\n> x'), '<blockquote><blockquote><p>x</p></blockquote></blockquote>')
   assert.equal(html('- +\nflush'), '<ul><li>flush</li></ul>')
   assert.equal(html(': +\nflush'), '<p>: +\nflush</p>')
   assert.equal(html('> a\n+\nflush'), '<blockquote><p>a</p><p>flush</p></blockquote>')
 })
 
 test('a nested quote opened after outer content takes its first block', () => {
-  assert.equal(html('> outer\n> > +\n```\nx\n```'), '<blockquote><p>outer</p><blockquote><pre><code>x\n</code></pre></blockquote></blockquote>')
+  assert.equal(html('> outer\n> > +\n> ```\n> x\n> ```'), '<blockquote><p>outer</p><blockquote><pre><code>x\n</code></pre></blockquote></blockquote>')
+  assert.equal(html('> outer\n> > +\n```\nx\n```'), '<blockquote><p>outer</p><blockquote><p>+</p></blockquote></blockquote><pre><code>x\n</code></pre>')
   assert.equal(html('> > a\nlazy\n> > +\nz'), '<blockquote><blockquote><p>a\nlazy\n+\nz</p></blockquote></blockquote>')
 })
