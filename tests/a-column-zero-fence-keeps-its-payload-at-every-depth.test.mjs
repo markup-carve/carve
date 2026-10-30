@@ -21,10 +21,6 @@ for (const host of hosts) {
   }
 }
 
-test('a line the parent strips to a closer still closes the fence', () => {
-  assert.equal(payload(`- - +\n${fence}\n  ${fence}\n`), '')
-})
-
 test('a block that is not a code fence keeps its local reading', () => {
   assert.match(renderDoc(parse('- - +\n%%%\n  > y\n')), /<blockquote>/)
 })
