@@ -34,7 +34,7 @@ test('the item content column still takes the block, as for the description twin
   }
 })
 
-test('below the body column the line ends the note, as it ends the description', () => {
+test('a non-list block at column zero is the item\'s block, as in the description (carve#4356)', () => {
   const out = flat('[^a]: - +\npara\ntail\n\nr[^a]\n')
-  assert.match(out, /^<p>para\ntail<\/p><p>r/)
+  assert.match(out, /^<p>r.*<li id="fn1"><ul><li>para\ntail<\/li>/s)
 })

@@ -3169,8 +3169,10 @@ function ownLines(lines, trace = null) {
     // content column alike, so the walk moves the block there and owns it as
     // the readers do. An item stacked on its parent's marker line reads its
     // follower otherwise (corpus 651, 750).
+    // An item on a note's or description's marker line takes it too, and so does a chain of items there (carve#4356).
+    const bodyHosted = top().kind === 'item' && frames.some((f) => (f.kind === 'note' || f.kind === 'dd') && f.line === top().line)
     const plusBody = (top().kind === 'item' || top().kind === 'dd') && top().plus === at - 1 &&
-      frames[frames.length - 2].line !== top().line ? top() : null
+      (frames[frames.length - 2].line !== top().line || bodyHosted) ? top() : null
     // Between the marker and content columns the readers attach any block but
     // a paragraph (CARVE-P9-067, corpus 633). The walk already hands them the
     // line they attach; only the trace records it under the item (carve#4147).
@@ -3184,6 +3186,13 @@ function ownLines(lines, trace = null) {
     // An open div's closer is never a block, so no `+` takes it (PART 9 §12, carve#4254).
     // A line comment or link definition there is not the body's and leaves the `+` unspent (carve#4307).
     const invisibleLine = !COMMENT_FENCE_BODY.test(m.rest) && COMMENT_LINE.test(m.rest) || isLinkDef(m.rest) && !FOOTNOTE_DEF.test(m.rest)
+    // The readers would close the host at such a line, so it moves into the item and the `+` waits (carve#4356).
+    if (plusBody && bodyHosted && missed && invisibleLine && m.col === 0 && plusBody.markerCol > 0 && !replaced.has(at)) {
+      lines[at] = lines[at].slice(0, lines[at].length - m.rest.length) + ' '.repeat(plusBody.col) + m.rest
+      plusBody.plus = at
+      at--
+      continue
+    }
     if (plusBody && missed && m.rest !== '' && !replaced.has(at) && !['item', 'dd', 'term', 'colon-close'].includes(form.kind) && m.rest[0] !== '+' && !invisibleLine &&
         m.col === 0 && plusBody.markerCol > 0 && !frames.slice(reached + 1).some((f) => f.kind === 'quote')) {
       const depth = frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length
@@ -3208,7 +3217,7 @@ function ownLines(lines, trace = null) {
       })
       // A code or comment fence keeps its lines as written: an unclosed one
       // ends at the readers' block boundary, not at the body's end.
-      if (fenced) {
+      if (fenced && !bodyHosted) {
         result.push(...lines.slice(at, end))
         if (trace) {
           const family = fence ? 'code' : 'comment'
