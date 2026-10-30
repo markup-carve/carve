@@ -3282,6 +3282,8 @@ function ownLines(lines, trace = null) {
         if (rest === undefined) return null
         const ind = walkIndent(rest)
         if (ind.rest === '' || line === lines[at]) return ' '.repeat(Math.max(0, ind.col - from)) + ind.rest
+        // A description at the column the block came from is its sibling, as for a `: +` at column 0 (corpus 812).
+        if (plusBody.kind === 'dd' && ind.col === from && DESCRIPTION_TEXT.test(ind.rest)) return null
         // The block an invisible line leads is measured with it, but an open div's closer is no block.
         if (classifyAt(reached, ind.rest, frames[reached], at, ind.col).kind === 'colon-close') return null
         if (ind.col < base || (!fenced && (ind.col < from || ind.col >= floor || (ind.col === from && matchMarkerAt(indentCols(rest)))))) return null
