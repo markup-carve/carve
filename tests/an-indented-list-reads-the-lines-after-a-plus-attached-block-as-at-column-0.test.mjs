@@ -42,3 +42,16 @@ test('a paragraph after a blank below an attached quote leaves the list', () => 
 test('an indented quote reads the line after its + as at column 0', () => {
   assert.equal(html('  > q\n  +\n  para\n'), html('> q\n+\npara\n'))
 })
+
+// The same for a first-block `+` on the marker line.
+const firstBlockHeads = ['- +', '1. +', '- [ ] +', ':: t\n: +', '[^n]: +', '> +']
+for (const head of firstBlockHeads) {
+  for (const block of ['# h', '> q', '```\nx\n```', '{.c}\npara', 'p']) {
+    for (const tail of ['', '+\nz', '- s', '\nafter', 'z']) {
+      const source = `${head}\n${block}\n${tail}\n` + (head.includes('[^n]') ? '\nx[^n]\n' : '')
+      test(`${JSON.stringify(source)} indented by 2 reads as written at column 0`, () => {
+        assert.equal(html(indent(source, '  ')), html(source))
+      })
+    }
+  }
+}
