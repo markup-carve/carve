@@ -6410,6 +6410,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (lines[i] !== undefined && (qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&
             !bodyEndsWrappedAttr(inner) && !refusedNotePlus && !isBlank(lines[i]) &&
             !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(unmarked) ||
+              // A term continues by the paragraph test, so a folded caret line is text (§10 I7).
+              (lines[i].startsWith(LAZY) && CAPTION.test(unmarked)) ||
               QUOTE.test(stripIndent(unmarked)) ||
               (FENCE.test(unmarked) && !opensFence(lines, i)) || nestedMarkerFold) &&
             (!peekInterrupts(i) || foldedColon || nestedMarkerFold) &&
