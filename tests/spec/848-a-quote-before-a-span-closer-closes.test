@@ -1,0 +1,25 @@
+A quote before a span closer closes
+
+```
+*"Wait-"*
+.
+<p><strong>“Wait-”</strong></p>
+```
+
+```
+_"Wait-"_
+.
+<p><u>“Wait-”</u></p>
+```
+
+```
+{+"Wait-"+}
+.
+<p><ins>“Wait-”</ins></p>
+```
+
+```
+*"Wait/"*
+.
+<p><strong>“Wait/”</strong></p>
+```

@@ -1,0 +1,19 @@
+A marker the left boundary refuses is an ordinary character
+
+```
+b#->
+.
+<p>b#→</p>
+```
+
+```
+b@->
+.
+<p>b@→</p>
+```
+
+```
+b#-->
+.
+<p>b#→</p>
+```
