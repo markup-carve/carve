@@ -4217,6 +4217,17 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
     // A quote opened on a description or footnote body's marker line stands where its `>` does.
     const bodyQuote = /^(?::|\[\^[^\]]+\]:) +(?=> )/.exec(measured.rest)
     if (bodyQuote) quoteColumn = measured.col + bodyQuote[0].length
+    // An item on a description's marker line has a marker column too (PART 0 S2).
+    const hostedBody = /^: +/.exec(measured.rest)
+    if (hostedBody) {
+      let hostedCol = measured.col + hostedBody[0].length
+      let nested = indentCols(measured.rest.slice(hostedBody[0].length))
+      for (let hosted = matchMarkerAt(nested), depth = 0; hosted && depth < MAX_NESTING_DEPTH; hosted = matchMarkerAt(nested), depth++) {
+        markerColumns.push(hostedCol)
+        nested = indentCols(hosted.text)
+        hostedCol += hosted.markerWidth + nested.col
+      }
+    }
     return line
   }) : sourceLines
   for (const index of walked.refusedPlus) {
@@ -5301,7 +5312,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const followerColumn = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
             if (nestedFirstBlock && bodyLines.length === 1 &&
                 followerColumn < sourceBodyColumn &&
-                !isBlank(cur)) break
+                !isBlank(cur) && !CONT_MARKER.test(cur)) break
             if (isBlank(cur)) {
               afterComment = false
               // The whole blank run belongs to a continuation at the body column.
