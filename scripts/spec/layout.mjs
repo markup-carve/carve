@@ -1607,6 +1607,9 @@ function markerCarriesContinuation(text, memo) {
   return result
 }
 
+// `marker.text` starts after a task box, which is content columns (CARVE-P0-008).
+const taskBoxWidth = marker => marker.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH
+
 function markerFenceSummary(text, memo) {
   const path = []
   let summary
@@ -1623,12 +1626,14 @@ function markerFenceSummary(text, memo) {
       memo.set(text.length, summary)
       break
     }
-    path.push({ length: text.length, width: marker.indent + marker.markerWidth })
+    path.push({ length: text.length, width: marker.indent + marker.markerWidth, box: taskBoxWidth(marker) })
     text = marker.text
   }
   for (let k = path.length - 1; k >= 0; k--) {
-    if (summary) summary = { ...summary, col: summary.col + path[k].width,
-      hostCol: summary.hostCol === undefined ? summary.col : summary.hostCol + path[k].width }
+    // A box before a further marker shifts it; the innermost box is its item's content.
+    if (summary) summary = summary.hostCol === undefined
+      ? { ...summary, col: summary.col + path[k].width, hostCol: summary.col }
+      : { ...summary, col: summary.col + path[k].box + path[k].width, hostCol: summary.hostCol + path[k].box + path[k].width }
     memo.set(path[k].length, summary)
   }
   return summary
@@ -7967,11 +7972,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           memo.set(text.length, summary)
           break
         }
-        path.push({ length: text.length, width: marker.indent + marker.markerWidth })
+        path.push({ length: text.length, width: marker.indent + marker.markerWidth, box: taskBoxWidth(marker) })
         text = marker.text
       }
       for (let k = path.length - 1; k >= 0; k--) {
-        if (summary) summary = { ...summary, col: summary.col + path[k].width, markers: summary.markers + 1 }
+        if (summary) summary = { ...summary, col: summary.col + (summary.markers ? path[k].box : 0) + path[k].width, markers: summary.markers + 1 }
         memo.set(path[k].length, summary)
       }
       if (!summary?.markers) return null
@@ -9099,6 +9104,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // Read with the paragraph state this line ARRIVED with, exactly as
         // `bodyFenceOpens` above is; the chain below then answers for the line.
         const wasNested = nestedOpaque
+        // A line below a code body's column ends that body and is read afresh.
+        const endedBelow = wasNested?.kind === 'code' && dmeas.col < wasNested.col
         // Only a descendant LIST ITEM's fence, which is the host carve#2490
         // rules. An indented fence inside a colon container is that container's
         // question, and CARVE-P0-014 answers it the other way: a colon body CAN
@@ -9131,7 +9138,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             // A line that opens, carries or closes an opaque descendant body is
             // verbatim, and a verbatim body holds no paragraph.
             advanceDescendantQ1(dmeas.rest, absorbedFenceSeen,
-              nestedOpaque !== null || wasNested !== null, i, dmeas.col)
+              nestedOpaque !== null || (wasNested !== null && !endedBelow), i, dmeas.col)
           }
           if (dmeas.rest !== '') {
             if (nm && nm.indent >= contentCol && !inDefBody) descLive = true
@@ -9393,7 +9400,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // fence on that line leaves no claim, even if the old descendant was
         // still open when the line arrived.
         if ((descendantOwned || isCodeBlockOpener(dedented)) &&
-            (nestedVerbatim() || wasNested?.kind === 'code')) closePara()
+            (nestedVerbatim() || (wasNested?.kind === 'code' && !endedBelow))) closePara()
         // The note body keeps its reach past the closed paragraph (CARVE-P0-013).
         if (markerNoteCommentSeen && inNoteBody) {
           const noteBody = defBodyIndent
