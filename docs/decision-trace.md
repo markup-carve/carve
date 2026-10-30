@@ -113,9 +113,10 @@ line after the block is recorded in its parent. A block it takes at column zero 
 marker is recorded inside the item or description too, with `plus` set to the
 marker line. So is a block other than a paragraph that an item's or a
 description's `+` takes between its marker and content columns. A paragraph
-there is refused: it is recorded in the parent, and so are the lines the walk
-folds after it. A list marker there, or below it, is refused too: it opens a
-list in the parent, recorded as an item there.
+below the content column is refused, unless it starts at column zero or at the
+parent's content column: it is recorded in the parent, and so are the lines the
+walk folds after it. A list marker there is refused too: it opens a list in the
+parent, recorded as an item there.
 
 A list marker of another kind under an item's paragraph, at the content column
 of the item's parent, starts a new list (PART 9 §10 I2). The walk folds it into
