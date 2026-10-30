@@ -161,7 +161,7 @@ const MAX_NESTING_DEPTH = 200
 /// scan per opener is quadratic on a body of fenced bodies, which is carve#2509,
 /// so the answer comes from an index built once per depth and this counts the
 /// lines that index reads. `closerScan` counts the lines `findCloser` reads.
-export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0, closerScan: 0 }
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0, closerScan: 0, attrScan: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
@@ -175,6 +175,7 @@ export function resetLayoutWork() {
   layoutWork.commentTail = 0
   layoutWork.ownership = 0
   layoutWork.captionHost = 0
+  layoutWork.attrScan = 0
 }
 
 /**
@@ -1436,24 +1437,6 @@ function dedentedWindow(lines, start, column, unframe = false) {
   })
 }
 
-// Whether the lines from `start` reach an unquoted `}` before a blank line or an
-// unquoted `{`, which no attribute block holds. Quote state is per line, as in
-// tryAttrLine, so a run of openers is read once (PART 9 SS9 LINEAR TIME).
-function wrapCloses(lines, start) {
-  for (let k = start; k < lines.length && !isBlank(lines[k]); k++) {
-    let inQuote = false
-    const line = lines[k]
-    for (let c = 0; c < line.length; c++) {
-      const ch = line[c]
-      if (ch === '\\' && inQuote) c++
-      else if (ch === '"') inQuote = !inQuote
-      else if (!inQuote && ch === '}') return true
-      else if (!inQuote && ch === '{') return false
-    }
-  }
-  return false
-}
-
 function tryAttrLine(lines, i) {
   let text = lines[i]
   if (text === undefined || text[0] !== '{') return null
@@ -1495,8 +1478,12 @@ function tryAttrLine(lines, i) {
       }
       buf += line.slice(j) + '\n'
       li++
+      layoutWork.attrScan++
       if (li >= lines.length || isBlank(lines[li])) return null // A5
       line = lines[li]
+      // No attribute list continues on a line that opens a block, so a run of
+      // openers is scanned once (PART 9 SS9 LINEAR TIME).
+      if (/^[ \t]*\{/.test(line)) return null
       j = 0
     }
     const list = parseBlockAttrList(buf)
@@ -4235,7 +4222,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // A wrapped attribute opened at the body column is one construct
           // whatever its later lines' columns (PART 9 SS24 C3, carve#3537).
           // An ancestor may have framed its closer line as lazy text.
-          const attributes = attrOpener && wrapCloses(lines, i) ? tryAttrLine(dedentedWindow(lines, i - 1, FOOTNOTE_BODY_COLUMN, true), 0) : null
+          const attributes = attrOpener ? tryAttrLine(dedentedWindow(lines, i - 1, FOOTNOTE_BODY_COLUMN, true), 0) : null
           for (let k = 1; k < (attributes?.next ?? 0); k++) bodyLines.push(dedent(unframeLazy(lines[i++]), FOOTNOTE_BODY_COLUMN))
         } else if (isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {
           // A BLANK RUN DOES NOT END THE DEFINITION -- carve#1620.
