@@ -19,6 +19,7 @@
 #     the line in the same commit that moves the pin.
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 # Format: <slug><space><space><reason>
+643-a-first-block-marker-does-not-pull-a-column-zero-list-into-a-note-or-description  markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)
 739-opaque-reference-and-inline-bounds-7  The pinned JS renderer drops a U+2029 quote body; tracked at markup-carve/carve-js#3764.
 739-opaque-reference-and-inline-bounds-8  The pinned JS renderer drops a U+2028 quote body; tracked at markup-carve/carve-js#3764.
 741-visible-footnote-headings-2  The pinned JS renderer indexes a heading in an unused footnote; tracked at markup-carve/carve-js#3775.
@@ -598,3 +599,6 @@
 839-a-quoted-row-attribute-value-may-hold-a-pipe-2  markup-carve/carve#4323, the pinned carve-js refuses a row attribute block whose quoted value holds a pipe; fix pending in carve-js
 839-a-quoted-row-attribute-value-may-hold-a-pipe-3  markup-carve/carve#4323, the pinned carve-js refuses a row attribute block whose quoted value holds a pipe; fix pending in carve-js
 839-a-quoted-row-attribute-value-may-hold-a-pipe  markup-carve/carve#4323, the pinned carve-js refuses a row attribute block whose quoted value holds a pipe; fix pending in carve-js
+840-a-refused-plus-reads-like-a-letter-2  markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)
+840-a-refused-plus-reads-like-a-letter-3  markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)
+840-a-refused-plus-reads-like-a-letter  markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)

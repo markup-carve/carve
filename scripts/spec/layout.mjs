@@ -3280,21 +3280,25 @@ function ownLines(lines, trace = null) {
     // A note's marker-line item refuses its `+` to a line that misses it, which then folds into none of them (CARVE-P9-067, carve#4222).
     if (missed && top().kind === 'item' && top().plus === at - 1 && m.rest !== '' && !CONT_MARKER.test(m.rest) && form.kind !== 'item' &&
         frames.some((f) => f.kind === 'note' && f.line === top().line)) top().para = false
-    // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
-    const interruptsPlus = plusNote && form.kind === 'item'
+    // A list marker that misses the note refuses its `+`, which then folds it like a letter (carve#4396).
+    if (plusNote && missed && m.rest !== '' && form.kind === 'item') {
+      refusedPlus.add(at - 1)
+      top().para = true
+      top().plus = -1
+    }
     // A `: ` description is a sibling at any column where its list's owner reads it (CARVE-P0-024 S3).
     // A caption at its owner's block column attaches to a quote it follows and is never its
     // lazy line (CARVE-P2-008, carve#4312); an indented one (§10 I7) or one past a note folds.
     const missedFrames = frames.slice(reached + 1)
     const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames.some((f) => f.kind === 'quote') && !missedFrames.some((f) => f.kind === 'note')
-    if (missed && m.rest !== '' && top().para && !form.interrupts && !interruptsPlus && !captionsQuote && form.kind !== 'dd' &&
+    if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && form.kind !== 'dd' &&
         !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes) &&
         !(missedNote && form.kind === 'item' && frames.slice(reached + 1).some((f) => f.kind === 'item'))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
       // the frame it missed. Past a missed note it is framed LAZY in the
       // deepest container, so every reader folds it there (carve#3885).
       // A refused `+` stays a line of text the follower folds into (CARVE-P9-067).
-      if (missedNote && (top().plus !== at - 1 || (plusNote && docCol !== 0 && docCol !== plusNote.docMarker))) {
+      if (missedNote && (top().plus !== at - 1 || (plusNote && (missesQuote || docCol !== 0 && docCol !== plusNote.docMarker)))) {
         lead(0)
         for (let k = reached + 1; k < frames.length; k++) {
           if (frames[k].kind === 'quote') out += ' '.repeat(frames[k - 1].reader ?? frames[k - 1].canon) + '> '
@@ -4865,8 +4869,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // the note's paragraph.
         if ((inItem || descriptionOwnerColumn !== null) &&
             measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured)) break
-        if (CONT_MARKER.test(m[2]) && bodyLines.length === 1 &&
-            measured.col === 0 && matchMarkerAt(measured)) break
         // A marker-line item's first-block `+` takes no block below the body column (CARVE-P9-067, carve#4222).
         if (nestedFirstBlock && bodyLines.length === 1 && !isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN) break
         if (isBlank(lines[i])) afterComment = false
@@ -5644,8 +5646,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A table row interrupts the paragraph (PART 9 §10 I1), so below
             // the body's column it ends the body rather than folding (carve#3145).
             if (isTableRow(dedented)) break
-            // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
-            if (matchMarkerAt(indentCols(dedented)) && /^\[\^[^\]]+\]: +\+[ \t]*$/.test(bodyLines.at(-1) ?? '')) break
             // A plain line folded into the open paragraph leaves it open, so the scan is not repeated per line.
             if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) &&
                 (foldedParagraphAt === bodyLines.length || bodyLeavesParagraphOpen(bodyLines))) {
@@ -6630,11 +6630,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const unmarked = stripLazy(lines[i] ?? '')
         // X2: every open quote depth keeps its claim on an unmarked marker.
         const nestedMarkerFold = !qTermOpen && qNestedPara.some(Boolean) && !!matchMarkerAt(indentCols(unmarked))
-        // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
-        const refusedNotePlus = qLastMarked === i - 1 && !!matchMarkerAt(indentCols(unmarked)) &&
-          endsInNotePlus(QUOTE.exec(lines[i - 1])?.[1] ?? '')
         if (lines[i] !== undefined && (qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&
-            !bodyEndsWrappedAttr(inner) && !refusedNotePlus && !isBlank(lines[i]) &&
+            !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
             !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(unmarked) ||
               // A term continues by the paragraph test, so a folded caret line is text (§10 I7).
               (lines[i].startsWith(LAZY) && CAPTION.test(unmarked)) ||
@@ -7402,24 +7399,6 @@ const firstBlockQuoteColumn = (source) => {
   }
   return undefined
 }
-// Whether a marker line's stack of quote and list markers ends in a note's
-// first-block `+` (`> [^b]: +`, `> - [^b]: +`).
-const endsInNotePlus = (source) => {
-  let rest = source
-  for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
-    const measured = indentCols(rest)
-    const note = FOOTNOTE_DEF.exec(measured.rest)
-    if (note) return CONT_MARKER.test(note[2])
-    const marker = matchMarkerAt(measured)
-    if (marker) { rest = marker.text; continue }
-    const description = /^:( +)(?=[ \t]*[^ \t])(.*)$/s.exec(measured.rest)
-    if (description) { rest = description[2]; continue }
-    const quote = QUOTE.exec(measured.rest)
-    if (!quote) return false
-    rest = quote[1] ?? ''
-  }
-  return false
-}
 // Per lazily folded line: whether it started at a column a first-block `+`
 // may pull from (column 0 of the frame it was read in, or the opener line's
 // own column). Keyed by the line array the fold pushed it into.
@@ -7730,6 +7709,23 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     let nestedAttachmentEnd = -1
     // A column-zero fence a descendant's `+` attached: its lines are payload at any column (CARVE-P0-024).
     let nestedZeroFence = false
+    let quoteFoldAt = -1
+    let holdsQuote = QUOTE.test(head.text)
+    const markerFoldsIntoItemQuote = () => {
+      if (!holdsQuote) return false
+      for (let k = itemLines.length - 2; k >= 0; k--) {
+        if (k === quoteFoldAt) return true
+        const measured = indentCols(stripLazy(itemLines[k]))
+        if (measured.rest === '') return false
+        if (QUOTE.test(measured.rest)) {
+          let top = k
+          while (top > 0 && QUOTE.test(indentCols(stripLazy(itemLines[top - 1])).rest)) top--
+          return bodyLeavesParagraphOpen(itemLines.slice(top, -1))
+        }
+        if (matchMarkerAt(measured)) return false
+      }
+      return false
+    }
     // A marker at the descendant's own indent is its sibling and bounds its block (SS17 L3).
     let nestedSiblingIndent = -1
     // A marker-line chain (`- - +`) has a sibling column per level, any of which closes the `+` item.
@@ -9598,7 +9594,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         }
         // A descendant's `+` is read the same way whatever its host: an item or
         // a description body supplies only its marker and content columns (CARVE-P9-067).
-        const descendantPlus = nm && nm.indent >= contentCol && markerCarriesContinuation(trimWs(lm.rest),
+        // A marker line the item's open quote folds is text, so its `+` carries nothing (carve#4396).
+        const foldedIntoQuote = nm && markerFoldsIntoItemQuote()
+        if (foldedIntoQuote) quoteFoldAt = itemLines.length - 1
+        const descendantPlus = nm && nm.indent >= contentCol && !foldedIntoQuote && markerCarriesContinuation(trimWs(lm.rest),
           prefixMemo(state, lines, i).continuation ??= new Map())
           ? { marker: nm.indent, content: nm.indent + nm.markerWidth, firstBlock: /^(\[[^\]]\][ \t]+)?\+$/.test(trimWs(lm.rest.slice(nm.markerWidth))) }
           : !nm && DESCRIPTION_PLUS.test(lm.rest) && i > 0 && DESCRIPTION_RUN.test(ind(i - 1).rest) && ind(i - 1).col === lm.col
@@ -9698,6 +9697,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // close it. Unconditional `startPara()` was the content-column twin of
         // the marker-line seed carve#1280 fixed, and it survived because that
         // fix reached only the marker line.
+        else if (foldedIntoQuote) startPara()
         else if (inPayload && matchMarkerAt(dmeas)) openParaWith(dedented)
         else if (matchMarkerAt(dmeas)) {
           if (opensParagraph(dmeas.rest, true, false, prefixMemo(state, lines, i).paragraph)) startPara()
@@ -9715,6 +9715,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // (CARVE-P0-009). The run's own paragraph and table state ride along,
         // so a marker or a `+ ...|` row under quoted prose stays that prose.
         else if (QUOTE.test(dedented)) {
+          holdsQuote = true
           advanceBodyQuote(dedented, i)
           if (bodyQuote.open) startPara()
           else closePara()

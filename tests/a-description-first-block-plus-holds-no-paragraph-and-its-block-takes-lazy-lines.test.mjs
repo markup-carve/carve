@@ -23,10 +23,10 @@ test('a quoted line still attaches to the description (CARVE-P9-067)', () => {
   assert.equal(flat('> :: t\n> : +\n> para\n'), '<blockquote><dl><dt>t</dt><dd>para</dd></dl></blockquote>')
 })
 
-test('a note on a quoted description marker line keeps its refused + (carve#4230)', () => {
-  const out = html('> :: t\n> : [^b]: +\n- y\n\nr[^b]\n')
-  assert.match(out.replace(/\n */g, ''), /^<blockquote><dl><dt>t<\/dt><dd><\/dd><\/dl><\/blockquote><ul><li>y<\/li><\/ul>/)
-  assert.deepEqual(parse('> :: t\n> : [^b]: +\n- y\n\nr[^b]\n').footnoteDefs.get('b'), [{ t: 'para', lines: ['+'] }])
+test('a note on a quoted description marker line keeps its refused + as a letter (carve#4396)', () => {
+  const source = (letter) => `> :: t\n> : [^b]: ${letter}\n- y\n\nr[^b]\n`
+  assert.equal(html(source('+')), html(source('Q')).replaceAll('Q', '+'))
+  assert.deepEqual(parse(source('+')).footnoteDefs.get('b'), [{ t: 'para', lines: ['+', '- y'] }])
 })
 
 test('the block a description first-block + takes continues lazily, as an item does', () => {

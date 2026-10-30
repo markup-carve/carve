@@ -17,17 +17,12 @@ test('column zero and the note body column still take the block (carve#4227)', (
   assert.deepEqual(note(':: t\n: x\n  [^q]: +\n  para\n\nr[^q]\n'), [{ t: 'para', lines: ['para'] }])
 })
 
-for (const src of [':: t\n: [^q]: +\n- y\n\nr[^q]\n', ':: t\n: [^q]: +\n - y\n\nr[^q]\n']) {
-  test(`a list below the body after a refused note + opens after the list: ${JSON.stringify(src)} (carve#4228)`, () => {
-    assert.match(html(src), /^<dl>\n {2}<dt>t<\/dt>\n {2}<dd><\/dd>\n<\/dl>\n<ul>\n {2}<li>y<\/li>\n<\/ul>/)
-    assert.deepEqual(note(src), [{ t: 'para', lines: ['+'] }])
-  })
+// carve#4396: the refused `+` reads like a letter, so a marker that misses the note folds.
+for (const follower of ['- y', ' - y', '  - y', '> - y']) {
+  for (const head of [':: t\n: ', '> :: t\n> : ']) {
+    const src = (letter) => `${head}[^q]: ${letter}\n${follower}\n\nr[^q]\n`
+    test(`a marker below a hosted note reads as under a letter: ${JSON.stringify(src('+'))}`, () => {
+      assert.equal(html(src('+')), html(src('Q')).replaceAll('Q', '+'))
+    })
+  }
 }
-
-test('inside a quote the list follows the description list in the quote (carve#4228)', () => {
-  assert.match(html('> :: t\n> : [^q]: +\n> - y\n\nr[^q]\n'), /<\/dl>\n {2}<ul>\n {4}<li>y<\/li>\n {2}<\/ul>\n<\/blockquote>/)
-})
-
-test('a list at the body column still opens in the description (carve#4228)', () => {
-  assert.match(html(':: t\n: [^q]: +\n  - y\n\nr[^q]\n'), /<dd>\n {4}<ul>\n {6}<li>y<\/li>/)
-})

@@ -285,7 +285,8 @@
          gives a note holding `<p>flush</p>`, and `: +` / `    flush` a
          description holding `flush`. A list at column zero is never pulled
          into a footnote body or a description body: `[^a]: +` / `- a list`
-         keeps `+` as the note's text and opens the list after the note, and
+         keeps `+` as the note's text and folds the marker into it, as
+         `[^a]: x` / `- a list` does, and
          `: +` / `- a list` leaves the description empty. A block in an
          enclosing item's column stays with that item. A non-paragraph,
          non-list block written between an enclosing item's marker and
@@ -319,7 +320,11 @@
          or description it leaves that body empty; in a quote or footnote body
          it remains text. A separate-line refusal folds into an open paragraph
          when that paragraph can continue, or forms its own one-line paragraph.
-         A following list item may interrupt that paragraph (§10 I2). The
+         That text has no structural effect a letter would not have (carve#4396):
+         it closes no open fence, quote, list item, description, note or
+         paragraph, it spends or blocks no first-block operation, and it changes
+         no later line's owner. A following list marker folds into it (§10 I2).
+         The
          `continuation-marker-refused` lint reports a recognized refusal.
          A marker at its host column ends an open code, raw or colon fence;
          a `+` at the fence content column stays payload. A table `+ text` row
