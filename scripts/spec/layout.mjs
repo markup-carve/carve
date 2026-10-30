@@ -2190,6 +2190,7 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
         body = { col: column + next.col, rest: next.rest }
         marker = matchMarkerAt(body)
       }
+      fenceAt = body
       // PART 0 S2: a description or footnote body is a frame too, so a fence
       // its marker line opens is the body's verbatim payload.
       const description = scan.termColumn === body.col && DESCRIPTION_LEAD.exec(body.rest)
@@ -8068,7 +8069,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (nestedOpaque?.kind === 'code' && CONT_MARKER.test(jm.rest) &&
             jm.col >= contentCol && jm.col <= Math.max(nestedOpaque.col, contentCol)) {
           // §17 L3: a descendant's marker ends its fence after every blank payload line.
-          for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
+          if (!descendantFence && !closedMarkerFence) for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
           // The attached block follows a blank in this item's child, so its
           // own paragraph is loose even when the follower is not a sibling.
           if (jm.col === contentCol) list.tight = false
