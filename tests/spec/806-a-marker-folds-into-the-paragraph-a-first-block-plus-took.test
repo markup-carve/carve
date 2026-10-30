@@ -1,0 +1,39 @@
+A marker folds into the paragraph a first-block plus took
+
+```
+- +
+  b
+ * w1
+.
+<ul>
+  <li>b
+* w1</li>
+</ul>
+```
+
+```
+1. +
++ w1
+ - w2
+.
+<ol>
+  <li>+ w1
+- w2</li>
+</ol>
+```
+
+```
+- a
+  - +
+  + w1
+   9. w2
+.
+<ul>
+  <li>a
+    <ul>
+      <li>+ w1
+9. w2</li>
+    </ul>
+  </li>
+</ul>
+```
