@@ -6,7 +6,7 @@ page: edge-attributes
 
 The classes a typed `:::` container writes itself, `admonition` and the kind word, lead the class list, and an authored class with the same value is not written again (CARVE-P4-002, carve#4143).
 
-::: compare
+::::: compare
 
 ```carve
 {.calculation}
@@ -21,9 +21,9 @@ The classes a typed `:::` container writes itself, `admonition` and the kind wor
 </div>
 ```
 
-:::
+:::::
 
-::: compare
+::::: compare
 
 ```carve
 {.note}
@@ -38,9 +38,9 @@ The classes a typed `:::` container writes itself, `admonition` and the kind wor
 </aside>
 ```
 
-:::
+:::::
 
-::: compare
+::::: compare
 
 ```carve
 {.admonition}
@@ -55,9 +55,9 @@ The classes a typed `:::` container writes itself, `admonition` and the kind wor
 </aside>
 ```
 
-:::
+:::::
 
-::: compare
+::::: compare
 
 ```carve
 {.x .note .y}
@@ -72,4 +72,4 @@ The classes a typed `:::` container writes itself, `admonition` and the kind wor
 </aside>
 ```
 
-:::
+:::::
