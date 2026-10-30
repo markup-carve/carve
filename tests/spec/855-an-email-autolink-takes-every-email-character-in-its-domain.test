@@ -1,0 +1,25 @@
+An email autolink takes every email character in its domain
+
+```
+<a@b..c>
+.
+<p><a href="mailto:a@b..c">a@b..c</a></p>
+```
+
+```
+<a@b+c.d>
+.
+<p><a href="mailto:a@b+c.d">a@b+c.d</a></p>
+```
+
+```
+<a@.c>
+.
+<p>&lt;a@.c&gt;</p>
+```
+
+```
+<a@b.c1>
+.
+<p>&lt;a@b.c1&gt;</p>
+```
