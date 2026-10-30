@@ -21,16 +21,16 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P0-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L69) | 0 | EVERY FRAME CARRIES OWNERSHIP AND PARAGRAPH STATE SEPARATELY |
 | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) | 0 | BLOCK STRUCTURE IS ONE ORDERED PROCEDURE |
 | [`CARVE-P0-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L150) | 0 | COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP |
-| [`CARVE-P0-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L280) | 0 | NO STORED CONTINUATION CLAIM, NO LAZY LINE |
-| [`CARVE-P0-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L320) | 0 | THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK |
-| [`CARVE-P0-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L260) | 0 | A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN |
-| [`CARVE-P0-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L251) | 0 | A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE CONTAINER |
-| [`CARVE-P0-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L244) | 0 | AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS UNDER |
-| [`CARVE-P0-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L307) | 0 | A HEADING IS THE VISIBLE CONTROL |
-| [`CARVE-P0-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L328) | 0 | A FENCED BODY IS NOT A PARAGRAPH |
-| [`CARVE-P0-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L339) | 0 | FENCE KIND DOES NOT DETERMINE CONTAINER REACH |
-| [`CARVE-P0-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L292) | 0 | A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES |
-| [`CARVE-P0-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L353) | 0 | CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH |
+| [`CARVE-P0-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L285) | 0 | NO STORED CONTINUATION CLAIM, NO LAZY LINE |
+| [`CARVE-P0-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L325) | 0 | THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK |
+| [`CARVE-P0-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L265) | 0 | A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN |
+| [`CARVE-P0-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L256) | 0 | A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE CONTAINER |
+| [`CARVE-P0-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L249) | 0 | AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS UNDER |
+| [`CARVE-P0-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L312) | 0 | A HEADING IS THE VISIBLE CONTROL |
+| [`CARVE-P0-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L333) | 0 | A FENCED BODY IS NOT A PARAGRAPH |
+| [`CARVE-P0-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L344) | 0 | FENCE KIND DOES NOT DETERMINE CONTAINER REACH |
+| [`CARVE-P0-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L297) | 0 | A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES |
+| [`CARVE-P0-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L358) | 0 | CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH |
 | [`CARVE-P0-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L177) | 0 | A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S COLUMN |
 | [`CARVE-P0-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L192) | 0 | AT OR PAST MEANS THE DEEPEST COLUMN THE LINE REACHES |
 | [`CARVE-P2-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L16) | 2 | A HEADING MARKER STARTS AT ITS CONTAINER'S CONTENT COLUMN |
