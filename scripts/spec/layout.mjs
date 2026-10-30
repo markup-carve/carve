@@ -7481,6 +7481,8 @@ function tieBreak(dialects, head) {
   return [roman.value === 1 ? roman : alpha]
 }
 
+const markerAxes = (mk) => mk.isOrdered ? { ord: { delim: mk.delim, dialects: mk.dialects } } : { bullet: mk.bullet, task: mk.task !== undefined }
+
 function sameAxes(list, head) {
   // PART 9 SS11 N1: bullet char, ordered dialect+delim, plain-vs-task
   if (list.ord) {
@@ -7839,6 +7841,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       : -1
     // The marker-line child owns this column until an outer authored block opens.
     let headSubActive = headSubCol >= 0
+    // The deepest descendant item's marker, for a marker line that cannot be its sibling.
+    let deepestMarker = headSubMarker ? { mk: headSubMarker, indent: headSubCol - headSubMarker.markerWidth, content: headSubCol } : null
     // A sibling list at the content column has ended the marker-line child.
     let headSubEnded = false
     // A plain line below the child's column folded into its open paragraph.
@@ -8278,7 +8282,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // §17 L3: the block a descendant's `+` attaches is the descendant's, so it ends no sublist.
     const nestedAttachmentTakes = (lm) => carriesBareContinuation && (i < nestedAttachmentEnd ||
       nestedAttachmentEnd < 0 && attachesFlushLeft(lm, (lm.L?.col ?? lm.col) === 0 && !matchMarkerAt(lm) ? 0 : nestedAttachmentColumn))
-    const trackNestedFence = (open, dmeas, sourceCol, idx, descendantOwned) => {
+    const trackNestedFence = (open, dmeas, sourceCol, idx, descendantOwned, markerOpens = true) => {
       if (open) {
         if (open.kind === 'comment') {
           // Indentation is part of neither delimiter (§28, carve#2471), so the
@@ -8304,7 +8308,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (markerSpan) return markerSpan
       // A fence on a sublist's marker line opens at a block start (§10 I4), so
       // its body is the descendant's verbatim body like any other (CARVE-P0-013).
-      if (matchMarkerAt(dmeas)) {
+      if (markerOpens && matchMarkerAt(dmeas)) {
         const lead = markerFenceSummary(dmeas.rest, prefixMemo(state, lines, idx).markerFence ??= new Map())
         if (lead) return { kind: 'code', run: lead.run, col: dmeas.col + lead.col, markerLine: true }
       }
@@ -8537,7 +8541,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const openFence = readsOpenFence(lines, i, lm)
         nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
           ind(idx).rest === '' || !openFence && (CONT_MARKER.test(lines[idx]) ||
-          [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent)), lm, column, Math.min(lm.col, column))
+          [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent)), lm,
+          // `attaches` reads the source column, which differs from `col` in a nested body (carve#4348).
+          lm.col >= contentCol ? (lm.L?.col ?? lm.col) : column, Math.min(lm.col, column))
       }
       // A marker-line chain's `+` spends itself on a sublist at its content column, as below.
       if (i === headIndex + 1 && carriesBareContinuation && nestedAttachmentEnd < 0 && headPlusContent >= 0 &&
@@ -9050,7 +9056,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         colonLineBlock.at(-1) === true
       // So is one in an open code or comment fence's payload (PART 0 opacity).
       const inOpaque = col >= contentCol && fence.opaque !== null && fence.opaque.opens !== false
-      const nm = inPayload || inOpaque ? null : matchMarkerAt(lm, col >= contentCol ? contentCol : 0)
+      const lineMarker = inPayload || inOpaque ? null : matchMarkerAt(lm, col >= contentCol ? contentCol : 0)
+      // A marker inside the deepest item's marker width that is no sibling folds into its paragraph as text (PART 0 S4).
+      const markerFolds = lineMarker !== null && descendantParagraphBefore && deepestMarker !== null && !insideFence() &&
+        lineMarker.indent > deepestMarker.indent && lineMarker.indent < deepestMarker.content && !sameAxes(markerAxes(deepestMarker.mk), lineMarker)
+      const nm = markerFolds ? null : lineMarker
       if (nm && col >= contentCol) descendantColumns.add(nm.indent + nm.markerWidth)
       if (DEFLIST_TERM.test(lm.rest) && col >= contentCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) {
@@ -9419,7 +9429,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // the base folds with it. `descendantOwned` is the collector's existing
         // spelling of "a known descendant item owns this column".
         absorbedFenceSeen = null
-        if (!inPayload) nestedOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody)
+        if (!inPayload) nestedOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody, !markerFolds)
         if ((absorbedFenceSeen && !fence.opaque) || foldedChildFence) (residueFence.foldedFences ??= new Set()).add(itemLines.length - 1)
         if (opens && !absorbedFenceSeen && !foldedChildFence) fenceOpensAt.add(itemLines.length - 1)
         // A line the note paragraph claims is note text; it opens no fence here.
@@ -9447,8 +9457,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
               nestedOpaque !== null || (wasNested !== null && !endedBelow), i, dmeas.col)
           }
           if (dmeas.rest !== '') {
-            if (nm && nm.indent >= contentCol && !inDefBody) descLive = true
-            else if (!descendantOwned && !COMMENT_LINE.test(dedented)) {
+            if (nm && nm.indent >= contentCol && !inDefBody) {
+              descLive = true
+              deepestMarker = { mk: nm, indent: nm.indent, content: nm.indent + nm.markerWidth }
+            } else if (!descendantOwned && !COMMENT_LINE.test(dedented)) {
               if (foldedChildFence) foldedChildParagraph = true
               if (!foldedChildParagraph || !descendantParagraphBefore || mayOpenAuthoredBlock) {
                 // The child's paragraph stays the deepest one for the box columns (PART 0 S4).
@@ -9487,6 +9499,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (subCol < 0 && nm && nm.indent >= contentCol && !inDefBody) {
           subCol = reach + nm.markerWidth
           paraBeforeSublist = paragraphIsOpen() ? [...para] : []
+        } else if (nm && nm.indent >= contentCol && !inDefBody && reach + nm.markerWidth < subCol && !insideFence()) {
+          // A shallower descendant marker ended that sublist; its item's column now owns the body.
+          subCol = reach + nm.markerWidth
         }
         // A descendant's `+` is read the same way whatever its host: an item or
         // a description body supplies only its marker and content columns (CARVE-P9-067).
