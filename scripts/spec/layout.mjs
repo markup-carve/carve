@@ -3689,7 +3689,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       while (host.kind === 'item' && last > from && isBlank(lines[last - 1])) last--
       if (last <= from) return false
       const own = lines.slice(from, last).map(view)
-      return !own.includes(null) && takeOneBlock(own, 0, {}, 0).next >= own.length
+      // T6: a table's rows stay its rows at any indent, so the block ends where they do.
+      const rows = own[0] !== null && isTableRow(own[0]) ? own.map((line) => (line !== null && (isTableRow(trimWsStart(line)) || CONT_ROW.test(trimWsStart(line))) ? trimWsStart(line) : line)) : own
+      return !own.includes(null) && takeOneBlock(rows, 0, {}, 0).next >= own.length
     }
     return { host, depth, endsAt, frames: frames.slice() }
   }

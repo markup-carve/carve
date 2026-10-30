@@ -23,6 +23,7 @@
 739-opaque-reference-and-inline-bounds-7  The pinned JS renderer drops a U+2029 quote body; tracked at markup-carve/carve-js#3764.
 739-opaque-reference-and-inline-bounds-8  The pinned JS renderer drops a U+2028 quote body; tracked at markup-carve/carve-js#3764.
 741-visible-footnote-headings-2  The pinned JS renderer indexes a heading in an unused footnote; tracked at markup-carve/carve-js#3775.
+855-a-plus-after-a-table-with-an-indented-row-attaches  The pinned carve-js predates this (markup-carve/carve#4494); the spec model is correct.
 741-visible-footnote-headings-4  The pinned JS renderer resolves an unused footnote heading crossref; tracked at markup-carve/carve-js#3775.
 212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine
 219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-js#3769, footnote body lazy continuation pending in the pinned engine

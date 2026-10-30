@@ -1,0 +1,22 @@
+A plus after a table with an indented row attaches
+
+```
+- a
++
+|x|
+ |y|
++
+H
+.
+<ul>
+  <li>a
+    <table>
+      <tbody>
+        <tr><td>x</td></tr>
+        <tr><td>y</td></tr>
+      </tbody>
+    </table>
+    H
+  </li>
+</ul>
+```
