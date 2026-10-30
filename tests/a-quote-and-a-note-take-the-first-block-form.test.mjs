@@ -58,7 +58,8 @@ test('non-flush-left lines retain their quote and note ownership', () => {
   assert.equal(html('> +\n flush'), '<blockquote><p>+\nflush</p></blockquote>')
   assert.equal(html('> +\n  flush'), '<blockquote><p>+\nflush</p></blockquote>')
   assert.equal(html('[^a]: +\n flush\n\nsee[^a]'), see + note('<p>+\nflush' + back + '</p>'))
-  assert.equal(html('[^a]: +\n  flush\n\nsee[^a]'), see + note('<p>+\nflush' + back + '</p>'))
+  // A footnote body takes its next owned block like a list item (carve#4152).
+  assert.equal(html('[^a]: +\n  flush\n\nsee[^a]'), see + note('<p>flush' + back + '</p>'))
 })
 
 test('other marker positions retain their behavior', () => {

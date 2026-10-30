@@ -514,6 +514,8 @@ continuation_marker_block = continuation_marker, block ;
    sole content right after a container's last opener (`- +`, `1. +`, `: +`,
    `> +`, `[^a]: +`, `- - +`) opens a body that is the one block starting at
    column 0 of its quote level or that opener line's column, with no inline lead;
+   a list item, footnote body or description body also takes its next owned
+   block at or past its content column (PART 9 §17 L4, CARVE-P9-067);
    a list item at a column owned by an open list remains a sibling.
    `- + text` keeps `+ text` as literal
    inline content -- only a bare `+` triggers this. With no block at that column

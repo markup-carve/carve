@@ -1,0 +1,27 @@
+A heading slug that starts with any Unicode number takes the s- prefix
+
+```
+# ²super
+
+# ١٢٣ heading
+.
+<section id="s-²super">
+  <h1>²super</h1>
+</section>
+<section id="s-١٢٣-heading">
+  <h1>١٢٣ heading</h1>
+</section>
+```
+
+```
+# 1st
+
+# x²
+.
+<section id="s-1st">
+  <h1>1st</h1>
+</section>
+<section id="x²">
+  <h1>x²</h1>
+</section>
+```

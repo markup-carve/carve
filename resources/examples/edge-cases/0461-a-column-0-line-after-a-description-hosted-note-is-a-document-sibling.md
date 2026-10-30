@@ -9,7 +9,10 @@ nothing and the `<dd>` is empty.
 
 `tail` at column 0 reaches neither the description nor the note, and the
 note's paragraph is the deepest one open, so `tail` folds into the note (PART 0
-S4). A footnote body takes a lazy line like every container (markup-carve/carve#3885); the section keeps the title of the reading it used to pin.
+S4). A footnote body takes a lazy line like every container (markup-carve/carve#3885); the section keeps the title of the reading it used to pin. In the last pair the
+list marker at column 4 misses the note's floor; under the note's open
+paragraph it is text of the note, not a list in the description
+(markup-carve/carve#4160).
 
 ::: compare
 
@@ -88,12 +91,7 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <ul>
-      <li>nested
-tail</li>
-    </ul>
-  </dd>
+  <dd></dd>
 </dl>
 ```
 

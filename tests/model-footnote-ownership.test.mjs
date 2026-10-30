@@ -16,18 +16,19 @@ test('a quoted definition closes the note claim after an interior blank', () => 
   assert.match(html, /<p><a href="\/x">x<\/a><\/p>\n<section role="doc-endnotes"/)
 })
 
+// The note's open paragraph is not the item's own, so no sublist (carve#4160).
 for (const marker of ['-', '*', '1.']) {
-  test(`a ${marker} marker at the item column owns the next paragraph`, () => {
+  test(`a ${marker} marker at the item column is text of the note paragraph`, () => {
     const source = `- outer\n  - see[^n]\n    [^n]: a\n    ${marker} li\nx\n`
     const html = renderDoc(parse(source))
-    assert.match(html, /<li>li\nx<\/li>/)
-    assert.doesNotMatch(html, /<p>a\n/)
+    assert.ok(html.includes(`<p>a\n${marker} li\nx<a href`))
+    assert.doesNotMatch(html, /<li>li/)
   })
 }
 
-test('a marker one column past the item column still opens in that item', () => {
+test('a marker one column past the item column is text of the note paragraph', () => {
   const source = '- outer\n  - see[^n]\n    [^n]: a\n     - li\nx\n'
   const html = renderDoc(parse(source))
-  assert.match(html, /<li>li\nx<\/li>/)
-  assert.doesNotMatch(html, /<p>a\n- li/)
+  assert.match(html, /<p>a\n- li\nx<a href/)
+  assert.doesNotMatch(html, /<li>li/)
 })

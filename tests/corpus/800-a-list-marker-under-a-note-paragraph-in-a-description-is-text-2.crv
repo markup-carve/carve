@@ -1,0 +1,5 @@
+:: t
+: [^q]: note
+  1. child
+
+r[^q]
