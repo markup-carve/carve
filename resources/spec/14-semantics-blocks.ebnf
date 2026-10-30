@@ -109,7 +109,7 @@
          `#b` and leaves ` c #}` as text. After a delimiter that closed
          nothing, a brace group is not an attribute run: its characters are
          read like any others, so a braced opener or closer in it still
-         counts. A run that attaches to nothing is text (§15 A7).
+         counts. A run that attaches to nothing is text.
       R4 OPEN. Otherwise, if d can open, is not an own kind and no entry of
          kind d is on the stack, push d. A further bare d while one is open
          is text (NO BARE SAME-TYPE NESTING): /usr/local/ ->
@@ -368,7 +368,8 @@
       at all (the interruption gate); §11 then partitions established
       same-indent items into sibling lists. The rules layer; §11 never
       overrides §10.
-      N1 SAME LIST iff two adjacent items at the same indent match on ALL
+      N1 SAME LIST iff two adjacent items in the same owner, neither nested in
+         the other, match on ALL
          axes: bullet character (`-` vs `*`; `+` is NOT a bullet in Carve --
          it is the continuation marker, §17), ordered_marker alternative,
          delimiter (`.` vs `)`), and plain-vs-task classification. Any axis
@@ -407,19 +408,22 @@
          item; a later marker outside the dialect, or with the other
          delimiter, starts a new sibling list. The first item also sets the
          `<ol>` `type` (a/A/i/I; decimal omits it) and `start` (the
-         marker's value; omitted when 1).
+         marker's value; omitted when 1). A roman run's value is its
+         subtractive sum, whether or not the spelling is canonical: `vx.` is
+         5 and `iiii.` is 4.
       N3 AMBIGUOUS-LETTER TIE-BREAK. A single roman-letter first marker
          (i/v/x/l/c/d/m) is ROMAN when the next sibling is the consecutive
          roman numeral (`iv.`+`v.`, `i.`+`ii.`) and ALPHA when the next is
          the consecutive letter (`c.`+`d.`, `v.`+`w.`); a lone `i`/`I`
-         defaults to roman, any other lone letter to alpha.
+         defaults to roman, any other lone letter to alpha. A next sibling
+         that is neither consecutive form leaves the first marker lone:
+         `v.` over `vii.` is an alpha list and a roman list.
       N1 looks only one item back; N2/N3 carry the FIRST item's
       classification (with N3's one-item-forward tie-break) for the rest of
       the list.
 
    12. FENCED ":::" BLOCK RENDERING -- NORMATIVE [CARVE-P9-015] (governs `admonition`
-      and `div` in PART 2; cross-references syntax.md §4.20 "Block
-      Extensions").
+      and `div` in PART 2).
 
       ONE COLON-FENCE FRAME -- NORMATIVE [CARVE-P9-084]. A div, admonition,
       line block, local hard-break block, figure group, fenced quote and block
@@ -451,7 +455,8 @@
       which floats onto the block (§15): `{.x #id}` then `::: note` yields
       `<aside class="admonition note x" id="id" aria-label="Note">`.
       The classes the block adds (`admonition` and the type word, or a
-      typed div's kind word) lead ONE class list with the authored ones,
+      typed div's kind word; a `::: |` or `::: \` class follows the authored
+      ones, corpus 421) lead ONE class list with the authored ones,
       deduplicated by CARVE-P4-002: `{.calculation}` over `::: calculation`
       gives `class="calculation"`, and `{.admonition .note}` over `::: note`
       gives `class="admonition note"`. Only the rendered `class` merges; the
@@ -540,7 +545,7 @@
               {body}
             </div>
         This is the carve fenced-div primitive that the block-extension
-        mechanism (syntax.md §4.20) builds on -- e.g. `::: tabs`,
+        mechanism builds on -- e.g. `::: tabs`,
         `::: mermaid`, `::: codepen` produce `<div class="tabs">`,
         `<div class="mermaid">`, `<div class="codepen">` respectively,
         which a registered extension may post-process. An unregistered
@@ -578,7 +583,8 @@
             <aside class="admonition note" aria-label="Note">
 
         The minted id starts at `adm-{n}`, n counting Tier-1 titled blocks in
-        document order from 1. Reserve explicit and automatic heading ids
+        rendered order from 1, so an endnote body counts after later body
+        blocks. Reserve explicit and automatic heading ids
         first, then add a duplicate suffix (`adm-1-2`, `adm-1-3`, ...) until
         the minted id is unused. Titled nameable directives use this same
         sequence (CARVE-P9-072).
@@ -613,7 +619,7 @@
       nameable region uses `aria-labelledby` at the title's minted id;
       an untitled one uses the `labels` map (§16a `endnotes`, TOC `tocNav`).
       The author's own `aria-label` or `aria-labelledby` still
-      wins under PART 10 §1, preventing id minting
+      wins under PART 10 §1 and prevents id minting
       WHERE THE MARKER'S ATTRIBUTES REACH
       THE PLACED ELEMENT: they reach the TOC nav, but none reaches the
       endnotes section; any OTHER `aria-*`
@@ -636,7 +642,8 @@
       nothing renders `<div class="{kind}">`, with both tokens inside even
       when otherwise empty: this includes absent notes, a second placement
       marker, and an unregistered Tier-3 kind. Naming is PROHIBITED on role `generic`;
-      a plain div takes NEITHER naming attribute and mints NO id; only the nameable placed regions,
+      a plain div takes NEITHER naming attribute and mints NO id from the engine,
+      though an authored one passes through; only the nameable placed regions,
       the endnotes section or TOC nav use the naming rule.
 
       WHERE THE ELEMENT CANNOT HOLD A PARAGRAPH, THE TOKENS PRECEDE IT.
@@ -675,8 +682,7 @@
         or 5/6). The structure mirrors djot's behavior; carve does NOT
         synthesize intermediate <h2>/<section> nodes.
       - Explicit `{#id}` on a heading: the id still lives on the
-        `<section>`, not on the `<h*>`. The dedup namespace (syntax.md
-        §4.1 / heading-id-tracker rules) is unchanged -- explicit ids are
+        `<section>`, not on the `<h*>`. The dedup namespace is unchanged -- explicit ids are
         reserved before auto-ids in document order.
       - ATTRIBUTES OTHER THAN THE ID STAY ON THE `<h*>`. The id is the
         only attribute that hoists, and it hoists the same way whether

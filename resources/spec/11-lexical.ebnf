@@ -109,6 +109,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    production then rejects the line. Either way the line falls back to
    ordinary prose rather than silently re-indenting or silently dropping
    metadata -- the same visible failure a tab after a marker already produces.
+   The one exception is PART 2's opener recovery: `::: note<TAB>"T"` opens the
+   named container and drops the title, with a diagnostic.
 
    Cardinality is a separate question from the terminal: a slot spelled
    `space` admits exactly one character, and a `space+` run admits one or
@@ -172,7 +174,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    emptiness test is not satisfied by its absence, and a line holding one is
    not a `blank_line`.
 
-   THE THREE WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
+   THE FOUR WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
    mark takes this definition. `typography_flank` (PART 3) is the class smart
    typography reads a neighbor through: it adds the no-break space and a soft
    or hard line break to these terminals, for that test only, and recognizes
@@ -182,7 +184,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    the C0 controls, which include both characters above, plus the Unicode
    spaces and the BOM -- and gives its reason there: it strips what a URL
    parser strips, before a scheme is read, and it is a SECURITY PROBE over a
-   destination rather than a reading of the source.
+   destination rather than a reading of the source. Its `style` check removes
+   all Unicode whitespace too, so `{style="u<U+00A0>rl(x)"}` is blanked.
 
    Constructs use this definition rather than a host language's trim,
    regular-expression or locale-aware character class. *)

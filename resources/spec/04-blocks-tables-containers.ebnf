@@ -186,7 +186,7 @@ caption_slot = [blank_line], caption ;
    `table`, `figure_group` and `quote_block`; the last two attach it to their
    CLOSING fence (CARVE-P9-001, PART 9 §4). Image paragraphs and standalone display-math blocks
    follow the same allowance under PART 9 §4 without a slot-carrying production.
-   A block code include carries this slot after its directive line (PART 10 I1c).
+   A block code include carries this slot after its directive line (PART 6 I1c).
    Any other `^ ` line is ordinary inline/paragraph content and, when a
    paragraph is OPEN above it, folds into it (PART 9 §10 I7).
 
@@ -508,8 +508,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    immediately followed by a format name (```=html). The leading `=` is the
    block parallel of the inline raw `{=format}` attribute; it never starts a
    language token (a code fence's language charset excludes `=`), so this is
-   unambiguous against an ordinary code block. The `=` and format name must be
-   adjacent -- ```= html (space after `=`) is NOT a raw block. Leading
+   unambiguous against an ordinary code block. The format name is case sensitive (`=HTML` matches no target). The `=` and
+   format name must be adjacent -- ```= html (space after `=`) is NOT a raw block. Leading
    whitespace before the `=` is permitted (```=html and ``` =html both open
    raw). The closer follows the PART 9 §2 rule: same fence character, length
    >= opener. Content is verbatim; it is emitted UNESCAPED when the format
@@ -533,7 +533,7 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    AN ALL-BLANK PAYLOAD IS NOT AN ABSENT BLOCK. If the sole line between the
    delimiters is blank, that line is still the payload and contributes its
    newline when the raw format matches the output format. Zero payload lines
-   contribute nothing; one blank payload line contributes one newline. An
+   contribute no content, only the placement line of CARVE-P10-012; one blank payload line contributes one newline. An
    implementation MUST NOT encode those two source shapes identically.
 
 

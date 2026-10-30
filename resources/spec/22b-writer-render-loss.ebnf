@@ -1,5 +1,6 @@
 (* ============================================================================
-   RENDER-LOSS REPORTING -- NORMATIVE [CARVE-P2-024]. Target routing may
+   RENDER-LOSS REPORTING -- NORMATIVE [CARVE-P2-024] (a stable id: it keeps its
+   P2 prefix and `part` in `rules.json` though it stands here). Target routing may
    intentionally omit a raw node, flatten a `ruby` node or an editorial
    comment, or displace an authored attribute, but a checked
    renderer MUST make that loss observable. Its

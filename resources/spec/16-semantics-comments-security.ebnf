@@ -375,11 +375,11 @@
          interrupting an open paragraph (§10 I2).
       C5 DEDENT. Re-parsing nested content strips the container's
          structural indent BY COLUMNS. A tab straddling the dedent boundary
-         is consumed WHOLE on non-marker lines, except for a `%%%` comment
-         payload line (§28). On a LIST-MARKER line or comment payload line,
-         the straddling tab's unconsumed columns are re-inserted as spaces.
-         This keeps mixed tab/space list markers aligned and preserves the
-         comment payload's indentation beyond the host column. A LIST-MARKER
+         is consumed by columns on every line: its unconsumed columns are
+         re-inserted as spaces. This keeps mixed tab/space list markers
+         aligned, gives a tab-indented code or `%%%` comment payload line (§28)
+         the indentation its space spelling has, and holds beyond the host
+         column. A LIST-MARKER
          line is a bullet or ordered marker line and equally a definition-list
          `:: ` term or `: ` description marker line.
 
@@ -415,8 +415,9 @@
 
         The probe does not strip the wider `Cf` category.
         A `data:` exception for images, if offered, MUST be opt-in. An
-        attribute-block `href`/`src` override (PART 4) MUST NOT reintroduce a
-        rejected scheme.
+        authored `href` on a link or `src` on an image is ignored and the
+        destination stands (`[a](/u){href=/v}` keeps `/u`), so an attribute
+        block cannot reintroduce a rejected scheme.
 
         THIS APPLIES TO EVERY TARGET THAT EMITS A RESOLVABLE URL, not only to
         the HTML renderer. A Markdown target's link and image destinations are
@@ -467,7 +468,7 @@
         `{title="Shell: bash"}` renders `title=""`; and MUST blank any `style`
         value containing `expression(`, `url(`, `@import`, `behavior:`, or
         `-moz-binding` (all whitespace removed first, so `ex pression(`
-        matches). An authored value is one written in an attribute block or
+        matches, and ASCII-case-insensitively, so `URL(` does). An authored value is one written in an attribute block or
         one an extension copies onto its wrapper element: an extension MUST
         route authored attributes through the same hardening and MUST NOT
         emit them raw. A value the renderer derives from text is not an

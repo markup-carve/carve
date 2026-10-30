@@ -54,7 +54,7 @@ attribute_run = attributes, {attributes} ;
    forced span in `*x*{.k}{*y*}`, which stays content. A bracketed span is
    the one carrier whose run also takes the empty block `{}` / `{ }` as a
    member (PART 3 `span_attribute_run`). A run that attaches to
-   nothing is text, block by block (PART 9 §15 A7). *)
+   nothing is text, block by block (PART 9 §9 R3). *)
 
 attribute = language_attribute | id_attribute | class_attribute
           | key_value_attribute | boolean_attribute ;
@@ -134,7 +134,7 @@ class_attribute = '.', explicit_identifier ;
    class, the way HTML reads a `class` attribute, so the CARVE-P4-002 dedup
    compares tokens: `{class="a b" .a}` parses to the classes `a`, `b` and
    renders `class="a b"`. A value that holds no token
-   (`class=""`) stays one empty entry. Each token is an authored value of its
+   (`class=""`, `class=" "`) stays one entry holding the value as authored. Each token is an authored value of its
    own for CARVE-P9-054. *)
 key_value_attribute = identifier, '=', attribute_value ;
 (* A bare identifier is a VALUE-LESS BOOLEAN attribute in source. It has the same
@@ -179,7 +179,8 @@ unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - ' ' - '\t' - newlin
    required for exactly those: `}` closes the block, a space is the separator
    before the next attribute and a tab is no part of a block, a quote opens a
    quoted value, a bare `|`
-   would end a table cell, and a `\` needs the quoted form, the only one that
+   would end a table cell (a quoted one still does inside a table row, PART 9
+   §5 T1, which cuts cells first; write `\|` there), and a `\` needs the quoted form, the only one that
    resolves escapes. Everything else needs
    no quoting, so a version string (`v1.2`), a namespaced token (`xml:lang`) and
    an imported utility class (`w-1/2`) are all bare values. *)

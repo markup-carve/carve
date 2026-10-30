@@ -75,13 +75,15 @@
       renders `<ul id="ix" k="v" class="index">`.
 
       TEXT-BLOCK ALIGNMENT IS A SEMANTIC ATTRIBUTE. On `<p>`, `<div>` and
-      `<h1>` through `<h6>`, an authored `align` key whose trimmed,
+      `<h1>` through `<h6>`, an authored `align` key, matched
+      ASCII-case-insensitively, whose trimmed,
       ASCII-case-folded value is `left`, `right` or `center` serializes as
       `style="text-align: VALUE;"`, not as the deprecated `align` attribute.
       The declaration takes the authored `align` slot. If the author also
       supplied `style`, emit one `style` attribute at its authored slot and
-      append the declaration there; the appended declaration wins if that
-      style already named `text-align`.
+      append the declaration there: the authored value trimmed, a `;` added
+      if it has none, one space, then the declaration. The appended declaration
+      wins if that style already named `text-align`.
 
       The element and value sets are closed. On `<table>`, `align` means block
       placement rather than alignment of cell text, so it remains an ordinary
@@ -144,8 +146,9 @@
 
       A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT -- NORMATIVE [CARVE-P10-012].
       A zero-line raw payload and one blank payload line are distinct under
-      PART 2 raw_block. In a nested body, a matching raw block emits one line
-      holding only the body's indentation when its payload has zero lines.
+      PART 2 raw_block. A matching raw block whose payload has zero lines emits one
+      line: an empty one at the top level, and one holding only the body's
+      indentation in a nested body.
       That placement counts as visible content for [CARVE-P10-001] and
       [CARVE-P9-077]; it keeps a child slot beside a paragraph in a list item.
       A comment or a raw block for another target contributes no slot. These

@@ -477,7 +477,7 @@ roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
    - DISAMBIGUATION of the abutting block mirrors the inline-span rule (CARVE-P9-020):
      it is consumed as li-attributes only if it yields >= 1 attribute (`#id`,
      `.class`, `key=value`) OR is the blessed empty block (`-{} text` -> bare
-     `<li>`). Otherwise (`-{+a+}`, `-{not attrs}`) the `-{` is not a marker and
+     `<li>`). Otherwise (`-{+a+}`, `-{???}`) the `-{` is not a marker and
      the line stays ordinary paragraph/inline text.
    - `-{` and `1.{` / `1){` are not list markers: each requires a space.
    - A trailing `{…}` line folded onto a tight item is not a
@@ -495,9 +495,9 @@ indent = whitespace, {whitespace} ;
 (* MARKER-LINE NESTED LIST -- NORMATIVE [CARVE-P2-014]. A sub-list whose first marker sits on
    the PARENT item's marker line (`- - A`) is an ordinary persistent nested_list,
    identical to writing the sub-marker on its own indented line. It is NOT a
-   one-off lone item: following markers at the sub-list's content column MERGE
-   into the same nested list, and a post-blank block indented to that column is
-   a further block of the open nested item (it reaches its content column). This matches
+   one-off lone item: following markers at the sub-list's marker column MERGE
+   into the same nested list, and a post-blank block indented to the nested
+   item's content column is a further block of the open nested item. This matches
    reference djot.js (`@djot/djot`) and CommonMark. *)
 (* Continuation marker (PART 9 §17): a lone `+` at an open container's marker column,
    measured through the prefixes of its enclosing quotes, attaches one block
