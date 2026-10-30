@@ -1,0 +1,55 @@
+A plus after a note in an item gives the note its list
+
+```
+- a
+  [^n]: note
+  +
+  1. ordered
+
+see[^n]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <ol>
+        <li>ordered</li>
+      </ol>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: t
+: x
+  [^n]: note
+  +
+  - b
+
+see[^n]
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <ul>
+        <li>b</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
