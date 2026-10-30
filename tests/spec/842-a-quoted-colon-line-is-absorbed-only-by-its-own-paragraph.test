@@ -1,0 +1,75 @@
+A quoted colon line is absorbed only by its own paragraph
+
+```
+> e
+:::e
+> :::
+l
+.
+<blockquote><p>e
+:::e
+:::
+l</p></blockquote>
+```
+
+```
+> > e
+> :::e
+> :::
+l
+.
+<blockquote>
+  <blockquote><p>e
+:::e</p></blockquote>
+  <div>
+
+  </div>
+</blockquote>
+<p>l</p>
+```
+
+```
+> > e
+> :::e
+> > :::
+l
+.
+<blockquote>
+  <blockquote><p>e
+:::e
+:::
+l</p></blockquote>
+</blockquote>
+```
+
+```
+> > e
+:::e
+> > :::
+l
+.
+<blockquote>
+  <blockquote><p>e
+:::e
+:::
+l</p></blockquote>
+</blockquote>
+```
+
+```
+> > > e
+:::e
+> > :::
+l
+.
+<blockquote>
+  <blockquote>
+    <blockquote><p>e
+:::e</p></blockquote>
+    <div>
+
+    </div>
+  </blockquote>
+</blockquote>
+<p>l</p>
+```

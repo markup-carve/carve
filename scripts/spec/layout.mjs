@@ -5333,6 +5333,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let qDescriptionBodyCol = null
       let qNoteBodyCol = null
       let qPara = [] // its lines, for SS12's absorption test below
+      // Whether qPara holds an inner quote's line; resumes its scan to stay linear over a long run.
+      let qParaScan = { para: qPara, at: 0, quoted: false }
+      const qParaHoldsQuote = () => {
+        if (qParaScan.para !== qPara) qParaScan = { para: qPara, at: 0, quoted: false }
+        for (; !qParaScan.quoted && qParaScan.at < qPara.length; qParaScan.at++) qParaScan.quoted = QUOTE.test(qPara[qParaScan.at])
+        return qParaScan.quoted
+      }
       const qColonRuns = []
       /*
        * IS A TABLE OPEN INSIDE THE QUOTE? -- PART 9 SS5 T6 (carve#1348).
@@ -5572,7 +5579,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const stack = qNestedColon[depth - 1] ??= []
             const closesColon = COLON_CLOSER.test(text) && stack.at(-1) === colon?.[1].length
             if (closesColon) stack.pop()
-            const absorbedColon = !closesColon && qNestedPara[depth - 1] && COLON_CLOSER.test(text) &&
+            const absorbedColon = !closesColon && qNestedPara[depth - 1] && !qNestedPara.slice(depth).some(Boolean) && COLON_CLOSER.test(text) &&
               !colonFenceInterrupts(text, qNestedParaLines[depth - 1] ?? [])
             if (colon && !closesColon && !absorbedColon && parseColonOpener(colon[2]) !== null) {
               stack.push(colon[1].length)
@@ -5765,7 +5772,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // (CARVE-P9-016). That is the same predicate the block reader uses,
         // applied to the STRIPPED line and to the quote's own paragraph -
         // spelling it a second way here is how the two answers would drift.
-        const absorbedColon = qOpenPara && COLON_CLOSER.test(l) &&
+        // The stripped line reaches this quote only, so a paragraph in an inner quote does not absorb it (CARVE-P9-017).
+        const absorbedColon = qOpenPara && COLON_CLOSER.test(l) && !qParaHoldsQuote() &&
           !colonFenceInterrupts(l, qPara)
         // Asked with the run as it stood BEFORE this line, then advanced: a
         // continuation row is a row relative to what is above it, never to
@@ -5997,6 +6005,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // collector's own fold; framing it twice leaks the sentinel into the
           // rendered text, which the paragraph collector strips only once.
           inner.push(lines[i].startsWith(LAZY) ? lines[i] : lazyFrame(ind(i).rest))
+          // A lazy line is the paragraph's, so a later quoted colon line reads it (CARVE-P9-016).
+          if (qOpenPara) {
+            const lazyText = stripLazy(ind(i).rest)
+            qPara.push(lazyText)
+            for (const para of qNestedParaLines) para?.push(lazyText)
+          }
           i++
           continue
         }
