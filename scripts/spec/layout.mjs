@@ -3232,7 +3232,8 @@ function ownLines(lines, trace = null) {
     const lonePlus = plusFollower ? frames[reached + 1] : null
     if (lonePlus?.kind === 'item' && reached === frames.length - 2 && form.kind === 'text' &&
         m.rest !== '' && !CONT_MARKER.test(m.rest) && m.col === lonePlus.markerCol) {
-      lead(Math.max(m.col - owner.cut, owner.canon))
+      // It meets the `+` where the walk moved it (PART 0 S3).
+      lead(lonePlus.markerCanon)
       result.push(out + src)
       lonePlus.absorbs = absorbsColon(m.rest)
       lonePlus.para = true
