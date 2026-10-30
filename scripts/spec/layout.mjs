@@ -5181,8 +5181,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               label: opener.label,
               children: parseBlocks(body, state, false),
             })
-          } else if (opener.type === 'toc') {
-            throw new Refuse('::: toc directive')
           } else if (
             isFigureGroupOpener(opener) && !state.inFigureGroup
           ) {

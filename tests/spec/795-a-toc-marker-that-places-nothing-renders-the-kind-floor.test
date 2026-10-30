@@ -1,0 +1,22 @@
+A toc marker that places nothing renders the kind floor
+
+```
+::: toc "Contents"
+:::
+.
+<div class="toc">
+  <p class="admonition-title">Contents</p>
+</div>
+```
+
+```
+::: toc "Contents" [Overview]
+Authored.
+:::
+.
+<div class="toc">
+  <p class="admonition-title">Contents</p>
+  <p class="div-label">Overview</p>
+  <p>Authored.</p>
+</div>
+```
