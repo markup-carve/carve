@@ -786,7 +786,7 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "if (ra && parseAttrBlock(`{${ra[1]}}`) !== null) {",
+          "find": "if (m && parseAttrBlock(`{${m[1]}}`) !== null) {",
           "replace": "if (false) {"
         }
       ]

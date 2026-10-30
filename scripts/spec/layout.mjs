@@ -800,7 +800,19 @@ function classifyOrdered(token) {
 function splitRow(line, openRun = 0, openRunAt = 0) {
   let s = line
   let rowAttrs = null
-  const ra = new RegExp(`\\|\\{(${ATTR_PAYLOAD})\\}[ \\t]*$`).exec(s)
+  // The block's `|{` is the last one outside quotes: an earlier `|{` is cell
+  // content, and `| a |{~|{.c}` still has a row block.
+  let ra = null
+  const rowAttrRe = new RegExp(`\\|\\{(${ATTR_PAYLOAD})\\}[ \\t]*$`, 'y')
+  for (let at = s.lastIndexOf('|{'); at >= 0; at = at > 0 ? s.lastIndexOf('|{', at - 1) : -1) {
+    rowAttrRe.lastIndex = at
+    const m = rowAttrRe.exec(s)
+    if (m && parseAttrBlock(`{${m[1]}}`) !== null) {
+      ra = m
+      break
+    }
+    if (!/['"]/.test(s.slice(at))) break
+  }
   // T8: a `{...}` GLUED to the closing pipe is the row attribute block - but
   // only if the payload is VALID: "the whole payload must be valid attribute
   // syntax (§15); otherwise the `{` is ordinary content and the line is not a
@@ -808,7 +820,7 @@ function splitRow(line, openRun = 0, openRunAt = 0) {
   // than at render time is what keeps `| a |{bad!!}` a paragraph; testing it
   // downstream REFUSED the whole document, the one outcome the clause rules
   // out. Same move carve#713 made for the cell block, on the row's twin.
-  if (ra && parseAttrBlock(`{${ra[1]}}`) !== null) {
+  if (ra) {
     rowAttrs = `{${ra[1]}}`
     s = s.slice(0, ra.index + 1)
   }
