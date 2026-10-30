@@ -96,7 +96,10 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        digit: `# ½ cup` gives `s-½-cup`) is prefixed `s-` (a bare leading digit
        is a valid HTML id but an invalid CSS selector); an empty result becomes
        `s`;
-     - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
+     - duplicates within a document get a numeric `-2`, `-3`, ... suffix. Only
+       an id the document renders takes part: an id dropped with an unresolved
+       reference's attributes (PART 9R) reserves nothing, so `x[^n]{#i}` above
+       `## {#i}` leaves the heading `id="i"` (carve#4288).
    An explicit {#id} is used verbatim (case preserved). Implementations MAY
    offer OPT-IN, orthogonal lowercasing and ASCII-folding transforms; neither
    is the default. ASCII-folding has TWO modes: BEST-EFFORT keeps characters
