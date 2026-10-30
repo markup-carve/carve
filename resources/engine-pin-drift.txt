@@ -577,3 +577,4 @@
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-4  markup-carve/carve#4162, a lazy line after a third-level fence folds into the middle item; pending in the pinned engine
 626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-6  markup-carve/carve#4162, a lazy line after a third-level fence folds into the middle item; pending in the pinned engine
 630-a-continuation-marker-stands-alone-at-column-zero-or-right-after-a-block-opener-9  markup-carve/carve#4162, a lazy line after a third-level fence folds into the middle item; pending in the pinned engine
+815-a-line-below-an-empty-div-after-a-first-block-plus-is-not-lazy-4  markup-carve/carve#4269, the pinned carve-js folds a column-zero line into the div after an attribute line; carve-js main already ends the item

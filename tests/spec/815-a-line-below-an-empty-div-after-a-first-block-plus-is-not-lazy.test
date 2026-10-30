@@ -1,0 +1,105 @@
+A line below an empty div after a first-block plus is not lazy
+
+```
+::: d
+- d
+  - e
+    - +
+  :::
+after
+.
+<div class="d">
+  <ul>
+    <li>d
+      <ul>
+        <li>e
+          <ul>
+            <li></li>
+          </ul>
+        </li>
+      </ul>
+      <div>
+
+      </div>
+    </li>
+  </ul>
+  <p>after</p>
+</div>
+```
+
+```
+- d
+  - +
+  :::
+after
+.
+<ul>
+  <li>d
+    <ul>
+      <li>
+        <div>
+
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>after</p>
+```
+
+```
+- d
+  - +
+  ::: note
+after
+.
+<ul>
+  <li>d
+    <ul>
+      <li>
+        <aside class="admonition note" aria-label="Note">
+
+        </aside>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>after</p>
+```
+
+```
+- +
+  ::: d
+  {.c}
+after
+.
+<ul>
+  <li>
+    <div class="d">
+
+    </div>
+  </li>
+</ul>
+<p>after</p>
+```
+
+```
+- d
+  - +
+  :::
+  in
+after
+.
+<ul>
+  <li>d
+    <ul>
+      <li>
+        <div>
+          <p>in
+after</p>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
