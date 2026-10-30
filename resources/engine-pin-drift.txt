@@ -547,10 +547,5 @@
 637-definition-body-note-and-fence-owner-boundaries-4  Pinned JavaScript opens a sublist under a note paragraph inside a list item (markup-carve/carve#4160); pending in carve-js.
 800-a-list-marker-under-a-note-paragraph-in-a-description-is-text-5  Pinned JavaScript opens a sublist under a note paragraph inside a list item (markup-carve/carve#4160); pending in carve-js.
 802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-6  Pinned JavaScript closes the quote at a paragraph line instead of folding it into a quoted note's refused + (markup-carve/carve#4097); pending in carve-js.
-805-a-typed-container-writes-each-class-once  Pinned JavaScript writes a container class again when an authored class repeats it (markup-carve/carve#4143); pending in carve-js.
-805-a-typed-container-writes-each-class-once-2  Pinned JavaScript writes a container class again when an authored class repeats it (markup-carve/carve#4143); pending in carve-js.
-805-a-typed-container-writes-each-class-once-3  Pinned JavaScript writes a container class again when an authored class repeats it (markup-carve/carve#4143); pending in carve-js.
-805-a-typed-container-writes-each-class-once-4  Pinned JavaScript writes a container class again when an authored class repeats it (markup-carve/carve#4143); pending in carve-js.
-807-a-caption-bucket-key-keeps-a-symbol-and-drops-a-comment  Pinned JavaScript leaves a symbol out of a caption bucket key (markup-carve/carve#4111); pending in carve-js.
 801-a-footnote-body-takes-its-first-block-at-its-body-column-7  Pinned JavaScript does not fold a paragraph line below the body column into a note's refused + (markup-carve/carve#4152); pending in carve-js.
 801-a-footnote-body-takes-its-first-block-at-its-body-column-8  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.

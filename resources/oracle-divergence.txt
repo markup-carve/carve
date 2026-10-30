@@ -39,4 +39,3 @@
 # Format: <document id><space><space><reason>
 docs/validation.md#5  points at the engine: siblings group by their container (markup-carve/carve#3885), so the pinned build still splits the list until markup-carve/carve-js#3874 lands
 docs/validation.md#6  points at the engine: an opener past the document's content column opens there (PART 0 S3, markup-carve/carve#3885), so the pinned build still reads `  # Heading` as text until markup-carve/carve-js#3874 lands
-docs/format-bridges.md#3  points at the engine: a typed container writes its kind-word class once even when an authored class repeats it (CARVE-P4-002, markup-carve/carve#4143), so the pinned build still writes `calculation calculation` until carve-js implements it
