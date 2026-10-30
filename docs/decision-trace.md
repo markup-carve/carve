@@ -105,7 +105,9 @@ the `+` line: the walk keeps its column and the block readers attach it to the
 `+`'s container (CARVE-P9-067). A `+` on an item's or description's own marker
 line has no record of its own: the block it takes at the marker column is
 recorded inside that item or description, and the lines after that block are
-recorded in its parent.
+recorded in its parent. A block it takes at column zero below an indented
+marker is recorded inside the item or description too, with `plus` set to the
+marker line.
 
 The trace covers the ownership walk. The block readers that build the final
 tree run after it, so a difference that only they make, such as how a table row
