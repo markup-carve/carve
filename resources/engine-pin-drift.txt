@@ -583,3 +583,4 @@
 821-a-quote-after-a-caption-starts-fresh  The pinned JS renderer carries a captioned quote's list into the quote after the caption (markup-carve/carve#4312, carve-js line).
 821-a-quote-after-a-caption-starts-fresh-2  The pinned JS renderer carries a captioned quote's list into the quote after the caption (markup-carve/carve#4312, carve-js line).
 821-a-quote-after-a-caption-starts-fresh-3  The pinned JS renderer carries a captioned quote's list into the quote after the caption (markup-carve/carve#4312, carve-js line).
+831-a-token-inside-a-literal-include-directive-opens-nothing  markup-carve/carve#4296, the pinned carve-js parses a backtick inside a literal directive; fix pending in carve-js
