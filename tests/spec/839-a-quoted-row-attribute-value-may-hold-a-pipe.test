@@ -1,0 +1,31 @@
+A quoted row attribute value may hold a pipe
+
+```
+| a |{a="x|y"}
+.
+<table>
+  <tbody>
+    <tr a="x|y"><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |{a='x|y|z' .c}
+.
+<table>
+  <tbody>
+    <tr a="x|y|z" class="c"><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|= a |{a="|"}
+.
+<table>
+  <thead>
+    <tr a="|"><th scope="col">a</th></tr>
+  </thead>
+</table>
+```
