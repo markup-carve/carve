@@ -5252,8 +5252,8 @@ EOF = (* end of file *) ;
       A TYPED `::: word` block renders by a TWO-TIER rule
       on the type identifier (below). A BARE `:::` opener with NO type
       word is a GENERIC DIV: a plain `<div>` (no class added), i.e. djot's
-      generic container. An EMPTY one closes on the next line --
-      `<div>` newline `</div>`, the exception PART 10 §4 states.
+      generic container. An EMPTY one keeps the blank body line of
+      CARVE-P10-001 (PART 10 §4).
 
       INLINE OPENER ATTRIBUTES. None. The opener's shape and the recovery of
       a malformed one are PART 2's (STRICT, under `admonition_open`). To
