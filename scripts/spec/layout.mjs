@@ -7467,12 +7467,26 @@ function foldLeadTab(marker, origin) {
   return { ...marker, text: text.slice(run.length), markerWidth: end - indent, leadTab: true }
 }
 
+// PART 9 SS11 N3: an ambiguous first letter is roman when the next sibling is
+// the consecutive numeral, alpha when it is the consecutive letter, and
+// otherwise roman for i/I and alpha for any other letter. Intersecting the two
+// markers' dialects would make `i.` + `b.` one alpha list.
+function tieBreak(dialects, head) {
+  if (dialects.length < 2) return dialects
+  const roman = dialects.find((d) => d.dialect.toLowerCase() === 'roman')
+  const alpha = dialects.find((d) => d.dialect.toLowerCase() === 'alpha')
+  const next = (d) => head.dialects.some((h) => h.dialect === d.dialect && h.value === d.value + 1)
+  if (next(roman)) return [roman]
+  if (next(alpha)) return [alpha]
+  return [roman.value === 1 ? roman : alpha]
+}
+
 function sameAxes(list, head) {
   // PART 9 SS11 N1: bullet char, ordered dialect+delim, plain-vs-task
   if (list.ord) {
     if (!head.isOrdered || head.delim !== list.ord.delim) return false
     const heads = new Set(head.dialects.map((d) => d.dialect))
-    return list.ord.dialects.some((d) => heads.has(d.dialect))
+    return tieBreak(list.ord.dialects, head).some((d) => heads.has(d.dialect))
   }
   if (head.isOrdered) return false
   if (head.bullet !== list.bullet) return false
@@ -7545,7 +7559,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     if (list.ord && list.items.length > 0) {
       // narrow the dialect set per item (SS11 N2)
       const heads = new Set(head.dialects.map((d) => d.dialect))
-      list.ord.dialects = list.ord.dialects.filter((d) => heads.has(d.dialect))
+      list.ord.dialects = tieBreak(list.ord.dialects, head).filter((d) => heads.has(d.dialect))
     }
     const itemBody = markerBodyPolicy(head.indent + head.markerWidth, authoredMarkerCol)
     let contentCol = itemBody.contentColumn
@@ -10155,8 +10169,7 @@ export function dedentMeasured(m, line, cols) {
 
 function finalizeOrdered(list) {
   if (!list.ord) return
-  // PART 9 SS11 N3 tie-break already applied by intersection; prefer roman
-  // for lone i/I, alpha otherwise
+  // A list still ambiguous here has one item: N3's lone default.
   const ds = list.ord.dialects
   let chosen = ds[0]
   if (ds.length > 1) {
