@@ -5920,6 +5920,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qItemPara = false // and is that paragraph an item's?
       let qTermOpen = false
+      let qTermInQuote = false
       let qDescriptionBodyCol = null
       let qNoteBodyCol = null
       let qPara = [] // its lines, for SS12's absorption test below
@@ -6444,13 +6445,17 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qPara.push(l)
         }
         let leaf = l
+        let termInItem = false
         for (let depth = 0; (qTermOpen || l.includes(':: ')) && depth < MAX_NESTING_DEPTH; depth++) {
           const quote = QUOTE.exec(leaf)
           const marker = matchMarkerAt(indentCols(leaf))
           if (quote) leaf = quote[1] ?? ''
-          else if (marker) leaf = marker.text
-          else break
+          else if (marker) {
+            leaf = marker.text
+            termInItem = true
+          } else break
         }
+        if (DEFLIST_TERM.test(leaf)) qTermInQuote = !termInItem && indentCols(leaf).col === 0
         // PART 0 T leaves a term open for plain lazy text.
         qTermOpen = !/^:( +)/.test(trimWsStart(leaf)) &&
           (DEFLIST_TERM.test(leaf) || qTermOpen)
@@ -6637,6 +6642,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const nestedMarkerFold = !qTermOpen && qNestedPara.some(Boolean) && !!matchMarkerAt(indentCols(unmarked))
         if (lines[i] !== undefined && (qOpenPara || qTermOpen || foldedColon || hostedFirstBlockPending) &&
             !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
+            // A quote's own term takes no lazy separator (carve#4300); under an item it folds (corpus 620).
+            !(qTermOpen && qTermInQuote && DEFLIST_SEPARATOR.test(stripIndent(unmarked))) &&
             !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(unmarked) ||
               // A term continues by the paragraph test, so a folded caret line is text (§10 I7).
               (lines[i].startsWith(LAZY) && CAPTION.test(unmarked)) ||

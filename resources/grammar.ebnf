@@ -495,7 +495,12 @@
                       sibling start a new list (PART 9 §11, §17).
      term             [B-term-start] `:: ` with content; a leaf with inline
                       content. [B-term-keep] It continues by the paragraph
-                      test and has no ownership of its own; [B-term-end] it
+                      test and has no ownership of its own, but a lazy line
+                      continues it only as plain text: a list marker with no
+                      `>` for the term's quote ends that quote and reads as
+                      it would without it, and so does a `: ` separator when
+                      the quote holds the term directly;
+                      [B-term-end] it
                       ends at anything that ends a paragraph or at a `: ` body
                       marker in the same owner.
      definition body  [B-dd-start] `: ` with content, directly after a term
@@ -911,10 +916,9 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
        PART 0 S4); and the line is
      - not blank (a blank line ends the blockquote), and
      - not an interrupting opener in the selected owner's coordinates: a
-       heading, table, guarded fenced code opener, `:::` div, thematic break,
+       heading, table, fenced code opener (§10 I4), `:::` div, thematic break,
        or an invisible definition or comment recognized there ends the quote
-       and starts outside it; an unclosed code fence does not interrupt its
-       open paragraph (§10 I4), and
+       and starts outside it, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
    A LIST MARKER (bullet or ordered) is NOT an exclusion: it folds into the
    open paragraph (PART 9 §10 I2, I6), so "> quoted \n - item" is ONE quote whose

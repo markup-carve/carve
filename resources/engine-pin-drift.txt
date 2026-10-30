@@ -606,3 +606,6 @@
 840-content-behind-a-lead-tab-offers-no-first-block-2  markup-carve/carve#4404 (carve-js), a first-block + behind a lead tab pending in the pinned engine
 840-content-behind-a-lead-tab-offers-no-first-block-3  markup-carve/carve#4404 (carve-js), a first-block + behind a lead tab pending in the pinned engine
 840-content-behind-a-lead-tab-offers-no-first-block-4  markup-carve/carve#4404 (carve-js), a first-block + behind a lead tab pending in the pinned engine
+846-a-quoted-term-takes-no-lazy-marker-or-separator  carve#4300 ruling B: all three pinned engines fold the marker into the term
+846-a-quoted-term-takes-no-lazy-marker-or-separator-2  carve#4300 ruling B: carve-js and carve-php fold the separator into the term
+846-a-quoted-term-takes-no-lazy-marker-or-separator-3  carve#4300 ruling B: carve-js and carve-php fold the separator into the term

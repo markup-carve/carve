@@ -378,7 +378,12 @@
                       sibling start a new list (PART 9 §11, §17).
      term             [B-term-start] `:: ` with content; a leaf with inline
                       content. [B-term-keep] It continues by the paragraph
-                      test and has no ownership of its own; [B-term-end] it
+                      test and has no ownership of its own, but a lazy line
+                      continues it only as plain text: a list marker with no
+                      `>` for the term's quote ends that quote and reads as
+                      it would without it, and so does a `: ` separator when
+                      the quote holds the term directly;
+                      [B-term-end] it
                       ends at anything that ends a paragraph or at a `: ` body
                       marker in the same owner.
      definition body  [B-dd-start] `: ` with content, directly after a term

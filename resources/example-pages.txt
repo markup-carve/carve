@@ -760,6 +760,7 @@ index: examples/edge-cases/index.md
   a-quote-inside-a-quote-is-asked-what-it-ends-on
   a-nested-quoted-term-leaves-no-paragraph-for-a-lazy-line
   a-quoted-term-takes-a-lazy-line
+  a-quoted-term-takes-no-lazy-marker-or-separator
   a-fence-in-a-quote-stores-no-continuation-claim
   a-fence-a-container-inside-a-quote-holds-open-stores-no-claim
   a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim
