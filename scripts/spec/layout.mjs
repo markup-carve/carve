@@ -5082,7 +5082,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // This is a distinct signal from an empty definition body, so an empty
           // `:  ` never swallows the following flush-left block.
           let pullPending = CONT_MARKER.test(trimWs(dm[2]))
-          const nestedFirstBlock = markerCarriesContinuation(dm[2].trim(), new Map())
+          // A bare `+` is the description's own marker, not a nested body's (CARVE-P0-006).
+          const nestedFirstBlock = !pullPending && markerCarriesContinuation(dm[2].trim(), new Map())
           if (!pullPending) {
             pushBody(stripIndent(dm[2]).replace(/[ \t]+$/, ''), i - 1)
           }
@@ -5879,6 +5880,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             qNestedTable[depth] = false
             return settle(false, depth + 1)
           }
+          if (blockStart && host.kinds.at(-1) === 'description' && CONT_MARKER.test(inner.rest)) return settle(false, depth + 1)
           depth++
           if (QUOTE.test(inner.rest)) text = inner.rest
           if (!QUOTE.test(text)) {
@@ -6136,6 +6138,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const nestedQuoteEnds = nestedQuoteText !== null && !nestedQuoteOpensParagraph(nestedQuoteText, blockStart || !qOpenPara, idx)
         const nestedItemEnds = !qOpenPara && !!matchMarkerAt(meas) &&
           !opensParagraph(l, true, false, prefixMemo(state, lines, idx).paragraph)
+        // A description's first-block `+` opens no paragraph, as an item's does not (CARVE-P9-067).
+        const descriptionPlus = blockStart && qHost.kinds.at(-1) === 'description' && CONT_MARKER.test(inner0.rest)
         const hostedBlock = hostedBlockAt(qHost, inner0, popped)
         // An item line under an item's paragraph starts the next item, so a
         // comment or attribute item closes that paragraph (corpus 610, carve#3268).
@@ -6154,7 +6158,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (!absorbedColon &&
             (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds ||
+             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionPlus ||
              (isLinkDef(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(l) || COMMENT_LINE.test(l) ||
              (FOOTNOTE_DEF.test(l) && !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true)))) {
           qOpenPara = false
@@ -7021,6 +7025,8 @@ const endsInNotePlus = (source) => {
     if (note) return CONT_MARKER.test(note[2])
     const marker = matchMarkerAt(measured)
     if (marker) { rest = marker.text; continue }
+    const description = /^:( +)(?=[ \t]*[^ \t])(.*)$/.exec(measured.rest)
+    if (description) { rest = description[2]; continue }
     const quote = QUOTE.exec(measured.rest)
     if (!quote) return false
     rest = quote[1] ?? ''
