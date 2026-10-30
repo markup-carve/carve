@@ -3178,7 +3178,12 @@ function ownLines(lines, trace = null) {
       const next = frames[reached + 1]
       const limit = next.kind === 'quote' ? Infinity : next.canon - 1
       // A lazy line in a description list is measured from its term's own column (CARVE-P0-008).
-      const cut = owner.termShift !== undefined && (owner.last === 'dd' || owner.last === 'term') ? owner.termShift : owner.cut
+      // A line at or past a missed list's column moves with that list
+      // (PART 0 S3), until one left of it starts what the readers reopen.
+      const listCol = Math.min(next.listCol, next.markerCol)
+      if (m.col < listCol) next.leftOfList = true
+      const shift = m.col >= listCol && !next.leftOfList ? Math.min(next.listShift, next.markerCol - next.markerCanon) : 0
+      const cut = owner.termShift !== undefined && (owner.last === 'dd' || owner.last === 'term') ? owner.termShift : Math.max(owner.cut, shift)
       const foldedAt = Math.min(Math.max(m.col - cut, owner.canon), limit, m.col)
       lead(foldedAt)
       if (FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
@@ -3257,6 +3262,7 @@ function ownLines(lines, trace = null) {
     const closed = frames.length - 1 - reached
     const reachedPath = trace && closed > 0 ? ownerPath(reached) : undefined
     const closedColumn = frames.slice(reached + 1).some((f) => f.kind !== 'quote')
+    const sibling = frames[reached + 1]
     frames.length = reached + 1
     owner = top()
     let applied = trace ? ownerPath() : null
@@ -3359,6 +3365,10 @@ function ownLines(lines, trace = null) {
         const frame = { kind: form.kind, col: col + form.width, canon: canon + form.width, reader: reader + form.width,
           docMarker: docColumn(lines[at], src), line: at,
           cut: col - canon, para: false, last: null, markerCol: col, markerCanon: canon, axes: form.axes }
+        // A sibling keeps its list's column and shift.
+        const first = owner === frames[reached] && sibling?.kind === form.kind && sibling.axes === form.axes ? sibling : frame
+        frame.listCol = first.listCol ?? col
+        frame.listShift = first.listShift ?? col - canon
         frames.push(frame)
         take(form.head)
         m = walkIndent(src)
