@@ -698,6 +698,16 @@ function reachedBefore(lines, i, markerLine, reaches) {
 // A comment line leads an attached block like an attribute run; the block decides how it ends.
 const isOneLineComment = (line) => line !== undefined && COMMENT_LINE.test(line) && !COMMENT_FENCE.test(line)
 
+// Does a fence open at `at`, behind any comment and attribute lines?
+const leadsFence = (lines, at) => {
+  for (let attrs; ; ) {
+    if (isOneLineComment(lines[at])) at++
+    else if ((attrs = tryAttrLine(lines, at))) at = attrs.next
+    else break
+  }
+  return FENCE.test(lines[at] ?? '')
+}
+
 // A fence a `+` attached below the body column ends at its block (SS17 L3), so the run after it is the host's.
 const attachedFenceOpen = (body, from) => from !== -1 && leavesFenceOpen(body.slice(from))
 
@@ -6774,7 +6784,9 @@ const leavesFenceOpen = (block) => {
 // The same for a quote's attached block: a list's fence may stand behind its
 // markers or on a later line, and a separator would become that fence's payload.
 const attachedLeavesFenceOpen = (block) => {
-  if (leavesFenceOpen(block.map((line) => trimWsStart(line)))) return true
+  // A closer is measured like its opener, so only the opener's own indentation comes off.
+  const openerIndent = /^[ \t]*/.exec(block.find((line) => FENCE.test(trimWsStart(line))) ?? '')[0].length
+  if (leavesFenceOpen(block.map((line) => line.slice(Math.min(openerIndent, /^[ \t]*/.exec(line)[0].length))))) return true
   const read = block.map((line) => {
     for (let marker; (marker = matchMarkerAt(indentCols(line))); ) line = marker.text
     return trimWsStart(line).replace(DESCRIPTION_TEXT, '')
@@ -7694,6 +7706,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       markerCarriesContinuation(trimWs(head.text), prefixMemo(state, itemLines, 0).continuation)
     let nestedAttachmentColumn = sourceMarkerCol
     let nestedAttachmentEnd = -1
+    // A column-zero fence a descendant's `+` attached: its lines are payload at any column (CARVE-P0-024).
+    let nestedZeroFence = false
     // A marker at the descendant's own indent is its sibling and bounds its block (SS17 L3).
     let nestedSiblingIndent = -1
     // A marker-line chain (`- - +`) has a sibling column per level, any of which closes the `+` item.
@@ -8589,6 +8603,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent)), lm,
           // `attaches` reads the source column, which differs from `col` in a nested body (carve#4348).
           lm.col >= contentCol ? (lm.L?.col ?? lm.col) : column, Math.min(lm.col, column))
+        nestedZeroFence = (lm.L?.col ?? lm.col) === 0 && leadsFence(lines, i)
       }
       // A marker-line chain's `+` spends itself on a sublist at its content column, as below.
       if (i === headIndex + 1 && carriesBareContinuation && nestedAttachmentEnd < 0 && headPlusContent >= 0 &&
@@ -8613,6 +8628,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           lm.rest !== '' && lm.col <= baseIndent &&
           !CONT_MARKER.test(lm.rest) && !(spentOnSublist && deepestParagraphOpen() && (foldablePlainLine(lm.rest) || DESCRIPTION_TEXT.test(lm.rest) ||
             isCodeBlockOpener(lm.rest) && !hasCloser(lines.slice(i), 0)))) break
+      if (nestedZeroFence && i < nestedAttachmentEnd) {
+        pushLine(lm.rest.startsWith(LAZY) ? lm.rest : line, lm)
+        i++
+        if (i === nestedAttachmentEnd) closePara()
+        continue
+      }
       if (i <= wrappedAttrEnd) {
         const body = dedentMeasured(lm, line, contentCol)
         pushLine(body.text, body.meas)
@@ -9835,6 +9856,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
             ind(idx).rest === '' || !openFence && (CONT_MARKER.test(lines[idx]) ||
             [baseIndent, nestedSiblingIndent].includes(matchMarkerAt(ind(idx))?.indent)), lm, attachmentColumn)
+          nestedZeroFence = firstBlockAtZero && leadsFence(lines, i)
         }
         if (i < nestedAttachmentEnd) {
           // Only an attached paragraph leaves one open for a lazy line (PART 0 S4).
