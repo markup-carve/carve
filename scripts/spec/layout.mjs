@@ -8120,6 +8120,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i), blockColumn, Math.min(ind(i).col, blockColumn))
       const attached = lines.slice(i, end)
+      // The block an attribute run leads decides how it ends, not the run (carve#4271).
+      let opener = 0
+      for (let attrs; opener < attached.length - 1 &&
+        (attrs = tryAttrLine(dedentedWindow(attached, opener, ind(i).col), 0)); ) opener += attrs.next
       const codeMatch = FENCE.exec(attached[0] ?? '')
       const code = codeMatch && parseFenceInfo(codeMatch[2]) !== null ? codeMatch : null
       const colon = COLON_FENCE.exec(attached[0] ?? '')
@@ -8129,9 +8133,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (captionable && CAPTION.test(lines[end] ?? '')) end++
       // After a lone `+` the item stays open, so a block at its content column
       // is the item's own and ends the attached paragraph (CARVE-P0-011).
-      const lonePara = !attachNext && foldablePlainLine(ind(i).rest)
+      const lonePara = !attachNext && foldablePlainLine(ind(i + opener).rest)
       if (lonePara) {
-        for (let k = i + 1; k < end; k++) {
+        for (let k = i + opener + 1; k < end; k++) {
           const km = ind(k)
           if (km.col >= contentCol && (opensBlockAt(km.rest, k) || isCodeBlockOpener(km.rest) || isDefinitionOrAttributeLine(km.rest))) {
             end = k
@@ -8139,7 +8143,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           }
         }
       }
-      const paraBlock = foldablePlainLine(ind(i).rest)
+      const paraBlock = foldablePlainLine(ind(i + opener).rest)
       const taken = []
       for (; i < end; i++) {
         // Measure the attached block from the marker column. `blockColumn` is a
