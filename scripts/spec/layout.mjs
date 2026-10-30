@@ -6233,7 +6233,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
 const leavesFenceOpen = (block) => {
   let at = 0
   for (let attrs; ; ) {
-    if (isOneLineComment(block[at])) at++
+    if (isOneLineComment(block[at]) || at < block.length - 1 && leadsNothing(block[at])) at++
     else if ((attrs = tryAttrLine(block, at))) at = attrs.next
     else break
   }
@@ -7814,7 +7814,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // The block an attribute run leads decides how it ends, not the run (carve#4271).
       let opener = 0
       for (let attrs; ; ) {
-        if (isOneLineComment(attached[opener]) && opener + 1 < attached.length) opener++
+        if (opener + 1 < attached.length && (isOneLineComment(attached[opener]) || leadsNothing(stripIndent(attached[opener])))) opener++
         else if ((attrs = tryAttrLine(dedentedWindow(attached, opener, ind(i).col), 0)) && opener + attrs.next < attached.length) opener += attrs.next
         else break
       }

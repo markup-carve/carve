@@ -1,0 +1,16 @@
+A definition before a plus-attached fence adds no blank
+
+````
+- a
++
+[r]: /u
+```
+x
+.
+<ul>
+  <li>a
+    <pre><code>x
+</code></pre>
+  </li>
+</ul>
+````

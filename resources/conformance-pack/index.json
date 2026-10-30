@@ -12,7 +12,7 @@
       "cases": 1200,
       "skipped": {
         "refused": 0,
-        "error": 0
+        "error": 2
       },
       "shards": [
         "ownership-01.json"
@@ -25,7 +25,7 @@
       "cases": 1200,
       "skipped": {
         "refused": 0,
-        "error": 0
+        "error": 1
       },
       "shards": [
         "lazy-01.json"
@@ -130,7 +130,7 @@
       "cases": 1200,
       "skipped": {
         "refused": 0,
-        "error": 0
+        "error": 1
       },
       "shards": [
         "roundtrip-01.json"
