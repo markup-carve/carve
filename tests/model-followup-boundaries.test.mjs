@@ -11,11 +11,11 @@ test('a sibling marker refuses a description-hosted first block without loosenin
   assert.deepEqual(list.items[1].blocks, [{ t: 'para', lines: ['z'] }])
 })
 
-test('a refused document-column follower leaves the description', () => {
+test('a document-column follower is the hosted item\'s block (carve#4356)', () => {
   const source = ':: t\n: - +\nx\n'
   const doc = parse(source)
-  assert.equal(doc.blocks[0].items[1].ddBlocks[0].items[0].blocks.length, 0)
-  assert.deepEqual(doc.blocks[1], { t: 'para', lines: ['x'] })
+  assert.deepEqual(doc.blocks[0].items[1].ddBlocks[0].items[0].blocks, [{ t: 'para', lines: ['x'] }])
+  assert.equal(doc.blocks.length, 1)
 })
 
 test('a later heading at the footnote body floor remains a block', () => {
