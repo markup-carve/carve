@@ -1,0 +1,26 @@
+An unclosed fence opener interrupts a quote or item paragraph
+
+````
+> a
+```
+b
+.
+<blockquote><p>a</p></blockquote>
+<pre><code>b
+</code></pre>
+````
+
+````
+- d
+   ```
+
+  l
+.
+<ul>
+  <li>d
+    <pre><code>
+l
+</code></pre>
+  </li>
+</ul>
+````

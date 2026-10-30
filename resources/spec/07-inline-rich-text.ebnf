@@ -486,6 +486,9 @@ smart_quote = '"' | "'" ;
    renders `“Wait—” he said.`, while `he said—"Go"` renders `he said—“Go”`.
    A path or URL that ends in a slash closes its quote: `"app/config/".`
    renders `“app/config/”.`, while `and/"or"` renders `and/“or”`.
+   A span's closing delimiter is not the next source character: nothing
+   follows a quote at the end of a span's content, so `*"Wait-"*` renders
+   `<strong>“Wait-”</strong>`, as `"Wait-"` closes at the end of a paragraph.
 
    R2. LISTED ELISIONS. A single quote that would open and is followed by
    a maximal run of Unicode letters equal, case-insensitively, to one of
