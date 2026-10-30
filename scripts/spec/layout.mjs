@@ -2874,7 +2874,9 @@ function ownLines(lines, trace = null) {
           const ind = walkIndent(line)
           return ' '.repeat(Math.max(0, ind.col - col)) + ind.rest
         })
-        frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, para: false, last: null, once: end }
+        // It keeps the marker's shift too, as does the parent after it (carve#4245).
+        const cut = Math.max(hostParent.cut, plusHost.markerCol - plusHost.markerCanon)
+        frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, cut, para: false, last: null, once: end }
         if (trace) afterPlusBlock = { end, path: ownerPath(), col: plusHost.col }
       }
     }
@@ -2940,7 +2942,7 @@ function ownLines(lines, trace = null) {
     const once = frames[reached]
     if (once.once !== undefined && at >= once.once && !plus) {
       frames.length = reached
-      Object.assign(top(), { para: once.para, absorbs: once.absorbs, last: once.last })
+      Object.assign(top(), { para: once.para, absorbs: once.absorbs, last: once.last, cut: Math.max(top().cut, once.cut) })
       reached--
     }
     if (plus) {
@@ -2955,6 +2957,12 @@ function ownLines(lines, trace = null) {
     const plusFollower = afterPlus
     afterPlus = false
     const missed = reached < frames.length - 1
+    // The block a `+` attaches at its marker's column moves with the marker,
+    // and so does every line after it (PART 0 S3): the owner reads them by
+    // the marker's shift, not its own (carve#4245).
+    if ((plusFollower || top().plus === at - 1) && m.rest !== '' && reached < frames.length - 1 && m.col >= top().markerCol) {
+      frames[reached].cut = Math.max(frames[reached].cut, top().markerCol - top().markerCanon)
+    }
     // A follower carrying the prefix of a quote opened on the `+` line loses
     // its raw column to the walk, so the walk refuses it here; the readers
     // take every other such follower.
@@ -3226,12 +3234,6 @@ function ownLines(lines, trace = null) {
         reown = { from: ownerPath(), to: ownerPath(reached), refused: true }
       } else if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
       continue
-    }
-    // The block a `+` attaches at its marker's column moves with the marker,
-    // and so does every line after it (PART 0 S3): the owner reads them by
-    // the marker's shift, not its own (carve#4245).
-    if (plusFollower && m.rest !== '' && reached < frames.length - 1 && top().markerCol === m.col) {
-      frames[reached].cut = Math.max(frames[reached].cut, top().markerCol - top().markerCanon)
     }
     // A lone `+` at an item's marker column attaches a paragraph written there,
     // and the readers keep it in the item (§17 L3). S4 tests the lines after it
