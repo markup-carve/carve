@@ -158,9 +158,15 @@
          attributes renders as `<p>` with those attributes; the item stays
          tight and its other paragraphs stay bare. The attributes belong on
          the paragraph's own element, so they are neither dropped nor moved
-         to the `<li>`.
+         to the `<li>`. A description body that holds one paragraph does the
+         same (CARVE-P9-067): an attributed paragraph renders as `<p>` inside
+         the `<dd>`, and an unattributed one stays bare.
 
              - {.c}            ->  <ul><li><p class="c">text</p></li></ul>
+               text
+
+             :: T              ->  <dl><dt>T</dt><dd><p class="c">text</p></dd></dl>
+             : {.c}
                text
 
       L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER -- NORMATIVE [CARVE-P9-029]. L1 asks

@@ -739,7 +739,9 @@ function renderBlock(b, depth, ctx) {
         // no-op there.
         if (blocks.length === 1 && blocks[0].t === 'para' && !blocks[0].blockImage && blocks[0].caption === undefined) {
           const inline = renderInline(blocks[0].lines.join('\n'))
-          return `${pad}  <dd>${b.loose ? `<p>${inline}</p>` : inline}</dd>`
+          // An attributed paragraph keeps its `<p>`, as in a tight item (CARVE-P9-081).
+          const pattrs = renderTextBlockAttrs(blocks[0].battrs, 'p')
+          return `${pad}  <dd>${b.loose || pattrs ? `<p${pattrs}>${inline}</p>` : inline}</dd>`
         }
         const inner = blocks.map((c) => renderBlock(c, depth + 2, ctx)).filter((x) => x !== null).join('\n')
         return `${pad}  <dd>\n${inner}\n${pad}  </dd>`
