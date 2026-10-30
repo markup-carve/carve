@@ -177,6 +177,8 @@ ${CONTENT_RULES.map((rule) => `  ${rule} := ${coreSource.match(new RegExp(`^  ${
   span := ~any any
   spComment := sepRun "%%" (~newline ~"*/" any)*
   fSpComment<d> := sepRun "%%" (~newline ~(d "}") ~"*/" any)*
+  escComment := nbspEsc "%%" (~newline ~"*/" any)*
+  fEscComment<d> := nbspEsc "%%" (~newline ~(d "}") ~"*/" any)*
   initialComment := ~markupContent "%%" (~newline any)*
   markupContent = ""
 }`, { [core.name]: core })
@@ -1047,6 +1049,15 @@ const sem = g.createSemantics().addOperation('h', {
   biSpComment(_sp, _pp, _run, _closer) {
     return ''
   },
+  escComment(esc, _pp, _rest) {
+    return esc.h()
+  },
+  fEscComment(esc, _pp, _rest) {
+    return esc.h()
+  },
+  biEscComment(esc, _pp, _run, _closer) {
+    return esc.h()
+  },
   bracedComment(_open, _content, _close) {
     if (readComments.src !== this.source.sourceString) readComments = { src: this.source.sourceString, opens: new Map() }
     readComments.opens.set(this.source.endIdx, this.source.startIdx)
@@ -1354,12 +1365,12 @@ function buildToks(children, literalDelims = '') {
     }
     const alt = c.child(0)
     const name = alt.ctorName
-    if ((name === 'spComment' || name === 'fSpComment') && !comment) {
+    if ((name === 'spComment' || name === 'fSpComment' || name === 'escComment' || name === 'fEscComment') && !comment) {
       const src = alt.source.sourceString
       const end = alt.source.endIdx
       if (src.startsWith('*/', end)) {
         const nl = src.indexOf('\n', end)
-        const tok = { k: 't', h: '', commentAt: end }
+        const tok = { k: 't', h: name.endsWith('EscComment') || name === 'escComment' ? '&nbsp;' : '', commentAt: end }
         push(tok)
         comment = { tok, lineEnd: nl === -1 ? src.length : nl }
         continue
@@ -2100,6 +2111,7 @@ const headingSem = core.createSemantics().addOperation('headingText', {
   headingInline(part) { return part.headingText() },
   initialComment(_marker, _body) { return '' },
   spComment(_space, _marker, _body) { return '' },
+  escComment(esc, _marker, _body) { return esc.sourceString },
   inline(_content) { return this.sourceString },
 })
 
