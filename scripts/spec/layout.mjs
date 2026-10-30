@@ -1493,6 +1493,8 @@ function tryAttrLine(lines, i) {
         found = true
         break
       }
+      // A glued run is one physical line: only a lone block may wrap (carve#4078).
+      if (lists.length > 0) return null
       buf += line.slice(j) + '\n'
       li++
       if (li >= lines.length || isBlank(lines[li])) return null // A5
@@ -1502,7 +1504,7 @@ function tryAttrLine(lines, i) {
     const list = parseBlockAttrList(buf)
     if (list === null) return null // A6: not an attribute list
     lists.push(list)
-    if (text.slice(pos).trim() !== '' && text[pos] !== '{') return null
+    if (text.slice(pos).trim() !== '' && (text[pos] !== '{' || li > i)) return null
   }
   if (lists.length === 0) return null
   return { lists, next: li + 1 }

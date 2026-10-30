@@ -1,0 +1,44 @@
+A glued attribute run is one physical line
+
+```
+{.a}{.b}
+p
+.
+<p class="a b">p</p>
+```
+
+```
+{.a}{.b
+}
+p
+.
+<p>{.a}{.b
+}
+p</p>
+```
+
+```
+{.a
+}{.b}
+p
+.
+<p>{.a
+}{.b}
+p</p>
+```
+
+```
+{k=""}{c
+}
+.
+<p>{k=““}{c
+}</p>
+```
+
+```
+{.a
+}
+p
+.
+<p class="a">p</p>
+```

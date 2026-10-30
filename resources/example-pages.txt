@@ -1197,6 +1197,7 @@ index: examples/edge-cases/index.md
   boolean-attributes
   unquoted-attribute-values-may-contain-dots-and-colons
   adjacent-attribute-blocks-on-one-line-merge
+  a-glued-attribute-run-is-one-physical-line
   glued-attribute-blocks-on-an-inline-element-merge
   the-empty-block-is-a-member-of-a-bracketed-span-s-attribute-run
   footnote-references-take-an-attribute-run-editorial-substitution-and-comment-take-none

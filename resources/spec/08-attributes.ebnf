@@ -198,7 +198,13 @@ quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' 
    of the container that opened the block. A line without that prefix does
    not continue the attribute: its first line is paragraph text, and the
    prefix-less line may lazily continue that paragraph. *)
-block_attributes = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}', newline ;
+block_attributes = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}', newline
+                 | attributes, attributes, {attributes}, newline ;
+(* A GLUED RUN IS ONE PHYSICAL LINE. `{.a}{.b}` on a line of its own is one
+   attribute line whose blocks merge as PART 9 §15 A3 merges stacked lists.
+   Only a lone block may wrap: the second alternative is built from
+   `attributes`, whose padding admits no line break, so `{.a}{.b` + newline +
+   `}` and `{.a` + newline + `}{.b}` are paragraph text. *)
 (* THE PADDING ADMITS A LINE BREAK TOO, not only the separator: `{` + newline
    + `.a}`, `{.a` + newline + `}` and `{.a` + newline + `.b}` are all block
    attributes, and the paragraph below takes `class="a"` or `class="a b"`
