@@ -74,7 +74,8 @@
       direct child of the document. Written inside a block quote, a list item
       or a div, the line is not a definition at all: it is ordinary paragraph
       text, it defines nothing, and it is preserved as the text the author
-      typed.
+      typed. A line at column 0 below one is not written inside it: it is a direct
+      child of the document (PART 9 §10).
 
           > *[HTML]: Hyper Text
 

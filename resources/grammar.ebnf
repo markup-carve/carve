@@ -377,7 +377,9 @@
         document level. Below every open content column a definition
         interrupts (S4), so `- a` / ` [r]: /u` / `tail` closes the item and
         registers `r` in the document. Abbreviation definitions are recognized
-        only at document level (CARVE-P12-026). A definition either registers
+        only at document level (CARVE-P12-026), which is where a line at column 0
+        stands: `- a` / `*[A]: b` closes the item and defines
+        `A`, while `- a` / `  *[A]: b` stays item text. A definition either registers
         or remains visible text; it never disappears from both.
 
         A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN --
@@ -3255,7 +3257,8 @@ continuation = newline, opt_ws ;         (* a single line break + indent; NOT a 
 abbreviation_definition = "*[", abbreviation_term, "]:", space+, abbreviation_expansion, newline ;
 (* DOCUMENT LEVEL ONLY: the line is a definition only as a direct child of the
    document. In a block quote, a list item or a div it is paragraph text
-   (CARVE-P12-026). *)
+   (CARVE-P12-026). A line at column 0 below one is a direct child of the
+   document (PART 9 §10). *)
 abbreviation_term = (letter | digit)+ ;
 (* a term is a SINGLE alphanumeric word -- a bracketed term containing
    punctuation or spaces (`*[e.g.]:`, `*[HTTP API]:`) is NOT a definition;
@@ -5196,11 +5199,14 @@ EOF = (* end of file *) ;
 
          THE CLASSIFICATION HAS ONE EXCEPTION, and it is about MEMBERSHIP,
          never about a member behaving differently: AN ABBREVIATION
-         DEFINITION IS DOCUMENT-LEVEL ONLY (CARVE-P12-026). Anywhere else it
-         is paragraph text, it is VISIBLE, and it folds like any other plain
-         line. Every other member keeps its class below a container's content
-         column: it interrupts, closes the missed containers and is read in
-         the surviving owner (PART 0 S4, S5).
+         DEFINITION IS DOCUMENT-LEVEL ONLY (CARVE-P12-026). Inside a container
+         it is paragraph text, it is VISIBLE, and it folds like any other plain
+         line. A line at column 0 is not inside a container: it stands at document
+         level, ends every container and defines, under an item, a description and
+         a quote alike (carve#4412). `- n` / `*[A]: b` closes the item and defines
+         `A`; `- n` / `  *[A]: b` stays item text. Every other member keeps its
+         class below a container's content column: it interrupts, closes the
+         missed containers and is read in the surviving owner (PART 0 S4, S5).
 
          Comments in this list are classified in PART 0 S1, before S3
          classifies the visible residue; their AST/source extent is retained
@@ -12065,7 +12071,8 @@ EOF = (* end of file *) ;
       direct child of the document. Written inside a block quote, a list item
       or a div, the line is not a definition at all: it is ordinary paragraph
       text, it defines nothing, and it is preserved as the text the author
-      typed.
+      typed. A line at column 0 below one is not written inside it: it is a direct
+      child of the document (PART 9 §10).
 
           > *[HTML]: Hyper Text
 

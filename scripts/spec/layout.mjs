@@ -1581,6 +1581,14 @@ function tryAttrLine(lines, i) {
 
 // Single-line recognition only; callers supply the column and ownership guards.
 // Abbreviations are document-only and remain text in these container contexts.
+// Rule A moves a line that missed its frames onto column 0, so the document's
+// readers cannot see the column it was written at (carve#4412).
+const sourceColumnZero = new WeakMap()
+
+function abbreviationAtSourceColumnZero(lines, i) {
+  return sourceColumnZero.get(lines)?.[i] === true && ABBR_DEF.test(lines[i])
+}
+
 function isDefinitionOrAttributeLine(line) {
   return FOOTNOTE_DEF.test(line) || isLinkDef(line) || !!tryAttrLine([line], 0)
 }
@@ -3881,12 +3889,13 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   // A private character keeps a refused `+` a letter through every reader.
   let sentinel = '\uE100'
   while (src.includes(sentinel)) sentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
-  const walked = ownLines(src.split('\n'), trace, sentinel)
+  const authored = src.split('\n')
+  const walked = ownLines(authored, trace, sentinel)
   src = walked.join('\n')
   const refusedPlusLines = walked.refusedPlus
   const hasOrdinaryPlus = refusedPlusLines.length > 0
   const lines = src.split('\n')
-  if (lines[lines.length - 1] === '') lines.pop()
+  if (lines[lines.length - 1] === '') { lines.pop(); authored.pop() }
   const state = {
     linkDefs: new Map(),
     footnoteDefs: new Map(),
@@ -3951,10 +3960,12 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(lines[j])) {
         lines.splice(0, j + 1)
+        authored.splice(0, j + 1)
         break
       }
     }
   }
+  sourceColumnZero.set(lines, authored.map((line) => !/^[ \t]/.test(line)))
   const blocks = parseBlocks(lines, state, true)
   if (hasOrdinaryPlus) {
     restoreOrdinaryPlus(blocks, sentinel)
@@ -4519,7 +4530,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             !opensFence(lines, i) &&
             !(measured.col === 0 && commentFenceOpensSpan(lines, i)) &&
             !(measured.col === 0 && (isDefinitionOrAttributeLine(measured.rest) ||
-              tryAttrLine(lines, i)))) {
+              tryAttrLine(lines, i))) &&
+            !abbreviationAtSourceColumnZero(lines, i)) {
           bodyLines.push(lazyFrame(measured.rest))
           lazyParagraphOpen = true
           i++
@@ -4741,6 +4753,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               dt += '\n' + TERM_COMMENT
               continue
             }
+            if (abbreviationAtSourceColumnZero(lines, i)) break
             const sourceColumn = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
             const pastColumnDefinition = sourceColumn > (descriptionOwnerColumn ?? sourceTermCol) &&
               (isLinkDef(indentCols(cur).rest) || FOOTNOTE_DEF.test(indentCols(cur).rest))
@@ -4997,14 +5010,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * adding one blank line above it made this host attach too. A blank
              * line is not what makes pending metadata exist (§15 A2).
              *
-             * Abbreviations are excluded here exactly as they are at C3: PART 12
-             * §7 recognizes one only as a direct child of the DOCUMENT, and a
-             * `dd` is not the document however its columns line up.
+             * An abbreviation definition breaks here only at source column 0
+             * (carve#4412), exactly as at C3.
              */
             // The item owns an attribute below the description body column;
             // it ends the paragraph there and cannot fold into the description.
             if (inItem && authoredCol > 0 && tryAttrLine([dedented], 0)) break
-            if (authoredCol === 0 && (isDefinitionOrAttributeLine(dedented) || !!tryAttrLine(lines, i))) break
+            if (authoredCol === 0 && (isDefinitionOrAttributeLine(dedented) || !!tryAttrLine(lines, i) || abbreviationAtSourceColumnZero(lines, i))) break
             // CARVE-P9-083: a surviving description can own a marker below this nested body.
             if ((inItem || descriptionOwnerColumn !== null &&
                 (sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) >= descriptionOwnerColumn) &&
@@ -9213,16 +9225,15 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // column fold: `- - a` / `  [^f]: x` dedents to column 0 for the inner
       // list's collector, so it arrives here (carve#635).
       //
-      // ABBREVIATIONS ARE EXCLUDED, and unanimously so: `- x` / `*[A]: b` is
-      // item text in all four implementations. PART 12 §7 recognizes an
-      // abbreviation definition only as a direct child of the DOCUMENT, and an
-      // item's body is not the document however its columns line up.
+      // An abbreviation definition breaks only at source column 0 (carve#4412):
+      // a nested collector's column 0 is a dedented line, and CARVE-P12-026
+      // keeps that paragraph text.
       //
       // A definition BELOW every open content column is untouched - it never
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
       // A wrapped attribute line is one attribute line (CARVE-P9-013 I5).
-      if (!nm && atFrameColumn(lm.col) && (isDefinitionOrAttributeLine(line) || !!tryAttrLine(lines, i))) break
+      if (!nm && atFrameColumn(lm.col) && (isDefinitionOrAttributeLine(line) || !!tryAttrLine(lines, i) || abbreviationAtSourceColumnZero(lines, i))) break
       // A surviving frame after a comment can own a nonzero below-column line,
       // which begins a new paragraph rather than continuing the closed one.
       // Document column zero remains owned by the document.

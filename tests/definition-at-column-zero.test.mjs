@@ -59,12 +59,9 @@ test('BELOW every open content column the definition closes the items and regist
   assert.ok(collected(out), 'the definition must be registered')
 })
 
-test('an abbreviation definition at column 0 still folds as text', () => {
-  // Excluded deliberately, and unanimously: PART 12 §7 recognizes an
-  // abbreviation definition only as a direct child of the DOCUMENT, and an
-  // item's body is not the document however its columns line up. All four
-  // implementations agree here.
+test('an abbreviation definition at column 0 ends the item and defines', () => {
+  // Ruled in carve#4412: the line misses every frame, so it stands at document level.
   const out = html('- x\n*[A]: b\n\nA here\n')
-  assert.ok(out.includes('*[A]: b'), `expected the line to stay as text, got: ${out}`)
-  assert.ok(!out.includes('<abbr'), 'no abbreviation may be defined from a container')
+  assert.ok(!out.includes('*[A]: b'), `expected the line to define, got: ${out}`)
+  assert.ok(out.includes('<abbr title="b">A</abbr>'), 'the abbreviation must be defined')
 })

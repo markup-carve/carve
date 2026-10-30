@@ -1,0 +1,88 @@
+A definition at column 0 stands in the document
+
+```
+- n
+*[A]: b
+
+A
+.
+<ul>
+  <li>n</li>
+</ul>
+<p><abbr title="b">A</abbr></p>
+```
+
+```
+- > n
+*[A]: b
+
+A
+.
+<ul>
+  <li>
+    <blockquote><p>n</p></blockquote>
+  </li>
+</ul>
+<p><abbr title="b">A</abbr></p>
+```
+
+```
+:: t
+: n
+*[A]: b
+
+A
+.
+<dl>
+  <dt>t</dt>
+  <dd>n</dd>
+</dl>
+<p><abbr title="b">A</abbr></p>
+```
+
+```
+> > n
+*[A]: b
+
+A
+.
+<blockquote>
+  <blockquote><p>n</p></blockquote>
+</blockquote>
+<p><abbr title="b">A</abbr></p>
+```
+
+```
+> n
+*[A]: b
+
+A
+.
+<blockquote><p>n</p></blockquote>
+<p><abbr title="b">A</abbr></p>
+```
+
+```
+- n
+[r]: /u
+
+[x][r]
+.
+<ul>
+  <li>n</li>
+</ul>
+<p><a href="/u">x</a></p>
+```
+
+```
+- n
+  *[A]: b
+
+A
+.
+<ul>
+  <li>n
+*[A]: b</li>
+</ul>
+<p>A</p>
+```

@@ -315,11 +315,14 @@
 
          THE CLASSIFICATION HAS ONE EXCEPTION, and it is about MEMBERSHIP,
          never about a member behaving differently: AN ABBREVIATION
-         DEFINITION IS DOCUMENT-LEVEL ONLY (CARVE-P12-026). Anywhere else it
-         is paragraph text, it is VISIBLE, and it folds like any other plain
-         line. Every other member keeps its class below a container's content
-         column: it interrupts, closes the missed containers and is read in
-         the surviving owner (PART 0 S4, S5).
+         DEFINITION IS DOCUMENT-LEVEL ONLY (CARVE-P12-026). Inside a container
+         it is paragraph text, it is VISIBLE, and it folds like any other plain
+         line. A line at column 0 is not inside a container: it stands at document
+         level, ends every container and defines, under an item, a description and
+         a quote alike (carve#4412). `- n` / `*[A]: b` closes the item and defines
+         `A`; `- n` / `  *[A]: b` stays item text. Every other member keeps its
+         class below a container's content column: it interrupts, closes the
+         missed containers and is read in the surviving owner (PART 0 S4, S5).
 
          Comments in this list are classified in PART 0 S1, before S3
          classifies the visible residue; their AST/source extent is retained

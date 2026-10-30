@@ -27,7 +27,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-071`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L284) | 9 | THE MEDIA TYPE AND THE FILE EXTENSION |
 | [`CARVE-P9-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L480) | 9 | TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID |
 | [`CARVE-P9-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L512) | 9 | HOSTS MAY OFFER A DOCUMENT-WIDE SMART TYPOGRAPHY SWITCH |
-| [`CARVE-P9-074`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L744) | 9 | A MARKDOWN LABEL THAT IS BOTH A CHECKBOX AND A DEFINED REFERENCE IS THE CHECKBOX |
+| [`CARVE-P9-074`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L747) | 9 | A MARKDOWN LABEL THAT IS BOTH A CHECKBOX AND A DEFINED REFERENCE IS THE CHECKBOX |
 | [`CARVE-P9-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L30) | 9 | AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE |
 | [`CARVE-P9-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L41) | 9 | CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES |
 | [`CARVE-P9-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L382) | 9 | SECURITY REQUIREMENTS |
@@ -43,9 +43,9 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P10-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L324) | 10 | A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES |
 | [`CARVE-P10-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L154) | 10 | A PLACED ELEMENT'S OWN TAGS CARRY THE PER-IMPLEMENTATION INDENTATION |
 | [`CARVE-P12-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L272) | 12 | A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST |
-| [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L250) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
-| [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L335) | 12 | A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION |
-| [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L370) | 12 | A TABLE MAY CARRY AN OPTIONAL ROW GROUPING |
+| [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L251) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L336) | 12 | A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION |
+| [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L371) | 12 | A TABLE MAY CARRY AN OPTIONAL ROW GROUPING |
 | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | 12 | A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT |
 | [`CARVE-P12-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L33) | 12 | A CITATION DEFINITION IS A NODE |
 | [`CARVE-P12-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L69) | 12 | A CITATION ITEM IS A POSITIONED INLINE NODE |
