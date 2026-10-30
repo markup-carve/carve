@@ -23,10 +23,10 @@ import { delimitedRowCount, delimitedRows, delimitedRecords } from './delimited-
 import { scanDirective } from './include-directive.mjs'
 
 function standaloneCodeInclude(line) {
-  const start = line.search(/\S/)
+  const start = line.search(/[^ \t\n\r]/)
   if (start < 0 || line.slice(start, start + 2) !== '{{') return null
   const directive = scanDirective(line, start)
-  if (!directive || line.slice(directive.end).trim() !== '') return null
+  if (!directive || trimWs(line.slice(directive.end)) !== '') return null
   const code = directive.options.find(([key]) => key === 'code')
   return code ? { directive, lang: code[1] ?? '' } : null
 }
@@ -219,9 +219,9 @@ export function ownershipTransition(boundary, deepestParagraphOpen = false) {
 // predicted it would: slugging drops a leading run either way, so `##<SP><SP>a
 // b` was `a-b` before this and is `a-b` after. What moves is the heading's TEXT
 // and therefore a crossref's auto-text (PART 9 §19).
-const HEADING = /^(#{1,6}) +(?=.*[^ \t\n\r\f])(.*)$/
+const HEADING = /^(#{1,6}) +(?=.*[^ \t\n\r])(.*)$/s
 const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
-const FENCE = /^(`{3,}|~{3,})(.*)$/
+const FENCE = /^(`{3,}|~{3,})(.*)$/s
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/
 const QUOTE_LINE = /^>(?: ([^\r\n]*)|[ \t]*$)/
 const QUOTE = {
@@ -295,7 +295,7 @@ const QUOTE = {
 // grammar rather than by a brace scan, so a quoted `}` in a value and a `{` or
 // quote inside the destination (`/u{x} {.c}`, `it's {.c}`) read correctly. With
 // no space the braces are destination (`[a]: /u{.c}`).
-const LINK_DEF = /^\[([^\]@][^\]]*)\]: +(\P{White_Space}+)(?: (?:"((?:\\"|[^"])*)"|'((?:\\'|[^'])*)'))?(?: (\{.*\}))?[ \t]*$/u
+const LINK_DEF = /^\[([^\]@][^\]]*)\]: +(\P{White_Space}+)(?: (?:"((?:\\"|[^"])*)"|'((?:\\'|[^'])*)'))?(?: (\{.*\}))?[ \t]*$/su
 const EMPTY_LINK_DEF = /^\[([^\]@^][^\]]*)\]:[ \t]*$/u
 
 /*
@@ -319,12 +319,12 @@ const isLinkDef = (line) => matchLinkDef(line) !== null
 // The marker line must carry inline content (PART 9 SS16 production:
 // `"]:", space, inline_content`); a bare `[^label]:` is an ordinary
 // paragraph line (corpus 132).
-const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: +(?![ \t]*$)([^ ].*)$/
+const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: +(?![ \t]*$)([^ ].*)$/s
 // `abbreviation_term = (letter | digit)+`, and `letter` is enumerated ASCII.
 // This was `[^\]]+` - anything but a bracket - so the executable spec called
 // `*[e.g.]:` and `*[ß]:` definitions, which made their LINE disappear, while
 // all three engines kept it as paragraph text (carve#791).
-const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/
+const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/s
 // The caption text drops its trailing whitespace run, like every other content
 // line (PART 2, NO TRAILING WHITESPACE; carve#926). Done in the PATTERN rather
 // than at each use: five places read this capture, and the rule was missing
@@ -358,7 +358,7 @@ const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/
 // is normative and names the shape: a marker followed by the separator and
 // nothing but whitespace opens no block. The lookahead is the same one `HEADING`
 // carries, for the same clause.
-const CAPTION = /^\^ +(?=.*[^ \t\n\r\f])(.*?)[ \t]*$/
+const CAPTION = /^\^ +(?=.*[^ \t\n\r])(.*?)[ \t]*$/s
 // THE §16 BRACKETED-RUN CLOSE (carve#1197).
 //
 // `line[open]` is a `[`; the return value is the index just past the `]` that
@@ -378,6 +378,8 @@ export const MAX_CODE_RUN = 8
 // PART 7's four whitespace characters (CARVE-P7-003). JS `trim()` and `\s`
 // also take a form feed, a vertical tab and the Unicode spaces, all content.
 export const trimWs = (s) => s.replace(/^[ \t\n\r]+|[ \t\n\r]+$/g, '')
+const trimWsStart = (s) => s.replace(/^[ \t\n\r]+/, '')
+const trimWsEnd = (s) => s.replace(/[ \t\n\r]+$/, '')
 
 // What the run skips is `brContent` in resources/carve-core.ohm (`altContent`
 // for an image alt), read through the grammar rather than copied here: a copy
@@ -476,12 +478,12 @@ function isCaptionableParagraph(para) {
 // Matches `{`, a payload of quoted runs and bare characters, then `}`.
 const ATTR_PAYLOAD = /(?:[^}'"\\]|\\.|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")*/.source
 const ATTR_BLOCK = `\\{${ATTR_PAYLOAD}\\}`
-const BULLET = new RegExp(`^([ \\t]*)([-*])(${ATTR_BLOCK})?( +)(?:\\[([ xX_>/!?-])\\] )?(.+)$`)
+const BULLET = new RegExp(`^([ \\t]*)([-*])(${ATTR_BLOCK})?( +)(?:\\[([ xX_>/!?-])\\] )?(.+)$`, 's')
 const TASK_MARKER_SOURCE_WIDTH = 4 // `[x] ` is content on the marker line.
 // The value is optional before a `.`: a bare `. ` is a decimal marker
 // counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
 // marker, so the empty alternative is guarded by a lookahead at the dot.
-const ORDERED = new RegExp(`^([ \\t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\\.))([.)])(${ATTR_BLOCK})?( +)(.+)$`)
+const ORDERED = new RegExp(`^([ \\t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\\.))([.)])(${ATTR_BLOCK})?( +)(.+)$`, 's')
 const CONT_MARKER = /^\+[ \t]*$/
 // marks a lazily-folded line (PART 9 SS10 I2): always paragraph text, never
 // re-classified as structure when an item's content is re-parsed
@@ -509,12 +511,12 @@ const lazyFrame = text => text.startsWith(LAZY) ? text : LAZY + text
 export const stripLazy = (line) => (line.startsWith(LAZY) ? line.slice(LAZY.length) : line)
 const stripLazyLead = (line) => {
   const at = line.indexOf(LAZY)
-  return at > 0 && line.slice(0, at).trim() === '' ? line.slice(at) : line
+  return at > 0 && trimWs(line.slice(0, at)) === '' ? line.slice(at) : line
 }
 // A line with its LAZY frame removed and its indentation kept.
 const unframeLazy = (line) => {
   const at = line?.indexOf(LAZY) ?? -1
-  return at >= 0 && line.slice(0, at).trim() === '' ? line.slice(0, at) + line.slice(at + LAZY.length) : line
+  return at >= 0 && trimWs(line.slice(0, at)) === '' ? line.slice(0, at) + line.slice(at + LAZY.length) : line
 }
 
 /// The verbatim payload of a raw block, from its lines between the delimiters.
@@ -882,8 +884,8 @@ function splitRow(line, openRun = 0, openRunAt = 0) {
    * This does not widen what counts as a row: the leftover must be the escaped
    * closer itself, so `| a | b` is prose exactly as before.
    */
-  if (cur.trimEnd().endsWith('\\|')) {
-    cells.push(cur.trimEnd())
+  if (trimWsEnd(cur).endsWith('\\|')) {
+    cells.push(trimWsEnd(cur))
     cur = ''
   }
   // T2: a row CLOSES with a pipe (`standard_row` ends in `'|'`). A line-initial
@@ -913,7 +915,7 @@ export function isTableRow(line) {
   return line[0] === '|' && splitRow(line) !== null
 }
 
-const COLON_FENCE = /^(:{3,})(.*)$/
+const COLON_FENCE = /^(:{3,})(.*)$/s
 const COLON_CLOSER = /^(:{3,})[ \t]*$/
 const TIER1 = new Set(['note', 'tip', 'warning', 'danger', 'info', 'success', 'example', 'quote'])
 
@@ -995,7 +997,7 @@ function parseValidColonOpener(tail) {
     s = lb.rest
   }
   if (!/^[ \t]*$/.test(s)) return null // trailing junk -> paragraph
-  if (!out.type && !out.title && out.label === null && tail.trim() !== '') return null
+  if (!out.type && !out.title && out.label === null && trimWs(tail) !== '') return null
   return out
 }
 
@@ -1054,7 +1056,7 @@ const ITEM_PREFIX = /^-(\d+);/
 function leavesParagraphOpen(lines, idx, wasOpen, inItem = false) {
   const line = lines[idx]
   // Past an item's content column the authored block base is erased (C3).
-  const block = inItem ? line.trimStart() : line
+  const block = inItem ? trimWsStart(line) : line
   if (/^[ \t]*$/.test(line) || COMMENT_LINE.test(line) || CONT_MARKER.test(block)) return false
   if (HEADING.test(block) || HR.test(block) || LINK_DEF.test(block) || EMPTY_LINK_DEF.test(block) ||
     isTableRow(block) || (block[0] === '{' && (inItem ? tryAttrLine([block], 0) : tryAttrLine(lines, idx)))) return false
@@ -1145,7 +1147,7 @@ function lineBlockSpanEnd(lines, idx) {
 function paragraphOpenSince(bodyLines, from) {
   const tail = commentTailSince(bodyLines, from)
   let last = tail.length - 1
-  while (last >= 0 && tail[last].trim() === '') last--
+  while (last >= 0 && trimWs(tail[last]) === '') last--
   return last >= 0 && noteBodyParagraphOpen(tail)
 }
 
@@ -1154,7 +1156,7 @@ function paragraphOpenSince(bodyLines, from) {
 function bodyEndsInOpenFence(bodyLines) {
   for (let k = 0; k < bodyLines.length; k++) {
     const line = stripLazy(bodyLines[k])
-    if (line.trim() === '' || COMMENT_LINE.test(line)) continue
+    if (trimWs(line) === '' || COMMENT_LINE.test(line)) continue
     // A LAZY line is paragraph text, whatever it looks like.
     if (isCodeBlockOpener(line) && line === bodyLines[k]) {
       const closer = findCloser(bodyLines, k, FENCE.exec(line)[1])
@@ -1211,11 +1213,11 @@ function colonInterruptsParagraph(lines, idx, para) {
 const COMMENT_LINE = /^[ \t]*%%/
 // A fence line is DELIMITER + INSIGNIFICANT TAIL (SS28): only the leading run
 // of `%` is structural, so `%%% TODO` opens and `%%% end` closes.
-const COMMENT_FENCE = /^[ \t]*(%{3,})(.*)$/
+const COMMENT_FENCE = /^[ \t]*(%{3,})(.*)$/s
 // The same fence, matched against a line's indent-free content rather than the
 // line: `[ \t]*` in front is what makes the pattern re-walk indentation an
 // enclosing container has already walked.
-const COMMENT_FENCE_BODY = /^(%{3,})(.*)$/
+const COMMENT_FENCE_BODY = /^(%{3,})(.*)$/s
 
 /**
  * Recognize layout-transparent comments after an opaque payload has had the
@@ -1277,7 +1279,7 @@ export function classifyLayoutComment(lines, index) {
   return null
 }
 
-const CONT_ROW = /^\+.*\|[ \t]*$/ // `+` replaces the leading pipe; must close with one
+const CONT_ROW = /^\+.*\|[ \t]*$/s // `+` replaces the leading pipe; must close with one
 const DELIM_CELL = /^ *:?-+:? *$/
 
 /*
@@ -1493,7 +1495,7 @@ function tryAttrLine(lines, i) {
     const list = parseBlockAttrList(buf)
     if (list === null) return null // A6: not an attribute list
     lists.push(list)
-    if (text.slice(pos).trim() !== '' && (text[pos] !== '{' || li > i)) return null
+    if (trimWs(text.slice(pos)) !== '' && (text[pos] !== '{' || li > i)) return null
   }
   if (lists.length === 0) return null
   return { lists, next: li + 1 }
@@ -1595,8 +1597,8 @@ function markerCarriesContinuation(text, memo) {
     if (!marker) {
       const quote = QUOTE.exec(text)
       if (!quote) break
-      text = (quote[1] ?? '').trim()
-    } else text = marker.text.trim()
+      text = trimWs(quote[1] ?? '')
+    } else text = trimWs(marker.text)
     if (path.length === MAX_NESTING_DEPTH) return false
   }
   for (let k = path.length - 1; k >= 0; k--) {
@@ -1744,10 +1746,10 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
   for (;;) {
     // Marker peeling trims the tail; quote peeling preserves it. Keep
     // those two source endpoints separate when their suffix lengths match.
-    const key = text.length * 4 + Number(inQuote) * 2 + Number(/\s$/.test(text))
+    const key = text.length * 4 + Number(inQuote) * 2 + Number(/[ \t\n\r]$/.test(text))
     const known = cache?.get(key)
     if (known && known.steps <= budget) return finish(known.value, known.steps)
-    if (text.trim() === '') return finish(false)
+    if (trimWs(text) === '') return finish(false)
     if (budget <= 0) return true
     if (cache) path.push(key)
     // A quote is asked the SAME question about what it carries. An empty quote
@@ -1785,7 +1787,7 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
     if (atBlockPosition && text[0] !== ' ' && text[0] !== '\t') {
       const nm = matchMarkerAt({ col: 0, rest: text })
       if (nm) {
-        text = nm.text.trim()
+        text = trimWs(nm.text)
         openTable = false
         // A bare continuation marker is an empty FIRST-BLOCK item until a
         // following document-column-0 block is attached. It does not leave a
@@ -1801,7 +1803,7 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
     // A definition interrupts wherever it stands (§10 I5).
     const note = FOOTNOTE_DEF.exec(text)
     if (note) {
-      text = note[2].trim()
+      text = trimWs(note[2])
       openTable = false
       atBlockPosition = true
       continue
@@ -1849,7 +1851,7 @@ function endsWithAuthoredInterrupter(line) {
 function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   let last = -1
   for (let k = bodyLines.length - 1; k >= 0; k--) {
-    if (bodyLines[k].trim() !== '') { last = k; break }
+    if (trimWs(bodyLines[k]) !== '') { last = k; break }
   }
   // An empty body has nothing to fold into and nothing to protect: the
   // flush-left line IS the body, which is the `:  ` + pulled-block shape.
@@ -1866,7 +1868,7 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   const tail = indentCols(bodyLines[last])
   if (tail.col > 0 && tryAttrLine([tail.rest], 0) !== null) {
     if (quoted) return true
-    for (let k = last - 1; k >= 0 && bodyLines[k].trim() !== ''; k--) {
+    for (let k = last - 1; k >= 0 && trimWs(bodyLines[k]) !== ''; k--) {
       if (QUOTE.test(bodyLines[k])) return true
       const marker = matchMarkerAt(indentCols(bodyLines[k]))
       if (marker) return tail.col < marker.indent + marker.markerWidth
@@ -1909,7 +1911,7 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
     // separator between the body and what follows and carry no such meaning -
     // so it must not run on a peeled quote, or `:  > a` over `   >` reports
     // the paragraph `>` just ended as open and pulls the flush-left line in.
-    if (inner.length > 0 && inner[inner.length - 1].trim() === '') return false
+    if (inner.length > 0 && trimWs(inner[inner.length - 1]) === '') return false
     return bodyLeavesParagraphOpen(inner, true, depth + 1)
   }
 
@@ -1922,7 +1924,7 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
       if (note) {
         if (k === last) break
         const body = [note[2], ...bodyLines.slice(k + 1, last + 1).map((l) => dedentMeasured(indentCols(l), l, m.col + FOOTNOTE_BODY_COLUMN).text)]
-        if (bodyLines.slice(k + 1, last + 1).every((l) => l.trim() === '' || indentCols(l).col >= m.col + FOOTNOTE_BODY_COLUMN)) {
+        if (bodyLines.slice(k + 1, last + 1).every((l) => trimWs(l) === '' || indentCols(l).col >= m.col + FOOTNOTE_BODY_COLUMN)) {
           return !bodyEndsInOpenFence(body) && bodyLeavesParagraphOpen(body, false, depth + 1)
         }
         break
@@ -1953,9 +1955,9 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   if (COLON_CLOSER.test(bodyLines[last])) {
     let text = last
     while (text >= 0 && COLON_CLOSER.test(bodyLines[text])) text--
-    if (text < 0 || bodyLines[text].trim() === '') return false
+    if (text < 0 || trimWs(bodyLines[text]) === '') return false
     let start = text
-    while (start > 0 && bodyLines[start - 1].trim() !== '') start--
+    while (start > 0 && trimWs(bodyLines[start - 1]) !== '') start--
     return paraHasInvalidColonOpener(bodyLines.slice(start, text + 1)) &&
       bodyLeavesParagraphOpen(bodyLines.slice(0, text + 1), quoted, depth)
   }
@@ -2001,14 +2003,14 @@ function descriptionBodyEndsInAbsorbedNote(bodyLines) {
 // single-line tracker cannot recognize that boundary on its own.
 function bodyEndsWrappedAttr(bodyLines, depth = 0) {
   let last = bodyLines.length - 1
-  while (last >= 0 && bodyLines[last].trim() === '') last--
+  while (last >= 0 && trimWs(bodyLines[last]) === '') last--
   if (last < 0) return false
   // A wrapped attribute block's final line is the `}` that closes it, at every
   // quote depth (`#x}`, or `> #x}` one level out). A last line that does not end
   // in `}` cannot be one, so the scan below - and the recursion - is skipped.
   // Without this the predicate rescans the whole trailing paragraph for every
   // lazy line, which is quadratic on a long plain quote (carve#1956).
-  if (!bodyLines[last].trimEnd().endsWith('}')) return false
+  if (!trimWsEnd(bodyLines[last]).endsWith('}')) return false
   if (trailingWrappedAttr(bodyLines, last, true, true)) return true
   if (!QUOTE.test(bodyLines[last]) || depth >= MAX_NESTING_DEPTH) return false
   let first = last
@@ -2027,7 +2029,7 @@ function trailingWrappedAttr(lines, last, wrappedOnly = false, requireHost = fal
       if (marker) firstHostColumn = Math.min(firstHostColumn, marker.indent + marker.markerWidth)
     }
   }
-  for (let k = last; k >= 0 && lines[k].trim() !== ''; k--) {
+  for (let k = last; k >= 0 && trimWs(lines[k]) !== ''; k--) {
     const opener = indentCols(lines[k])
     if (!opener.rest.startsWith('{')) continue
     if (requireHost && opener.col > 0 && hostColumnBefore[k] > opener.col) continue
@@ -2176,7 +2178,7 @@ function hostLadder() {
 function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
   const meas = indentCols(line)
   const term = meas.col === 0 && DEFLIST_TERM.test(meas.rest)
-  const description = h.descriptionTerm && meas.col === 0 && /^:( +)(?=[ \t]*[^ \t])(.*)$/.exec(meas.rest)
+  const description = h.descriptionTerm && meas.col === 0 && /^:( +)(?=[ \t]*[^ \t])(.*)$/s.exec(meas.rest)
   if (description && matchMarkerAt(indentCols(description[2]))) {
     const lead = markerFenceSummary(description[2], new Map())
     if (lead) {
@@ -2694,7 +2696,7 @@ function advanceQuoteRun(run, text, idx) {
     // A colon fence line of a hosted container leaves no paragraph open, except
     // in a line block's payload.
     if (hostColonStep(host, inner, () => false, blockStart, run.para ?? [])) {
-      if (host.colons?.at(-1)?.mode === 'line-block' && text.trim() !== '') stanza = true
+      if (host.colons?.at(-1)?.mode === 'line-block' && trimWs(text) !== '') stanza = true
       opaque = true
       break
     }
@@ -2707,7 +2709,7 @@ function advanceQuoteRun(run, text, idx) {
   const wasOpen = continues && run.open
   // A bare colon run closes a div unless the open paragraph absorbs it (CARVE-P9-016).
   const colonCloses = COLON_CLOSER.test(text) && !(wasOpen && !colonFenceInterrupts(text, run.para))
-  run.open = stanza || (!opaque && !colonCloses && text.trim() !== '' && opensParagraph(text, !wasOpen, rowOpen))
+  run.open = stanza || (!opaque && !colonCloses && trimWs(text) !== '' && opensParagraph(text, !wasOpen, rowOpen))
   if (!run.open || !wasOpen) run.para = []
   if (run.open) run.para.push(text)
   run.table = !opaque && tableRunStep(rowOpen, text)
@@ -2787,7 +2789,7 @@ function strippedColumn(line, origins) {
     else break
     while (o < origins.length && origins[o] <= col) origin = origins[o++]
   }
-  layoutWork.ownership += line.length - line.trimStart().length + origins.length
+  layoutWork.ownership += line.length - trimWsStart(line).length + origins.length
   return col
 }
 
@@ -3075,7 +3077,7 @@ function ownLines(lines, trace = null) {
       for (let j = at + 1; j < end; j++) {
         replaced.add(j)
         if (!isBlank(lines[j])) lines[j] = moved + lines[j]
-        else if (prefix !== '') lines[j] = prefix.trimEnd()
+        else if (prefix !== '') lines[j] = trimWsEnd(prefix)
       }
       lines[at] = moved + m.rest
       at--
@@ -3525,7 +3527,7 @@ function ownLines(lines, trace = null) {
       if (!QUOTE.test(m.rest)) return false
       m = walkIndent(QUOTE.exec(m.rest)[1] ?? '')
     }
-    return m.rest.trim() !== '' && m.col === col
+    return trimWs(m.rest) !== '' && m.col === col
   }
 
   function absorbsColon(rest) {
@@ -3804,7 +3806,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
     let depth = quoted.depth
     const marker = matchMarkerAt(quoted.measured)
     if (marker) {
-      rest = marker.text.trimStart()
+      rest = trimWsStart(marker.text)
       while (QUOTE.test(rest)) { rest = QUOTE.exec(rest)[1] ?? ''; depth++ }
     }
     return { rest, depth }
@@ -4199,12 +4201,12 @@ function flattenPastCap(lines) {
     // trailing whitespace of the LAST line goes, like any paragraph's.
     const trimmed = [...run]
     trimmed[trimmed.length - 1] = trimmed[trimmed.length - 1].replace(/[ \t]+$/, '')
-    if (trimmed.join('').trim() !== '') blocks.push({ t: 'para', lines: trimmed })
+    if (trimWs(trimmed.join('')) !== '') blocks.push({ t: 'para', lines: trimmed })
     run = []
   }
   for (const raw of lines) {
     const line = stripLazy(raw)
-    if (line.trim() === '') { flush(); continue }
+    if (trimWs(line) === '') { flush(); continue }
     run.push(line)
   }
   flush()
@@ -4534,13 +4536,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           push(node)
         }
         else push(top
-          ? { t: 'includeLiteral', text: line.trim(), quotedPath: directive.quoted }
-          : { t: 'para', lines: [line.trim()] })
+          ? { t: 'includeLiteral', text: trimWs(line), quotedPath: directive.quoted }
+          : { t: 'para', lines: [trimWs(line)] })
       } else {
         i++
         push(top
-          ? { t: 'includeLiteral', text: line.trim(), quotedPath: directive.quoted }
-          : { t: 'para', lines: [line.trim()] })
+          ? { t: 'includeLiteral', text: trimWs(line), quotedPath: directive.quoted }
+          : { t: 'para', lines: [trimWs(line)] })
       }
       continue
     }
@@ -4601,7 +4603,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // pulled-in block (SS17 L4). It is a distinct signal from an empty body
       // line, so an empty note (`[^a]:`) never swallows the following block.
       let pullPending = false
-      const nestedFirstBlock = !CONT_MARKER.test(m[2]) && markerCarriesContinuation(m[2].trim(), new Map())
+      const nestedFirstBlock = !CONT_MARKER.test(m[2]) && markerCarriesContinuation(trimWs(m[2]), new Map())
       let afterComment = false
       let commentScanFrom = 0
       let retainedParagraph = false
@@ -4950,7 +4952,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       while (i < n) {
         const cur0 = unlazy(lines[i] ?? '')
         let dm
-        if ((dm = /^:: (?=[ \t]*[^ \t\n\r])(.*)$/.exec(cur0))) {
+        if ((dm = /^:: (?=[ \t]*[^ \t\n\r])(.*)$/s.exec(cur0))) {
           sourceTermCol = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
           // term (dt): folds plain wrapped continuation lines so a wrapped term
           // line does not strand its definition. (This used to say "like a
@@ -5016,7 +5018,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           node.items.push({ dt })
           continue
         }
-        if ((dm = /^:( +)(?=[ \t]*[^ \t])(.*)$/.exec(cur0))) {
+        if ((dm = /^:( +)(?=[ \t]*[^ \t])(.*)$/s.exec(cur0))) {
           const sourceDescriptionCol = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
           if (sourceDescriptionCol < sourceTermCol) break
           const bodyColumn = ind(i).col + 1 + dm[1].length
@@ -5110,7 +5112,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // `:  ` never swallows the following flush-left block.
           let pullPending = CONT_MARKER.test(trimWs(dm[2]))
           // A bare `+` is the description's own marker, not a nested body's (CARVE-P0-006).
-          const nestedFirstBlock = !pullPending && markerCarriesContinuation(dm[2].trim(), new Map())
+          const nestedFirstBlock = !pullPending && markerCarriesContinuation(trimWs(dm[2]), new Map())
           if (!pullPending) {
             pushBody(stripIndent(dm[2]).replace(/[ \t]+$/, ''), i - 1)
           }
@@ -5752,9 +5754,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             let text = lines[j]
             let k = 0
             // A nested quote's marker may stand at a hosted container's column.
-            while (k < markers && QUOTE.test(k > 0 ? text.trimStart() : text)) {
+            while (k < markers && QUOTE.test(k > 0 ? trimWsStart(text) : text)) {
               layoutWork.quoteStrips += 1
-              text = QUOTE.exec(k > 0 ? text.trimStart() : text)[1] ?? ''
+              text = QUOTE.exec(k > 0 ? trimWsStart(text) : text)[1] ?? ''
               k++
             }
             if (k < markers) break
@@ -5847,7 +5849,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
               const remaining = MAX_NESTING_DEPTH - state.blockDepth
               if (depth > remaining) return true
-              return tail.trim() !== ''
+              return trimWs(tail) !== ''
             }
             levelLines[depth - 1] = tail
             qNestedTable.length = depth
@@ -5880,7 +5882,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // At the parser's depth limit the remaining line is literal text.
           // Inspecting markers below it both misclassifies that text and walks
           // an arbitrarily deep suffix for every enclosing quote.
-          if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(text.trim() !== '', depth)
+          if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(trimWs(text) !== '', depth)
           text = QUOTE.exec(text)[1] ?? ''
           levelLines[depth] = text
           // S2: an open payload makes this level's line verbatim, so a marker
@@ -5911,7 +5913,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           depth++
           if (QUOTE.test(inner.rest)) text = inner.rest
           if (!QUOTE.test(text)) {
-            if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(text.trim() !== '', depth)
+            if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(trimWs(text) !== '', depth)
             if (hostedBlockAt(host, inner, popped) ||
                 (hostedDefinitionAt(host, inner) && !FOOTNOTE_DEF.test(inner.rest))) return settle(false, depth)
             // A bare colon run closes the claim unless this level's own
@@ -5955,7 +5957,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             let text = lines[j]
             let k = 0
             for (; k < markers; k++) {
-              const quoted = QUOTE.exec(k > 0 ? text.trimStart() : text)
+              const quoted = QUOTE.exec(k > 0 ? trimWsStart(text) : text)
               if (!quoted) break
               text = quoted[1] ?? ''
             }
@@ -6151,7 +6153,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const hostedQuote = inner0.col === qHost.columns.at(-1) ? QUOTE.exec(inner0.rest) : null
         const hostedQuoteNeedsTracking = hostedQuote && (
           qNestedHost.some(host => host?.fence) ||
-          isDefinitionOrAttributeLine((hostedQuote[1] ?? '').trimStart()) ||
+          isDefinitionOrAttributeLine(trimWsStart(hostedQuote[1] ?? '')) ||
           !opensParagraph(inner0.rest, true, false, prefixMemo(state, lines, idx).paragraph) ||
           (qHost.columns.length > 1 && hostsIndentedContent(hostedQuote[1] ?? '')))
         // Tracking starts late for a hosted quote, so seed its ladder from the
@@ -6208,7 +6210,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           else break
         }
         // PART 0 T leaves a term open for plain lazy text.
-        qTermOpen = !/^:( +)/.test(leaf.trimStart()) &&
+        qTermOpen = !/^:( +)/.test(trimWsStart(leaf)) &&
           (DEFLIST_TERM.test(leaf) || qTermOpen)
       }
       while (i < n) {
@@ -6260,7 +6262,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               const shift = here.d > 1 && quoteColFollower ? ind(i + 1).col : 0
               inner.push(here.d > 1 ? qm[1] : '',
                 ...(shift ? attached.rawMarker.map((line) => line.replace(new RegExp(`^ {0,${shift}}`), '')) : attached.rawMarker))
-              if (!leavesFenceOpen(attached.rawMarker.map((line) => line.trimStart()))) inner.push('')
+              if (!leavesFenceOpen(attached.rawMarker.map((line) => trimWsStart(line)))) inner.push('')
               if (here.d > 1 && QUOTE.test(lines[i + 1])) quotePulledFollowers.add(inner)
               qLastMarked = i
               i = attached.next
@@ -6276,7 +6278,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             firstBlockQuoteColumn((qm[1] ?? '').replace(/^(?:> ?)*/, '')) !== undefined
           // Below a quote opened with the `+` on this quote's opener line, the
           // walk already refused every follower at an ineligible raw column.
-          if (i > 0 && markerCarriesContinuation(lines[i - 1].trim(), prefixMemo(state, lines, i - 1).continuation))
+          if (i > 0 && markerCarriesContinuation(trimWs(lines[i - 1]), prefixMemo(state, lines, i - 1).continuation))
             recordLazyFollower(inner, lazyFollowerEligible.get(lines)?.[i] ??
             ((inner.length === 2 && QUOTE.test(inner[0]) && /^[> \t]*\+[ \t]*$/.test(inner[0])) ||
               [0, markerLineQuoteColumns.get(lines), state.markerLineColumns.get(lines)?.get(0)].includes(ind(i).L?.col ?? ind(i).col)))
@@ -6330,7 +6332,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             if (!insideColon || qOpenPara) inner.push('')
             inner.push(...attached.rawMarker)
-            if (!leavesFenceOpen(attached.rawMarker.map((line) => line.trimStart()))) inner.push('')
+            if (!leavesFenceOpen(attached.rawMarker.map((line) => trimWsStart(line)))) inner.push('')
             qOpenPara = false
             qItemPara = false
             qTermOpen = false
@@ -6383,7 +6385,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // UNFRAMED for exactly this reason, so a comment reaching a nested quote
         // still arrives as itself.
         const foldedColon = ind(i).col > 0 && COLON_CLOSER.test(ind(i).rest) &&
-          (inner.at(-1) ?? '').startsWith(' ') && (inner.at(-1) ?? '').trimStart().startsWith(':::')
+          (inner.at(-1) ?? '').startsWith(' ') && trimWsStart(inner.at(-1) ?? '').startsWith(':::')
         const unmarked = stripLazy(lines[i] ?? '')
         // X2: every open quote depth keeps its claim on an unmarked marker.
         const nestedMarkerFold = !qTermOpen && qNestedPara.some(Boolean) && !!matchMarkerAt(indentCols(unmarked))
@@ -6489,7 +6491,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (ind(i).rest.startsWith('%%')) break // SS10 I5 (comment line or fence)
       if (inItem && para.length > 0 && matchMarkerAt(ind(i))) break // SS24 C3
       // A refused sibling marker that starts its own paragraph yields to that sibling.
-      if (para.length === 1 && para[0].trim() === state.refusedSiblingSentinel && matchMarkerAt(ind(i))) break
+      if (para.length === 1 && trimWs(para[0]) === state.refusedSiblingSentinel && matchMarkerAt(ind(i))) break
       if (para.length > 0) {
         if (startsParagraphBlock(lines[i], top)) break // I1/I5
         if (fenceOpens?.has(i)) break
@@ -6812,7 +6814,7 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
     return foldedDefinitionEnd(lines, start, start + known.next, seenTables)
   }
   const remember = (entry) => {
-    const lineLevels = Math.max(0, ...measuredLines.map((line) => line.replace(/\s/g, '').length))
+    const lineLevels = Math.max(0, ...measuredLines.map((line) => line.replace(/[ \t\n\r]/g, '').length))
     entry.levels = seen.depthReach - depth
     entry.slack = Math.max(seen.depthSlack, lineLevels + 2)
     entry.depth = depth
@@ -7052,7 +7054,7 @@ const endsInNotePlus = (source) => {
     if (note) return CONT_MARKER.test(note[2])
     const marker = matchMarkerAt(measured)
     if (marker) { rest = marker.text; continue }
-    const description = /^:( +)(?=[ \t]*[^ \t])(.*)$/.exec(measured.rest)
+    const description = /^:( +)(?=[ \t]*[^ \t])(.*)$/s.exec(measured.rest)
     if (description) { rest = description[2]; continue }
     const quote = QUOTE.exec(measured.rest)
     if (!quote) return false
@@ -7337,9 +7339,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     pushLine(head.text)
     if (sourceQuoteCol !== undefined) markerLineQuoteColumns.set(itemLines, sourceQuoteCol)
     if (matchMarkerAt(indentCols(head.text))) state.markerLineColumns.set(itemLines, new Map([[0,
-      head.text.includes('+') && markerCarriesContinuation(head.text.trim(), prefixMemo(state, itemLines, 0).continuation)
+      head.text.includes('+') && markerCarriesContinuation(trimWs(head.text), prefixMemo(state, itemLines, 0).continuation)
         ? sourceMarkerCol : sourceMarkerCol + head.markerWidth]]))
-    else if (QUOTE.test(head.text) && head.text.includes('+') && markerCarriesContinuation(head.text.trim(),
+    else if (QUOTE.test(head.text) && head.text.includes('+') && markerCarriesContinuation(trimWs(head.text),
         prefixMemo(state, itemLines, 0).continuation)) {
       state.markerLineColumns.set(itemLines, new Map([[0, sourceMarkerCol]]))
       markerLineQuoteColumns.set(itemLines, sourceQuoteCol ?? sourceMarkerCol + head.markerWidth)
@@ -7349,7 +7351,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // flush-left block down to that item even though the empty `+` leaves no
     // paragraph open at the enclosing levels.
     let carriesBareContinuation = i + 1 < n &&
-      markerCarriesContinuation(head.text.trim(), prefixMemo(state, itemLines, 0).continuation)
+      markerCarriesContinuation(trimWs(head.text), prefixMemo(state, itemLines, 0).continuation)
     let nestedAttachmentColumn = sourceMarkerCol
     let nestedAttachmentEnd = -1
     // A marker at the descendant's own indent is its sibling and bounds its block (SS17 L3).
@@ -7494,7 +7496,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           return false
         }
       }
-      return body.at(-1)?.trim() !== '' && !bodyEndsInOpenFence(body) && noteBodyParagraphOpen(body)
+      return (body.length === 0 || trimWs(body.at(-1)) !== '') && !bodyEndsInOpenFence(body) && noteBodyParagraphOpen(body)
     }
     // §11 N1's hard boundary fired: this item is the list's last. Set where the
     // run is measured, acted on after the item is pushed.
@@ -7510,7 +7512,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // A wrapped attribute block is classified from its complete physical-line
       // span in the body loop below. Its opener is intentionally not guessed
       // from this one-line seed.
-      if (i + 1 < lines.length && !opensParagraph(head.text.trim(), true, false, prefixMemo(state, itemLines, 0).paragraph)) closePara()
+      if (i + 1 < lines.length && !opensParagraph(trimWs(head.text), true, false, prefixMemo(state, itemLines, 0).paragraph)) closePara()
     }
     // A footnote definition on the marker line has a body too.
     if (FOOTNOTE_DEF.test(head.text)) {
@@ -7594,7 +7596,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // descendant's own column is its opener or its closer, and neither leaves
       // a paragraph open - an absorbed opener is paragraph text and never
       // reaches here, because the caller answers it first.
-      text.trim() !== '' && !PURE_FENCE.test(text) &&
+      trimWs(text) !== '' && !PURE_FENCE.test(text) &&
       opensParagraph(text, true, rowOpen,
         rowOpen ? null : (memo ?? (idx >= 0 ? prefixMemo(state, lines, idx).paragraph : null)))
     /*
@@ -7666,7 +7668,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         close()
         text = FOOTNOTE_DEF.exec(noteContent.rest)[2]
       }
-      if (text.trim() === '') { close(); descTableOpen = false; return }
+      if (trimWs(text) === '') { close(); descTableOpen = false; return }
       // A marker-line opener is not an absorbed opener when this is its closer.
       const markerCloser = markerLineFence && PURE_FENCE.exec(text)
       if (markerCloser && markerCloser[1][0] === markerLineFence.run[0] &&
@@ -8046,7 +8048,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // already answers that way and the two spellings stay together.
       if (fence.opaque?.kind === 'comment') fence.opaque.markerLine = true
       else {
-        nestedOpaque = markerComment(head.text.trimStart(), i)
+        nestedOpaque = markerComment(trimWsStart(head.text), i)
         const lead = markerFenceSummary(head.text, prefixMemo(state, lines, i).markerFence ??= new Map())
         if (!nestedOpaque && headSubMarker && lead) nestedOpaque = { kind: 'code', run: lead.run, col: lead.col, hostCol: contentCol + lead.hostCol, markerLine: true }
       }
@@ -9049,7 +9051,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           col === authoredBlockBase && COLON_CLOSER.test(lm.rest)
         pushLine(codeColonText ? lazyFrame(dedented) : dedented, dmeas)
         if (noteFenceOpensPast) fenceOpensAt.add(itemLines.length - 1)
-        if (nm && lm.rest.includes('+') && markerCarriesContinuation(lm.rest.trim(),
+        if (nm && lm.rest.includes('+') && markerCarriesContinuation(trimWs(lm.rest),
             prefixMemo(state, lines, i).continuation ??= new Map())) {
           const columns = state.markerLineColumns.get(itemLines) ?? new Map()
           columns.set(itemLines.length - 1, lm.L?.col ?? lm.col)
@@ -9162,7 +9164,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           subCol = reach + nm.markerWidth
           paraBeforeSublist = paragraphIsOpen() ? [...para] : []
         }
-        if (nm && nm.indent >= contentCol && markerCarriesContinuation(lm.rest.trim(),
+        if (nm && nm.indent >= contentCol && markerCarriesContinuation(trimWs(lm.rest),
             prefixMemo(state, lines, i).continuation ??= new Map())) {
           carriesBareContinuation = true
           nestedAttachmentColumn = lm.L?.col ?? lm.col

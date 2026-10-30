@@ -437,6 +437,11 @@ const INVENTORY = [
   { base: '635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-4', crv: ['trailing-WS'], html: [] }, // the refused `+  ` keeps its trailing spaces
   { base: '666-a-line-at-the-marker-column-leaves-a-closed-nested-body', crv: ['trailing-WS'], html: [] },
   { base: '666-a-line-at-the-marker-column-leaves-a-closed-nested-body-2', crv: ['trailing-WS'], html: [] },
+  { base: '819-block-reading-uses-only-carve-whitespace', crv: ['LS'], html: ['LS'] },
+  { base: '819-block-reading-uses-only-carve-whitespace-2', crv: ['FF'], html: ['FF'] },
+  { base: '819-block-reading-uses-only-carve-whitespace-3', crv: ['FF'], html: ['FF'] },
+  { base: '819-block-reading-uses-only-carve-whitespace-4', crv: ['LS'], html: ['LS'] },
+  { base: '819-block-reading-uses-only-carve-whitespace-5', crv: ['LS'], html: ['LS', 'LS'] },
 ]
 
 function scan(text) {

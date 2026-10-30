@@ -967,7 +967,7 @@ function taskLabel(item) {
   // space, which is what the reader hears anyway. A no-break space is CONTENT
   // and survives, so the class is spelled out rather than using `\s`, which
   // reaches past ASCII.
-  return derivedText(first.lines.join('\n')).replace(/[ \t\n\r\f\v]+/g, ' ').trim()
+  return derivedText(first.lines.join('\n')).replace(/[ \t\n\r\f\v]+/g, ' ').replace(/^ | $/g, '')
 }
 
 function renderItem(item, list, depth, ctx) {

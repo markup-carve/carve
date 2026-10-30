@@ -1,0 +1,50 @@
+Block reading uses only Carve whitespace
+
+```
+- a 
+.
+<ul>
+  <li>a </li>
+</ul>
+```
+
+```
+# 
+.
+<section id="s">
+  <h1></h1>
+</section>
+```
+
+```
+- +
+> q
+.
+<ul>
+  <li>+</li>
+</ul>
+<blockquote><p>q</p></blockquote>
+```
+
+```
+:: term
+:  the definition
+.
+<dl>
+  <dt>term</dt>
+  <dd> the definition</dd>
+</dl>
+```
+
+```
+- [ ] outer 
+  - inner
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="outer "> outer 
+    <ul>
+      <li>inner</li>
+    </ul>
+  </li>
+</ul>
+```
