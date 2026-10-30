@@ -56,7 +56,7 @@
         same delimiter for the adjacency test: {_*a* b_} nests, and in
         {~~a~ b~>c~} the second `~` opens. Any other
         guard blocks: a_*x* stays text.
-      - `=` followed by `>` never opens: it starts the arrow (§8). The `=`
+      - `=` followed by `>` never opens (CARVE-P3-022). The `=`
         of a comparison (`!=`, `<=`, `>=`) is part of that symbol and neither
         opens nor closes: =a <= b= -> <mark>a ≤ b</mark>, and
         =a != b= -> <mark>a ≠ b</mark>. An arrow whose `=` closes a span is
@@ -882,8 +882,8 @@
          paragraph text. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
          follows PART 4 `block_attributes` and PART 0 S4. The opener's
-         indentation does not change what a wrapped block is (rule A,
-         CARVE-P0-024): an indented block that wraps is an attribute line
+         indentation does not change what a wrapped block is
+         (CARVE-P0-024): an indented block that wraps is an attribute line
          exactly like ` {.c}` and `{.c` + newline + ` }`. Its continuation
          lines belong to it at any column, so it interrupts an open
          paragraph (A1), and the line after its `}` is not lazy (PART 0 T:

@@ -137,8 +137,8 @@
    4d. A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE -- NORMATIVE [CARVE-P9-080]
       (constrains `caption_slot` in PART 2). A STRUCTURAL-ONLY LINE is a
       non-blank line that is empty once its block structural prefix is
-      removed: a bare `>`, a bare list marker, a bare continuation marker, a
-      bare container fence. It carries layout and no content. It is NOT a
+      removed: a bare `>`, an accepted continuation marker, a bare container
+      fence. A list marker with no content and a refused `+` are text. It carries layout and no content. It is NOT a
       blank line, and the `[blank_line]` of `caption_slot` never matches one.
 
       WHERE IT CHANGES THE OPEN CONTAINER, IT ENDS ANY PENDING CAPTION SCOPE.
@@ -658,7 +658,7 @@
    `continuation-marker-refused` reports every refusal PART 9 §17 names, at
    every host and depth, including the first-block form in a stacked quote
    (`- > +`, `> - +`) and in a description body (`: > +`, `: - +`). A `+`
-   that rule A (PART 0 S2) reads as ordinary text is not a refusal and is
+   that PART 0 S2 reads as ordinary text is not a refusal and is
    quiet.
    `block-opener-overindented` reports a block opener that PART 0 S3 opens
    past its owner's content column, where the owner is the document, a

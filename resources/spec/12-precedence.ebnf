@@ -31,8 +31,8 @@
    Prefer literal text over markup: a delimiter that pairs with nothing
    under §9 is literal. What remains is read afterwards, in this order:
    1. Mentions and tags (@user, #tag)
-   2. Smart typography (--, ---, etc.; `=>` is the arrow, never a
-      highlight opener, PART 9 §8)
+   2. Smart typography (--, ---, etc.; `=>` is ordinary text, never a
+      highlight opener, CARVE-P3-022)
    3. Trailing line comments (%%, PART 9 §21)
    4. Plain text
 *)

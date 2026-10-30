@@ -361,7 +361,7 @@
         instead, as a list marker there does, and with no open term in the
         surviving context it is paragraph text: `- item` / `  :: t` /
         `  : a` / `: b` renders `: b` as a paragraph after the list (corpus
-        657). Under an open quote paragraph it folds at every column (X2).
+        657). Under an open quote paragraph it folds at every column (S4).
 
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
         UNDER -- NORMATIVE [CARVE-P0-011]. A block read in a container, at or
@@ -541,7 +541,7 @@
                       such a marker line (`- +`, `> +`, `: +`, `[^a]: +`),
                       offers the container its next block (PART 9 §17,
                       CARVE-P9-067). A refused `+` is a plain letter
-                      and ends nothing (carve#4396).
+                      (carve#4396).
 
    OUTPUT. The layout-resolved line stream (equivalently: INDENT / DEDENT /
            CONT events plus line residues). PARTS 1-2 parse blocks over it;
@@ -1102,8 +1102,8 @@ indent = whitespace, {whitespace} ;
    a further block of the open nested item (it reaches its content column). This matches
    reference djot.js (`@djot/djot`) and CommonMark. *)
 (* Continuation marker (PART 9 §17): a lone `+` at an open container's marker column,
-   or directly after a quote prefix, attaches one block starting at that
-   column. A first-block `+` after the last opener on its line attaches to
+   measured through the prefixes of its enclosing quotes, attaches one block
+   starting at that column. A first-block `+` after the last opener on its line attaches to
    that innermost opener when the next line stands at the opener's marker
    column, through the prefixes of its enclosing quotes. At a list item's
    marker column a list marker is a sibling and a description's `: ` line is a
@@ -1461,8 +1461,8 @@ caption_slot = [blank_line], caption ;
    paragraph is OPEN above it, folds into it (PART 9 §10 I7).
 
    The optional `blank_line` matches a TRULY blank line only. A
-   structural-only line -- a bare `>`, a bare list marker, a bare
-   continuation marker, a bare fence -- is not blank, and where it changes
+   structural-only line -- a bare `>`, an accepted continuation marker, a
+   bare fence -- is not blank, and where it changes
    the open container it ends the caption scope instead of being spent as
    the allowance (CARVE-P9-080). *)
 
@@ -4139,8 +4139,8 @@ EOF = (* end of file *) ;
    Prefer literal text over markup: a delimiter that pairs with nothing
    under §9 is literal. What remains is read afterwards, in this order:
    1. Mentions and tags (@user, #tag)
-   2. Smart typography (--, ---, etc.; `=>` is the arrow, never a
-      highlight opener, PART 9 §8)
+   2. Smart typography (--, ---, etc.; `=>` is ordinary text, never a
+      highlight opener, CARVE-P3-022)
    3. Trailing line comments (%%, PART 9 §21)
    4. Plain text
 *)
@@ -4284,8 +4284,8 @@ EOF = (* end of file *) ;
    4d. A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE -- NORMATIVE [CARVE-P9-080]
       (constrains `caption_slot` in PART 2). A STRUCTURAL-ONLY LINE is a
       non-blank line that is empty once its block structural prefix is
-      removed: a bare `>`, a bare list marker, a bare continuation marker, a
-      bare container fence. It carries layout and no content. It is NOT a
+      removed: a bare `>`, an accepted continuation marker, a bare container
+      fence. A list marker with no content and a refused `+` are text. It carries layout and no content. It is NOT a
       blank line, and the `[blank_line]` of `caption_slot` never matches one.
 
       WHERE IT CHANGES THE OPEN CONTAINER, IT ENDS ANY PENDING CAPTION SCOPE.
@@ -4805,7 +4805,7 @@ EOF = (* end of file *) ;
    `continuation-marker-refused` reports every refusal PART 9 §17 names, at
    every host and depth, including the first-block form in a stacked quote
    (`- > +`, `> - +`) and in a description body (`: > +`, `: - +`). A `+`
-   that rule A (PART 0 S2) reads as ordinary text is not a refusal and is
+   that PART 0 S2 reads as ordinary text is not a refusal and is
    quiet.
    `block-opener-overindented` reports a block opener that PART 0 S3 opens
    past its owner's content column, where the owner is the document, a
@@ -4940,7 +4940,7 @@ EOF = (* end of file *) ;
         same delimiter for the adjacency test: {_*a* b_} nests, and in
         {~~a~ b~>c~} the second `~` opens. Any other
         guard blocks: a_*x* stays text.
-      - `=` followed by `>` never opens: it starts the arrow (§8). The `=`
+      - `=` followed by `>` never opens (CARVE-P3-022). The `=`
         of a comparison (`!=`, `<=`, `>=`) is part of that symbol and neither
         opens nor closes: =a <= b= -> <mark>a ≤ b</mark>, and
         =a != b= -> <mark>a ≠ b</mark>. An arrow whose `=` closes a span is
@@ -5766,8 +5766,8 @@ EOF = (* end of file *) ;
          paragraph text. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
          follows PART 4 `block_attributes` and PART 0 S4. The opener's
-         indentation does not change what a wrapped block is (rule A,
-         CARVE-P0-024): an indented block that wraps is an attribute line
+         indentation does not change what a wrapped block is
+         (CARVE-P0-024): an indented block that wraps is an attribute line
          exactly like ` {.c}` and `{.c` + newline + ` }`. Its continuation
          lines belong to it at any column, so it interrupts an open
          paragraph (A1), and the line after its `}` is not lazy (PART 0 T:
@@ -6086,14 +6086,23 @@ EOF = (* end of file *) ;
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.
          - `- +` / `- b` is refused: `<li>+</li>` and a sibling item.
 
-         A REFUSED `+` IS A PLAIN LETTER AND ENDS NOTHING -- NORMATIVE [CARVE-P9-085].
-         Rulings carve#3421 and carve#4396. It does not close a fence, quote, item, description, note
-         or paragraph, it does not spend or block another marker, and it does
-         not change which owner a later line belongs to. Replacing a refused
-         `+` with a letter changes the output only in that character. So it
-         folds into an open paragraph when that paragraph can continue and a
-         following list marker folds with it (§10 I2), and otherwise it starts
-         a paragraph where a letter would. The `continuation-marker-refused`
+         A `+` on the next line at the marker column is a marker for the same
+         host. If it attaches, its block is the one the earlier marker offered
+         and both markers are consumed: `- +` / `+` / `x` gives the item `x`.
+         If it is refused it is a letter and is itself the attached block:
+         `- +` / `+` / a blank line / `x` gives `<li>+</li>` and a paragraph
+         after the list.
+
+         A REFUSED `+` IS A PLAIN LETTER -- NORMATIVE [CARVE-P9-085].
+         Rulings carve#3421 and carve#4396. It has no effect of its own: it
+         closes only what that letter would close, it does not spend or block
+         another marker, and a later line has the owner it would have after
+         that letter. Replacing a refused `+` with a letter changes the output
+         only in that character. So it folds into an open paragraph when that
+         paragraph can continue, a following list marker reads as it does after
+         that letter (it folds under an open paragraph unless it is a sibling,
+         PART 0 S4), and otherwise the `+` starts a paragraph where a letter
+         would. The `continuation-marker-refused`
          lint reports a recognized refusal.
 
          A `+` at a container's marker column is outside that container's code,

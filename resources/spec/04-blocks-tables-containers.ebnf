@@ -191,8 +191,8 @@ caption_slot = [blank_line], caption ;
    paragraph is OPEN above it, folds into it (PART 9 §10 I7).
 
    The optional `blank_line` matches a TRULY blank line only. A
-   structural-only line -- a bare `>`, a bare list marker, a bare
-   continuation marker, a bare fence -- is not blank, and where it changes
+   structural-only line -- a bare `>`, an accepted continuation marker, a
+   bare fence -- is not blank, and where it changes
    the open container it ends the caption scope instead of being spent as
    the allowance (CARVE-P9-080). *)
 
