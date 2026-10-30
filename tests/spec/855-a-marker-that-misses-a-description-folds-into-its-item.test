@@ -1,0 +1,52 @@
+A marker that misses a description folds into its item
+
+```
+:: t
+: - a
+- b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+- b</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: 1. a
+2. b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ol>
+      <li>a
+2. b</li>
+    </ol>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: - a
+
+- b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<ul>
+  <li>b</li>
+</ul>
+```

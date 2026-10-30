@@ -1133,7 +1133,7 @@
 {"id":"plus-f32bf47bd64d","source":"+ one\n+ ttwo\n%%%\n","html":"<p>+ one\n+ ttwo</p>"},
 {"id":"plus-f351013e0438","source":" :: t\n :  | a |\ntail\n   + b |\n","html":"<dl>\n  <dt>t</dt>\n  <dd>\n    <table>\n      <tbody>\n        <tr><td>a</td></tr>\n      </tbody>\n    </table>\n  </dd>\n</dl>\n<p>tail\n+ b |</p>"},
 {"id":"plus-f37157ceef80","source":"| a | b |\n- + x | y |\n","html":"<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<ul>\n  <li>+ x | y |</li>\n</ul>"},
-{"id":"plus-f3825032510f","source":":: term\n: - a\n-     | x | y | Ω\n+ c\n","html":"<dl>\n  <dt>term</dt>\n  <dd>\n    <ul>\n      <li>a</li>\n      <li>| x | y | Ω\n+ c</li>\n    </ul>\n  </dd>\n</dl>"},
+{"id":"plus-f3825032510f","source":":: term\n: - a\n-     | x | y | Ω\n+ c\n","html":"<dl>\n  <dt>term</dt>\n  <dd>\n    <ul>\n      <li>a\n-     | x | y | Ω\n+ c</li>\n    </ul>\n  </dd>\n</dl>"},
 {"id":"plus-f3df85881848","source":"| a | b |\n| a | b |\n| ^ | c |\n| < | d |\n+ x |  |\n","html":"<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td rowspan=\"2\">a</td><td>b</td></tr>\n    <tr><td>c</td></tr>\n    <tr><td>x</td><td>d</td></tr>\n  </tbody>\n</table>"},
 {"id":"plus-f4463a1b6f30","source":"| |\n+ |\n|| |\n","html":"<table>\n  <tbody>\n    <tr><td></td></tr>\n    <tr><td></td><td></td></tr>\n  </tbody>\n</table>"},
 {"id":"plus-f453a89cab9a","source":" + x | y |\n\t| a | b |\n\t| - | - |\n+ |\n","html":"<p>+ x | y |</p>\n<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n</table>\n<p>+ |</p>"},

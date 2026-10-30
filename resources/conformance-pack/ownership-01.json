@@ -126,7 +126,7 @@
 {"id":"ownership-19791b3cc807","source":"- para\n  {.k}\n: \n    more\n","html":"<ul>\n  <li>para</li>\n</ul>\n<p>:\nmore</p>"},
 {"id":"ownership-198628c98851","source":"- - text\n\n  ![i](x.png)\n  x\n\n  cap\n- c\n","html":"<ul>\n  <li>\n    <ul>\n      <li>text</li>\n    </ul>\n    <p><img src=\"x.png\" alt=\"i\">\nx</p>\n    <p>cap</p>\n  </li>\n  <li><p>c</p></li>\n</ul>"},
 {"id":"ownership-198e6ff96e5d","source":"- a\n  - b\n[l](u)\n cc::: note\n","html":"<ul>\n  <li>a\n    <ul>\n      <li>b\n<a href=\"u\">l</a>\ncc::: note</li>\n    </ul>\n  </li>\n</ul>"},
-{"id":"ownership-19a15d4c0b00","source":":: term\n: - a\n   :: sub\n- item\n: def\n","html":"<dl>\n  <dt>term</dt>\n  <dd>\n    <ul>\n      <li>a</li>\n    </ul>\n    <dl>\n      <dt>sub</dt>\n    </dl>\n    <ul>\n      <li>item</li>\n    </ul>\n  </dd>\n  <dd>def</dd>\n</dl>"},
+{"id":"ownership-19a15d4c0b00","source":":: term\n: - a\n   :: sub\n- item\n: def\n","html":"<dl>\n  <dt>term</dt>\n  <dd>\n    <ul>\n      <li>a</li>\n    </ul>\n    <dl>\n      <dt>sub\n- item</dt>\n    </dl>\n  </dd>\n  <dd>def</dd>\n</dl>"},
 {"id":"ownership-19ba30bbf523","source":"> - a\n  > y\n>   - b\n> +\n> para\n","html":"<blockquote>\n  <ul>\n    <li>a\ny\n      <ul>\n        <li>b</li>\n      </ul>\n      para\n    </li>\n  </ul>\n</blockquote>"},
 {"id":"ownership-19bedb7d682e","source":"> - a\n>   - \n> +\n> +\n> para\n","html":"<blockquote>\n  <ul>\n    <li>a\n-\n      para\n    </li>\n  </ul>\n</blockquote>"},
 {"id":"ownership-19c4feebbdc6","source":"para\n1. outer\n","html":"<p>para\n1. outer</p>"},
