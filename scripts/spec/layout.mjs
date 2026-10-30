@@ -8467,7 +8467,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       closePara()
     }
     const attachFlushLeft = () => {
-      const attachmentCol = attachNext ? (ind(headIndex).L?.col ?? ind(headIndex).col) : sourceMarkerCol
+      // A separate `+` reads its follower from its own column: a stacked head's source column is its host's (PART 0 S2, carve#4355).
+      const plusLine = i - 1 > headIndex && CONT_MARKER.test(ind(i - 1).rest) ? ind(i - 1) : null
+      const attachmentCol = plusLine ? (plusLine.L?.col ?? plusLine.col) : attachNext ? (ind(headIndex).L?.col ?? ind(headIndex).col) : sourceMarkerCol
       const follower = ind(i)
       const followerCol = follower?.L?.col ?? follower?.col
       const firstBlockAtZero = attachNext && attachmentCol > 0 && followerCol === 0 &&
