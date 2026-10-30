@@ -2786,6 +2786,8 @@ function ownLines(lines, trace = null) {
   const replaced = new Set()
   // Quote first-block `+` lines whose follower stands at an ineligible column.
   const refusedPlus = new Set()
+  // Lines an item's or a description's first-block `+` moved onto its body.
+  const firstBlockLines = new Set()
   let start = 0
   if (lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
     const close = lines.findIndex((line, k) => k > 0 && /^---[ \t]*$/.test(line))
@@ -3009,6 +3011,63 @@ function ownLines(lines, trace = null) {
       at--
       continue
     }
+    // An item's first-block `+` also takes a block at column zero of its
+    // quote level (CARVE-P9-067, corpus 633). The item keeps a block at its
+    // content column alike, so the walk moves the block there and owns it as
+    // the readers do. An item stacked on its parent's marker line reads its
+    // follower otherwise (corpus 651, 750).
+    const plusBody = top().kind === 'item' && top().plus === at - 1 &&
+      frames[frames.length - 2].line !== top().line ? top() : null
+    if (plusBody && missed && m.rest !== '' && !replaced.has(at) && !['item', 'dd', 'term'].includes(form.kind) && m.rest[0] !== '+' &&
+        m.col === 0 && plusBody.markerCol > 0 && !frames.slice(reached + 1).some((f) => f.kind === 'quote')) {
+      const depth = frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length
+      const shift = ' '.repeat(plusBody.col - m.col)
+      const from = m.col
+      const fence = FENCE.exec(m.rest)
+      const fenced = fence && parseFenceInfo(fence[2]) !== null || COMMENT_FENCE_BODY.test(m.rest)
+      // A line below the frame the block stands in is not the block's. Nor,
+      // outside a fence, is one below the block's column, a list marker at it,
+      // or one at the column of an item the block missed.
+      const base = frames[reached].col
+      const floor = Math.min(...frames.slice(reached + 1, -1).map((f) => f.col))
+      const end = at + pulledBlockLength(lines, at, (line) => {
+        const rest = stripQuotes(line, depth)?.rest
+        if (rest === undefined) return null
+        const ind = walkIndent(rest)
+        if (ind.rest === '' || line === lines[at]) return ' '.repeat(Math.max(0, ind.col - from)) + ind.rest
+        if (ind.col < base || (!fenced && (ind.col < from || ind.col >= floor || (ind.col === from && matchMarkerAt(indentCols(rest)))))) return null
+        return ind.col < from ? rest : ' '.repeat(ind.col - from) + ind.rest
+      })
+      // A code or comment fence keeps its lines as written: an unclosed one
+      // ends at the readers' block boundary, not at the body's end.
+      if (fenced) {
+        result.push(...lines.slice(at, end))
+        if (trace) {
+          const family = fence ? 'code' : 'comment'
+          const path = `${ownerPath()}/${family}:${at + 1}`
+          emit(at, 'S5', path, 'CARVE-P9-067', family, { cell: `B-${family}-start`, plus: at })
+          for (let j = at + 1; j < end; j++) {
+            const form = j === end - 1 && !leavesFenceOpen(lines.slice(at, end)) ? 'closer' : 'payload'
+            emit(j, 'S1', path, 'CARVE-P0-005', form, { cell: `B-${family}-${form === 'closer' ? 'end' : 'keep'}` })
+          }
+        }
+        plusBody.para = false
+        plusBody.last = 'block'
+        plusBody.plus = undefined
+        at = end - 1
+        continue
+      }
+      for (let j = at; j < end; j++) {
+        const rest = stripQuotes(lines[j], depth).rest
+        replaced.add(j)
+        if (!isBlank(rest)) lines[j] = lines[j].slice(0, lines[j].length - rest.length) + (j === at ? ' '.repeat(plusBody.col) + m.rest : shift + rest)
+      }
+      firstBlockLines.add(at)
+      plusBody.para = false
+      plusBody.plus = undefined
+      at--
+      continue
+    }
     // Past a missed note a marker opens where an item or a description body
     // owns it (§10 I2), or beside a missed list.
     const missedNote = missed && frames.slice(reached + 1).some((f) => f.kind === 'note')
@@ -3084,7 +3143,7 @@ function ownLines(lines, trace = null) {
       const kind = TRACE_FORM[form.kind] ?? form.family ?? form.kind
       const cell = form.kind === 'colon-close' ? 'B-div-end' : TRACE_OPENS.has(form.kind) ? `B-${form.family ?? kind}-start` : undefined
       emit(at, 'S5', applied, TRACE_RULE[form.kind] ?? 'CARVE-P0-024', kind,
-        { cell, closed: closed > 0 ? closed : undefined, reached: reachedPath, plus: plusFollower ? at : undefined })
+        { cell, closed: closed > 0 ? closed : undefined, reached: reachedPath, plus: plusFollower || firstBlockLines.has(at) ? at : undefined })
     }
 
     // `col` is where the opener starts in the source, `canon` where it lands.
