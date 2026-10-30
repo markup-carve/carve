@@ -8087,6 +8087,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           }
         }
       }
+      const paraBlock = foldablePlainLine(ind(i).rest)
       const taken = []
       for (; i < end; i++) {
         // Measure the attached block from the marker column. `blockColumn` is a
@@ -8098,9 +8099,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         taken.push(body.text)
       }
       // An attached paragraph stays open for a marker below the content column
-      // that is no sibling: S4 folds it (PART 0, carve#4080). The walk has
+      // that is no sibling: S4 folds it (PART 0, carve#4080), after a lone `+`
+      // and after the first-block form alike (§10 I2, carve#4235). The walk has
       // already moved every sibling to the marker column.
-      const lazyMarker = lonePara && end < n && matchMarkerAt(ind(end))
+      const lazyMarker = (lonePara || (attachNext && paraBlock)) && end < n && matchMarkerAt(ind(end))
       if (lazyMarker && lazyMarker.indent !== baseIndent && lazyMarker.indent < contentCol) {
         openPara = true
         return true

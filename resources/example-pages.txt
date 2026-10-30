@@ -435,6 +435,9 @@ index: examples/edge-cases/index.md
   633-a-first-block-marker-on-an-indented-opener-reads-two-columns-37
   633-a-first-block-marker-on-an-indented-opener-reads-two-columns-38
   633-a-first-block-marker-on-an-indented-opener-reads-two-columns-39
+  806-a-marker-folds-into-the-paragraph-a-first-block-plus-took
+  806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-2
+  806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-3
   634-a-refused-continuation-plus-remains-text-10
   634-a-refused-continuation-plus-remains-text-11
   634-a-refused-continuation-plus-remains-text-12
