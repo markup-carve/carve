@@ -2545,9 +2545,12 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false, mar
           at = directive.end
         }
         html = renderInlineInner(masked + text.slice(at))
-        for (const [marker, literal] of replacements) {
-          html = html.replaceAll(marker, quoteOpaque(escapeHtml(literal)))
-        }
+        const rendered = new Map(replacements.map(([marker, literal]) => [marker, quoteOpaque(escapeHtml(literal))]))
+        const markers = new RegExp(`\\{!CARVEINVALIDINCLUDE${key}X\\d+X\\}`, 'g')
+        // A reference frame holds JSON, so a literal goes in escaped like its other text.
+        html = html.replace(REF_FRAME, (frame) => frame.replace(markers, (marker) =>
+          refFrame(rendered.get(marker)).slice('\uE000ref:"'.length, -'"\uE001'.length)))
+        html = html.replace(markers, (marker) => rendered.get(marker))
       }
     }
     html ??= renderInlineInner(text)
