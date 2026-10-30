@@ -1,0 +1,49 @@
+An attribute run after a lone plus leads a sublist at the content column
+
+```
+- a
++
+{x}
+  - c
+.
+<ul>
+  <li>a
+    <ul x="">
+      <li>c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
++
+{x
+y}
+  - c
+.
+<ul>
+  <li>a
+    <ul x="" y="">
+      <li>c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+> - a
+> +
+> {x}
+>   - c
+.
+<blockquote>
+  <ul>
+    <li>a
+      <ul x="">
+        <li>c</li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+```
