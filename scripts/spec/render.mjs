@@ -164,11 +164,16 @@ core.rules.closerless.body = closerless
 // openers behind it, so a long run of them stays literal text instead of
 // overflowing the stack (PART 9 §25, carve#4134).
 const BRACKET_RULES = ['bracketed', 'nested', 'altNested', 'inlineNote']
+// A `[` whose nested run fails ends the run around it: the outer scan would go
+// on exactly as the inner one did and fail too, so stopping keeps a long chain
+// linear (carve#4236). Every use of these rules is followed by `]`.
+const CONTENT_RULES = ['brContent', 'altContent']
 const g = ohm.grammar(`CarveStack <: ${core.name} {
   codeClosed += codeLong
   codeLong = "\\u0000" "\\u0000" "\\u0000"
   bracketless = "\\u0000"
 ${BRACKET_RULES.map((rule) => `  ${rule} := ~bracketless ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1]}`).join('\n')}
+${CONTENT_RULES.map((rule) => `  ${rule} := ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1].replace('(~"]" any)', '(~"]" ~"[" any)')}`).join('\n')}
   span := ~any any
   spComment := sepRun "%%" (~newline ~"*/" any)*
   fSpComment<d> := sepRun "%%" (~newline ~(d "}") ~"*/" any)*
@@ -185,12 +190,39 @@ markupContent.eval = function (state) {
   return false
 }
 g.rules.markupContent.body = markupContent
-let lastCloser = { source: null, at: -1 }
+let lastCloser = { source: null, at: -1, deep: false }
+// A chain of openers that each recurse into the next before one closes
+// (carve#4236) is read right to left first, so each opener finds the ones
+// behind it memoized and the match stays shallow.
+const PREWARM_CHAIN = 100
+const PREWARM_RULES = [new ohm.pexprs.Apply('nested'), new ohm.pexprs.Apply('altNested')]
+const prewarmed = new WeakSet()
+function prewarm(state, from) {
+  const { inputStream } = state
+  const { source } = inputStream
+  const bindings = state._bindings.length
+  for (let j = lastCloser.at - 1; j > from; j--) {
+    if (source[j] !== '[') continue
+    for (const rule of PREWARM_RULES) {
+      inputStream.pos = j
+      state.eval(rule)
+      state._bindings.length = bindings
+      state._bindingOffsets.length = bindings
+    }
+  }
+  inputStream.pos = from
+}
 const bracketless = new ohm.pexprs.Terminal('')
 bracketless.eval = function (state) {
   const { source, pos } = state.inputStream
-  if (lastCloser.source !== source) lastCloser = { source, at: source.lastIndexOf(']') }
+  if (lastCloser.source !== source) {
+    lastCloser = { source, at: source.lastIndexOf(']'), deep: bracketNesting(source).chain > PREWARM_CHAIN }
+  }
   if (lastCloser.at < pos) return ohm.pexprs.Terminal.prototype.eval.call(this, state)
+  if (lastCloser.deep && !prewarmed.has(state)) {
+    prewarmed.add(state)
+    prewarm(state, pos)
+  }
   state.processFailure(pos, this)
   return false
 }
@@ -1960,15 +1992,17 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
 // never overflows the stack.
 const MAX_NESTING_DEPTH = 200
 
-// The Ohm `bracketed`/`nested` rules recurse once per open bracket. A run of
-// unmatched/deeply-nested `[` would blow the JS call stack inside g.match with
-// a raw RangeError. Pre-scan the maximum simultaneous `[` nesting (skipping
-// escapes and verbatim spans) and REFUSE past the bound -- a legitimate
-// refusal, not a crash.
-function bracketDepthExceeds(text, limit) {
-  // An opener with no `]` after it does not recurse (`bracketless`).
+// The Ohm `bracketed`/`nested` rules recurse once per open bracket. `chain` is
+// how deep that recursion runs before a `]` ends it (openers with no `]` after
+// them do not recurse, `bracketless`); `prewarm` keeps it shallow. `matched`
+// is the nesting of the pairs that close, which the CST and its semantics
+// recurse through, so the model REFUSES past the bound (escapes and verbatim
+// spans skipped) -- a legitimate refusal, not a crash.
+function bracketNesting(text) {
   const lastClose = text.lastIndexOf(']')
-  let depth = 0
+  const open = []
+  const pairs = []
+  let chain = 0
   for (let i = 0; i < text.length; i++) {
     const c = text[i]
     if (c === '\\') {
@@ -1983,14 +2017,19 @@ function bracketDepthExceeds(text, limit) {
       continue
     }
     if (c === '[' && i < lastClose) {
-      depth++
-      if (depth > limit) return true
-    } else if (c === ']') {
-      if (depth > 0) depth--
+      open.push(i)
+      chain = Math.max(chain, open.length)
+    } else if (c === ']' && open.length) {
+      pairs.push([open.pop(), i])
     }
   }
-  return false
+  const edges = pairs.flatMap(([a, b]) => [[a, 1], [b, -1]]).sort((x, y) => x[0] - y[0])
+  let depth = 0
+  let matched = 0
+  for (const [, step] of edges) matched = Math.max(matched, (depth += step))
+  return { chain, matched }
 }
+const bracketDepthExceeds = (text, limit) => bracketNesting(text).matched > limit
 
 // math attrs merge into the base `math inline|display` class (PART 9 SS18);
 // key/value and boolean attributes go through the SAME hardening path as
