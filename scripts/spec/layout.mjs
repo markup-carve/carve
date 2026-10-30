@@ -4451,7 +4451,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const inheritedFenceOpens = new Set()
       const defLine = i
       i++
-      if (CONT_MARKER.test(m[2]) && i < n && !isBlank(lines[i]) &&
+      // A note on a description's marker line: a follower authored at the body
+      // column stands between the note's columns and refuses the `+` (CARVE-P9-067).
+      const followsAtBodyColumn = defLine === 0 && descriptionOwnerColumn !== null && (sourceColumns?.[i] ?? 0) > 0
+      if (CONT_MARKER.test(m[2]) && i < n && !isBlank(lines[i]) && !followsAtBodyColumn &&
           !matchMarkerAt(ind(i)) && attachesFlushLeft(ind(i), sourceDefCol)) {
         const attached = takeOneBlock(lines, i, state, ind(i), sourceDefCol)
         // An attached paragraph ends at an opener that reaches the body column: that line is the body's.
@@ -5277,6 +5280,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A table row interrupts the paragraph (PART 9 §10 I1), so below
             // the body's column it ends the body rather than folding (carve#3145).
             if (isTableRow(dedented)) break
+            // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
+            if (matchMarkerAt(indentCols(dedented)) && /^\[\^[^\]]+\]: +\+[ \t]*$/.test(bodyLines.at(-1) ?? '')) break
             if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) && bodyLeavesParagraphOpen(bodyLines)) {
               // The marker is below the lead item's content column, so it
               // continues that paragraph even when the description dedents it.
