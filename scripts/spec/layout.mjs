@@ -5310,7 +5310,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                   indentCols(quotedLast).col >= FOOTNOTE_BODY_COLUMN) ||
                  (quotedLeadItem && indentCols(quotedLast).col >= quotedLeadItem.markerWidth &&
                   isDefinitionOrAttributeLine(indentCols(quotedLast).rest)))
-              if (nestedDescriptionClosed || nestedItemClosed || nestedQuoteClosed) break
+              if (nestedDescriptionClosed || nestedItemClosed || nestedQuoteClosed || endsInClosedDescription(bodyLines)) break
             }
             /*
              * AN INVISIBLE CONSTRUCT AT DOCUMENT COLUMN 0 IS NOT LAZY TEXT --
@@ -6777,6 +6777,39 @@ function measuredMarkerColumns(markerColumns, start, limit) {
 const DESCRIPTION_TEXT = /^: (?=[ \t]*[^ \t\n\r])/
 const DESCRIPTION_PLUS = /^:[ \t]+\+[ \t]*$/
 const DESCRIPTION_RUN = /^::? /
+// Whether a `: ` line at `col` is a description: the nearest line at or left of
+// that column is the entry's term or an earlier description of it.
+const opensDescriptionAt = (bodyLines, col, end = bodyLines.length) => {
+  for (let k = end - 1; k >= 0; k--) {
+    const measured = indentCols(bodyLines[k])
+    if (measured.rest === '' || measured.col > col) continue
+    return measured.col === col && DESCRIPTION_RUN.test(measured.rest)
+  }
+  return false
+}
+// Whether a body's last block is a heading, break, table or definition that a
+// nested description holds, at its marker line or past its content column.
+const endsInClosedDescription = (bodyLines) => {
+  let last = bodyLines.length - 1
+  while (last >= 0 && isBlank(bodyLines[last])) last--
+  if (last < 0 || bodyLines[last].startsWith(LAZY)) return false
+  const tail = indentCols(bodyLines[last])
+  const closed = (text) => HEADING.test(text) || HR.test(text) || isTableRow(text) || isDefinitionOrAttributeLine(text)
+  const isDescription = (k, measured) => DESCRIPTION_LEAD.test(measured.rest) && opensDescriptionAt(bodyLines, measured.col, k)
+  if (isDescription(last, tail)) return closed(tail.rest.slice(DESCRIPTION_LEAD.exec(tail.rest)[0].length))
+  if (tail.col === 0) return false
+  for (let k = last - 1; k >= 0; k--) {
+    const measured = indentCols(bodyLines[k])
+    if (measured.rest === '' || measured.col >= tail.col) continue
+    if (!isDescription(k, measured)) return false
+    return tail.col >= measured.col + DESCRIPTION_LEAD.exec(measured.rest)[0].length && closed(tail.rest)
+  }
+  return false
+}
+const descriptionCarriesParagraph = (line) => {
+  const content = line.slice(DESCRIPTION_LEAD.exec(line)[0].length)
+  return !CONT_MARKER.test(content) && opensParagraph(content, true)
+}
 
 function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0, quoteHost = false) {
   if (limit - start <= 1) return limit
@@ -9222,27 +9255,27 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           subCol = reach + nm.markerWidth
           paraBeforeSublist = paragraphIsOpen() ? [...para] : []
         }
-        if (nm && nm.indent >= contentCol && markerCarriesContinuation(trimWs(lm.rest),
-            prefixMemo(state, lines, i).continuation ??= new Map())) {
+        // A descendant's `+` is read the same way whatever its host: an item or
+        // a description body supplies only its marker and content columns (CARVE-P9-067).
+        const descendantPlus = nm && nm.indent >= contentCol && markerCarriesContinuation(trimWs(lm.rest),
+          prefixMemo(state, lines, i).continuation ??= new Map())
+          ? { marker: nm.indent, content: nm.indent + nm.markerWidth, firstBlock: /^(\[[^\]]\][ \t]+)?\+$/.test(trimWs(lm.rest.slice(nm.markerWidth))) }
+          : !nm && DESCRIPTION_PLUS.test(lm.rest) && i > 0 && DESCRIPTION_RUN.test(ind(i - 1).rest) && ind(i - 1).col === lm.col
+            ? { marker: lm.col, content: lm.col + /^:[ \t]+/.exec(lm.rest)[0].length, firstBlock: true }
+            : null
+        if (descendantPlus) {
           carriesBareContinuation = true
           nestedAttachmentColumn = lm.L?.col ?? lm.col
           nestedAttachmentEnd = -1
-          nestedSiblingIndent = nestedSiblingMax = nm.indent
+          nestedSiblingIndent = nestedSiblingMax = descendantPlus.marker
           // The descendant's `+` spends itself on a sublist at its content column.
           const sub = i + 1 < n ? matchMarkerAt(ind(i + 1)) : null
-          spentOnSublist = /^(\[[^\]]\][ \t]+)?\+$/.test(trimWs(lm.rest.slice(nm.markerWidth))) && sub && sub.indent >= nm.indent + nm.markerWidth
+          spentOnSublist = descendantPlus.firstBlock && sub && sub.indent >= descendantPlus.content
           if (spentOnSublist) {
             nestedAttachmentEnd = attachedBlockEnd(lines, i + 1, state, (idx) =>
               ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
               matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i + 1), ind(i + 1).col, ind(i + 1).col)
           }
-        } else if (!nm && DESCRIPTION_PLUS.test(lm.rest) && i > 0 && DESCRIPTION_RUN.test(ind(i - 1).rest) && ind(i - 1).col === lm.col) {
-          // A description body's first-block `+` carries a flush-left block the same way (§17 L4, carve#4166).
-          carriesBareContinuation = true
-          nestedAttachmentColumn = lm.L?.col ?? lm.col
-          nestedAttachmentEnd = -1
-          nestedSiblingIndent = nestedSiblingMax = lm.col
-          spentOnSublist = false
         }
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
@@ -9404,6 +9437,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             if (opensParagraph(noteText, true)) { openPara = true; para = [noteText] }
           }
         }
+        // A DESCRIPTION MARKER is asked what its body carries, as a sub-list
+        // marker is: `: +` and `: # H` hold no paragraph (CARVE-P0-011).
+        else if (DESCRIPTION_LEAD.test(dmeas.rest) && opensDescriptionAt(itemLines, dmeas.col) &&
+            !descriptionCarriesParagraph(dmeas.rest)) closePara()
         /*
          * A FOOTNOTE DEFINITION'S OWN BODY LEAVES THE PARAGRAPH CLOSED -- carve#1357.
          *
