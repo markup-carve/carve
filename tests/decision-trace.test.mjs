@@ -111,3 +111,39 @@ test('trace-diff prints the first divergent record against a saved engine trace'
   assert.match(run.stdout, /cites +S4/)
   assert.match(run.stdout, /cites +CARVE-P0-006/)
 })
+
+test('the block a marker-line + takes at its marker column is traced in that container (carve#4126)', () => {
+  const steps = (source) => modelTrace(source).map((r) => `${r.line} ${r.step} ${r.owner} ${r.form}`)
+  assert.deepEqual(steps('- foo\n  - +\n  ```\n  x\n  ```\n'), [
+    '1 S5 doc/item:1 item',
+    '2 S5 doc/item:1/item:2 item',
+    '3 S5 doc/item:1/item:2/code:3 code',
+    '4 S1 doc/item:1/item:2/code:3 payload',
+    '5 S1 doc/item:1/item:2/code:3 closer',
+  ])
+  assert.deepEqual(steps(':: t\n: +\n> q\ntail\n\nafter\n'), [
+    '1 S5 doc term',
+    '2 S5 doc/dd:2 dd',
+    '3 S5 doc/dd:2/quote:3 quote',
+    '4 S4 doc/dd:2/quote:3 lazy',
+    '5 S5 doc blank',
+    '6 S5 doc text',
+  ])
+  // A table is one block over its rows; the next marker is the item's sibling.
+  assert.deepEqual(steps('- +\n| a |\n| b |\n- c\n'), [
+    '1 S5 doc/item:1 item',
+    '2 S5 doc/item:1 leaf',
+    '3 S5 doc/item:1 leaf',
+    '4 S5 doc/item:4 item',
+  ])
+  // Stacked on its parent's marker line, the `+` reads the parent's column.
+  assert.deepEqual(steps('- - +\n  # H\n'), ['1 S5 doc/item:1/item:1 item', '2 S5 doc/item:1 leaf'])
+  // One block only: a fence after the attached heading is the parent's.
+  assert.deepEqual(steps('- foo\n  - +\n  # H\n  ```\n  ```\n'), [
+    '1 S5 doc/item:1 item',
+    '2 S5 doc/item:1/item:2 item',
+    '3 S5 doc/item:1/item:2 leaf',
+    '4 S5 doc/item:1/code:4 code',
+    '5 S1 doc/item:1/code:4 closer',
+  ])
+})
