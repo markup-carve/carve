@@ -143,6 +143,11 @@
           "file": "scripts/spec/layout.mjs",
           "find": "             isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||\n",
           "replace": "             "
+        },
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "  if (opener) {\n    let absorbed = false\n",
+          "replace": "  if (opener && (base > 0 || opener.mode === 'line-block')) {\n    let absorbed = false\n"
         }
       ]
     },
