@@ -1085,7 +1085,7 @@
 {"id":"lazy-e5e117041289","source":"> -a\n>   - b\n>     ```\n>     x\nflush\n","html":"<blockquote>\n  <p>-a\n- b</p>\n  <pre><code>x\n</code></pre>\n</blockquote>\n<p>flush</p>"},
 {"id":"lazy-e5f10323832e","source":"\t:: term\n\t: A definition wrapped\n\t: A definition wrapped\n\t onto the next line.\n","html":"<dl>\n  <dt>term</dt>\n  <dd>A definition wrapped</dd>\n  <dd>A definition wrapped\nonto the next line.</dd>\n</dl>"},
 {"id":"lazy-e600bf0afa1d","source":">  a\n> > # H\ntail\ntail\n","html":"<blockquote>\n  <p>a</p>\n  <blockquote>\n    <h1 id=\"H\">H</h1>\n  </blockquote>\n</blockquote>\n<p>tail\ntail</p>"},
-{"id":"lazy-e6257fa184f3","source":"> |= a |\n>  + b |\ntail\n\n","html":"<blockquote>\n  <table>\n    <thead>\n      <tr><th scope=\"col\">a</th></tr>\n    </thead>\n  </table>\n  <p>+ b |\ntail</p>\n</blockquote>"},
+{"id":"lazy-e6257fa184f3","source":"> |= a |\n>  + b |\ntail\n\n","html":"<blockquote>\n  <table>\n    <thead>\n      <tr><th scope=\"col\">a b</th></tr>\n    </thead>\n  </table>\n</blockquote>\n<p>tail</p>"},
 {"id":"lazy-e62d3dc97899","source":"> - a\n>   - b\n>lazy\n>     ```\n>     x\n>     ```\n","html":"<blockquote>\n  <ul>\n    <li>a\n      <ul>\n        <li>b\n&gt;lazy\n          <pre><code>x\n</code></pre>\n        </li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>"},
 {"id":"lazy-e639940c98e9","source":"#tag\n- a\n  > # H\ntail\ntaill\n","html":"<p><span class=\"tag\"><strong>#tag</strong></span>\n- a</p>\n<blockquote>\n  <h1 id=\"H\">H</h1>\n</blockquote>\n<p>tail\ntaill</p>"},
 {"id":"lazy-e65b567a4c9d","source":"> ```\n> text\n> text\nlazy\n","html":"<blockquote>\n  <pre><code>text\ntext\n</code></pre>\n</blockquote>\n<p>lazy</p>"},

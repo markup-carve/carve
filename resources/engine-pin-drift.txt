@@ -521,3 +521,5 @@
 794-the-equals-of-a-comparison-neither-opens-nor-closes-a-highlight  Pinned JavaScript closes a bare highlight at the = of a <= or >= (markup-carve/carve#4131); pending in carve-js.
 794-the-equals-of-a-comparison-neither-opens-nor-closes-a-highlight-2  Pinned JavaScript closes a bare highlight at the = of a <= or >= (markup-carve/carve#4131); pending in carve-js.
 794-the-equals-of-a-comparison-neither-opens-nor-closes-a-highlight-3  Pinned JavaScript closes a bare highlight at the = of a <= or >= (markup-carve/carve#4131); pending in carve-js.
+797-an-indented-continuation-row-continues-the-table-above  Pinned JavaScript reads a continuation row indented past its table as paragraph text (markup-carve/carve#4161); pending in carve-js.
+797-an-indented-continuation-row-continues-the-table-above-2  Pinned JavaScript reads a continuation row indented past its table as paragraph text (markup-carve/carve#4161); pending in carve-js.
