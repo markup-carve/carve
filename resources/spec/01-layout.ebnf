@@ -239,6 +239,11 @@
         open description's body column is read inside that body (`:: t` /
         `: a` / `  : b`), and one whose owner holds no open term or
         description folds lazily (`- item` / `  :: t` / `  : a` / ` : b`).
+        At a surviving container's marker column the line ends the item
+        instead, as a list marker there does, and with no open term in the
+        surviving context it is paragraph text: `- item` / `  :: t` /
+        `  : a` / `: b` renders `: b` as a paragraph after the list (corpus
+        657). Under an open quote paragraph it folds at every column (X2).
 
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
         UNDER -- NORMATIVE [CARVE-P0-011]. A block read in a container, at or
