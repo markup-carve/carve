@@ -702,13 +702,14 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        an id the document renders takes part: an id dropped with an unresolved
        reference's attributes (PART 9R) reserves nothing, so `x[^n]{#i}` above
        `## {#i}` leaves the heading `id="i"` (carve#4288).
-   An explicit {#id} is used verbatim (case preserved). Implementations MAY
-   offer OPT-IN, orthogonal lowercasing and ASCII-folding transforms; neither
-   is the default. ASCII-folding has TWO modes: BEST-EFFORT keeps characters
-   its shared transliteration table cannot map, while STRICT drops that residue
-   so the id matches `[0-9A-Za-z-]`. The table is not normative, but engines
-   MUST use the same table. Cross-references match the id table EXACTLY, case
-   included (PART 9R R4). *)
+   An explicit {#id} is used verbatim (case preserved), so two headings may
+   carry the same id; a cross-reference resolves to the first (PART 9R R4,
+   carve#4450). Implementations MAY offer OPT-IN, orthogonal lowercasing and
+   ASCII-folding transforms; neither is the default. ASCII folding is
+   HOST-DEFINED: its table, and what it does with a character the table cannot
+   map, belong to the host, and a folded id is outside conformance (carve#4451).
+   The default rule above is what conformance tests. Cross-references match the
+   id table EXACTLY, case included (PART 9R R4). *)
 
 (* MARKDOWN MIGRATION FRAGMENTS -- NORMATIVE [CARVE-P2-031]. An importer
    rewriting an inline Markdown link destination's local fragment, within one file or a
@@ -811,7 +812,9 @@ code_block = fenced_code_block, [caption_slot] ;
 
 fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
                     code_content,
-                    code_fence_close, newline ;
+                    [code_fence_close, newline] ;
+(* The closer is optional: an unclosed fence runs to the end of its host
+   (PART 0 S1, PART 9 §10 I4, carve#4018). *)
 (* The optional info-string padding is exactly one space (CARVE-P7-002).
    The glued form is canonical; ```` ```<TAB>php ```` and
    ```` ```<SP><SP>php ```` fall back to text. A trailing tab with no info
@@ -1779,7 +1782,7 @@ braced_comment = "{%", !(grapheme_extender), {character - "%}"}, "%}" ;
 (* --- Raw Blocks --- *)
 raw_block = code_fence_open, [space], "=", format_name, newline,
             raw_content,
-            code_fence_close, newline ;
+            [code_fence_close, newline] ;
 (* The opener is a code fence (backticks or tildes) whose info string is `=`
    immediately followed by a format name (```=html). The leading `=` is the
    block parallel of the inline raw `{=format}` attribute; it never starts a
@@ -1788,7 +1791,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    format name must be adjacent -- ```= html (space after `=`) is NOT a raw block. Leading
    whitespace before the `=` is permitted (```=html and ``` =html both open
    raw). The closer follows the PART 9 §2 rule: same fence character, length
-   >= opener. Content is verbatim; it is emitted UNESCAPED when the format
+   >= opener, and an unclosed raw block runs to the end of its host as a code
+   block does. Content is verbatim; it is emitted UNESCAPED when the format
    matches the output format (html) and DROPPED otherwise -- the block parallel
    of raw inline (PART 9 §20).
 
@@ -2611,7 +2615,8 @@ inline_footnote = "^[", inline_content, ']', [attribute_run] ;
 
 footnote_definition = "[^", footnote_label, "]:", space+, inline_content, newline,
                       {footnote_continuation | continuation_marker_block
-                      | lazy_continuation_line} ;
+                      | lazy_continuation_line}
+                    | "[^", footnote_label, "]:", space+, first_block_content ;
 footnote_continuation = (footnote_indent, inline_content, newline) | blank_line ;
 footnote_indent = whitespace, {whitespace} ;
 (* A footnote definition has the `[^label]: ` marker and renders as an endnote.
@@ -4184,7 +4189,9 @@ EOF = (* end of file *) ;
 
    2. MATCHING FENCES -- FORMALIZED. Stated as `where` guards on the
       productions (GUARD NOTATION, header):
-      - code_fence_close: same fence character, len(close) >= len(open);
+      - code_fence_close: same fence character, len(close) >= len(open); the
+        closer is optional and an unclosed fence runs to the end of its host
+        (PART 0 S1, §10 I4);
       - colon_fence_close (§12): len(close) = len(open), matched against the
         INNERMOST open colon fence; the closer is optional and an unclosed
         container ends at end of input;
@@ -6130,7 +6137,7 @@ EOF = (* end of file *) ;
            holding `x`.
          - `- - +` / `  para` gives the inner item the paragraph, and
            `> [^b]: +` / `> # H` gives the note the heading.
-         - `- +` / `  para` is refused and reads `<li>+ para</li>`. Write the
+         - `- +` / `  para` is refused and reads `<li>+` / `para</li>`. Write the
            block at the marker column, or drop the `+`.
          - `- a` / `  - +` / `para` is refused: the inner marker column is 2.
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.
@@ -7302,7 +7309,8 @@ EOF = (* end of file *) ;
      headingIds   : slug -> heading node             -- case-preserving; the
                     PART 2 HEADING IDENTIFIERS rules: explicit {#id} ids are
                     reserved first in document order, then auto-slugs, with
-                    -2/-3/... collision dedup
+                    -2/-3/... collision dedup; a repeated explicit id
+                    keeps its first heading (R4)
      captionIds   : id -> (kind in {figure, table, listing, equation},
                     label, number)                   -- from R5/R5a
      footnoteSeq  : ONE shared document-order counter for both footnote
@@ -7500,7 +7508,9 @@ EOF = (* end of file *) ;
    R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
       spelling of an id resolves; corpus 15-heading-ids), then captionIds for numbered captions and
-      directly numbered display equations. The link text is LABEL + NUMBER,
+      directly numbered display equations. Two headings with one explicit id
+      both keep it, and the reference resolves to the first in the order R1's
+      heading index takes them (carve#4450). The link text is LABEL + NUMBER,
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string.
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so a
@@ -7665,7 +7675,8 @@ EOF = (* end of file *) ;
          `sourceLine` render option), which records where a block was written.
 
       An authored attribute replaces a generated attribute of the same name,
-      compared ASCII case-insensitively. The generated one is omitted.
+      compared ASCII case-insensitively. The generated one is omitted. These
+      examples are quoted, so their headings do not wrap (CARVE-P9-019):
 
         > {k=v .attr}  -> <ol type="a" k="v" class="attr">
         > a. alpha
@@ -7681,7 +7692,10 @@ EOF = (* end of file *) ;
 
       A top-level heading's id moves to <section> and its other attributes do
       not (CARVE-P9-019); with the `sections` option off, or for a heading
-      inside a container, the id stays on the <h*> with the rest.
+      inside a container, the id stays on the <h*> with the rest:
+
+        {#x a=b}       -> <section id="x"><h1 a="b">
+        # Written
 
       A MENTION OR TAG IS THE STATED EXCEPTION: its structural class leads and
       the link form's `href` is second (PART 3, ATTRIBUTES ON A MENTION OR

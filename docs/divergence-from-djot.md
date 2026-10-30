@@ -79,9 +79,8 @@ Arabic. Best-effort (carve-js `'fold'`, carve-rs `AsciiHeadingIds::Fold`) keeps
 what it cannot map, so `Ωmega` stays `Ωmega` and the heading keeps a usable
 anchor; strict (carve-js `'strict'`, carve-rs `AsciiHeadingIds::Strict`, and what
 carve-php's extension does) drops it, so `Ωmega` becomes `mega` and the id is
-guaranteed to match `[0-9A-Za-z-]`. All three engines carry the same table, so a
-folded id is byte-identical across them; carve-rs bakes it rather than taking a
-dependency.
+guaranteed to match `[0-9A-Za-z-]`. Folding is host-defined: the table and the
+modes belong to each implementation, and a folded id is outside conformance.
 
 Smart-typography substitutions are also reversed to their ASCII source before
 the id is computed, so an id never depends on presentational typography:

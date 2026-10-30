@@ -257,7 +257,7 @@ function renderDocPass(doc, footnoteProbe) {
         hAttrs = renderTextBlockAttrs(rest, `h${b.level}`)
       }
       if (id === null) id = ctx.headingIdByBlock.get(b)
-      ctx.headingIds.set(id, { id, html })
+      noteHeadingId(ctx, id, html)
       noteHeadingRef(ctx, derivedText(b.text), id)
       out.push(`${indent()}<section id="${escapeAttr(id)}">`)
       sections.push(b.level)
@@ -773,7 +773,7 @@ function renderBlock(b, depth, ctx) {
       }
       const attrStr = renderTextBlockAttrs(b.battrs, `h${b.level}`)
       const id = authored ?? ctx.headingIdByBlock.get(b)
-      ctx.headingIds.set(id, { id, html })
+      noteHeadingId(ctx, id, html)
       noteHeadingRef(ctx, derivedText(b.text), id)
       const idAttr = authored === null ? ` id="${escapeAttr(id)}"` : ''
       return `${pad}<h${b.level}${attrStr}${idAttr}>${html}</h${b.level}>`
@@ -1543,6 +1543,11 @@ function refKey(text) {
 }
 
 /* Register a heading in the implicit-reference index. FIRST wins. */
+// PART 9R R4: a repeated explicit id resolves to its first heading.
+function noteHeadingId(ctx, id, html) {
+  if (!ctx.headingIds.has(id)) ctx.headingIds.set(id, { id, html })
+}
+
 function noteHeadingRef(ctx, text, id) {
   if (ctx.inBlockquote) return
   const key = refKey(text)

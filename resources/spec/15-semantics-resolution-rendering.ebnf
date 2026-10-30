@@ -279,7 +279,7 @@
            holding `x`.
          - `- - +` / `  para` gives the inner item the paragraph, and
            `> [^b]: +` / `> # H` gives the note the heading.
-         - `- +` / `  para` is refused and reads `<li>+ para</li>`. Write the
+         - `- +` / `  para` is refused and reads `<li>+` / `para</li>`. Write the
            block at the marker column, or drop the `+`.
          - `- a` / `  - +` / `para` is refused: the inner marker column is 2.
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.

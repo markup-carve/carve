@@ -21,7 +21,8 @@
      headingIds   : slug -> heading node             -- case-preserving; the
                     PART 2 HEADING IDENTIFIERS rules: explicit {#id} ids are
                     reserved first in document order, then auto-slugs, with
-                    -2/-3/... collision dedup
+                    -2/-3/... collision dedup; a repeated explicit id
+                    keeps its first heading (R4)
      captionIds   : id -> (kind in {figure, table, listing, equation},
                     label, number)                   -- from R5/R5a
      footnoteSeq  : ONE shared document-order counter for both footnote
@@ -219,7 +220,9 @@
    R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
       spelling of an id resolves; corpus 15-heading-ids), then captionIds for numbered captions and
-      directly numbered display equations. The link text is LABEL + NUMBER,
+      directly numbered display equations. Two headings with one explicit id
+      both keep it, and the reference resolves to the first in the order R1's
+      heading index takes them (carve#4450). The link text is LABEL + NUMBER,
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string.
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so a
