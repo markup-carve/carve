@@ -8992,8 +8992,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             !FENCE.test(lm.rest) && !nestedVerbatim() && !nestedAttachmentTakes(lm) &&
             !(nestedOpaque?.kind === 'comment' && COMMENT_FENCE.exec(lm.rest)?.[1].length === nestedOpaque.run.length)) {
           subCol = -1
-          descLive = false
-          deepestIsDescendant = false
+          // A line still in the marker-line child's column stays in that child (PART 0 S4).
+          if (!(headSubActive && reach >= headSubCol)) {
+            descLive = false
+            deepestIsDescendant = false
+          }
         }
         // A completed span ends the paragraph for a new matched body line,
         // while its below-column continuation claim remains available.
@@ -9358,7 +9361,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // item whose paragraph the span never closed.
         if (!belowCloser && !inCommentSpan) {
           if (nm && nm.indent >= contentCol && !inDefBody &&
-              !fence.opaque && !nestedOpaque && !wasNested && !inPayload &&
+              !fence.opaque && !nestedOpaque && (!wasNested || endedBelow) && !inPayload &&
               // A quote on the marker line starts the descendant's quote run there.
               (descendantQ1.col < 0 ? QUOTE.test(nm.text) : nm.indent < descendantQ1.col)) {
             seedDescendantQ1(nm.indent + nm.markerWidth, nm.text, prefixMemo(state, lines, i).paragraph, i)
