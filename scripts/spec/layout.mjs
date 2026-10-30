@@ -2754,6 +2754,23 @@ function walkIndent(line) {
   return { col, rest: i === 0 ? line : line.slice(i) }
 }
 
+// A leading run's column as nested frames strip it (PART 9 SS24 C5): each frame
+// strips to its content column and the rest is walked again, so tab stops
+// restart at every frame column the run reaches. `origins` ascend.
+function strippedColumn(line, origins) {
+  let col = 0
+  let origin = 0
+  let o = 0
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === ' ') col += 1
+    else if (line[i] === '\t') col = origin + (Math.floor((col - origin) / 4) + 1) * 4
+    else break
+    while (o < origins.length && origins[o] <= col) origin = origins[o++]
+  }
+  layoutWork.ownership += line.length - line.trimStart().length + origins.length
+  return col
+}
+
 // Decision trace vocabulary (resources/spec/decision-trace.schema.json).
 const TRACE_FRAME = { quote: 'quote', item: 'item', note: 'footnote', dd: 'dd', colon: 'div' }
 const TRACE_FORM = { 'colon-close': 'closer', colon: 'div', note: 'footnote' }
@@ -2842,6 +2859,9 @@ function ownLines(lines, trace = null) {
     // `zero` is column 0 of the follower's own quote level, past host quote prefixes.
     let stack = null
     let zero = 0
+    // The C5 column of the current quote segment, measured on demand.
+    let stripped = null
+    let segment = 1
     for (let k = 1; k < frames.length; k++) {
       const f = frames[k]
       if (quotePlus && !stack && f.line === at - 1) stack = { base: f, col: -1 }
@@ -2859,10 +2879,19 @@ function ownLines(lines, trace = null) {
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
         if (k < baseAt) zero = docColumn(lines[at], src)
         m = walkIndent(src)
+        stripped = null
+        segment = k + 1
         reached = k
         continue
       }
-      if (m.rest !== '' && m.col < f.col) break
+      if (m.rest !== '' && m.col < f.col) {
+        if (stripped === null && src.length > m.rest.length && src.slice(0, src.length - m.rest.length).includes('\t')) {
+          const origins = []
+          for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col)
+          stripped = strippedColumn(src, origins)
+        }
+        if (stripped === null || stripped < f.col) break
+      }
       reached = k
     }
     if (attrRest && !(reached < frames.length - 1 && frames.slice(reached + 1).some((f) => f.kind === 'quote'))) {

@@ -1,0 +1,39 @@
+A tab past an off-stop frame column is measured in that frame
+
+````
+- 1. a
+  	```
+  	x
+  	```
+.
+<ul>
+  <li>
+    <ol>
+      <li>a
+        <pre><code>x
+</code></pre>
+      </li>
+    </ol>
+  </li>
+</ul>
+````
+
+```
+- - 10. a
+
+  	  b
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ol start="10">
+          <li><p>a</p>
+            <p>b</p>
+          </li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
