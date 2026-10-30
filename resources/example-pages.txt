@@ -210,6 +210,7 @@ source: examples-tier3.md
 out: examples/edge-cases/tables.md
 index: examples/edge-cases/index.md
   an-indented-line-after-a-table-is-a-paragraph
+  an-indented-continuation-row-continues-the-table-above
   escaped-table-hyphens-stay-literal
   escaped-hyphen-run-in-a-table-cell
   a-head-row-alignment-marker-sets-the-whole-column

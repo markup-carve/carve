@@ -1,0 +1,50 @@
+An indented continuation row continues the table above
+
+```
+  | h |
+  | v |
+  + text |
+.
+<table>
+  <tbody>
+    <tr><td>h</td></tr>
+    <tr><td>v text</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| v |
+  + t |
+
+- | a |
+    + b |
+.
+<table>
+  <tbody>
+    <tr><td>v t</td></tr>
+  </tbody>
+</table>
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a b</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+```
+
+```
+| a |
+
+  + b |
+.
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+<p>+ b |</p>
+```

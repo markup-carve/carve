@@ -3182,6 +3182,7 @@ function ownLines(lines, trace = null) {
       // A caption spills onto following lines like a paragraph (CARVE-P2-021).
       owner.para = !!form.caption
       owner.last = form.kind
+      owner.tableLine = form.table ? at : undefined
       if (form.attrLines) attrRest = { left: form.attrLines, cut: col - canon }
       if (form.kind === 'term') {
         owner.para = true
@@ -3333,6 +3334,11 @@ function ownLines(lines, trace = null) {
     if (COMMENT_LINE.test(rest)) return { kind: 'leaf', interrupts: true }
     const note = /^\[\^[^\]]+\]: +/.exec(rest)
     if (note && FOOTNOTE_DEF.test(rest)) return { kind: 'note', width: FOOTNOTE_BODY_COLUMN, head: note[0].length, interrupts: true }
+    // T6: a continuation row right under a row of the owner's table is that
+    // table's line, so it moves with the rows (carve#4161).
+    if (owner.tableLine === at - 1 && CONT_ROW.test(rest) && splitRow('|' + rest.slice(1))) {
+      return { kind: 'leaf', interrupts: true, table: true }
+    }
     const marker = matchMarkerAt({ col: 0, rest })
     // §10 I2: under an open paragraph a marker opens only in a list item.
     // A term is not a paragraph a marker continues.
@@ -3346,7 +3352,8 @@ function ownLines(lines, trace = null) {
     if (dd && (owner.last === 'term' || owner.last === 'dd')) {
       return { kind: 'dd', width: 1 + dd[1].length, head: 1 + dd[1].length, interrupts: false }
     }
-    if (HEADING.test(rest) || HR.test(rest) || isTableRow(rest) || isLinkDef(rest) ||
+    if (isTableRow(rest)) return { kind: 'leaf', interrupts: true, table: true }
+    if (HEADING.test(rest) || HR.test(rest) || isLinkDef(rest) ||
         FOOTNOTE_DEF.test(rest) || ABBR_DEF.test(rest) || (rest[0] === '{' && tryAttrLine([rest], 0))) {
       return { kind: 'leaf', interrupts: true }
     }
