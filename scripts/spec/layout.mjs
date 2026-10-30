@@ -2868,7 +2868,7 @@ function ownLines(lines, trace = null) {
         m.col >= hostParent.col && plusHost.plus === at - 1 && plusHost.line !== hostParent.line &&
         !CONT_MARKER.test(m.rest) && !frames.some((f) => f.kind === 'quote')) {
       const follower = classifyAt(frames.length - 2, m.rest, hostParent, at, m.col)
-      if (follower.interrupts && follower.kind !== 'item') {
+      if (follower.interrupts && follower.kind !== 'item' && follower.kind !== 'colon-close') {
         const col = plusHost.markerCol
         const end = at + pulledBlockLength(lines, at, (line) => {
           const ind = walkIndent(line)
@@ -2973,7 +2973,7 @@ function ownLines(lines, trace = null) {
       const base = frames[baseAt]
       const col = stack?.col >= 0 ? stack.col : docColumn(lines[at], m.rest)
       if (col !== 0 && col !== zero && col !== base.docMarker && col !== quotePlus.docMarker) refusedPlus.add(at - 1)
-      else if (!(stack?.col >= 0) && !replaced.has(at) && classify(m.rest, frames[reached], at, m.col).kind !== 'item' &&
+      else if (!(stack?.col >= 0) && !replaced.has(at) && !['item', 'colon-close'].includes(classifyAt(reached, m.rest, frames[reached], at, m.col).kind) &&
           ((col === 0 || col === zero) && reached < baseAt - 1 && base.kind === 'quote' ||
             col === quotePlus.docMarker && frames.slice(baseAt, -1).some((f) => f.kind === 'quote'))) {
         const depth = frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length
@@ -3041,7 +3041,7 @@ function ownLines(lines, trace = null) {
     // An intervening column refuses the marker in every host group (CARVE-P9-067, carve#4212).
     if (plusNote && missed && !missesQuote && m.rest !== '' && docCol !== 0 && docCol !== plusNote.docMarker &&
         form.kind !== 'item' && !CONT_MARKER.test(m.rest)) refusedPlus.add(at - 1)
-    if (plusNote && !(host.kind !== 'quote' && host.line === plusNote.line) && missed && !missesQuote && m.rest !== '' && docCol === 0 && form.kind !== 'item' && !CONT_MARKER.test(m.rest) && !replaced.has(at)) {
+    if (plusNote && !(host.kind !== 'quote' && host.line === plusNote.line) && missed && !missesQuote && m.rest !== '' && docCol === 0 && form.kind !== 'item' && form.kind !== 'colon-close' && !CONT_MARKER.test(m.rest) && !replaced.has(at)) {
       replaced.add(at)
       let prefix = out
       for (let k = reached + 1; k < frames.length; k++) {
@@ -3095,10 +3095,11 @@ function ownLines(lines, trace = null) {
     const pullingItem = (top().kind === 'item' || top().kind === 'dd') && top().plus === at - 1 &&
       (frames[frames.length - 2].line !== top().line || frames[frames.length - 2].kind === 'quote') ? top() : null
     const pulledInto = trace && pullingItem && missed && m.rest !== '' && !replaced.has(at) &&
-      !['item', 'dd', 'term', 'text'].includes(form.kind) && m.rest[0] !== '+' &&
+      !['item', 'dd', 'term', 'text', 'colon-close'].includes(form.kind) && m.rest[0] !== '+' &&
       m.col > pullingItem.markerCol && m.col < pullingItem.col && !frames.slice(reached + 1).some((f) => f.kind === 'quote')
       ? ownerPath() : null
-    if (plusBody && missed && m.rest !== '' && !replaced.has(at) && !['item', 'dd', 'term'].includes(form.kind) && m.rest[0] !== '+' &&
+    // An open div's closer is never a block, so no `+` takes it (PART 9 §12, carve#4254).
+    if (plusBody && missed && m.rest !== '' && !replaced.has(at) && !['item', 'dd', 'term', 'colon-close'].includes(form.kind) && m.rest[0] !== '+' &&
         m.col === 0 && plusBody.markerCol > 0 && !frames.slice(reached + 1).some((f) => f.kind === 'quote')) {
       const depth = frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length
       const shift = ' '.repeat(plusBody.col - m.col)

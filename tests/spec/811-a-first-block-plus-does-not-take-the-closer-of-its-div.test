@@ -1,0 +1,76 @@
+A first-block plus does not take the closer of its div
+
+```
+::: d
+- d
+  - +
+:::
+after
+.
+<div class="d">
+  <ul>
+    <li>d
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+<p>after</p>
+```
+
+```
+::: d
+:: t
+: d
+  :: u
+  : +
+:::
+after
+.
+<div class="d">
+  <dl>
+    <dt>t</dt>
+    <dd>
+      <p>d</p>
+      <dl>
+        <dt>u</dt>
+        <dd></dd>
+      </dl>
+    </dd>
+  </dl>
+</div>
+<p>after</p>
+```
+
+```
+::: d
+- +
+:::
+after
+.
+<div class="d">
+  <ul>
+    <li></li>
+  </ul>
+</div>
+<p>after</p>
+```
+
+```
+::: d
+- d
+
+  > +
+:::
+after
+.
+<div class="d">
+  <ul>
+    <li>d
+      <blockquote><p>+</p></blockquote>
+    </li>
+  </ul>
+</div>
+<p>after</p>
+```
