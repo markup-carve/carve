@@ -4081,7 +4081,17 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
         continue
       }
       if (measured.col > col) continue
-      if (matchMarkerAt(measured)) return measured.col === col
+      // A list opened on another item's marker line stands at its own marker's column (PART 0 S2, carve#4390).
+      let opener = matchMarkerAt(measured)
+      if (opener) {
+        let openerCol = measured.col
+        for (let depth = 0; opener && openerCol < col && depth < MAX_NESTING_DEPTH; depth++) {
+          const nested = indentCols(opener.text)
+          openerCol += opener.markerWidth + (opener.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH) + nested.col
+          opener = matchMarkerAt(nested)
+        }
+        return openerCol === col && !!opener
+      }
       if (CONT_MARKER.test(measured.rest)) continue
       // A plain line at this column can be a lazy continuation of the item.
       // Keep looking for its marker, but a blank between them ends that claim.
