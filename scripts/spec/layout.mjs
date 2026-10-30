@@ -2818,6 +2818,15 @@ function ownLines(lines, trace = null) {
   const result = []
   const frames = [{ kind: 'doc', col: 0, canon: 0, cut: 0, para: false, last: null }]
   const top = () => frames[frames.length - 1]
+  const carried = (f) => f.plusShift?.shift ?? 0
+  // A lone `+` the walk does not read as an indented list's marker is still
+  // that list's to the readers (PART 0 S3): what it attaches keeps the list's shift.
+  const carryPlus = (owner, list, at) => {
+    if (list?.markerCol === undefined || at >= list.col || at === list.markerCol) return
+    const col = Math.min(list.listCol ?? list.markerCol, list.markerCol)
+    const shift = list.listShift ?? list.markerCol - list.markerCanon
+    if (shift > 0 && at >= col) owner.plusShift = { col, shift }
+  }
   let reach = 0
   let runs = null
   // Fence-shaped lines the walk read as paragraph text.
@@ -3035,6 +3044,7 @@ function ownLines(lines, trace = null) {
     }
     if (inner.kind === 'fence') frames.pop()
     let owner = frames[reached]
+    if (m.rest !== '') for (const f of frames) if (f.plusShift && m.col < f.plusShift.col) f.plusShift = undefined
     const form = classify(m.rest, owner, at, m.col)
     // A note's first-block `+` takes a non-list block at document column zero
     // as at its marker column (CARVE-P9-067): read the line again there.
@@ -3190,9 +3200,10 @@ function ownLines(lines, trace = null) {
       const listCol = Math.min(next.listCol, next.markerCol)
       if (m.col < listCol) next.leftOfList = true
       const shift = m.col >= listCol && !next.leftOfList ? Math.min(next.listShift, next.markerCol - next.markerCanon) : 0
-      const cut = owner.termShift !== undefined && (owner.last === 'dd' || owner.last === 'term') ? owner.termShift : Math.max(owner.cut, shift)
+      const cut = owner.termShift !== undefined && (owner.last === 'dd' || owner.last === 'term') ? owner.termShift : Math.max(owner.cut, shift, carried(owner))
       const foldedAt = Math.min(Math.max(m.col - cut, owner.canon), limit, m.col)
       lead(foldedAt)
+      if (CONT_MARKER.test(m.rest)) carryPlus(owner, next, m.col)
       if (FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       result.push(out + src)
       // The readers open a list at a folded marker (§10 I2); a lazy line framed later belongs to its item (carve#4259).
@@ -3291,10 +3302,13 @@ function ownLines(lines, trace = null) {
       const afterPlus = owner.para && owner.plusLine === at - 1 && owner.termShift !== undefined && DESCRIPTION_LEAD.test(m.rest)
       // So does the block a `+` attaches to a description.
       const attached = plusFollower && owner.termShift !== undefined && owner.last === 'dd'
-      const cut = term ? owner.termCut : afterPlus || attached ? owner.termShift : owner.cut
+      const cut = term ? owner.termCut : afterPlus || attached ? owner.termShift : Math.max(owner.cut, carried(owner))
       const moved = !(owner.para || !closedColumn || plusFollower)
       lead(moved ? owner.canon : Math.max(m.col - cut, owner.canon), term)
       owner.plusLine = moved && CONT_MARKER.test(m.rest) ? at : undefined
+      // A lone `+` the walk closed an indented list at is still that list's
+      // marker to the readers (PART 0 S3): what it attaches keeps the list's shift.
+      if (owner.plusLine === at) carryPlus(owner, sibling, m.col)
       if (owner.para && FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       owner.absorbs = (owner.para && owner.absorbs) || absorbsColon(m.rest)
       owner.para = true
@@ -3800,6 +3814,7 @@ function restoreOrdinaryPlus(value, sentinel) {
 export function parse(src, { stateSink = null, includeFiles = null, trace = null } = {}) {
   src = normalizeSource(src)
   const walked = ownLines(src.split('\n'), trace)
+  if (process.env.OC_WALK) console.error(JSON.stringify(walked))
   src = walked.join('\n')
   // A private character keeps indented plus lines ordinary through recursive dedents.
   let hasOrdinaryPlus = false
