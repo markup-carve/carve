@@ -1,0 +1,107 @@
+A description body in an item takes a column-zero block after its first-block plus
+
+````
+- a
+  :: t
+  : +
+```
+x
+```
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <pre><code>x
+</code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+````
+
+````
+- a
+  - b
+    :: t
+    : +
+```
+x
+```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <dl>
+          <dt>t</dt>
+          <dd>
+            <pre><code>x
+</code></pre>
+          </dd>
+        </dl>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+```
+1. a
+   :: t
+   : +
+> q
+.
+<ol>
+  <li>a
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <blockquote><p>q</p></blockquote>
+      </dd>
+    </dl>
+  </li>
+</ol>
+```
+
+```
+- a
+  :: t
+  : +
+# H
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <h1 id="H">H</h1>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
+
+````
+- a
+  :: t
+  : +
+```
+x
+
+see
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <pre><code>x
+</code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>see</p>
+````

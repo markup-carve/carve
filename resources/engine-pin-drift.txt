@@ -557,3 +557,7 @@
 800-a-class-key-value-splits-into-class-tokens-3  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
 800-a-class-key-value-splits-into-class-tokens-4  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
 800-a-class-key-value-splits-into-class-tokens-6  Pinned JavaScript keeps a class=V value as one class entry (markup-carve/carve#4205); pending in carve-js.
+806-a-description-body-in-an-item-takes-a-column-zero-block-after-its-first-block-plus  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
+806-a-description-body-in-an-item-takes-a-column-zero-block-after-its-first-block-plus-2  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
+806-a-description-body-in-an-item-takes-a-column-zero-block-after-its-first-block-plus-3  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
+806-a-description-body-in-an-item-takes-a-column-zero-block-after-its-first-block-plus-4  Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.
