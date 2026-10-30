@@ -3289,6 +3289,15 @@ function ownLines(lines, trace = null) {
     // The empty string after a final newline is not a line.
     if (index === lines.length - 1 && lines[index] === '') return
     if (afterPlusBlock && index >= afterPlusBlock.end) {
+      // An unclosed fence leaves the walk reading payload; the readers end the
+      // fence there and read the lines at the content column as the item's body.
+      if (form === 'payload') {
+        const rec = (afterPlusBlock.body ??= bodyTrace(index, afterPlusBlock)).get(index)
+        if (rec) {
+          trace.push(rec)
+          return
+        }
+      }
       const blank = isBlank(lines[index])
       // A blank run goes with the line after it.
       let next = index
@@ -3328,6 +3337,27 @@ function ownLines(lines, trace = null) {
     let col = 0
     for (const ch of line.slice(0, line.length - rest.length)) col = ch === '\t' ? (Math.floor(col / 4) + 1) * 4 : col + 1
     return col
+  }
+
+  // The records of the lines from `from` at the item's content column, traced
+  // as that item's own body and placed under its path.
+  function bodyTrace(from, { col, path }) {
+    let to = from
+    for (let k = from; k < lines.length; k++) {
+      if (isBlank(lines[k])) continue
+      if (walkIndent(lines[k]).col < col) break
+      to = k + 1
+    }
+    const body = lines.slice(from, to).map((line) => {
+      const ind = walkIndent(line)
+      return isBlank(line) ? '' : ' '.repeat(ind.col - col) + ind.rest
+    })
+    const records = []
+    if (body.length) ownLines(body, records)
+    const place = (owner) => path + owner.slice(3).replace(/:(\d+)/g, (_, n) => `:${+n + from}`)
+    return new Map(records.map((r) => [r.line - 1 + from, {
+      ...r, line: r.line + from, owner: place(r.owner), ...(r.reached ? { reached: place(r.reached) } : {}),
+    }]))
   }
 
   // Whether line `next` holds a block at `col` under `depth` quote levels.
