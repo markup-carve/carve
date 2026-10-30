@@ -8151,12 +8151,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       let opener = 0
       for (let attrs; (attrs = tryAttrLine(dedentedWindow(attached, opener, ind(i).col), 0)) &&
         opener + attrs.next < attached.length; ) opener += attrs.next
-      const codeMatch = FENCE.exec(attached[0] ?? '')
+      const codeMatch = FENCE.exec(attached[opener] ?? '')
       const code = codeMatch && parseFenceInfo(codeMatch[2]) !== null ? codeMatch : null
-      const colon = COLON_FENCE.exec(attached[0] ?? '')
-      const unclosedAttached = code && i + 1 < n && !hasCloser(lines.slice(i), 0) && !lines.slice(i).some(isBlank)
+      const colon = COLON_FENCE.exec(attached[opener] ?? '')
+      const unclosedAttached = code && i + opener + 1 < n && !hasCloser(lines.slice(i + opener), 0) && !lines.slice(i).some(isBlank)
       if (unclosedAttached) end = n
-      const captionable = code ? hasCloser(attached, 0) : colon && isFigureGroupOpener(parseColonOpener(colon[2])) && COLON_CLOSER.test(attached.at(-1) ?? '')
+      const captionable = code ? hasCloser(attached, opener) : colon && isFigureGroupOpener(parseColonOpener(colon[2])) && COLON_CLOSER.test(attached.at(-1) ?? '')
       if (captionable && CAPTION.test(lines[end] ?? '')) end++
       // After a lone `+` the item stays open, so a block at its content column
       // is the item's own and ends the attached paragraph (CARVE-P0-011).
