@@ -747,3 +747,5 @@
 851-a-first-block-plus-shape-reads-the-one-attach-rule-7  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 851-a-first-block-plus-shape-reads-the-one-attach-rule-8  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
 851-a-first-block-plus-shape-reads-the-one-attach-rule-9  Pinned JavaScript predates one attach rule for every plus host (carve#4409); the spec moved first
+851-an-accepted-plus-needs-a-follower-that-reaches-its-host  A line of bare quote markers holds no block for a plus (markup-carve/carve#4396); pending in carve-js.
+851-an-accepted-plus-needs-a-follower-that-reaches-its-host-3  A quote prefix left of a container holding that quote carries nothing (markup-carve/carve#4396); pending in carve-js.

@@ -1,0 +1,69 @@
+An accepted plus needs a follower that reaches its host
+
+```
+> a
+>
++
+>
+.
+<blockquote><p>a</p></blockquote>
+<p>+</p>
+<blockquote>
+
+</blockquote>
+```
+
+```
+> +
+>
+.
+<blockquote><p>+</p></blockquote>
+```
+
+```
+:: t
+: > 1. +
+>   x
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote>
+      <ol>
+        <li>+</li>
+      </ol>
+    </blockquote>
+  </dd>
+</dl>
+<blockquote><p>x</p></blockquote>
+```
+
+````
+- > :: t
+  > : ```
+  >   code
+  >   ```
+> +
+:: u
+: v
+.
+<ul>
+  <li>
+    <blockquote>
+      <dl>
+        <dt>t</dt>
+        <dd>
+          <pre><code>code
+</code></pre>
+        </dd>
+      </dl>
+    </blockquote>
+  </li>
+</ul>
+<blockquote>
+  <dl>
+    <dt>u</dt>
+    <dd>v</dd>
+  </dl>
+</blockquote>
+````
