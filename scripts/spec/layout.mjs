@@ -2820,6 +2820,25 @@ function ownLines(lines, trace = null) {
       out += src.slice(0, count)
       src = src.slice(count)
     }
+    // The block a marker-line `+` takes at its marker column stays in that
+    // item or description (§17 L3, carve#3421). The walk reads that one block
+    // where it stands, so the container keeps its parent's columns.
+    // A `+` stacked on its parent's marker line reads its parent's column instead.
+    const plusHost = top()
+    const hostParent = frames[frames.length - 2]
+    if ((plusHost.kind === 'item' || plusHost.kind === 'dd') && m.rest !== '' && m.col === plusHost.markerCol &&
+        m.col >= hostParent.col && plusHost.plus === at - 1 && plusHost.line !== hostParent.line &&
+        !CONT_MARKER.test(m.rest) && !frames.some((f) => f.kind === 'quote')) {
+      const follower = classifyAt(frames.length - 2, m.rest, hostParent, at, m.col)
+      if (follower.interrupts && follower.kind !== 'item') {
+        const col = plusHost.markerCol
+        const end = at + pulledBlockLength(lines, at, (line) => {
+          const ind = walkIndent(line)
+          return ' '.repeat(Math.max(0, ind.col - col)) + ind.rest
+        })
+        frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, para: false, last: null, once: end }
+      }
+    }
     let reached = 0
     let plus = null
     // A quote's first-block `+` reads a follower by its raw column (CARVE-P9-067).
@@ -2850,6 +2869,13 @@ function ownLines(lines, trace = null) {
       }
       if (m.rest !== '' && m.col < f.col) break
       reached = k
+    }
+    // The container closes after that block, at the first line that goes no deeper.
+    const once = frames[reached]
+    if (once.once !== undefined && at >= once.once && !plus) {
+      frames.length = reached
+      Object.assign(top(), { para: once.para, absorbs: once.absorbs, last: once.last })
+      reached--
     }
     if (plus) {
       frames.length = frames.indexOf(plus) + 1
@@ -3116,6 +3142,17 @@ function ownLines(lines, trace = null) {
   const walked = frameTextFences(result, textFences)
   walked.refusedPlus = refusedPlus
   return walked
+
+  // `classify` as the line reads at frame `depth`.
+  function classifyAt(depth, rest, owner, at, col) {
+    const saved = reach
+    reach = depth
+    try {
+      return classify(rest, owner, at, col)
+    } finally {
+      reach = saved
+    }
+  }
 
   // A decision trace record (docs/decision-trace.md). `depth` cuts the path at a frame.
   function emit(index, step, owner, rule, form, extra = {}) {

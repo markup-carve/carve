@@ -102,7 +102,10 @@ this as `modelTrace(source)` and reads and writes the JSON-lines form.
 
 The line after an accepted `+` is recorded where it stands, with `plus` set to
 the `+` line: the walk keeps its column and the block readers attach it to the
-`+`'s container (CARVE-P9-067).
+`+`'s container (CARVE-P9-067). A `+` on an item's or description's own marker
+line has no record of its own: the block it takes at the marker column is
+recorded inside that item or description, and the lines after that block are
+recorded in its parent.
 
 The trace covers the ownership walk. The block readers that build the final
 tree run after it, so a difference that only they make, such as how a table row
