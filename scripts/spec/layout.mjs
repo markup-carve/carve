@@ -4337,6 +4337,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   // container could not derive that one - a tab in the run, or a line it
   // synthesized - so it is walked here, once.
   const meas = seeded ?? new Array(n)
+  lineMeasures.set(lines, meas)
   // Fence lines the enclosing collector already found to open, whose closer
   // lies past these lines (§10 I4).
   const fenceOpens = state.fenceOpensAt?.get(lines)
@@ -6834,23 +6835,37 @@ const descriptionCarriesParagraph = (line) => {
   return !CONT_MARKER.test(content) && opensParagraph(content, true)
 }
 
+// The measurement a parse holds for each line of its array, so a nested reading
+// derives its lines' columns instead of walking them once per level (carve#752).
+const lineMeasures = new WeakMap()
+const heldMeasure = (lines, row) => {
+  const held = lineMeasures.get(lines)?.[row]
+  const line = lines[row]
+  // A collector may hand down where a comment was written, not where it stands.
+  return held && !held.tabs && line.length - held.rest.length === held.col ? held : indentCols(line)
+}
+
 function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0, quoteHost = false) {
   if (limit - start <= 1) return limit
   // Measure the block at the column it is read at: `  # H` is a heading there.
   // A line below that column can only fold lazily (§10 I2), and a fence there
   // folds only without a closer (§10 I4); any other line ends the block.
   let measuredLines = lines.slice(start, limit)
+  let readMeasures
   if (readColumn > 0) {
     const read = []
+    readMeasures = []
     // A code fence the block opens takes no lazy line: S4 folds into a paragraph only.
     let fence = null
     // A colon fence or attribute line leaves no paragraph for a lazy line (PART 0 S4).
     let paragraphOpen = false
-    for (const line of measuredLines) {
-      const measured = indentCols(line)
+    for (let row = start; row < limit; row++) {
+      const line = lines[row]
+      const measured = heldMeasure(lines, row)
       if (measured.rest === '' || measured.col >= readColumn) {
-        const text = dedentParts(line, readColumn).text
-        const at = indentCols(text)
+        const body = dedentMeasured(measured, line, readColumn)
+        const text = body.text
+        const at = body.meas
         paragraphOpen = at.rest !== '' && !COLON_FENCE.test(at.rest) &&
           !(at.rest[0] === '{' && tryAttrLine([at.rest], 0))
         if (read.length === 0) {
@@ -6861,12 +6876,17 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
           if (close && close[1][0] === fence.run[0] && close[1].length >= fence.run.length) fence = null
         }
         read.push(text)
+        readMeasures.push(at)
       } else if (fence) break
       else if (measured.rest[0] === '{' && tryAttrLine([measured.rest], 0)) break
       // A description marker with no term opens nothing, so it folds (PART 0 S4).
-      else if (paragraphOpen && (foldablePlainLine(measured.rest) || DESCRIPTION_TEXT.test(measured.rest))) read.push(lazyFrame(measured.rest))
-      else if (isCodeBlockOpener(measured.rest)) read.push(measured.rest)
-      else break
+      else if (paragraphOpen && (foldablePlainLine(measured.rest) || DESCRIPTION_TEXT.test(measured.rest))) {
+        read.push(lazyFrame(measured.rest))
+        readMeasures.push(LAZY_MEAS(measured.rest))
+      } else if (isCodeBlockOpener(measured.rest)) {
+        read.push(measured.rest)
+        readMeasures.push(null)
+      } else break
     }
     if (read.length <= 1) return start + read.length
     limit = start + read.length
@@ -6899,16 +6919,22 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
   if (known && (known.depth === depth || deepest(known) < MAX_NESTING_DEPTH)) {
     report(known)
     if (known.refused) return limit
+    if (known.noDefinition) return start + known.next
     const seenTables = {
       linkDefs: known.linkDefs, footnoteDefs: known.footnoteDefs,
       opaqueMeasurement: { rows: new Set([...known.rows].map((row) => row + start)) },
     }
     return foldedDefinitionEnd(lines, start, start + known.next, seenTables)
   }
+  // The collector alone decides where a list ends. An item body's parse adds
+  // only definitions, which need a `[` that no task box supplies, and the depth refusal, bounded here by
+  // the markers the lines hold (carve#4183).
+  const nonBlank = measuredLines.reduce((sum, line) => sum + line.replace(/[ \t\n\r]/g, '').length, 0)
+  const measuringListExtent = depth + nonBlank < MAX_NESTING_DEPTH && !measuredLines.some((line) => line.replace(/\[[ xX]\](?!:)/g, '').includes('['))
   const remember = (entry) => {
     const lineLevels = Math.max(0, ...measuredLines.map((line) => line.replace(/[ \t\n\r]/g, '').length))
     entry.levels = seen.depthReach - depth
-    entry.slack = Math.max(seen.depthSlack, lineLevels + 2)
+    entry.slack = Math.max(seen.depthSlack, lineLevels + 2, measuringListExtent ? nonBlank : 0)
     entry.depth = depth
     report(entry)
     if (!memo) return
@@ -6931,11 +6957,12 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
     depthReach: depth,
     depthSlack: 0,
     measuringAuthoredBlock: state.measuringAuthoredBlock ?? false,
+    measuringListExtent,
   }
   seen.opaqueMeasurement = { origins: new WeakMap([[measuredLines, start]]), sourceColumns, sourceLines: lines, markerFenceEnd: new WeakMap(), rows: new Set() }
   try {
     // A quote body folds a list marker lazily where an item body ends at it (PART 0 S4).
-    parseBlocks(measuredLines, seen, false, !quoteHost, undefined, stop)
+    parseBlocks(measuredLines, seen, false, !quoteHost, readMeasures, stop)
   } catch (error) {
     if (!(error instanceof Refuse)) throw error
     // Outside the executable subset: the extent is the honest answer, and the
@@ -6945,9 +6972,9 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
   }
   remember({
     next: stop.next, linkDefs: seen.linkDefs, footnoteDefs: seen.footnoteDefs,
-    rows: [...seen.opaqueMeasurement.rows].map((row) => row - start),
+    rows: [...seen.opaqueMeasurement.rows].map((row) => row - start), noDefinition: measuringListExtent,
   })
-  return foldedDefinitionEnd(lines, start, start + stop.next, seen)
+  return measuringListExtent ? start + stop.next : foldedDefinitionEnd(lines, start, start + stop.next, seen)
 }
 
 function invisibleAuthoredEnd(lines, start, limit) {
@@ -9290,13 +9317,15 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (descendantPlus) {
           carriesBareContinuation = true
           nestedAttachmentColumn = lm.L?.col ?? lm.col
+          const enclosingEnd = nestedAttachmentEnd
           nestedAttachmentEnd = -1
           nestedSiblingIndent = nestedSiblingMax = descendantPlus.marker
           // The descendant's `+` spends itself on a sublist at its content column.
           const sub = i + 1 < n ? matchMarkerAt(ind(i + 1)) : null
           spentOnSublist = descendantPlus.firstBlock && sub && sub.indent >= descendantPlus.content
           if (spentOnSublist) {
-            nestedAttachmentEnd = attachedBlockEnd(lines, i + 1, state, (idx) =>
+            // A chain below a measured sublist lies in that measurement (carve#4183).
+            nestedAttachmentEnd = i + 1 < enclosingEnd ? enclosingEnd : attachedBlockEnd(lines, i + 1, state, (idx) =>
               ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
               matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i + 1), ind(i + 1).col, ind(i + 1).col)
           }
@@ -9851,7 +9880,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       (state.descriptionSourceColumns ??= new WeakMap()).set(itemLines, relativeColumns);
       (state.itemRelativeTermColumns ??= new WeakSet()).add(itemLines)
     }
-    item.blocks = parseBlocks(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
+    item.blocks = state.measuringListExtent ? [] : parseBlocks(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
     let beforeBlock = item.blocks.length
     for (let gap = captionGaps.length - 1; gap >= 0; gap--) {
       const { line, text } = captionGaps[gap]
