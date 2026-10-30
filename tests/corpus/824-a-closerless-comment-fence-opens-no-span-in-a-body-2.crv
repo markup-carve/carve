@@ -1,0 +1,8 @@
+[^n]: head
+
+  %%%
+%% below
+
+  tail
+
+r[^n]

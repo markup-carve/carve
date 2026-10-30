@@ -208,7 +208,7 @@
 {"id":"roundtrip-28ecf2d3a143","source":"- a\n -bb\n  +\n  > q\n","html":"<ul>\n  <li>a\n-bb\n+\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ul>"},
 {"id":"roundtrip-298bed795d14","source":"[t][r]\n[^1]: > q\n\n- item\n\n  :: c\n    [r]: /u\n","html":"<p><a href=\"/u\">t</a></p>\n<ul>\n  <li>item\n    <dl>\n      <dt>c</dt>\n    </dl>\n  </li>\n</ul>"},
 {"id":"roundtrip-2993d03bad2f","source":"- a\n\t|x|\n+ c\n::: |\n\n","html":"<ul>\n  <li>a\n    <table>\n      <tbody>\n        <tr><td>x</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>\n<p>+ c</p>\n<div class=\"line-block\">\n\n</div>"},
-{"id":"roundtrip-29bf84d5501e","source":":: t\n:  head\n\n     %%%\n%%/i/%%\n\n   tail\n","html":"<dl>\n  <dt>t</dt>\n  <dd>\n    <p>head</p>\n    <p>tail</p>\n  </dd>\n</dl>"},
+{"id":"roundtrip-29bf84d5501e","source":":: t\n:  head\n\n     %%%\n%%/i/%%\n\n   tail\n","html":"<dl>\n  <dt>t</dt>\n  <dd>head</dd>\n</dl>\n<p>tail</p>"},
 {"id":"roundtrip-29cb9e235d59","source":"^[fn]tai{.x}l\n","html":"<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>tai{.x}l</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>fn<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"},
 {"id":"roundtrip-29cca120aca6","source":"\n_u_\n*a `x` b*\n","html":"<p><u>u</u>\n<strong>a <code>x</code> b</strong></p>"},
 {"id":"roundtrip-29f60f1229fc","source":"- one\n-one\n > qq\n","html":"<ul>\n  <li>one\n-one</li>\n</ul>\n<blockquote><p>qq</p></blockquote>"},
