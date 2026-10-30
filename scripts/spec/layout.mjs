@@ -8169,8 +8169,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (lm.rest !== '') fenceBlankRun = 0
       if (line.startsWith(LAZY)) {
         // a lazy line from an OUTER context propagates to the deepest open
-        // paragraph (PART 9 SS10 I2)
-        if (!paragraphIsOpen()) break
+        // paragraph (PART 9 SS10 I2), or stays in a descendant's attached block.
+        if (!paragraphIsOpen() && !(carriesBareContinuation && i < nestedAttachmentEnd)) break
+        if (!paragraphIsOpen()) {
+          pushLine(line, lm)
+          i++
+          continue
+        }
         pushLine(line, lm)
         i++
         continue
@@ -9285,7 +9290,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (i < nestedAttachmentEnd) {
           // Only an attached paragraph leaves one open for a lazy line (PART 0 S4).
           attachedLeavesNoParagraph ??= !foldablePlainLine(lm.rest)
-          pushLine(line, lm)
+          // A lazy frame reaches the nested parse at column 0, or it reads as text.
+          pushLine(lm.rest.startsWith(LAZY) ? lm.rest : line, lm)
           i++
           if (i === nestedAttachmentEnd && attachedLeavesNoParagraph) closePara()
           continue
