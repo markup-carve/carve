@@ -1,0 +1,25 @@
+An unresolved reference keeps its whole attribute run as text
+
+```
+[a][a]{.c}{#i}
+.
+<p>[a][a]{.c}{#i}</p>
+```
+
+```
+[a][b]{.c}{.d}
+.
+<p>[a][b]{.c}{.d}</p>
+```
+
+```
+x[a][a]{key=v}{#i}
+.
+<p>x[a][a]{key=v}{#i}</p>
+```
+
+```
+[a][]{#i}{.c}
+.
+<p>[a][]{#i}{.c}</p>
+```

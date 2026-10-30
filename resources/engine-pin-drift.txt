@@ -591,3 +591,10 @@
 837-a-description-s-one-attributed-paragraph-keeps-its-p  markup-carve/carve#4309, the pinned carve-js drops a one-paragraph description's attributes; fix pending in carve-js
 837-a-description-s-one-attributed-paragraph-keeps-its-p-2  markup-carve/carve#4309, the pinned carve-js drops a one-paragraph description's attributes; fix pending in carve-js
 838-an-item-on-a-body-s-marker-line-takes-a-column-zero-block-after-its-plus-2  markup-carve/carve#4372, the pinned carve-js leaves the column-0 block outside a note's marker-line item; fix pending in carve-js
+838-an-unresolved-reference-keeps-its-whole-attribute-run-as-text-2  markup-carve/carve#4320, the pinned carve-js drops every block after the first in an unresolved reference's attribute run; fix pending in carve-js
+838-an-unresolved-reference-keeps-its-whole-attribute-run-as-text-3  markup-carve/carve#4320, the pinned carve-js drops every block after the first in an unresolved reference's attribute run; fix pending in carve-js
+838-an-unresolved-reference-keeps-its-whole-attribute-run-as-text-4  markup-carve/carve#4320, the pinned carve-js drops every block after the first in an unresolved reference's attribute run; fix pending in carve-js
+838-an-unresolved-reference-keeps-its-whole-attribute-run-as-text  markup-carve/carve#4320, the pinned carve-js drops every block after the first in an unresolved reference's attribute run; fix pending in carve-js
+839-a-quoted-row-attribute-value-may-hold-a-pipe-2  markup-carve/carve#4323, the pinned carve-js refuses a row attribute block whose quoted value holds a pipe; fix pending in carve-js
+839-a-quoted-row-attribute-value-may-hold-a-pipe-3  markup-carve/carve#4323, the pinned carve-js refuses a row attribute block whose quoted value holds a pipe; fix pending in carve-js
+839-a-quoted-row-attribute-value-may-hold-a-pipe  markup-carve/carve#4323, the pinned carve-js refuses a row attribute block whose quoted value holds a pipe; fix pending in carve-js
