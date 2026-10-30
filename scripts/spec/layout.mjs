@@ -9388,7 +9388,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
               if (foldedChildFence) foldedChildParagraph = true
               if (!foldedChildParagraph || !descendantParagraphBefore || mayOpenAuthoredBlock) {
                 // The child's paragraph stays the deepest one for the box columns (PART 0 S4).
-                childParagraphLazy = childParagraphOpen && !mayOpenAuthoredBlock && (foldablePlainLine(dmeas.rest) || foldsIntoChild)
+                childParagraphLazy = childParagraphOpen && !isBlank(lines[i - 1] ?? '') && !mayOpenAuthoredBlock && (foldablePlainLine(dmeas.rest) || foldsIntoChild)
                 // A lazy fold keeps the child the deepest frame (PART 0 S4, carve#4291).
                 if (!childParagraphLazy || nestedOpaque || wasNested) descLive = false
                 foldedChildParagraph = false
