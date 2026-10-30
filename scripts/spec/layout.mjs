@@ -3798,6 +3798,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
     abbrDefs: new Map(),
     includeFiles,
     prefixMemos: new WeakMap(),
+    blockEndMemo: new Map(),
     markerLineColumns: new WeakMap(),
     sourceHasLonePlus,
     unterminatedLines: new WeakSet(src.endsWith('\n') ? [] : [lines]),
@@ -3888,6 +3889,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   delete state.includeFiles
   delete state.markerCommentClosers
   delete state.prefixMemos
+  delete state.blockEndMemo
   delete state.attachmentBoundaries
   delete state.quoteAttachmentOrigins
   delete state.markerLineColumns
@@ -3939,6 +3941,7 @@ function inheritFinalBreak(parent, child, end, state) {
 // sibling containers never accumulate depth.
 function parseBlocks(lines, state, top, inItem = false, meas = undefined, stop = undefined, descriptionOwnerColumn = null) {
   state.blockDepth = (state.blockDepth ?? 0) + 1
+  if (state.depthReach < state.blockDepth) state.depthReach = state.blockDepth
   if (state.blockDepth > MAX_NESTING_DEPTH) {
     state.blockDepth--
     // PART 9 SS25: past the cap an opener DEGRADES to literal paragraph text
@@ -6456,16 +6459,60 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
   // The throwaway state still reads the document the real parse reads: its
   // settings, and the marker-line columns of the measured rows (carve#3945).
   const markerColumns = state.markerLineColumns?.get(lines)
+  const shiftedColumns = markerColumns ? measuredMarkerColumns(markerColumns, start, limit) : null
+  // The throwaway parse reads only the measured lines and the fields copied
+  // below, so its outcome is memoized per document. A nested first-block `+`
+  // is measured once per enclosing level otherwise: exponential in the depth
+  // (carve#4148). The entry depth decides the outcome only when some depth
+  // test in the parse could reach the cap. `levels` bounds the recursion below
+  // the entry and `slack` the quote and colon levels a single line adds.
+  const memo = state.blockEndMemo
+  const depth = state.blockDepth ?? 0
+  const memoKey = memo && [
+    state.measuringAuthoredBlock ? 1 : 0, sourceColumns ? sourceColumns.slice(start, limit).join(',') : '',
+    shiftedColumns ? [...shiftedColumns].join(';') : '', measuredLines.join('\n'),
+  ].join('\u0000')
+  const known = memo && (memo.get(memoKey)?.[depth] ?? memo.get(memoKey)?.any)
+  const deepest = (entry) => depth + entry.levels + entry.slack
+  const report = (entry) => {
+    if (state.depthReach === undefined) return
+    state.depthReach = Math.max(state.depthReach, depth + entry.levels)
+    state.depthSlack = Math.max(state.depthSlack, entry.slack)
+  }
+  if (known && (known.depth === depth || deepest(known) < MAX_NESTING_DEPTH)) {
+    report(known)
+    if (known.refused) return limit
+    const seenTables = {
+      linkDefs: known.linkDefs, footnoteDefs: known.footnoteDefs,
+      opaqueMeasurement: { rows: new Set([...known.rows].map((row) => row + start)) },
+    }
+    return foldedDefinitionEnd(lines, start, start + known.next, seenTables)
+  }
+  const remember = (entry) => {
+    const lineLevels = Math.max(0, ...measuredLines.map((line) => line.replace(/\s/g, '').length))
+    entry.levels = seen.depthReach - depth
+    entry.slack = Math.max(seen.depthSlack, lineLevels + 2)
+    entry.depth = depth
+    report(entry)
+    if (!memo) return
+    const entries = memo.get(memoKey) ?? {}
+    if (deepest(entry) < MAX_NESTING_DEPTH) entries.any = entry
+    else entries[depth] = entry
+    memo.set(memoKey, entries)
+  }
   const seen = {
     linkDefs: new Map(),
     footnoteDefs: new Map(),
     abbrDefs: new Map(),
     includeFiles: state.includeFiles,
-    markerLineColumns: new WeakMap(markerColumns ? [[measuredLines, measuredMarkerColumns(markerColumns, start, limit)]] : []),
+    markerLineColumns: new WeakMap(shiftedColumns ? [[measuredLines, shiftedColumns]] : []),
+    blockEndMemo: memo,
     sourceHasLonePlus: state.sourceHasLonePlus,
     ordinaryPlusSentinel: state.ordinaryPlusSentinel,
     refusedSiblingSentinel: state.refusedSiblingSentinel,
-    blockDepth: state.blockDepth ?? 0,
+    blockDepth: depth,
+    depthReach: depth,
+    depthSlack: 0,
     measuringAuthoredBlock: state.measuringAuthoredBlock ?? false,
   }
   seen.opaqueMeasurement = { origins: new WeakMap([[measuredLines, start]]), sourceColumns, sourceLines: lines, markerFenceEnd: new WeakMap(), rows: new Set() }
@@ -6476,8 +6523,13 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
     if (!(error instanceof Refuse)) throw error
     // Outside the executable subset: the extent is the honest answer, and the
     // real parse of these lines raises the same refusal where it belongs.
+    remember({ refused: true })
     return limit
   }
+  remember({
+    next: stop.next, linkDefs: seen.linkDefs, footnoteDefs: seen.footnoteDefs,
+    rows: [...seen.opaqueMeasurement.rows].map((row) => row - start),
+  })
   return foldedDefinitionEnd(lines, start, start + stop.next, seen)
 }
 
@@ -6608,7 +6660,11 @@ function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas, column
   // Grow a window instead of measuring the whole extent per marker (carve#4017).
   // The extent holds no blank line outside a fence, so a block that ends inside
   // the window ends there in the full extent too, unless a closer lies beyond.
-  for (let cap = start + 16; ; cap = start + 2 * (cap - start)) {
+  for (let width = 16; ; width *= 2) {
+    // Window ends sit at a fixed distance from the end of the lines, so a
+    // nested measurement reads the window its host measured and the memo in
+    // firstBlockEnd answers it (carve#4148).
+    const cap = Math.min(lines.length, lines.length - 16 * Math.floor((lines.length - start - width) / 16))
     const limit = oneBlockEnd(lines, start, endsAttachment, cap)
     const end = firstBlockEnd(lines, start, limit, state, undefined, readColumn, quoteHost)
     if (limit < cap || cap >= lines.length) return end
