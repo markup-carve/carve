@@ -96,6 +96,8 @@
         markup, stays literal, and its closer MUST NOT close a parent. The
         literal range is bounded by the linear index of §9, not by parsing it
         again or rescanning the rest of the block for each rejected opener.
+        The top inline run is level 1 of the cap, so 199 spans nest in it and
+        the 200th stays literal.
         LITERAL here means the current inline source characters as text: do
         not decode escapes or produce nodes for code, autolinks or other
         markup inside the rejected range. Earlier document ingestion policies
@@ -401,11 +403,11 @@
         handler that can launch a binary or open a macro-bearing document, so
         they are blanked like `javascript:`. Ordinary web and contact schemes
         -- `http`, `https`, `mailto`, `tel`, `ftp`, `sms` -- remain allowed.
-        Scheme detection MUST first strip ASCII control characters anywhere
-        in the value (`java` + U+0001 + `script:` is `javascript:`)
+        Scheme detection MUST first strip C0 and C1 control characters and DEL
+        anywhere in the value (`java` + U+0001 + `script:` is `javascript:`)
         AND ALL UNICODE WHITESPACE -- not just ASCII space/tab/newline but
-        every Unicode space separator, including NARROW NO-BREAK SPACE
-        (U+202F), NBSP (U+00A0), the U+2000..U+200A spaces, MEDIUM
+        every Unicode space separator, including NEXT LINE (U+0085), NARROW
+        NO-BREAK SPACE (U+202F), NBSP (U+00A0), the U+2000..U+200A spaces, MEDIUM
         MATHEMATICAL SPACE (U+205F), IDEOGRAPHIC SPACE (U+3000), the
         line/paragraph separators (U+2028 / U+2029), and the BOM (U+FEFF) --
         before matching the scheme, so an obfuscated `<U+202F>javascript:`
@@ -475,6 +477,11 @@
         authored value and is not blanked: a link title (`[a](u "Shell: x")`
         keeps `title="Shell: x"`), an image's alt text, and a task box's
         accessible name stay as written.
+        EVERY PROBE IN THIS CLAUSE READS THE VALUE AS IT WILL BE EMITTED. An
+        authored attribute value keeps a bidi override or isolate control, as a
+        destination does: `{style="ur` + U+202E + `l(x)"}` renders that value
+        unchanged, where it is no `url(`. A renderer that removes a character
+        from an authored value MUST remove it before probing.
 
         A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD --
         NORMATIVE [CARVE-P9-055]. Four attributes carry a LIST of URLs: `srcset`,

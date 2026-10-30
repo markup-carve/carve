@@ -1,0 +1,33 @@
+Attribute hardening probes the value as emitted
+
+```
+{style="ur‮l(https://evil/x)"}
+p
+.
+<p style="ur‮l(https://evil/x)">p</p>
+```
+
+```
+{srcset="a 1x,java‮script:x 2x"}
+p
+.
+<p srcset="a 1x,java‮script:x 2x">p</p>
+```
+
+```
+*x*{k="‮javascript:x"}
+.
+<p><strong k="‮javascript:x">x</strong></p>
+```
+
+```
+*x*{k="javascript:x"}
+.
+<p><strong k="">x</strong></p>
+```
+
+```
+[x](javascript:alert(1))
+.
+<p><a href="">x</a></p>
+```

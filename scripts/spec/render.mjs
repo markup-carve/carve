@@ -56,6 +56,9 @@ base.rules.bareVal.body = bareRun
 const BRACED_RULES = ['forced<d>', 'fBody<d>', 'edIns', 'edDel', 'edSub', 'edCommentBody', 'edInsBody', 'edDelBody', 'bracedComment']
 const core = ohm.grammar(`CarveGated <: ${base.name} {
   closerless = "\\u0000"
+  overCap = "\\u0000"
+  forcedSpan += overCap
+  forcedBody += overCap
 ${BRACED_RULES.map((rule) => `  ${rule} := ~closerless ${coreSource.match(new RegExp(`^  ${rule.replace('<d>', '<d>')} *= (.*)$`, 'm'))[1]}`).join('\n')}
 }`, { [base.name]: base })
 // PART 9 §9 LINEAR TIME: a braced opener forms only at the first closer of
@@ -114,11 +117,69 @@ function softHiding(source) {
   }
   return soft
 }
-let closerIndex = { source: null, unpaired: null }
-const closerless = new ohm.pexprs.Terminal('')
-closerless.eval = function (state) {
-  const { source, pos } = state.inputStream
-  if (closerIndex.source !== source) {
+// PART 9 §22 DEPTH LIMIT: a braced span past the depth budget left to this run
+// is one literal atom, so neither the match nor its semantics recurse into it.
+// A closer pairs with the nearest open mark here even where hiding text hands
+// it down below, since the recursion to bound is the one the openers would
+// start. A repeated editorial opener does not nest: its body ends at the first
+// closer.
+const OVER_CAP_MARKS = new Set([...NESTING_MARKS, '+', '-'])
+function overCapSpans(source, budget) {
+  const overCap = new Map()
+  const stacks = new Map()
+  const pairs = []
+  let last = null
+  for (let i = 0; i < source.length; i++) {
+    if (source[i] === '\\') i++
+    else if (source[i] === '`') {
+      let n = 1
+      while (source[i + n] === '`') n++
+      const close = source.indexOf('`'.repeat(n), i + n)
+      i = close === -1 ? i + n - 1 : close + n - 1
+    } else if (source[i] === '{' && OVER_CAP_MARKS.has(source[i + 1])) {
+      const mark = source[i + 1]
+      if (!stacks.has(mark)) stacks.set(mark, [])
+      if (NESTING_MARKS.has(mark) || last !== mark) stacks.get(mark).push(i)
+      last = mark
+      i++
+    } else if (source[i + 1] === '}' && stacks.has(source[i])) {
+      const at = stacks.get(source[i]).pop()
+      if (at !== undefined) pairs.push([at, i + 2])
+      i++
+    }
+  }
+  if (pairs.length < budget) return overCap
+  const open = []
+  for (const [at, end] of pairs.sort((a, b) => a[0] - b[0])) {
+    while (open.length && open.at(-1) <= at) open.pop()
+    open.push(end)
+    if (open.length >= budget) overCap.set(at, end)
+  }
+  return overCap
+}
+let closerIndex = { source: null, budget: 0, unpaired: null, overCap: null, deep: false }
+const BRACE_PREWARM_DEPTH = 50
+const bracePrewarmed = new WeakSet()
+function prewarmBraces(state, from) {
+  const { inputStream } = state
+  const { source } = inputStream
+  const bindings = state._bindings.length
+  const rule = new ohm.pexprs.Apply('forcedSpan')
+  const scan = new ohm.pexprs.Apply('forcedBody')
+  const editorial = new ohm.pexprs.Apply('editorial')
+  for (let j = source.lastIndexOf('{'); j > from; j = source.lastIndexOf('{', j - 1)) {
+    for (const r of [rule, scan, editorial]) {
+      inputStream.pos = j
+      state.eval(r)
+      state._bindings.length = bindings
+      state._bindingOffsets.length = bindings
+    }
+  }
+  inputStream.pos = from
+}
+const indexClosers = (source) => {
+  const budget = MAX_NESTING_DEPTH + 1 - inlineDepth
+  if (closerIndex.source !== source || closerIndex.budget !== budget) {
     const stacks = new Map()
     const unpaired = new Set()
     const openers = []
@@ -145,15 +206,47 @@ closerless.eval = function (state) {
     }
     for (const stack of stacks.values()) for (const at of stack) unpaired.add(at)
     for (const at of openers) if (!((last.get(source[at + 1]) ?? -1) >= at + 2)) unpaired.add(at)
-    closerIndex = { source, unpaired }
+    const overCap = overCapSpans(source, budget)
+    for (const at of overCap.keys()) unpaired.add(at)
+    closerIndex = { source, budget, unpaired, overCap, deep: overCap.size > 0 || overCapSpans(source, BRACE_PREWARM_DEPTH).size > 0 }
   }
-  if (source[pos] === '{' && closerIndex.unpaired.has(pos)) {
+  return closerIndex
+}
+const closerless = new ohm.pexprs.Terminal('')
+closerless.eval = function (state) {
+  const { source, pos } = state.inputStream
+  if (source[pos] !== '{') {
+    state.processFailure(pos, this)
+    return false
+  }
+  const index = indexClosers(source)
+  // A deep braced chain is read right to left first, as a deep bracket chain is
+  // (`prewarm`), so the depth of the match does not follow the depth of the spans.
+  if (index.deep && !bracePrewarmed.has(state)) {
+    bracePrewarmed.add(state)
+    prewarmBraces(state, pos)
+  }
+  if (index.unpaired.has(pos)) {
     return ohm.pexprs.Terminal.prototype.eval.call(this, state)
   }
   state.processFailure(pos, this)
   return false
 }
 core.rules.closerless.body = closerless
+const overCap = new ohm.pexprs.Terminal('')
+overCap.eval = function (state) {
+  const { inputStream } = state
+  const { source, pos } = inputStream
+  const end = source[pos] === '{' ? indexClosers(source).overCap.get(pos) : undefined
+  if (end === undefined) {
+    state.processFailure(pos, this)
+    return false
+  }
+  inputStream.pos = end
+  state.pushBinding(new TerminalNode(end - pos), pos)
+  return true
+}
+core.rules.overCap.body = overCap
 // A combined opener is a stack entry (PART 9 §9 THE COMBINED TOKEN), so the
 // `bold_italic` production never matches here: its `/` and `*` reach
 // `pairDelims` as candidates.
@@ -328,6 +421,9 @@ export const escapeHtml = (s) => escapeMarkup(s).replaceAll(' ', '&nbsp;')
 // else.
 export const escapeAttr = (s) => escapeMarkup(s).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
 export const escapeUrlAttr = (s) => escapeMarkup(checkUrl(s), true).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
+// An authored attribute value keeps a bidi control, as a destination does: the
+// hardening probes read this value, so stripping after them could arm it (carve#4472).
+const escapeAuthoredAttr = (s) => escapeMarkup(s, true).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
 
 // PART 9 SS25: URL sink scheme denylist -- a denylisted scheme renders an
 // EMPTY value. Scheme detection first strips ASCII controls and ALL Unicode
@@ -377,7 +473,7 @@ export function isImageSource(text) {
 }
 
 export function checkUrl(url) {
-  const probe = url.replace(STRIP_FRAMES, '').replace(/[\x00-\x20\x7f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/g, '')
+  const probe = url.replace(STRIP_FRAMES, '').replace(/[\x00-\x20\x7f-\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/g, '')
   const m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(probe)
   if (m && DENY.has(m[1].toLowerCase())) return ''
   return url
@@ -524,7 +620,7 @@ function hardenAttr(name, value) {
   if (value !== '' && checkUrl(value) === '') return { name, value: '' }
   const separator = Object.hasOwn(URL_LIST_SEPARATORS, n) ? URL_LIST_SEPARATORS[n] : null
   if (separator && !urlListIsClean(separator, value)) return { name, value: '' }
-  if (n === 'style' && STYLE_VECTOR.test(value.replace(/\s+/g, ''))) return { name, value: '' }
+  if (n === 'style' && STYLE_VECTOR.test(value.replace(STRIP_FRAMES, '').replace(/\s+/g, ''))) return { name, value: '' }
   return { name, value }
 }
 
@@ -691,16 +787,15 @@ export function renderAttrs(list, structuralUrl = null) {
       }
       for (const value of classTokens(a)) if (value !== '' && !classes.includes(value)) classes.push(value)
     } else if (a[0] === 'id') {
-      if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAttr(a[1])}"`
+      if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAuthoredAttr(a[1])}"`
       else {
         seen.set('#id', parts.length)
-        parts.push(` id="${escapeAttr(a[1])}"`)
+        parts.push(` id="${escapeAuthoredAttr(a[1])}"`)
       }
     } else if (a[0] === 'kv') {
       const h = hardenAttr(a[1], a[2])
       if (!h) continue
-      const name = a[1].toLowerCase()
-      const value = name === 'href' || name === 'src' || Object.hasOwn(URL_LIST_SEPARATORS, name) ? escapeUrlAttr(h.value) : escapeAttr(h.value)
+      const value = escapeAuthoredAttr(h.value)
       if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}="${value}"`
       else {
         seen.set(a[1], parts.length)
@@ -721,7 +816,7 @@ export function renderAttrs(list, structuralUrl = null) {
       }
     }
   }
-  if (classAt !== -1) parts[classAt] = ` class="${escapeAttr(classes.join(' '))}"`
+  if (classAt !== -1) parts[classAt] = ` class="${escapeAuthoredAttr(classes.join(' '))}"`
   return parts.join('')
 }
 
@@ -948,13 +1043,18 @@ const sem = g.createSemantics().addOperation('h', {
   forcedSpan(f) {
     return f.h()
   },
+  overCap(_range) {
+    return escapeHtml(this.sourceString)
+  },
   forced(_ob, d, inner, _d2, _cb, attrs) {
+    if (inlineDepth >= MAX_NESTING_DEPTH) return escapeHtml(this.sourceString)
     const dch = d.sourceString
     const tag = { '/': 'em', '*': 'strong', _: 'u', '~': 's', '^': 'sup', ',': 'sub', '=': 'mark' }[dch]
     const a = renderAttrs(attrsOf(attrs))
     // A forced `{X ... X}` span emphasizes intraword; nested spans of OTHER
     // delimiters resolve normally, but the forced delimiter X itself stays
     // literal inside (PART 9 SS22). Run the same SS9 stack, holding X literal.
+    inlineDepth++
     const body = resolveEmphasis(
       () => buildToks(inner.children, dch),
       this.source.sourceString,
@@ -963,6 +1063,7 @@ const sem = g.createSemantics().addOperation('h', {
       true,
       inner.source.endIdx,
     )
+    inlineDepth--
     return `<${tag}${a}>${body}</${tag}>`
   },
   edIns(_o, content, _c, attrs) {
@@ -1805,8 +1906,11 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
   for (let j = 0; j < toks.length; j++) {
     const t = toks[j]
     if (t.k === 'f') {
+      // Rendered in `renderRange`, where the bare spans around it have counted
+      // toward the depth budget.
       t.k = 't'
-      t.h = t.node.h()
+      t.h = ''
+      t.deferred = t.node
       continue
     }
     if (t.tailEnd !== undefined) {
@@ -2000,7 +2104,15 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
           openMap.get(i + 1) === closeIdx - 1 && toks[closeIdx - 1].at === toks[closeIdx].at - 1 &&
           !/[ \t]\*\//.test(src.slice(head.at + 1, toks[closeIdx].at + 1))
         if (bi) pairedDelims?.push(head.at, toks[closeIdx - 1].at)
+        const levels = bi ? 2 : 1
+        if (inlineDepth + levels > MAX_NESTING_DEPTH - 1) {
+          out += escapeHtml(src.slice(t.at, toks[closeIdx].at + 1))
+          i = closeIdx + 1
+          continue
+        }
+        inlineDepth += levels
         const inner = bi ? renderRange(i + 2, closeIdx - 1) : renderRange(i + 1, closeIdx)
+        inlineDepth -= levels
         // A `{...}` block immediately after the closer attaches as attributes.
         let attrsStr = ''
         const after = closeIdx + 1
@@ -2032,7 +2144,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
           const literalMarker = t.heldMarker || (marker?.k === 'd' && !openMap.has(i - 1) && !closers.has(i - 1))
           unattachedAttrs.push({ at: t.at, end: t.node.source.endIdx, literalMarker: literalMarker && t.markerAt + 1 === t.at, markerChar: t.markerChar, provisional: marker?.k === 'd' && tentative.has(marker.at) })
         }
-      } else out += t.h
+      } else out += t.deferred ? t.deferred.h() : t.h
       i++
     }
     return out
@@ -2044,6 +2156,9 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
 // MAX_NESTING_DEPTH bounds recursion so the pipeline stays linear-time and
 // never overflows the stack.
 const MAX_NESTING_DEPTH = 200
+// The inline runs and spans open around the one being rendered; the top run is
+// level 1. Bare and braced spans share this budget (PART 9 §22).
+let inlineDepth = 0
 
 // The Ohm `bracketed`/`nested` rules recurse once per open bracket. `chain` is
 // how deep that recursion runs before a `]` ends it (openers with no `]` after
@@ -2204,18 +2319,19 @@ export function renderBlockAttrs(lists, structuralUrl = null) {
         }
         for (const value of classTokens(a)) if (value !== '' && !classes.includes(value)) classes.push(value)
       } else if (a[0] === 'id') {
-        if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAttr(a[1])}"`
+        if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAuthoredAttr(a[1])}"`
         else {
           seen.set('#id', parts.length)
-          parts.push(` id="${escapeAttr(a[1])}"`)
+          parts.push(` id="${escapeAuthoredAttr(a[1])}"`)
         }
       } else if (a[0] === 'kv') {
         const h = hardenAttr(a[1], a[2])
         if (!h) continue
-        if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}="${escapeAttr(h.value)}"`
+        const value = escapeAuthoredAttr(h.value)
+        if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}="${value}"`
         else {
           seen.set(a[1], parts.length)
-          parts.push(` ${a[1]}="${escapeAttr(h.value)}"`)
+          parts.push(` ${a[1]}="${value}"`)
         }
       } else {
         // Same rule as the inline merge above: a boolean is a key/value with an
@@ -2229,7 +2345,7 @@ export function renderBlockAttrs(lists, structuralUrl = null) {
       }
     }
   }
-  if (classAt !== -1) parts[classAt] = ` class="${escapeAttr(classes.join(' '))}"`
+  if (classAt !== -1) parts[classAt] = ` class="${escapeAuthoredAttr(classes.join(' '))}"`
   return parts.join('')
 }
 
@@ -2513,6 +2629,8 @@ export function deTypography(s) {
 }
 
 export function renderInline(text, prevCtx = '', separateQuoteScope = false, markup = false) {
+  if (inlineDepth >= MAX_NESTING_DEPTH) return escapeHtml(text)
+  const outerDepth = inlineDepth++
   const saved = quotePrevCtx
   const outerMarkup = inMarkupContent
   inMarkupContent = markup
@@ -2565,6 +2683,7 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false, mar
     html ??= renderInlineInner(text)
     return root ? settleQuotes(html, quoteRun, prevCtx) : html
   } finally {
+    inlineDepth = outerDepth
     spanPairs = outerPairs
     quotePrevCtx = saved
     quoteRun.depth--

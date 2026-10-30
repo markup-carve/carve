@@ -1367,6 +1367,7 @@ index: examples/edge-cases/index.md
   invalid-line-range-includes-within-paragraphs-stay-literal
   a-quoted-include-with-no-resolver-parses-inline-content
   url-sinks-reject-schemes-after-emitted-value-normalization
+  attribute-hardening-probes-the-value-as-emitted
   45-inline-extensions-9
   36-autolinks-2
 
