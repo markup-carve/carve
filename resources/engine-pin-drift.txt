@@ -752,3 +752,5 @@
 851-a-definition-at-column-0-stands-in-the-document  Pinned JavaScript predates a column-0 abbreviation definition ending every container (carve#4412); the spec moved first
 851-a-definition-at-column-0-stands-in-the-document-2  Pinned JavaScript predates a column-0 abbreviation definition ending every container (carve#4412); the spec moved first
 851-a-definition-at-column-0-stands-in-the-document-3  Pinned JavaScript predates a column-0 abbreviation definition ending every container (carve#4412); the spec moved first
+852-a-plus-a-second-plus-follows-hands-the-quote-its-next-block  A plus a second plus follows hands the quote its next block (markup-carve/carve#4438); pending the carve-js pin.
+852-a-plus-a-second-plus-follows-hands-the-quote-its-next-block-2  A plus a second plus follows hands the quote its next block (markup-carve/carve#4438); pending the carve-js pin.

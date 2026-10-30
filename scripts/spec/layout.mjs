@@ -4434,7 +4434,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // or description owner, where it opens a list instead of extending
         // the note's paragraph.
         if ((inItem || descriptionOwnerColumn !== null) &&
-            measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured)) break
+            measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !attachPending) break
         if (isBlank(lines[i])) afterComment = false
         if (measured.col >= FOOTNOTE_BODY_COLUMN || isBlank(lines[i])) {
           retainedParagraph = false
@@ -5962,6 +5962,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // Every `+` a reader meets was accepted by the walk (§17 L3).
         if (lines[i] !== undefined && CONT_MARKER.test(ind(i).rest)) {
           i++
+          // A `+` the next `+` follows hands that one the quote's next block (carve#4438).
+          if (lines[i] !== undefined && CONT_MARKER.test(ind(i).rest)) continue
           const attached = takeOneBlock(lines, i, state, ind(i - 1).L?.col ?? sourceQuoteCol, true)
           if (attached.next > i) {
             const colonMode = qColonRuns.at(-1)?.mode
@@ -7729,6 +7731,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     if (trimWs(head.text) === '+') {
       itemLines.length = 0
       itemMeas.length = 0
+      itemSourceRows.length = 0
       if (itemOrigins) itemOrigins.length = 0
       // The memo carried for the `+` head must not answer for the line that now opens the body.
       state.prefixMemos?.get(itemLines)?.delete(0)

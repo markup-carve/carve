@@ -1,0 +1,66 @@
+A definition at a plus-attached description's body column registers
+
+```
+- +
+:: term
+: description
+  [r]: /url
+
+See [r][]
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>description</dd>
+    </dl>
+  </li>
+</ul>
+<p>See <a href="/url">r</a></p>
+```
+
+```
+- +
+:: term
+: description
+  [^n]: note
+
+See[^n]
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>description</dd>
+    </dl>
+  </li>
+</ul>
+<p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+1. +
+:: term
+: description
+  [r]: /url
+
+See [r][]
+.
+<ol>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>description</dd>
+    </dl>
+  </li>
+</ol>
+<p>See <a href="/url">r</a></p>
+```
