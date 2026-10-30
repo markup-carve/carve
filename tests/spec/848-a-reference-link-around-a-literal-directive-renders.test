@@ -1,0 +1,17 @@
+A reference link around a literal directive renders
+
+```
+[a {{ x @lines:0 }} b][r]
+
+[r]: /r
+.
+<p><a href="/r">a {{ x @lines:0 }} b</a></p>
+```
+
+```
+[{{ x @code }} *b*][r] c
+
+[r]: /r
+.
+<p><a href="/r">{{ x @code }} <strong>b</strong></a> c</p>
+```
