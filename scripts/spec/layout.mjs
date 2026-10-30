@@ -2744,6 +2744,19 @@ function pulledBlockLength(lines, at, view) {
   }
 }
 
+const underPath = (path, root) => path === root || path.startsWith(`${root}/`)
+
+// The column a written line starts at, for the trace (the walk's work is not counted).
+function leadColumn(line) {
+  let col = 0
+  for (const ch of line) {
+    if (ch === ' ') col += 1
+    else if (ch === '\t') col = (Math.floor(col / 4) + 1) * 4
+    else break
+  }
+  return col
+}
+
 function walkIndent(line) {
   let col = 0
   let i = 0
@@ -3162,21 +3175,33 @@ function ownLines(lines, trace = null) {
       // at the parent's content column (§10 I2), and so does any marker the
       // `+` refuses between its columns. The walk folds it, and the markers
       // after it, into that paragraph; the trace records the lists (carve#4193).
-      const list = trace && reown?.levels && reown.from === ownerPath() ? reown : null
+      const list = trace && reown?.levels && underPath(ownerPath(), reown.from) ? reown : null
+      // The readers measure the line where the walk wrote it.
+      const wc = list ? leadColumn(result.at(-1)) : m.col
       let parent = null
       let levels = list?.levels ?? []
       if (list && form.kind === 'item') {
-        const k = levels.findIndex((l) => m.col === l.col)
+        const k = levels.findIndex((l) => wc === l.col)
         if (k >= 0) {
           parent = levels[k].parent
           levels = levels.slice(0, k)
-        } else if (m.col >= levels.at(-1).content) parent = levels.at(-1).path
+        } else if (wc >= levels.at(-1).content) parent = levels.at(-1).path
+        // The readers closed every frame the walk keeps inside the list's parent.
+        else if (!underPath(levels[0].parent, ownerPath(reached))) parent = null
         else if (m.col === frames[reached].col) {
           parent = ownerPath(reached)
           levels = []
+        } else if (wc < levels[0].col && levels[0].parent === ownerPath(reached)) {
+          // Left of the list's own column the marker closes it (carve#4213).
+          parent = ownerPath(reached)
+          levels = []
         }
+      } else if (trace && reown?.refused && reown.from === ownerPath() && form.kind === 'item' && ownerPath(reached) === reown.to &&
+          frames[reached].kind === 'item' && wc >= frames[reached].col) {
+        // An item's paragraph the `+` refused takes a sublist at its content column.
+        parent = reown.to
       } else if (trace && !list && form.kind === 'item' && frames[reached + 1].kind === 'item' &&
-          !(reown?.refused && reown.from === ownerPath()) &&
+          !(reown?.refused && reown.from === ownerPath() && reown.to === ownerPath(reached)) &&
           !frames.slice(reached + 1).some((f) => f.kind === 'quote') &&
           (m.col === frames[reached].col || (pullingItem === top() && m.col < pullingItem.col))) {
         parent = ownerPath(reached)
@@ -3184,9 +3209,10 @@ function ownLines(lines, trace = null) {
       if (parent !== null) {
         const path = `${parent}/item:${at + 1}`
         const closed = list ? list.levels.length - levels.length : frames.length - 1 - reached
-        emit(at, 'S5', path, 'CARVE-P0-024', 'item', { cell: 'B-item-start', closed: closed || undefined, reached: closed ? parent : undefined })
-        reown = { from: list?.from ?? ownerPath(), to: path, levels: [...levels, { path, parent, col: m.col, content: m.col + form.head }] }
-      } else if (list && m.col >= list.levels.at(-1).content) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'text')
+        emit(at, 'S5', path, 'CARVE-P0-024', 'item', { cell: 'B-item-start', closed: closed || undefined, reached: closed ? parent : undefined, as: !!list })
+        const col = leadColumn(result.at(-1))
+        reown = { from: list?.from ?? ownerPath(), to: path, levels: [...levels, { path, parent, col, content: col + form.head }], aliases: list?.aliases ?? [] }
+      } else if (list && wc >= list.levels.at(-1).content) emit(at, 'S5', list.to, 'CARVE-P0-024', 'text', { as: true })
       else if (refusedBy) {
         emit(at, 'S5', ownerPath(reached), 'CARVE-P0-024', 'text', { closed: frames.length - 1 - reached, reached: ownerPath(reached) })
         reown = { from: ownerPath(), to: ownerPath(reached), refused: true }
@@ -3248,7 +3274,31 @@ function ownLines(lines, trace = null) {
     const parentPath = pulledInto ? ownerPath(reached) : null
     const blockPath = applied
     if (pulledInto) applied = pulledInto + applied.slice(parentPath.length)
-    if (trace) {
+    // A marker the walk opens as a frame inside a list the readers opened
+    // (carve#4193) is read where the walk wrote it: at a level's column a
+    // sibling, past the deepest content column a child, anywhere else text of
+    // the deepest item's paragraph (carve#4213).
+    if (trace && form.kind === 'item' && reown?.refused && !/(^|\/)item:\d+$/.test(reown.to) && !pulledInto &&
+        blockPath !== reown.from && underPath(blockPath, reown.to)) {
+      // The paragraph the `+` refused is the parent's, and only an item's
+      // paragraph takes a sublist: the marker continues it.
+      emit(at, 'S5', reown.to, 'CARVE-P0-024', 'text', { as: true })
+      reown = { ...reown, aliases: [...(reown.aliases ?? []), [blockPath, reown.to]] }
+    } else if (trace && form.kind === 'item' && reown?.levels && !pulledInto && !underPath(blockPath, reown.to) &&
+        underPath(blockPath.slice(0, blockPath.lastIndexOf('/')), reown.levels[0].parent) &&
+        blockPath.lastIndexOf('/') > reown.levels[0].parent.length) {
+      const wc = leadColumn(result.at(-1))
+      let levels = reown.levels
+      const k = levels.findIndex((l) => wc === l.col)
+      const parent = k >= 0 ? levels[k].parent : wc >= levels.at(-1).content ? levels.at(-1).path : null
+      if (k >= 0) levels = levels.slice(0, k)
+      const path = parent === null ? reown.to : `${parent}/item:${at + 1}`
+      const closed = reown.levels.length - levels.length
+      if (parent === null) emit(at, 'S5', path, 'CARVE-P0-024', 'text', { as: true })
+      else emit(at, 'S5', path, 'CARVE-P0-024', 'item', { cell: 'B-item-start', closed: closed || undefined, reached: closed ? parent : undefined, as: true })
+      reown = { ...reown, to: path, aliases: [...reown.aliases, [blockPath, path]],
+        levels: parent === null ? reown.levels : [...levels, { path, parent, col: wc, content: wc + form.head }] }
+    } else if (trace) {
       const kind = TRACE_FORM[form.kind] ?? form.family ?? form.kind
       const cell = form.kind === 'colon-close' ? 'B-div-end' : TRACE_OPENS.has(form.kind) ? `B-${form.family ?? kind}-start` : undefined
       emit(at, 'S5', applied, TRACE_RULE[form.kind] ?? 'CARVE-P0-024', kind,
@@ -3361,8 +3411,15 @@ function ownLines(lines, trace = null) {
       afterPlusBlock = null
     }
     if (reown && reown.attribute && form === 'blank') reown = null
-    const moved = reown && (owner === reown.from || owner.startsWith(`${reown.from}/`))
-    if (moved) owner = reown.to + owner.slice(reown.from.length)
+    // `as` records the owner the readers give the line, keeping the list open.
+    const fixed = extra.as
+    extra = { ...extra, as: undefined }
+    const moved = reown && (fixed || underPath(owner, reown.from) || reown.aliases?.some(([walk]) => underPath(owner, walk)))
+    if (moved && !fixed) {
+      // A frame the walk opened inside the list goes where the readers put its line.
+      const alias = reown.aliases?.findLast(([walk]) => underPath(owner, walk))
+      owner = alias ? alias[1] + owner.slice(alias[0].length) : reown.to + owner.slice(reown.from.length)
+    }
     // A line the walk folds into the refused item continues the paragraph.
     if (moved && reown.refused && owner === reown.to && form === 'lazy') {
       step = 'S5'
