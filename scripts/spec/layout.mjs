@@ -3170,7 +3170,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
             chain = matchMarkerAt({ col: 0, rest: tail })
             continue
           }
-          if (!attachesAt('item', at, column, frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length)) {
+          if (!attachesAt('item', at, column, reached + 1)) {
             src = src.slice(0, src.length - inner.rest.length) + inner.rest.replace('+', plusLetter)
             m = walkIndent(src)
             refusedPlus.push(at)
@@ -3556,19 +3556,38 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   // The one attach rule (PART 9 §17 L3, carve#4409). The host supplies its marker
   // column, and the quote frames around it the prefixes the next line must carry.
   function plusAttaches(host, at, column = host.docMarker) {
-    return attachesAt(host.kind, at, column, frames.slice(1, frames.indexOf(host)).filter((f) => f.kind === 'quote').length)
+    return attachesAt(host.kind, at, column, frames.indexOf(host))
   }
 
-  function attachesAt(kind, at, column, depth) {
+  function attachesAt(kind, at, column, hostIndex) {
     if (at + 1 >= lines.length) return false
-    const level = stripQuotes(lines[at + 1], depth)
+    const level = throughQuotes(lines[at + 1], hostIndex)
     if (level === null) return false
     const rest = trimWs(level.rest)
-    if (rest === '' || docColumn(lines[at + 1], trimWsStart(level.rest)) !== column) return false
+    // A line of nothing but quote markers is blank at its own level: it holds no block.
+    if (/^(?:>[ \t]*)*$/.test(rest) || docColumn(lines[at + 1], trimWsStart(level.rest)) !== column) return false
     if (COLON_CLOSER.test(rest) && frames.some((f) => f.kind === 'colon' && f.run === COLON_FENCE.exec(rest)[1].length)) return false
     if (kind === 'item') return !matchMarkerAt({ col: 0, rest })
     if (kind === 'dd') return !DEFLIST_TERM.test(rest) && !/^:( +)(?=[ \t]*[^ \t])/.test(rest)
     return true
+  }
+
+  // The line behind the quotes around frame `hostIndex`. A `>` left of a frame
+  // holding that quote has ended the frame, so it is not that quote's prefix.
+  function throughQuotes(line, hostIndex) {
+    let rest = line
+    let floor = 0
+    for (let k = 1; k < hostIndex; k++) {
+      if (frames[k].kind !== 'quote') {
+        floor = frames[k].col
+        continue
+      }
+      const ind = walkIndent(rest)
+      if (ind.col < floor || !QUOTE.test(ind.rest)) return null
+      rest = QUOTE.exec(ind.rest)[1] ?? ''
+      floor = 0
+    }
+    return { rest }
   }
 
   function attachedBlock(host, from) {
@@ -4870,7 +4889,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (CONT_MARKER.test(cur)) {
               i++
               markAttachmentBoundary(state, bodyLines)
-              pushBody('')
+              pushBody('', i - 1)
               attachPending = true
               continue
             }
