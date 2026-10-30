@@ -1,0 +1,63 @@
+Content behind a lead tab offers no first block
+
+```
+- - 	+
+  x
+.
+<ul>
+  <li>
+    <ul>
+      <li>+
+x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- - 	+
+x
+.
+<ul>
+  <li>
+    <ul>
+      <li>+
+x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+ - 	+
+>
+.
+<ul>
+  <li>+</li>
+</ul>
+<blockquote>
+
+</blockquote>
+```
+
+```
+> - 	- +
+x
+.
+<blockquote>
+  <ul>
+    <li>- +
+x</li>
+  </ul>
+</blockquote>
+```
+
+```
+- 	> +
+x
+.
+<ul>
+  <li>&gt; +
+x</li>
+</ul>
+```

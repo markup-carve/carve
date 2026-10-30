@@ -602,3 +602,7 @@
 840-a-refused-plus-reads-like-a-letter-2  markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)
 840-a-refused-plus-reads-like-a-letter-3  markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)
 840-a-refused-plus-reads-like-a-letter  markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)
+840-content-behind-a-lead-tab-offers-no-first-block  markup-carve/carve#4404 (carve-js), a first-block + behind a lead tab pending in the pinned engine
+840-content-behind-a-lead-tab-offers-no-first-block-2  markup-carve/carve#4404 (carve-js), a first-block + behind a lead tab pending in the pinned engine
+840-content-behind-a-lead-tab-offers-no-first-block-3  markup-carve/carve#4404 (carve-js), a first-block + behind a lead tab pending in the pinned engine
+840-content-behind-a-lead-tab-offers-no-first-block-4  markup-carve/carve#4404 (carve-js), a first-block + behind a lead tab pending in the pinned engine
