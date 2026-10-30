@@ -549,3 +549,6 @@
 802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-6  Pinned JavaScript closes the quote at a paragraph line instead of folding it into a quoted note's refused + (markup-carve/carve#4097); pending in carve-js.
 801-a-footnote-body-takes-its-first-block-at-its-body-column-7  Pinned JavaScript does not fold a paragraph line below the body column into a note's refused + (markup-carve/carve#4152); pending in carve-js.
 801-a-footnote-body-takes-its-first-block-at-its-body-column-8  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
+805-an-invalid-table-count-keeps-native-header-cells-in-the-body  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
+805-an-invalid-table-count-keeps-native-header-cells-in-the-body-2  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).
+805-an-invalid-table-count-keeps-native-header-cells-in-the-body-3  The pinned JS renderer keeps a native |= row as a head under an invalid count; fixed on carve-js main by markup-carve/carve-js#3811, the pin is behind (carve#4137).

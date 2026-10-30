@@ -1,0 +1,40 @@
+An invalid table count keeps native header cells in the body
+
+```
+{header-rows=7}
+|= a |
+| b |
+.
+<table>
+  <tbody>
+    <tr><th scope="row">a</th></tr>
+    <tr><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{header-rows=x}
+|= a |= b |
+| c | d |
+.
+<table>
+  <tbody>
+    <tr><th scope="row">a</th><th scope="row">b</th></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{header-rows=1 footer-rows=2}
+|= a |
+| b |
+.
+<table>
+  <tbody>
+    <tr><th scope="row">a</th></tr>
+    <tr><td>b</td></tr>
+  </tbody>
+</table>
+```
