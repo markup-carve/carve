@@ -591,6 +591,9 @@
 837-a-description-s-one-attributed-paragraph-keeps-its-p-2  markup-carve/carve#4309, the pinned carve-js drops a one-paragraph description's attributes; fix pending in carve-js
 838-an-open-div-s-closer-is-not-absorbed  markup-carve/carve#4397, the pinned carve-js folds a line below a closed div into the item; fix pending in carve-js
 838-an-item-on-a-body-s-marker-line-refuses-a-column-zero-block-after-its-plus-2  markup-carve/carve#4372, the pinned carve-js leaves the column-0 block outside a note's marker-line item; fix pending in carve-js
+855-a-caret-shaped-lazy-line-keeps-a-quote-in-an-item  The pinned carve-js predates this (markup-carve/carve#4489); the spec model is correct.
+855-a-caret-shaped-lazy-line-keeps-a-quote-in-an-item-2  The pinned carve-js predates this (markup-carve/carve#4489); the spec model is correct.
+838-an-item-on-a-body-s-marker-line-takes-a-column-zero-block-after-its-plus-2  markup-carve/carve#4372, the pinned carve-js leaves the column-0 block outside a note's marker-line item; fix pending in carve-js
 838-an-unresolved-reference-keeps-its-whole-attribute-run-as-text-2  markup-carve/carve#4320, the pinned carve-js drops every block after the first in an unresolved reference's attribute run; fix pending in carve-js
 838-an-unresolved-reference-keeps-its-whole-attribute-run-as-text-3  markup-carve/carve#4320, the pinned carve-js drops every block after the first in an unresolved reference's attribute run; fix pending in carve-js
 838-an-unresolved-reference-keeps-its-whole-attribute-run-as-text-4  markup-carve/carve#4320, the pinned carve-js drops every block after the first in an unresolved reference's attribute run; fix pending in carve-js

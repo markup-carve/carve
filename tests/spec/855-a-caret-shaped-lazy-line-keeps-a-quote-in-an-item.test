@@ -1,0 +1,31 @@
+A caret-shaped lazy line keeps a quote in an item
+
+```
+- > a
+^ J
+   > b
+.
+<ul>
+  <li>
+    <blockquote><p>a
+^ J
+b</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+:: t
+: > a
+^ J
+   > b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>a
+^ J
+b</p></blockquote>
+  </dd>
+</dl>
+```

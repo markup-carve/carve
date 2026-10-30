@@ -3197,7 +3197,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // A caption at its owner's block column attaches to a quote it follows and is never its
     // lazy line (CARVE-P2-008, carve#4312); an indented one (§10 I7) or one past a note folds.
     const missedFrames = frames.slice(reached + 1)
-    const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames.some((f) => f.kind === 'quote') && !missedFrames.some((f) => f.kind === 'note')
+    const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
     // PART 0 [B-term-keep]: past a missed quote or note a marker leaves a term, and past a quote a separator too (carve#4300).
     const termRefuses = top().last === 'term' && (matchMarkerAt(m) ? missedFrames.some((f) => f.kind === 'quote' || f.kind === 'note') :
       DESCRIPTION_LEAD.test(m.rest) && missedFrames.some((f) => f.kind === 'quote'))
