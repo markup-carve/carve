@@ -612,3 +612,8 @@
 842-a-plus-at-a-stacked-item-s-marker-column-reaches-it-2  markup-carve/carve#4355, the pinned carve-js does not attach a + at a stacked item's marker column; spec first, port pending
 842-a-plus-at-a-stacked-item-s-marker-column-reaches-it  markup-carve/carve#4355, the pinned carve-js does not attach a + at a stacked item's marker column; spec first, port pending
 841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-2  markup-carve/carve#4407, the pinned carve-js formats a quote after an indented first-block + so that the oracle reads another document
+841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
+841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-3  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
+841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-4  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
+841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-5  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
+841-a-description-at-a-pulled-block-s-column-ends-it-below-an-indented-plus-6  markup-carve/carve#4407, the pinned carve-js folds the description into the attached block
