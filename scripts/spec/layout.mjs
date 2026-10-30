@@ -3251,7 +3251,9 @@ function ownLines(lines, trace = null) {
       const outer = owner.closedList && m.col < listCol && m.col >= owner.closedList.col ? owner.closedList.shift : 0
       const shift = m.col >= listCol && !next.leftOfList ? Math.min(next.listShift, next.markerCol - next.markerCanon) : outer
       const cut = owner.termShift !== undefined && (owner.last === 'dd' || owner.last === 'term') ? owner.termShift : Math.max(owner.cut, shift, carried(owner))
-      const foldedAt = Math.min(Math.max(m.col - cut, owner.canon), limit, m.col)
+      // Moved to the owner's column, a paragraph line after a `: +` would read as the block it takes (CARVE-P9-067).
+      const refused = form.kind === 'text' && top().kind === 'dd' && top().plus === at - 1 && m.col > 0 && m.col < top().markerCol
+      const foldedAt = Math.min(Math.max(m.col - cut, owner.canon + (refused ? 1 : 0)), limit, m.col)
       lead(foldedAt)
       if (CONT_MARKER.test(m.rest)) carryPlus(owner, next, m.col)
       if (FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
