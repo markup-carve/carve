@@ -290,7 +290,8 @@ CarveCore {
   // empty here and `nameCuts` hands the `_` back when nothing pairs with it.
   markName   = tagName | braceUnderscore
   braceUnderscore = &("_" ("{" | "}"))
-  gluedMarker = ("@" | "#") tagName
+  // Only the marker is absorbed; the name after it is read fresh (carve#4329).
+  gluedMarker = ("@" | "#") &(asciiLetter | digit | "-")
   tagName    = tagChar+ (tagDot tagChar+)*
   // ASCII, per `name_word = (letter | digit | '_' | '-')+` in grammar.ebnf,
   // where `letter` is the enumerated ASCII alphabet (carve#844's rule, applied
@@ -788,8 +789,10 @@ CarveCore {
   // a:b:c, 10:30) and the intraword dot so none triggers mention / tag /
   // symbol / typography rules (the left word-boundary guard: a symbol only
   // opens at start or after a non-word char, matching @mention / #tag)
-  atGlue     = "@" &wordChar
-  hashGlue   = "#" &wordChar
+  // A `-` may start a name run, so it is glued too: the marker is then text
+  // and the `-` is read fresh (`b#->` is `b#→`, carve#4329).
+  atGlue     = "@" &(wordChar | "-")
+  hashGlue   = "#" &(wordChar | "-")
   // absorb an intraword colon, but NOT one that opens an inline extension
   // (`a:kbd[x]`): extensions have no left-boundary restriction, so the
   // `:name[` opener must still reach the extension rule.

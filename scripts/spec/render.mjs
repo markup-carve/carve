@@ -1630,7 +1630,25 @@ function resolveArrowCuts(toks, openMap) {
   }
 }
 
-function resolveNameRun(toks, openMap) {
+// Text left of a name's end is read fresh with what follows it, so a last `-`
+// and the next `>` are one arrow again (`a_#->`, carve#4329). Takes the `>`
+// from the token after the name and returns the text to read.
+function arrowTail(toks, i, src, text) {
+  const t = toks[i]
+  let n = i + 1
+  while (toks[n]?.ofName === t) n++
+  const next = toks[n]
+  if (!text.endsWith('-') || src[t.at + t.full.length] !== '>' || next?.k !== 't' || next.at !== undefined) return text
+  if (next.raw?.startsWith('>')) {
+    next.h = ''
+    return text + next.raw
+  }
+  if (!next.h.startsWith('&gt;')) return text
+  next.h = next.h.slice(4)
+  return text + '>'
+}
+
+function resolveNameRun(toks, openMap, src) {
   const closed = new Set(openMap.values())
   for (let i = 0; i < toks.length; i++) {
     const t = toks[i]
@@ -1648,7 +1666,8 @@ function resolveNameRun(toks, openMap) {
         c.k = 't'
         c.h = ''
       }
-      c.seg.h = kept ? '' : escapeHtml(c.seg.text)
+      const text = kept || c !== t.cuts.at(-1) ? c.seg.text : arrowTail(toks, i, src, c.seg.text)
+      c.seg.h = kept ? '' : text === c.seg.text ? escapeHtml(text) : renderInline(text, '_')
     }
     const name = cut ? t.full.slice(0, cut.at - t.at) : t.full
     if (name === t.raw) continue
@@ -1711,7 +1730,7 @@ function applyMarkerBoundary(toks, openMap, src, contentAt, literalDelims) {
     // the marker stands behind.
     if (!isWordCh(at > contentAt ? src[at - 1] : undefined)) continue
     // An enclosing span's held `_` stays literal in the rest it leaves.
-    const rest = t.raw.slice(1)
+    const rest = t.raw === t.full ? arrowTail(toks, i, src, t.raw.slice(1)) : t.raw.slice(1)
     t.h = escapeHtml(t.raw[0]) + renderInline(literalDelims.includes('_') ? rest.replaceAll('_', '\\_') : rest, t.raw[0])
     failed.push(t)
   }
@@ -1872,11 +1891,15 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
 }
 
 // Pairing supplies the opening context of an emphasis span; quote state follows rendered order.
-function applyQuotes(toks, openMap, src, contentAt, spanContent) {
+function applyQuotes(toks, openMap, src, contentAt, spanContent, contentEnd) {
   const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
   const candidates = new Set(toks.filter((t) => t.k === 'd').map((t) => t.at))
+  const closes = new Set([...openMap.values()].map((i) => toks[i].at))
   for (const t of toks) {
     if (!t.quote) continue
+    // A span's closer is no next character: the quote reads as at the end of
+    // the paragraph (CARVE-P3-023 R1, carve#4318).
+    if (closes.has(t.quote.at + 1) || (spanContent && t.quote.at + 1 === contentEnd)) t.quote.record.spanEnd = true
     const pi = quotePrevIdx(src, t.quote.at)
     const prev = pi > 0 ? src[pi - 1] : quotePrevCtx
     // CARVE-P3-023: an opener of any kind starts content (carve#3898).
@@ -1924,9 +1947,9 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
   const toks = build()
   const openMap = pairDelims(toks, src, literalDelims, contentAt)
   const tentative = new Set([...openMap.values()].map((i) => toks[i].at))
-  applyQuotes(toks, openMap, src, contentAt, spanContent)
+  applyQuotes(toks, openMap, src, contentAt, spanContent, contentEnd)
   applyDashFlanks(toks, openMap, src, contentAt, spanContent, contentEnd)
-  resolveNameRun(toks, openMap)
+  resolveNameRun(toks, openMap, src)
   resolveArrowCuts(toks, openMap)
   // A bare marker that is no mention or tag leaves the `_` it borrowed an
   // ordinary delimiter, so the run is read again without that borrowing.
@@ -2289,7 +2312,8 @@ function settleQuotes(html, run, prevCtx) {
         const r = run.records[Number(quote[2])]
         if (r.initialContext !== undefined) prev = r.initialContext
         if (r.spanStart) prev = ''
-        const dashClose = '-–—/'.includes(prev) && prev !== '' && (r.next === '' || isTypographyFlank(r.next) || '"\'.,;:!?)]'.includes(r.next))
+        const next = r.spanEnd ? '' : r.next
+        const dashClose = '-–—/'.includes(prev) && prev !== '' && (next === '' || isTypographyFlank(next) || '"\'.,;:!?)]'.includes(next))
         const opening = (r.spanStart ?? (prev === '' || isTypographyFlank(prev) || QUOTE_OPEN_PREV.has(prev))) && !dashClose
         let apostrophe = r.single && (/[0-9]/.test(r.next) || (!opening && quoteAlnum(r.next)))
         if (r.single && !apostrophe && !opening && !isTypographyFlank(prev)) span = null
