@@ -3287,9 +3287,12 @@ function ownLines(lines, trace = null) {
     const sibling = frames[reached + 1]
     frames.length = reached + 1
     owner = top()
-    // A list opened right of an indented list it closes leaves the lines left
-    // of it at the closed list's shift (PART 0 S3, carve#4304).
-    if (form.kind === 'item' && sibling?.listShift > 0 && m.col >= sibling.listCol) owner.closedList = { col: sibling.listCol, shift: sibling.listShift }
+    // A line at or past an indented list or term run that ends there keeps
+    // that run's shift for the lines after it (PART 0 S3, carve#4304, carve#4316).
+    if (m.rest !== '' && sibling?.listShift > 0 && m.col >= sibling.listCol) owner.closedList = { col: sibling.listCol, shift: sibling.listShift }
+    else if (m.rest !== '' && owner.last === 'term' && owner.termShift > 0 && m.col >= owner.canon + owner.termShift) {
+      owner.closedList = { col: owner.canon + owner.termShift, shift: owner.termShift }
+    }
     let applied = trace ? ownerPath() : null
     if (m.rest === '') {
       owner.para = false
@@ -3309,7 +3312,7 @@ function ownLines(lines, trace = null) {
       const afterPlus = owner.para && owner.plusLine === at - 1 && owner.termShift !== undefined && DESCRIPTION_LEAD.test(m.rest)
       // So does the block a `+` attaches to a description.
       const attached = plusFollower && owner.termShift !== undefined && owner.last === 'dd'
-      const cut = term ? owner.termCut : afterPlus || attached ? owner.termShift : Math.max(owner.cut, carried(owner))
+      const cut = term ? owner.termCut : afterPlus || attached ? owner.termShift : Math.max(owner.cut, carried(owner), owner.closedList?.shift ?? 0)
       const moved = !(owner.para || !closedColumn || plusFollower)
       lead(moved ? owner.canon : Math.max(m.col - cut, owner.canon), term)
       owner.plusLine = moved && CONT_MARKER.test(m.rest) ? at : undefined
@@ -3821,7 +3824,6 @@ function restoreOrdinaryPlus(value, sentinel) {
 export function parse(src, { stateSink = null, includeFiles = null, trace = null } = {}) {
   src = normalizeSource(src)
   const walked = ownLines(src.split('\n'), trace)
-  if (process.env.OC_WALK) console.error(JSON.stringify(walked))
   src = walked.join('\n')
   // A private character keeps indented plus lines ordinary through recursive dedents.
   let hasOrdinaryPlus = false
