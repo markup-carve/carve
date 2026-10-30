@@ -959,6 +959,7 @@ const sem = g.createSemantics().addOperation('h', {
       dch,
       inner.source.startIdx,
       true,
+      inner.source.endIdx,
     )
     return `<${tag}${a}>${body}</${tag}>`
   },
@@ -1102,16 +1103,7 @@ const sem = g.createSemantics().addOperation('h', {
     // n%3==0 all em; n%2==0 all en; else maximize em-dashes with the remainder
     // as en, where a remainder of 1 trades one em-dash for two en-dashes. Must
     // match carve-js / carve-php exactly (e.g. n=11 -> 3 em + 1 en, not 1 em).
-    const n = this.sourceString.length
-    if (n % 3 === 0) return '\u2014'.repeat(n / 3)
-    if (n % 2 === 0) return '\u2013'.repeat(n / 2)
-    let em = Math.floor(n / 3)
-    let rem = n - em * 3
-    if (rem === 1) {
-      em -= 1
-      rem = 4
-    }
-    return '\u2014'.repeat(em) + '\u2013'.repeat(rem / 2)
+    return dashGlyphs(this.sourceString.length)
   },
   dquote(_q) {
     return smartQuote(this, '\u201c', '\u201d', false)
@@ -1888,26 +1880,45 @@ function applyQuotes(toks, openMap, src, contentAt, spanContent) {
   }
 }
 
+function dashGlyphs(n) {
+  if (n % 3 === 0) return '\u2014'.repeat(n / 3)
+  if (n % 2 === 0) return '\u2013'.repeat(n / 2)
+  let em = Math.floor(n / 3)
+  let rem = n - em * 3
+  if (rem === 1) {
+    em -= 1
+    rem = 4
+  }
+  return '\u2014'.repeat(em) + '\u2013'.repeat(rem / 2)
+}
+
 // CARVE-P3-021 with CARVE-P3-023: a run at the start of a span's content follows
-// start-of-content, so it stays literal before a non-flank (carve#4170).
-function applyDashStarts(toks, openMap, src, contentAt, spanContent) {
+// start-of-content (carve#4170), and a span's closer is no following character,
+// so a run at the end of its content converts as at the end of a paragraph (carve#4260).
+function applyDashFlanks(toks, openMap, src, contentAt, spanContent, contentEnd) {
   const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
+  const closes = new Set([...openMap.values()].map((i) => toks[i].at))
   for (const t of toks) {
     if (!t.dash) continue
     const { at, raw } = t.dash
-    if (!opens.has(at - 1) && !(spanContent && at === contentAt)) continue
+    const atStart = opens.has(at - 1) || (spanContent && at === contentAt)
+    const atEnd = closes.has(at + raw.length) || (spanContent && at + raw.length === contentEnd)
+    if (!atStart && !atEnd) continue
+    const prev = at > 0 ? src[at - 1] : ''
     const next = src[at + raw.length] ?? ''
-    if (next !== '' && !isTypographyFlank(next)) t.h = escapeHtml(raw)
+    const prevIsSpace = atStart || prev === '' || isTypographyFlank(prev)
+    const nextIsSpace = atEnd || next === '' || isTypographyFlank(next)
+    t.h = prevIsSpace && !nextIsSpace ? escapeHtml(raw) : dashGlyphs(raw.length)
   }
 }
 
-// `spanContent`: `contentAt` starts a braced span's content.
-function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanContent = false) {
+// `spanContent`: `contentAt` starts and `contentEnd` ends a braced span's content.
+function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanContent = false, contentEnd = -1) {
   const toks = build()
   const openMap = pairDelims(toks, src, literalDelims, contentAt)
   const tentative = new Set([...openMap.values()].map((i) => toks[i].at))
   applyQuotes(toks, openMap, src, contentAt, spanContent)
-  applyDashStarts(toks, openMap, src, contentAt, spanContent)
+  applyDashFlanks(toks, openMap, src, contentAt, spanContent, contentEnd)
   resolveNameRun(toks, openMap)
   resolveArrowCuts(toks, openMap)
   // A bare marker that is no mention or tag leaves the `_` it borrowed an
@@ -1918,7 +1929,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
     const saved = freedTails
     freedTails = { src, at: new Set([...(saved?.at ?? []), ...freed]) }
     try {
-      return resolveEmphasis(build, src, literalDelims, contentAt, spanContent)
+      return resolveEmphasis(build, src, literalDelims, contentAt, spanContent, contentEnd)
     } finally {
       freedTails = saved
     }
