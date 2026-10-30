@@ -5085,6 +5085,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const bodyLines = []
           const bodySourceColumns = []
           let bodyHasFenceCandidate = false
+          let foldedParagraphAt = -1
           const measurement = state.opaqueMeasurement
           const parentOrigins = measurement?.origins.get(lines)
           const markerLead = matchMarkerAt(indentCols(dm[2])) && markerFenceSummary(dm[2], new Map())
@@ -5400,22 +5401,22 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              */
             // Below the body's column an opener folds into the open paragraph
             // (PART 0 O3, CARVE-P0-021); in an item it opens there unless a quote holds the band (X2).
-            const lastBlock = stripIndent([...bodyLines].reverse().find((l) => !l.startsWith(LAZY)) ?? '')
+            const lastBlock = stripIndent(bodyLines.findLast((l) => !l.startsWith(LAZY)) ?? '')
             if (authoredCol > 0 && authoredCol < bodyColumn && (!inItem || QUOTE.test(lastBlock)) &&
-                descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt) === -1 &&
-                bodyLeavesParagraphOpen(bodyLines) &&
                 (HEADING.test(dedented) || HR.test(dedented) || isTableRow(dedented) ||
-                 QUOTE.test(dedented) || (QUOTE.test(lastBlock) && isCodeBlockOpener(dedented)))) {
+                 QUOTE.test(dedented) || (QUOTE.test(lastBlock) && isCodeBlockOpener(dedented))) &&
+                descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt) === -1 &&
+                bodyLeavesParagraphOpen(bodyLines)) {
               pushBody(lazyFrame(dedented))
               i++
               continue
             }
-            openFence = descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt)
+            openFence = bodyHasFenceCandidate ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt) : -1
             if (openFence !== -1) break
-            if (authoredCol > 0 && bodyLeavesParagraphOpen(bodyLines) &&
-                !startsVisibleBlock(dedented) &&
+            if (authoredCol > 0 && !startsVisibleBlock(dedented) &&
                 (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented) ||
-                 ABBR_DEF.test(dedented) || dedented[0] === '{')) {
+                 ABBR_DEF.test(dedented) || dedented[0] === '{') &&
+                bodyLeavesParagraphOpen(bodyLines)) {
               pushBody(lazyFrame(dedented))
               i++
               continue
@@ -5450,13 +5451,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (isTableRow(dedented)) break
             // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
             if (matchMarkerAt(indentCols(dedented)) && /^\[\^[^\]]+\]: +\+[ \t]*$/.test(bodyLines.at(-1) ?? '')) break
-            if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) && bodyLeavesParagraphOpen(bodyLines)) {
+            // A plain line folded into the open paragraph leaves it open, so the scan is not repeated per line.
+            if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) &&
+                (foldedParagraphAt === bodyLines.length || bodyLeavesParagraphOpen(bodyLines))) {
               // The marker is below the lead item's content column, so it
               // continues that paragraph even when the description dedents it.
               const leadItem = matchMarkerAt(indentCols(bodyLines[0] ?? ''))
               const belowLeadItem = leadItem && authoredCol > 0 && authoredCol < bodyColumn + leadItem.markerWidth &&
                 matchMarkerAt(indentCols(dedented))
               pushBody(lazyFence || belowLeadItem || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
+              if (foldablePlain(dedented) && !lazyFence && !CAPTION.test(dedented)) foldedParagraphAt = bodyLines.length
               i++
               continue
             }
