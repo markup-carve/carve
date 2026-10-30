@@ -1158,8 +1158,8 @@ function bodyEndsInOpenFence(bodyLines) {
     const line = stripLazy(bodyLines[k])
     if (trimWs(line) === '' || COMMENT_LINE.test(line)) continue
     // A LAZY line is paragraph text, whatever it looks like.
-    if (isCodeBlockOpener(line) && line === bodyLines[k]) {
-      const closer = findCloser(bodyLines, k, FENCE.exec(line)[1])
+    if (line === bodyLines[k] && (k === 0 ? openerFenceRun(line) !== null : isCodeBlockOpener(line))) {
+      const closer = bodyFenceEnd(bodyLines, k)
       if (closer === -1) return true
       k = closer
     }
@@ -1927,7 +1927,7 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
       if (m.rest === '') continue
       const note = FOOTNOTE_DEF.exec(m.rest)
       if (note) {
-        if (k === last) break
+        if (k === last && openerFenceRun(note[2]) === null) break
         const body = [note[2], ...bodyLines.slice(k + 1, last + 1).map((l) => dedentMeasured(indentCols(l), l, m.col + FOOTNOTE_BODY_COLUMN).text)]
         if (bodyLines.slice(k + 1, last + 1).every((l) => trimWs(l) === '' || indentCols(l).col >= m.col + FOOTNOTE_BODY_COLUMN)) {
           return !bodyEndsInOpenFence(body) && bodyLeavesParagraphOpen(body, false, depth + 1)
@@ -2268,12 +2268,17 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     }
     // A footnote body's column is its marker's plus 2 (PART 9 SS16), and the
     // definition itself interrupts a paragraph, so its first block is a start.
-    if (FOOTNOTE_DEF.test(inner.rest) && reachesDefinitionSite(h, inner.col)) {
+    const note = FOOTNOTE_DEF.exec(inner.rest)
+    if (note && reachesDefinitionSite(h, inner.col)) {
       h.markerCols.push(inner.col)
       h.columns.push(inner.col + 2)
       h.kinds.push('note')
       blockStart = true
-      break
+      // Its marker-line content is read on at the body column (carve#4258), so a fence opened there is the note's.
+      paraOpen = false
+      const next = indentCols(note[2])
+      inner = { col: inner.col + FOOTNOTE_BODY_COLUMN + next.col, rest: next.rest }
+      continue
     }
     // A description carries its separator column only while its term's list survives.
     if (description && inner === meas) {
@@ -2458,6 +2463,29 @@ function hostFenceOpener(h, inner) {
   return opener
 }
 
+// The run of a code fence a body's marker-line content opens, bare or behind list markers.
+function openerFenceRun(line) {
+  const f = FENCE.exec(line)
+  if (f) return parseFenceInfo(f[2]) === null ? null : f[1]
+  return matchMarkerAt(indentCols(line)) ? markerFenceSummary(line, new Map())?.run ?? null : null
+}
+
+// The body index where the fence `bodyLines[k]` opens ends, or -1. Behind list
+// markers it also ends at a line below its item's content column (CARVE-P0-013).
+function bodyFenceEnd(bodyLines, k) {
+  const f = FENCE.exec(bodyLines[k])
+  if (f) return findCloser(bodyLines, k, f[1])
+  const { run, col } = markerFenceSummary(bodyLines[k], new Map())
+  for (let j = k + 1; j < bodyLines.length; j++) {
+    if (trimWs(bodyLines[j]) === '') continue
+    const m = indentCols(bodyLines[j])
+    if (bodyLines[j].startsWith(LAZY) || m.col < col) return j - 1
+    const c = PURE_FENCE.exec(m.rest)
+    if (c && m.col === col && c[1][0] === run[0] && c[1].length >= run.length) return j
+  }
+  return -1
+}
+
 // The body index of a code fence a description body OPENED and has not closed,
 // or -1. A FENCED BODY IS NOT A PARAGRAPH (CARVE-P0-013), so a line below the
 // body's column cannot fold into it and ends the body. A valid opener always
@@ -2465,8 +2493,8 @@ function hostFenceOpener(h, inner) {
 function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) {
   for (let k = 0; k < bodyLines.length; k++) {
     const f = FENCE.exec(bodyLines[k])
-    if (!f || parseFenceInfo(f[2]) === null) continue
-    const end = findCloser(bodyLines, k, f[1])
+    if (k === 0 ? openerFenceRun(bodyLines[k]) === null : !f || parseFenceInfo(f[2]) === null) continue
+    const end = bodyFenceEnd(bodyLines, k)
     if (end !== -1) {
       k = end
       continue
@@ -4677,7 +4705,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         for (; fenceKnownShut < bodyLines.length; fenceKnownShut++) {
           const l = bodyLines[fenceKnownShut]
           if (l.startsWith(LAZY)) continue
-          if (FENCE.test(l)) fenceSeen = true
+          if (fenceKnownShut === 0 ? openerFenceRun(l) !== null : FENCE.test(l)) fenceSeen = true
           if (fenceSeen) break
         }
         if (fenceKnownShut === bodyLines.length) return -1
@@ -6252,7 +6280,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
              isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionPlus ||
              (isLinkDef(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(l) || COMMENT_LINE.test(l) ||
-             (FOOTNOTE_DEF.test(l) && !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true)))) {
+             (FOOTNOTE_DEF.test(l) && (openerFenceRun(FOOTNOTE_DEF.exec(l)[2]) !== null ||
+               !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true))))) {
           qOpenPara = false
           qItemPara = false
           qTermOpen = false
