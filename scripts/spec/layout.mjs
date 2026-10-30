@@ -2996,11 +2996,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
           const level = stripQuotes(line, prefixes)
           if (level === null) return null
           const ind = walkIndent(level.rest)
+          if (plusHost.kind === 'dd' && ind.col < plusHost.col && DESCRIPTION_TEXT.test(ind.rest)) return null
           return ' '.repeat(Math.max(0, ind.col - col)) + ind.rest
         })
         // It keeps the marker's shift too, as does the parent after it (carve#4245).
         const cut = Math.max(hostParent.cut, plusHost.markerCol - plusHost.markerCanon)
-        frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, cut, para: false, last: null, once: end }
+        frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, cut, para: false, last: null, once: end, bodyCol: plusHost.col }
         if (trace) afterPlusBlock = { end, path: ownerPath(), col: plusHost.col }
       }
     }
@@ -3013,6 +3014,20 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
         frames.push(...attachedTo.frames)
       }
       attachedTo = null
+    }
+    // The block a `+` attached leaves its description open for a sibling (carve#4408).
+    if (attachedTo?.host.kind === 'dd') {
+      const stands = stripQuotes(src, attachedTo.depth)
+      const line = stands && walkIndent(stands.rest)
+      if (line && DESCRIPTION_TEXT.test(line.rest) && line.col < attachedTo.host.col) {
+        if (attachedTo.endsAt(at)) {
+          frames.length = 0
+          frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
+          top().last = 'dd'
+          top().para = false
+        }
+        attachedTo = null
+      }
     }
     let reached = 0
     let plus = null
@@ -3074,7 +3089,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     if (once.once !== undefined && at >= once.once && !plus) {
       frames.length = reached
       // A description a `+` filled stays open for a sibling (carve#4408).
-      Object.assign(top(), { para: once.para, absorbs: once.absorbs, last: once.kind === 'dd' ? 'dd' : once.last, cut: Math.max(top().cut, once.cut) })
+      Object.assign(top(), { para: once.para, absorbs: once.absorbs, last: once.kind === 'dd' && m.col < once.bodyCol ? 'dd' : once.last, cut: Math.max(top().cut, once.cut) })
       reached--
     }
     if (plus) {
@@ -3587,7 +3602,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       const own = lines.slice(from, last).map(view)
       return !own.includes(null) && takeOneBlock(own, 0, {}, 0).next >= own.length
     }
-    return { depth, endsAt, frames: frames.slice() }
+    return { host, depth, endsAt, frames: frames.slice() }
   }
 
   function absorbsColon(rest) {
