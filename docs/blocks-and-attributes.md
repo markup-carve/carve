@@ -107,7 +107,10 @@ The two signals stay independent: `js` identifies the language of the code,
 while `.diff` asks the host to present its leading `+`, `-`, and space
 characters as diff markers. Core HTML preserves both as
 `<pre class="diff"><code class="language-js">…</code></pre>`; applying the
-presentation is the host's responsibility.
+presentation is the host's responsibility. When the fence has a `^` caption, the
+figure owns the attribute line, so the class moves to it:
+`<figure class="diff"><pre><code class="language-js">…</code></pre>…</figure>`.
+A host has to check both shapes.
 
 Sites using Shiki can use the browser-safe transformer and baseline CSS from
 [`@markup-carve/carve-grammars`](https://github.com/markup-carve/carve-grammars):
@@ -117,15 +120,19 @@ import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
 import '@markup-carve/carve-grammars/shiki/carve.css'
 ```
 
-For each code block whose `<pre>` has the `diff` class, create a fresh
-transformer and pass it alongside the fence language:
+For each code block whose `<pre>`, or the `<figure>` directly around it, has
+the `diff` class, create a fresh transformer and pass it alongside the fence
+language:
 
 ```js
 const language = [...code.classList]
   .find((name) => name.startsWith('language-'))
   ?.slice('language-'.length)
 
-const transformers = pre.classList.contains('diff')
+const isDiff = pre.classList.contains('diff')
+  || pre.parentElement?.matches('figure.diff')
+
+const transformers = isDiff
   ? [diffCodeTransformer()]
   : []
 
