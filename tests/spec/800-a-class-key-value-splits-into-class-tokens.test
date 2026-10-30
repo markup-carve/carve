@@ -1,0 +1,42 @@
+A class key-value splits into class tokens
+
+```
+{class="a b" .a}
+para
+.
+<p class="a b">para</p>
+```
+
+```
+[x]{class="a b" .b}
+.
+<p><span class="a b">x</span></p>
+```
+
+```
+[x]{class="a  b a"}
+.
+<p><span class="a b">x</span></p>
+```
+
+```
+{.b}
+{class="a b"}
+para
+.
+<p class="b a">para</p>
+```
+
+```
+{class=""}
+para
+.
+<p class="">para</p>
+```
+
+```
+{class="javascript:x y"}
+para
+.
+<p class="y">para</p>
+```

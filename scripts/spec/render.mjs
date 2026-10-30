@@ -552,12 +552,16 @@ export const FOOTNOTE_FRAMES = new RegExp(
 // still passes `hardenAttr`, which every key/value does and which blanks a
 // class the URL sink check refuses; a blanked or empty value contributes no
 // class but still claims the slot.
+// A `class=V` value splits on ASCII whitespace into one class per token before
+// it joins the list, so the dedup sees tokens (carve#4205); a value with no
+// token stays one entry. Each token passes `hardenAttr` on its own.
 // A carrier that builds its own class attribute tests the slot with these two,
 // or it writes the second attribute the clause exists to remove.
-export const classValue = (a) => {
-  if (a[0] === 'class') return a[1]
-  const hardened = hardenAttr('class', a[0] === 'kv' ? a[2] : '')
-  return hardened ? hardened.value : ''
+export const classTokens = (a) => {
+  if (a[0] === 'class') return [a[1]]
+  const raw = a[0] === 'kv' ? a[2] : ''
+  const tokens = raw.split(/[\t\n\f\r ]+/).filter((t) => t !== '')
+  return (tokens.length ? tokens : [raw]).map((v) => hardenAttr('class', v)?.value ?? '')
 }
 export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && a[1] === 'class')
 
@@ -576,8 +580,7 @@ export function renderAttrs(list, structuralUrl = null) {
         classAt = parts.length
         parts.push(null) // placeholder
       }
-      const value = classValue(a)
-      if (value !== '' && !classes.includes(value)) classes.push(value)
+      for (const value of classTokens(a)) if (value !== '' && !classes.includes(value)) classes.push(value)
     } else if (a[0] === 'id') {
       if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAttr(a[1])}"`
       else {
@@ -2028,8 +2031,7 @@ export function renderBlockAttrs(lists, structuralUrl = null) {
           classAt = parts.length
           parts.push(null)
         }
-        const value = classValue(a)
-        if (value !== '' && !classes.includes(value)) classes.push(value)
+        for (const value of classTokens(a)) if (value !== '' && !classes.includes(value)) classes.push(value)
       } else if (a[0] === 'id') {
         if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAttr(a[1])}"`
         else {
