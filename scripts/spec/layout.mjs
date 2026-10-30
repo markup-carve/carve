@@ -9188,7 +9188,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
               if (!foldedChildParagraph || !descendantParagraphBefore || mayOpenAuthoredBlock) {
                 // The child's paragraph stays the deepest one for the box columns (PART 0 S4).
                 childParagraphLazy = childParagraphOpen && !mayOpenAuthoredBlock && (foldablePlainLine(dmeas.rest) || foldsIntoChild)
-                descLive = false
+                // A lazy fold keeps the child the deepest frame (PART 0 S4, carve#4291).
+                if (!childParagraphLazy || nestedOpaque || wasNested) descLive = false
                 foldedChildParagraph = false
               }
             }
@@ -9763,6 +9764,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         }
         belowSpanClosed = false
         pushLine(lazyFrame(lm.rest), LAZY_MEAS(lm.rest))
+        // The head seed waits for a quoted line; a lazy line continues the run too (carve#4291).
+        if (bodyQuote.at === -2 && i - 1 === headIndex && QUOTE.test(head.text)) advanceBodyQuote(head.text, headIndex)
         if (bodyQuote.at === i - 1 && bodyQuote.open) bodyQuote.at = i
         i++
         continue
