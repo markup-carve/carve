@@ -1377,6 +1377,7 @@ index: examples/edge-cases/index.md
   model-syntax-boundaries-and-ownership
   model-inline-frames-and-html-attributes
   invalid-table-metadata-keeps-the-table
+  an-invalid-table-count-keeps-native-header-cells-in-the-body
 
 [edge-model-followups] Model source boundaries
 > Source columns, table sections, footnotes, and image attributes.
