@@ -8,7 +8,8 @@ A definition attached by a + continuation marker is collected, and the item keep
 see [t][r]
 .
 <ul>
-  <li>a</li>
+  <li>a
++</li>
 </ul>
 <p>see <a href="/u">t</a></p>
 ```

@@ -1,0 +1,71 @@
+Invisible lines after a plus are skipped and the first visible line decides
+
+```
+- +
+%% c
+
+text
+.
+<ul>
+  <li>+</li>
+</ul>
+<p>text</p>
+```
+
+```
+- +
+%%%
+c
+%%%
+
+text
+.
+<ul>
+  <li>+</li>
+</ul>
+<p>text</p>
+```
+
+```
+- +
+%% c
+- b
+.
+<ul>
+  <li>+</li>
+  <li>b</li>
+</ul>
+```
+
+```
+- +
+%% c
+  text
+.
+<ul>
+  <li>+</li>
+</ul>
+<p>text</p>
+```
+
+```
+- +
+%% c
+text
+.
+<ul>
+  <li>text</li>
+</ul>
+```
+
+```
+- +
+%%%
+c
+%%%
+text
+.
+<ul>
+  <li>text</li>
+</ul>
+```

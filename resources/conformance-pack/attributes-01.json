@@ -404,7 +404,7 @@
 {"id":"attributes-58b58c754bd4","source":"![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n\n\n\n","html":"<img src=\"safe.png\" alt=\"a\" srcset=\"\">"},
 {"id":"attributes-58dcea9a3697","source":"{#poem .verse}\n::: |\n  Violets are blue.\nRoses are red,\n:::{\n","html":"<div id=\"poem\" class=\"verse line-block\">\n  <p>&nbsp;&nbsp;Violets are blue.<br>\nRoses are red,<br>\n:::{</p>\n</div>"},
 {"id":"attributes-591dc4360f8b","source":"_*a*{title=\"_\"} b_\n{\n","html":"<p><u><strong title=\"_\">a</strong> b</u>\n{</p>"},
-{"id":"attributes-5944b36aa7a1","source":"- a\n+\n{.x}\n > q\n \n","html":"<ul>\n  <li>a\n    <blockquote class=\"x\"><p>q</p></blockquote>\n  </li>\n</ul>"},
+{"id":"attributes-5944b36aa7a1","source":"- a\n+\n{.x}\n > q\n \n","html":"<ul>\n  <li>a\n+</li>\n</ul>\n<blockquote class=\"x\"><p>q</p></blockquote>"},
 {"id":"attributes-597575eb63bd","source":"Launch :rocket:{.big} ow.\n:  d\n","html":"<p>Launch <span class=\"big\">:rocket:</span> ow.\n:  d</p>"},
 {"id":"attributes-598027ed4800","source":"\n a.{.c} An alpha item.\n","html":"<ol type=\"a\">\n  <li class=\"c\">An alpha item.</li>\n</ol>"},
 {"id":"attributes-5a13a9d9d78f","source":"A [daner]{srcdoc=\"<script>\"} span.\nA [danger]{srcdoc=\"<script>\"} span.\n","html":"<p>A <span>daner</span> span.\nA <span>danger</span> span.</p>"},

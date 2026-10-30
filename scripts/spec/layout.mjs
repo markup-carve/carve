@@ -2962,6 +2962,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   let afterPlus = false
   // The host of the last `+` and where the block it took ends.
   let attachedTo = null
+  // The invisible lines between an accepted `+` and its block (carve#4449).
+  let skipped = null
   // The continuation lines of a wrapped attribute block the walk opened.
   let attrRest = null
   // Every lone `+` the one rule refused; each is written as a letter.
@@ -2982,6 +2984,15 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     }
   }
   for (let at = start; at < lines.length; at++) {
+    if (skipped) {
+      result.push(skipped.lead + (skipped.fenced.has(at) ? '%%' : trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)))
+      if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
+      if (at + 1 === skipped.end) {
+        if (skipped.host.plus === skipped.at) skipped.host.plus = at
+        skipped = null
+      }
+      continue
+    }
     let src = lines[at]
     let out = ''
     let m = walkIndent(src)
@@ -3118,7 +3129,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     if (plus) {
       frames.length = frames.indexOf(plus) + 1
       plus.para = false
-      attachedTo = attachedBlock(plus, at + 1)
+      skipInvisible(plus, at, docColumn(lines[at], m.rest))
+      attachedTo = attachedBlock(plus, skipped?.end ?? at + 1)
       lead(plus.markerCanon)
       result.push(out + src)
       afterPlus = true
@@ -3291,25 +3303,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'text', { plus: at })
       continue
     }
-    // An attribute run after it leads the `+`'s one block, so the item stays open
-    // for the line after the run (CARVE-P0-008, corpus 325, carve#4278).
-    // A description-hosted list's readers refuse that `+`, so it keeps its reading.
-    const runEnd = at + 1 + (form.attrLines ?? 0)
-    const quoteDepth = frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length
-    const runNext = ledLine((k) => {
-      const rest = stripQuotes(lines[k], quoteDepth)?.rest
-      return rest === undefined ? null : walkIndent(rest)
-    }, runEnd, lines.length)
-    if (lonePlus?.kind === 'item' && reached === frames.length - 2 && m.col === lonePlus.markerCol &&
-        frames[reached].kind !== 'dd' && (form.attrLines !== undefined || (m.rest[0] === '{' && tryAttrLine([m.rest], 0))) &&
-        runNext?.col >= lonePlus.col) {
-      lead(lonePlus.markerCanon)
-      result.push(out + src)
-      if (form.attrLines) attrRest = { left: form.attrLines, cut: m.col - lonePlus.markerCanon, floor: lonePlus.markerCanon }
-      afterPlus = true
-      if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
-      continue
-    }
     // Any other block it attaches there meets the `+` where the walk moved it (§17 L3, carve#4367).
     const invisibleLine = !COMMENT_FENCE_BODY.test(m.rest) && COMMENT_LINE.test(m.rest) || isLinkDef(m.rest) && !FOOTNOTE_DEF.test(m.rest)
     const plusLanding = lonePlus?.kind === 'item' && reached === frames.length - 2 && m.col === lonePlus.markerCol &&
@@ -3449,7 +3442,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
           // Past the one space after a `>` the `+` is the quote's text (corpus 646).
           if (!(frame.kind === 'quote' && m.col > 0) && plusAttaches(frame, at)) {
             frame.plus = at
-            attachedTo = attachedBlock(frame, at + 1)
+            skipInvisible(frame, at, frame.docMarker)
+            attachedTo = attachedBlock(frame, skipped?.end ?? at + 1)
           } else {
             src = src.replace('+', plusLetter)
             m = walkIndent(src)
@@ -3598,41 +3592,58 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   }
 
   function attachesAt(kind, at, column, hostIndex) {
-    if (at + 1 >= lines.length) return false
-    const level = throughQuotes(lines[at + 1], hostIndex)
+    const next = firstVisibleLine(at + 1, hostIndex, column)
+    if (next >= lines.length) return false
+    const level = throughQuotes(lines[next], hostIndex)
     if (level === null) return false
     const rest = trimWs(level.rest)
     // A line of nothing but quote markers is blank at its own level: it holds no block.
-    if (/^(?:>[ \t]*)*$/.test(rest) || docColumn(lines[at + 1], trimWsStart(level.rest)) !== column) return false
+    if (/^(?:>[ \t]*)*$/.test(rest) || docColumn(lines[next], trimWsStart(level.rest)) !== column) return false
     if (COLON_CLOSER.test(rest) && frames.some((f) => f.kind === 'colon' && f.run === COLON_FENCE.exec(rest)[1].length)) return false
-    const sibling = kind === 'item' ? (r) => !!matchMarkerAt({ col: 0, rest: r })
-      : kind === 'dd' ? (r) => DEFLIST_TERM.test(r) || /^:( +)(?=[ \t]*[^ \t])/.test(r) : null
-    if (!sibling) return true
-    if (sibling(rest)) return false
-    // An attribute run moves nothing, so the sibling test reads the block it leads (carve#4278).
-    const led = lineAfterRun(at + 1, hostIndex)
-    return led === null || !sibling(trimWs(throughQuotes(lines[led], hostIndex)?.rest ?? ''))
+    if (kind === 'item') return !matchMarkerAt({ col: 0, rest })
+    if (kind === 'dd') return !DEFLIST_TERM.test(rest) && !/^:( +)(?=[ \t]*[^ \t])/.test(rest)
+    return true
   }
 
-  // The first line past the attribute and invisible lines from `from`, or null when they hold no attribute line.
-  function lineAfterRun(from, hostIndex) {
-    let run = false
-    for (let k = from; k < lines.length;) {
-      const view = new Proxy([], {
-        get(_, key) {
-          if (key === 'length') return lines.length - k
-          const j = typeof key === 'string' && /^\d+$/.test(key) ? k + Number(key) : -1
-          if (j < 0 || j >= lines.length) return undefined
-          return trimWsStart(throughQuotes(lines[j], hostIndex)?.rest ?? '')
-        },
-      })
-      const attr = tryAttrLine(view, 0)
-      if (attr) run = true
-      if (attr) k += attr.next
-      else if (leadsNothing(view[0])) k++
-      else return run ? k : null
+  // The readers meet the skipped lines where the block stands, one line for a
+  // line, so each host reads them as it reads a comment before its block.
+  function skipInvisible(host, at, column) {
+    const hostIndex = frames.indexOf(host)
+    const fenced = new Set()
+    const end = firstVisibleLine(at + 1, hostIndex, column, fenced)
+    if (end === at + 1) return
+    const rest = throughQuotes(lines[end], hostIndex).rest
+    skipped = { host, at, end, hostIndex, fenced, lead: lines[end].slice(0, lines[end].length - rest.length) + ' '.repeat(host.markerCanon) }
+  }
+
+  // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Off the
+  // marker column an invisible line is that next line, and a note definition's body is its own.
+  function firstVisibleLine(from, hostIndex, column, fenced = null) {
+    const view = (k) => trimWsStart(throughQuotes(lines[k], hostIndex)?.rest ?? '\uE000')
+    const fromHere = new Proxy([], {
+      get: (_, key) => key === 'length' ? lines.length : /^\d+$/.test(String(key)) && +key < lines.length ? view(+key) : undefined,
+    })
+    let k = from
+    while (k < lines.length) {
+      const rest = trimLineEnd(view(k))
+      if (docColumn(lines[k], view(k)) !== column) return k
+      const comment = COMMENT_FENCE_BODY.exec(rest)
+      if (comment && (closerRuns().lastComment.get(comment[1].length) ?? -1) > k) {
+        const opener = k++
+        while (k < lines.length && COMMENT_FENCE_BODY.exec(trimLineEnd(view(k)))?.[1].length !== comment[1].length) k++
+        k++
+        for (let j = opener; fenced && j < Math.min(k, lines.length); j++) fenced.add(j)
+      } else if (FOOTNOTE_DEF.test(rest)) {
+        k++
+        while (k < lines.length && foldablePlainLine(view(k))) k++
+      } else if (COMMENT_LINE.test(rest) || isLinkDef(rest)) k++
+      else {
+        const attr = rest[0] === '{' ? tryAttrLine(fromHere, k) : null
+        if (!attr) return k
+        k = attr.next
+      }
     }
-    return null
+    return lines.length
   }
 
   // The line behind the quotes around frame `hostIndex`. A `>` left of a frame
@@ -6722,18 +6733,6 @@ function foldedDefinitionEnd(lines, start, end, seen) {
   return end
 }
 
-// An invisible line an attribute run cannot lead (PART 9 §21, CARVE-P2-014).
-const leadsNothing = (rest) => COMMENT_LINE.test(rest) || isLinkDef(rest) || FOOTNOTE_DEF.test(rest) || ABBR_DEF.test(rest)
-// The first line past further attribute lines and invisible lines: the block a run leads.
-function ledLine(measure, k, limit) {
-  for (; k < limit; k++) {
-    const m = measure(k)
-    if (!m || m.rest === '') return null
-    if (!leadsNothing(m.rest) && !(m.rest[0] === '{' && tryAttrLine([m.rest], 0))) return m
-  }
-  return null
-}
-
 const LOOKAHEAD_SHAPE = /`{3}|~{3}|:{3}|%%|\$\$/
 
 function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, quoteHost = false) {
@@ -7811,12 +7810,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       let end = attachedBlockEnd(lines, i, state, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent, Math.min(ind(i).col, blockColumn))
-      // A run that leads a block at the content column leaves that block to the item (carve#4278).
-      let run = 0
-      for (let attrs; i + run < end && (attrs = tryAttrLine(dedentedWindow(lines.slice(i, end), run, ind(i).col), 0)); ) run += attrs.next
-      const leadsContent = run > 0 && blockColumn < contentCol && ind(i + run)?.col >= contentCol &&
-        ledLine((k) => (ind(k).col >= contentCol ? ind(k) : null), i + run, n) !== null
-      if (leadsContent) end = i + run
       const attached = lines.slice(i, end)
       // The block an attribute run leads decides how it ends, not the run (carve#4271).
       let opener = 0
@@ -7862,10 +7855,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const lazyMarker = (lonePara || (attachNext && paraBlock)) && end < n && matchMarkerAt(ind(end))
       if (lazyMarker && lazyMarker.indent !== baseIndent && lazyMarker.indent < contentCol) {
         openPara = true
-        return true
-      }
-      if (leadsContent) {
-        closePara()
         return true
       }
       // A separator after a fence the block leaves open would be its payload.

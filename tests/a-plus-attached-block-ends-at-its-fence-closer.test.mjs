@@ -63,9 +63,8 @@ test('a `+`-attached colon fence stays whole inside a list item', () => {
 })
 
 test('a `+`-attached comment fence stays whole inside a list item', () => {
-  // The whole span is invisible, so the item holds only its lead text and
-  // nothing escapes to document level.
-  assert.equal(html(doc('- x', '+', ...COMMENT, '', 'z')), '<ul><li>x</li></ul><p>z</p>')
+  // The whole span is invisible and a blank follows it, so the + is a letter (carve#4449).
+  assert.equal(html(doc('- x', '+', ...COMMENT, '', 'z')), '<ul><li>x +</li></ul><p>z</p>')
 })
 
 // --- the list `+` FIRST-BLOCK form (`- +`), same collector -----------------
@@ -85,7 +84,7 @@ test('a first-block `- +` keeps its colon fence whole', () => {
 })
 
 test('a first-block `- +` keeps its comment fence whole', () => {
-  assert.equal(html(doc('- +', ...COMMENT, '', 'z')), '<ul><li></li></ul><p>z</p>')
+  assert.equal(html(doc('- +', ...COMMENT, '', 'z')), '<ul><li>+</li></ul><p>z</p>')
 })
 
 // --- the block-quote `+` collector (takeOneBlock) --------------------------
@@ -105,7 +104,7 @@ test('a `+`-attached colon fence stays whole inside a block quote', () => {
 })
 
 test('a `+`-attached comment fence stays whole inside a block quote', () => {
-  assert.equal(html(doc('> q', '+', ...COMMENT, '', 'z')), '<blockquote><p>q</p></blockquote><p>z</p>')
+  assert.equal(html(doc('> q', '+', ...COMMENT, '', 'z')), '<blockquote><p>q +</p></blockquote><p>z</p>')
 })
 
 // --- the footnote and `dd` collectors (takePulledBlockEnd) -----------------
@@ -136,7 +135,7 @@ test('a `+`-attached comment fence stays whole inside a footnote body', () => {
   // Invisible, so the note body is its definition line and the backlink only.
   assert.equal(
     html(doc('[^f]: n', '+', ...COMMENT, '', 'see[^f]')),
-    `${REF}<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1"><p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p></li></ol></section>`,
+    `${REF}<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1"><p>n +<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p></li></ol></section>`,
   )
 })
 
@@ -155,7 +154,7 @@ test('a `+`-attached colon fence stays whole inside a `dd`', () => {
 })
 
 test('a `+`-attached comment fence stays whole inside a `dd`', () => {
-  assert.equal(html(doc(':: t', ':  d', '+', ...COMMENT, '', 'z')), '<dl><dt>t</dt><dd>d</dd></dl><p>z</p>')
+  assert.equal(html(doc(':: t', ':  d', '+', ...COMMENT, '', 'z')), '<dl><dt>t</dt><dd>d +</dd></dl><p>z</p>')
 })
 
 // --- controls --------------------------------------------------------------

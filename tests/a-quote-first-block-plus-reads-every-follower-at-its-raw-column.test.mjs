@@ -42,7 +42,7 @@ const hosts = [
   { pre: ['- a'], lead: '  - ', marker: true },
   { pre: [], lead: '- - ', marker: true },
 ]
-const blocks = ['q', '# h', '| a |', '***', '::: note', '{.c}']
+const blocks = ['q', '# h', '| a |', '***', '::: note']
 
 test('every follower column and block kind reads as the clause says', () => {
   let count = 0

@@ -48,7 +48,7 @@ test('a body stacked on its parent marker line keeps its reading', () => {
 
 test('a marker-column block is traced in the item and leaves no +, a column-zero one is refused', () => {
   const hosts = [['- foo\n', '  - +', 2], ['- foo\n', '  1. +', 2], ['- a\n  - b\n', '    - [ ] +', 4]]
-  const blocks = [['```', 'x', '```'], ['%%%', 'c', '%%%'], ['> q'], ['# h'], ['para', 'more'], ['| a |'], ['::: note', 'x', ':::'], ['***'], ['{#i}', 'para']]
+  const blocks = [['```', 'x', '```'], ['> q'], ['# h'], ['para', 'more'], ['| a |'], ['::: note', 'x', ':::'], ['***'], ['{#i}', 'para']]
   let n = 0
   for (const [outer, host, marker] of hosts) {
     for (const block of blocks) for (const tail of ['', '\n', 'tail\n']) {
@@ -67,5 +67,5 @@ test('a marker-column block is traced in the item and leaves no +, a column-zero
       n++
     }
   }
-  assert.equal(n, 81)
+  assert.equal(n, 72)
 })
