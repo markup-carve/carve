@@ -288,7 +288,8 @@
          alike (corpus 101-table-header-cell-rowspan). PART 10 §7 puts every
          row in one `<tbody>` when a rowspan crosses a row-group boundary.
          NO origin -> the marker renders as an EMPTY cell (`<td></td>` /
-         `<th></th>`, no content, no span); never dropped, never literal.
+         `<th></th>`, no content except the continuation fragments T6 gives
+         it, no span); never dropped, never literal.
          Covers uniformly:
            * ORPHAN -- `^` in the FIRST row / `<` in the FIRST column
              (corpus 98-table-span-marker-in-first-column);
@@ -305,10 +306,9 @@
          stands before or after the `^` row (corpus
          64-table-rowspan-with-multi-line-content). A `+` fragment on a span
          marker joins the cell the T5 walk resolves the marker into, in
-         row-major order. A BLOCKED marker (T5) is a cell of its own: it renders
-         no marker, and the fragments on it are its content
-. A
-         table cannot BEGIN with a continuation row (PART 2 `table`). The AST
+         row-major order. A marker with no origin, ORPHAN or BLOCKED (T5), is
+         a cell of its own: it renders no marker, and the fragments on it are
+         its content (carve#3151). A table cannot BEGIN with a continuation row (PART 2 `table`). The AST
          keeps each join as a `cell_wrap` marker, so a writer can put the
          `+` lines back (CARVE-P12-069).
 

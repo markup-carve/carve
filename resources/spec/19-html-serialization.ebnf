@@ -17,9 +17,10 @@
          other structural attributes.
       R2 A MANDATORY BASE CLASS, where the author wrote no class: math's
          `math inline|display`, an admonition's, a task list's `task-list`
-         (§11) and a core div's directive-kind class. Where the author did
-         write a class, the base class is prepended inside that class slot
-         instead.
+         (§11) and a core div's directive-kind class, the type word of its
+         opener (`::: foo` gives `foo`). `line-block` is not a directive-kind
+         class; it is R4's marker-derived class. Where the author did write a
+         class, the base class is prepended inside that class slot instead.
       R3 AUTHORED, in the author's source order (the recorded `order`; PART
          4 RENDER ORDER). All classes accumulate, space-joined, into one
          `class` slot at its first-appearance position. An Attrs built
@@ -35,7 +36,10 @@
          auto-slug id an unwrapped heading carries (CARVE-P9-019) and, where
          the author wrote no class, a marker-derived class such as
          `line-block` or a diagram fence's class, and an extension wrapper's
-         `toc`, `glossary`, `index`, `tabs` or `code-group` class.
+         `toc`, `glossary`, `index`, `tabs` or `code-group` class. Where the
+         author did write a class, the marker-derived class is appended after
+         the authored classes inside that class slot: `{.verse}` over
+         `::: |` gives `class="verse line-block"` (carve#2328, carve#2338).
       R5 A RENDER ANNOTATION. The one in the core is `data-source-line` (the
          `sourceLine` render option), which records where a block was written.
 
@@ -111,6 +115,13 @@
       child indentation or inserted newline: `<blockquote><p>q</p></blockquote>`.
       Invisible children do not prevent this compact form. A block image,
       captioned paragraph, or second visible block takes the multiline form.
+
+      A BLOCK IMAGE (CARVE-P9R-007) is a bare `<img …>` on its own line, with
+      no `<p>` around it. A captioned host other than a table is a `<figure>`
+      holding the host element and then its `<figcaption>`, and the host's
+      block attributes, its id included, go on the `<figure>` (corpus
+      47-numbered-cross-references-8). A table keeps its attributes on
+      `<table>` and holds its caption as `<caption>` (§7).
 
       The HTML API returns a fragment with no final LF. A caller writing an
       output file may add its own line ending after the fragment.
@@ -195,8 +206,11 @@
         > ```
 
    7. TABLES. Alignment renders as `style="text-align: VALUE;"` (one
-      space after the colon, trailing semicolon); a cell with no effective
-      alignment emits NO style attribute. `rowspan`/`colspan` are emitted
+      space after the colon, trailing semicolon). Vertical alignment adds
+      `vertical-align: VALUE;` to the same `style`, after `text-align` and
+      one space from it when both are present: `style="text-align: right;
+      vertical-align: top;"` (PART 12 §19 and §20). A cell with no effective
+      alignment on either axis emits NO style attribute. `rowspan`/`colspan` are emitted
       only when their count is > 1.
       A visible resolved rowspan that crosses a row-group boundary cannot occupy its
       authored slots if those groups become separate HTML sections. In that
