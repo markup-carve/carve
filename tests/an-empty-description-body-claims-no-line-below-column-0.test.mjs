@@ -104,8 +104,6 @@ test('at the body\'s own content column the payload is ordinary continuation, in
 for (const [what, marked, plain] of [
   ['a footnote body, payload at column 1',
     '[^a]: +\n flush\n\nsee[^a]\n', '[^a]: x\n flush\n\nsee[^a]\n'],
-  ['a footnote body, payload at column 2',
-    '[^a]: +\n  flush\n\nsee[^a]\n', '[^a]: x\n  flush\n\nsee[^a]\n'],
   ['a block quote, payload at column 1', '> +\n flush\n', '> x\n flush\n'],
   ['a block quote, payload at column 2', '> +\n  flush\n', '> x\n  flush\n'],
 ]) {
@@ -118,6 +116,12 @@ for (const [what, marked, plain] of [
  * The positive half, so a reading that made `+` text EVERYWHERE fails here:
  * all four L4 containers attach a column-0 block in the first-block position.
  */
+// A footnote body takes a payload at its body column as its block, like a
+// list item (CARVE-P9-067, carve#4152).
+test('a first-block + in a footnote body takes a payload at column 2', () => {
+  assert.equal(html('[^a]: +\n  flush\n\nsee[^a]\n'), html('[^a]: flush\n\nsee[^a]\n'))
+})
+
 test('the first-block form still attaches where §17 L4 spells it', () => {
   assert.equal(html('- +\nflush\n'), '<ul><li>flush</li></ul>')
   assert.equal(html(':: t\n:  +\nflush\n'), '<dl><dt>t</dt><dd>flush</dd></dl>')

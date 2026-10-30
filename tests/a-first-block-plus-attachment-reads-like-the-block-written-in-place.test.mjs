@@ -21,12 +21,17 @@ for (const [plus, direct] of [['> +\n', '> '], ['> > +\n', '> > ']]) {
 }
 
 // carve#3959 shape 2: a note's `+` moves its whole attached fence, so the
-// payload and the closer stay the fence's at every nesting depth.
+// payload and the closer stay the fence's at every nesting depth. An
+// unprefixed fence does not reach a note in a quote (carve#4097).
 for (const host of ['', '- a\n  ', '- a\n  - x\n    ', '> ']) {
   for (const [open, close] of [['```', '```'], ['~~~', '~~~'], ['``` x', '```']]) {
     test(`${JSON.stringify(host)}[^b]: + then a closed "${open}"`, () => {
-      const out = notes(`${host}[^b]: +\n${open}\nc\n${close}\n\nr[^b]\n`)
-      assert.match(out, /<pre><code[^>]*>c\n<\/code><\/pre>/)
+      const source = `${host}[^b]: +\n${open}\nc\n${close}\n\nr[^b]\n`
+      const out = notes(source)
+      if (host === '> ') {
+        assert.match(out, /<p>\+<a href/)
+        assert.match(html(source), /<\/blockquote>\n<pre><code[^>]*>c\n<\/code><\/pre>/)
+      } else assert.match(out, /<pre><code[^>]*>c\n<\/code><\/pre>/)
       assert.doesNotMatch(out, /\u0000/)
     })
   }

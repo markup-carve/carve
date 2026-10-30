@@ -3009,7 +3009,10 @@ function ownLines(lines, trace = null) {
     const docCol = plusNote ? docColumn(lines[at], m.rest) : -1
     // Stacked on an item's marker line, the `+` already reads column zero there.
     const host = plusNote ? frames[frames.length - 2] : null
-    if (plusNote && !(host.kind !== 'quote' && host.line === plusNote.line) && missed && m.rest !== '' && docCol === 0 && form.kind !== 'item' && !CONT_MARKER.test(m.rest) && !replaced.has(at)) {
+    // A line that misses a quote does not reach a note inside it (carve#4097).
+    const missesQuote = frames.slice(reached + 1).some((f) => f.kind === 'quote')
+    if (plusNote && missesQuote && m.rest !== '' && form.kind !== 'item' && !CONT_MARKER.test(m.rest)) refusedPlus.add(at - 1)
+    if (plusNote && !(host.kind !== 'quote' && host.line === plusNote.line) && missed && !missesQuote && m.rest !== '' && docCol === 0 && form.kind !== 'item' && !CONT_MARKER.test(m.rest) && !replaced.has(at)) {
       replaced.add(at)
       let prefix = out
       for (let k = reached + 1; k < frames.length; k++) {
@@ -3116,15 +3119,15 @@ function ownLines(lines, trace = null) {
       at--
       continue
     }
-    // Past a missed note a marker opens where an item or a description body
-    // owns it (§10 I2), or beside a missed list.
+    // Past a missed note a marker opens where an item owns it (§10 I2), or
+    // beside a missed list; a description body is no exception (carve#4160).
     const missedNote = missed && frames.slice(reached + 1).some((f) => f.kind === 'note')
     // A list item interrupts the one-line paragraph a note's refused `+` forms (§10 I2).
     const interruptsPlus = plusNote && form.kind === 'item'
     // A `: ` description is a sibling at any column where its list's owner reads it (CARVE-P0-024 S3).
     if (missed && m.rest !== '' && top().para && !form.interrupts && !interruptsPlus && form.kind !== 'dd' &&
         !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes) &&
-        !(missedNote && form.kind === 'item' && (owner.kind === 'item' || owner.kind === 'dd' || frames.slice(reached + 1).some((f) => f.kind === 'item')))) {
+        !(missedNote && form.kind === 'item' && (owner.kind === 'item' || frames.slice(reached + 1).some((f) => f.kind === 'item')))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
       // the frame it missed. Past a missed note it is framed LAZY in the
       // deepest container, so every reader folds it there (carve#3885).
@@ -4392,6 +4395,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         bodyLines.push(...taken)
         if (!leavesFenceOpen(taken)) bodyLines.push('')
         i = next
+      }
+      // A marker-line `+` takes a next line at the body column as its block,
+      // like a list item's (CARVE-P9-067, carve#4152).
+      if (CONT_MARKER.test(bodyLines[0]) && bodyLines.length === 1) {
+        let k = i
+        while (k < n && isBlank(lines[k])) k++
+        if (k < n && !lines[k].includes(LAZY) && (ind(k).L?.col ?? ind(k).col) >= sourceDefCol + FOOTNOTE_BODY_COLUMN) bodyLines[0] = ''
       }
       // `pullPending` is set by a `+` marker: the NEXT flush-left line begins a
       // pulled-in block (SS17 L4). It is a distinct signal from an empty body

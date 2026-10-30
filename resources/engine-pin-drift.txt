@@ -532,3 +532,14 @@
 798-the-equals-of-a-not-equal-sign-neither-opens-nor-closes-a-highlight-2  markup-carve/carve#4131 (carve-js), the `=` of `!=` as a comparison pending in the pinned engine
 798-the-equals-of-a-not-equal-sign-neither-opens-nor-closes-a-highlight-3  markup-carve/carve#4131 (carve-js), the `=` of `!=` as a comparison pending in the pinned engine
 798-the-equals-of-a-not-equal-sign-neither-opens-nor-closes-a-highlight-4  markup-carve/carve#4131 (carve-js), the `=` of `!=` as a comparison pending in the pinned engine
+437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-3  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
+461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
+756-a-description-keeps-a-list-marker-below-its-hosted-footnote  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
+800-a-list-marker-under-a-note-paragraph-in-a-description-is-text  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
+800-a-list-marker-under-a-note-paragraph-in-a-description-is-text-2  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
+800-a-list-marker-under-a-note-paragraph-in-a-description-is-text-3  Pinned JavaScript opens a list in a description under a note paragraph (markup-carve/carve#4160); pending in carve-js.
+801-a-footnote-body-takes-its-first-block-at-its-body-column  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
+801-a-footnote-body-takes-its-first-block-at-its-body-column-2  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
+801-a-footnote-body-takes-its-first-block-at-its-body-column-3  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
+801-a-footnote-body-takes-its-first-block-at-its-body-column-4  Pinned JavaScript refuses a footnote first-block + over a line at the body column (markup-carve/carve#4152); pending in carve-js.
+802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-3  Pinned JavaScript lets an unprefixed line reach a quoted note first-block + (markup-carve/carve#4097); pending in carve-js.
