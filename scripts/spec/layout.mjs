@@ -2226,6 +2226,15 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     }
     return { meas, inner: meas, blockStart: false, popped: false }
   }
+  // An attribute run after an item's lone `+` leads the `+`'s block, so the item stays (carve#4278).
+  const plusAt = h.plusAt
+  h.plusAt = h.kinds.at(-1) === 'item' && CONT_MARKER.test(meas.rest) && meas.col === h.markerCols.at(-1) ? meas.col
+    : plusAt === meas.col && (h.plusAttrWrap || meas.rest[0] === '{') ? plusAt : undefined
+  if (h.plusAt !== undefined && plusAt !== undefined) {
+    h.plusAttrWrap = h.plusAttrWrap ? !meas.rest.includes('}') : tryAttrLine([meas.rest], 0) === null
+    return { meas, inner: meas, blockStart: false, popped: false }
+  }
+  h.plusAttrWrap = false
   // ONLY A LIST ITEM'S PARAGRAPH GIVES WAY. `- d` / `  - x` opens a sublist, so
   // the marker interrupts; the same marker at a DESCRIPTION or FOOTNOTE body's
   // column under its open paragraph is ordinary text, and both bodies take the
@@ -2996,7 +3005,7 @@ function ownLines(lines, trace = null) {
     if (attrRest && !(reached < frames.length - 1 && frames.slice(reached + 1).some((f) => f.kind === 'quote'))) {
       // A continuation stays in the block's owner at any column; padding
       // between attribute tokens is insignificant, so it may gain columns.
-      const col = Math.max(m.col - attrRest.cut, top().canon)
+      const col = Math.max(m.col - attrRest.cut, attrRest.floor ?? top().canon)
       if (col <= m.col) lead(col)
       else {
         lead(0)
@@ -3339,6 +3348,25 @@ function ownLines(lines, trace = null) {
       lonePlus.para = true
       lonePlus.last = 'para'
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'text', { plus: at })
+      continue
+    }
+    // An attribute run after it leads the `+`'s one block, so the item stays open
+    // for the line after the run (CARVE-P0-008, corpus 325, carve#4278).
+    // A description-hosted list's readers refuse that `+`, so it keeps its reading.
+    const runEnd = at + 1 + (form.attrLines ?? 0)
+    const quoteDepth = frames.slice(1, reached + 1).filter((f) => f.kind === 'quote').length
+    const runNext = ledLine((k) => {
+      const rest = stripQuotes(lines[k], quoteDepth)?.rest
+      return rest === undefined ? null : walkIndent(rest)
+    }, runEnd, lines.length)
+    if (lonePlus?.kind === 'item' && reached === frames.length - 2 && m.col === lonePlus.markerCol &&
+        frames[reached].kind !== 'dd' && (form.attrLines !== undefined || (m.rest[0] === '{' && tryAttrLine([m.rest], 0))) &&
+        runNext?.col >= lonePlus.col) {
+      lead(lonePlus.markerCanon)
+      result.push(out + src)
+      if (form.attrLines) attrRest = { left: form.attrLines, cut: m.col - lonePlus.markerCanon, floor: lonePlus.markerCanon }
+      afterPlus = true
+      if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
       continue
     }
     const closed = frames.length - 1 - reached
@@ -7164,6 +7192,18 @@ function foldedDefinitionEnd(lines, start, end, seen) {
 const attachesFlushLeft = (firstMeas, column = 0) =>
   markerBodyPolicy(column, column).attaches(firstMeas)
 
+// An invisible line an attribute run cannot lead (PART 9 §21, CARVE-P2-014).
+const leadsNothing = (rest) => COMMENT_LINE.test(rest) || isLinkDef(rest) || FOOTNOTE_DEF.test(rest) || ABBR_DEF.test(rest)
+// The first line past further attribute lines and invisible lines: the block a run leads.
+function ledLine(measure, k, limit) {
+  for (; k < limit; k++) {
+    const m = measure(k)
+    if (!m || m.rest === '') return null
+    if (!leadsNothing(m.rest) && !(m.rest[0] === '{' && tryAttrLine([m.rest], 0))) return m
+  }
+  return null
+}
+
 // A line a closer lookahead reads past: only these can move a block end from below.
 const LOOKAHEAD_SHAPE = /`{3}|~{3}|:{3}|%%|\$\$/
 
@@ -8306,6 +8346,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       let end = attachedBlockEnd(lines, i, state, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i), blockColumn, Math.min(ind(i).col, blockColumn))
+      // A run that leads a block at the content column leaves that block to the item (carve#4278).
+      let run = 0
+      for (let attrs; i + run < end && (attrs = tryAttrLine(dedentedWindow(lines.slice(i, end), run, ind(i).col), 0)); ) run += attrs.next
+      const leadsContent = run > 0 && blockColumn < contentCol && ind(i + run)?.col >= contentCol &&
+        ledLine((k) => (ind(k).col >= contentCol ? ind(k) : null), i + run, n) !== null
+      if (leadsContent) end = i + run
       const attached = lines.slice(i, end)
       // The block an attribute run leads decides how it ends, not the run (carve#4271).
       let opener = 0
@@ -8348,6 +8394,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const lazyMarker = (lonePara || (attachNext && paraBlock)) && end < n && matchMarkerAt(ind(end))
       if (lazyMarker && lazyMarker.indent !== baseIndent && lazyMarker.indent < contentCol) {
         openPara = true
+        return true
+      }
+      if (leadsContent) {
+        closePara()
         return true
       }
       // A separator after a fence the block leaves open would be its payload.
