@@ -3382,6 +3382,10 @@ function ownLines(lines, trace = null) {
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
       continue
     }
+    // Any other block it attaches there meets the `+` where the walk moved it (§17 L3, carve#4367).
+    const plusLanding = lonePlus?.kind === 'item' && reached === frames.length - 2 && m.col === lonePlus.markerCol &&
+      m.rest !== '' && !CONT_MARKER.test(m.rest) && !invisibleLine && !['text', 'item', 'dd', 'term', 'colon-close'].includes(form.kind)
+      ? lonePlus.markerCanon : null
     const closed = frames.length - 1 - reached
     const reachedPath = trace && closed > 0 ? ownerPath(reached) : undefined
     const closedColumn = frames.slice(reached + 1).some((f) => f.kind !== 'quote')
@@ -3424,6 +3428,10 @@ function ownLines(lines, trace = null) {
       owner.absorbs = (owner.para && owner.absorbs) || absorbsColon(m.rest)
       owner.para = true
       if (!term) owner.last = 'para'
+    } else if (plusLanding !== null) {
+      lead(plusLanding)
+      apply(owner, m.col, form, plusLanding)
+      if (trace) applied = ownerPath()
     } else {
       lead(owner.canon, form.kind === 'term' || form.kind === 'dd')
       apply(owner, m.col, form)
