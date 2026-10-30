@@ -1,0 +1,75 @@
+A refused plus before an attribute run and a sibling is a letter
+
+```
+- a
++
+{x}
+- c
+.
+<ul>
+  <li>a
++</li>
+</ul>
+<ul x="">
+  <li>c</li>
+</ul>
+```
+
+```
+- +
+{x}
+- c
+.
+<ul>
+  <li>+</li>
+</ul>
+<ul x="">
+  <li>c</li>
+</ul>
+```
+
+```
+:: t
+: a
++
+{x}
+: b
+.
+<dl>
+  <dt>t</dt>
+  <dd>a
++</dd>
+</dl>
+<p x="">: b</p>
+```
+
+```
+:: t
+: +
+{x}
+: b
+.
+<dl>
+  <dt>t</dt>
+  <dd>+</dd>
+</dl>
+<p x="">: b</p>
+```
+
+```
+:: t
+: a
++
+{x}
+  - c
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <ul x="">
+      <li>c</li>
+    </ul>
+  </dd>
+</dl>
+```

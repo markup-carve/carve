@@ -765,3 +765,10 @@
 853-a-line-after-a-marker-line-folded-into-a-sublist-item-folds-too  The pinned carve-js predates this: a line after a fold folds too (markup-carve/carve#4371); the spec model is correct.
 853-a-marker-under-a-quoted-description-paragraph-in-an-item-is-text  The pinned carve-js predates this: a marker under a quoted description paragraph is text (markup-carve/carve#4231); the spec model is correct.
 853-a-whitespace-run-after-a-tab-sets-the-content-column-where-the-content-starts  The pinned carve-js predates this: a tab-led item sets its content column where the content starts (markup-carve/carve#4122); the spec model is correct.
+821-an-attribute-run-after-a-lone-plus-leads-a-sublist-at-the-content-column  The pinned carve-js predates this: a list behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.
+821-an-attribute-run-after-a-lone-plus-leads-a-sublist-at-the-content-column-2  The pinned carve-js predates this: a list behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.
+821-an-attribute-run-after-a-lone-plus-leads-a-sublist-at-the-content-column-3  The pinned carve-js predates this: a list behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.
+854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter  The pinned carve-js predates this: a sibling behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.
+854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter-2  The pinned carve-js predates this: a sibling behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.
+854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter-3  The pinned carve-js predates this: a sibling behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.
+854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter-4  The pinned carve-js predates this: a sibling behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.

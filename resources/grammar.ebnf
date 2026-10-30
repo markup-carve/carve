@@ -6071,8 +6071,10 @@ EOF = (* end of file *) ;
          follower nests. No other column reaches: not the content column, not
          column 0 of a quote level, unless that is the marker column. The
          column of the `+` itself decides nothing else. Blank lines between
-         the marker and its block refuse it. Examples, with `/` for a line
-         break:
+         the marker and its block refuse it. An attribute line moves nothing,
+         so the sibling test also reads the first line past the attribute and
+         invisible lines at the marker column, at any column. Examples, with
+         `/` for a line break:
 
          - `- +` / `para` gives the item the paragraph; `:: t` / `: +` / `- l`
            gives the description the list; `[^a]: +` / `- l` gives the note the
@@ -6085,6 +6087,8 @@ EOF = (* end of file *) ;
          - `- a` / `  - +` / `para` is refused: the inner marker column is 2.
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.
          - `- +` / `- b` is refused: `<li>+</li>` and a sibling item.
+         - `- a` / `+` / `{x}` / `  - c` is refused: `{x}` ends the item and
+           labels the list outside it (carve#4278).
 
          A `+` on the next line at the marker column is a marker for the same
          host. If it attaches, its block is the one the earlier marker offered

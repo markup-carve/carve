@@ -3591,9 +3591,34 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // A line of nothing but quote markers is blank at its own level: it holds no block.
     if (/^(?:>[ \t]*)*$/.test(rest) || docColumn(lines[at + 1], trimWsStart(level.rest)) !== column) return false
     if (COLON_CLOSER.test(rest) && frames.some((f) => f.kind === 'colon' && f.run === COLON_FENCE.exec(rest)[1].length)) return false
-    if (kind === 'item') return !matchMarkerAt({ col: 0, rest })
-    if (kind === 'dd') return !DEFLIST_TERM.test(rest) && !/^:( +)(?=[ \t]*[^ \t])/.test(rest)
-    return true
+    const sibling = kind === 'item' ? (r) => !!matchMarkerAt({ col: 0, rest: r })
+      : kind === 'dd' ? (r) => DEFLIST_TERM.test(r) || /^:( +)(?=[ \t]*[^ \t])/.test(r) : null
+    if (!sibling) return true
+    if (sibling(rest)) return false
+    // An attribute run moves nothing, so the sibling test reads the block it leads (carve#4278).
+    const led = lineAfterRun(at + 1, hostIndex)
+    return led === null || !sibling(trimWs(throughQuotes(lines[led], hostIndex)?.rest ?? ''))
+  }
+
+  // The first line past the attribute and invisible lines from `from`, or null when they hold no attribute line.
+  function lineAfterRun(from, hostIndex) {
+    let run = false
+    for (let k = from; k < lines.length;) {
+      const view = new Proxy([], {
+        get(_, key) {
+          if (key === 'length') return lines.length - k
+          const j = typeof key === 'string' && /^\d+$/.test(key) ? k + Number(key) : -1
+          if (j < 0 || j >= lines.length) return undefined
+          return trimWsStart(throughQuotes(lines[j], hostIndex)?.rest ?? '')
+        },
+      })
+      const attr = tryAttrLine(view, 0)
+      if (attr) run = true
+      if (attr) k += attr.next
+      else if (leadsNothing(view[0])) k++
+      else return run ? k : null
+    }
+    return null
   }
 
   // The line behind the quotes around frame `hostIndex`. A `>` left of a frame
