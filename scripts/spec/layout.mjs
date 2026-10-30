@@ -8122,8 +8122,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const attached = lines.slice(i, end)
       // The block an attribute run leads decides how it ends, not the run (carve#4271).
       let opener = 0
-      for (let attrs; opener < attached.length - 1 &&
-        (attrs = tryAttrLine(dedentedWindow(attached, opener, ind(i).col), 0)); ) opener += attrs.next
+      for (let attrs; (attrs = tryAttrLine(dedentedWindow(attached, opener, ind(i).col), 0)) &&
+        opener + attrs.next < attached.length; ) opener += attrs.next
       const codeMatch = FENCE.exec(attached[0] ?? '')
       const code = codeMatch && parseFenceInfo(codeMatch[2]) !== null ? codeMatch : null
       const colon = COLON_FENCE.exec(attached[0] ?? '')

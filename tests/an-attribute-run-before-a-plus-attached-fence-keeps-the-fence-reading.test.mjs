@@ -11,3 +11,8 @@ test('an attribute run before a + attached fence in an item does not end the fen
   assert.equal(renderDoc(parse('- a\n+\n{x}\n{y}\n```\n  ```\n')), fenced(' x="" y=""'))
   assert.equal(renderDoc(parse('- a\n+\n{x}\npara\n  more\n')), '<ul>\n  <li>a\n    <p x="">para\nmore</p>\n  </li>\n</ul>')
 })
+
+test('an attribute run that is the whole + attachment attaches to nothing', () => {
+  assert.equal(renderDoc(parse('- a\n+\n{x\ny}\n')), '<ul>\n  <li>a</li>\n</ul>')
+  assert.equal(renderDoc(parse('- a\n+\n{x\ny}\n- b\n')), '<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>')
+})
