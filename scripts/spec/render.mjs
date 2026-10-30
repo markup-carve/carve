@@ -2280,6 +2280,15 @@ export function renderInlineWithoutSymbols(text, prevCtx = '') {
   }
 }
 
+export function renderInlineWithoutComments(text, prevCtx = '') {
+  omitComments = true
+  try {
+    return renderInline(text, prevCtx)
+  } finally {
+    omitComments = false
+  }
+}
+
 export function renderInlineWithoutRaw(text, prevCtx = '') {
   omitRawInline = true
   try {

@@ -207,7 +207,11 @@ caption_slot = [blank_line], caption ;
    caption's top-level text (`^ *Figure* #:`, not `^ *Figure #*:`).
    The LABEL is the inline_content before the placeholder, trailing
    whitespace trimmed; the counter BUCKET KEY is that label's plain
-   text. Numbering is per-bucket, 1-based, in document order, assigned
+   text. A symbol contributes the plain text of what the caption renders
+   for it (`:smile:` as written when no map resolves it), so
+   `^ Fig :smile: #:` and `^ Fig #:` count in two buckets. A comment
+   contributes nothing, so `^ Fig {#c#} #:` counts with `^ Fig #:`.
+   Numbering is per-bucket, 1-based, in document order, assigned
    in the resolution pass. A caption with no bare `#` is unchanged. *)
 
 (* --- Admonitions --- *)
