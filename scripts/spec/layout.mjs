@@ -4458,7 +4458,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const taken = lines.slice(i, next).map(stripLazyLead)
         attachedFrom = bodyLines.length
         bodyLines.push(...taken)
-        if (!leavesFenceOpen(taken)) bodyLines.push('')
+        // S4 reads the lines after an attached paragraph against it (PART 0).
+        if (!leavesFenceOpen(taken) && !bodyLeavesParagraphOpen(taken)) bodyLines.push('')
         i = next
       }
       // Set by a `+` the walk accepted: the next line begins its block (§17 L3).
