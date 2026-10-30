@@ -115,9 +115,13 @@ Specifically, on every rendered element:
 
 - attribute **names** that start with `on` (event handlers) and the injection
   sinks `srcdoc` / `formaction` are dropped;
-- an attribute **value** whose scheme is `javascript`, `vbscript`, `data`, or
-  `file` is blanked - scheme detection ignores the control/space characters a
-  browser discards, so `java<TAB>script:` does not slip through;
+- an authored attribute **value** whose scheme is on the
+  [URL scheme denylist](#url-scheme-sanitization-always-on) is blanked, the OS-handler
+  schemes included, so `{title="Shell: bash"}` renders `title=""`. Scheme
+  detection ignores the control/space characters a browser discards, so
+  `java<TAB>script:` does not slip through. Text the renderer derives a value
+  from is not authored: a link title, an image's alt text and a task box's
+  name stay as written;
 - a `style` value containing a script-bearing or fetching CSS construct -
   `expression(...)`, `url(...)`, `@import`, `behavior:`, or `-moz-binding` - is
   blanked (whitespace collapsed first to defeat evasion);

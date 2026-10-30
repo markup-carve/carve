@@ -439,6 +439,12 @@
       attribute a div or admonition, use a PRECEDING block-attribute line,
       which floats onto the block (§15): `{.x #id}` then `::: note` yields
       `<aside class="admonition note x" id="id" aria-label="Note">`.
+      The classes the block adds (`admonition` and the type word, or a
+      typed div's kind word) lead ONE class list with the authored ones,
+      deduplicated by CARVE-P4-002: `{.calculation}` over `::: calculation`
+      gives `class="calculation"`, and `{.admonition .note}` over `::: note`
+      gives `class="admonition note"`. Only the rendered `class` merges; the
+      AST keeps the authored attribute list as written.
 
       Fence length and an unclosed opener follow the shared frame above and
       PART 2's `colon_fence_close` production (corpus

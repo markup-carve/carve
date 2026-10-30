@@ -23,17 +23,17 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L406) | 9 | T9 A HEADER CELL STATES WHAT IT HEADS |
 | [`CARVE-P9-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L502) | 9 | SMART TYPOGRAPHY RUNS BY DEFAULT |
 | [`CARVE-P9-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L411) | 9 | BLOCK RENDERING |
-| [`CARVE-P9-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L544) | 9 | AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME |
-| [`CARVE-P9-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L574) | 9 | A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES |
-| [`CARVE-P9-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L630) | 9 | HEADING SECTION WRAPPING |
+| [`CARVE-P9-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L550) | 9 | AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME |
+| [`CARVE-P9-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L580) | 9 | A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES |
+| [`CARVE-P9-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L636) | 9 | HEADING SECTION WRAPPING |
 | [`CARVE-P9-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L2) | 9 | FOOTNOTES |
 | [`CARVE-P9-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L41) | 9 | THE BACKLINK CARRIES AN ACCESSIBLE NAME |
 | [`CARVE-P9-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L51) | 9 | THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME |
 | [`CARVE-P9-075`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L61) | 9 | A TOP-LEVEL `::: footnotes` THAT PLACES THE ENDNOTES SECTION |
 | [`CARVE-P9-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L75) | 9 | DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL |
 | [`CARVE-P9-067`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L269) | 9 | EVERY CONTAINER THAT TAKES THE MARKER TAKES THE FIRST-BLOCK FORM |
-| [`CARVE-P9-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L540) | 9 | A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT |
-| [`CARVE-P9-078`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L551) | 9 | THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP |
+| [`CARVE-P9-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L546) | 9 | A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT |
+| [`CARVE-P9-078`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L557) | 9 | THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP |
 | [`CARVE-P9-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L2) | 9 | MATH |
 | [`CARVE-P9-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L24) | 9 | A MATH SPAN CARRIES ROLE MATH |
 | [`CARVE-P9-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L86) | 9 | RAW PASSTHROUGH |
