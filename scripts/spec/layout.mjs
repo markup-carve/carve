@@ -1250,6 +1250,44 @@ function colonInterruptsParagraph(lines, idx, para) {
   return colonFenceInterrupts(lines[idx], para)
 }
 
+// Is the bare run at bodyLines[last] a div's closer or a new opener, not paragraph
+// text? A paragraph absorbs a run only outside a div (CARVE-P9-016): inside one,
+// findColonCloser's stack decides, as the block reader does with these lines.
+function bareColonIsFence(bodyLines, last, scan = { at: 0, stack: [], para: [] }) {
+  for (; scan.at < last; scan.at++) {
+    const top = scan.stack.at(-1)
+    const span = top?.lineBlock ? lineBlockSpanEnd(bodyLines, scan.at) : opaqueSpanEnd(bodyLines, scan.at)
+    if (span !== -1) {
+      scan.at = span
+      scan.para = []
+      continue
+    }
+    const text = stripLazy(bodyLines[scan.at])
+    const colon = COLON_FENCE.exec(text)
+    const bare = COLON_CLOSER.test(text)
+    const opener = colon && parseColonOpener(colon[2])
+    if (top && bare && colon[1].length === top.length) {
+      scan.stack.pop()
+      if (top.absorbed) scan.para.push(text)
+      else scan.para = []
+    } else if (top?.lineBlock) continue
+    else if (top ? bare || opener : colon && colonFenceInterrupts(text, scan.para)) {
+      // The stack counts a run of another width, but the paragraph holds it as text.
+      const absorbed = !!top && bare && paraHasInvalidColonOpener(scan.para)
+      scan.stack.push({ length: colon[1].length, lineBlock: opener?.mode === 'line-block', absorbed })
+      if (absorbed) scan.para.push(text)
+      else scan.para = []
+    } else if (opensParagraph(text, scan.para.length === 0)) scan.para.push(text)
+    else scan.para = []
+  }
+  if (scan.at > last) return false
+  const line = stripLazy(bodyLines[last])
+  const run = COLON_CLOSER.exec(line)
+  if (!run) return false
+  const top = scan.stack.at(-1)
+  return top ? run[1].length === top.length && !top.absorbed : colonFenceInterrupts(line, scan.para)
+}
+
 const COMMENT_LINE = /^[ \t]*%%/
 // A fence line is DELIMITER + INSIGNIFICANT TAIL (SS28): only the leading run
 // of `%` is structural, so `%%% TODO` opens and `%%% end` closes.
@@ -2002,6 +2040,7 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   // container leaves no paragraph open (carve#1938, carve#2147).
   // Unless an invalid opener earlier in an open paragraph absorbed it (CARVE-P9-016).
   if (COLON_CLOSER.test(bodyLines[last])) {
+    if (bareColonIsFence(bodyLines, last)) return false
     let text = last
     while (text >= 0 && COLON_CLOSER.test(bodyLines[text])) text--
     if (text < 0 || trimWs(bodyLines[text]) === '') return false
@@ -2422,10 +2461,10 @@ function hostColonStep(h, inner, commentCloses = () => false, markerLine = false
   // interrupt its paragraph (CARVE-P0-004, CARVE-P9-083).
   if (top && base === top.base && inner.col > top.column &&
       !(!bare && opensHostedColonBlock(inner.rest))) return false
-  if (top && bare && inner.col !== top.base && inner.col !== top.column) return false
+  if (top && base === top.base && bare && inner.col !== top.base && inner.col !== top.column) return false
   if (stack.length >= remainingDepth) return false
   const opener = colon && parseColonOpener(colon[2])
-  if (opener && (base > 0 || opener.mode === 'line-block')) {
+  if (opener) {
     let absorbed = false
     if (COLON_CLOSER.test(inner.rest)) {
       let held = h.colonParagraph
@@ -7764,6 +7803,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // into it (PART 1 S4, NO OPEN PARAGRAPH NO LAZY LINE; carve#576,
     // carve#582).
     let openPara = true
+    const bodyColonScan = { at: 0, stack: [], para: [] }
     // The lines of that open paragraph, for SS12's absorption test: a paragraph
     // that has already taken a MALFORMED colon fence as text absorbs the next
     // fence-shaped line as text too, so knowing the paragraph is open is not
@@ -8035,6 +8075,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       descendantQ1.para = descendantQ1.open ? [text] : []
       descendantQ1.absorbedFence = null
       descendantQ1.noteCol = null
+      descColons.length = 0
+      if (quoted === null && isColonBlockOpener(text)) {
+        const colon = COLON_FENCE.exec(text)
+        descColons.push({ length: colon[1].length, lineBlock: parseColonOpener(colon[2])?.mode === 'line-block' })
+      }
     }
     /*
      * One line the descendant takes. `text` is already in the descendant's
@@ -8101,7 +8146,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const lineBlock = top?.lineBlock === true
       // A bare run the open paragraph absorbs is its text (CARVE-P9-016).
       if (!lineBlock && descendantQ1.open && idx > 0 && !isBlank(lines[idx - 1]) && COLON_CLOSER.test(text) &&
-          !colonFenceInterrupts(text, descendantQ1.para)) {
+          COLON_FENCE.exec(text)[1].length !== top?.length && !colonFenceInterrupts(text, descendantQ1.para)) {
         descendantQ1.para.push(text)
         return
       }
@@ -8258,7 +8303,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           fence.colon.pop()
           colonLineBlock.length = fence.colon.length
           colonBases.length = fence.colon.length
-        } else if (!payload) {
+        } else if (!payload && (fence.colon.length !== 0 || !openPara || !paraHasInvalidColonOpener(para))) {
           fence.colon.push(len)
           colonLineBlock[fence.colon.length - 1] = false
           colonBases[fence.colon.length - 1] = Math.max(contentCol, indentCols(lines[index]).col)
@@ -9549,8 +9594,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         if (!belowCloser && !inCommentSpan) {
           if (nm && nm.indent >= contentCol && !inDefBody &&
               !fence.opaque && !nestedOpaque && (!wasNested || endedBelow) && !inPayload &&
-              // A quote on the marker line starts the descendant's quote run there.
-              (descendantQ1.col < 0 ? QUOTE.test(nm.text) : nm.indent < descendantQ1.col)) {
+              // A quote or a div on the marker line starts the descendant's run there.
+              (descendantQ1.col < 0 ? QUOTE.test(nm.text) || COLON_FENCE.test(nm.text) : nm.indent < descendantQ1.col)) {
             seedDescendantQ1(nm.indent + nm.markerWidth, nm.text, prefixMemo(state, lines, i).paragraph, i)
           }
           if (descendantOwned) {
@@ -9681,7 +9726,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // (carve#891). Same rule, same spelling, as the block reader's
         // colonInterruptsParagraph.
         else if (COLON_FENCE.test(dedented)) {
-          if (colonFenceInterrupts(dedented, openPara ? para : [])) closePara()
+          if (colonFenceInterrupts(dedented, openPara ? para : []) ||
+              bareColonIsFence(itemLines, itemLines.length - 1, bodyColonScan)) closePara()
           else openParaWith(dedented)
         }
         // A TABLE ROW closes the paragraph, and so does the continuation row

@@ -5353,6 +5353,9 @@ EOF = (* end of file *) ;
       has no length to match against, so there is nothing for a width test to
       compare; the paragraph simply continues.
 
+      An open div's own closer is not absorbed: `:::` / `:::e` / `:::` is a div
+      holding one paragraph, in any container (carve#4397).
+
       ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY -- NORMATIVE [CARVE-P9-017].
       The absorbed line has to be one the paragraph's container
       supplied a prefix for. A FLUSH-LEFT fence-shaped line under a QUOTED
