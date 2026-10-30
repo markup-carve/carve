@@ -3157,6 +3157,20 @@ function ownLines(lines, trace = null) {
       } else if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
       continue
     }
+    // A lone `+` at an item's marker column attaches a paragraph written there,
+    // and the readers keep it in the item (§17 L3). S4 tests the lines after it
+    // against that paragraph, so a sibling marker interrupts it (carve#4080).
+    const lonePlus = plusFollower ? frames[reached + 1] : null
+    if (lonePlus?.kind === 'item' && reached === frames.length - 2 && form.kind === 'text' &&
+        m.rest !== '' && !CONT_MARKER.test(m.rest) && m.col === lonePlus.markerCol) {
+      lead(Math.max(m.col - owner.cut, owner.canon))
+      result.push(out + src)
+      lonePlus.absorbs = absorbsColon(m.rest)
+      lonePlus.para = true
+      lonePlus.last = 'para'
+      if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'text', { plus: at })
+      continue
+    }
     const closed = frames.length - 1 - reached
     const reachedPath = trace && closed > 0 ? ownerPath(reached) : undefined
     const closedColumn = frames.slice(reached + 1).some((f) => f.kind !== 'quote')
@@ -5034,7 +5048,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // A separate `+` after content attaches a list (§17 L3).
               if (bodyLines.length === 0 && matchMarkerAt(ind(i))) break
               const sourceColumn = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
-              const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), { col: sourceColumn }, sourceDescriptionCol)
+              // A sibling description ends the pulled block, as a sibling marker ends an item's (carve#4080).
+              const siblingAt = (k) => DESCRIPTION_TEXT.test(ind(k)?.rest ?? '') &&
+                (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceDescriptionCol
+              const end = attachedBlockEnd(lines, i, state, (k) => attachmentBoundary(lines)(k) || siblingAt(k), { col: sourceColumn }, sourceDescriptionCol)
               for (let k = i; k < end; k++) pushBody(lines[k], k)
               pullPending = false
               i = end
@@ -7924,6 +7941,18 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (unclosedAttached) end = n
       const captionable = code ? hasCloser(attached, 0) : colon && isFigureGroupOpener(parseColonOpener(colon[2])) && COLON_CLOSER.test(attached.at(-1) ?? '')
       if (captionable && CAPTION.test(lines[end] ?? '')) end++
+      // After a lone `+` the item stays open, so a block at its content column
+      // is the item's own and ends the attached paragraph (CARVE-P0-011).
+      const lonePara = !attachNext && foldablePlainLine(ind(i).rest)
+      if (lonePara) {
+        for (let k = i + 1; k < end; k++) {
+          const km = ind(k)
+          if (km.col >= contentCol && (opensBlockAt(km.rest, k) || isCodeBlockOpener(km.rest) || isDefinitionOrAttributeLine(km.rest))) {
+            end = k
+            break
+          }
+        }
+      }
       const taken = []
       for (; i < end; i++) {
         // Measure the attached block from the marker column. `blockColumn` is a
@@ -7933,6 +7962,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const body = dedentMeasured(measured, lines[i], Math.max(0, blockColumn - shift))
         pushLine(body.text, body.meas)
         taken.push(body.text)
+      }
+      // An attached paragraph stays open for a marker below the content column
+      // that is no sibling: S4 folds it (PART 0, carve#4080). The walk has
+      // already moved every sibling to the marker column.
+      const lazyMarker = lonePara && end < n && matchMarkerAt(ind(end))
+      if (lazyMarker && lazyMarker.indent !== baseIndent && lazyMarker.indent < contentCol) {
+        openPara = true
+        return true
       }
       // A separator after a fence the block leaves open would be its payload.
       if (!leavesFenceOpen(taken)) pushLine('', BLANK_MEAS)
