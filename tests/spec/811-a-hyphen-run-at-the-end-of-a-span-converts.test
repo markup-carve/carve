@@ -1,0 +1,23 @@
+A hyphen run at the end of a span converts
+
+```
+*a --* b, /a --/ b, _a ---_ b, ~a --~ b and */a --/* b
+.
+<p><strong>a –</strong> b, <em>a –</em> b, <u>a —</u> b, <s>a –</s> b and <strong><em>a –</em></strong> b</p>
+```
+
+```
+{*a --*} b and {=a ---=} b
+*a
+--* b
+.
+<p><strong>a –</strong> b and <mark>a —</mark> b
+<strong>a
+–</strong> b</p>
+```
+
+```
+(a --) b, *a --x* b and *--x* b
+.
+<p>(a --) b, <strong>a --x</strong> b and <strong>--x</strong> b</p>
+```
