@@ -1,0 +1,15 @@
+An escaped space and a hard break work inside a forced span
+
+```
+{=\ x=}, {_a \ b_} and {*a\
+b*}
+.
+<p><mark>&nbsp;x</mark>, <u>a &nbsp;b</u> and <strong>a<br>
+b</strong></p>
+```
+
+```
+{=a\ =} and {=a\=}
+.
+<p><mark>a&nbsp;</mark> and {=a=}</p>
+```

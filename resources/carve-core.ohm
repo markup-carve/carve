@@ -363,7 +363,7 @@ CarveCore {
   // An unclosed code run takes the rest of the block here too, so the span
   // cannot close (carve#3973 X5).
   fInner<d>  = ~(d "}") (editorial | bracedDash | eqCloseCut<d> | ~(~"==>" dRun<d>) rich
-             | ~(~fSpan<d> "/*") span | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | ~(d attrs) litDelim
+             | ~(~fSpan<d> "/*") span | nbspEsc | hardBreak | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | ~(d attrs) litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
   // The span's closer ranks above smart typography (PART 8 items 7 and 11),
