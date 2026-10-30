@@ -13,6 +13,7 @@ const hosts = [
   {
     name: 'item follower',
     attrAttachesToTail: true,
+    abbreviationDefines: true,
     source: line => `- head\n${line}\ntail\n`,
     html: (line, prose) => prose
       ? `<ul>\n  <li>head\n${line}\ntail</li>\n</ul>`
@@ -21,6 +22,7 @@ const hosts = [
   {
     name: 'description follower',
     attrAttachesToTail: true,
+    abbreviationDefines: true,
     source: line => `:: term\n:  head\n${line}\ntail\n`,
     html: (line, prose) => prose
       ? `<dl>\n  <dt>term</dt>\n  <dd>head\n${line}\ntail</dd>\n</dl>`
@@ -39,14 +41,17 @@ for (const host of hosts) {
   for (const row of lines) {
     test(`${host.name}: ${row.name} preserves the boundary and registration`, () => {
       const doc = parse(host.source(row.line))
+      // A column-0 abbreviation definition ends the follower host (carve#4412).
+      const defines = row.name === 'abbreviation' && host.abbreviationDefines
+      const prose = row.prose && !defines
       // A footnote body takes the lazy line in every host (carve#3885).
-      const tail = row.prose || row.name === 'footnote' ? '' :
+      const tail = prose || row.name === 'footnote' ? '' :
         host.attrAttachesToTail && row.name === 'attribute'
           ? '\n<p class="marked">tail</p>' : '\n<p>tail</p>'
-      assert.equal(renderDoc(doc), host.html(row.line, row.prose) + tail)
+      assert.equal(renderDoc(doc), host.html(row.line, prose) + tail)
       assert.deepEqual([...doc.linkDefs.keys()], row.links ?? [])
       assert.deepEqual([...doc.footnoteDefs.keys()], row.notes ?? [])
-      assert.deepEqual([...doc.abbrDefs.keys()], [])
+      assert.deepEqual([...doc.abbrDefs.keys()], defines ? ['A'] : [])
     })
   }
 }
