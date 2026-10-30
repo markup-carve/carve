@@ -721,28 +721,27 @@ differently in Carve, which is what `carve lint --from-djot` reports.
 
 Pinned in the corpus as the five `84-single-line-headings*` cases.
 
-## 15. Block markers are column-strict and their separator is a literal space
+## 15. Indented block openers and their literal-space separator
 
 **Djot:** a block marker tolerates leading indentation and accepts any
 whitespace as its separator, so ` # H` is a heading and `>\tq` is a quote.
 
-**Carve:** a top-level block opener must start at column 0, and a marker's
-separator is a literal space that a tab does not satisfy (PART 9 §24 C1 gives a
-tab a column value; the separator rule is about the byte, not the column).
+**Carve:** a block opener also accepts leading indentation; its separator must
+be a literal space, so a tab does not satisfy it (PART 9 §24 C1 assigns columns
+to tabs; the separator rule is about the byte, not its column).
 
 ```
  # H            Djot:  <section id="H"><h1>H</h1></section>
-                Carve: <p># H</p>
+                Carve: <section id="H"><h1>H</h1></section>
 
 >\tq            Djot:  <blockquote><p>q</p></blockquote>
                 Carve: <p>&gt;\tq</p>
 ```
 
-**Why.** Both spellings are invisible in a diff and in most editors, so a
-document that renders one way for the author renders another way after a
-reformat. Requiring the column and the byte makes the shape of the source
-decide, not the width of a tab stop. This is a SOURCE break: the bytes mean
-something different, and nothing is silently dropped.
+**Why.** A leading space no longer turns `# H` into prose, but indentation past
+the container's content column is still diagnosed by `carve lint` as
+`block-opener-overindented`. The tab separator remains a different spelling;
+the byte, not the tab's visual width, determines whether the marker opens.
 
 ## 16. Attribute names are strict
 
@@ -989,10 +988,11 @@ Most Djot source needs only mechanical changes:
    applies them to it. If you relied on the Djot reading, the attributes now
    land on something. This is the one form on this list that silently CHANGED
    meaning rather than becoming an error (section 18).
-10. **Indented block openers and tab separators.** ` # H` is prose in Carve and
-   `>\tq` is prose too - the opener must start at column 0 and the separator is
-   a literal space. Both are invisible in most editors, so search for them
-   rather than reading for them (section 15).
+10. **Indented block openers and tab separators.** ` # H` is a heading in Carve;
+   indentation past the required content column triggers `block-opener-overindented`.
+   `>\tq` is prose because the separator must be a literal space. Both spellings
+   are invisible in most editors, so search for them rather than reading for
+   them (section 15).
 11. **`-{.c} x`** is a list item with attributes in Carve and a paragraph in
    Djot. Nothing is lost, but the block structure changes (section 17).
 12. Nested containers mostly carry over: equal-length fences nest in both

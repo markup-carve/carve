@@ -502,6 +502,6 @@ When moving a document from Markdown to Carve:
 - [ ] Verify GFM table delimiter rows became `|=` header cells
 - [ ] Verify `~~strike~~` became `~strike~` (single tilde)
 - [ ] Move any heading `{#id}` onto the line above the heading - `carve lint` finds them, and left in place the `#id` becomes a tag AND changes the heading's anchor
-- [ ] Check block-marker indentation: top-level markers require column 0. Inside a container, a recognized opener must reach the innermost container's minimum content column; a deeper opener is structural too, and `carve fmt` moves it back to the minimum column
+- [ ] Check block-marker indentation: top-level openers may be indented, but indentation past the document's content column is reported by `carve lint` as `block-opener-overindented`. Inside a container, a recognized opener must reach the innermost container's minimum content column; a deeper opener is structural too, and `carve fmt` moves it back to the minimum column
 - [ ] Review imported raw HTML: block elements become `=html` blocks, native inline tags become their Carve constructs, and other inline tags become `` `...`{=html} `` spans - all preserved automatically, no manual replacement needed. For untrusted input, use the engine's safe mode so the passthrough is escaped
 - [ ] Audit CSS and JS for direct-child assumptions - headings now nest their content in `<section>` (see [Headings are wrapped in `<section>`](#headings-are-wrapped-in-section))
