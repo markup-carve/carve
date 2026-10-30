@@ -6602,8 +6602,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- paragraph ---
     const para = []
     while (i < n && !isBlank(lines[i])) {
-      if (lines[i].startsWith(LAZY)) {
-        para.push(lines[i].slice(LAZY.length).replace(/[ \t]+$/, ''))
+      // A frame kept the column of a deeper container this line never reached (carve#4222).
+      const framed = stripLazyLead(lines[i])
+      if (framed.startsWith(LAZY)) {
+        para.push(framed.slice(LAZY.length).replace(/[ \t]+$/, ''))
         i++
         continue
       }
