@@ -2960,7 +2960,7 @@ function ownLines(lines, trace = null) {
     // The block a `+` attaches at its marker's column moves with the marker,
     // and so does every line after it (PART 0 S3): the owner reads them by
     // the marker's shift, not its own (carve#4245).
-    if ((plusFollower || top().plus === at - 1) && m.rest !== '' && reached < frames.length - 1 && top().markerCol === m.col) {
+    if ((plusFollower || top().plus === at - 1) && m.rest !== '' && reached < frames.length - 1 && m.col >= top().markerCol) {
       frames[reached].cut = Math.max(frames[reached].cut, top().markerCol - top().markerCanon)
     }
     // A follower carrying the prefix of a quote opened on the `+` line loses

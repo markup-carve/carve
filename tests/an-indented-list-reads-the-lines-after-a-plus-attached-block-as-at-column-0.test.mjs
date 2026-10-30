@@ -55,3 +55,7 @@ for (const head of firstBlockHeads) {
     }
   }
 }
+
+test('a follower between the marker and content columns keeps the shift too', () => {
+  assert.equal(html('   1. +\n     # h\n   z\n'), html('1. +\n  # h\nz\n'))
+})
