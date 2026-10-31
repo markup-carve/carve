@@ -147,12 +147,12 @@
          ALL render WITHOUT `<p>` (<li>text</li>), every one of them, not
          only the first, except as CARVE-P9-081 below states; a loose
          item's paragraphs are ALL wrapped (<li><p>text</p></li>). An item can hold more than one paragraph
+         block and still be tight -- L2 and L6 below cover the ways that
+         happens without a blank line ever appearing.
          When the first visible block of an item is a paragraph, it follows
          the opening `<li>` directly, whether the list is tight or loose and
          whether later blocks follow it. Later visible blocks start on their
          own indented lines.
-         block and still be tight -- L2 and L6 below cover the ways that
-         happens without a blank line ever appearing.
          A TIGHT ITEM'S ATTRIBUTED PARAGRAPH KEEPS ITS `<p>` -- NORMATIVE
          [CARVE-P9-081]. In a tight item, a paragraph that carries block
          attributes renders as `<p>` with those attributes; the item stays
@@ -339,7 +339,8 @@
            fenced block quote `::: >`) --
            their bodies already hold flush-left blocks; a lone `+` inside
            is literal text;
-         - TABLE -- a first-column `+` is the continuation ROW (§5 T6), a
+         - TABLE -- a `+` as a row's first non-indent character is the
+           continuation ROW (§5 T6), a
            distinct construct;
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.
