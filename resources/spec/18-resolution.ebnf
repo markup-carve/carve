@@ -268,7 +268,10 @@
       top-level text carries a bare `#` placeholder receives the next
       number for the label's plain-text bucket key (PART 2, CAPTION NUMBER
       PLACEHOLDER); an {#id} on
-      the captioned host registers it in captionIds for R4. For every captionIds
+      the captioned host registers it in captionIds for R4. Only the host's
+      block id registers: an id glued to the image or math span inside it is
+      an inline attribute and does not, so `![a](/i){#i}` over `^ Fig #`
+      leaves `</#i>` literal. For every captionIds
       collision, including collisions between two captions or between a
       caption and an equation, the first registration in document order wins;
       the later target remains numbered but does not replace it.

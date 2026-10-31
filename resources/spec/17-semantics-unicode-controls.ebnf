@@ -13,7 +13,9 @@
         U+200B yields an id with NEITHER codepoint.
       - PRESENTATION TARGETS -- HTML, Markdown, plain text, and terminal
         (ANSI) -- strip the bidi-override / isolate controls (U+202A..U+202E,
-        U+2066..U+2069) from rendered text, code and math content. An authored
+        U+2066..U+2069) from rendered text, code and math content. A link or
+        image title and an image's alt text are rendered text for this rule:
+        `[a](/u "t<U+202E>")` writes `title="t"`. An authored
         attribute value and a destination are neither (CARVE-P9-054).
         They are REMOVED, not escaped: in HTML, entity-encoding one would let
         it DECODE BACK to the raw control downstream; in the other presentation

@@ -26,7 +26,9 @@
          in that one slot: `{k=v .c}` over `::: note` gives
          `class="admonition note c" k="v"`. On a task list, where the author
          wrote a class, the base class is prepended inside that class slot
-         instead. Math keeps its own slot, on its own span.
+         instead, and so is math's: `` $`a`{k=v} `` gives
+         `class="math inline" k="v"`, while `` $`a`{k=v .c} `` gives
+         `k="v" class="math inline c"`. Math's classes stay on its own span.
       R3 AUTHORED, in the author's source order (the recorded `order`; PART
          4 RENDER ORDER). All classes accumulate, space-joined, into one
          `class` slot at its first-appearance position. An Attrs built
@@ -107,7 +109,9 @@
       The declaration takes the authored `align` slot. If the author also
       supplied `style`, emit one `style` attribute at its authored slot and
       append the declaration there: the authored value trimmed, a `;` added
-      if it has none, one space, then the declaration. The appended declaration
+      if it does not already end in one, one space, then the declaration. An
+      empty trimmed value adds nothing, neither `;` nor space:
+      `{style="" align=right}` gives `style="text-align: right;"`. The appended declaration
       wins if that style already named `text-align`.
 
       A TABLE CELL'S ALIGNMENT MERGES THE SAME WAY. A cell's `text-align` and
