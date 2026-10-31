@@ -32,9 +32,9 @@ Retired IDs are never reused. Their replacement points to the document that now 
 | `CARVE-P9-079` | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT | [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L472) |
 | `CARVE-P12-003` | TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION | [`CARVE-P12-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L16) |
 | `CARVE-P0-016` | A REAL DIV IS A CONTAINER LIKE ANY OTHER | [`CARVE-P9-084`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L431) |
-| `CARVE-P0-018` | DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L289) |
-| `CARVE-P2-017` | BELOW THE BODY'S COLUMN THE BODY ENDS | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L289) |
-| `CARVE-P3-015` | INDENTATION IS COLUMNS, NOT CHARACTERS | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L289) |
+| `CARVE-P0-018` | DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L301) |
+| `CARVE-P2-017` | BELOW THE BODY'S COLUMN THE BODY ENDS | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L301) |
+| `CARVE-P3-015` | INDENTATION IS COLUMNS, NOT CHARACTERS | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L301) |
 | `CARVE-P0-004` | ONE AUTHORED BLOCK BASE | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
 | `CARVE-P0-009` | A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
 | `CARVE-P0-021` | A BLOCK OPENER IN THE BAND FOLDS ON THE SAME TERMS | [`CARVE-P0-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L119) |
