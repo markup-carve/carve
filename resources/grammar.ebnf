@@ -277,6 +277,8 @@
         opener without an exact-width closer is one `%%` line comment.
         Comment delimiters inside code, raw content or another payload are
         literal bytes.
+        A body line that misses the matched comment span's owner ends that
+        span under S1; the line is classified in its selected owner.
 
         A comment is still an ordinary line for ownership. S2 selects its
         owner, it takes the `line_comment` / `fenced_comment` row of T there,
@@ -545,7 +547,7 @@
      table            [B-table-start] A valid pipe row, or a selected CSV or
                       TSV fence. [B-table-end] It ends at the first line that
                       is not a row; [B-table-keep] a continuation row needs a
-                      body row above it.
+                      row above it, including a header row.
      caption          [B-caption-start] `^ ` with content after an eligible
                       host. One blank between host and marker is allowed, two
                       detach.
@@ -1463,8 +1465,10 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    the caption's first character. MARKER REQUIRES CONTENT (CARVE-P2-009) applies
    after the run as well: a caret, the separator and nothing but whitespace
    opens no caption, and the line is ordinary paragraph text.
-   A COMMENT IS NOT CONTENT HERE EITHER (carve#4559). Removing a comment must
-   not change the output (carve#4220, CARVE-P9-013), so a caret whose content is only
+   A COMMENT IS NOT CONTENT HERE EITHER (carve#4559). Removing a braced
+   comment leaves surrounding whitespace in place, including a space before
+   the comment at the end of a line. A comment contributes no content to the
+   caption's content test (carve#4220, CARVE-P9-013), so a caret whose content is only
    `braced_comment`s, whitespace and a trailing `inline_comment` opens no
    caption: `| a |` over `^ %% x` is the table and then the paragraph `^`,
    and a quote over it gets no `<figure>`. A comment followed by text,
@@ -1508,10 +1512,11 @@ caption_slot = [blank_line], caption ;
    `^ ` line ends the description list and is a paragraph of its own.
 
    The optional `blank_line` matches a TRULY blank line only. A
-   structural-only line -- a bare `>`, an accepted continuation marker, a
-   bare fence -- is not blank, and where it changes
-   the open container it ends the caption scope instead of being spent as
-   the allowance (CARVE-P9-080). *)
+   structural-only line that changes the open container -- an accepted
+   continuation marker or a bare fence -- ends the caption scope instead of
+   being spent as the allowance (CARVE-P9-080). A bare `>` inside an already
+   open quote is that quote's blank line, and a captionable host inside it may
+   spend that line as its one-blank allowance. *)
 
 (* CAPTION NUMBER PLACEHOLDER -- NORMATIVE [CARVE-P2-022].
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
@@ -2996,11 +3001,13 @@ smart_quote = '"' | "'" ;
    The PREVIOUS character is the last EMITTED character. A construct that
    renders nothing, including an empty braced comment, contributes no
    character: `\{{%%}"q"` renders `{“q”`, just as `\{"q"` does. The end of a
-   closed inline element (emphasis, span, link, code) counts as a word
+   closed inline element (emphasis, span, link, code, math, image, extension,
+   editorial or inline note) counts as a word
    character whatever it ends in, so the quote after it CLOSES:
    `[—]{.c}"q"` renders `<span class="c">—</span>”q”`. The START of an
    inline span's content (emphasis of every kind, bare, braced or combined,
-   a span, a link) is start-of-content, whatever precedes the span, so the
+   an editorial frame, either side of a substitution, a span, a link, an
+   inline note or an extension) is start-of-content, whatever precedes the span, so the
    quote there OPENS: `x.="q"=`, `x.*"q"*` and `x.*/"q"/*` all render `“q”`.
    An editorial frame, either side of a substitution, an extension's content
    and an inline note's content also start content. An inline literal and a
@@ -3070,7 +3077,8 @@ arrow = "<--" | "-->" | "<-->"      (* ← → ↔, canonical *)
    Matched longest-first, as `<->` already beats `<-`, so `<==` beats `<=` and
    `-->` beats the hyphen run. A right arrow does not start inside a longer
    hyphen run: `a--->b` is an em dash and `>`, and `a ---> b` stays a flag. `=`
-   has no run rule, so `a ===> b` is `=` and the arrow.
+   has no run rule, so `a ===> b` is `=` and the arrow. A left arrow takes
+   the first two hyphens of a longer run: `a<---b` gives `a←-b`.
 
    `<=` KEEPS ≤. `->`, `<-` AND `<->` ARE DEPRECATED, NOT REMOVED: they
    still render, with the doubled forms canonical.
@@ -3435,6 +3443,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    option's marker, so `@shift:1@lines:1-8` is two options and never one shift
    whose value is `1@lines:1-8`. A value that needs an `@` takes the quoted
    form. *)
+(* Quoting an option value changes only how its characters are delimited;
+   outside @cols it does not change the option's meaning. Thus
+   `@lines:"1-2"` selects the same physical lines as `@lines:1-2`. *)
 (* The spaces before an `@` or a `#section` are OPTIONAL, in EVERY position. `bare_include_path`
    stops at `@` and `include_section` holds no `@` either, so both slots are
    already spelled to let an option butt straight up against them:
@@ -4289,6 +4300,8 @@ EOF = (* end of file *) ;
    so `*a %% c* d` renders `*a`. An atom or attached attribute run that starts
    before the `%%` holds it: `` `a %% b` ``, `{# a %% b #}`,
    `[a](/u "t %% b")` and `*x*{k="b %% c"}` all keep their `%%`.
+   Link text and an inline note body are runs of their own: a `%%` in either
+   runs to the matching `]`. An image's alt text holds its `%%` verbatim.
 
    Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
    the order of its atom table (escapes, code spans, math, inline
@@ -4453,7 +4466,8 @@ EOF = (* end of file *) ;
       non-blank line that is empty once its block structural prefix is
       removed: a bare `>`, an accepted continuation marker, a bare container
       fence. A list marker with no content and a refused `+` are text. It carries layout and no content. It is NOT a
-      blank line, and the `[blank_line]` of `caption_slot` never matches one.
+      blank line outside that quote. Inside a quote, a bare `>` is that quote's
+      blank line and counts toward a contained host's one-blank caption allowance.
 
       WHERE IT CHANGES THE OPEN CONTAINER, IT ENDS ANY PENDING CAPTION SCOPE.
       A structural-only line that opens or closes a container ends the scope
@@ -5343,7 +5357,8 @@ EOF = (* end of file *) ;
          - a thematic break (a lone `---` / `***` / `___` line);
          - a block quote (`>` alone or `> `; `>text`, `>= 5`, and `>>=`
            are prose, not quote markers);
-         - a definition-list term (`:: ` followed by non-whitespace content);
+         - a definition-list term (`:: ` followed by further spaces and then
+           non-whitespace content is still a term);
          - a valid table row (valid_row(L), §5 T2; a stray `|` in prose,
            and a line-initial `|` with no closing `|`, are NOT ones);
          - a code or raw fence opener, closer or not (I4);
@@ -5423,7 +5438,9 @@ EOF = (* end of file *) ;
          description, a note and a quote alike (carve#4412). `- n` / `*[A]: b` and
          `- n` / ` *[A]: b` close the item and define `A`; `- n` / `  *[A]: b` reaches
          the item and stays its text, and so does a line past an open term's
-         column, since a term is no frame. Every other member keeps its
+         column, since a term is no frame. Any line past an open term's
+         content column folds into that term, including an abbreviation-like
+         line. Every other member keeps its
          class below a container's content column: it interrupts, closes the
          missed containers and is read in the surviving owner (PART 0 S4, S5).
 
@@ -5691,7 +5708,8 @@ EOF = (* end of file *) ;
 
         The minted id starts at `adm-{n}`, n counting from 1 the Tier-1 titled
         blocks of the body and a placed directive's title in document order,
-        then those of endnote bodies in definition order, so an endnote body
+        then those of rendered endnote bodies in endnote order; an unreferenced
+        note mints none. Thus an endnote body
         counts after later body blocks even where a `::: footnotes` marker
         renders it before them. Reserve every rendered explicit id and every automatic heading id
         first, then add a duplicate suffix (`adm-1-2`, `adm-1-3`, ...) until
@@ -6118,11 +6136,13 @@ EOF = (* end of file *) ;
       - DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL -- NORMATIVE
         [CARVE-P9-073]. A `::: footnotes`, `::: bibliography`, or
         `::: references` marker inside a block-level container -- a block
-        quote, a list item, a div or directive body, a table cell, a definition
+        quote, a list item, a div or directive body, a definition
         description, a footnote definition -- does not place its document-wide
         region. It renders the `<div class="{kind}">` floor of §12 where it is
         written, and the region goes where it would without THIS marker. A
-        processor with lint diagnostics reports `{kind}-placement-in-container`
+        table cell holds inline content rather than block markers, so it
+        cannot contain a placement marker and is not a host in this list.
+        A processor with lint diagnostics reports `{kind}-placement-in-container`
         for the kind it supports. This rule does not restrict `::: toc`,
         `::: glossary`, or `::: index` inside a container.
       - A MARKER IN A TOC BODY RETAINS ITS CONTAINER SCOPE -- NORMATIVE
@@ -6332,8 +6352,9 @@ EOF = (* end of file *) ;
          the gates apply to the first visible line after them (carve#4449).
          Link, note and abbreviation definitions are one class here (CARVE-P9-013):
          an abbreviation definition the `+` skips defines in the document when
-         the host stands in the document. Under a host in a quote, an item or a
-         div the line is text (CARVE-P12-026), so it is the next line. An invisible line off the marker column is itself that
+         the host stands in the document. Under a host in a quote, an item, a
+         definition body, a footnote body or a div the line is text
+         (CARVE-P12-026), so it is the next line. An invisible line off the marker column is itself that
          next line, and a note definition's body belongs to the note. A blank line, the end of
          input or a sibling after them refuses the `+`. Examples, with `/` for
          a line break:
@@ -6630,7 +6651,9 @@ EOF = (* end of file *) ;
       ends at `|`, link text at `]`, and ANY CONSTRUCT WITH AN EXPLICIT CLOSER
       ends at that closer -- a forced span `{X...X}` at its `X}`, the combined
       `/*...*/` token at its `*/`, and the rest of the braced family the same
-      way. Plain prose supplies none, and this is the form for it:
+      way. In an editorial `{~...~>...~}` frame, the first side's run ends
+      at `~>` and the second side's run ends at `~}`; `%%` stops at that
+      side's closer. Plain prose supplies none, and this is the form for it:
       `foo {% bar %} baz` renders `<p>foo  baz</p>`.
       - Only the braced comment's own characters are removed. Spaces before
         and after it stay in the inline run, including a trailing space in
@@ -6699,6 +6722,8 @@ EOF = (* end of file *) ;
         again or rescanning the rest of the block for each rejected opener.
         The top inline run is level 1 of the cap, so 199 spans nest in it and
         the 200th stays literal.
+        A bracket span counts toward the same cap: at most 199 formed spans of
+        any mix nest in the top inline run.
         LITERAL here means the current inline source characters as text: do
         not decode escapes or produce nodes for code, autolinks or other
         markup inside the rejected range. Earlier document ingestion policies
@@ -6803,7 +6828,8 @@ EOF = (* end of file *) ;
         leaves NOTHING: no verse line, no line break, and a blank line in its
         body ends no stanza. A verse block holding only such a span renders
         with no stanza, so `::: |` / `  %%%` / `  secret` / `  %%%` / `:::`
-        renders `<div class="line-block"></div>`. A fence with no closer in
+        renders an empty line block with the blank line required between its
+        opening and closing tags by CARVE-P10-001. A fence with no closer in
         the body degrades to a `comment_line` (§28) and leaves an empty verse
         line like any other; an indented one is verse text, as an indented
         `%%` line is below.
@@ -7827,10 +7853,12 @@ EOF = (* end of file *) ;
       NUMBERING, PREFIXING AND JOINING REMAIN THE EXTENSION'S OWN
       BUSINESS. This governs what the TITLE part is made of, not the label
       word, not the number, and not the separator around them.
-   R5 NUMBERED CAPTIONS. Per bucket key, in document order, each caption whose
+   R5 NUMBERED CAPTIONS. Per bucket key, in rendered document order, each caption whose
       top-level text carries a bare `#` placeholder receives the next
       number for the label's plain-text bucket key (PART 2, CAPTION NUMBER
-      PLACEHOLDER); an {#id} on
+      PLACEHOLDER). A caption in an endnote body is numbered when that
+      endnote renders, after body captions; an unreferenced footnote body
+      receives no caption number. An {#id} on
       the captioned host registers it in captionIds for R4. Only the host's
       block id registers: an id glued to the image or math span inside it is
       an inline attribute and does not, so `![a](/i){#i}` over `^ Fig #`
@@ -8212,7 +8240,9 @@ EOF = (* end of file *) ;
       `[x]{abbr="gen" title="authored"}` is `<abbr title="authored">`, not two
       `title` attributes on one element. The author wrote that one in the
       output's own vocabulary; the derived one is a convenience for the case
-      where they did not. Several names nest in this fixed
+      where they did not. A derived `title` or `datetime`, when present,
+      precedes the leftover authored attributes in the rendered element.
+      Several names nest in this fixed
       INNER-TO-OUTER order, independent of the order the author typed them:
       `abbr`, `time`, `kbd`.
 
@@ -10803,6 +10833,12 @@ EOF = (* end of file *) ;
       CONTENT and may drop only its INTERACTION, and authored text -- a label
       or a title that distinguishes one block from another -- MUST NOT be
       silently discarded.
+
+      Every caption's text is content under that floor. Plain text and the
+      terminal preserve it as readable text for each captionable host, just
+      as Markdown does. The target-capabilities caption row cites this clause
+      for that shared preservation requirement; T2 below fixes the Markdown
+      table caption's particular position.
 
       This clause decides only where the named text goes on the targets below.
       Unnamed construct/target pairs remain open, not allowed by omission.

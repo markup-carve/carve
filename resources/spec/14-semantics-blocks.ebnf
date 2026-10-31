@@ -254,7 +254,8 @@
          - a thematic break (a lone `---` / `***` / `___` line);
          - a block quote (`>` alone or `> `; `>text`, `>= 5`, and `>>=`
            are prose, not quote markers);
-         - a definition-list term (`:: ` followed by non-whitespace content);
+         - a definition-list term (`:: ` followed by further spaces and then
+           non-whitespace content is still a term);
          - a valid table row (valid_row(L), §5 T2; a stray `|` in prose,
            and a line-initial `|` with no closing `|`, are NOT ones);
          - a code or raw fence opener, closer or not (I4);
@@ -334,7 +335,9 @@
          description, a note and a quote alike (carve#4412). `- n` / `*[A]: b` and
          `- n` / ` *[A]: b` close the item and define `A`; `- n` / `  *[A]: b` reaches
          the item and stays its text, and so does a line past an open term's
-         column, since a term is no frame. Every other member keeps its
+         column, since a term is no frame. Any line past an open term's
+         content column folds into that term, including an abbreviation-like
+         line. Every other member keeps its
          class below a container's content column: it interrupts, closes the
          missed containers and is read in the surviving owner (PART 0 S4, S5).
 
@@ -602,7 +605,8 @@
 
         The minted id starts at `adm-{n}`, n counting from 1 the Tier-1 titled
         blocks of the body and a placed directive's title in document order,
-        then those of endnote bodies in definition order, so an endnote body
+        then those of rendered endnote bodies in endnote order; an unreferenced
+        note mints none. Thus an endnote body
         counts after later body blocks even where a `::: footnotes` marker
         renders it before them. Reserve every rendered explicit id and every automatic heading id
         first, then add a duplicate suffix (`adm-1-2`, `adm-1-3`, ...) until

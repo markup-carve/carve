@@ -52,6 +52,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    option's marker, so `@shift:1@lines:1-8` is two options and never one shift
    whose value is `1@lines:1-8`. A value that needs an `@` takes the quoted
    form. *)
+(* Quoting an option value changes only how its characters are delimited;
+   outside @cols it does not change the option's meaning. Thus
+   `@lines:"1-2"` selects the same physical lines as `@lines:1-2`. *)
 (* The spaces before an `@` or a `#section` are OPTIONAL, in EVERY position. `bare_include_path`
    stops at `@` and `include_section` holds no `@` either, so both slots are
    already spelled to let an option butt straight up against them:

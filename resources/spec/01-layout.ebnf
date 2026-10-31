@@ -158,6 +158,8 @@
         opener without an exact-width closer is one `%%` line comment.
         Comment delimiters inside code, raw content or another payload are
         literal bytes.
+        A body line that misses the matched comment span's owner ends that
+        span under S1; the line is classified in its selected owner.
 
         A comment is still an ordinary line for ownership. S2 selects its
         owner, it takes the `line_comment` / `fenced_comment` row of T there,
@@ -426,7 +428,7 @@
      table            [B-table-start] A valid pipe row, or a selected CSV or
                       TSV fence. [B-table-end] It ends at the first line that
                       is not a row; [B-table-keep] a continuation row needs a
-                      body row above it.
+                      row above it, including a header row.
      caption          [B-caption-start] `^ ` with content after an eligible
                       host. One blank between host and marker is allowed, two
                       detach.

@@ -42,7 +42,9 @@
       ends at `|`, link text at `]`, and ANY CONSTRUCT WITH AN EXPLICIT CLOSER
       ends at that closer -- a forced span `{X...X}` at its `X}`, the combined
       `/*...*/` token at its `*/`, and the rest of the braced family the same
-      way. Plain prose supplies none, and this is the form for it:
+      way. In an editorial `{~...~>...~}` frame, the first side's run ends
+      at `~>` and the second side's run ends at `~}`; `%%` stops at that
+      side's closer. Plain prose supplies none, and this is the form for it:
       `foo {% bar %} baz` renders `<p>foo  baz</p>`.
       - Only the braced comment's own characters are removed. Spaces before
         and after it stay in the inline run, including a trailing space in
@@ -111,6 +113,8 @@
         again or rescanning the rest of the block for each rejected opener.
         The top inline run is level 1 of the cap, so 199 spans nest in it and
         the 200th stays literal.
+        A bracket span counts toward the same cap: at most 199 formed spans of
+        any mix nest in the top inline run.
         LITERAL here means the current inline source characters as text: do
         not decode escapes or produce nodes for code, autolinks or other
         markup inside the rejected range. Earlier document ingestion policies
@@ -215,7 +219,8 @@
         leaves NOTHING: no verse line, no line break, and a blank line in its
         body ends no stanza. A verse block holding only such a span renders
         with no stanza, so `::: |` / `  %%%` / `  secret` / `  %%%` / `:::`
-        renders `<div class="line-block"></div>`. A fence with no closer in
+        renders an empty line block with the blank line required between its
+        opening and closing tags by CARVE-P10-001. A fence with no closer in
         the body degrades to a `comment_line` (§28) and leaves an empty verse
         line like any other; an indented one is verse text, as an indented
         `%%` line is below.
