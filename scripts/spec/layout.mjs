@@ -2068,6 +2068,15 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
       bodyLeavesParagraphOpen(bodyLines.slice(0, text + 1), quoted, depth)
   }
 
+  // A description's marker line answers with the block it holds (CARVE-P9-083).
+  if (depth < MAX_NESTING_DEPTH && DESCRIPTION_LEAD.test(tail.rest)) {
+    for (let k = last - 1; k >= 0 && trimWs(bodyLines[k]) !== ''; k--) {
+      if (DEFLIST_TERM.test(indentCols(bodyLines[k]).rest)) {
+        return bodyLeavesParagraphOpen([tail.rest.slice(tail.rest.search(/[^: ]/))], quoted, depth + 1)
+      }
+    }
+  }
+
   return opensParagraph(bodyLines[last], false, tableOpenAfter(bodyLines.slice(0, last)))
 }
 
@@ -3218,8 +3227,15 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     const missedFrames = frames.slice(reached + 1)
     const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
     // PART 0 [B-term-keep]: past a missed quote or note a marker leaves a term, and past a quote a separator too (carve#4300).
-    const termRefuses = top().last === 'term' && (matchMarkerAt(m) ? missedFrames.some((f) => f.kind === 'quote' || f.kind === 'note') :
+    let termRefuses = top().last === 'term' && (matchMarkerAt(m) ? missedFrames.some((f) => f.kind === 'quote' || f.kind === 'note') :
       DESCRIPTION_LEAD.test(m.rest) && missedFrames.some((f) => f.kind === 'quote'))
+    // That separator ends the quote; a container around it that the line also missed keeps it as lazy text (carve#4432).
+    if (termRefuses && !matchMarkerAt(m) && missedFrames[0].kind !== 'quote' && !missedFrames.some((f) => f.kind === 'note')) {
+      frames.length = frames.findLastIndex((f) => f.kind === 'quote')
+      top().para = true
+      top().last = 'para'
+      termRefuses = false
+    }
     if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && !termRefuses && form.kind !== 'dd' &&
         !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes) &&
         !(missedNote && form.kind === 'item' && frames.slice(reached + 1).some((f) => f.kind === 'item'))) {
@@ -3277,6 +3293,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       result.push(out + src)
       // The readers open a list at a folded marker (§10 I2); a lazy line framed later belongs to its item (carve#4259).
       if (form.kind === 'item') top().listContent = foldedAt + form.width
+      // The list they open there is read from the body column, so the child's source measure ends.
+      if (form.kind === 'item') for (const f of frames.slice(reached + 1)) {
+        if (!f.sourceShift) continue
+        f.col -= f.sourceShift
+        f.cut -= f.sourceShift
+        f.sourceShift = 0
+      }
       // A marker of another list kind under an item's paragraph opens a list
       // at the parent's content column (§10 I2), and so does any marker the
       // `+` refuses between its columns. The walk folds it, and the markers
@@ -3454,8 +3477,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
         frames.push(frame)
         take(form.head)
         m = walkIndent(src)
-        // The readers set a note's marker-line content at its body column.
-        if (form.kind === 'note') return content(frame, frame.col - m.col, frame.canon - m.col)
+        // A marker-line item or note is measured from its source column (CARVE-P9-083); it lands at the body column, as other content does.
+        if (form.kind === 'note') {
+          const start = frame.col - m.col
+          const measured = noteChildAtSource(m.rest) ? col + form.head : start
+          const depth = frames.length
+          content(frame, measured, frame.canon - m.col)
+          // A `+` and a fence payload still read the body column (carve#4409).
+          for (let k = depth; k < frames.length; k++) {
+            if (frames[k].markerCol === undefined) continue
+            frames[k].markerCol -= measured - start
+            frames[k].sourceShift = measured - start
+          }
+          return
+        }
+        frame.boxGap = form.boxGap
         return content(frame, col + form.head, canon + form.head, form.leadTab)
       }
     }
@@ -3492,7 +3528,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       }
       const col = start + m.col
       lead(m.col)
-      apply(frame, col, form, canon + m.col, frame.kind === 'note' ? frame.reader : frame.reader + canon + m.col - frame.canon)
+      apply(frame, col, form, canon + m.col, frame.kind === 'note' ? frame.reader : frame.reader + canon + m.col - frame.canon - (form.kind === 'item' ? frame.boxGap ?? 0 : 0))
     }
   }
   const walked = frameTextFences(result, textFences)
@@ -3774,7 +3810,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // A term is not a paragraph a marker continues.
     if (marker && owner.para && owner.kind !== 'item' && owner.last !== 'term') return { kind: 'text', interrupts: false }
     if (marker) {
-      return { kind: 'item', width: marker.markerWidth, head: rest.length - marker.text.length, interrupts: false,
+      const head = rest.length - marker.text.length
+      return { kind: 'item', width: marker.markerWidth, head, interrupts: false,
+        // The readers measure a child past the box as four columns, whatever gap precedes it (§24 C3).
+        boxGap: marker.task === undefined ? 0 : head - marker.markerWidth - taskBoxWidth(marker),
         axes: marker.isOrdered ? `${marker.delim}` : marker.bullet, leadTab: marker.leadTab }
     }
     if (DEFLIST_TERM.test(rest)) return { kind: 'term', interrupts: true }
@@ -3832,6 +3871,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     return m
   }
 
+}
+
+// Whether a note's marker-line content is a chain of items or notes measured from its source
+// column. One ending in a code fence keeps the body column.
+function noteChildAtSource(rest) {
+  let text = rest
+  let chained = false
+  for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+    const measured = indentCols(trimLineEnd(text))
+    const next = matchMarkerAt(measured)?.text ?? FOOTNOTE_DEF.exec(measured.rest)?.[2]
+    if (next === undefined) return chained && !isCodeBlockOpener(measured.rest)
+    text = next
+    chained = true
+  }
+  return false
 }
 
 // The readers re-derive a fence line's reading from the walk's output, where
@@ -6020,7 +6074,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         // PART 0 T leaves a term open for plain lazy text.
         qTermOpen = !/^:( +)/.test(trimWsStart(leaf)) &&
-          (DEFLIST_TERM.test(leaf) || qTermOpen)
+          (DEFLIST_TERM.test(trimWsStart(leaf)) || qTermOpen)
       }
       while (i < n) {
         // The MARKER is `>` plus a space, or `>` alone - the same rule the
@@ -7298,6 +7352,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     let headSubEnded = false
     // A plain line below the child's column folded into its open paragraph.
     let childParagraphLazy = false
+    let colonDescriptionBody = Infinity
     let subCol = -1
     // A comment below the child's column ends it in the body parse (carve#3985).
     let commentBelowChild = false
@@ -8480,7 +8535,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // takes its authored base and may interrupt a paragraph
         // (CARVE-P0-004, CARVE-P9-083).
         const retainedAfterComment = afterComment && subCol > reach && !opensBlockAt(line, i)
-        const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 &&
+        // A line at the body column of a description in that container is the description's, not a new base (CARVE-P9-083).
+        if (fence.colon.length === 0 || (lm.rest !== '' && col < colonDescriptionBody)) colonDescriptionBody = Infinity
+        if (fence.colon.length !== 0 && fence.opaque === null && DESCRIPTION_LEAD.test(lm.rest) && opensDescriptionAt(itemLines, col - contentCol)) {
+          colonDescriptionBody = col + DESCRIPTION_LEAD.exec(lm.rest)[0].length
+        }
+        const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 && col < colonDescriptionBody &&
           col > contentCol && !descendantOwned && !COLON_CLOSER.test(lm.rest) && !inPayload && !retainedAfterComment && opensHostedColonBlock(lm.rest)
         if (markerNoteEligible && defBodyIndent !== null && nm && col >= contentCol + defBodyIndent + FOOTNOTE_BODY_COLUMN) noteMarkerSeen = true
         if (nm && defBodyIndent !== null && col >= contentCol + defBodyIndent + FOOTNOTE_BODY_COLUMN &&
@@ -8821,7 +8881,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
               if (foldedChildFence) foldedChildParagraph = true
               if (!foldedChildParagraph || !descendantParagraphBefore || mayOpenAuthoredBlock) {
                 // The child's paragraph stays the deepest one for the box columns (PART 0 S4).
-                childParagraphLazy = childParagraphOpen && !isBlank(lines[i - 1] ?? '') && !mayOpenAuthoredBlock && (foldablePlainLine(dmeas.rest) || foldsIntoChild)
+                childParagraphLazy = childParagraphOpen && !isBlank(lines[i - 1] ?? '') && !mayOpenAuthoredBlock && (foldablePlainLine(dmeas.rest) || CAPTION.test(dmeas.rest) || foldsIntoChild)
                 // A lazy fold keeps the child the deepest frame (PART 0 S4, carve#4291).
                 if (!childParagraphLazy || nestedOpaque || wasNested) descLive = false
                 foldedChildParagraph = false

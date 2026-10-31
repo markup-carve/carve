@@ -1,0 +1,18 @@
+A separator below a term after an item paragraph leaves its quote
+
+```
+> - ::
+>   :: t
+   : a
+.
+<blockquote>
+  <ul>
+    <li>::
+      <dl>
+        <dt>t</dt>
+      </dl>
+    </li>
+  </ul>
+</blockquote>
+<p>: a</p>
+```

@@ -1,0 +1,55 @@
+A line below the column after a note-hosted description leaves the note
+
+```
+[^f]: :: t
+  : | a |
+ ^ cap
+
+[^f]
+.
+<p>^ cap</p>
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <dl>
+        <dt>t</dt>
+        <dd>
+          <table>
+            <tbody>
+              <tr><td>a</td></tr>
+            </tbody>
+          </table>
+        </dd>
+      </dl>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^f]: :: t
+  : # h
+b
+
+[^f]
+.
+<p>b</p>
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <dl>
+        <dt>t</dt>
+        <dd>
+          <h1 id="h">h</h1>
+        </dd>
+      </dl>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

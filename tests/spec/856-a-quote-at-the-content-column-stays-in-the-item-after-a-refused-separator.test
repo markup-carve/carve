@@ -1,0 +1,19 @@
+A quote at the content column stays in the item after a refused separator
+
+```
+- > :: t
+: a
+  > q
+.
+<ul>
+  <li>
+    <blockquote>
+      <dl>
+        <dt>t</dt>
+      </dl>
+    </blockquote>
+    : a
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```

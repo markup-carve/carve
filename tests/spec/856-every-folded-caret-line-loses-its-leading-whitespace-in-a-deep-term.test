@@ -1,0 +1,21 @@
+Every folded caret line loses its leading whitespace in a deep term
+
+```
+- [ ] - [ ] :: t
+      ^ ap
+     ^ cap
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 
+        <dl>
+          <dt>t
+^ ap
+^ cap</dt>
+        </dl>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
