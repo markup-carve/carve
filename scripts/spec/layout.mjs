@@ -2266,6 +2266,8 @@ function bodyLeavesNoParagraphAt(bodyLines, last, quoted = false) {
       const end = findCloser(bodyLines, k, code[1])
       // An unterminated fence opens no block, so nothing below it is closed
       // either: the paragraph above stays open and `opensParagraph` answers.
+      // At a block start it opens unconditionally (§10 I4) and holds no paragraph.
+      if (end === -1 && (k === 0 || trimWs(bodyLines[k - 1]) === '')) return true
       if (end === -1 || end > last) return false
       closedAt = end
       k = end + 1
