@@ -6,7 +6,10 @@
       - AN INLINE RUN IS A DELIMITED REGION PARSED AS `inline_content` IN ITS
         OWN RIGHT: a paragraph, a heading's text, a definition term, a table
         cell, a figure caption, an admonition header, a container, link, span
-        or fence label. Nothing else holds a run -- not markup INSIDE one, so
+        or fence label. A bracket run that stays literal, an inline note's body
+        and an extension's content also hold a run, so a `%%` in one ends at its
+        closing `]`: `^[%% c] d` is an empty note and ` d`.
+        Nothing else holds a run -- not markup INSIDE one, so
         an emphasis span's first content character does not start one; not a
         slot the grammar declares literal (`alt_text`, a code fence's
         `quoted_title`); and
