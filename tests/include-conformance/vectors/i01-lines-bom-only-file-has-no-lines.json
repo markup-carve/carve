@@ -13,7 +13,7 @@
     "bom.txt": "﻿"
   },
   "expected": {
-    "html": "<p>{{ bom.txt <span class=\"mention\"><strong>@lines</strong></span>:1-1 <span class=\"mention\"><strong>@code</strong></span> }}</p>",
+    "html": "<p>{{ bom.txt @lines:1-1 @code }}</p>",
     "fmt": "{{ bom.txt @lines:1-1 @code }}\n",
     "warnings": [
       {

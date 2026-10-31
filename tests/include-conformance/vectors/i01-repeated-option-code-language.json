@@ -12,7 +12,7 @@
     "a.js": "one()\ntwo()\nthree()\n"
   },
   "expected": {
-    "html": "<p>{{ a.js <span class=\"mention\"><strong>@code</strong></span>:js <span class=\"mention\"><strong>@code</strong></span>:py }}</p>",
+    "html": "<p>{{ a.js @code:js @code:py }}</p>",
     "fmt": "{{ a.js @code:js @code:py }}\n",
     "warnings": [
       {

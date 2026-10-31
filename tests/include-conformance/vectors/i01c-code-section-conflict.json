@@ -12,7 +12,7 @@
     "child": "# Intro\n\nBody."
   },
   "expected": {
-    "html": "<p>{{ child <span class=\"tag\"><strong>#intro</strong></span> <span class=\"mention\"><strong>@code</strong></span>:js }}</p>",
+    "html": "<p>{{ child #intro @code:js }}</p>",
     "fmt": "{{ child #intro @code:js }}\n",
     "warnings": [
       {

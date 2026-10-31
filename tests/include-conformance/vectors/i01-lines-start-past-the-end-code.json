@@ -12,7 +12,7 @@
     "two.txt": "one\ntwo\n"
   },
   "expected": {
-    "html": "<p>{{ two.txt <span class=\"mention\"><strong>@lines</strong></span>:3-3 <span class=\"mention\"><strong>@code</strong></span> }}</p>",
+    "html": "<p>{{ two.txt @lines:3-3 @code }}</p>",
     "fmt": "{{ two.txt @lines:3-3 @code }}\n",
     "warnings": [
       {
