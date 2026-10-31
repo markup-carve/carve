@@ -271,7 +271,7 @@
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,
-      but a separator would promote those cells under PART 9 T7.1. The
+      but a separator would promote those cells under PART 9 T7, effect 1. The
       roundtrip writer does not change a cell's meaning to preserve the field's spelling.
       A source-conversion API that refuses unspellable fields refuses this
       combination with its typed source-unspellable error. A producer providing

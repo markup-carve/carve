@@ -166,8 +166,9 @@
         code span        a backtick run of length n, to the next run of
                          exactly n backticks; verbatim, and a glued
                          `{=format}` makes it raw inline. Unclosed, the rest
-                         of the block is code, inside a braced span or frame
-                         too (carve#3973 X5).
+                         of the block, or of an extension's content, is code,
+                         inside a braced span or frame too (carve#3973 X5):
+                         ``:foo[`a] b`` closes the extension at its `]`.
         math             a dollar sign or two before a code span, to the
                          code span's end; verbatim; unclosed as a code span.
         inline literal   `!` before a code span, as math.
@@ -556,7 +557,8 @@
         custom type still renders as its generic `<div class="{type}">`
         so the document stays readable. `details` is an ordinary Tier-2
         type (`<div class="details">`); an extension that wants the
-        HTML5 `<details>/<summary>` disclosure element opts in via §4.20.
+        HTML5 `<details>/<summary>` disclosure element registers for the
+        `details` type and post-processes that div, as above.
 
       Pinned rules common to both tiers:
         a. The class is the literal type identifier (Tier 1 prefixes it
@@ -710,7 +712,10 @@
         top-level headings (`# abc` then `> # abc` gives `abc` then
         `abc-2`), and it is a valid `</#id>` crossref target. The one
         exception is the implicit `[Heading][]` reference index, which
-        declines headings under a blockquote (PART 9R R1).
+        declines headings under a blockquote (PART 9R R1). Document order
+        has one exception: a footnote definition's headings take their ids
+        after every body heading, in definition order, so `[^n]: # abc`
+        written above `# abc` leaves the body `abc` and the note `abc-2`.
         When the `sections` option below is off, the top-level shape becomes
         identical to this one, so id
         placement and attribute placement follow ONE rule everywhere in
