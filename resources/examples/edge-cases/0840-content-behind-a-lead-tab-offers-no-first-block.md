@@ -4,7 +4,7 @@ page: edge-lists
 
 ## Content behind a lead tab offers no first block
 
-A tab that begins an item's content is leading whitespace (CARVE-P2-010), and what follows it is paragraph text whatever it spells (corpus 684, 736). So a `+` behind that tab is a letter at every nesting depth, the paragraph it starts stays open, and a lazy line folds into it. No enclosing collector reads a first-block `+` through the tab.
+A tab that begins an item's content is content (CARVE-P2-010), so the item's text starts with it, and what follows it is paragraph text whatever it spells (corpus 684, 736). So a `+` behind that tab is a letter at every nesting depth, the paragraph it starts stays open, and a lazy line folds into it. No enclosing collector reads a first-block `+` through the tab.
 
 :::: compare
 
@@ -17,7 +17,7 @@ A tab that begins an item's content is leading whitespace (CARVE-P2-010), and wh
 <ul>
   <li>
     <ul>
-      <li>+
+      <li>	+
 x</li>
     </ul>
   </li>
@@ -37,7 +37,7 @@ x
 <ul>
   <li>
     <ul>
-      <li>+
+      <li>	+
 x</li>
     </ul>
   </li>
@@ -55,7 +55,7 @@ x</li>
 
 ```html
 <ul>
-  <li>+</li>
+  <li>	+</li>
 </ul>
 <blockquote>
 
@@ -74,7 +74,7 @@ x
 ```html
 <blockquote>
   <ul>
-    <li>- +
+    <li>	- +
 x</li>
   </ul>
 </blockquote>
@@ -91,7 +91,7 @@ x
 
 ```html
 <ul>
-  <li>&gt; +
+  <li>	&gt; +
 x</li>
 </ul>
 ```

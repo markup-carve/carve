@@ -1017,12 +1017,18 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    which folds it as a soft break: `:`, `: `, `:   ` and `:` + TAB are one
    document.
 
-   A LEADING CONTENT TAB FOLLOWS NORMAL INDENTATION -- NORMATIVE [CARVE-P2-010].
+   A LEADING CONTENT TAB IS CONTENT -- NORMATIVE [CARVE-P2-010].
    With the separator space present and content after it, a tab that begins
-   the content is ordinary leading whitespace and is stripped: content_column
-   is where the content actually STARTS (PART 9 §24 C3). `::` + space + TAB +
-   `x` renders `<dl><dt>x</dt></dl>`. TABS IN CODE (CARVE-P2-007) covers code
-   content only.
+   the content is the first content character, as it is after a heading's
+   separator (CARVE-P2-002): the separator is spaces only (CARVE-P7-002), and a
+   tab past the first non-whitespace character is content (CARVE-P7-001). It
+   stays in the text with every space or tab after it, and it does not move
+   the content column: that is marker width plus the separator's spaces (PART 9
+   §24 C3), the same for a list item, a definition term and a description.
+   What follows the tab is paragraph text whatever it spells. `-` + space +
+   TAB + `x` followed by `  # H` is one item holding the text TAB + `x` and the
+   heading; `::` + space + TAB + `x` is the term TAB + `x`. TABS IN CODE
+   (CARVE-P2-007) covers code content only.
 
    WHICH CHARACTERS THE CONTENT TEST IGNORES -- NORMATIVE [CARVE-P2-027]. A tab
    PAST the separator run is judged by the content test: a body of nothing but

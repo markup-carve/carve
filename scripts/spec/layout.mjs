@@ -4964,7 +4964,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // line does not strand its definition. (This used to say "like a
           // heading". A heading ends at its newline and folds nothing; the term
           // is the key half of a key-value entry, and keeps its fold.)
-          let dt = trimWs(dm[1])
+          // CARVE-P2-010: the separator is spaces; a tab after it is content.
+          let dt = trimWsEnd(dm[1].replace(/^ +/, ''))
           i++
           while (i < n) {
             const cur = lines[i] ?? ''
@@ -5058,7 +5059,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           let foldedParagraphAt = -1
           const measurement = state.opaqueMeasurement
           const parentOrigins = measurement?.origins.get(lines)
-          const markerLead = matchMarkerAt(indentCols(dm[2])) && markerFenceSummary(dm[2], new Map())
+          // CARVE-P2-010: a tab-led body is paragraph text, as in a list item.
+          const leadTab = dm[2].startsWith('\t')
+          const markerLead = !leadTab && matchMarkerAt(indentCols(dm[2])) && markerFenceSummary(dm[2], new Map())
           const bodyOrigins = parentOrigins === undefined || !markerLead ? undefined : []
           if (bodyOrigins) measurement.origins.set(bodyLines, bodyOrigins)
           // X2: lazy prose keeps the quote's claim until a block closes it.
@@ -5126,9 +5129,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // authored lines reported an open paragraph the body does not have.
           i++
           // Set by a `+` the walk accepted: the next line begins its block (§17 L3).
-          let attachPending = CONT_MARKER.test(trimWs(dm[2]))
+          let attachPending = !leadTab && CONT_MARKER.test(trimWs(dm[2]))
           let attachedFrom = -1
-          if (!attachPending) {
+          if (leadTab) pushBody(lazyFrame(trimLineEnd(dm[2])), i - 1)
+          else if (!attachPending) {
             pushBody(stripIndent(dm[2]).replace(/[ \t]+$/, ''), i - 1)
           }
           const endsBodyAt = (at) => {
@@ -7110,9 +7114,7 @@ function foldLeadTab(marker, origin) {
   const { indent, markerWidth, text, task } = marker
   const run = task === undefined ? /^\t[ \t]*/.exec(text)?.[0] : undefined
   if (!run || /^%{3}/.test(text.slice(1))) return marker
-  let end = indent + markerWidth
-  for (const ch of run) end = ch === '\t' ? origin + (Math.floor((end - origin) / 4) + 1) * 4 : end + 1
-  return { ...marker, text: text.slice(run.length), markerWidth: end - indent, leadTab: true }
+  return { ...marker, leadTab: true }
 }
 
 // PART 9 SS11 N3: an ambiguous first letter is roman when the next sibling is

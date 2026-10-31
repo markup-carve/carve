@@ -183,7 +183,7 @@ flush
 ```html
 <dl>
   <dt>t</dt>
-  <dd>text</dd>
+  <dd>	text</dd>
 </dl>
 <p>flush</p>
 ```

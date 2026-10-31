@@ -4,7 +4,7 @@ Whitespace after a leading content tab is not content
 - 	 e
 .
 <ul>
-  <li>e</li>
+  <li>	 e</li>
 </ul>
 ```
 
@@ -13,7 +13,7 @@ Whitespace after a leading content tab is not content
    b
 .
 <ol>
-  <li><strong>a</strong>
+  <li>	  <strong>a</strong>
 b</li>
 </ol>
 ```
@@ -23,7 +23,7 @@ b</li>
 .
 <blockquote>
   <ul>
-    <li>- x</li>
+    <li>	 - x</li>
   </ul>
 </blockquote>
 ```

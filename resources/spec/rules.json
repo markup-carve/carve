@@ -235,7 +235,7 @@
     {
       "id": "CARVE-P2-010",
       "part": "2",
-      "title": "A LEADING CONTENT TAB FOLLOWS NORMAL INDENTATION",
+      "title": "A LEADING CONTENT TAB IS CONTENT",
       "scope": "parsing"
     },
     {

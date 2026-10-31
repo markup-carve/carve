@@ -10,7 +10,7 @@ A tab after a list marker separator is content and cannot expose a quote opener.
 
 ```html
 <ul>
-  <li>&gt; a</li>
+  <li>	&gt; a</li>
 </ul>
 ```
 

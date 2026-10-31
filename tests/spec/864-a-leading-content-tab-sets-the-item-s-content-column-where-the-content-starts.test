@@ -6,7 +6,8 @@ A leading content tab sets the item's content column where the content starts
   f
 .
 <ul>
-  <li>e</li>
+  <li><p>	e</p>
+    <p>f</p>
+  </li>
 </ul>
-<p>f</p>
 ```

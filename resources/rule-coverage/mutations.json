@@ -271,8 +271,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "          let dt = trimWs(dm[1])",
-          "replace": "          let dt = dm[1].replace(/[ \\t\\n\\r]+$/, '')"
+          "find": "          let dt = trimWsEnd(dm[1].replace(/^ +/, ''))",
+          "replace": "          let dt = trimWs(dm[1])"
         }
       ]
     },
