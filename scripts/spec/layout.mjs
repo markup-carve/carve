@@ -3294,7 +3294,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       termRefuses = false
     }
     if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && !termRefuses && form.kind !== 'dd' &&
-        !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && frames[reached + 1].axes === form.axes) &&
+        !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && sameAxes(markerAxes(frames[reached + 1].marker), form.marker)) &&
         !(missedNote && form.kind === 'item' && frames.slice(reached + 1).some((f) => f.kind === 'item'))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
       // the frame it missed. Past a missed note it is framed LAZY in the
@@ -3526,7 +3526,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       if (form.kind === 'item' || form.kind === 'note' || form.kind === 'dd') {
         const frame = { kind: form.kind, col: col + form.width, canon: canon + form.width, reader: reader + form.width,
           docMarker: docColumn(lines[at], src), line: at,
-          cut: col - canon, para: false, last: null, markerCol: col, markerCanon: canon, axes: form.axes }
+          cut: col - canon, para: false, last: null, markerCol: col, markerCanon: canon, axes: form.axes, marker: form.marker }
         // A sibling keeps its list's column and shift.
         const first = owner === frames[reached] && sibling?.kind === form.kind && sibling.axes === form.axes ? sibling : frame
         frame.listCol = first.listCol ?? col
@@ -3878,7 +3878,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       return { kind: 'item', width: marker.markerWidth, head, interrupts: false,
         // The readers measure a child past the box as four columns, whatever gap precedes it (§24 C3).
         boxGap: marker.task === undefined ? 0 : head - marker.markerWidth - taskBoxWidth(marker),
-        axes: marker.isOrdered ? `${marker.delim}` : marker.bullet, leadTab: marker.leadTab }
+        axes: marker.isOrdered ? `${marker.delim}` : marker.bullet, marker, leadTab: marker.leadTab }
     }
     if (DEFLIST_TERM.test(rest)) return { kind: 'term', interrupts: true }
     const dd = /^:( +)(?=[ \t]*[^ \t])/.exec(rest)

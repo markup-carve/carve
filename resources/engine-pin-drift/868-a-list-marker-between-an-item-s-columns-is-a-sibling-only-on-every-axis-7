@@ -1,0 +1,1 @@
+The pinned carve-js folds a column-1 marker that matches the open list on every axis into the item's paragraph; the spec model keeps it a sibling (PART 0 S4, markup-carve/carve#4545).

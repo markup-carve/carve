@@ -1,0 +1,88 @@
+A list marker between an item's columns is a sibling only on every axis
+
+```
+- a
+ - [ ] b
+.
+<ul>
+  <li>a
+- [ ] b</li>
+</ul>
+```
+
+```
+- [ ] a
+ - b
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="a - b"> a
+- b</li>
+</ul>
+```
+
+```
+1. a
+ a. b
+.
+<ol>
+  <li>a
+a. b</li>
+</ol>
+```
+
+```
+1. a
+ i. b
+.
+<ol>
+  <li>a
+i. b</li>
+</ol>
+```
+
+```
+a. a
+ 1. b
+.
+<ol type="a">
+  <li>a
+1. b</li>
+</ol>
+```
+
+```
+- x
+  - a
+   - [ ] b
+.
+<ul>
+  <li>x
+    <ul>
+      <li>a
+- [ ] b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- [ ] a
+ - [x] b
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="a"> a</li>
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="b"> b</li>
+</ul>
+```
+
+```
+- a
+- [ ] b
+.
+<ul>
+  <li>a</li>
+</ul>
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="b"> b</li>
+</ul>
+```
