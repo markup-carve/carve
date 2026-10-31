@@ -1,0 +1,57 @@
+A widths list writes one col per entry
+
+```
+{widths=25,50}
+| a | b | c |
+.
+<table>
+  <colgroup>
+    <col style="width: 25%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <tbody>
+    <tr><td>a</td><td>b</td><td>c</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{widths=,50}
+| a | b | c |
+.
+<table>
+  <colgroup>
+    <col>
+    <col style="width: 50%;">
+  </colgroup>
+  <tbody>
+    <tr><td>a</td><td>b</td><td>c</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{widths=101}
+| a |
+.
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{widths=50,101}
+| a | b |
+.
+<table>
+  <colgroup>
+    <col style="width: 50%;">
+    <col>
+  </colgroup>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
