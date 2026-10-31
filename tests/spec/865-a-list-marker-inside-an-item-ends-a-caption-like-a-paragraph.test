@@ -1,0 +1,57 @@
+A list marker inside an item ends a caption like a paragraph
+
+```
+- > q
+  ^ p
+  - b
+.
+<ul>
+  <li>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>p</figcaption>
+    </figure>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- | a |
+  ^ p
+  - b
+.
+<ul>
+  <li>
+    <table>
+      <caption>p</caption>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- > q
+  ^ p
+   - b
+.
+<ul>
+  <li>
+    <figure>
+      <blockquote><p>q</p></blockquote>
+      <figcaption>p</figcaption>
+    </figure>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
