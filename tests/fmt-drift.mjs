@@ -1,14 +1,13 @@
 /*
  * Shared loader for the two declared-drift files consulted by any test that
  * reads the pinned build's OWN output back through itself or the oracle:
- * `resources/engine-pin-drift.txt` (direct render drift) and
+ * `resources/engine-pin-drift/` (direct render drift) and
  * `resources/engine-fmt-drift.txt` (writer-only drift - see that file's own
  * header for why it is kept separate rather than folded into the first).
  *
- * Both files share the same format (`<slug><two spaces><reason>`), so one
- * parser serves both, and consumers that need "is this slug excused for a
- * round-trip or cross-read purpose" want the UNION of the two, not either one
- * alone.
+ * Both map a slug to a reason, so one parser serves both, and consumers that
+ * need "is this slug excused for a round-trip or cross-read purpose" want the
+ * UNION of the two, not either one alone.
  */
 import { resolve } from 'node:path'
 import { parseDriftLedger } from '../scripts/lib/drift-ledger.mjs'
@@ -34,7 +33,7 @@ const parseDriftFile = (path) => [...parseDriftLedger(path).keys()]
 export function loadDeclaredFmtDrift(testsDir) {
   const resourcesDir = resolve(testsDir, '..', 'resources')
   return new Set([
-    ...parseDriftFile(resolve(resourcesDir, 'engine-pin-drift.txt')),
+    ...parseDriftFile(resolve(resourcesDir, 'engine-pin-drift')),
     ...parseDriftFile(resolve(resourcesDir, 'engine-fmt-drift.txt')),
   ])
 }
@@ -43,7 +42,7 @@ export function loadDeclaredFmtDrift(testsDir) {
  * The WRITER-ONLY file on its own, for the staleness ratchet.
  *
  * `npm run engine:report -- --check` fails in either direction on
- * `engine-pin-drift.txt`, so a line there cannot outlive the drift it names.
+ * `engine-pin-drift/`, so a row there cannot outlive the drift it names.
  * Nothing did that for `engine-fmt-drift.txt`: it was read only through the
  * union above, where a slug's only effect is to EXCUSE a failure. A line that
  * stopped being true would have gone on excusing nothing, silently, forever -

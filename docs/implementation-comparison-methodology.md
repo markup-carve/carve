@@ -349,7 +349,7 @@ target is expected to name them until their fixes land:
 
 The golden is derived from the clause, not from an engine, so it stays as
 written until the engines meet it. This is the same window
-`resources/engine-pin-drift.txt` declares for the HTML target, kept here instead
+`resources/engine-pin-drift/` declares for the HTML target, kept here instead
 because that file is read by `npm run engine:report -- --check`, which measures
 HTML only and would report a line for this slug as stale on the day it landed.
 
@@ -568,7 +568,7 @@ every run:
   itself rather than trusting the table.
 - **A known-behind conversion** is drift: it lives in
   `resources/converter-drift.txt` as `engine/case  reason`, the converter
-  corpus's `engine-pin-drift.txt`. An undeclared mismatch fails immediately;
+  corpus's `engine-pin-drift/`. An undeclared mismatch fails immediately;
   a declared one that starts passing fails as stale until the line is deleted
   in the commit that fixed it.
 

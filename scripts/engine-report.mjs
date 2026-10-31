@@ -16,7 +16,7 @@
  *
  * --check turns it into a gate on the DECLARED window rather than on drift
  * itself, which is the distinction that keeps the deadlock above from coming
- * back. resources/engine-pin-drift.txt names the slugs the pin is knowingly
+ * back. resources/engine-pin-drift/ names the slugs the pin is knowingly
  * behind on; --check fails only when the real set differs from that file, in
  * either direction. A spec PR that puts the corpus ahead of the engine adds a
  * line there and stays green; drift nobody declared goes red the same day.
@@ -124,27 +124,28 @@ if (!checkMode) process.exit(mismatches.length || threw.length ? 1 : 0)
  * document that reproduces fine - so the next real drift on that slug is
  * pre-excused and never reported.
  */
-const driftPath = resolve(here, '..', 'resources/engine-pin-drift.txt')
+const driftPath = resolve(here, '..', 'resources/engine-pin-drift')
 const declared = parseDriftLedger(driftPath)
 
 const actual = new Set([...mismatches.map((m) => m.slug), ...threw.map((t) => t.slug)])
 const undeclared = [...actual].filter((s) => !declared.has(s)).sort()
 const stale = [...declared.keys()].filter((s) => !actual.has(s)).sort()
 
-console.log(`\ndeclared drift:          ${declared.size} (resources/engine-pin-drift.txt)`)
+console.log(`\ndeclared drift:          ${declared.size} (resources/engine-pin-drift/)`)
 
 for (const slug of undeclared) {
   console.log(`  UNDECLARED  ${slug} - the pin does not reproduce this and nothing says why`)
 }
 for (const slug of stale) {
-  console.log(`  STALE       ${slug} - reproduces now; drop the line (reason was: ${declared.get(slug)})`)
+  console.log(`  STALE       ${slug} - reproduces now; delete its file (reason was: ${declared.get(slug)})`)
 }
 
 if (undeclared.length || stale.length) {
   console.log(
-    `\nresources/engine-pin-drift.txt does not describe this build.\n` +
-      `Add a line (with the reason) for drift a spec rule just created, or delete\n` +
-      `lines the pin has caught up on - in the commit that causes either.`,
+    `\nresources/engine-pin-drift/ does not describe this build.\n` +
+      `Add a file named by the slug, holding the reason, for drift a spec rule just\n` +
+      `created, or delete the files the pin has caught up on - in the commit that\n` +
+      `causes either.`,
   )
   process.exit(1)
 }

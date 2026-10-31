@@ -38,7 +38,7 @@ export function formatOfExtension(ext) {
  * CHECKED IN BOTH DIRECTIONS by the runner (scripts/compare-impls.mjs,
  * --corpus=convert): a declared gap the engine has quietly closed is a STALE
  * entry and fails, so the table cannot outlive the gap it describes - the
- * discipline resources/engine-pin-drift.txt already follows.
+ * discipline resources/engine-pin-drift/ already follows.
  *
  * Engine names are the runner's (`rust`, `js`, `php`), and the coverage they
  * record was measured on carve#1130 (comment of 2026-08-12, corrected the same

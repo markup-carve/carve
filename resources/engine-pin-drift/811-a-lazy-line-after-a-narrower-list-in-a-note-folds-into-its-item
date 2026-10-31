@@ -1,0 +1,1 @@
+The pinned JS writer moves a lazy line after a narrower note list out of the note; carve-js main (68ec736e) keeps it in the item, the pin is behind (carve#4259).

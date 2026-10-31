@@ -1,0 +1,1 @@
+markup-carve/carve#4514, the pinned carve-js repeats a directive class the author also wrote (CARVE-P4-002 dedup, carve#4154): class="foo foo c".

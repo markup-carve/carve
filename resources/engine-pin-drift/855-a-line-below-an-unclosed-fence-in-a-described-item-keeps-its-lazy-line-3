@@ -1,0 +1,1 @@
+The pinned carve-js predates this: a line below an unclosed fence in a described item keeps its lazy line (markup-carve/carve#4468); the spec model is correct.

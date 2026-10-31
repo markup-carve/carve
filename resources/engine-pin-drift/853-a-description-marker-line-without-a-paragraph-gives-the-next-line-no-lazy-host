@@ -1,0 +1,1 @@
+The pinned carve-js predates this: a marker-line description holding no paragraph ends its body at a column-0 line (markup-carve/carve#4305); the spec model is correct.

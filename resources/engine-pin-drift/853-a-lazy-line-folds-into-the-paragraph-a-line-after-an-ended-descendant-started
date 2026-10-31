@@ -1,0 +1,1 @@
+The pinned carve-js predates this: a lazy line folds into the paragraph after an ended descendant (markup-carve/carve#4165); the spec model is correct.

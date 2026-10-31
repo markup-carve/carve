@@ -1,0 +1,1 @@
+Pinned JavaScript still blocks an opener after a guard that does not close (carve#3973 X1); tracked at markup-carve/carve-js#3961.

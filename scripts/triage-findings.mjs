@@ -164,7 +164,7 @@ if (flag('fetch-issues')) {
   }
 }
 const samples = issues.flatMap((i) => issueSamples(i.body).map((src) => ({ ref: `${i.repo}#${i.number}`, src })))
-for (const name of ['engine-pin-drift.txt', 'engine-target-drift.txt']) {
+for (const name of ['engine-pin-drift', 'engine-target-drift.txt']) {
   const path = join(root, 'resources', name)
   if (!existsSync(path)) continue
   for (const [key, reason] of parseDriftLedger(path)) {

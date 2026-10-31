@@ -1,0 +1,1 @@
+Pinned JavaScript still reads an empty brace group as text (carve#3973 X6); tracked at markup-carve/carve-js#3961.

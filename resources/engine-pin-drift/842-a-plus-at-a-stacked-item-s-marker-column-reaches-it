@@ -1,0 +1,1 @@
+markup-carve/carve#4355, the pinned carve-js does not attach a + at a stacked item's marker column; spec first, port pending

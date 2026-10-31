@@ -199,7 +199,7 @@ const MANIFEST = [
   // two-verdicts note at the top of this file (carve#1811). `prPolicy` is
   // deliberately a per-entry opt-in rather than a blanket relaxation of
   // `owed`, so relaxing a third ledger stays a visible edit here.
-  { repo: 'spec', path: 'resources/engine-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'scripts/engine-report.mjs', staleness: 'reproduces now; drop the line (reason was:', owner: 'npm run engine:report -- --check' },
+  { repo: 'spec', path: 'resources/engine-pin-drift', kind: 'dir-ledger', policy: 'owed', prPolicy: 'declared', guard: 'two-way', stalenessFile: 'scripts/engine-report.mjs', staleness: 'reproduces now; delete its file (reason was:', owner: 'npm run engine:report -- --check' },
   // Declared inside a pull request for the same reason: a spec rule the
   // oracle already renders lands before the pin, on every authored document
   // that uses the construct (carve#2887).
@@ -864,7 +864,7 @@ const LANG_OF = { js: 'js', 'js-string': 'js', php: 'php', rust: 'rust' }
 /** Live rows for one manifest entry, or an Error explaining why not. */
 function liveRows(entry, src) {
   if (entry.kind === 'txt') return txtRows(src)
-  if (entry.kind === 'dir') return txtRows(src)
+  if (entry.kind === 'dir' || entry.kind === 'dir-ledger') return txtRows(src)
   if (entry.kind === 'json' || entry.kind === 'json-flag') {
     let node
     try { node = JSON.parse(src) } catch (error) { return new Error(`invalid JSON: ${error.message}`) }
@@ -948,6 +948,39 @@ function readDir(repo, path) {
   return names.filter((name) => !name.startsWith('.')).sort().join('\n')
 }
 
+/**
+ * A `dir-ledger`'s entries as `<key>  <reason>` lines: one file per key, the
+ * reason its content. A file without a reason yields a bare key, which the
+ * `declared` policy reports.
+ */
+function readDirLedger(repo, path) {
+  const info = REPOS[repo]
+  if (!info || !existsSync(info.dir)) return new Error(`checkout not found: ${info?.dir ?? repo}`)
+  const all = listFiles(repo, path)
+  if (all.length === 0) return new Error(`directory not found: ${path}`)
+  const files = all.filter((file) => !file.slice(file.lastIndexOf('/') + 1).startsWith('.')).sort()
+  let contents
+  if (info.alwaysWorktree || ref === 'worktree') {
+    contents = files.map((file) => readFileSync(join(info.dir, file), 'utf8'))
+  } else {
+    const batch = execFileSync('git', ['-C', info.dir, 'cat-file', '--batch'], {
+      input: files.map((file) => `${ref}:${file}\n`).join(''),
+      maxBuffer: 64 * 1024 * 1024,
+    })
+    contents = []
+    let at = 0
+    for (let i = 0; i < files.length; i++) {
+      const eol = batch.indexOf(0x0a, at)
+      const size = Number(batch.subarray(at, eol).toString('utf8').split(' ')[2])
+      contents.push(batch.subarray(eol + 1, eol + 1 + size).toString('utf8'))
+      at = eol + 1 + size + 1
+    }
+  }
+  return files
+    .map((file, i) => `${file.slice(file.lastIndexOf('/') + 1)}  ${contents[i].trim().replace(/\n/g, ' ')}`.trimEnd())
+    .join('\n')
+}
+
 function stalenessCheck(entry, source, reader = read) {
   if (entry.stalenessFile !== undefined && entry.staleness === undefined) {
     return new Error(`stalenessFile requires staleness: ${entry.path}`)
@@ -1002,7 +1035,7 @@ function perPrPolicy(entry) {
   return entry.policy
 }
 
-export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, gitReferenceBuildStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, undeclaredExtentRows, spanRowKey, spanExemptions, stalenessCheck, MANIFEST }
+export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, readDirLedger, classifyPinDistance, gitPinStatus, gitReferenceBuildStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, undeclaredExtentRows, spanRowKey, spanExemptions, stalenessCheck, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.
@@ -1082,7 +1115,9 @@ console.log(`${pad('repo', width.repo)} ${pad('file', width.path)} ${pad('consta
 console.log('-'.repeat(width.repo + width.path + width.name + width.rows + 24))
 
 for (const entry of MANIFEST) {
-  const src = entry.kind === 'dir' ? readDir(entry.repo, entry.path) : read(entry.repo, entry.path)
+  const src = entry.kind === 'dir' ? readDir(entry.repo, entry.path)
+    : entry.kind === 'dir-ledger' ? readDirLedger(entry.repo, entry.path)
+      : read(entry.repo, entry.path)
   const label = `${pad(entry.repo, width.repo)} ${pad(entry.path, width.path)} ${pad(entry.name ?? '-', width.name)}`
   if (src instanceof Error) {
     // "There is no sibling clone of carve-rs on this machine" is a fact about

@@ -1,0 +1,1 @@
+The pinned carve-js predates this: a tab-led item sets its content column where the content starts (markup-carve/carve#4122); the spec model is correct.

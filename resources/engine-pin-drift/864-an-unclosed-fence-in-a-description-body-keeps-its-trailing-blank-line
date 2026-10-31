@@ -1,0 +1,1 @@
+The pinned carve-js drops the blank run from the open fence (markup-carve/carve#4033); the spec model is correct.

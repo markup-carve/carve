@@ -1,0 +1,1 @@
+Pinned JavaScript does not fold a paragraph line below the body column into a note's refused + (markup-carve/carve#4152); pending in carve-js.

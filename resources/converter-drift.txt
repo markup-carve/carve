@@ -6,7 +6,7 @@
 # against the case's expected.html. A mismatch is not automatically wrong:
 # when a converter rule is pinned here before an engine ships it, the corpus
 # is ahead of that engine until its fix lands. That window is normal, and -
-# exactly as with resources/engine-pin-drift.txt - it is DECLARED rather than
+# exactly as with resources/engine-pin-drift/ - it is DECLARED rather than
 # tolerated.
 #
 # The runner fails (under --fail-on-diff) when the real set differs in EITHER

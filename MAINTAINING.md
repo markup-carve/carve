@@ -40,7 +40,7 @@ none of them is the pin itself:
    EXCLUDED in `docs/.vitepress/carve-extensions.js`, or
    `tests/playground-extensions.test.mjs` fails. Classify it *before* bumping;
    the entry is harmless while the pinned build still lacks the export.
-2. **`resources/engine-pin-drift.txt`.** Every entry describes a document the
+2. **`resources/engine-pin-drift/`.** Every entry describes a document the
    *pinned* build does not reproduce. An entry the new build satisfies is now a
    lie about the engine - re-run `npm run engine:report` and delete what it no
    longer reports.
@@ -49,7 +49,7 @@ none of them is the pin itself:
    build. Diagram and math hydration wrappers also have optional corpus pairs.
    For examples without a pair, the ` ```html ` fence supplies the expectation. So a Tier-3 ruling that lands before the engine ships it goes in
    the fence, and its section is named in `AHEAD_OF_PIN` in that test file, the
-   same window `resources/engine-pin-drift.txt` declares for the core corpus.
+   same window `resources/engine-pin-drift/` declares for the core corpus.
    **A diff here at bump time is a decision, never a re-snapshot**: the ledger
    fails an entry the new build reproduces, so a bump DELETES entries, and it
    fails an undeclared disagreement, so a build that moved under a fixture

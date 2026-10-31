@@ -176,6 +176,9 @@ const NOT_SHIPPED = [
     // A pin bump rewrites them all and owes the reader nothing; six of the 67
     // merges in 0.1.6 were exactly that.
     /^resources\/.*\.txt$/,
+    // The same ledgers stored one file per row.
+    /^resources\/engine-pin-drift\//,
+    /^resources\/roundtrip\//,
     /^resources\/corpus-sidecars\.lock\.json$/,
 ];
 

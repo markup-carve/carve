@@ -242,7 +242,7 @@ fi
 # 7. Engine pin drift is CURRENT, not merely declared (carve#1200).
 #
 # CI gates that every mismatch between the corpus and the pinned reference build
-# is DECLARED in resources/engine-pin-drift.txt. Nothing gated that the
+# is DECLARED in resources/engine-pin-drift/. Nothing gated that the
 # declarations are still true. A release is exactly where the difference shows:
 # an entry whose rule the pinned build now reproduces reads as "the corpus is
 # ahead of the engines" while meaning "nobody has run bump-carve-pin in a
@@ -251,10 +251,10 @@ fi
 # `engine:report --check` already fails in both directions, so this is a gate on
 # a report rather than a second implementation of it.
 #
-# Only this repo has the file. Invoked from carve-js/carve-rs/carve-php the
-# block does not run, which is why it tests the file rather than the version
+# Only this repo has the ledger. Invoked from carve-js/carve-rs/carve-php the
+# block does not run, which is why it tests the ledger rather than the version
 # field.
-if [ -f resources/engine-pin-drift.txt ]; then
+if [ -d resources/engine-pin-drift ]; then
   if [ ! -d node_modules ]; then
     # NOT a skip. The drift file is present, so the claim is checkable and
     # unchecked; passing here would report a verification that did not happen.
@@ -301,13 +301,13 @@ if [ -f resources/engine-pin-drift.txt ]; then
     if DRIFT_OUT="$(npm run --silent engine:report -- --check 2>&1)"; then
       ok "engine pin drift matches what is declared"
     else
-      bad "engine pin drift is stale or undeclared - run npm run bump-carve-pin, then delete every line that now reproduces"
+      bad "engine pin drift is stale or undeclared - run npm run bump-carve-pin, then delete every file that now reproduces"
       printf '%s\n' "$DRIFT_OUT" | grep -E 'UNDECLARED|reproduces|no longer|declared drift' | sed 's/^/         /'
     fi
   fi
 fi
 
-# 8. EVERY declaration list is clear, not only resources/engine-pin-drift.txt.
+# 8. EVERY declaration list is clear, not only resources/engine-pin-drift/.
 #
 # Step 7 gates ONE ledger. It is not the only place a release can carry a
 # silenced comparison: this repo has a dozen more (resources/*.txt plus the

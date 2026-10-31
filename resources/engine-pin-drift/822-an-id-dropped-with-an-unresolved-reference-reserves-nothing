@@ -1,0 +1,1 @@
+markup-carve/carve#4349, the pinned carve-js reserves an id an unresolved reference drops, so the heading takes -2; fix pending in carve-js
