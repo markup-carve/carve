@@ -2090,12 +2090,13 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   if (depth < MAX_NESTING_DEPTH) {
     for (let k = last; k >= 0; k--) {
       const m = indentCols(bodyLines[k])
-      if (m.rest === '') continue
+      if (m.rest === '' || bodyLines[k].includes(LAZY)) continue
       const note = FOOTNOTE_DEF.exec(m.rest)
       if (note) {
         if (k === last && openerFenceRun(note[2]) === null) break
-        const body = [note[2], ...bodyLines.slice(k + 1, last + 1).map((l) => dedentMeasured(indentCols(l), l, m.col + FOOTNOTE_BODY_COLUMN).text)]
-        if (bodyLines.slice(k + 1, last + 1).every((l) => trimWs(l) === '' || indentCols(l).col >= m.col + FOOTNOTE_BODY_COLUMN)) {
+        // A lazy line is the note's paragraph text wherever it stands.
+        const body = [note[2], ...bodyLines.slice(k + 1, last + 1).map((l) => l.includes(LAZY) ? stripLazyLead(l) : dedentMeasured(indentCols(l), l, m.col + FOOTNOTE_BODY_COLUMN).text)]
+        if (bodyLines.slice(k + 1, last + 1).every((l) => trimWs(l) === '' || l.includes(LAZY) || indentCols(l).col >= m.col + FOOTNOTE_BODY_COLUMN)) {
           return !bodyEndsInOpenFence(body) && bodyLeavesParagraphOpen(body, false, depth + 1)
         }
         break
@@ -3172,7 +3173,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     }
     // A `+` right after the block a `+` attached reaches the same host, whose
     // frames the walk closed when it read that block where it stands.
-    if (attachedTo && CONT_MARKER.test(trimWs(src).replace(/^(?:> ?)*/, ''))) {
+    if (attachedTo && CONT_MARKER.test(trimWs(src).replace(/^(?:>[ \t]*)*/, ''))) {
       const stands = stripQuotes(src, attachedTo.depth)
       if (stands && CONT_MARKER.test(trimWs(stands.rest)) && walkIndent(stands.rest).col === attachedTo.host.markerCol && attachedTo.endsAt(at)) {
         frames.length = 0
@@ -3856,7 +3857,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // Measured only when a `+` asks, over the lines since the block began.
     const endsAt = (at) => {
       let last = at
-      while (host.kind === 'item' && last > from && isBlank(lines[last - 1])) last--
+      while (host.kind === 'item' && last > from && isBlank(view(lines[last - 1]) ?? lines[last - 1])) last--
       if (last <= from) return false
       const own = lines.slice(from, last).map(view)
       // T6: a table's rows stay its rows at any indent, so the block ends where they do.

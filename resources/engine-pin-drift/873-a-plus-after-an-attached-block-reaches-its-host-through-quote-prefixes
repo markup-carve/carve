@@ -1,0 +1,1 @@
+The pinned carve-js reads `>   : p` under a quoted term as term text, so the description and both `+` lines stay in the `dt` (markup-carve/carve#4629).
