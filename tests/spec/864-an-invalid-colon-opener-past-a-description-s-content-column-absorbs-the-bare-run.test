@@ -1,0 +1,17 @@
+An invalid colon opener past a description's content column absorbs the bare run
+
+```
+:: t
+: m
+   :::e
+  :::
+l
+.
+<dl>
+  <dt>t</dt>
+  <dd>m
+:::e
+:::
+l</dd>
+</dl>
+```

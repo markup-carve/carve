@@ -1,0 +1,8 @@
+A fence a note's marker-line item opens ends at a column-zero line
+
+````
+[^n]: - ``` js
+tail
+.
+<p>tail</p>
+````

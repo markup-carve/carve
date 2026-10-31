@@ -1,0 +1,17 @@
+A comment fence on a nested marker line closes at the first exact-width closer
+
+```
+. - %%%
+%%%
+x
+%%%
+.
+<ol>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ol>
+<p>x</p>
+```

@@ -1,0 +1,34 @@
+A wrapped attribute at a footnote body's column is one construct
+
+```
+[^f]: d
+  {.c
+}
+  x
+
+[^f]
+.
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>d</p>
+      <p class="c">x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- d
+  {.c
+}
+  x
+.
+<ul>
+  <li>d
+    <p class="c">x</p>
+  </li>
+</ul>
+```

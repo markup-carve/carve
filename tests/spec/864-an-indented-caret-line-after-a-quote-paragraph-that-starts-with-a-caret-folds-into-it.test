@@ -1,0 +1,17 @@
+An indented caret line after a quote paragraph that starts with a caret folds into it
+
+```
+> ^ x
+ ^ cap
+.
+<blockquote><p>^ x
+^ cap</p></blockquote>
+```
+
+```
+> a
+ ^ cap
+.
+<blockquote><p>a
+^ cap</p></blockquote>
+```

@@ -838,3 +838,15 @@
 863-a-closer-or-caption-at-a-note-marker-line-item-s-content-column-is-the-item-s-3  The pinned carve-js reads the closer or caption as text (markup-carve/carve#4504); the spec model is correct.
 863-a-closer-or-caption-at-a-note-marker-line-item-s-content-column-is-the-item-s-4  The pinned carve-js keeps this line in the item (markup-carve/carve#4496); the spec model is correct.
 863-a-closer-or-caption-at-a-note-marker-line-item-s-content-column-is-the-item-s-5  The pinned carve-js keeps this line in the item (markup-carve/carve#4496); the spec model is correct.
+864-a-bullet-line-after-a-hostless-caption-line-leaves-later-indented-blocks-out-of-the-paragraph  The pinned carve-js folds the indented quote marker into the paragraph (markup-carve/carve#4283); the spec model is correct.
+864-a-comment-fence-on-a-nested-marker-line-closes-at-the-first-exact-width-closer  The pinned carve-js skips the first exact-width comment closer (markup-carve/carve#4116); the spec model is correct.
+864-a-line-below-a-bare-run-a-paragraph-absorbed-in-a-div-folds-into-it-2  The pinned carve-js ends the item at the line below the absorbed bare run (markup-carve/carve#4415); the spec model is correct.
+864-a-longer-bare-colon-run-does-not-end-a-line-block  The pinned carve-js ends the line block at a longer bare run (markup-carve/carve#4113); the spec model is correct.
+864-a-paragraph-after-a-closed-third-level-item-takes-a-lazy-line  The pinned carve-js gives the paragraph no lazy line (markup-carve/carve#4162); the spec model is correct.
+864-a-second-description-after-a-task-item-s-marker-line-term-opens-its-own-description  The pinned carve-js folds the second description into the first (markup-carve/carve#4094); the spec model is correct.
+864-a-second-description-in-an-indented-description-list-opens-its-own-description  The pinned carve-js folds the second description into the first (markup-carve/carve#4176); the spec model is correct.
+864-a-wrapped-attribute-at-a-footnote-body-s-column-is-one-construct  The pinned carve-js reads the wrapped attribute as paragraph text (markup-carve/carve#4104); the spec model is correct.
+864-an-invalid-colon-opener-past-a-description-s-content-column-absorbs-the-bare-run  The pinned carve-js ends the description at the line below the bare run (markup-carve/carve#4112); the spec model is correct.
+864-an-item-hands-its-blank-run-to-a-description-or-note-child-s-open-fence  The pinned carve-js drops the blank run from the open fence (markup-carve/carve#4047); the spec model is correct.
+864-an-item-hands-its-blank-run-to-a-description-or-note-child-s-open-fence-2  The pinned carve-js drops the blank run from the open fence (markup-carve/carve#4047); the spec model is correct.
+864-an-unclosed-fence-in-a-description-body-keeps-its-trailing-blank-line  The pinned carve-js drops the blank run from the open fence (markup-carve/carve#4033); the spec model is correct.
