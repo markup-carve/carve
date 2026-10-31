@@ -1026,7 +1026,7 @@ const sem = g.createSemantics().addOperation('h', {
   mention(_a, name, glued) {
     if (!name.sourceString) return escapeHtml(`@${glued.sourceString}`)
     return (
-      `<span class="mention"><strong>@${escapeHtml(name.sourceString)}</strong></span>` +
+      rawFrame(`<span class="mention"><strong>@${escapeHtml(name.sourceString)}</strong></span>`) +
       escapeHtml(glued.sourceString)
     )
   },
@@ -1098,7 +1098,8 @@ const sem = g.createSemantics().addOperation('h', {
         : codeText(inner.child(1)),
     )
     const a = renderAttrs(attrsOf(attrs))
-    return a === '' ? body : `<span${a}>${body}</span>`
+    // PART 9R R3: the abbreviation pass does not scan an inline literal or a mention.
+    return a === '' ? rawFrame(body) : `<span${a}>${rawFrame(body)}</span>`
   },
   extension(_c, name, _o, content, _cl, attrs) {
     const n = name.sourceString

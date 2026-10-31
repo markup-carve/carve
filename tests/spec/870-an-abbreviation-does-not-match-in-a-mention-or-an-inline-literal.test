@@ -1,0 +1,51 @@
+An abbreviation does not match in a mention or an inline literal
+
+```
+*[A]: x
+
+@A and !`A` and `A`
+.
+<p><span class="mention"><strong>@A</strong></span> and A and <code>A</code></p>
+```
+
+```
+*[A]: x
+
+!`A`{.c} and A
+.
+<p><span class="c">A</span> and <abbr title="x">A</abbr></p>
+```
+
+```
+*[AB]: x
+
+# @AB and !`AB`
+.
+<section id="AB-and-AB">
+  <h1><span class="mention"><strong>@AB</strong></span> and AB</h1>
+</section>
+```
+
+```
+*[A]: x
+
+| @A | !`A B` | A |
+.
+<table>
+  <tbody>
+    <tr><td><span class="mention"><strong>@A</strong></span></td><td>A B</td><td><abbr title="x">A</abbr></td></tr>
+  </tbody>
+</table>
+```
+
+```
+*[A]: x
+
+> q !`A`
+^ cap @A A
+.
+<figure>
+  <blockquote><p>q A</p></blockquote>
+  <figcaption>cap <span class="mention"><strong>@A</strong></span> <abbr title="x">A</abbr></figcaption>
+</figure>
+```
