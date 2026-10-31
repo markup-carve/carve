@@ -2088,7 +2088,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
           !/[ \t]\*\//.test(src.slice(head.at + 1, toks[closeIdx].at + 1))
         if (bi) pairedDelims?.push(head.at, toks[closeIdx - 1].at)
         const levels = bi ? 2 : 1
-        if (inlineDepth + levels > MAX_NESTING_DEPTH - 1) {
+        if (inlineDepth + levels > MAX_NESTING_DEPTH) {
           out += escapeHtml(src.slice(t.at, toks[closeIdx].at + 1))
           i = closeIdx + 1
           continue

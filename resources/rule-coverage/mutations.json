@@ -1372,8 +1372,8 @@
       "edits": [
         {
           "file": "scripts/spec/html.mjs",
-          "find": "const text = hit.html.replace(/\u005cuE000(?!\u005cuE001)[\\s\\S]*?\u005cuE001/g, '')",
-          "replace": "const text = stripTags(hit.html.replace(/\u005cuE000(?!\u005cuE001)[\\s\\S]*?\u005cuE001/g, ''))"
+          "find": "const text = resolveRefs(flattenInnerLinks(hit.html).replace(/\u005cuE000(?!ref:|\u005cuE001)[\\s\\S]*?\u005cuE001/g, ''), ctx)",
+          "replace": "const text = stripTags(resolveRefs(flattenInnerLinks(hit.html).replace(/\u005cuE000(?!ref:|\u005cuE001)[\\s\\S]*?\u005cuE001/g, ''), ctx))"
         }
       ]
     },

@@ -1,0 +1,95 @@
+An attribute merge and a cross-reference read the authored value
+
+```
+{id="a&b"}
+| a |
+^ T #: c
+
+</#a&b>
+.
+<table id="a&amp;b">
+  <caption>T 1: c</caption>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+<p><a href="#a&amp;b">T 1</a></p>
+```
+
+```
+{align=right align}
+p
+.
+<p align="">p</p>
+```
+
+```
+{align align=right}
+p
+.
+<p style="text-align: right;">p</p>
+```
+
+```
+{style=a style align=left}
+p
+.
+<p style="text-align: left;">p</p>
+```
+
+```
+{align=left}
+::: |
+a
+:::
+.
+<div style="text-align: left;" class="line-block">
+  <p>a</p>
+</div>
+```
+
+```
+{style=x align=left}
+::: \
+a
+:::
+.
+<div style="x; text-align: left;" class="hardbreaks">
+  <p>a</p>
+</div>
+```
+
+```
+# [l](/u) t
+
+</#l-t>
+.
+<section id="l-t">
+  <h1><a href="/u">l</a> t</h1>
+  <p><a href="#l-t">l t</a></p>
+</section>
+```
+
+```
+# [l][r] t
+
+[r]: /u
+
+</#l-t>
+.
+<section id="l-t">
+  <h1><a href="/u">l</a> t</h1>
+  <p><a href="#l-t">l t</a></p>
+</section>
+```
+
+```
+# Café
+
+</#Café>
+.
+<section id="Café">
+  <h1>Café</h1>
+  <p><a href="#Café">Café</a></p>
+</section>
+```

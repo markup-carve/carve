@@ -79,8 +79,11 @@ function renderTextBlockAttrs(lists, tag) {
   let style = null
   for (const list of copied) {
     for (const a of list) {
-      if (a[0] !== 'kv') continue
+      if (a[0] !== 'kv' && a[0] !== 'bool') continue
       const name = a[1].toLowerCase()
+      if (name !== 'align' && name !== 'style') continue
+      // A boolean takes part in the name merge as an empty value (PART 9 §19).
+      if (a[0] === 'bool') a.splice(0, 3, 'kv', a[1], '')
       if (name === 'align') aligns.push(a)
       if (name === 'style') style = a
     }
@@ -217,7 +220,7 @@ function renderDocPass(doc, footnoteProbe) {
     // while still slugging it and keeping it a crossref target.
     inBlockquote: false,
     captionSeq: new Map(), // caption label word -> counter (R5)
-    captionIds: new Map(), // exact id -> "Label N" (R4)
+    captionIds: new Map(), // NFC id -> { id, label: "Label N" } (R4)
     footnotesMarkerCount: 0,
     footnotesMarkerDepths: [],
     footnotesMarkerAttrs: [],
@@ -714,7 +717,7 @@ function renderBlock(b, depth, ctx) {
       // `class="y line-block"`. renderBlockAttrs merges classes at the FIRST
       // class position, so appending the synthetic class IS that rule, and an
       // id-only attribute line still yields `id="x" class="line-block"`.
-      const lbAttrs = renderBlockAttrs([...(b.battrs ?? []), [['class', 'line-block']]])
+      const lbAttrs = renderTextBlockAttrs([...(b.battrs ?? []), [['class', 'line-block']]], 'div')
       return `${pad2}<div${lbAttrs}>\n${ps.join('\n')}\n${pad2}</div>`
     }
     case 'hardbreaks': {
@@ -729,7 +732,7 @@ function renderBlock(b, depth, ctx) {
         return renderBlock(c, depth + 1, ctx)
       }).filter((x) => x !== null)
       // Same rule as the line block above, same defect, same fix.
-      const hbAttrs = renderBlockAttrs([...(b.battrs ?? []), [['class', 'hardbreaks']]])
+      const hbAttrs = renderTextBlockAttrs([...(b.battrs ?? []), [['class', 'hardbreaks']]], 'div')
       if (parts.length === 0) return `${pad2}<div${hbAttrs}>\n\n${pad2}</div>`
       return `${pad2}<div${hbAttrs}>\n${parts.join('\n')}\n${pad2}</div>`
     }
@@ -1134,8 +1137,15 @@ function panelLetter(k) {
   }
   return s
 }
-function numberCaption(text, ctx, id, panelIds) {
+// Ids reach numberCaption read back from serialized attributes; R4 keys the
+// authored value, which the crossref escapes again.
+const attrValue = (v) => v?.replaceAll('&quot;', '"').replaceAll('&apos;', "'")
+  .replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&')
+
+function numberCaption(text, ctx, rawId, rawPanelIds) {
   if (ctx.inPanel) return text
+  const id = attrValue(rawId)
+  const panelIds = rawPanelIds?.map(attrValue)
   const at = captionPlaceholder(text)
   if (at === -1) return text
   // PART 7 whitespace, not the host language's Unicode class.
@@ -1147,10 +1157,14 @@ function numberCaption(text, ctx, id, panelIds) {
   const n = (ctx.captionSeq.get(key) ?? 0) + 1
   ctx.captionSeq.set(key, n)
   const shown = label === '' ? '' : flattenInnerLinks(renderInline(label)).replace(/\uE000(?!ref:|\uE001)[\s\S]*?\uE001/g, '')
-  if (id && !ctx.captionIds.has(id)) ctx.captionIds.set(id, shown === '' ? `${n}` : `${shown} ${n}`)
+  // R4 keys are NFC-normalized and matched exactly (PART 9R R5a); the href keeps the authored id.
+  const register = (key, label) => {
+    if (key && !ctx.captionIds.has(key.normalize('NFC'))) ctx.captionIds.set(key.normalize('NFC'), { id: key, label })
+  }
+  register(id, shown === '' ? `${n}` : `${shown} ${n}`)
   if (panelIds) {
     panelIds.forEach((pid, k) => {
-      if (pid && !ctx.captionIds.has(pid)) ctx.captionIds.set(pid, `${shown === '' ? '' : `${shown} `}${n}${panelLetter(k)}`)
+      register(pid, `${shown === '' ? '' : `${shown} `}${n}${panelLetter(k)}`)
     })
   }
   return text.slice(0, at) + n + text.slice(at + 1)
@@ -1578,7 +1592,7 @@ function refKey(text) {
 // PART 9R R4: a repeated explicit id resolves to its first heading.
 function noteHeadingId(ctx, id, html) {
   // `id` here is what the cross-reference's href writes, and an id key can hold a quote.
-  if (!ctx.headingIds.has(id)) ctx.headingIds.set(id, { id: escapeAuthoredAttr(id), html })
+  if (!ctx.headingIds.has(id.normalize('NFC'))) ctx.headingIds.set(id.normalize('NFC'), { id: escapeAuthoredAttr(id), html })
 }
 
 function noteHeadingRef(ctx, text, id) {
@@ -1858,11 +1872,13 @@ function resolveFootnotes(html, ctx) {
 // --- PART 9R R4: crossrefs ---------------------------------------------------
 function resolveCrossrefs(html, ctx) {
   return html.replace(/xref(text)?:(.*?)/g, (_, textOnly, id) => {
-    const hit = ctx.headingIds.get(id)
+    const key = id.normalize('NFC')
+    const hit = ctx.headingIds.get(key)
     if (!hit) {
       // A reference in the label is still a frame: refs resolved before this pass.
-      const cap = ctx.captionIds.has(id) ? resolveRefs(ctx.captionIds.get(id), ctx) : undefined
-      if (cap) return textOnly ? cap : `<a href="#${escapeAuthoredAttr(id)}">${cap}</a>`
+      const target = ctx.captionIds.get(key)
+      const cap = target ? resolveRefs(target.label, ctx) : undefined
+      if (cap) return textOnly ? cap : `<a href="#${escapeAuthoredAttr(target.id)}">${cap}</a>`
       // unresolved: literal source text (PART 9 SS19), HTML-escaped -- an
       // unresolved id may carry `<`/`>`/`&` (e.g. `</#<script>`) which must not
       // reach the output raw.
@@ -1881,7 +1897,9 @@ function resolveCrossrefs(html, ctx) {
     // these three (see `derivedText`), and R4 binds every consumer that derives
     // display text from a heading to the same clone, so the two derivations
     // agree rather than differing by which frame each remembered to strip.
-    const text = hit.html.replace(/\uE000(?!\uE001)[\s\S]*?\uE001/g, '')
+    // The clone lands inside a link, and a link holds no link.
+    // A reference link in it flattens to its text like a caption label's.
+    const text = resolveRefs(flattenInnerLinks(hit.html).replace(/\uE000(?!ref:|\uE001)[\s\S]*?\uE001/g, ''), ctx)
     return textOnly ? text : `<a href="#${hit.id}">${text}</a>`
   })
 }
