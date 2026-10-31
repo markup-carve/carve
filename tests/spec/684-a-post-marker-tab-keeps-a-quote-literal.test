@@ -4,6 +4,6 @@ A post-marker tab keeps a quote literal
 - 	> a
 .
 <ul>
-  <li>&gt; a</li>
+  <li>	&gt; a</li>
 </ul>
 ```

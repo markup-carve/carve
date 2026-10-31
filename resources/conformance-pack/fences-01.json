@@ -867,7 +867,7 @@
 {"id":"fences-be603e6c7523","source":"    :::\n  - ``` =html\n- a\n    +\n\n","html":"<div>\n  <ul>\n    <li>\n      \n    </li>\n    <li>a\n+</li>\n  </ul>\n</div>"},
 {"id":"fences-be8043b3def8","source":"- foo\n\n  - +\n_u_\n  ```\n  x\n  ```\n","html":"<ul>\n  <li>foo\n    <ul>\n      <li>+\n<u>u</u></li>\n    </ul>\n    <pre><code>x\n</code></pre>\n  </li>\n</ul>"},
 {"id":"fences-be8b51804c14","source":"::: note\n- item\ncode\n```\n::::\n%%\n:::\nafter *b*\n","html":"<aside class=\"admonition note\" aria-label=\"Note\">\n  <ul>\n    <li>item\ncode</li>\n  </ul>\n  <pre><code>::::\n%%\n:::\nafter *b*\n</code></pre>\n</aside>"},
-{"id":"fences-beb7a2645809","source":":: |\ntab\tgap\nwide\t\tgap\n- \tlead\n  :::\n","html":"<dl>\n  <dt>|\ntab\tgap\nwide\t\tgap</dt>\n</dl>\n<ul>\n  <li>lead</li>\n</ul>\n<div>\n\n</div>"},
+{"id":"fences-beb7a2645809","source":":: |\ntab\tgap\nwide\t\tgap\n- \tlead\n  :::\n","html":"<dl>\n  <dt>|\ntab\tgap\nwide\t\tgap</dt>\n</dl>\n<ul>\n  <li>\tlead\n    <div>\n\n    </div>\n  </li>\n</ul>"},
 {"id":"fences-bedb43ef18bd","source":"- outer\n  - head\n    - deep\n\n      ```\n     text a\n  ```\n \n   tail\n","html":"<ul>\n  <li>outer\n    <ul>\n      <li>head\n        <ul>\n          <li>deep\n            <pre><code></code></pre>\n          </li>\n        </ul>\n        text a\n      </li>\n    </ul>\n    <pre><code>\n tail\n</code></pre>\n  </li>\n</ul>"},
 {"id":"fences-bf2c19b88f60","source":"- a\n\n  \\x\n  `  ``\n$`x`\n","html":"<ul>\n  <li><p>a</p>\n    <p>\\x\n<code>  ``\n$</code>x<code></code></p>\n  </li>\n</ul>"},
 {"id":"fences-bf35d6c59d5a","source":"- > para\n  >  more\n%% c\n```\nx\n","html":"<ul>\n  <li>\n    <blockquote><p>para\nmore</p></blockquote>\n  </li>\n</ul>\n<pre><code>x\n</code></pre>"},

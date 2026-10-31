@@ -1,6 +1,6 @@
 ## Whitespace after a leading content tab is not content
 
-A tab that begins a list item's content is leading whitespace and is stripped (CARVE-P2-010), and so is every space or tab after it: the first line starts at its first visible character, as it does after a run of spaces (carve#4081).
+A tab that begins a list item's content is content, and so is every space or tab after it (CARVE-P2-010, carve#4610). The separator is the space before the tab; the item's text keeps the whole run. The section title names the reading carve#4610 replaced and stays as the corpus name.
 
 ::: compare
 
@@ -10,7 +10,7 @@ A tab that begins a list item's content is leading whitespace and is stripped (C
 
 ```html
 <ul>
-  <li>e</li>
+  <li>	 e</li>
 </ul>
 ```
 
@@ -25,7 +25,7 @@ A tab that begins a list item's content is leading whitespace and is stripped (C
 
 ```html
 <ol>
-  <li><strong>a</strong>
+  <li>	  <strong>a</strong>
 b</li>
 </ol>
 ```
@@ -41,7 +41,7 @@ b</li>
 ```html
 <blockquote>
   <ul>
-    <li>- x</li>
+    <li>	 - x</li>
   </ul>
 </blockquote>
 ```

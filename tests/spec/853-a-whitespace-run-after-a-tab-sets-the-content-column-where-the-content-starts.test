@@ -6,9 +6,10 @@ A whitespace run after a tab sets the content column where the content starts
 	f
 .
 <ul>
-  <li>e</li>
+  <li><p>	 e</p>
+    <p>f</p>
+  </li>
 </ul>
-<p>f</p>
 ```
 
 ```
@@ -27,7 +28,7 @@ A whitespace run after a tab sets the content column where the content starts
 	> q
 .
 <ul>
-  <li>e
+  <li>	e
     <blockquote><p>q</p></blockquote>
   </li>
 </ul>

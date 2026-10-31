@@ -7,7 +7,7 @@ Content behind a lead tab offers no first block
 <ul>
   <li>
     <ul>
-      <li>+
+      <li>	+
 x</li>
     </ul>
   </li>
@@ -21,7 +21,7 @@ x
 <ul>
   <li>
     <ul>
-      <li>+
+      <li>	+
 x</li>
     </ul>
   </li>
@@ -33,7 +33,7 @@ x</li>
 >
 .
 <ul>
-  <li>+</li>
+  <li>	+</li>
 </ul>
 <blockquote>
 
@@ -46,7 +46,7 @@ x
 .
 <blockquote>
   <ul>
-    <li>- +
+    <li>	- +
 x</li>
   </ul>
 </blockquote>
@@ -57,7 +57,7 @@ x</li>
 x
 .
 <ul>
-  <li>&gt; +
+  <li>	&gt; +
 x</li>
 </ul>
 ```
