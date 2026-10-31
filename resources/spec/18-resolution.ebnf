@@ -214,7 +214,10 @@
       because PART 9 §14 renders that run's content. The rule is not about
       brackets; it is about whether the text reached the reader.
    R3 ABBREVIATIONS. Each abbrDefs term matches in rendered text at WORD
-      BOUNDARIES only and emits <abbr>. Literal source text emitted for an
+      BOUNDARIES only and emits <abbr>. A boundary exists on a side of the
+      term when the adjacent character is absent or is not a Unicode letter
+      or number (general category L or N). The ASCII alnum guard of
+      CARVE-P3-013 applies to emphasis, not to abbreviations. Literal source text emitted for an
       unresolved link or image reference (R1) is not scanned for abbreviations;
       ordinary bracket text remains eligible. The text of a code span, an
       inline literal and a mention is not scanned (carve#4560).

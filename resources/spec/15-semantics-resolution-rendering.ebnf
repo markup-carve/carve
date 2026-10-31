@@ -135,11 +135,12 @@
       `list` rendering and the continuation_marker productions in PART 2).
       L1 LOOSE(list) := some item is followed by a blank line before the
          next sibling marker, OR some item holds a blank-line-separated
-         second PARAGRAPH; otherwise TIGHT. The paragraph must be the item's
-         OWN: a blank-separated second paragraph inside a container the item
-         holds (a nested item, a block quote, a `:::` container or a
-         description body) is that container's paragraph and does not loosen
-         the item (corpus 144, 563). This is a statement about ONE
+         PARAGRAPH after an earlier visible block of that item; otherwise
+         TIGHT. The paragraph and earlier block must be the item's OWN: a
+         blank-separated paragraph inside a container the item holds (a nested
+         item, a block quote, a `:::` container or a description body) is that
+         container's paragraph and does not loosen the item (corpus 144, 563).
+         This is a statement about ONE
          and TWO blank lines: a run of THREE OR MORE is CARVE-P9-014's hard
          boundary, so the marker below it is not a "next sibling marker" at
          all and there is no one list left to be loose. Tightness is a property of the
@@ -169,26 +170,26 @@
              : {.c}
                text
 
-      L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER -- NORMATIVE [CARVE-P9-029]. L1 asks
-         whether the item holds a blank-line-separated second PARAGRAPH. It
-         does not ask what the FIRST block was, and nothing here depends on
-         that. So
+      L1a THE ITEM'S FIRST VISIBLE BLOCK MAY BE ANY KIND -- NORMATIVE [CARVE-P9-029].
+         L1 asks whether the item holds a paragraph after an earlier visible
+         block of its own, separated by a blank. So
 
              - - a
 
                Body.
 
-         is LOOSE: the sub-list is the item's first block, `Body.` is a
-         second paragraph after a blank line, and L1 is satisfied. The same
-         holds for every other lead -- plain text, a heading, an attribute
-         block, a block quote -- all of which core rendering handles
-         loose.
+         is LOOSE: the sub-list is the item's first visible block and `Body.`
+         is its own paragraph after the blank. A heading or block quote before
+         that paragraph has the same result. An attribute-block lead is
+         invisible (CARVE-P9-013), so a blank after that lead separates no
+         visible blocks and loosens nothing (L1b, carve#4639).
 
       L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION -- NORMATIVE [CARVE-P9-030]. L1
-         asks whether the item holds a blank-line-separated second PARAGRAPH.
-         An INVISIBLE LINE (§10 I5, AN INVISIBLE LINE IS ONE CLASSIFICATION)
-         emits no visible block, which is why it cannot BE the second one
-         (L1a's argument), and by the same clause's property 3 it
+         asks whether the item holds a paragraph after an earlier visible block,
+         separated by a blank. An INVISIBLE LINE (§10 I5, AN INVISIBLE LINE IS
+         ONE CLASSIFICATION) emits no visible block, so it can be neither the
+         earlier block nor the following paragraph (L1a's argument). By the
+         same clause's property 3 it
          does not choose the next line's owner either: it is not a separator,
          so the separation it appears to interrupt is intact and the item is
          LOOSE. This clause is that property's consequence for list

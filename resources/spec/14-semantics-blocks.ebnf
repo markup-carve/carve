@@ -397,6 +397,9 @@
          and so does TWO (§17 L1). In the common LF spelling the boundary is
          four newline bytes between the two item lines (`item\n\n\n\nitem`)
          against two for the tight spelling and three for the loose one.
+         Count the run in the layout stream after comments are erased by
+         PART 0 S1 (CARVE-P0-005). A comment between blank lines does not
+         split the run; removing it leaves this boundary unchanged.
          Example:
            - apples         produces:    <ul><li>apples</li></ul>
                                          <ul><li>oranges</li></ul>

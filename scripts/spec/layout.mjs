@@ -7280,7 +7280,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
   const baseIndent = matchMarkerAt(ind(i)).indent
   const commentsBeforeSibling = (at) => {
     if (at >= n || !COMMENT_LINE.test(ind(at).rest)) return at
-    // Three consecutive blanks end the list; a comment line breaks the run.
+    // Comments are erased from layout, so blank lines on either side belong
+    // to the same run (PART 0 S1, CARVE-P9-014).
     let run = 0
     for (let k = at - 1; k >= 0 && ind(k).rest === ''; k--) run++
     let blanks = run
@@ -7293,7 +7294,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         k++
         continue
       }
-      run = 0
       const fence = COMMENT_FENCE_BODY.exec(ind(k).rest)?.[1]
       let end = k
       if (fence) {
@@ -7538,7 +7538,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // A `%%%` opens a comment span only where its closer follows; alone it is a comment line.
         const close = run(rests[k]) === undefined ? -1 : rests.findIndex((rest, at) => at > k && run(rest) === run(rests[k]))
         if (close > k) k = close
-        else if (rests[k] !== '' && !COMMENT_LINE.test(rests[k]) && !isLinkDef(rests[k])) return true
+        else if (rests[k] !== '' && !COMMENT_LINE.test(rests[k]) &&
+            !isDefinitionOrAttributeLine(rests[k])) return true
       }
       return false
     }
