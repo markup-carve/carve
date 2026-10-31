@@ -1615,7 +1615,7 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "const cap = children.length > 0 ? captionSlot(i) : null",
+          "find": "const cap = !children.every(holdsNothing) ? captionSlot(i) : null",
           "replace": "const cap = captionSlot(i)"
         }
       ]

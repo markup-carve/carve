@@ -1,0 +1,1 @@
+The pinned carve-js predates a continuation cell past the last column becoming a new cell (carve#4470); the spec model makes it a header cell beside a header `<` marker (markup-carve/carve#4566)

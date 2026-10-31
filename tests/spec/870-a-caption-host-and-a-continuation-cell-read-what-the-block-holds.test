@@ -1,0 +1,89 @@
+A caption host and a continuation cell read what the block holds
+
+```
+|= a | < |
++ | | c |
+.
+<table>
+  <thead>
+    <tr><th scope="col" colspan="2">a</th><th scope="col">c</th></tr>
+  </thead>
+</table>
+```
+
+```
+| < |= a |
++ | | c |
+.
+<table>
+  <tbody>
+    <tr><td></td><th scope="row">a</th><td>c</td></tr>
+  </tbody>
+</table>
+```
+
+```
+![a](/i) %% c
+^ cap
+.
+<figure>
+  <img src="/i" alt="a">
+  <figcaption>cap</figcaption>
+</figure>
+```
+
+```
+![a](/i){%%}
+^ cap
+.
+<figure>
+  <img src="/i" alt="a">
+  <figcaption>cap</figcaption>
+</figure>
+```
+
+```
+![a](/i) {% c %}
+^ cap
+.
+<p><img src="/i" alt="a"> 
+^ cap</p>
+```
+
+```
+> >
+^ cap
+.
+<blockquote>
+  <blockquote>
+
+  </blockquote>
+</blockquote>
+<p>^ cap</p>
+```
+
+```
+> :::
+> :::
+^ cap
+.
+<blockquote>
+  <div>
+
+  </div>
+</blockquote>
+<p>^ cap</p>
+```
+
+```
+> >
+> > a
+^ cap
+.
+<figure>
+  <blockquote>
+    <blockquote><p>a</p></blockquote>
+  </blockquote>
+  <figcaption>cap</figcaption>
+</figure>
+```
