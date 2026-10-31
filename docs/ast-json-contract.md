@@ -207,7 +207,9 @@ above before inline parsing, so a cell's `children` hold the joined content.
 Each join is a `cell_wrap` inline node carrying `line`, the continuation line
 it came from, plus `row` when it sits in a cell spanning down from an earlier
 row. `table_row.continuationLines` counts the row's `+` lines. Renderers output
-`cell_wrap` as one space; the Carve writer uses the markers to write the `+`
+`cell_wrap` as one space, except a cell's leading marker, which outputs nothing
+and marks a cell a `+` line appended past the row's last column. The Carve
+writer uses the markers to write the `+`
 lines back.
 
 When a join crosses a `code`, `raw_inline`, or `math` node, its `cellWraps`

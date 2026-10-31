@@ -1,0 +1,63 @@
+A continuation cell past the last column is a new cell
+
+```
+| a | b |
++ c | d | e |
+.
+<table>
+  <tbody>
+    <tr><td>a c</td><td>b d</td><td>e</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a |
++ b | | c |
++ d | | e |
+.
+<table>
+  <tbody>
+    <tr><td>a b d</td><td></td><td>c e</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a |
++ b | |
+.
+<table>
+  <tbody>
+    <tr><td>a b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | x |
+| b |
++ c | ^ |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>x</td></tr>
+    <tr><td>b c</td><td>^</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|= a |
++ b | c |
+| d | e |
+.
+<table>
+  <thead>
+    <tr><th scope="col">a b</th><th scope="col">c</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>d</td><td>e</td></tr>
+  </tbody>
+</table>
+```

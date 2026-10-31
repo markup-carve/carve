@@ -51,6 +51,30 @@
       }
     },
     {
+      "name": "continuation-past-the-last-column",
+      "description": "A continuation cell past the last column is appended and reported on its line.",
+      "source": "| a | b |\n+ c | d | e |\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "table"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "continuation-within-the-row",
+      "description": "A continuation row inside the row's columns is quiet.",
+      "source": "| a | b |\n+ c | d |\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
       "name": "rowspan-fills-width",
       "description": "A resolved rowspan fills the header width.",
       "source": "|= A |= B |\n| 1 | 2 |\n| ^ | 3 |\n",

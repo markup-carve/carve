@@ -466,6 +466,23 @@
         table_cell{ colspan: 2, children: [ "a", cell_wrap{line:1}, "x",
                                             cell_wrap{line:1, col:1}, "y" ] }
 
+      A CELL A `+` LINE APPENDED (T6) has no part on the standard row, so its
+      first child is the `cell_wrap` of the line that made it. No other cell
+      starts with one: a join onto an empty cell has no joining space and so no
+      marker. A column it skipped holds that marker alone. A leading marker
+      stands for no space, so a renderer outputs nothing for it, and the Carve
+      writer gives the cell no slot on the standard row. A cell with a leading
+      marker followed by a cell without one is invalid in the sense of
+      CARVE-P12-030.
+
+        | a |
+        + b | | c |
+
+        table_row{ continuationLines: 1, cells: [
+          table_cell[ "a", cell_wrap{line:1}, "b" ],
+          table_cell[ cell_wrap{line:1} ],
+          table_cell[ cell_wrap{line:1}, "c" ] ] }
+
       AN ATOMIC INLINE NODE CARRIES THE JOIN AS AN OFFSET. When a join crosses
       a `code`, `raw_inline`, or `math` payload, the node carries an optional
       `cellWraps` array. Each entry is an object `{ offset, line, row?, col? }`:
@@ -504,8 +521,8 @@
       inline tree; literal per-line child lists are refused because the parts
       are joined BEFORE inline parsing (CARVE-P2-019 item 2), so a span that
       crosses the line could not be split. Every renderer and writer other
-      than the Carve writer outputs `cell_wrap` as one space, the joining
-      space it replaces, so no HTML, Markdown, plain or ANSI output moves.
+      than the Carve writer outputs a non-leading `cell_wrap` as one space, the
+      joining space it replaces, so no HTML, Markdown, plain or ANSI output moves.
       Normalization never merges text across a `cell_wrap` and never drops
       one.
 

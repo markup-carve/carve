@@ -86,13 +86,13 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P7-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/11-lexical.ebnf#L59) | 7 | MARKER SEPARATORS AND PADDING SLOTS |
 | [`CARVE-P7-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/11-lexical.ebnf#L130) | 7 | ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT |
 | [`CARVE-P7-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/11-lexical.ebnf#L192) | 7 | ESCAPE CONTEXTS |
-| [`CARVE-P9-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L284) | 9 | T5 SPAN WALK |
-| [`CARVE-P9-069`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L326) | 9 | THE ROW ABOVE IS A LINE, NOT A `<tr>` |
-| [`CARVE-P9-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L354) | 9 | A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN |
-| [`CARVE-P9-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L370) | 9 | T7 GFM DELIMITER ROW |
-| [`CARVE-P9-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L404) | 9 | T8 ROW ATTRIBUTES |
-| [`CARVE-P9-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L443) | 9 | T10 CELL ATTRIBUTES BIND LAST |
-| [`CARVE-P9-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L462) | 9 | T11 A MARKER RUN ENDS AT A SPACE |
+| [`CARVE-P9-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L286) | 9 | T5 SPAN WALK |
+| [`CARVE-P9-069`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L337) | 9 | THE ROW ABOVE IS A LINE, NOT A `<tr>` |
+| [`CARVE-P9-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L365) | 9 | A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN |
+| [`CARVE-P9-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L381) | 9 | T7 GFM DELIMITER ROW |
+| [`CARVE-P9-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L415) | 9 | T8 ROW ATTRIBUTES |
+| [`CARVE-P9-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L454) | 9 | T10 CELL ATTRIBUTES BIND LAST |
+| [`CARVE-P9-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L473) | 9 | T11 A MARKER RUN ENDS AT A SPACE |
 | [`CARVE-P9-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L296) | 9 | AN INVISIBLE LINE IS ONE CLASSIFICATION |
 | [`CARVE-P9-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L387) | 9 | N1a HARD BOUNDARY AFTER THREE BLANK LINES |
 | [`CARVE-P9-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L474) | 9 | A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER |
@@ -124,6 +124,6 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P3-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L279) | 3 | AN EMPTY DESTINATION IS EXPLICIT |
 | [`CARVE-P3-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L37) | 3 | A DELIMITER IS A WHOLE GRAPHEME |
 | [`CARVE-P3-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L256) | 3 | GENERIC EXTENSION CONTENT IS INLINE CONTENT |
-| [`CARVE-P9-082`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L248) | 9 | A CELL SLOT IS COUNTED, NOT WEIGHED |
+| [`CARVE-P9-082`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L250) | 9 | A CELL SLOT IS COUNTED, NOT WEIGHED |
 | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L301) | 9 | C3 MARKER-BODY COLUMN AND EXTENT |
 | [`CARVE-P9-084`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L432) | 9 | ONE COLON-FENCE FRAME |

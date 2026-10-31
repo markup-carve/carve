@@ -244,6 +244,8 @@
          fewer effective cells than its header renders as written and lint
          reports `table-row-cell-count` at that row. Colspan and rowspan
          markers count the cells they span; a correctly spanned row is quiet.
+         A continuation row that appends a cell (T6) gets the same finding on
+         its `+` line, with or without a header.
 
          A CELL SLOT IS COUNTED, NOT WEIGHED -- NORMATIVE [CARVE-P9-082]. The
          delimiters are T1's: an escaped `|` and a `|` inside a code span
@@ -322,6 +324,15 @@
          its content (carve#3151). A table cannot BEGIN with a continuation row (PART 2 `table`). The AST
          keeps each join as a `cell_wrap` marker, so a writer can put the
          `+` lines back (CARVE-P12-069).
+
+         A CELL PAST THE ROW'S LAST COLUMN IS A NEW CELL OF THE ROW ABOVE. A
+         non-empty fragment in a slot where that row has no cell appends one,
+         so no text is lost. A column it skips gets an empty cell, and an empty
+         slot past the last cell appends nothing. The fragment is the cell's
+         content and never a T5 span marker, so `^` and `<` there are text. The
+         new cell is a header cell when every other cell of the row is. A later
+         `+` line joins onto it like any cell. Lint reports the row at the
+         `+` line (T2).
 
          THE ROW ABOVE IS A LINE, NOT A `<tr>` -- NORMATIVE [CARVE-P9-069]. What
          a continuation joins is the row above it in the SOURCE. T7 CONSUMES

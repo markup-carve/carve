@@ -19,6 +19,10 @@
 #     the line in the same commit that moves the pin.
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 # Format: <slug><space><space><reason>
+856-a-continuation-cell-past-the-last-column-is-a-new-cell  Pinned JavaScript predates a continuation cell past the last column becoming a new cell (carve#4470); the spec moved first
+856-a-continuation-cell-past-the-last-column-is-a-new-cell-2  Pinned JavaScript predates a continuation cell past the last column becoming a new cell (carve#4470); the spec moved first
+856-a-continuation-cell-past-the-last-column-is-a-new-cell-4  Pinned JavaScript predates a continuation cell past the last column becoming a new cell (carve#4470); the spec moved first
+856-a-continuation-cell-past-the-last-column-is-a-new-cell-5  Pinned JavaScript predates a continuation cell past the last column becoming a new cell (carve#4470); the spec moved first
 643-a-first-block-marker-takes-a-list-at-a-note-s-or-description-s-marker-column  markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)
 739-opaque-reference-and-inline-bounds-7  The pinned JS renderer drops a U+2029 quote body; tracked at markup-carve/carve-js#3764.
 739-opaque-reference-and-inline-bounds-8  The pinned JS renderer drops a U+2028 quote body; tracked at markup-carve/carve-js#3764.
