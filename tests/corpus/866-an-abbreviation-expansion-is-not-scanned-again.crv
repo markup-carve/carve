@@ -1,0 +1,4 @@
+*[A]: x
+*[x]: y onmouseover=alert(1) z
+
+A

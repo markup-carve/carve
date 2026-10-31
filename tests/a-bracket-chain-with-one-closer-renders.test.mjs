@@ -2,11 +2,11 @@
  * Openers that never close do not nest (PART 9 §25, carve#4236). A long run of
  * `[` in front of one `[x](u)` renders the link and keeps the rest literal, the
  * way carve-js, carve-php and carve-rs do, instead of refusing at the nesting
- * bound. Pairs that do nest past the bound still refuse.
+ * bound. Pairs that do nest past the bound stay literal (carve#4557).
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { parse, Refuse } from '../scripts/spec/layout.mjs'
+import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = (src) => renderDoc(parse(src)).trim()
@@ -29,6 +29,7 @@ test('a chain on several lines of one paragraph renders each link', () => {
   assert.equal(out.match(/<a href="u">x<\/a>/g).length, 2)
 })
 
-test('pairs nested past the bound still refuse', () => {
-  assert.throws(() => html('['.repeat(300) + 'x' + ']'.repeat(300) + '\n'), Refuse)
+test('pairs nested past the bound stay literal', () => {
+  const run = '['.repeat(300) + 'x' + ']'.repeat(300)
+  assert.equal(html(run + '\n'), `<p>${run}</p>`)
 })

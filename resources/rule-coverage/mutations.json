@@ -1372,8 +1372,8 @@
       "edits": [
         {
           "file": "scripts/spec/html.mjs",
-          "find": "const text = hit.html.replace(/\u005cuE000[\\s\\S]*?\u005cuE001/g, '')",
-          "replace": "const text = stripTags(hit.html.replace(/\u005cuE000[\\s\\S]*?\u005cuE001/g, ''))"
+          "find": "const text = hit.html.replace(/\u005cuE000(?!\u005cuE001)[\\s\\S]*?\u005cuE001/g, '')",
+          "replace": "const text = stripTags(hit.html.replace(/\u005cuE000(?!\u005cuE001)[\\s\\S]*?\u005cuE001/g, ''))"
         }
       ]
     },
@@ -1544,8 +1544,8 @@
       "edits": [
         {
           "file": "scripts/spec/html.mjs",
-          "find": "return b.format === 'html' ? pad + rawPassthrough(b.text) : null",
-          "replace": "return b.format === 'html' ? (b.text === '' ? null : pad + rawPassthrough(b.text)) : null"
+          "find": "return rawFrame(b.format === 'html' ? pad + rawPassthrough(b.text) : null)",
+          "replace": "return rawFrame(b.format === 'html' ? (b.text === '' ? null : pad + rawPassthrough(b.text)) : null)"
         }
       ]
     },
