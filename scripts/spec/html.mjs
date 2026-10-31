@@ -362,6 +362,26 @@ function renderLineBlockLine(line) {
 // layout pass takes them out of the tree.
 const rendersNoElement = (b) => b.t === 'raw' && b.format !== 'html'
 
+// A closed `%%%` pair in verse leaves nothing: no verse line, and a blank line
+// in its body splits no stanza (CARVE-P9-047). Its opener's first character is
+// `%`; the body is not verse, so the closer takes SS28's optional indent.
+function withoutCommentBlocks(lines) {
+  const closerRun = (l) => /^[ \t]*(%{3,})/.exec(l)?.[1].length
+  const lastCloser = new Map()
+  lines.forEach((l, j) => lastCloser.set(closerRun(l), j))
+  const kept = []
+  for (let i = 0; i < lines.length; i++) {
+    const run = /^%{3,}/.exec(lines[i])?.[0].length
+    if (run === undefined || !(lastCloser.get(run) > i)) {
+      kept.push(lines[i])
+      continue
+    }
+    i++
+    while (closerRun(lines[i]) !== run) i++
+  }
+  return kept
+}
+
 function renderBlock(b, depth, ctx) {
   const pad = '  '.repeat(depth)
   const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
@@ -647,7 +667,7 @@ function renderBlock(b, depth, ctx) {
       // serialize as NBSP entities (PART 9 SS23)
       const stanzas = []
       let cur = []
-      for (const l of b.lines) {
+      for (const l of withoutCommentBlocks(b.lines)) {
         if (/^[ \t]*$/.test(l)) {
           if (cur.length) stanzas.push(cur)
           cur = []
@@ -669,9 +689,8 @@ function renderBlock(b, depth, ctx) {
         // Only a line whose FIRST character is `%` qualifies. In verse the
         // leading run is CONTENT, so `comment_line`'s optional `[whitespace]`
         // prefix has nothing to consume and an indented `%%` line is ordinary
-        // text. `%%%` is included: SS28 degrades a fence opener with no closer
-        // to a comment line, and SS23 makes a fence opener ordinary text here
-        // anyway, so it can never be anything else.
+        // text. A `%%%` still here has no closer, and SS28 degrades it to a
+        // comment line.
         const body = st.map((l) => (l.startsWith('%%') ? '' : l))
         // ONE inline parse for the whole stanza, so a run with no closer
         // reaches the end of the block instead of stopping at a line break

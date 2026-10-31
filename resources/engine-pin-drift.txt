@@ -808,3 +808,5 @@
 856-a-hard-break-is-whitespace-to-a-typography-flank-3  markup-carve/carve#4511, the pinned carve-js reads the backslash of a hard break or an escaped space as a word character in a typography flank.
 856-a-hard-break-is-whitespace-to-a-typography-flank-4  markup-carve/carve#4511, the pinned carve-js reads the backslash of a hard break or an escaped space as a word character in a typography flank.
 856-a-hard-break-is-whitespace-to-a-typography-flank-5  markup-carve/carve#4511, the pinned carve-js reads the backslash of a hard break or an escaped space as a word character in a typography flank.
+855-a-comment-block-in-a-line-block-leaves-nothing  Pinned JavaScript predates a comment block in a line block leaving nothing (carve#4469); the spec moved first
+855-a-comment-block-in-a-line-block-leaves-nothing-2  Pinned JavaScript predates a comment block in a line block leaving nothing (carve#4469); the spec moved first

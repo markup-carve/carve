@@ -1,0 +1,44 @@
+A comment block in a line block leaves nothing
+
+```
+::: |
+%%%
+secret
+%%%
+:::
+.
+<div class="line-block">
+
+</div>
+```
+
+```
+::: |
+a
+%%%
+one
+
+two
+%%%
+c
+:::
+.
+<div class="line-block">
+  <p>a<br>
+c</p>
+</div>
+```
+
+```
+::: |
+a
+%%%
+c
+:::
+.
+<div class="line-block">
+  <p>a<br>
+<br>
+c</p>
+</div>
+```
