@@ -132,7 +132,10 @@
       boolean means: every description renders its children as BLOCKS. Absent,
       each description derives its own wrapper from its own block count -- one
       block renders inline, two or more render as blocks -- which is what every
-      definition list written without the key does.
+      definition list written without the key does. The count is of RENDERED
+      blocks: a comment block is kept in the tree but renders nothing
+      (CARVE-P9-013), so it does not count, and `:: t` / `: x` / `  %% c`
+      gives `<dd>x</dd>`.
 
         {"type":"definition_list","loose":true,"items":[
           {"type":"definition_term","children":[...]},

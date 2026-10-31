@@ -450,7 +450,10 @@ local_hard_break_block_open = colon_fence:open, space, backslash ;
 (* A SECOND SPELLING of the block quote, not a second block: a colon fence
    whose type token is a bare `>` opens a quote whose body is ordinary block
    content, and the node is the one `blockquote_line` produces. The two forms
-   are the same tree, so every rule that speaks of a block quote reaches both.
+   are the same tree, so every rule that speaks of a block quote reaches both,
+   with one exception: the body is a fenced container's, so a lone `+` in it
+   is text and not a continuation marker (PART 9 §17 L5). `::: >` / `+` /
+   `# H` / `:::` gives a quote holding `<p>+</p>` and the heading.
    Third member of the sigil-fence family beside `line_block_open` and
    `local_hard_break_block_open`, and it takes the same REQUIRED space before
    its token; `:::>` is not an opener.
