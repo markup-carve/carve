@@ -430,7 +430,10 @@ ellipsis = "..." ;    (* → … *)
    before. The case is a long CLI flag: `git log --oneline`. The start of an
    inline span's content is the start of the inline content, as for quote
    direction (CARVE-P3-023): `*--x*` keeps its run, while a `*` that opens
-   nothing is the preceding character, so `2*--x` converts. A span's closing
+   nothing is the preceding character, so `2*--x` converts. A bracket run that
+   stays literal is a region like a span (PART 9 §9), so its content
+   starts the same way: `[--x] y` keeps its run, while `(` opens no region and
+   `(--x) y` converts. A span's closing
    delimiter is not a following character: nothing follows a run at the end
    of a span's content, so `*a --*` converts as `a --` does.
    Unlike quote direction, this clause reads SOURCE neighbors, so the closing
