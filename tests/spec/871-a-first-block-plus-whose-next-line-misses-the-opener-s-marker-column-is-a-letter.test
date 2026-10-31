@@ -1,0 +1,60 @@
+A first-block plus whose next line misses the opener's marker column is a letter
+
+````
+- - +
+```
+  - y
+
+w
+.
+<ul>
+  <li>
+    <ul>
+      <li>+</li>
+    </ul>
+  </li>
+</ul>
+<pre><code>  - y
+
+w
+</code></pre>
+````
+
+```
+:: s
+: a
+
+  * +
+> q
+.
+<dl>
+  <dt>s</dt>
+  <dd>
+    <p>a</p>
+    <ul>
+      <li>+</li>
+    </ul>
+  </dd>
+</dl>
+<blockquote><p>q</p></blockquote>
+```
+
+```
+- a
+  - +
+   + y
+    - z
+.
+<ul>
+  <li>a
+    <ul>
+      <li>+
++ y
+        <ul>
+          <li>z</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```

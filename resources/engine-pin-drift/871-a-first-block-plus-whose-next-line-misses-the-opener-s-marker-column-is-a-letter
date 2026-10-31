@@ -1,0 +1,1 @@
+The pinned carve-js writer moves the refused `+` fence under the inner item, so the oracle reads its output as another document (markup-carve/carve#4400); carve-js main writes it faithfully.
