@@ -5194,7 +5194,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // The marker is below the lead item's content column, so it
               // continues that paragraph even when the description dedents it.
               const leadItem = matchMarkerAt(indentCols(bodyLines[0] ?? ''))
-              const belowLeadItem = leadItem && authoredCol > 0 && authoredCol < bodyColumn + leadItem.markerWidth &&
+              const belowLeadItem = leadItem && authoredCol < bodyColumn + leadItem.markerWidth &&
                 matchMarkerAt(indentCols(dedented))
               pushBody(lazyFence || belowLeadItem || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
               if (foldablePlain(dedented) && !lazyFence && !CAPTION.test(dedented)) foldedParagraphAt = bodyLines.length
