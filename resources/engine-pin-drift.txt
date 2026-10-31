@@ -810,3 +810,10 @@
 856-a-hard-break-is-whitespace-to-a-typography-flank-5  markup-carve/carve#4511, the pinned carve-js reads the backslash of a hard break or an escaped space as a word character in a typography flank.
 855-a-comment-block-in-a-line-block-leaves-nothing  Pinned JavaScript predates a comment block in a line block leaving nothing (carve#4469); the spec moved first
 855-a-comment-block-in-a-line-block-leaves-nothing-2  Pinned JavaScript predates a comment block in a line block leaving nothing (carve#4469); the spec moved first
+856-a-child-on-a-note-s-marker-line-is-measured-from-its-source-column  The pinned carve-js predates the spec model fix for this row (markup-carve/carve#4496); the spec moved first.
+856-a-child-on-a-note-s-marker-line-is-measured-from-its-source-column-2  The pinned carve-js predates the spec model fix for this row (markup-carve/carve#4496); the spec moved first.
+856-a-child-on-a-note-s-marker-line-is-measured-from-its-source-column-3  The pinned carve-js predates the spec model fix for this row (markup-carve/carve#4496); the spec moved first.
+856-a-line-at-a-description-s-body-column-in-a-div-in-an-item-stays-in-the-description  The pinned carve-js predates the spec model fix for this row (markup-carve/carve#4497); the spec moved first.
+856-a-line-at-a-description-s-body-column-in-a-div-in-an-item-stays-in-the-description-2  The pinned carve-js predates the spec model fix for this row (markup-carve/carve#4497); the spec moved first.
+856-a-wide-gap-before-a-task-box-leaves-the-lazy-frame-out-of-a-term  The pinned carve-js predates the spec model fix for this row (markup-carve/carve#4499); the spec moved first.
+856-every-folded-caret-line-loses-its-leading-whitespace-in-a-deep-term  The pinned carve-js predates the spec model fix for this row (markup-carve/carve#4502); the spec moved first.

@@ -1,0 +1,48 @@
+A line at a description's body column in a div in an item stays in the description
+
+```
+- :::
+  :: t
+  : a
+    > q
+  :::
+.
+<ul>
+  <li>
+    <div>
+      <dl>
+        <dt>t</dt>
+        <dd>
+          <p>a</p>
+          <blockquote><p>q</p></blockquote>
+        </dd>
+      </dl>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- :::
+  :: t
+  : a
+
+    ~~~
+    x
+  :::
+.
+<ul>
+  <li>
+    <div>
+      <dl>
+        <dt>t</dt>
+        <dd>
+          <p>a</p>
+          <pre><code>x
+</code></pre>
+        </dd>
+      </dl>
+    </div>
+  </li>
+</ul>
+```
