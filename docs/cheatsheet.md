@@ -127,9 +127,10 @@ code block
 body                          info success example quote;
 :::                          any other word = <div class="word">;
                               optional "Title" -> admonition-title,
-                              must be straight-quoted - unquoted or
-                              curly-quoted text makes the line a
-                              plain paragraph)
+                              must be straight-quoted - an unquoted
+                              or curly-quoted title still opens the
+                              container, reports fence-title-syntax
+                              and drops the title)
 
 ::: tab [Label]              (optional [Label] after the type = group
 body                          identifier, e.g. the tab name; same

@@ -977,10 +977,10 @@ Most Djot source needs only mechanical changes:
    `: definition`. A multi-paragraph Djot `<dd>` carries over - a Carve
    definition continues like a list item (indent a block after a blank line, or
    use a lone `+`; see section 9).
-8. **Attribute blocks that Djot accepted and Carve does not.** A class or id
-   starting with a digit (`{.123}`) is no longer an attribute block - it stays
-   literal text, so it becomes visible rather than silently styling nothing.
-   Rename it (section 16).
+8. **Attribute blocks that Djot accepted and Carve does not.** An attribute
+   key starting with a digit (`{12=v}`) is not an attribute block - it stays
+   literal text, so it becomes visible rather than silently dropped. Rename it
+   (section 16). Digit-leading classes and ids such as `{.123}` still work.
 9. **An attribute line inside a paragraph.** Djot consumed `{...}` on a soft
    break and dropped the bytes; Carve ends the paragraph at the block below and
    applies them to it. If you relied on the Djot reading, the attributes now

@@ -282,9 +282,10 @@ The quoted header renders as the admonition's title.
 ```
 
 VitePress and Docusaurus accept an unquoted title such as `::: tip Custom Title`.
-Carve does not: it treats those lines as ordinary text. Write `::: tip "Custom
+Carve does not take it as a title: the container still opens, the parser
+reports `fence-title-syntax`, and the title is dropped. Write `::: tip "Custom
 Title"`. Typographic quotation marks such as `“Custom Title”` are not accepted
-here; use straight quotation marks.
+either; use straight quotation marks.
 
 ### Attributes
 
