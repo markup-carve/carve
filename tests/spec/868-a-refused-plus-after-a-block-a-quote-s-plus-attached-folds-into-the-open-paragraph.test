@@ -1,0 +1,15 @@
+A refused plus after a block a quote's plus attached folds into the open paragraph
+
+```
+>
++
+. e
++
+.
+<blockquote>
+  <ol>
+    <li>e
++</li>
+  </ol>
+</blockquote>
+```

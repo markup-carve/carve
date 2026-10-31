@@ -1,0 +1,23 @@
+A blank before a plus in a stacked sublist does not loosen the outer item
+
+```
+- a
+  - - x
+
+    +
+    y
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <ul>
+          <li>x
+            y
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```

@@ -1,0 +1,8 @@
+A paragraph at an indented quote's own marker column takes its first-block plus
+
+```
+ > +
+ x
+.
+<blockquote><p>x</p></blockquote>
+```

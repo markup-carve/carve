@@ -1,0 +1,8 @@
+r[^n]
+
+[^n]: n
+
+    :: t
+    : +
+    after
+    tail
