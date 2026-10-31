@@ -286,7 +286,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       The directive's caption slot attaches to the resulting table (I1c).
       If delimited quoting is malformed, the include falls back to a code
       block holding the selected source, the full source when nothing selects,
-      with `delimited-table-malformed` as usual. An invalid `@rows` or `@lines`
+      with `delimited-table-malformed` as usual. A `@lines` range that cuts a
+      quoted record makes the selection malformed even where the whole file
+      decodes, and falls back the same way (carve#4640). An invalid `@rows` or `@lines`
       value, an out-of-range `@lines` and a missing region are refused first
       and stay literal. Malformed quoting is decided next, so a valid `@rows`
       selects nothing there: the fallback holds the full source and reports no

@@ -4428,9 +4428,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const width = rows.reduce((width, row) => Math.max(width, row.length), 0)
         const headerAttr = attrs.findLast((a) => a[1] === 'header-rows' && (a[0] === 'kv' || a[0] === 'bool'))
         const footerAttr = attrs.findLast((a) => a[1] === 'footer-rows' && (a[0] === 'kv' || a[0] === 'bool'))
-        const footerRows = delimitedRowCount(footerAttr?.[0] === 'bool' ? '' : footerAttr?.[2]) ?? 0
-        const headerRows = node.tableHeaderRows ?? delimitedRowCount(headerAttr?.[0] === 'bool' ? '' : headerAttr?.[2])
-          ?? Math.min(1, Math.max(0, rows.length - footerRows))
+        const footerCount = delimitedRowCount(footerAttr?.[0] === 'bool' ? '' : footerAttr?.[2])
+        const headerCount = delimitedRowCount(headerAttr?.[0] === 'bool' ? '' : headerAttr?.[2])
+        const footerRows = footerCount ?? 0
+        let headerRows = node.tableHeaderRows ?? headerCount ?? Math.min(1, Math.max(0, rows.length - footerRows))
+        // An explicit header and footer that overlap make no partition and no header cells (carve#4640).
+        if (headerCount !== undefined && footerCount !== undefined && headerCount + footerCount > rows.length) headerRows = 0
         node = {
           t: 'table', sourceFormat: node.lang, caption: node.caption,
           rows: rows.map((row, index) => ({

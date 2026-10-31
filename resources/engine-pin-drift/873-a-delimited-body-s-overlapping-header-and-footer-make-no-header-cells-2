@@ -1,0 +1,1 @@
+The pinned carve-js drops the cell a continuation appends past a ^ row (markup-carve/carve#4640); the spec model is correct.
