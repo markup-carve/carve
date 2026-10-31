@@ -733,7 +733,7 @@
     {
       "id": "CARVE-P9-029",
       "part": "9",
-      "title": "L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER",
+      "title": "L1a THE ITEM'S FIRST VISIBLE BLOCK MAY BE ANY KIND",
       "scope": "parsing"
     },
     {
