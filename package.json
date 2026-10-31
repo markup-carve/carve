@@ -21,7 +21,7 @@
     "docs:build": "node --test tests/docs-controlled-vocabulary.test.mjs tests/ast-schema.test.mjs && node scripts/publish-schema.mjs && npm run docs:pages && vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "corpus:build": "node scripts/generate-corpus.mjs",
-    "docs:pages": "node scripts/generate-example-pages.mjs",
+    "docs:pages": "node scripts/generate-example-pages.mjs && node scripts/spec-rule-index.mjs --write",
     "deps:map": "node tools/dependency-map.mjs",
     "compare:impls": "node scripts/compare-impls.mjs",
     "compare:convert": "node scripts/compare-impls.mjs --corpus=convert --fail-on-diff",

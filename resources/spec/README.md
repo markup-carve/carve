@@ -48,8 +48,9 @@ the heading anchor that now owns the contract.
 
 The five scopes are navigation metadata, not conformance profiles. Every active
 rule belongs to exactly one scope, and `npm run spec:rules:write` generates the
-focused pages under `docs/rules/`. Run `npm run spec:rules:check` to validate the
-registry and reject stale generated pages.
+focused pages under `docs/rules/`. The docs build runs it, and the pages are not
+committed: their source links carry line numbers that every clause edit moves.
+Run `npm run spec:rules:check` to validate the registry and the generated views.
 
 The optional table-alignment mode has byte fixtures in
 `table-alignment-fixtures.json`. Engines that offer it check their output and
