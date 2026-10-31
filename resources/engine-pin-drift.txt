@@ -850,3 +850,5 @@
 864-an-item-hands-its-blank-run-to-a-description-or-note-child-s-open-fence  The pinned carve-js drops the blank run from the open fence (markup-carve/carve#4047); the spec model is correct.
 864-an-item-hands-its-blank-run-to-a-description-or-note-child-s-open-fence-2  The pinned carve-js drops the blank run from the open fence (markup-carve/carve#4047); the spec model is correct.
 864-an-unclosed-fence-in-a-description-body-keeps-its-trailing-blank-line  The pinned carve-js drops the blank run from the open fence (markup-carve/carve#4033); the spec model is correct.
+865-a-list-marker-inside-an-item-ends-a-caption-like-a-paragraph  The pinned carve-js keeps the list marker in the quote's caption (markup-carve/carve#4060); the spec model is correct.
+865-a-list-marker-inside-an-item-ends-a-caption-like-a-paragraph-3  The pinned carve-js keeps the list marker past the item's content column in the quote's caption (markup-carve/carve#4060); the spec model is correct.
