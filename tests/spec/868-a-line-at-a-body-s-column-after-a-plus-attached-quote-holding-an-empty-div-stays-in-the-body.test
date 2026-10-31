@@ -1,0 +1,37 @@
+A line at a body's column after a plus-attached quote holding an empty div stays in the body
+
+```
+- +
+> :::
+  x
+.
+<ul>
+  <li>
+    <blockquote>
+      <div>
+
+      </div>
+    </blockquote>
+    x
+  </li>
+</ul>
+```
+
+```
+:: t
+: +
+> :::
+  x
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote>
+      <div>
+
+      </div>
+    </blockquote>
+    <p>x</p>
+  </dd>
+</dl>
+```
