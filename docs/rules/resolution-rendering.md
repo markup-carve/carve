@@ -51,21 +51,21 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9R-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L166) | 9R | AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT |
 | [`CARVE-P9R-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L274) | 9R | R5a LABELED DISPLAY EQUATIONS ARE NUMBERED |
 | [`CARVE-P9R-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L70) | 9R | NO NAME LOOKUP FOLDS CASE |
-| [`CARVE-P10-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L135) | 10 | AN EMPTY CONTAINER BODY |
-| [`CARVE-P10-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L230) | 10 | A ROW IS A ROW, IN EVERY SECTION |
-| [`CARVE-P10-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L251) | 10 | SEMANTIC SPAN ATTRIBUTES |
-| [`CARVE-P10-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L263) | 10 | A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME |
-| [`CARVE-P10-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L272) | 10 | LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT |
-| [`CARVE-P10-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L289) | 10 | THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE |
-| [`CARVE-P10-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L296) | 10 | THE CORE SEMANTIC NAMES ARE CLOSED |
+| [`CARVE-P10-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L139) | 10 | AN EMPTY CONTAINER BODY |
+| [`CARVE-P10-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L234) | 10 | A ROW IS A ROW, IN EVERY SECTION |
+| [`CARVE-P10-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L255) | 10 | SEMANTIC SPAN ATTRIBUTES |
+| [`CARVE-P10-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L267) | 10 | A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME |
+| [`CARVE-P10-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L276) | 10 | LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT |
+| [`CARVE-P10-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L293) | 10 | THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE |
+| [`CARVE-P10-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L300) | 10 | THE CORE SEMANTIC NAMES ARE CLOSED |
 | [`CARVE-P9-076`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L85) | 9 | A MARKER IN A TOC BODY RETAINS ITS CONTAINER SCOPE |
 | [`CARVE-P9-077`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L99) | 9 | A BODY WHOSE EVERY BLOCK RENDERS NOTHING IS AN EMPTY BODY |
-| [`CARVE-P10-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L73) | 10 | DIRECTIVE CLASSES FOLLOW ELEMENT OWNERSHIP |
-| [`CARVE-P10-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L151) | 10 | A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT |
-| [`CARVE-P10-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L400) | 10 | AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST |
-| [`CARVE-P10-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L430) | 10 | ROUNDTRIP EXPORT WRITES NAMED CARRIERS |
-| [`CARVE-P10-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L593) | 10 | THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY |
-| [`CARVE-P10-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L791) | 10 | ROUNDTRIP EXPORT DROPS AN AUTHORED RESERVED NAME AND REPORTS IT |
+| [`CARVE-P10-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L77) | 10 | DIRECTIVE CLASSES FOLLOW ELEMENT OWNERSHIP |
+| [`CARVE-P10-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L155) | 10 | A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT |
+| [`CARVE-P10-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L404) | 10 | AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST |
+| [`CARVE-P10-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L434) | 10 | ROUNDTRIP EXPORT WRITES NAMED CARRIERS |
+| [`CARVE-P10-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L597) | 10 | THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY |
+| [`CARVE-P10-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L795) | 10 | ROUNDTRIP EXPORT DROPS AN AUTHORED RESERVED NAME AND REPORTS IT |
 | [`CARVE-P3-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L323) | 3 | AN INERT MENTION OR TAG RENDERS ITS FULL SPELLING IN STRONG |
 | [`CARVE-P9-080`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L140) | 9 | A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE |
 | [`CARVE-P9-081`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L156) | 9 | A TIGHT ITEM'S ATTRIBUTED PARAGRAPH KEEPS ITS `<p>` |

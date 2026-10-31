@@ -94,4 +94,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-077`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L699) | 11 | A PARAGRAPH LINE OF DASHES ALONE IS WRITTEN WITH THE GLYPH |
 | [`CARVE-P11-078`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L727) | 11 | A VERBATIM VALUE LINE THAT OPENS A BLOCK IS SPELLED OR REFUSED |
 | [`CARVE-P12-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L273) | 12 | `fmt` WRITES THE SOURCE SPELLING, NOT `blockImage` |
-| [`CARVE-P10-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L916) | 10 | ONE OPTION SWITCHES EVERY TARGET'S CARRIERS |
+| [`CARVE-P10-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L920) | 10 | ONE OPTION SWITCHES EVERY TARGET'S CARRIERS |

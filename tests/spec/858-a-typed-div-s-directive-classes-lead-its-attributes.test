@@ -1,0 +1,45 @@
+A typed div's directive classes lead its attributes
+
+```
+{k=v .c}
+::: note
+x
+:::
+.
+<aside class="admonition note c" k="v" aria-label="Note">
+  <p>x</p>
+</aside>
+```
+
+```
+{k=v .c}
+::: foo
+x
+:::
+.
+<div class="foo c" k="v">
+  <p>x</p>
+</div>
+```
+
+```
+{k=v}
+::: foo
+x
+:::
+.
+<div class="foo" k="v">
+  <p>x</p>
+</div>
+```
+
+```
+{k=v .foo .c}
+::: foo
+x
+:::
+.
+<div class="foo c" k="v">
+  <p>x</p>
+</div>
+```
