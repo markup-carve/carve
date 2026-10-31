@@ -833,3 +833,8 @@
 859-a-line-folded-into-a-child-s-paragraph-is-not-the-item-s-text-4  markup-carve/carve#4526, the pinned carve-js keeps a column-0 line in an item whose quote took a lazy invalid opener before a bare run; the spec model, carve-php and carve-rs end the item.
 858-a-typed-div-s-directive-classes-lead-its-attributes-4  markup-carve/carve#4514, the pinned carve-js repeats a directive class the author also wrote (CARVE-P4-002 dedup, carve#4154): class="foo foo c".
 859-a-note-body-and-an-extension-s-content-hold-a-comment-s-run  markup-carve/carve#4512, the pinned carve-js writes a comment in a note body as text.
+863-a-closer-or-caption-at-a-note-marker-line-item-s-content-column-is-the-item-s  The pinned carve-js reads the closer or caption as text (markup-carve/carve#4504); the spec model is correct.
+863-a-closer-or-caption-at-a-note-marker-line-item-s-content-column-is-the-item-s-2  The pinned carve-js reads the closer or caption as text (markup-carve/carve#4504); the spec model is correct.
+863-a-closer-or-caption-at-a-note-marker-line-item-s-content-column-is-the-item-s-3  The pinned carve-js reads the closer or caption as text (markup-carve/carve#4504); the spec model is correct.
+863-a-closer-or-caption-at-a-note-marker-line-item-s-content-column-is-the-item-s-4  The pinned carve-js keeps this line in the item (markup-carve/carve#4496); the spec model is correct.
+863-a-closer-or-caption-at-a-note-marker-line-item-s-content-column-is-the-item-s-5  The pinned carve-js keeps this line in the item (markup-carve/carve#4496); the spec model is correct.
