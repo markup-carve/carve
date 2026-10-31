@@ -1,0 +1,37 @@
+A cell's escaped pipe reaches a link destination
+
+```
+| [x](/a\|b) |
+.
+<table>
+  <tbody>
+    <tr><td><a href="/a|b">x</a></td></tr>
+  </tbody>
+</table>
+```
+
+```
+| ![i](/a\|b) |
+.
+<table>
+  <tbody>
+    <tr><td><img src="/a|b" alt="i"></td></tr>
+  </tbody>
+</table>
+```
+
+```
+| `a\|b` and [x](/a\|b) |
+.
+<table>
+  <tbody>
+    <tr><td><code>a\|b</code> and <a href="/a|b">x</a></td></tr>
+  </tbody>
+</table>
+```
+
+```
+[x](/a\|b)
+.
+<p><a href="/a\|b">x</a></p>
+```

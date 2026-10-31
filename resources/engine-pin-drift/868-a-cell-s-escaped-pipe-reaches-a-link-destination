@@ -1,0 +1,1 @@
+The pinned carve-js keeps the backslash of a cell's escaped pipe in a link or image destination (markup-carve/carve#4549); the spec model gives the pipe.
