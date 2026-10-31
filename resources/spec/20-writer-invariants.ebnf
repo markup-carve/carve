@@ -130,7 +130,7 @@
       written into a caption come back as one paragraph and no spelling of the
       slot restores them, because the slot forbids the structure. A producer
       exposing conversion diagnostics SHOULD report that structural loss, as
-      PART 12 §14 requires for a dropped short caption. The requirement here is
+      PART 12 §14 says for a dropped short caption. The requirement here is
       bounded at the boundary: the words and the constructs on either side of
       it survive as themselves.
 
@@ -138,11 +138,12 @@
       of a pipe-table cell. No other spelling
       carries a hard break in a single-line slot, so the producer writes one
       space in its place, or nothing where the slot holds no token on one side
-      of it: `<td>x<br>y</td>` writes `| x y |` and `<td>x<br></td>` writes
-      `| x |`. A producer with a diagnostic channel reports each break as
-      `structure-unspellable`.
+      of it: `<td>x<br>y</td>` writes `| x y |`. A producer with a diagnostic channel
+      reports each break as `structure-unspellable`.
       A terminal hard break in a pipe-table cell has the Carve spelling `\ `
-      before the closing pipe and the canonical writer MUST keep it.
+      before the closing pipe and the canonical writer MUST keep it, so a tree
+      holding one writes `| x\ |`. An HTML importer that declines `<td>x<br></td>`
+      writes `| x |` and reports the `<br>`.
 
    1c. A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING --
       NORMATIVE [CARVE-P11-004]. CARVE-P11-003 settles what a producer owes where an
@@ -197,17 +198,12 @@
       `![a](u)` and by `![a][r]` alike, defined or not.
 
       THE CEILING IS UNIFORM AND NOT POSITIONAL, which is the half that decides
-      the shape rather than merely describing it. At top level the image
-      paragraph does have a spelling -- one leading space, which the block
-      layer reads as a paragraph and not as a standalone image -- and the
-      writer still does not use it. Inside a list item or a definition
-      description there is no such spelling at any width: the marker's own
-      content column absorbs the padding, so `- ![a](u)` and `-       ![a](u)`
-      are the same tree, and `: ` behaves the same way. A writer preserving the
-      shape at one nesting level and losing it at the next, with nothing
-      declaring the difference, is not a preservation rule; and the indented
-      form emits meaning-bearing leading whitespace, which editors and
-      pipelines strip. So the wrapper is lost EVERYWHERE.
+      the shape rather than merely describing it. Padding does not spell the
+      image paragraph at any level: ` ![a](u)` is a standalone image at top
+      level, and inside a list item or a definition description the marker's
+      own content column absorbs the padding, so `- ![a](u)` and
+      `-       ![a](u)` are the same tree, and `: ` behaves the same way. So
+      the wrapper is lost EVERYWHERE.
 
       This exit REPORTS the wrapper loss rather than refusing the tree, as
       `docs/html-import.md` requires, preserving an editor round trip through
@@ -371,7 +367,7 @@
       One occurrence needing the conservative form does not put
       the OTHER
       occurrences in the unit with it. CARVE-P11-009 bounds how far the fallback reaches;
-      the reach is not the only thing that was too wide. An indented paragraph
+      the reach is not the only thing that was too wide. A paragraph
       whose text reads `{.note}` is written
 
         \{.note}
@@ -417,8 +413,8 @@
       every candidate character is emitted by §2's own test, which for a
       character nothing needs means BARE.
 
-      A paragraph the author indented so that its text reads `## H`, followed
-      by a paragraph reading `plain (b) text`, is written as
+      A paragraph whose text reads `## H` (source `\#\# H`), followed by a
+      paragraph reading `plain (b) text`, is written as
 
         \#\# H
 
@@ -476,8 +472,8 @@
         source run BARE, which is what makes `fmt` reproduce the author's
         spelling.
 
-        A backslash is escaped before ASCII punctuation or a newline. Elsewhere
-        it is bare. A caret is escaped where it starts a caption line and is
+        A backslash is escaped before ASCII punctuation, a space, a newline or the
+        end of input. Elsewhere it is bare. A caret is escaped where it starts a caption line and is
         bare elsewhere (CARVE-P11-010).
 
         SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT -- NORMATIVE [CARVE-P11-010].
@@ -572,9 +568,10 @@
         `@ #`                mentions and tags (PART 9 §7 boundary rules); `#` also
                              opens a heading at column 0
         `> + - . ) : | % !`  block openers at column 0, plus the inline forms
-                             `%%`, `::` and the symbol shortcode `:name:` (the
-                             inline-footnote `^[` is covered by the
-                             leading-caret rule above)
+                             `%%`, `::` and the symbol shortcode `:name:`
+        `^`                  a mid-line inline footnote `^[`; the line-start
+                             caret is the rule above
+        `(`                  typography shortcodes such as `(r)`
         `$`                  math
 
       A character in neither set is never escaped.

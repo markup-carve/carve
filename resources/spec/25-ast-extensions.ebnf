@@ -96,8 +96,8 @@
         width   a number greater than zero and at most one: the column's
                 FRACTION of the table width
 
-      Either field may be absent, meaning unset. The array MAY be empty or
-      shorter than the widest row; a missing entry means both fields are unset
+      Any field may be absent, meaning unset. The array MAY be empty or
+      shorter than the widest row; a missing entry means every field is unset
       for that column. Widths need not sum to one. A sum above one is a
       diagnostic concern for a source spelling or format bridge, not an invalid
       exchange tree.
@@ -242,7 +242,7 @@
 
         {"type":"paragraph","blockImage":true,
          "children":[{"type":"image","src":"/u","alt":"a",
-                      "ref":"r","rawRef":"[r]"}]}
+                      "ref":"r","rawRef":"![a][r]"}]}
 
       The field is set by that phase and by NOTHING ELSE. It is present only as
       `true`; a paragraph that is not a block image omits it rather than

@@ -8942,7 +8942,7 @@ EOF = (* end of file *) ;
       written into a caption come back as one paragraph and no spelling of the
       slot restores them, because the slot forbids the structure. A producer
       exposing conversion diagnostics SHOULD report that structural loss, as
-      PART 12 §14 requires for a dropped short caption. The requirement here is
+      PART 12 §14 says for a dropped short caption. The requirement here is
       bounded at the boundary: the words and the constructs on either side of
       it survive as themselves.
 
@@ -8950,11 +8950,12 @@ EOF = (* end of file *) ;
       of a pipe-table cell. No other spelling
       carries a hard break in a single-line slot, so the producer writes one
       space in its place, or nothing where the slot holds no token on one side
-      of it: `<td>x<br>y</td>` writes `| x y |` and `<td>x<br></td>` writes
-      `| x |`. A producer with a diagnostic channel reports each break as
-      `structure-unspellable`.
+      of it: `<td>x<br>y</td>` writes `| x y |`. A producer with a diagnostic channel
+      reports each break as `structure-unspellable`.
       A terminal hard break in a pipe-table cell has the Carve spelling `\ `
-      before the closing pipe and the canonical writer MUST keep it.
+      before the closing pipe and the canonical writer MUST keep it, so a tree
+      holding one writes `| x\ |`. An HTML importer that declines `<td>x<br></td>`
+      writes `| x |` and reports the `<br>`.
 
    1c. A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING --
       NORMATIVE [CARVE-P11-004]. CARVE-P11-003 settles what a producer owes where an
@@ -9009,17 +9010,12 @@ EOF = (* end of file *) ;
       `![a](u)` and by `![a][r]` alike, defined or not.
 
       THE CEILING IS UNIFORM AND NOT POSITIONAL, which is the half that decides
-      the shape rather than merely describing it. At top level the image
-      paragraph does have a spelling -- one leading space, which the block
-      layer reads as a paragraph and not as a standalone image -- and the
-      writer still does not use it. Inside a list item or a definition
-      description there is no such spelling at any width: the marker's own
-      content column absorbs the padding, so `- ![a](u)` and `-       ![a](u)`
-      are the same tree, and `: ` behaves the same way. A writer preserving the
-      shape at one nesting level and losing it at the next, with nothing
-      declaring the difference, is not a preservation rule; and the indented
-      form emits meaning-bearing leading whitespace, which editors and
-      pipelines strip. So the wrapper is lost EVERYWHERE.
+      the shape rather than merely describing it. Padding does not spell the
+      image paragraph at any level: ` ![a](u)` is a standalone image at top
+      level, and inside a list item or a definition description the marker's
+      own content column absorbs the padding, so `- ![a](u)` and
+      `-       ![a](u)` are the same tree, and `: ` behaves the same way. So
+      the wrapper is lost EVERYWHERE.
 
       This exit REPORTS the wrapper loss rather than refusing the tree, as
       `docs/html-import.md` requires, preserving an editor round trip through
@@ -9183,7 +9179,7 @@ EOF = (* end of file *) ;
       One occurrence needing the conservative form does not put
       the OTHER
       occurrences in the unit with it. CARVE-P11-009 bounds how far the fallback reaches;
-      the reach is not the only thing that was too wide. An indented paragraph
+      the reach is not the only thing that was too wide. A paragraph
       whose text reads `{.note}` is written
 
         \{.note}
@@ -9229,8 +9225,8 @@ EOF = (* end of file *) ;
       every candidate character is emitted by §2's own test, which for a
       character nothing needs means BARE.
 
-      A paragraph the author indented so that its text reads `## H`, followed
-      by a paragraph reading `plain (b) text`, is written as
+      A paragraph whose text reads `## H` (source `\#\# H`), followed by a
+      paragraph reading `plain (b) text`, is written as
 
         \#\# H
 
@@ -9288,8 +9284,8 @@ EOF = (* end of file *) ;
         source run BARE, which is what makes `fmt` reproduce the author's
         spelling.
 
-        A backslash is escaped before ASCII punctuation or a newline. Elsewhere
-        it is bare. A caret is escaped where it starts a caption line and is
+        A backslash is escaped before ASCII punctuation, a space, a newline or the
+        end of input. Elsewhere it is bare. A caret is escaped where it starts a caption line and is
         bare elsewhere (CARVE-P11-010).
 
         SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT -- NORMATIVE [CARVE-P11-010].
@@ -9384,9 +9380,10 @@ EOF = (* end of file *) ;
         `@ #`                mentions and tags (PART 9 §7 boundary rules); `#` also
                              opens a heading at column 0
         `> + - . ) : | % !`  block openers at column 0, plus the inline forms
-                             `%%`, `::` and the symbol shortcode `:name:` (the
-                             inline-footnote `^[` is covered by the
-                             leading-caret rule above)
+                             `%%`, `::` and the symbol shortcode `:name:`
+        `^`                  a mid-line inline footnote `^[`; the line-start
+                             caret is the rule above
+        `(`                  typography shortcodes such as `(r)`
         `$`                  math
 
       A character in neither set is never escaped.
@@ -9610,7 +9607,7 @@ EOF = (* end of file *) ;
       same tree as parsing its canonical form. Formatting an aligned table
       again with `alignTables` yields identical bytes. A formatter's `--check`
       operation with this mode compares the source against aligned output.
-      The byte fixtures are in `resources/spec/table-alignment-fixtures.json`.
+      The byte fixtures are in `resources/spec/table-alignment-fixtures.json`; a row with a `note` is a roundtrip row.
 
    6f. PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING --
       NORMATIVE [CARVE-P11-015]. CARVE-P11-014's padding removes the need for
@@ -9980,7 +9977,9 @@ EOF = (* end of file *) ;
 
       ONE OTHER SPELLING REACHES AN EMPTY `<dd>` AND IS NOT WRITTEN:
 
-        : {empty}   claims no line below it at any column        -- CANONICAL
+        : {empty}   claims no line below the description's
+                    content column; a block at that column
+                    takes the attribute                  -- CANONICAL
         : %%        holds a `comment` child                      -- not written
 
       `: %%` renders alike and fails §1: its description carries a `comment`
@@ -10065,7 +10064,7 @@ EOF = (* end of file *) ;
 
       (c) A HOISTED DEFINITION DOES NOT CROSS A MARKER. A link reference or
           footnote definition with a region marker anywhere below its source
-          line is not collected to the end of the document (§7). It is written
+          line is not collected to the end of the document (PART 12 §7, CARVE-P12-070). It is written
           where the author wrote it, among its siblings in source order, and
           (a) applies to it like any other block. One with no marker below it
           is collected as before, which moves it past no marker.
@@ -10182,7 +10181,7 @@ EOF = (* end of file *) ;
       backtick is always escaped (§5), and a tilde run takes `\~~~`.
 
       `tests/fixtures/verbatim-opener-line-fmt.json` pins the spelled rows
-      and, per refused shape, the candidate spellings that do not read back.
+      and the refused shapes.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It answers to a Markdown
@@ -11253,7 +11252,7 @@ EOF = (* end of file *) ;
       figure's group wrapper, and a line block (`::: |`) or a hard-break
       block (`::: \`), whose lines this target writes as a paragraph with
       hard breaks. A container this target DOES spell is not one
-      and takes no comment: an attributes-only opener (`::: {.warning}`) is
+      and takes no comment: `{.warning}` above a bare `:::` opener is
       written verbatim, and a list table is written as a pipe table. A BARE
       DIV'S OPENER IS `:::` WITH NOTHING AFTER IT, so its marker is
       `<!-- carve: ::: -->`, the same bytes as its closer's; no space pads the
@@ -12418,7 +12417,7 @@ EOF = (* end of file *) ;
       It renders nothing itself; it is what the inline `abbreviation` resolves
       against.
 
-      THE HOISTING CLAUSE ABOVE IS ABOUT FOOTNOTES. An `abbreviation_def` is
+      THE HOISTING CLAUSE ABOVE IS ABOUT FOOTNOTES AND LINK REFERENCE DEFINITIONS. An `abbreviation_def` is
       never hoisted, because there is never one to hoist: the construct is
       recognized only at document level.
 
@@ -12451,8 +12450,8 @@ EOF = (* end of file *) ;
 
       THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
       PART 11's writer emits the definition after the container the author
-      wrote it in, which reads like a violation of PART 11 §6 ("fmt does not
-      reorder ... those are the author's choices and the AST records them"). It
+      wrote it in, which reads like a violation of PART 11 §6 (a spelling the AST records is
+      the author's and is reproduced). It
       is not, because PART 11 §6 governs what the writer may do with what the tree
       HOLDS, and this clause is what the tree holds. It is accepted for
       footnotes because a footnote definition renders as a footnote either way,
@@ -12986,8 +12985,8 @@ EOF = (* end of file *) ;
         width   a number greater than zero and at most one: the column's
                 FRACTION of the table width
 
-      Either field may be absent, meaning unset. The array MAY be empty or
-      shorter than the widest row; a missing entry means both fields are unset
+      Any field may be absent, meaning unset. The array MAY be empty or
+      shorter than the widest row; a missing entry means every field is unset
       for that column. Widths need not sum to one. A sum above one is a
       diagnostic concern for a source spelling or format bridge, not an invalid
       exchange tree.
@@ -13132,7 +13131,7 @@ EOF = (* end of file *) ;
 
         {"type":"paragraph","blockImage":true,
          "children":[{"type":"image","src":"/u","alt":"a",
-                      "ref":"r","rawRef":"[r]"}]}
+                      "ref":"r","rawRef":"![a][r]"}]}
 
       The field is set by that phase and by NOTHING ELSE. It is present only as
       `true`; a paragraph that is not a block image omits it rather than

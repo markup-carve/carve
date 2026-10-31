@@ -11,6 +11,7 @@
   },
   {
     "name": "authored separator",
+    "note": "Roundtrip row: --roundtrip keeps this separator, canonical fmt writes |= cells (CARVE-P11-066).",
     "canonical": "| A | B |\n|---|---|\n| x | yy |\n",
     "aligned": "| A | B  |\n|---|--- |\n| x | yy |\n"
   },
@@ -31,6 +32,7 @@
   },
   {
     "name": "separator colons",
+    "note": "Roundtrip row: --roundtrip keeps this separator, canonical fmt writes |= cells (CARVE-P11-066).",
     "canonical": "| A | B |\n|:--|--:|\n| x | right |\n",
     "aligned": "| A | B     |\n|:--|--:    |\n| x | right |\n"
   },
