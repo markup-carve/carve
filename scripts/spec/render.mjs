@@ -263,13 +263,16 @@ const ATOM_RULES = ['nested', 'altNested']
 // linear (carve#4236). Every use of these rules is followed by `]`.
 const CONTENT_RULES = ['brContent', 'altContent']
 const g = ohm.grammar(`CarveStack <: ${core.name} {
+  inline := inlineAtom | ...
+  inlineAtom = "\\u0000"
+  bracketAtom = "\\u0000"
   codeClosed += codeLong
   codeLong = "\\u0000" "\\u0000" "\\u0000"
   bracketless = "\\u0000"
 ${BRACKET_RULES.map((rule) => `  ${rule} := ~bracketless ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1]}`).join('\n')}
 ${ATOM_RULES.map((rule) => `  ${rule} := overCapBracket | ${rule}Live\n  ${rule}Live = ~bracketless ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1]}`).join('\n')}
   overCapBracket = "\\u0000"
-${CONTENT_RULES.map((rule) => `  ${rule} := ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1].replace('(~"]" any)', '(~"]" ~"[" any)')}`).join('\n')}
+${CONTENT_RULES.map((rule) => `  ${rule} := bracketAtom | ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1].replace('(~"]" any)', '(~"]" ~"[" any)')}`).join('\n')}
   span := ~any any
   spComment := sepRun "%%" (~newline ~"*/" any)*
   fSpComment<d> := sepRun "%%" (~newline ~(d "}") ~"*/" any)*
@@ -278,6 +281,28 @@ ${CONTENT_RULES.map((rule) => `  ${rule} := ${coreSource.match(new RegExp(`^  ${
   initialComment := ~markupContent "%%" (~newline any)*
   markupContent = ""
 }`, { [core.name]: core })
+let atomScope = null
+const atomPart = (kind) => {
+  const part = new ohm.pexprs.Terminal('\u0000')
+  part.eval = function (state) {
+    const { inputStream } = state
+    const atom = atomScope?.source === inputStream.source
+      ? atomScope.byStart.get(inputStream.pos) : undefined
+    const end = atom?.[kind]
+    if (end === undefined) {
+      state.processFailure(inputStream.pos, this)
+      return false
+    }
+    const pos = inputStream.pos
+    inputStream.pos = end
+    state.pushBinding(new TerminalNode(end - pos), pos)
+    return true
+  }
+  part._isNullable = () => false
+  return part
+}
+g.rules.inlineAtom.body = atomPart('fullEnd')
+g.rules.bracketAtom.body = atomPart('boundaryEnd')
 // Insert and delete content is markup INSIDE an inline run, not a run of its
 // own, so a `%%` at its start is text (CARVE-P9-041, carve#4178).
 let inMarkupContent = false
@@ -882,7 +907,88 @@ const ARROWS = {
 }
 const COMPARISONS = new Set(['!=', '<=', '>='])
 
+function bracketTailEnd(source, closeEnd, boundaryEnd, limit) {
+  let end = boundaryEnd
+  if (source[end] === '[') {
+    const close = source.indexOf(']', end + 1)
+    const newline = source.indexOf('\n', end + 1)
+    if (close !== -1 && close < limit && (newline === -1 || close < newline)) {
+      end = close + 1
+      const attrs = heldAttrsEnd(source, end, limit)
+      if (attrs > end) end = attrs
+      const tail = source.slice(closeEnd, end)
+      return g.match(tail, 'brTail').succeeded() ? end : boundaryEnd
+    }
+  }
+  while (end < limit) {
+    const attrs = heldAttrsEnd(source, end, limit)
+    if (attrs > end) { end = attrs; continue }
+    if (source[end] === '{') {
+      let next = end + 1
+      while (next < limit && source[next] === ' ') next++
+      if (source[next] === '}') { end = next + 1; continue }
+    }
+    break
+  }
+  const tail = source.slice(closeEnd, end)
+  return tail && g.match(tail, 'brTail').failed() ? boundaryEnd : end
+}
+
+// The boundary CST records nested bracket runs at their original source
+// positions. Keep those intervals when rendering a label so the inline matcher
+// can consume an already rendered child in one step instead of reparsing it.
+function bracketAtoms(content) {
+  const source = content.source.sourceString
+  const base = content.source.startIdx
+  const byStart = new Map()
+  for (const part of content.children) {
+    const child = part.child(0)
+    if (child.ctorName === 'bracketAtom') {
+      const old = atomScope?.byStart.get(child.source.startIdx)
+      if (old) byStart.set(child.source.startIdx - base, {
+        boundaryEnd: old.boundaryEnd - base,
+        fullEnd: old.fullEnd - base,
+        render: old.render,
+      })
+      continue
+    }
+    if (child.ctorName !== 'nested') continue
+    const nested = child.child(0)
+    if (nested.ctorName !== 'nestedLive') continue
+    const start = child.source.startIdx
+    if (source.startsWith('[^', start) || source[start - 1] === '!' || source[start - 1] === '^') continue
+    const boundaryEnd = child.source.endIdx
+    // The boundary scan leaves a span's attribute run outside `nested`.
+    const end = bracketTailEnd(source, nested.child(2).source.endIdx, boundaryEnd, content.source.endIdx)
+    const label = nested.child(1)
+    const children = bracketAtoms(label)
+    byStart.set(start - base, {
+      boundaryEnd: boundaryEnd - base,
+      fullEnd: end - base,
+      render: () => {
+        if (source[nested.child(2).source.endIdx] === '{' && inlineDepth >= MAX_NESTING_DEPTH) {
+          return escapeHtml(source.slice(start, end))
+        }
+        const raw = label.sourceString
+        const inner = raw === '' ? '' : renderInline(raw, '[', false, false, children)
+        const tail = source.slice(nested.child(2).source.endIdx, end)
+        if (!tail) return `[${inner}]`
+        const match = g.match(tail, 'brTail')
+        if (match.failed()) return renderInline(source.slice(start, end), '[')
+        return sem(match).child(0).applyTail(inner, raw)
+      },
+    })
+  }
+  return byStart
+}
+
 const sem = g.createSemantics().addOperation('h', {
+  inlineAtom(_atom) {
+    return atomScope.byStart.get(this.source.startIdx).render()
+  },
+  bracketAtom(_atom) {
+    return atomScope.byStart.get(this.source.startIdx).render()
+  },
   inlines(_initial, items) {
     // The bare single-char emphasis delimiters are NOT resolved by the PEG.
     // Build a flat token stream (leaf HTML fragments + bare-delimiter
@@ -962,7 +1068,7 @@ const sem = g.createSemantics().addOperation('h', {
     }
     // link text is FULL inline content; parse the raw source recursively
     const raw = content.sourceString
-    let inner = raw === '' ? '' : renderInline(raw, '[')
+    let inner = raw === '' ? '' : renderInline(raw, '[', false, false, bracketAtoms(content))
     if (tail.numChildren === 0) {
       // bare bracketed run: literal (PART 9 SS14), content still parsed
       return `[${inner}]`
@@ -2668,9 +2774,11 @@ export function deTypography(s) {
   return out
 }
 
-export function renderInline(text, prevCtx = '', separateQuoteScope = false, markup = false) {
+export function renderInline(text, prevCtx = '', separateQuoteScope = false, markup = false, atoms = null) {
   if (inlineDepth >= MAX_NESTING_DEPTH) return escapeHtml(text)
   const outerDepth = inlineDepth++
+  const outerAtoms = atomScope
+  atomScope = atoms?.size ? { source: text, byStart: atoms } : null
   const saved = quotePrevCtx
   const outerMarkup = inMarkupContent
   inMarkupContent = markup
@@ -2723,6 +2831,7 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false, mar
     html ??= renderInlineInner(text)
     return root ? settleQuotes(html, quoteRun, prevCtx) : html
   } finally {
+    atomScope = outerAtoms
     inlineDepth = outerDepth
     spanPairs = outerPairs
     quotePrevCtx = saved
