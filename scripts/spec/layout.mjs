@@ -3905,7 +3905,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
         (COLON_CLOSER.test(rest) && !(owner === top() && owner.para && owner.absorbs))
       if (owner.para && !interrupts) return { kind: 'text', interrupts: false }
       if (parseColonOpener(colon[2]).mode === 'line-block') {
-        return { kind: 'fence', family: 'div', interrupts, lineBlock: true, closes: (r) => COLON_CLOSER.exec(r)?.[1].length === run }
+        return { kind: 'fence', family: 'div', interrupts, lineBlock: true, closes: (r, closerCol) =>
+          closerCol <= col && COLON_CLOSER.exec(r)?.[1].length === run }
       }
       return { kind: 'colon', run, interrupts }
     }
@@ -7712,7 +7713,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       descColons.length = 0
       if (quoted === null && isColonBlockOpener(text)) {
         const colon = COLON_FENCE.exec(text)
-        descColons.push({ length: colon[1].length, lineBlock: parseColonOpener(colon[2])?.mode === 'line-block' })
+        descColons.push({ length: colon[1].length, lineBlock: parseColonOpener(colon[2])?.mode === 'line-block', column: col })
       }
     }
     /*
@@ -7786,12 +7787,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         return
       }
       const run = COLON_FENCE.exec(text)?.[1].length
-      const closes = COLON_CLOSER.test(text) && top !== undefined && run === top.length
+      const closes = COLON_CLOSER.test(text) && top !== undefined && run === top.length &&
+        (!lineBlock || ind(idx).col <= top.column)
       // Inside a line block only its own closer is a fence line.
       const bare = !lineBlock && COLON_CLOSER.test(text) && !closes
       const opener = bare || (!lineBlock && isColonBlockOpener(text) && !COLON_CLOSER.test(text))
       if (closes) descColons.pop()
-      else if (opener) descColons.push({ length: run, lineBlock: !bare && parseColonOpener(COLON_FENCE.exec(text)[2])?.mode === 'line-block' })
+      else if (opener) descColons.push({ length: run, lineBlock: !bare && parseColonOpener(COLON_FENCE.exec(text)[2])?.mode === 'line-block', column: ind(idx).col })
       if (opener || closes) { close(); return }
       if (lineBlock) {
         if (!descendantQ1.open) { descendantQ1.open = true; descendantQ1.para = [] }
