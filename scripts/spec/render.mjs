@@ -1209,9 +1209,8 @@ const sem = g.createSemantics().addOperation('h', {
       const at = this.source.startIdx
       const end = this.source.endIdx
       const prev = at > 0 ? src[at - 1] : ''
-      const next = src[end] ?? ''
       const prevIsSpace = prev === '' || isTypographyFlank(prev)
-      const nextIsSpace = next === '' || isTypographyFlank(next)
+      const nextIsSpace = flankAfter(src, end)
       if (prevIsSpace && !nextIsSpace) return escapeHtml(this.sourceString)
     }
     // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot allocateDashes):
@@ -2052,9 +2051,8 @@ function applyDashFlanks(toks, openMap, src, contentAt, spanContent, contentEnd)
     const atEnd = closes.has(at + raw.length) || (spanContent && at + raw.length === contentEnd)
     if (!atStart && !atEnd) continue
     const prev = at > 0 ? src[at - 1] : ''
-    const next = src[at + raw.length] ?? ''
     const prevIsSpace = atStart || prev === '' || isTypographyFlank(prev)
-    const nextIsSpace = atEnd || next === '' || isTypographyFlank(next)
+    const nextIsSpace = atEnd || flankAfter(src, at + raw.length)
     t.h = prevIsSpace && !nextIsSpace ? escapeHtml(raw) : dashGlyphs(raw.length)
   }
 }
@@ -2371,6 +2369,15 @@ function quotePrevIdx(src, at) {
 // CARVE-P3-021 and CARVE-P3-023: typography flanks include soft and hard breaks, represented here by \n.
 export const TYPOGRAPHY_FLANK = new Set([' ', '\t', '\n', '\r', '\u00a0'])
 export const isTypographyFlank = (ch) => TYPOGRAPHY_FLANK.has(ch)
+// The character after `at` in source. A backslash that writes a hard break or an
+// escaped space reads as the break or space it renders (carve#4511).
+export const flankAfter = (src, at) => {
+  const next = src[at] ?? ''
+  if (next === '' || isTypographyFlank(next)) return true
+  if (next !== '\\') return false
+  const after = src[at + 1] ?? ''
+  return after === '' || after === '\n' || after === '\r' || after === ' '
+}
 const QUOTE_OPEN_PREV = new Set(['=', ':', '-', '–', '—', '/', '(', '[', '{', '“', '‘'])
 const QUOTE_CHARS = new Set(['"', "'"])
 // A quote directly after a delimiter that OPENS a span stands at the START of
@@ -2394,7 +2401,7 @@ function quoteOpaque(value) {
 function smartQuote(node, open, close, single) {
   const src = node.source.sourceString
   const at = node.source.startIdx
-  const next = String.fromCodePoint(src.codePointAt(at + 1) ?? 0).replace('\0', '')
+  const next = src[at + 1] === '\\' && flankAfter(src, at + 1) ? ' ' : String.fromCodePoint(src.codePointAt(at + 1) ?? 0).replace('\0', '')
   QUOTE_LETTER_RUN.lastIndex = at + 1
   const word = single ? (QUOTE_LETTER_RUN.exec(src)?.[0] ?? '') : ''
   const end = at + 1 + word.length

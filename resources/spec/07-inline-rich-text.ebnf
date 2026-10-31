@@ -434,6 +434,9 @@ ellipsis = "..." ;    (* → … *)
    of a span's content, so `*a --*` converts as `a --` does.
    Unlike quote direction, this clause reads SOURCE neighbors, so the closing
    brace of a braced comment is the preceding character: `{% c %}--x` converts.
+   The backslash of a hard break or an escaped space is no following
+   character: the run reads the break or space it renders (`typography_flank`),
+   so `x --\` before a line break and `x --\ y` both convert.
 
    THE RULE IS DELIBERATELY NARROW. Requiring whitespace on BOTH sides removes
    every canonical dash use, which is unspaced -- `pages 1--10`, `the Mon--Fri
@@ -493,6 +496,9 @@ smart_quote = '"' | "'" ;
    renders `“Wait—” he said.`, while `he said—"Go"` renders `he said—“Go”`.
    A path or URL that ends in a slash closes its quote: `"app/config/".`
    renders `“app/config/”.`, while `and/"or"` renders `and/“or”`.
+   A hard break and an escaped space read as the `typography_flank` character
+   they render, not as their backslash: `"a-"\` before a line break renders
+   `“a-”<br>`, and `"a-"\ b` renders `“a-”&nbsp;b`.
    A span's closing delimiter is not the next source character: nothing
    follows a quote at the end of a span's content, so `*"Wait-"*` renders
    `<strong>“Wait-”</strong>`, as `"Wait-"` closes at the end of a paragraph.
@@ -554,7 +560,8 @@ soft_break = newline ;        (* regular line ending within paragraph *)
 (* TYPOGRAPHY FLANK. The one class smart typography reads a neighbor
    character through, for dash runs (CARVE-P3-021) and quote direction
    (CARVE-P3-023): space, tab, line feed, carriage return, no-break space
-   U+00A0, and a soft or hard line break. THE CLASS IS CLOSED: every other
+   U+00A0, and a soft or hard line break. An escaped space renders U+00A0, so
+   it is in the class. THE CLASS IS CLOSED: every other
    Unicode space, U+2000 to U+200A, U+202F and U+3000 among them, is a word
    character here. So a quote after U+202F closes, as French spacing inside
    the marks needs, and a quote after U+3000 closes too. *)
