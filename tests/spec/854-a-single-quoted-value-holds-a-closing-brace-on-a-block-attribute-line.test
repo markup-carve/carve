@@ -1,0 +1,8 @@
+A single-quoted value holds a closing brace on a block attribute line
+
+```
+{k='x}y'}
+p
+.
+<p k="x}y">p</p>
+```

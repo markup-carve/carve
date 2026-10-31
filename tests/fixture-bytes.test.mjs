@@ -96,6 +96,7 @@ const INVENTORY = [
   { base: '249-trailing-whitespace-after-a-block-marker-4', crv: ['trailing-WS'], html: [] }, // a table's continuation row
   { base: '249-trailing-whitespace-after-a-block-marker-6', crv: ['trailing-WS'], html: [] }, // the `+` continuation marker - §17 L3 says "only content is `+`"
   { base: '84-single-line-headings-5', crv: ['trailing-WS'], html: [] },
+  { base: '854-an-unresolved-cross-reference-strips-a-bidi-control', crv: ['RLO'], html: [] },
   // The caret and its separator with NOTHING after them is the case: MARKER
   // REQUIRES CONTENT (PART 2) opens no caption there, so the quote above stays
   // a quote and the line is the paragraph `^`. Strip the run and both lines

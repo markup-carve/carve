@@ -13,7 +13,7 @@ import { resolve as presolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import * as ohm from 'ohm-js'
 import { MAX_CODE_RUN, Refuse, trimWs } from './layout.mjs'
-import { findDirectives, hasInvalidLineRange } from './include-directive.mjs'
+import { findDirectives, hasInvalidCodeLanguage, hasInvalidLineRange } from './include-directive.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const coreSource = readFileSync(presolve(here, '../../resources/carve-core.ohm'), 'utf8')
@@ -609,15 +609,13 @@ const URL_LIST_SEPARATORS = {
 const urlListIsClean = (separator, value) =>
   value.split(separator).every((token) => token === '' || checkUrl(token) !== '')
 
-// PART 9 SS25 ATTRIBUTE HARDENING: drop on*/srcdoc/formaction; drop an
-// href/src override whose scheme is denylisted; blank any value whose own
+// PART 9 SS25 ATTRIBUTE HARDENING: drop on*/srcdoc/formaction; blank any value whose own
 // leading scheme is denylisted, and a URL-list value with a denylisted scheme
 // in ANY candidate as well; blank a style value with a CSS execution vector.
 const STYLE_VECTOR = /expression\(|url\(|@import|behavior:|-moz-binding/i
 function hardenAttr(name, value) {
   const n = name.toLowerCase()
   if (n.startsWith('on') || n === 'srcdoc' || n === 'formaction') return null
-  if ((n === 'href' || n === 'src') && checkUrl(value) === '') return null
   if (value !== '' && checkUrl(value) === '') return { name, value: '' }
   const separator = Object.hasOwn(URL_LIST_SEPARATORS, n) ? URL_LIST_SEPARATORS[n] : null
   if (separator && !urlListIsClean(separator, value)) return { name, value: '' }
@@ -770,6 +768,8 @@ export const classTokens = (a) => {
   return (tokens.length ? tokens : [raw]).map((v) => hardenAttr('class', v)?.value ?? '')
 }
 export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && a[1] === 'class')
+// An `id` key spells the id slot, as a `class` key spells the class slot.
+export const idSlot = (a) => a[0] === 'id' ? a[1] : a[0] === 'kv' && a[1] === 'id' ? hardenAttr('id', a[2]).value : null
 
 export function renderAttrs(list, structuralUrl = null) {
   // serialization: SOURCE order; all classes merge (deduplicated, corpus
@@ -787,11 +787,11 @@ export function renderAttrs(list, structuralUrl = null) {
         parts.push(null) // placeholder
       }
       for (const value of classTokens(a)) if (value !== '' && !classes.includes(value)) classes.push(value)
-    } else if (a[0] === 'id') {
-      if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAuthoredAttr(a[1])}"`
+    } else if (idSlot(a) !== null) {
+      if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAuthoredAttr(idSlot(a))}"`
       else {
         seen.set('#id', parts.length)
-        parts.push(` id="${escapeAuthoredAttr(a[1])}"`)
+        parts.push(` id="${escapeAuthoredAttr(idSlot(a))}"`)
       }
     } else if (a[0] === 'kv') {
       const h = hardenAttr(a[1], a[2])
@@ -2319,11 +2319,11 @@ export function renderBlockAttrs(lists, structuralUrl = null) {
           parts.push(null)
         }
         for (const value of classTokens(a)) if (value !== '' && !classes.includes(value)) classes.push(value)
-      } else if (a[0] === 'id') {
-        if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAuthoredAttr(a[1])}"`
+      } else if (idSlot(a) !== null) {
+        if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAuthoredAttr(idSlot(a))}"`
         else {
           seen.set('#id', parts.length)
-          parts.push(` id="${escapeAuthoredAttr(a[1])}"`)
+          parts.push(` id="${escapeAuthoredAttr(idSlot(a))}"`)
         }
       } else if (a[0] === 'kv') {
         const h = hardenAttr(a[1], a[2])
@@ -2646,7 +2646,7 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false, mar
     let html
     if (text.includes('{{')) {
       let literals = findDirectives(text).filter((directive) =>
-        hasInvalidLineRange(directive) || !directive.quoted && directive.options.some(([key, value]) => key === 'code' && value === null))
+        hasInvalidLineRange(directive) || hasInvalidCodeLanguage(directive) || !directive.quoted && directive.options.some(([key, value]) => key === 'code' && value === null))
       if (literals.length) {
         // A literal directive is no atom (CARVE-P9-043): an opener before it
         // that closes inside it breaks it, and its text is read as content.

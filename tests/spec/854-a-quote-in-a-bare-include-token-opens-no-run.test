@@ -1,0 +1,7 @@
+A quote in a bare include token opens no run
+
+```
+{{ it's_x @lines:0-1 }} it's_y }}
+.
+<p>{{ it's_x @lines:0-1 }} it’s_y }}</p>
+```

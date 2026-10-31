@@ -135,7 +135,10 @@ class_attribute = '.', explicit_identifier ;
    compares tokens: `{class="a b" .a}` parses to the classes `a`, `b` and
    renders `class="a b"`. A value that holds no token
    (`class=""`, `class=" "`) stays one entry holding the value as authored. Each token is an authored value of its
-   own for CARVE-P9-054. *)
+   own for CARVE-P9-054.
+   An `id` key spells the id slot the same way when an element renders: `{#i id=j}`
+   gives one `id`, the last value at the first position, and `{id=q}` takes the
+   slot a generated id would. *)
 key_value_attribute = identifier, '=', attribute_value ;
 (* A bare identifier is a VALUE-LESS BOOLEAN attribute in source. It has the same
    empty-string AST value as `name=""` and renders `name=""` (a carve

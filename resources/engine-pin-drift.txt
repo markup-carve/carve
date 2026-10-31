@@ -792,3 +792,8 @@
 853-an-abbreviation-definition-below-a-content-column-stands-in-the-document-4  Pinned JavaScript predates an abbreviation definition below a content column ending every container (carve#4412); the spec moved first
 853-an-abbreviation-definition-below-a-content-column-stands-in-the-document-5  Pinned JavaScript predates an abbreviation definition below a content column ending every container (carve#4412); the spec moved first
 853-an-abbreviation-definition-below-a-content-column-stands-in-the-document-6  Pinned JavaScript predates an abbreviation definition below a content column ending every container (carve#4412); the spec moved first
+854-a-cross-reference-to-an-empty-caption-label-is-the-number-alone  The pinned carve-js predates this: an empty label's link text starts with a space (markup-carve/carve#4461); the spec model is correct.
+854-a-standalone-code-include-with-no-resolver-is-literal-in-every-host  The pinned carve-js predates this: a malformed code language reads inline (markup-carve/carve#4463); the spec model is correct.
+854-a-standalone-code-include-with-no-resolver-is-literal-in-every-host-2  The pinned carve-js predates this: a malformed code language reads inline (markup-carve/carve#4463); the spec model is correct.
+854-an-indented-dash-line-neither-opens-nor-closes-frontmatter  The pinned carve-js predates this: an indented dash line reads as text (markup-carve/carve#4453); the spec model is correct.
+854-an-indented-dash-line-neither-opens-nor-closes-frontmatter-2  The pinned carve-js predates this: an indented dash line reads as text (markup-carve/carve#4453); the spec model is correct.

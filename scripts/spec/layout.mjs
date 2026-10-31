@@ -20,7 +20,7 @@
 import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd } from './render.mjs'
 import { labelKey } from './label-key.mjs'
 import { delimitedRowCount, delimitedRows, delimitedRecords } from './delimited-table.mjs'
-import { scanDirective } from './include-directive.mjs'
+import { hasInvalidCodeLanguage, scanDirective } from './include-directive.mjs'
 
 function standaloneCodeInclude(line) {
   const start = line.search(/[^ \t\n\r]/)
@@ -1549,7 +1549,7 @@ function tryAttrLine(lines, i) {
     let line = text
     let found = false
     while (!found) {
-      let inQuote = false
+      let inQuote = null
       let close = -1
       for (let k = j; k < line.length; k++) {
         const ch = line[k]
@@ -1557,8 +1557,10 @@ function tryAttrLine(lines, i) {
           k++
           continue
         }
-        if (ch === '"') inQuote = !inQuote
-        else if (ch === '}' && !inQuote) {
+        if (inQuote) {
+          if (ch === inQuote) inQuote = null
+        } else if (ch === '"' || ch === "'") inQuote = ch
+        else if (ch === '}') {
           close = k
           break
         }
@@ -4019,9 +4021,12 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   // whole of that reading, and it is deliberately spelled with the same two
   // characters PART 2's `whitespace` admits - a form feed or a no-break space
   // is CONTENT, so `---<FF>` is not an opener and falls through as before.
-  if (lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
+  //
+  // AUTHORED LINES, because the walk above has already dropped a leading run:
+  // `frontmatter_open` and `frontmatter_close` admit no indent.
+  if (authored[0] !== undefined && FRONTMATTER_OPENER.test(authored[0])) {
     for (let j = 1; j < lines.length; j++) {
-      if (/^---[ \t]*$/.test(lines[j])) {
+      if (/^---[ \t]*$/.test(authored[j])) {
         lines.splice(0, j + 1)
         authored.splice(0, j + 1)
         missedFrames.splice(0, j + 1)
@@ -4354,7 +4359,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const linesRange = options.has('lines') ? includeRange(options.get('lines')) : null
       const selections = Number(Boolean(directive.section)) + Number(options.has('rows'))
         + Number(options.has('lines')) + Number(options.has('region'))
-      const invalid = selections > 1 || (options.has('rows') && (!tableInclude || !range))
+      // PART 10 I2: an unresolved or refused line stays literal in every host. A quoted
+      // path keeps core inline syntax (tests/unresolved-quoted-include-inline).
+      const pushLiteral = () => {
+        const text = trimWs(line)
+        push(top
+          ? { t: 'includeLiteral', text, inline: directive.quoted }
+          : { t: 'para', lines: [directive.quoted ? text : text.replace(/[!-/:-@[-`{-~]/g, '\\$&')] })
+      }
+      const invalid = selections > 1 || hasInvalidCodeLanguage(directive) || (options.has('rows') && (!tableInclude || !range))
         || (options.has('cols') && !tableInclude)
         || (options.has('lines') && !linesRange)
         || (options.has('shift') && options.get('shift') !== 'auto' && !/^[+-]?\d+$/.test(options.get('shift') ?? ''))
@@ -4392,7 +4405,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               )).map(record => record.cells)
               const header = allRows.slice(0, headerRows)
               const project = row => columns === null ? row : columns.map(column => row[column] ?? '')
-              node.tableRows = [...header, ...(regionRange ? selectedRecords.map(record => record.cells) : body)].map(project)
+              // A selected record is numbered from the region; a header record inside it is not repeated.
+              const headerEnd = records[headerRows - 1]?.endLine ?? 0
+              const regionBody = regionRange ? selectedRecords.filter(record => record.line + regionRange[0] - 1 > headerEnd).map(record => record.cells) : body
+              node.tableRows = [...header, ...regionBody].map(project)
               node.tableHeaderRows = header.length
             }
           } else if (options.has('rows') || options.has('cols')) {
@@ -4408,14 +4424,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
           push(node)
         }
-        else push(top
-          ? { t: 'includeLiteral', text: trimWs(line), quotedPath: directive.quoted }
-          : { t: 'para', lines: [trimWs(line)] })
+        else pushLiteral()
       } else {
         i++
-        push(top
-          ? { t: 'includeLiteral', text: trimWs(line), quotedPath: directive.quoted }
-          : { t: 'para', lines: [trimWs(line)] })
+        pushLiteral()
       }
       continue
     }

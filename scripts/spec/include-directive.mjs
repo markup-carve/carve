@@ -37,6 +37,18 @@ function quotedRunEnd(text, from) {
 }
 
 /*
+ * Only the two quoted slots open a run: the path right after the padding, which
+ * takes a double quote, and an option value right after `@key:`. A quote anywhere
+ * else is a character of its token, so `{{ it's }} it's }}` closes at the first pair.
+ */
+const OPTION_VALUE_SLOT = /@[A-Za-z_][A-Za-z0-9_-]*:$/
+function opensQuotedSlot(text, from, at) {
+  const before = text.slice(from, at)
+  if (OPTION_VALUE_SLOT.test(before)) return true
+  return text[at] === '"' && /^ +$/.test(before)
+}
+
+/*
  * THE CLOSER: the index of the first `}}` at or after `from` that falls OUTSIDE
  * any quoted run, or -1 when the line holds none.
  *
@@ -49,7 +61,7 @@ export function findCloser(text, from = 0) {
   for (let i = from; i < text.length; i += 1) {
     const ch = text[i]
     if (ch === '\n') return -1
-    if (ch === '"' || ch === "'") {
+    if ((ch === '"' || ch === "'") && opensQuotedSlot(text, from, i)) {
       const end = quotedRunEnd(text, i)
       if (end !== -1) {
         i = end
@@ -73,7 +85,7 @@ const UNQUOTED_VALUE = /^[^}|"'\\ \t\r\n@]+/
 function readPath(inner, at) {
   if (inner[at] === '"') {
     const end = quotedRunEnd(inner, at)
-    if (end === -1) return null
+    if (end === -1 || end === at + 1) return null // `quoted_include_path` holds one or more characters
     return { value: unescapePath(inner.slice(at + 1, end)), quoted: true, next: end + 1 }
   }
   let i = at
@@ -82,9 +94,8 @@ function readPath(inner, at) {
   return { value: inner.slice(at, i), quoted: false, next: i }
 }
 
-const unescape = (raw) => raw.replace(/\\(.)/g, '$1')
-// A quoted path takes the quoted attribute value's escape set (PART 4): a
-// backslash before ASCII punctuation yields it, any other pair is path text.
+// A quoted path and a quoted value take the one escape set (PART 4): a backslash
+// before ASCII punctuation yields it, any other pair stays two characters.
 const unescapePath = (raw) => raw.replace(/\\([!-/:-@[-`{-~])/g, '$1')
 
 /* `attribute_value` (PART 4): a quoted run in either quote, else the bare set. */
@@ -92,7 +103,7 @@ function readValue(inner, at) {
   if (inner[at] === '"' || inner[at] === "'") {
     const end = quotedRunEnd(inner, at)
     if (end === -1) return null
-    return { value: unescape(inner.slice(at + 1, end)), raw: inner.slice(at + 1, end), quote: inner[at], next: end + 1 }
+    return { value: unescapePath(inner.slice(at + 1, end)), raw: inner.slice(at + 1, end), quote: inner[at], next: end + 1 }
   }
   const m = UNQUOTED_VALUE.exec(inner.slice(at))
   if (!m) return null
@@ -180,6 +191,12 @@ export function findDirectives(text) {
     i = directive.end - 1
   }
   return found
+}
+
+// I1c: `@code:lang` takes a `language_info` token.
+const LANGUAGE_INFO = /^[A-Za-z0-9_+#./-]+$/
+export function hasInvalidCodeLanguage(directive) {
+  return directive.options.some(([key, value]) => key === 'code' && value !== null && !LANGUAGE_INFO.test(value))
 }
 
 // I1 rejects zero, leading zeros, and reversed physical line ranges.

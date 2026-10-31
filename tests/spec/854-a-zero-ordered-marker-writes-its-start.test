@@ -1,0 +1,19 @@
+A zero ordered marker writes its start
+
+```
+0. a
+1. b
+.
+<ol start="0">
+  <li>a</li>
+  <li>b</li>
+</ol>
+```
+
+```
+0) a
+.
+<ol start="0" data-delim=")">
+  <li>a</li>
+</ol>
+```
