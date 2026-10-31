@@ -3343,7 +3343,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // so the block's closer still finds it (PART 0 S4).
     if (inner.kind === 'fence' && inner.lineBlock && missed && form.kind === 'text' && !isBlank(lines[at - 1]) && at - 1 > inner.line) {
       frames.push(inner)
-      lead(m.col)
+      // The payload was moved by this frame's shift. A lazy follower keeps the
+      // same frame even though it stands short of the authored content column.
+      lead(Math.max(0, m.col - inner.cut))
       result.push(out + src)
       if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
       continue
