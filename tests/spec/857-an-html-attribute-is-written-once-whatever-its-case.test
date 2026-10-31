@@ -1,0 +1,74 @@
+An HTML attribute is written once, whatever its case
+
+```
+{type=text}
+a. alpha
+.
+<ol type="a">
+  <li>alpha</li>
+</ol>
+```
+
+```
+{start=9}
+3. x
+.
+<ol start="3">
+  <li>x</li>
+</ol>
+```
+
+```
+![a](/u.png){alt=z}
+.
+<img src="/u.png" alt="a">
+```
+
+```
+[a](/u "T"){TITLE=t}
+.
+<p><a href="/u" title="T">a</a></p>
+```
+
+```
+{start=9}
+1. x
+.
+<ol start="9">
+  <li>x</li>
+</ol>
+```
+
+```
+{K=1 k=2}
+para
+.
+<p K="2">para</p>
+```
+
+```
+{CLASS=z}
+::: |
+verse
+:::
+.
+<div CLASS="z line-block">
+  <p>verse</p>
+</div>
+```
+
+```
+[x]{.a CLASS=b ID=c #d}
+.
+<p><span class="a b" ID="d">x</span></p>
+```
+
+```
+|>{style="color:red"} a |
+.
+<table>
+  <tbody>
+    <tr><td style="color:red; text-align: right;">a</td></tr>
+  </tbody>
+</table>
+```

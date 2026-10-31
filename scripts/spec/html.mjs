@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { escapeAuthoredAttr, idSlot, renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { escapeAuthoredAttr, idSlot, imageStructural, linkStructural, renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -398,7 +398,7 @@ function renderBlock(b, depth, ctx) {
         // a standalone image paragraph renders as a bare <img> (PART 10)
         const image = b.blockImageHtml
         if (b.caption !== undefined) {
-          const id = / id="([^"]*)"/.exec(ba)?.[1]
+          const id = / id="([^"]*)"/i.exec(ba)?.[1]
           const cap = numberCaption(b.caption, ctx, id)
           return `${pad}<figure${ba}>\n${pad}  ${image}\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
         }
@@ -406,7 +406,7 @@ function renderBlock(b, depth, ctx) {
       }
       const html = renderInline(b.lines.join('\n'))
       if (b.caption !== undefined) {
-        const id = / id="([^"]*)"/.exec(ba)?.[1]
+        const id = / id="([^"]*)"/i.exec(ba)?.[1]
         const cap = numberCaption(b.caption, ctx, id)
         return `${pad}<figure${ba}>\n${pad}  <p>${html}</p>\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
       }
@@ -418,7 +418,7 @@ function renderBlock(b, depth, ctx) {
       const cls = b.lang ? ` class="language-${b.lang}"` : ''
       const title = b.title != null && !/ title="/.test(ba) ? ` title="${escapeAttr(b.title)}"` : ''
       if (b.caption !== undefined) {
-        const id = / id="([^"]*)"/.exec(ba)?.[1]
+        const id = / id="([^"]*)"/i.exec(ba)?.[1]
         const cap = numberCaption(b.caption, ctx, id)
         const esc0 = b.text
           .replace(/[\u202A-\u202E\u2066-\u2069\uE000\uE001\u0002]/g, '')
@@ -514,7 +514,7 @@ function renderBlock(b, depth, ctx) {
         ? `${quotePad}<blockquote${captioned ? '' : ba}>${inner}</blockquote>`
         : `${quotePad}<blockquote${captioned ? '' : ba}>\n${inner}\n${quotePad}</blockquote>`
       if (!captioned) return quote
-      const id = / id="([^"]*)"/.exec(ba)?.[1]
+      const id = / id="([^"]*)"/i.exec(ba)?.[1]
       const cap = numberCaption(b.caption, ctx, id)
       return `${pad}<figure${ba}>\n${quote}\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
     }
@@ -604,7 +604,7 @@ function renderBlock(b, depth, ctx) {
       // in source order (renderBlockAttrs already merges classes at the first
       // class position, so prepending a synthetic class list IS that rule).
       const attrStr = renderBlockAttrs([[['class', 'carve-figure-group']], ...(b.battrs ?? [])])
-      const groupId = / id="([^"]*)"/.exec(attrStr)?.[1]
+      const groupId = / id="([^"]*)"/i.exec(attrStr)?.[1]
       // panels: direct children the inner SS4 rules made captionable things
       // of -- a captioned paragraph host (image / display math / promoted
       // reference image), a captioned code listing, a captioned quote (SS4b:
@@ -619,7 +619,7 @@ function renderBlock(b, depth, ctx) {
         // ids with letters (SS4c), so number BEFORE rendering the children.
         const panelIds = b.children.filter(isPanel).map((c) => {
           const a = c.battrs ? renderBlockAttrs(c.battrs) : ''
-          return / id="([^"]*)"/.exec(a)?.[1]
+          return / id="([^"]*)"/i.exec(a)?.[1]
         })
         cap = numberCaption(b.caption, ctx, groupId, panelIds)
       }
@@ -934,14 +934,13 @@ function standaloneImage(line, ctx, blockAttrs = null) {
   }
   const structural = imageSource === line ? html : renderInline(imageSource)
   if (!IMG_ONLY.test(structural)) return null
-  const attrs = renderBlockAttrs([...blockAttrs, inlineAttrs], 'src')
+  const attrs = renderBlockAttrs([...blockAttrs, inlineAttrs], imageStructural(/ title="/.test(structural)))
   return structural.replace(/>$/, `${attrs}>`)
 }
 
 function renderList(list, depth, ctx) {
   const pad = '  '.repeat(depth)
   let tag = 'ul'
-  const authored = list.battrs || list.task ? renderBlockAttrs(withTaskListClass(list)) : ''
   // A STRUCTURAL ATTRIBUTE LEADS (PART 11 §5.1). `type` and `start` are fixed
   // by the first item's marker, so they are the element's own shape rather than
   // something added on top of what the author wrote, and they are emitted
@@ -958,6 +957,8 @@ function renderList(list, depth, ctx) {
     // trailing `type` and `start` and only where it is not the default `.`.
     if (list.ord.delim === ')') structural += ` data-delim="${escapeAttr(list.ord.delim)}"`
   }
+  const derived = !list.ord ? [] : [list.ord.type && 'type', list.ord.start != null && 'start', list.ord.delim === ')' && 'data-delim'].filter(Boolean)
+  const authored = list.battrs || list.task ? renderBlockAttrs(withTaskListClass(list), derived) : ''
   const attrs = structural + authored
   const items = list.items.map((item) => renderItem(item, list, depth + 1, ctx))
   return `${pad}<${tag}${attrs}>\n${items.join('\n')}\n${pad}</${tag}>`
@@ -1372,7 +1373,12 @@ function renderTable(node, depth, ctx) {
       const declarations = []
       if (align) declarations.push(`text-align: ${align};`)
       if (valign) declarations.push(`vertical-align: ${valign};`)
-      a += ` style="${declarations.join(' ')}"`
+      // An authored style keeps its slot and takes the declarations, as on a text block.
+      a = !/ style="/i.test(a) ? `${a} style="${declarations.join(' ')}"` : a.replace(/ (style)="([^"]*)"/i, (_, name, value) => {
+        const current = value.trim()
+        const lead = current === '' ? '' : `${current}${current.endsWith(';') ? '' : ';'} `
+        return ` ${name}="${lead}${declarations.join(' ')}"`
+      })
     }
     const content = cell.content === '' ? '' : cell.literal ? escapeHtml(cell.content) : renderInline(cell.content)
     return `<${tag}${a}>${content}</${tag}>`
@@ -1392,7 +1398,7 @@ function renderTable(node, depth, ctx) {
   }
   const out = [`${pad}<table${ba}>`]
   if (node.caption !== undefined) {
-    const id = / id="([^"]*)"/.exec(ba)?.[1]
+    const id = / id="([^"]*)"/i.exec(ba)?.[1]
     out.push(`${pad}  <caption>${renderInline(numberCaption(node.caption, ctx, id))}</caption>`)
   }
   if (attrWidths.some((width) => Number.isFinite(width) && width > 0)) {
@@ -1453,10 +1459,10 @@ function resolveImageRef(parsed, ctx, literal, blockAttrs = null) {
   if (!def) return refFrame({ opaque: true, literal: `![${escapeHtml(alt)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}` })
   const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
   const a = blockAttrs?.length
-    ? renderBlockAttrs([...blockAttrs, def.attrs ?? [], attrList ?? []], 'src')
+    ? renderBlockAttrs([...blockAttrs, def.attrs ?? [], attrList ?? []], imageStructural(t))
     : def.attrs?.length
-      ? renderBlockAttrs([def.attrs, attrList ?? []], 'src')
-      : renderAttrs(attrList ?? [], 'src')
+      ? renderBlockAttrs([def.attrs, attrList ?? []], imageStructural(t))
+      : renderAttrs(attrList ?? [], imageStructural(t))
   return `<img src="${escapeUrlAttr(def.url)}" alt="${escapeAttr(alt.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
 }
 
@@ -1517,7 +1523,7 @@ function resolveRefsOnce(html, ctx) {
       const heading = ctx.headingRefs.get(refKey(indexKey))
       if (heading !== undefined) {
         if (flat) return text
-        return `<a href="#${escapeAuthoredAttr(heading)}"${renderAttrs(attrList ?? [], 'href')}>${text}</a>`
+        return `<a href="#${escapeAuthoredAttr(heading)}"${renderAttrs(attrList ?? [], linkStructural(''))}>${text}</a>`
       }
     }
     if (!def) {
@@ -1544,8 +1550,8 @@ function resolveRefsOnce(html, ctx) {
     // link's own list through the block merge turned `{.a .a}` into
     // `class="a a"` on reference links alone.
     const a = def.attrs?.length
-      ? renderBlockAttrs([def.attrs, attrList ?? []], 'href')
-      : renderAttrs(attrList ?? [], 'href')
+      ? renderBlockAttrs([def.attrs, attrList ?? []], linkStructural(t))
+      : renderAttrs(attrList ?? [], linkStructural(t))
     return `<a href="${escapeUrlAttr(def.url)}"${t}${a}>${text}</a>`
   })
 }
@@ -1705,7 +1711,7 @@ function resolveFootnotes(html, ctx) {
         anchorIndex++
       }
       const carrier = (generatedId, n, attributes) => {
-        const authored = attributes.match(/ id="([^"]*)"/)
+        const authored = attributes.match(/ id="([^"]*)"/i)
         const id = authored ? authored[1] : generatedId
         const remaining = authored ? attributes.replace(authored[0], '') : attributes
         const ids = referenceIds.get(n) ?? []
@@ -1713,7 +1719,7 @@ function resolveFootnotes(html, ctx) {
         referenceIds.set(n, ids)
         return anchorDepth > 0
           ? `<sup id="${id}"${remaining}>${n}</sup>`
-          : `<a id="${id}" href="#fn${n}" role="doc-noteref"${remaining}><sup>${n}</sup></a>`
+          : `<a id="${id}" href="#fn${n}" role="doc-noteref"${remaining.replace(/ (?:href|role)="[^"]*"/gi, '')}><sup>${n}</sup></a>`
       }
       if (json !== undefined) {
         let parsed
