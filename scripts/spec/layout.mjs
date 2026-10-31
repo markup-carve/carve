@@ -3596,7 +3596,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
           // A `+` and a fence payload still read the body column (carve#4409).
           for (let k = depth; k < frames.length; k++) {
             if (frames[k].markerCol === undefined) continue
-            frames[k].markerCol -= measured - start
             frames[k].sourceShift = measured - start
           }
           return

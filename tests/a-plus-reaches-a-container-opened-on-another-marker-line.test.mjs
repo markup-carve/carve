@@ -15,8 +15,10 @@ test('an item on a description marker line takes the block after its +', () => {
   assert.match(compact(render(':: t\n: - a\n  +\n  p\n')), /<dd><ul><li>a p ?<\/li><\/ul><\/dd>/)
 })
 
-test('an item on a note marker line reads its + at the note body column', () => {
-  assert.match(compact(render('[^n]: - a\n  +\n  p\n\nr[^n]\n')), /<li id="fn1"><ul><li>a p ?<\/li><\/ul>/)
+// carve#4623: the item's authored marker column, not the note's body column.
+test('an item on a note marker line reads its + at its own marker column', () => {
+  assert.match(compact(render('[^n]: - a\n      +\n      p\n\nr[^n]\n')), /<li id="fn1"><ul><li>a p ?<\/li><\/ul>/)
+  assert.match(compact(render('[^n]: - a\n  +\n  p\n\nr[^n]\n')), /<li id="fn1"><ul><li>a \+ p<\/li><\/ul>/)
 })
 
 test('a note on an item marker line takes the block after its +', () => {

@@ -67,3 +67,5 @@
 847-a-padded-plus-after-a-quote-marker-is-the-quote-s-text-3  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
 868-a-line-below-a-note-div-past-a-closed-block-leaves-the-note  The pinned writer spells the empty item as a + the one attach rule refuses (carve#4409).
 868-a-separator-below-a-term-in-a-note-item-stays-term-text  The pinned writer spells the empty outer item as a + the one attach rule refuses (carve#4409) and writes the folded term line outside the note.
+868-a-plus-at-the-column-of-a-container-opened-on-another-marker-line-attaches-the-next-block-2  The pinned writer spells the + under a note's marker-line item at the note's body column, which the carve#4623 ruling refuses; it belongs at the item's authored marker column.
+873-an-item-on-a-note-marker-line-takes-its-plus-at-its-own-marker-column  The pinned writer spells the + under a note's marker-line item at the note's body column, which the carve#4623 ruling refuses; it belongs at the item's authored marker column.

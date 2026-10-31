@@ -1,1 +1,0 @@
-The pinned carve-js refuses the plus in the note's marker-line item (markup-carve/carve#4359); the spec model is correct.

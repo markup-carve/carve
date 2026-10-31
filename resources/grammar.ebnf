@@ -6273,7 +6273,9 @@ EOF = (* end of file *) ;
          quotes, definition bodies and footnote bodies all use this one test.
          The marker's host is the innermost opener on its marker line, or for
          a `+` on its own line the open container whose marker column it stands
-         at. The marker attaches the next line's block when all of these hold:
+         at. A child opened on a note's marker line stands at its authored
+         marker column (CARVE-P9-083), not at the note's body column. The
+         marker attaches the next line's block when all of these hold:
 
          - that line is not blank, and a line of nothing but quote markers
            counts as blank;
