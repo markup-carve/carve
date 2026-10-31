@@ -65,3 +65,5 @@
 652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column-3  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
 801-a-footnote-body-refuses-a-first-block-at-its-body-column-8  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
 847-a-padded-plus-after-a-quote-marker-is-the-quote-s-text-3  The pinned writer spells a + the one attach rule refuses (carve#4409): the pin writes the empty body or the follower as it read them before
+868-a-line-below-a-note-div-past-a-closed-block-leaves-the-note  The pinned writer spells the empty item as a + the one attach rule refuses (carve#4409).
+868-a-separator-below-a-term-in-a-note-item-stays-term-text  The pinned writer spells the empty outer item as a + the one attach rule refuses (carve#4409) and writes the folded term line outside the note.
