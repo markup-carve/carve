@@ -20,8 +20,8 @@ A plus at the column of a container opened on another marker line attaches the n
 
 ```
 [^n]: - a
-  +
-  p
+      +
+      p
 
 r[^n]
 .

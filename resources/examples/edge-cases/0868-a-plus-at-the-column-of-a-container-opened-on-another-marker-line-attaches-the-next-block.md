@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A plus at the column of a container opened on another marker line attaches the next block
 
-PART 9 §17 L3 and CARVE-P0-024 S3 (carve#4359). A lone `+` at the marker column of an item or note opened on a description's or item's marker line gives that container its next block.
+PART 9 §17 L3 and CARVE-P0-024 S3 (carve#4359). A lone `+` at the marker column of an item or note opened on a description's, item's or note's marker line gives that container its next block. An item on a note's marker line stands at its authored marker column (carve#4623).
 
 :::::: compare
 
@@ -34,8 +34,8 @@ PART 9 §17 L3 and CARVE-P0-024 S3 (carve#4359). A lone `+` at the marker column
 
 `````carve
 [^n]: - a
-  +
-  p
+      +
+      p
 
 r[^n]
 `````
