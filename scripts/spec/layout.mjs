@@ -67,22 +67,39 @@ function includeColumns(raw, quote, rows, headerRows) {
   return columns
 }
 
+// A marker's match, false for a malformed marker, null for any other line (I1b).
+function regionMarker(sourceLine) {
+  const line = sourceLine.replace(/^[ \t]*/, '')
+  let body = line
+  let closer = ''
+  if (line.startsWith('%%') && !line.startsWith('%%%')) body = line.slice(2)
+  else if (line.startsWith('//') || line.startsWith('--')) body = line.slice(2)
+  else if (line.startsWith('/*')) { body = line.slice(2); closer = '\\*/' }
+  else if (line.startsWith('<!--')) { body = line.slice(4); closer = '-->' }
+  body = body.replace(/^[ \t]*/, '')
+  if (!/^#(?:end)?region(?![A-Za-z0-9_])/.test(body)) return null
+  return new RegExp(`^#(end)?region(?:[ \\t]+([A-Za-z_][\\w-]*))?[ \\t]*${closer}[ \\t]*$`).exec(body) ?? false
+}
+
+// A well-formed marker line is no record of a table include, so it holds no row
+// and no header slot. A marker-shaped line inside a quoted field is the field's text.
+function recordsWithoutRegionMarkers(records, source) {
+  if (!records) return records
+  const lines = source.split('\n')
+  return records.filter((record) => {
+    const marker = record.line === record.endLine && regionMarker(lines[record.line - 1])
+    return !marker || !(marker[1] || marker[2])
+  })
+}
+
 function includeRegion(lines, selected) {
   if (!/^[A-Za-z_][A-Za-z0-9_-]*$/.test(selected ?? '')) return null
   const seen = new Set()
   const stack = []
   let range = null
   for (const [index, sourceLine] of lines.entries()) {
-    const line = sourceLine.replace(/^[ \t]*/, '')
-    let body = line
-    let closer = ''
-    if (line.startsWith('%%') && !line.startsWith('%%%')) body = line.slice(2)
-    else if (line.startsWith('//') || line.startsWith('--')) body = line.slice(2)
-    else if (line.startsWith('/*')) { body = line.slice(2); closer = '\\*/' }
-    else if (line.startsWith('<!--')) { body = line.slice(4); closer = '-->' }
-    body = body.replace(/^[ \t]*/, '')
-    if (!/^#(?:end)?region(?![A-Za-z0-9_])/.test(body)) continue
-    const marker = new RegExp(`^#(end)?region(?:[ \\t]+([A-Za-z_][\\w-]*))?[ \\t]*${closer}[ \\t]*$`).exec(body)
+    const marker = regionMarker(sourceLine)
+    if (marker === null) continue
     if (!marker) return null
     const name = marker[2]
     if (marker[1]) {
@@ -4387,8 +4404,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         let valid = (!linesRange || linesRange[0] <= BigInt(physicalLines.length)) && (!options.has('region') || regionRange !== null)
         if (tableInclude && valid) {
           const separator = lang === 'csv' ? ',' : '\t'
-          const records = delimitedRecords(content, separator)
-          const selectedRecords = linesRange || regionRange ? delimitedRecords(selectedText, separator) : records
+          const records = recordsWithoutRegionMarkers(delimitedRecords(content, separator), content)
+          const selectedRecords = linesRange || regionRange ? recordsWithoutRegionMarkers(delimitedRecords(selectedText, separator), selectedText) : records
           const headerAttr = attrs.findLast(a => a[1] === 'header-rows' && (a[0] === 'kv' || a[0] === 'bool'))
           const headerRows = delimitedRowCount(headerAttr?.[0] === 'bool' ? '' : headerAttr?.[2]) ?? 1
           const allRows = records?.map(record => record.cells) ?? null
