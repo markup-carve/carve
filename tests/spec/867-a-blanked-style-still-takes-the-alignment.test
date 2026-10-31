@@ -1,0 +1,28 @@
+A blanked style still takes the alignment
+
+```
+{style="url(x)" align=right}
+p
+.
+<p style="text-align: right;">p</p>
+```
+
+```
+{style="url(x)" align=center}
+# h
+.
+<section id="h">
+  <h1 style="text-align: center;">h</h1>
+</section>
+```
+
+```
+{style="url(x)" align=left}
+::: d
+q
+:::
+.
+<div class="d" style="text-align: left;">
+  <p>q</p>
+</div>
+```
