@@ -1886,8 +1886,8 @@ const dropCloneIds = (html) => html.split(RAW_FRAME)
 function resolveCrossrefs(html, ctx) {
   return html.replace(/xref(text)?:(.*?)/g, (_, textOnly, id) => {
     const key = id.normalize('NFC')
-    const hit = ctx.headingIds.get(key)
-    if (!hit) {
+    const source = ctx.headingIds.get(key)
+    if (!source) {
       // A reference in the label is still a frame: refs resolved before this pass.
       const target = ctx.captionIds.get(key)
       const cap = target ? resolveRefs(target.label, ctx) : undefined
@@ -1898,20 +1898,22 @@ function resolveCrossrefs(html, ctx) {
       const esc = id.replace(/[\u202A-\u202E\u2066-\u2069]/g, '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
       return `&lt;/#${esc}&gt;`
     }
-    // ONE LEVEL (R4): the cloned text is not re-expanded, so every PART 9R
-    // frame in it is dropped rather than resolved a second time.
+    // ONE LEVEL (R4): an inner crossref contributes its target's inline
+    // content, but frames in that target are not expanded again. This also
+    // bounds self-references and mutual cycles.
     //
-    // ALL THREE FRAMES, not the crossref alone. A heading is stored here as
-    // rendered HTML before any resolution pass runs, so it can still hold a
-    // footnote reference or an inline note, and only the crossref frame was
-    // being removed - the other two rode into the reader's HTML as the framing
-    // text `fn:1` and `note:...`, which is the one thing this pipeline must
-    // never emit. The heading's own derived text already excludes exactly
-    // these three (see `derivedText`), and R4 binds every consumer that derives
-    // display text from a heading to the same clone, so the two derivations
-    // agree rather than differing by which frame each remembered to strip.
+    // Footnote and note frames still drop. The heading is stored as HTML
+    // before resolution and may still contain those frames. They must not
+    // reach the output as framing text. The inner crossref alone contributes
+    // its target's visible text.
     // The clone lands inside a link, and a link holds no link.
     // A reference link in it flattens to its text like a caption label's.
+    const hit = { ...source, html: source.html.replace(/\uE000xref(?:text)?:(.*?)\uE001/g, (_frame, innerId) => {
+      const inner = ctx.headingIds.get(innerId.normalize('NFC'))
+      if (!inner) return resolveCrossrefs(`\uE000xreftext:${innerId}\uE001`, ctx)
+      // The target's own frames do not expand, even in a cycle.
+      return inner.html.replace(/\uE000(?!ref:|\uE001)[\s\S]*?\uE001/g, '')
+    }) }
     const text = resolveRefs(flattenInnerLinks(hit.html).replace(/\uE000(?!ref:|\uE001)[\s\S]*?\uE001/g, ''), ctx)
     return textOnly ? text : `<a href="#${hit.id}">${text}</a>`
   })
