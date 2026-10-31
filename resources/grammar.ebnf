@@ -400,7 +400,9 @@
         only when it matches the open list on every §11 N1 axis (bullet
         character, ordered type, delimiter, plain or task); any other marker
         there is text of the open paragraph, so `- a` / ` - [ ] b` and
-        `1. a` / ` a. b` fold like `- a` / ` * b` (carve#4545). Headings,
+        `1. a` / ` a. b` fold like `- a` / ` * b` (carve#4545). The same test holds
+        left of the marker column while the line is past the owner's content
+        column: `  - a` / ` * b` folds and `  - a` / ` - b` is a sibling. Headings,
         thematic breaks, quotes, terms, tables, valid colon openers, code and
         raw openers, comments, attributes and definitions interrupt. An invalid opener is text. A fold closes
         nothing and changes the leaf operation, never which container
@@ -564,7 +566,8 @@ frontmatter = frontmatter_open, frontmatter_content, frontmatter_close ;
 (* An optional format token names the frontmatter dialect; bare `---` means
    yaml. Its padding slot is exactly one space (CARVE-P7-002):
    `---<TAB>yaml` and `---<SP><SP>yaml` are text. A trailing tab with no token
-   is removed under CARVE-P2-025. The closer is a bare `---`. *)
+   is removed under CARVE-P2-025. The closer is a bare `---`, and trailing
+   whitespace on it is removed the same way. *)
 frontmatter_open = "---", [space], [frontmatter_format], newline ;
 frontmatter_close = "---", (newline | EOF) ;
 frontmatter_format = (letter | digit)+ ;
@@ -1186,13 +1189,14 @@ task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
 
 (* --- Definition Lists --- *)
 definition_list = definition_entry+ ;
-definition_entry = definition_term+, [[blank_line], definition_body,
-                   {[blank_line], definition_body}] ;
-(* A blank line may separate a term from its definition, and one definition
-   from the next, for readability -- the blank is a separator only (djot
-   parity). A blank NOT followed by a `: ` definition ends the entry. The
-   bodies are optional: `:: t` alone is a definition list holding one term and
-   no description (PART 0 FAMILIES, [B-term-start]). *)
+definition_entry = definition_term+, [{blank_line}, definition_body,
+                   {{blank_line}, definition_body}] ;
+(* Any run of blank lines may separate a term from its definition, one
+   definition from the next, and one entry from the next, for readability --
+   the run is a separator only (djot parity), and a definition list has no
+   three-blank boundary. A blank NOT followed by a `: ` definition ends the
+   entry. The bodies are optional: `:: t` alone is a definition list holding
+   one term and no description (PART 0 FAMILIES, [B-term-start]). *)
 definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
@@ -1612,7 +1616,8 @@ admonition = admonition_open, newline,
    a straight double quote, `{`, `[`, or a curly double quote. Recovery is
    confined to one source line. It reports fence-title-syntax, drops all opener metadata, and parses the children as
    blocks through the matching-width closer: `::: note {.x}` opens
-   the `note` container with no metadata. This recovery does
+   the `note` container with no metadata. A recovered opener is not bare, so
+   `::: figure {.x}` is a Tier-2 `figure` div and no figure group. This recovery does
    not admit a bare title as valid syntax. An unrecognized fence/type prefix
    remains paragraph text.
    Class/id/data-* attach via a PRECEDING block-attribute line, which floats
@@ -1622,8 +1627,9 @@ admonition = admonition_open, newline,
      - HEADER ("...") -- the visible admonition title (`<p
        class="admonition-title">`, or `<summary>` under the details
        extension). Unchanged role.
-     - LABEL ([...]) -- a short grouping identifier; core ignores it standalone,
-       a group extension (e.g. tabs) uses it as the tab label. This is the
+     - LABEL ([...]) -- a short grouping identifier; with no group extension it
+       renders as `<p class="div-label">`, and a group extension (e.g. tabs)
+       uses it as the tab label. This is the
        canonical replacement for the tabs `{label="..."}` / inner-heading
        convention (those stay supported, deprecated). The `selected`
        default-tab marker is NOT a label -- it remains a boolean attribute on
@@ -2467,7 +2473,9 @@ reference_image = '!', '[', alt_text, ']', '[', reference_label, ']', [attribute
 collapsed_reference_image = '!', '[', alt_text, ']', '[', ']', [attribute_run] ;
 alt_text = {character} ;
 (* SEMANTIC CONSTRAINT: the alt text ends at the matching `]` -- THE SAME
-   close as `link_text`, balanced-bracket, escape- and LITERAL-SPAN-aware. Not
+   close as `link_text`, balanced-bracket, escape- and LITERAL-SPAN-aware,
+   except that `{% %}` is not skipped. An image whose close leaves no
+   destination or reference tail is declined, and its `!` is text. Not
    expressible context-free, which is why this production reads `{character}`
    and defers to the constraint.
 
@@ -2479,7 +2487,7 @@ alt_text = {character} ;
    non-punctuation character stays literal. Nested links, images and literal
    span delimiters contribute text rather than elements; escape decoding does
    not invoke inline parsing. The matching close uses
-   `link_text`; the value remains scalar. *)
+   `link_text`, less the `{% %}` skip above; the value remains scalar. *)
 image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;
 (* A reference image resolves under PART 9R R1, taking the definition's
@@ -2504,8 +2512,9 @@ math_display = "$$", code_span ;
    parse a trailing attribute block and APPLY it to the math span, merging
    classes into the existing `math inline` / `math display` class
    (`<span class="math inline c">`); `#id` / `key=value` are applied too.
-   The `{=format}` raw form is code-span-ONLY and is NOT inherited by math:
-   `$\`x\`{=html}` leaves the `{=html}` literal.
+   The `{=format}` raw form is code-span-ONLY and is NOT inherited by math or
+   an inline literal: `$\`x\`{=html}` and `!\`x\`{=html}` leave the `{=html}`
+   literal.
    The math content is the verbatim text of the reused code_span. *)
 
 (* --- Emphasis. PART 9 §9 (CARVE-P9-043) is the one inline pairing
@@ -3204,7 +3213,8 @@ class_attribute = '.', explicit_identifier ;
    class, the way HTML reads a `class` attribute, so the CARVE-P4-002 dedup
    compares tokens: `{class="a b" .a}` parses to the classes `a`, `b` and
    renders `class="a b"`. A value that holds no token
-   (`class=""`, `class=" "`) stays one entry holding the value as authored. Each token is an authored value of its
+   (`class=""`, `class=" "`) stays one entry holding the value as authored,
+   joined to the others by one space: `{class=" " .a}` renders `class="  a"`. Each token is an authored value of its
    own for CARVE-P9-054.
    An `id` key spells the id slot the same way when an element renders: `{#i id=j}`
    gives one `id`, the last value at the first position, and `{id=q}` takes the
@@ -3231,7 +3241,10 @@ boolean_attribute = identifier - ('_', {character}) ;
 
    `body-rows`, `body-header-rows` and `body-header-cols` (PART 12 §15),
    and `aligns`, `valigns` and `widths` (PART 12 §19) are the same class in
-   key/value form. Every other name reaches the output as the attribute it is,
+   key/value form. On an ordinary span, `abbr`, `time` and `kbd` are consumed
+   into an element (CARVE-P10-003), and on a text block `align` becomes a
+   style (PART 10 §1).
+   Every other name reaches the output as the attribute it is,
    and each of these does too on a block that has nothing to consume it: the
    name is not reserved, it is read by the block below it. *)
 (* A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE -- NORMATIVE [CARVE-P4-005].
@@ -3634,9 +3647,11 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       The directive's caption slot attaches to the resulting table (I1c).
       If delimited quoting is malformed, the include falls back to a code
       block holding the selected source, the full source when nothing selects,
-      with `delimited-table-malformed` as usual. Malformed quoting is
-      decided first, so `@rows` selects nothing there: the fallback holds the
-      full source and reports no `include-rows-out-of-range`. Markdown
+      with `delimited-table-malformed` as usual. An invalid `@rows` or `@lines`
+      value, an out-of-range `@lines` and a missing region are refused first
+      and stay literal. Malformed quoting is decided next, so a valid `@rows`
+      selects nothing there: the fallback holds the full source and reports no
+      `include-rows-out-of-range`. Markdown
       export writes the selected cells in order as a plain GFM pipe table;
       a caption becomes a following paragraph.
 
@@ -3655,7 +3670,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       this boundary. An unresolved or refused directive, or one with no
       resolver, stays literal as its own paragraph, in I7's sense: its
       source text with no inline parse of its tokens, so `{{ _a_ @code:js }}`
-      keeps its underscores. The following caption line is an ordinary
+      keeps its underscores. A quoted path keeps its core inline reading, so
+      `{{ "_a_" @code:js }}` has an underlined span (corpus 725). The following caption line is an ordinary
       paragraph. A Carve-content include without `@code`
       keeps the block/inline behavior above.
 
@@ -4020,7 +4036,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
         (CommonMark tab stops), so a leading tab indents to column 4.
      3. FROM THE FIRST NON-WHITESPACE CHARACTER of a line onward, a tab is
         CONTENT and never syntax. It satisfies no slot in any production, and
-        no construct is recognized by it. A flank test that reads a tab as a
+        no construct is recognized by it. A line block's medial tab is counted
+        in columns toward a gap (PART 9 §23). A flank test that reads a tab as a
         neighbor (`typography_flank`, PART 3) classifies that neighbor; it
         recognizes nothing.
      4. INSIDE VERBATIM CONTENT -- fenced code and inline code spans -- a tab
@@ -4065,9 +4082,9 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
        `definition_term` and the three definition markers already carry that
        spelling; the prose is at MARKER REQUIRES CONTENT (PART 2) and at
        `abbreviation_definition`. The colon fence joins them: `:::` +
-       separator + (`note` | `|` | `\` | `[label]`)
-       decides between an admonition, a line block, a local hard-break block
-       and a div, so the separator is part of recognizing the block.
+       separator + (`note` | `|` | `\` | `>` | `figure` | `[label]`)
+       decides between an admonition, a line block, a local hard-break block,
+       a quote block, a figure group and a div, so the separator is part of recognizing the block.
 
      - A PADDING SLOT is whitespace between two tokens on a line whose
        construct is ALREADY fixed. It carries no recognition and its width
@@ -4085,7 +4102,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
      The two fence openers land on opposite sides of the ROLE line, so state
      it once: a COLON fence's slot is a separator, because `note` / `|` / `\`
-     / `[label]` after it pick one of four blocks; a CODE fence's slot is
+     / `>` / `figure` / `[label]` after it pick one of six blocks; a CODE fence's slot is
      padding, because the fence run already picked the block. Both are
      `space`. So is `raw_block`'s otherwise identical slot, which is a
      separator because the `=` after it selects a raw block over a code
@@ -4102,7 +4119,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    Cardinality is a separate question from the terminal: a slot spelled
    `space` admits exactly one character, and a `space+` run admits one or
-   more. Both spellings are used deliberately and the difference is
+   more. The colon openers' separator is the one exception: its `space` is the
+   first of a run (PART 2, `:::  note`). Both spellings are used deliberately and the difference is
    observable, so read the production rather than the role. Four slots are
    spelled `space` -- `link_title` (hence `image_title`), the code fence's
    opener slot, `frontmatter_open`'s, and the reference definition's slot
@@ -4234,7 +4252,8 @@ EOF = (* end of file *) ;
       lists)
    9. Tables (| prefix)
    10. Colon fences (::: -- admonition with type word, line block with |,
-       local hard-break block with \, generic div when bare; longest-token
+       local hard-break block with \, quote block with >, figure group with
+       figure, generic div when bare; longest-token
        wins: a `::: x` line is never a `:: ` definition term)
    11. Paragraphs (everything else)
    Recognition order is NOT interruption: which of these may interrupt an
@@ -4454,7 +4473,8 @@ EOF = (* end of file *) ;
          `table` node rather than a `code_block`. The flag is consumed; other
          table attributes, including `header-rows`, `footer-rows`, `aligns`,
          `valigns` and `widths`, apply to that table. An unmarked fence stays
-         code. A title or label on the fence has no table slot and is
+         code. On any other block, or where no table results, `table` is an
+         ordinary attribute (`<pre table="">`, `<p table="">`). A title or label on the fence has no table slot and is
          discarded. A caption after the fence becomes the table's caption and is
          numbered by its own label. An empty-valued `table=""` is
          equivalent to the boolean flag under the attribute rules.
@@ -5301,7 +5321,9 @@ EOF = (* end of file *) ;
       I2 LIST MARKERS NEVER INTERRUPT (symmetric). NEITHER a bullet
          (`- `/`* `, `- [x] ` task) NOR an ordered marker (decimal, letter,
          roman, any value) interrupts: the line FOLDS into P as lazy
-         continuation; a list needs a blank line before it (matching Djot).
+         continuation; a list needs a blank line before it (matching Djot). The
+         one exception is the sibling of an open list (PART 0 S4): `- a` / `- b`
+         gives two items.
          "Liste: \n - eins \n - zwei" is ONE paragraph, so is
          "x = 5 \n * 3 + 17"; a blank line starts the list.
          TIGHT NESTED LISTS UNAFFECTED:
@@ -5380,7 +5402,8 @@ EOF = (* end of file *) ;
          PARAGRAPH (CARVE-P0-010). The next nonblank line therefore stays in
          the item only if it reaches content_column and opens item prose. A
          footnote definition's own extent is CARVE-P0-012; a line one column
-         short of its body is item prose. The bare decimal-dot marker `. `
+         short of its body is item prose, unless it folds into the note's open
+         paragraph (PART 0 S4). The bare decimal-dot marker `. `
          claims one marker column and one separator column, so its
          content_column is the same as `- `. Pinned by corpus 374.
       I6 SCOPE. The relation applies to EVERY open
@@ -5630,9 +5653,11 @@ EOF = (* end of file *) ;
         WORD, drawn from the `labels` map (§16a) rather than fixed English:
             <aside class="admonition note" aria-label="Note">
 
-        The minted id starts at `adm-{n}`, n counting Tier-1 titled blocks in
-        rendered order from 1, so an endnote body counts after later body
-        blocks. Reserve explicit and automatic heading ids
+        The minted id starts at `adm-{n}`, n counting from 1 the Tier-1 titled
+        blocks of the body and a placed directive's title in document order,
+        then those of endnote bodies in definition order, so an endnote body
+        counts after later body blocks even where a `::: footnotes` marker
+        renders it before them. Reserve every rendered explicit id and every automatic heading id
         first, then add a duplicate suffix (`adm-1-2`, `adm-1-3`, ...) until
         the minted id is unused. Titled nameable directives use this same
         sequence (CARVE-P9-072).
@@ -5744,7 +5769,7 @@ EOF = (* end of file *) ;
       - HEADINGS INSIDE CONTAINERS DO NOT WRAP. The algorithm walks
         TOP-LEVEL blocks (and the sections it opens), so a heading
         inside a blockquote, div, admonition, list item, definition,
-        table cell, or footnote definition emits a bare `<h* id="...">`
+        or footnote definition emits a bare `<h* id="...">`
         with the id ON THE HEADING and no `<section>` around it. A
         `<section>` models THIS document's outline: quoted material
         carries another document's outline, and a div or list item is
@@ -5911,8 +5936,9 @@ EOF = (* end of file *) ;
            the earlier block's, which is what makes stacking work. A class
            already present is not added twice, in one block or across
            several.
-         Worked djot-canonical example: {#id} {key=val} {.foo .bar}
-         {key=val2} {.baz} {#id2} then "Okay" ->
+         Worked djot-canonical example: the lines {#id}, {key=val},
+         {.foo .bar}, {key=val2}, {.baz} and {#id2}, each on its own line,
+         then "Okay" ->
          <p id="id2" key="val2" class="foo bar baz">Okay</p>.
 
       A4 DROP IF DANGLING -- NORMATIVE [CARVE-P9-024]. pending with no following block
@@ -6217,7 +6243,8 @@ EOF = (* end of file *) ;
          list) does NOT loosen: the item
          stays tight, lead text inline, block attached. Only a genuine
          second PARAGRAPH (blank + indented plain prose), or a blank line
-         BETWEEN items, loosens. The blank line is still required to START
+         BETWEEN items, loosens. An image-only or display-math paragraph counts
+         as a paragraph here, promoted or captioned (corpus 618). The blank line is still required to START
          the block, so recognition and the uniformity principle are
          unchanged -- only the tight/loose RENDERING differs (djot renders
          these loose). Pinned by corpus compact-list-blocks.
@@ -6340,7 +6367,8 @@ EOF = (* end of file *) ;
 
          "No trace" describes output, not block structure. I5 still interrupts
          the open paragraph without a blank, so following plain text starts a
-         new block. L1/L2 govern its rendering: without a loosening blank the
+         new block, unless the definition is a footnote whose own paragraph is
+         open: that paragraph takes the line as a fold (PART 0 S4). L1/L2 govern its rendering: without a loosening blank the
          item stays tight and every paragraph, including the new one, renders
          bare. A definition between two item paragraphs therefore leaves two
          bare paragraph blocks; it neither merges them nor loosens the item.
@@ -6941,9 +6969,10 @@ EOF = (* end of file *) ;
         MATHEMATICAL SPACE (U+205F), IDEOGRAPHIC SPACE (U+3000), the
         line/paragraph separators (U+2028 / U+2029), and the BOM (U+FEFF) --
         before matching the scheme, so an obfuscated `<U+202F>javascript:`
-        destination cannot slip past the denylist. The corpus pins the
-        U+202F case (resources/examples/edge-cases/ "Scheme probe strips Unicode
-        whitespace").
+        destination cannot slip past the denylist. A link
+        destination cannot hold such a character (PART 3), so only an attribute
+        value reaches this strip; the corpus row "Scheme probe strips Unicode
+        whitespace" pins that a reference definition cannot hand one over.
 
         The probe does not strip the wider `Cf` category.
         A `data:` exception for images, if offered, MUST be opt-in. An
@@ -7099,7 +7128,9 @@ EOF = (* end of file *) ;
           an unresolved reference likewise renders its literal source.
         - REFUSE the whole operation with a typed failure, as the render
           ceiling below requires.
-        A returned document MUST NOT lack text the author typed.
+        A returned document MUST NOT lack text the author typed. An unresolved
+        footnote reference's attribute run is consumed (PART 9R R2), which is
+        that construct's rule and not such a bound.
 
         THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP -- NORMATIVE
         [CARVE-P9-078]. Over-cap flattening owes it no spellable tree: the
@@ -7286,7 +7317,8 @@ EOF = (* end of file *) ;
       whitespace of this language is exactly U+0020, U+0009, U+000A and
       U+000D. EVERY OTHER C0 CONTROL -- U+0001..U+0008, U+000B, U+000C,
       U+000E..U+001F -- is ordinary CONTENT: it parses as content, it
-      survives into the AST, and it satisfies no whitespace slot anywhere.
+      survives into the AST, and it satisfies no whitespace slot anywhere
+      outside a destination's marked wider notion (CARVE-P7-003).
       The rows below say what happens to ALL of them on each target. Naming
       only the vertical tab and the form feed, because those are the two the
       whitespace clause happens to mention, would leave the rest to habit,
@@ -7464,7 +7496,7 @@ EOF = (* end of file *) ;
 
    The two-pass model (PART 8 "first pass"): PASS 1 collects definitions
    while blocks are parsed; PASS 2 resolves inline uses. A definition may
-   appear before or after its use. Expansion follows PART 9 §25 RESOURCE BOUNDS. Definitions are collected even
+   appear before or after its use. Expansion follows PART 9 §25 RESOURCE BOUNDS. Link and footnote definitions are collected even
    inside a block-level container, which then renders as though the
    definition line were never written (PART 9 §17 L6 states the general
    rule once, for every container that can hold one; CARVE-P9-025; corpus "Footnote
@@ -7894,7 +7926,8 @@ EOF = (* end of file *) ;
 
       THE RANK IS PROVENANCE, NOT THE ATTRIBUTE'S NAME. An id the author wrote
       keeps its authored position; an id the engine minted follows the
-      authored run. An element with no effective attributes emits none.
+      authored run. A footnote reference is the exception: its id, minted or
+      authored, leads before `href` (corpus 475). An element with no effective attributes emits none.
 
       A top-level heading's id moves to <section> and its other attributes do
       not (CARVE-P9-019); with the `sections` option off, or for a heading

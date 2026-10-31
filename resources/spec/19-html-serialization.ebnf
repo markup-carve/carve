@@ -80,7 +80,8 @@
 
       THE RANK IS PROVENANCE, NOT THE ATTRIBUTE'S NAME. An id the author wrote
       keeps its authored position; an id the engine minted follows the
-      authored run. An element with no effective attributes emits none.
+      authored run. A footnote reference is the exception: its id, minted or
+      authored, leads before `href` (corpus 475). An element with no effective attributes emits none.
 
       A top-level heading's id moves to <section> and its other attributes do
       not (CARVE-P9-019); with the `sections` option off, or for a heading

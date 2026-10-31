@@ -4,7 +4,7 @@
 
    The two-pass model (PART 8 "first pass"): PASS 1 collects definitions
    while blocks are parsed; PASS 2 resolves inline uses. A definition may
-   appear before or after its use. Expansion follows PART 9 §25 RESOURCE BOUNDS. Definitions are collected even
+   appear before or after its use. Expansion follows PART 9 §25 RESOURCE BOUNDS. Link and footnote definitions are collected even
    inside a block-level container, which then renders as though the
    definition line were never written (PART 9 §17 L6 states the general
    rule once, for every container that can hold one; CARVE-P9-025; corpus "Footnote

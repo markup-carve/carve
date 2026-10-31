@@ -432,9 +432,10 @@
         MATHEMATICAL SPACE (U+205F), IDEOGRAPHIC SPACE (U+3000), the
         line/paragraph separators (U+2028 / U+2029), and the BOM (U+FEFF) --
         before matching the scheme, so an obfuscated `<U+202F>javascript:`
-        destination cannot slip past the denylist. The corpus pins the
-        U+202F case (resources/examples/edge-cases/ "Scheme probe strips Unicode
-        whitespace").
+        destination cannot slip past the denylist. A link
+        destination cannot hold such a character (PART 3), so only an attribute
+        value reaches this strip; the corpus row "Scheme probe strips Unicode
+        whitespace" pins that a reference definition cannot hand one over.
 
         The probe does not strip the wider `Cf` category.
         A `data:` exception for images, if offered, MUST be opt-in. An
@@ -590,7 +591,9 @@
           an unresolved reference likewise renders its literal source.
         - REFUSE the whole operation with a typed failure, as the render
           ceiling below requires.
-        A returned document MUST NOT lack text the author typed.
+        A returned document MUST NOT lack text the author typed. An unresolved
+        footnote reference's attribute run is consumed (PART 9R R2), which is
+        that construct's rule and not such a bound.
 
         THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP -- NORMATIVE
         [CARVE-P9-078]. Over-cap flattening owes it no spellable tree: the

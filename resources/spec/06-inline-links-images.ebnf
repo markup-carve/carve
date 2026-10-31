@@ -566,7 +566,9 @@ reference_image = '!', '[', alt_text, ']', '[', reference_label, ']', [attribute
 collapsed_reference_image = '!', '[', alt_text, ']', '[', ']', [attribute_run] ;
 alt_text = {character} ;
 (* SEMANTIC CONSTRAINT: the alt text ends at the matching `]` -- THE SAME
-   close as `link_text`, balanced-bracket, escape- and LITERAL-SPAN-aware. Not
+   close as `link_text`, balanced-bracket, escape- and LITERAL-SPAN-aware,
+   except that `{% %}` is not skipped. An image whose close leaves no
+   destination or reference tail is declined, and its `!` is text. Not
    expressible context-free, which is why this production reads `{character}`
    and defers to the constraint.
 
@@ -578,7 +580,7 @@ alt_text = {character} ;
    non-punctuation character stays literal. Nested links, images and literal
    span delimiters contribute text rather than elements; escape decoding does
    not invoke inline parsing. The matching close uses
-   `link_text`; the value remains scalar. *)
+   `link_text`, less the `{% %}` skip above; the value remains scalar. *)
 image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;
 (* A reference image resolves under PART 9R R1, taking the definition's

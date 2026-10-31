@@ -236,7 +236,8 @@
          list) does NOT loosen: the item
          stays tight, lead text inline, block attached. Only a genuine
          second PARAGRAPH (blank + indented plain prose), or a blank line
-         BETWEEN items, loosens. The blank line is still required to START
+         BETWEEN items, loosens. An image-only or display-math paragraph counts
+         as a paragraph here, promoted or captioned (corpus 618). The blank line is still required to START
          the block, so recognition and the uniformity principle are
          unchanged -- only the tight/loose RENDERING differs (djot renders
          these loose). Pinned by corpus compact-list-blocks.
@@ -359,7 +360,8 @@
 
          "No trace" describes output, not block structure. I5 still interrupts
          the open paragraph without a blank, so following plain text starts a
-         new block. L1/L2 govern its rendering: without a loosening blank the
+         new block, unless the definition is a footnote whose own paragraph is
+         open: that paragraph takes the line as a fold (PART 0 S4). L1/L2 govern its rendering: without a loosening blank the
          item stays tight and every paragraph, including the new one, renders
          bare. A definition between two item paragraphs therefore leaves two
          bare paragraph blocks; it neither merges them nor loosens the item.

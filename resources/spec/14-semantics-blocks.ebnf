@@ -263,7 +263,9 @@
       I2 LIST MARKERS NEVER INTERRUPT (symmetric). NEITHER a bullet
          (`- `/`* `, `- [x] ` task) NOR an ordered marker (decimal, letter,
          roman, any value) interrupts: the line FOLDS into P as lazy
-         continuation; a list needs a blank line before it (matching Djot).
+         continuation; a list needs a blank line before it (matching Djot). The
+         one exception is the sibling of an open list (PART 0 S4): `- a` / `- b`
+         gives two items.
          "Liste: \n - eins \n - zwei" is ONE paragraph, so is
          "x = 5 \n * 3 + 17"; a blank line starts the list.
          TIGHT NESTED LISTS UNAFFECTED:
@@ -342,7 +344,8 @@
          PARAGRAPH (CARVE-P0-010). The next nonblank line therefore stays in
          the item only if it reaches content_column and opens item prose. A
          footnote definition's own extent is CARVE-P0-012; a line one column
-         short of its body is item prose. The bare decimal-dot marker `. `
+         short of its body is item prose, unless it folds into the note's open
+         paragraph (PART 0 S4). The bare decimal-dot marker `. `
          claims one marker column and one separator column, so its
          content_column is the same as `- `. Pinned by corpus 374.
       I6 SCOPE. The relation applies to EVERY open
@@ -592,9 +595,11 @@
         WORD, drawn from the `labels` map (§16a) rather than fixed English:
             <aside class="admonition note" aria-label="Note">
 
-        The minted id starts at `adm-{n}`, n counting Tier-1 titled blocks in
-        rendered order from 1, so an endnote body counts after later body
-        blocks. Reserve explicit and automatic heading ids
+        The minted id starts at `adm-{n}`, n counting from 1 the Tier-1 titled
+        blocks of the body and a placed directive's title in document order,
+        then those of endnote bodies in definition order, so an endnote body
+        counts after later body blocks even where a `::: footnotes` marker
+        renders it before them. Reserve every rendered explicit id and every automatic heading id
         first, then add a duplicate suffix (`adm-1-2`, `adm-1-3`, ...) until
         the minted id is unused. Titled nameable directives use this same
         sequence (CARVE-P9-072).
@@ -706,7 +711,7 @@
       - HEADINGS INSIDE CONTAINERS DO NOT WRAP. The algorithm walks
         TOP-LEVEL blocks (and the sections it opens), so a heading
         inside a blockquote, div, admonition, list item, definition,
-        table cell, or footnote definition emits a bare `<h* id="...">`
+        or footnote definition emits a bare `<h* id="...">`
         with the id ON THE HEADING and no `<section>` around it. A
         `<section>` models THIS document's outline: quoted material
         carries another document's outline, and a div or list item is
@@ -873,8 +878,9 @@
            the earlier block's, which is what makes stacking work. A class
            already present is not added twice, in one block or across
            several.
-         Worked djot-canonical example: {#id} {key=val} {.foo .bar}
-         {key=val2} {.baz} {#id2} then "Okay" ->
+         Worked djot-canonical example: the lines {#id}, {key=val},
+         {.foo .bar}, {key=val2}, {.baz} and {#id2}, each on its own line,
+         then "Okay" ->
          <p id="id2" key="val2" class="foo bar baz">Okay</p>.
 
       A4 DROP IF DANGLING -- NORMATIVE [CARVE-P9-024]. pending with no following block

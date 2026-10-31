@@ -327,7 +327,8 @@ admonition = admonition_open, newline,
    a straight double quote, `{`, `[`, or a curly double quote. Recovery is
    confined to one source line. It reports fence-title-syntax, drops all opener metadata, and parses the children as
    blocks through the matching-width closer: `::: note {.x}` opens
-   the `note` container with no metadata. This recovery does
+   the `note` container with no metadata. A recovered opener is not bare, so
+   `::: figure {.x}` is a Tier-2 `figure` div and no figure group. This recovery does
    not admit a bare title as valid syntax. An unrecognized fence/type prefix
    remains paragraph text.
    Class/id/data-* attach via a PRECEDING block-attribute line, which floats
@@ -337,8 +338,9 @@ admonition = admonition_open, newline,
      - HEADER ("...") -- the visible admonition title (`<p
        class="admonition-title">`, or `<summary>` under the details
        extension). Unchanged role.
-     - LABEL ([...]) -- a short grouping identifier; core ignores it standalone,
-       a group extension (e.g. tabs) uses it as the tab label. This is the
+     - LABEL ([...]) -- a short grouping identifier; with no group extension it
+       renders as `<p class="div-label">`, and a group extension (e.g. tabs)
+       uses it as the tab label. This is the
        canonical replacement for the tabs `{label="..."}` / inner-heading
        convention (those stay supported, deprecated). The `selected`
        default-tab marker is NOT a label -- it remains a boolean attribute on

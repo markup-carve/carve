@@ -579,13 +579,14 @@ task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
 
 (* --- Definition Lists --- *)
 definition_list = definition_entry+ ;
-definition_entry = definition_term+, [[blank_line], definition_body,
-                   {[blank_line], definition_body}] ;
-(* A blank line may separate a term from its definition, and one definition
-   from the next, for readability -- the blank is a separator only (djot
-   parity). A blank NOT followed by a `: ` definition ends the entry. The
-   bodies are optional: `:: t` alone is a definition list holding one term and
-   no description (PART 0 FAMILIES, [B-term-start]). *)
+definition_entry = definition_term+, [{blank_line}, definition_body,
+                   {{blank_line}, definition_body}] ;
+(* Any run of blank lines may separate a term from its definition, one
+   definition from the next, and one entry from the next, for readability --
+   the run is a separator only (djot parity), and a definition list has no
+   three-blank boundary. A blank NOT followed by a `: ` definition ends the
+   entry. The bodies are optional: `:: t` alone is a definition list holding
+   one term and no description (PART 0 FAMILIES, [B-term-start]). *)
 definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new

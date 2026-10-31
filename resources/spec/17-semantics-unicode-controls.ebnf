@@ -128,7 +128,8 @@
       whitespace of this language is exactly U+0020, U+0009, U+000A and
       U+000D. EVERY OTHER C0 CONTROL -- U+0001..U+0008, U+000B, U+000C,
       U+000E..U+001F -- is ordinary CONTENT: it parses as content, it
-      survives into the AST, and it satisfies no whitespace slot anywhere.
+      survives into the AST, and it satisfies no whitespace slot anywhere
+      outside a destination's marked wider notion (CARVE-P7-003).
       The rows below say what happens to ALL of them on each target. Naming
       only the vertical tab and the form feed, because those are the two the
       whitespace clause happens to mention, would leave the rest to habit,
