@@ -7890,7 +7890,10 @@ EOF = (* end of file *) ;
       if it does not already end in one, one space, then the declaration. An
       empty trimmed value adds nothing, neither `;` nor space:
       `{style="" align=right}` gives `style="text-align: right;"`. The appended declaration
-      wins if that style already named `text-align`.
+      wins if that style already named `text-align`. The value is the one
+      left after CARVE-P9-054 hardening, so a style that hardening blanks
+      still takes the declaration: `{style="url(x)" align=right}` over `p`
+      gives `<p style="text-align: right;">`, as a table cell does.
 
       A TABLE CELL'S ALIGNMENT MERGES THE SAME WAY. A cell's `text-align` and
       `vertical-align` declarations (PART 9 §5) are appended to an authored

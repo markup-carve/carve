@@ -96,18 +96,19 @@ function renderTextBlockAttrs(lists, tag) {
   if (style === null) {
     aligns[0][1] = 'style'
     aligns[0][2] = declaration
-  } else {
-    const current = style[2].trim()
-    style[2] = current === ''
-      ? declaration
-      : `${current}${current.endsWith(';') ? '' : ';'} ${declaration}`
   }
   for (const list of copied) {
     for (let i = list.length - 1; i >= 0; i--) {
       if (aligns.includes(list[i]) && (style !== null || list[i] !== aligns[0])) list.splice(i, 1)
     }
   }
-  return renderBlockAttrs(copied)
+  const rendered = renderBlockAttrs(copied)
+  if (style === null) return rendered
+  // Appended after hardening, as for a table cell: a blanked style still takes it (carve#4548).
+  return rendered.replace(/ (style)="([^"]*)"/i, (_, name, current) => {
+    const lead = current.trim() === '' ? '' : `${current.trim()}${current.trim().endsWith(';') ? '' : ';'} `
+    return ` ${name}="${lead}${declaration}"`
+  })
 }
 
 export function renderDoc(doc) {
