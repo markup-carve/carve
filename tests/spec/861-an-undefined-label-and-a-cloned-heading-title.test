@@ -1,0 +1,23 @@
+An undefined label and a cloned heading title
+
+```
+# Intro
+
+[Intro][nothing]
+.
+<section id="Intro">
+  <h1>Intro</h1>
+  <p>[Intro][nothing]</p>
+</section>
+```
+
+```
+# *H*
+
+[see </#H>](/u)
+.
+<section id="H">
+  <h1><strong>H</strong></h1>
+  <p><a href="/u">see <strong>H</strong></a></p>
+</section>
+```
