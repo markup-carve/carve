@@ -1074,6 +1074,9 @@ const sem = g.createSemantics().addOperation('h', {
   edSub(_o, oldC, _ar, newC, _c) {
     return `<del>${renderInline(oldC.sourceString, '{', false, true)}</del><ins>${renderInline(newC.sourceString, '{', false, true)}</ins>`
   },
+  edSubAborted(_open, prefix, _space, _comment, _beforeArrow, _arrow, _afterArrow, _close) {
+    return renderInline(`{~${prefix.sourceString}`, quotePrevCtx)
+  },
   edComment(body) {
     // CARVE-P2-004: a comment is about the text, not part of it (carve#3899).
     if (omitComments) return ''

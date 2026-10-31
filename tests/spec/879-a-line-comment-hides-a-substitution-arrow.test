@@ -1,0 +1,49 @@
+A line comment hides a substitution arrow
+
+```
+{~a %% b~>c~} d
+.
+<p>{~a d</p>
+```
+
+```
+{~alpha %% hidden~>word~} tail
+.
+<p>{~alpha tail</p>
+```
+
+```
+{~a~>b %% c~} d
+.
+<p><del>a</del><ins>b</ins> d</p>
+```
+
+```
+x{+"q"+}
+.
+<p>x<ins>“q”</ins></p>
+```
+
+```
+2{+--x+}
+.
+<p>2<ins>--x</ins></p>
+```
+
+```
+x:foo["q"]
+.
+<p>x<span class="ext-foo">“q”</span></p>
+```
+
+```
+!`(`"q"
+.
+<p>(”q”</p>
+```
+
+```
+`(`{=html}"q"
+.
+<p>(”q”</p>
+```

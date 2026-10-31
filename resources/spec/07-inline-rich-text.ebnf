@@ -438,6 +438,9 @@ ellipsis = "..." ;    (* → … *)
    `(--x) y` converts. A span's closing
    delimiter is not a following character: nothing follows a run at the end
    of a span's content, so `*a --*` converts as `a --` does.
+   An editorial frame, either side of a substitution, an extension's content
+   and an inline note's content each start content in this sense. Thus
+   `2{+--x+}` keeps the hyphens in the insertion.
    Unlike quote direction, this clause reads SOURCE neighbors, so the closing
    brace of a braced comment is the preceding character: `{% c %}--x` converts.
    The backslash of a hard break or an escaped space is no following
@@ -485,6 +488,10 @@ smart_quote = '"' | "'" ;
    inline span's content (emphasis of every kind, bare, braced or combined,
    a span, a link) is start-of-content, whatever precedes the span, so the
    quote there OPENS: `x.="q"=`, `x.*"q"*` and `x.*/"q"/*` all render `“q”`.
+   An editorial frame, either side of a substitution, an extension's content
+   and an inline note's content also start content. An inline literal and a
+   raw inline count as code for the quote after them: their rendered content
+   does not make a following quote open, even if it ends in `(`.
    Letters and digits are judged by Unicode code point, so a character
    outside the Basic Multilingual Plane is a letter like any other.
    An unattributed symbol is text here, its last character the previous one:

@@ -178,7 +178,7 @@ CarveCore {
   inline     = wordSlash | word | spComment | bracedComment | inlineSpace
              | eqArrow | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
-             | editorial | bracedDash | forcedSpan
+             | edSubAborted | editorial | bracedDash | forcedSpan
              | mathD | mathI | litInline | codeA | escComment | nbspEsc | hardBreak | escapedCrossref | escape | imageRef | image | bracketed
              | autolink | bang | dollar
              | ellipsis | dashRun | dot | dash | plus | pct | lt | gt
@@ -230,7 +230,7 @@ CarveCore {
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)
   rich       = eqArrow | arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
-             | editorial | bracedDash | forcedSpan | mathD | mathI
+             | edSubAborted | editorial | bracedDash | forcedSpan | mathD | mathI
              | litInline | codeA | escape | imageRef | image | bracketed | autolink | bang | dollar
              | ellipsis | dashRun | dquote | squote
              | dot | dash | plus | pct
@@ -398,7 +398,14 @@ CarveCore {
   // `~` supplies no arrow, and `{~a <https://x~>y> b~}` is a forced
   // strikethrough (ruled 2026-10-15).
   edSub      = "{~" ~graphemeExt edSubOld* "~>" edSubNew* "~}"
-  edSubOld   = ~"~>" (crossref | autolink | ~"~}" edSubAtom)
+  edSubOld   = ~"~>" (edSubComment | crossref | autolink | ~"~}" edSubAtom)
+  // A trailing comment in the old side runs to this frame's own closer. Its
+  // `~>` cannot be the arrow that turns the frame into a substitution.
+  edSubComment = sepRun "%%" (~newline ~"~}" any)*
+  // An arrow inside the comment cannot form a substitution. The comment owns
+  // this frame's closer, leaving the unclosed opener to read as ordinary text.
+  edSubAborted = "{~" ~graphemeExt edSubBeforeComment* sepRun "%%" (~newline ~"~}" ~"~>" any)* "~>" (~newline ~"~}" any)* "~}"
+  edSubBeforeComment = ~"~>" ~(sepRun "%%") (crossref | autolink | ~"~}" edSubAtom)
   edSubNew   = ~"~}" (crossref | autolink | edSubAtom)
   // A `$` or `!` prefix needs no alternative of its own: the backtick run
   // behind it is what carries the arrow, and this rule skips that run.
