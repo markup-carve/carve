@@ -1946,7 +1946,7 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    BLOCK is NOT literal text: it opens a verbatim span that runs to
    END_OF_BLOCK (the block's trailing whitespace is stripped; no surrounding
    single-space strip, which applies only to a closed span). Nothing but an
-   extension's first `]` bounds
+   extension's first unescaped `]` bounds
    it earlier, a forced or editorial `X}` included: an unclosed run inside a
    braced span or an editorial frame takes the rest of the block too, so that
    span has no closer and its opener is text (carve#3973 X5). `{*a `b*} c` is
@@ -2706,10 +2706,11 @@ extension_name = identifier ;
    `class` attribute -- the structural `ext-NAME` class comes FIRST, then the
    authored classes (`:foo[a]{.cls}` -> `class="ext-foo cls"`); never two
    `class` attributes. *)
-extension_content = {character - ']'} ;
-(* The content runs up to the FIRST `]`; a nested `]` closes the extension
-   early and the remainder is literal: `:foo[a [b] c]` ->
-   `<span class="ext-foo">a [b</span> c]`. *)
+extension_content = {escaped_char | literal_backslash | (character - ']' - '\')} ;
+(* The content runs up to the FIRST UNESCAPED `]`; a nested `]` closes the
+   extension early and the remainder is literal: `:foo[a [b] c]` ->
+   `<span class="ext-foo">a [b</span> c]`. An escaped one is content:
+   `:foo[a\]b]` -> `<span class="ext-foo">a]b</span>`. *)
 (* GENERIC EXTENSION CONTENT IS INLINE CONTENT -- NORMATIVE [CARVE-P3-026].
    Parse the captured run as inline content, including nested inline elements;
    do not render its markup as literal characters. Thus `:code[*b*]` renders
@@ -5123,8 +5124,9 @@ EOF = (* end of file *) ;
                          (CARVE-P3-016). Unmatched, it is text.
         inline note      `^[`, to the balanced `]` (§16); a region.
         note reference   `[^` and a label, to the first `]`.
-        extension        `:`, an extension_name and `[`, to the FIRST `]`
-                         (PART 3); a region: :foo[a [b] c] holds `a [b`.
+        extension        `:`, an extension_name and `[`, to the FIRST
+                         unescaped `]` (PART 3); a region: :foo[a [b] c]
+                         holds `a [b`.
         bracket run      `[`, to the balanced `]`, skipping what
                          CARVE-P3-001 names; a region. Unbalanced, the `[`
                          is text.
@@ -9148,7 +9150,7 @@ EOF = (* end of file *) ;
         TWO PLACES ARE EXEMPT FROM BOTH HALVES.
 
         An INLINE EXTENSION's content (`:name[...]`) is not bracketed
-        content. Its reader ends at the first `]` without pairing brackets,
+        content. Its reader ends at the first unescaped `]` without pairing brackets,
         so a `[` inside it pairs with nothing and its escape would be idle.
         Corpus `45-inline-extensions-6` is the case, written as authored:
 
