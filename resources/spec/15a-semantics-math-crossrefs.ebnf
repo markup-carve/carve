@@ -94,10 +94,8 @@
       classes/ids/keys) is raw passthrough: the verbatim span content
       is emitted UNESCAPED when `format` matches the output format (`html`),
       and DROPPED otherwise. The `{=format}` tag is consumed, not rendered.
-      A code span with any other VALID trailing attribute block is a generic
-      attributed code span (PART 3 `code_span` note), not raw inline. A
-      trailing `{…}` that is no valid attribute block stays text after the
-      span: `` `<br>`{=html .c} `` is `<code>&lt;br&gt;</code>{=html .c}`. The corpus pins this
+      A code span with any OTHER trailing `{…}` is a generic attributed code
+      span (PART 3 `code_span` note), not raw inline. The corpus pins this
       (tests/corpus/30-raw-inline):
         `<br>`{=html}   -> <br>            (emitted verbatim)
         `\foo`{=latex}  ->                (dropped in HTML output)

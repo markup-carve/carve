@@ -98,10 +98,8 @@
         warning channel.
       - PAYLOAD INDENTATION: after the enclosing container prefixes are removed,
         every body line MUST retain its remaining leading whitespace. The
-        opener's indentation establishes no additional payload base. A closer
-        below the host's content column ends the span, but any other nonblank
-        line below that column ends the host first (corpus 508), so no body
-        line sits below it. A body line loses only its available prefix
+        opener's indentation establishes no additional payload base. A body
+        line below the host's content column loses only its available prefix
         whitespace; its text is never removed. A tab crossing the host column
         retains its remaining columns as spaces (PART 9 §24 C5). At document
         level there is no container prefix to remove. This also applies to a

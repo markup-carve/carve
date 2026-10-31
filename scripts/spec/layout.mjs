@@ -1622,6 +1622,18 @@ function abbreviationAtSourceColumnZero(lines, i) {
   return sourceColumnZero.get(lines)?.[i] === true && ABBR_DEF.test(lines[i])
 }
 
+// A `+` skips an abbreviation definition, which defines in the document in source order (carve#4449).
+const skippedAbbreviationsOf = new WeakMap()
+
+function defineSkippedAbbreviations(lines, state, before) {
+  const record = skippedAbbreviationsOf.get(lines)
+  if (!record || record.state !== state) return
+  while (record.next < record.entries.length && record.entries[record.next][0] < before) {
+    const [term, value] = record.entries[record.next++][1]
+    state.abbrDefs.set(term, value)
+  }
+}
+
 // The walk knows which line reached no frame; a term has none, so a term keeps its own test.
 const abbreviationMissedFrames = new WeakMap()
 
@@ -3005,6 +3017,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   const refusedPlus = []
   // Abbreviation definitions that reached no frame, so they stand in the document (carve#4412).
   const abbreviationsInDocument = new Set()
+  // Abbreviation definitions a `+` skipped: invisible in the host, defined in the document (carve#4449).
+  const skippedAbbreviations = new Map()
   // The trace path of a block the walk opens in a parent although an item's
   // first-block `+` took it, and the item path the trace records it under.
   let reown = null
@@ -3022,7 +3036,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   }
   for (let at = start; at < lines.length; at++) {
     if (skipped) {
-      result.push(skipped.lead + (skipped.fenced.has(at) ? '%%' : trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)))
+      const rest = trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)
+      const abbreviation = skipped.fenced.has(at) ? null : skippedAbbreviation(lines[at], skipped.hostIndex)
+      if (abbreviation) skippedAbbreviations.set(at, [abbreviation[1], abbreviation[2]])
+      result.push(skipped.lead + (skipped.fenced.has(at) || abbreviation ? '%%' : rest))
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
       if (at + 1 === skipped.end) {
         if (skipped.host.plus === skipped.at) skipped.host.plus = at
@@ -3534,6 +3551,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   const walked = frameTextFences(result, textFences)
   walked.refusedPlus = refusedPlus
   walked.abbreviationsInDocument = abbreviationsInDocument
+  walked.skippedAbbreviations = skippedAbbreviations
   return walked
 
   // `classify` as the line reads at frame `depth`.
@@ -3702,7 +3720,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       } else if (FOOTNOTE_DEF.test(rest)) {
         k++
         while (k < lines.length && foldablePlainLine(view(k))) k++
-      } else if (COMMENT_LINE.test(rest) || isLinkDef(rest)) k++
+      } else if (COMMENT_LINE.test(rest) || isLinkDef(rest) || skippedAbbreviation(lines[k], hostIndex)) k++
       else {
         const attr = rest[0] === '{' ? tryAttrLine(fromHere, k) : null
         if (!attr) return k
@@ -3710,6 +3728,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       }
     }
     return lines.length
+  }
+
+  // A skipped line stands where its host's marker line does, so it defines only beside a host
+  // in the document; in a quote, an item or a div it stays text (CARVE-P12-026).
+  function skippedAbbreviation(line, hostIndex) {
+    return hostIndex === 1 ? ABBR_DEF.exec(trimLineEnd(trimWsStart(line))) : null
   }
 
   // The line behind the quotes around frame `hostIndex`. A `>` left of a frame
@@ -4031,6 +4055,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   src = walked.join('\n')
   const refusedPlusLines = walked.refusedPlus
   const missedFrames = authored.map((_, k) => walked.abbreviationsInDocument.has(k))
+  let skippedAbbreviations = [...walked.skippedAbbreviations].sort((a, b) => a[0] - b[0])
   const hasOrdinaryPlus = refusedPlusLines.length > 0
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') { lines.pop(); authored.pop() }
@@ -4103,13 +4128,17 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
         lines.splice(0, j + 1)
         authored.splice(0, j + 1)
         missedFrames.splice(0, j + 1)
+        skippedAbbreviations = skippedAbbreviations.map(([k, def]) => [k - j - 1, def])
         break
       }
     }
   }
   sourceColumnZero.set(lines, authored.map((line) => !/^[ \t]/.test(line)))
   abbreviationMissedFrames.set(lines, missedFrames)
+  const skippedRecord = { state, entries: skippedAbbreviations, next: 0 }
+  skippedAbbreviationsOf.set(lines, skippedRecord)
   const blocks = parseBlocks(lines, state, true)
+  defineSkippedAbbreviations(lines, state, Infinity)
   if (hasOrdinaryPlus) {
     restoreOrdinaryPlus(blocks, sentinel)
     restoreOrdinaryPlus(state.linkDefs, sentinel)
@@ -4402,6 +4431,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       stop.next = i
       return blocks
     }
+    if (top) defineSkippedAbbreviations(lines, state, i)
     const line = trimLineEnd(lines[i])
     if (ind(i).rest === '') { // isBlank, without re-walking the indent
       i++
