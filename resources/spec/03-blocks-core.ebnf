@@ -46,18 +46,21 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    the next line begins whatever block it begins, exactly as it would after any
    other closed block.
 
-     # Title          -> <h1>Title</h1> then <p>Some text.</p>
-     Some text.
+     # Title          -> <section id="Title"><h1>Title</h1>
+     Some text.          <p>Some text.</p></section>
 
-     ## A             -> two separate <h2> elements
-     ## B
+     ## A             -> two separate <h2> elements, each in its own
+     ## B                <section>
 
    A `^ ` caption line is no exception: it does not fold in, and it does not
    attach either, because a heading is NOT one of PART 9 §4's captionable hosts. It
    opens an ordinary paragraph of its own.
 
-     # H              -> <h1>H</h1> then <p>^ cap</p>
-     ^ cap
+     # H              -> <section id="H"><h1>H</h1>
+     ^ cap               <p>^ cap</p></section>
+
+   The `<section>` wrapper and its id are PART 9 §13 (CARVE-P9-019), with the
+   section option at its default.
 
    NO TRAILING ATTRIBUTES (djot-strict). A heading line carries NO trailing
    `{...}` attribute block: a `{...}` at the end of a heading line is ordinary
@@ -576,11 +579,13 @@ task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
 
 (* --- Definition Lists --- *)
 definition_list = definition_entry+ ;
-definition_entry = definition_term+, [blank_line], definition_body,
-                   {[blank_line], definition_body} ;
+definition_entry = definition_term+, [[blank_line], definition_body,
+                   {[blank_line], definition_body}] ;
 (* A blank line may separate a term from its definition, and one definition
    from the next, for readability -- the blank is a separator only (djot
-   parity). A blank NOT followed by a `: ` definition ends the entry. *)
+   parity). A blank NOT followed by a `: ` definition ends the entry. The
+   bodies are optional: `:: t` alone is a definition list holding one term and
+   no description (PART 0 FAMILIES, [B-term-start]). *)
 definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
