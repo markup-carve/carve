@@ -33,7 +33,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
         (CommonMark tab stops), so a leading tab indents to column 4.
      3. FROM THE FIRST NON-WHITESPACE CHARACTER of a line onward, a tab is
         CONTENT and never syntax. It satisfies no slot in any production, and
-        no construct is recognized by it. A flank test that reads a tab as a
+        no construct is recognized by it. A line block's medial tab is counted
+        in columns toward a gap (PART 9 §23). A flank test that reads a tab as a
         neighbor (`typography_flank`, PART 3) classifies that neighbor; it
         recognizes nothing.
      4. INSIDE VERBATIM CONTENT -- fenced code and inline code spans -- a tab
@@ -78,9 +79,9 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
        `definition_term` and the three definition markers already carry that
        spelling; the prose is at MARKER REQUIRES CONTENT (PART 2) and at
        `abbreviation_definition`. The colon fence joins them: `:::` +
-       separator + (`note` | `|` | `\` | `[label]`)
-       decides between an admonition, a line block, a local hard-break block
-       and a div, so the separator is part of recognizing the block.
+       separator + (`note` | `|` | `\` | `>` | `figure` | `[label]`)
+       decides between an admonition, a line block, a local hard-break block,
+       a quote block, a figure group and a div, so the separator is part of recognizing the block.
 
      - A PADDING SLOT is whitespace between two tokens on a line whose
        construct is ALREADY fixed. It carries no recognition and its width
@@ -98,7 +99,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
      The two fence openers land on opposite sides of the ROLE line, so state
      it once: a COLON fence's slot is a separator, because `note` / `|` / `\`
-     / `[label]` after it pick one of four blocks; a CODE fence's slot is
+     / `>` / `figure` / `[label]` after it pick one of six blocks; a CODE fence's slot is
      padding, because the fence run already picked the block. Both are
      `space`. So is `raw_block`'s otherwise identical slot, which is a
      separator because the `=` after it selects a raw block over a code
@@ -115,7 +116,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    Cardinality is a separate question from the terminal: a slot spelled
    `space` admits exactly one character, and a `space+` run admits one or
-   more. Both spellings are used deliberately and the difference is
+   more. The colon openers' separator is the one exception: its `space` is the
+   first of a run (PART 2, `:::  note`). Both spellings are used deliberately and the difference is
    observable, so read the production rather than the role. Four slots are
    spelled `space` -- `link_title` (hence `image_title`), the code fence's
    opener slot, `frontmatter_open`'s, and the reference definition's slot

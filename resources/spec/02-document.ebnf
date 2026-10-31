@@ -9,7 +9,8 @@ frontmatter = frontmatter_open, frontmatter_content, frontmatter_close ;
 (* An optional format token names the frontmatter dialect; bare `---` means
    yaml. Its padding slot is exactly one space (CARVE-P7-002):
    `---<TAB>yaml` and `---<SP><SP>yaml` are text. A trailing tab with no token
-   is removed under CARVE-P2-025. The closer is a bare `---`. *)
+   is removed under CARVE-P2-025. The closer is a bare `---`, and trailing
+   whitespace on it is removed the same way. *)
 frontmatter_open = "---", [space], [frontmatter_format], newline ;
 frontmatter_close = "---", (newline | EOF) ;
 frontmatter_format = (letter | digit)+ ;

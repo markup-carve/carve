@@ -134,7 +134,8 @@ class_attribute = '.', explicit_identifier ;
    class, the way HTML reads a `class` attribute, so the CARVE-P4-002 dedup
    compares tokens: `{class="a b" .a}` parses to the classes `a`, `b` and
    renders `class="a b"`. A value that holds no token
-   (`class=""`, `class=" "`) stays one entry holding the value as authored. Each token is an authored value of its
+   (`class=""`, `class=" "`) stays one entry holding the value as authored,
+   joined to the others by one space: `{class=" " .a}` renders `class="  a"`. Each token is an authored value of its
    own for CARVE-P9-054.
    An `id` key spells the id slot the same way when an element renders: `{#i id=j}`
    gives one `id`, the last value at the first position, and `{id=q}` takes the
@@ -161,7 +162,10 @@ boolean_attribute = identifier - ('_', {character}) ;
 
    `body-rows`, `body-header-rows` and `body-header-cols` (PART 12 §15),
    and `aligns`, `valigns` and `widths` (PART 12 §19) are the same class in
-   key/value form. Every other name reaches the output as the attribute it is,
+   key/value form. On an ordinary span, `abbr`, `time` and `kbd` are consumed
+   into an element (CARVE-P10-003), and on a text block `align` becomes a
+   style (PART 10 §1).
+   Every other name reaches the output as the attribute it is,
    and each of these does too on a block that has nothing to consume it: the
    name is not reserved, it is read by the block below it. *)
 (* A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE -- NORMATIVE [CARVE-P4-005].

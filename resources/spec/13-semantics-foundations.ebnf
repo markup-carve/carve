@@ -193,7 +193,8 @@
          `table` node rather than a `code_block`. The flag is consumed; other
          table attributes, including `header-rows`, `footer-rows`, `aligns`,
          `valigns` and `widths`, apply to that table. An unmarked fence stays
-         code. A title or label on the fence has no table slot and is
+         code. On any other block, or where no table results, `table` is an
+         ordinary attribute (`<pre table="">`, `<p table="">`). A title or label on the fence has no table slot and is
          discarded. A caption after the fence becomes the table's caption and is
          numbered by its own label. An empty-valued `table=""` is
          equivalent to the boolean flag under the attribute rules.

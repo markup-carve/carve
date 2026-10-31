@@ -17,7 +17,8 @@
       lists)
    9. Tables (| prefix)
    10. Colon fences (::: -- admonition with type word, line block with |,
-       local hard-break block with \, generic div when bare; longest-token
+       local hard-break block with \, quote block with >, figure group with
+       figure, generic div when bare; longest-token
        wins: a `::: x` line is never a `:: ` definition term)
    11. Paragraphs (everything else)
    Recognition order is NOT interruption: which of these may interrupt an
