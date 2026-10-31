@@ -49,7 +49,7 @@
       figure's group wrapper, and a line block (`::: |`) or a hard-break
       block (`::: \`), whose lines this target writes as a paragraph with
       hard breaks. A container this target DOES spell is not one
-      and takes no comment: an attributes-only opener (`::: {.warning}`) is
+      and takes no comment: `{.warning}` above a bare `:::` opener is
       written verbatim, and a list table is written as a pipe table. A BARE
       DIV'S OPENER IS `:::` WITH NOTHING AFTER IT, so its marker is
       `<!-- carve: ::: -->`, the same bytes as its closer's; no space pads the

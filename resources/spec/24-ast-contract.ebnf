@@ -65,7 +65,7 @@
       It renders nothing itself; it is what the inline `abbreviation` resolves
       against.
 
-      THE HOISTING CLAUSE ABOVE IS ABOUT FOOTNOTES. An `abbreviation_def` is
+      THE HOISTING CLAUSE ABOVE IS ABOUT FOOTNOTES AND LINK REFERENCE DEFINITIONS. An `abbreviation_def` is
       never hoisted, because there is never one to hoist: the construct is
       recognized only at document level.
 
@@ -98,8 +98,8 @@
 
       THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
       PART 11's writer emits the definition after the container the author
-      wrote it in, which reads like a violation of PART 11 §6 ("fmt does not
-      reorder ... those are the author's choices and the AST records them"). It
+      wrote it in, which reads like a violation of PART 11 §6 (a spelling the AST records is
+      the author's and is reproduced). It
       is not, because PART 11 §6 governs what the writer may do with what the tree
       HOLDS, and this clause is what the tree holds. It is accepted for
       footnotes because a footnote definition renders as a footnote either way,

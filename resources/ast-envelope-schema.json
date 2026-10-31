@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://markup-carve.github.io/carve/ast-envelope-schema.json",
   "title": "Carve AST interchange envelope",
-  "description": "A versioned wrapper for a Carve AST at a STORAGE OR PROCESS BOUNDARY. The document inside it is exactly the tree `ast-schema.json` describes, unchanged: `carve --json` still emits that tree bare, and an in-memory handoff still passes it bare. The envelope exists so a reader that cannot read a payload can say WHY - a newer contract, a missing capability, or a corrupt tree - where a strict-closed schema with no version answers all three with one validation error (PART 12 section 33, carve#2199).",
+  "description": "A versioned wrapper for a Carve AST at a STORAGE OR PROCESS BOUNDARY. The document inside it is exactly the tree `ast-schema.json` describes, unchanged: `carve --json` still emits that tree bare, and an in-memory handoff still passes it bare. The envelope exists so a reader that cannot read a payload can say WHY - a newer contract, a missing capability, or a corrupt tree - where a strict-closed schema with no version answers all three with one validation error (PART 12 section 34, carve#2199).",
   "type": "object",
   "required": [
     "astVersion",

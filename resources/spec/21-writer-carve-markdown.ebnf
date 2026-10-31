@@ -211,7 +211,7 @@
       same tree as parsing its canonical form. Formatting an aligned table
       again with `alignTables` yields identical bytes. A formatter's `--check`
       operation with this mode compares the source against aligned output.
-      The byte fixtures are in `resources/spec/table-alignment-fixtures.json`.
+      The byte fixtures are in `resources/spec/table-alignment-fixtures.json`; a row with a `note` is a roundtrip row.
 
    6f. PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING --
       NORMATIVE [CARVE-P11-015]. CARVE-P11-014's padding removes the need for
@@ -581,7 +581,9 @@
 
       ONE OTHER SPELLING REACHES AN EMPTY `<dd>` AND IS NOT WRITTEN:
 
-        : {empty}   claims no line below it at any column        -- CANONICAL
+        : {empty}   claims no line below the description's
+                    content column; a block at that column
+                    takes the attribute                  -- CANONICAL
         : %%        holds a `comment` child                      -- not written
 
       `: %%` renders alike and fails §1: its description carries a `comment`
@@ -666,7 +668,7 @@
 
       (c) A HOISTED DEFINITION DOES NOT CROSS A MARKER. A link reference or
           footnote definition with a region marker anywhere below its source
-          line is not collected to the end of the document (§7). It is written
+          line is not collected to the end of the document (PART 12 §7, CARVE-P12-070). It is written
           where the author wrote it, among its siblings in source order, and
           (a) applies to it like any other block. One with no marker below it
           is collected as before, which moves it past no marker.
@@ -783,7 +785,7 @@
       backtick is always escaped (§5), and a tilde run takes `\~~~`.
 
       `tests/fixtures/verbatim-opener-line-fmt.json` pins the spelled rows
-      and, per refused shape, the candidate spellings that do not read back.
+      and the refused shapes.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It answers to a Markdown
