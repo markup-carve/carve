@@ -528,7 +528,9 @@ smart_quote = '"' | "'" ;
    At the END OF CONTENT, demote a still-open span's opener to an apostrophe
    if it was followed by a letter or number. EXCEPTIONS: retain an opener at
    the start of the block's whole inline content (the start of a span's
-   content does not count: `*'word*` gives `’word`) or directly after `“`. Thus `say 'word` renders
+   content does not count: `*'word*` gives `’word`) or directly after `“`.
+   A braced inline comment at the start of the content counts as nothing, so
+   the quote after it is still at the start: `{%%}'word` keeps `‘word`. Thus `say 'word` renders
    `say ’word`, while `'word` keeps `‘word` and `"'word` keeps `“‘word`.
 
    An APOSTROPHE is U+2019 IN EVERY LOCALE. Opening and closing quotes use

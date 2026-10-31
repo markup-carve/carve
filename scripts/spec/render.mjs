@@ -2397,6 +2397,14 @@ function quoteOpaque(value) {
   return `\uE000quote-opaque:${quoteRun.key}:${id}\uE001`
 }
 
+// Braced comments that open the content count as nothing for quote direction (carve#4552).
+const LEADING_COMMENTS = /^(?:\{%(?:(?!%\})[\s\S])*%\})+/
+let leadingComments = { src: null, end: 0 }
+const leadingCommentsEnd = (src) => {
+  if (leadingComments.src !== src) leadingComments = { src, end: LEADING_COMMENTS.exec(src)?.[0].length ?? 0 }
+  return leadingComments.end
+}
+
 function smartQuote(node, open, close, single) {
   const src = node.source.sourceString
   const at = node.source.startIdx
@@ -2406,7 +2414,7 @@ function smartQuote(node, open, close, single) {
   const end = at + 1 + word.length
   const record = {
     single, open, close, next,
-    contentStart: at === 0 && quoteRun.depth === 1,
+    contentStart: (at === 0 || at === leadingCommentsEnd(src)) && quoteRun.depth === 1,
     initialContext: at === 0 ? quotePrevCtx : undefined,
     elision: ELISION_WORDS.has(word.toLowerCase()) && !(src[end] === "'" && !quoteAlnum(String.fromCodePoint(src.codePointAt(end + 1) ?? 0).replace('\0', ''))),
   }

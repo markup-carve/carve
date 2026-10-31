@@ -1,0 +1,25 @@
+A comment at the start of content counts as nothing for quotes
+
+```
+{%%}'word
+.
+<p>‘word</p>
+```
+
+```
+{%%}"q"
+.
+<p>“q”</p>
+```
+
+```
+{% c %}{% d %}'word
+.
+<p>‘word</p>
+```
+
+```
+a {%%}'word
+.
+<p>a ’word</p>
+```
