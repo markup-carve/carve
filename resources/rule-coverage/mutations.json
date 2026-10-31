@@ -121,8 +121,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "      if (closer === -1) return true\n",
-          "replace": "      if (closer === -1) return false\n"
+          "find": "      if (end === -1) return true\n",
+          "replace": "      if (end === -1) return false\n"
         }
       ]
     },
