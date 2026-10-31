@@ -4638,8 +4638,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         state.footnoteDefs.set(key, parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false))
       } else {
         // A losing note is invisible, so definitions in its body must still register.
-        const losingBody = bodyLines.map(stripIndent)
-        parseBlocks(inheritFinalBreak(lines, losingBody, i, state), state, false)
+        parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false)
       }
       continue
     }

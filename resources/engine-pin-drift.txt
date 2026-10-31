@@ -269,6 +269,7 @@
 75-list-nesting-and-looseness-8  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-8  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 350-a-definition-at-a-container-s-content-column-2  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
+855-a-note-in-a-losing-note-keeps-its-whole-body  The pinned carve-js predates this (markup-carve/carve#4482); the spec model is correct.
 350-a-definition-at-a-container-s-content-column-7  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-4  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.
 357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-5  A footnote body takes a lazy line in every host (markup-carve/carve#3885, carve#3892 item 4); the pinned engine refuses it, tracked at markup-carve/carve-js#3890.

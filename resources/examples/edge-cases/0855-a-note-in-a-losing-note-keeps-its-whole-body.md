@@ -1,0 +1,37 @@
+---
+page: edge-footnotes
+---
+
+## A note in a losing note keeps its whole body
+
+A losing duplicate note renders nothing, and the definitions in its body still register whole.
+
+::: compare
+
+```carve
+[^f]: r
+[^f]: u
+  [^g]: mid
+
+    TAIL
+
+[^f] [^g]
+```
+
+```html
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>r<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>mid</p>
+      <p>TAIL<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
