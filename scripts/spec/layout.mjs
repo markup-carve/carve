@@ -3202,8 +3202,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // The C5 column of the current quote segment, measured on demand.
     let stripped = null
     let segment = 1
+    const attachedHostIndex = afterPlus || followsMarkerLine ? frames.indexOf(attachedTo?.host) : -1
+    const lastHostQuote = attachedHostIndex < 0 ? -1 : frames.findLastIndex((frame, index) => index < attachedHostIndex && frame.kind === 'quote')
+    let attachedColumnPlaced = false
     for (let k = 1; k < frames.length; k++) {
       const f = frames[k]
+      // The attach rule measured this follower through its quote prefixes at
+      // the host's marker column. Keep that measurement when the ownership
+      // walk reaches the host after consuming those prefixes (carve#4630).
+      if (!attachedColumnPlaced && k > lastHostQuote && k <= attachedHostIndex && f.kind !== 'quote' &&
+          m.col !== attachedTo.host.markerCol &&
+          docColumn(lines[at], m.rest) === attachedTo.host.docMarker) {
+        src = ' '.repeat(attachedTo.host.markerCol) + m.rest
+        m = walkIndent(src)
+        attachedColumnPlaced = true
+      }
       // A lone `+` reaches the marker column of an open marker container. A
       // marker body takes only a block at that column (§17 L3, L4).
       if (f.markerCol !== undefined && CONT_MARKER.test(m.rest) && m.col === f.markerCol &&
