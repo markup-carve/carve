@@ -101,3 +101,20 @@ x:foo["q"]
 ```
 
 :::
+
+A comment stops at the newline when no raw frame closer has appeared. The
+later arrow still splits the substitution.
+
+::: compare
+
+```carve
+{~a %% b~>c
+~>d~}
+```
+
+```html
+<p><del>a
+</del><ins>d</ins></p>
+```
+
+:::
