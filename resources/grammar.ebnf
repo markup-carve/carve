@@ -7707,12 +7707,16 @@ EOF = (* end of file *) ;
          `data-task-state` (§11) and, under
          roundtrip export, the carriers of §13, which follow the element's
          other structural attributes.
-      R2 A MANDATORY BASE CLASS, where the author wrote no class: math's
-         `math inline|display`, an admonition's, a task list's `task-list`
-         (§11) and a core div's directive-kind class, the type word of its
-         opener (`::: foo` gives `foo`). `line-block` is not a directive-kind
-         class; it is R4's marker-derived class. Where the author did write a
-         class, the base class is prepended inside that class slot instead.
+      R2 A MANDATORY BASE CLASS: math's `math inline|display`, an admonition's,
+         a task list's `task-list` (§11) and a core div's directive-kind class,
+         the type word of its opener (`::: foo` gives `foo`). `line-block` is
+         not a directive-kind class; it is R4's marker-derived class. ON AN
+         ADMONITION AND A CORE DIV the directive's classes hold this rank whether
+         or not the author wrote a class, and the authored classes follow them
+         in that one slot: `{k=v .c}` over `::: note` gives
+         `class="admonition note c" k="v"`. On a task list, where the author
+         wrote a class, the base class is prepended inside that class slot
+         instead. Math keeps its own slot, on its own span.
       R3 AUTHORED, in the author's source order (the recorded `order`; PART
          4 RENDER ORDER). All classes accumulate, space-joined, into one
          `class` slot at its first-appearance position. An Attrs built

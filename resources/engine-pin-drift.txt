@@ -824,3 +824,4 @@
 857-an-extension-s-content-closes-at-the-first-unescaped-bracket  markup-carve/carve#4513, the pinned carve-js ends an extension's content at an escaped bracket.
 857-an-extension-s-content-closes-at-the-first-unescaped-bracket-3  markup-carve/carve#4513, the pinned carve-js ends an extension's content at an escaped bracket.
 859-a-line-folded-into-a-child-s-paragraph-is-not-the-item-s-text-4  markup-carve/carve#4526, the pinned carve-js keeps a column-0 line in an item whose quote took a lazy invalid opener before a bare run; the spec model, carve-php and carve-rs end the item.
+858-a-typed-div-s-directive-classes-lead-its-attributes-4  markup-carve/carve#4514, the pinned carve-js repeats a directive class the author also wrote (CARVE-P4-002 dedup, carve#4154): class="foo foo c".
