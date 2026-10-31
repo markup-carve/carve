@@ -5085,8 +5085,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           let openBodyTermColumn = null
           let noteBodyReach = null
           let noteBodyQuoted = false
+          let lastBlockLine = ''
           const pushBody = (text, row = i) => {
             bodyLines.push(text)
+            if (!text.startsWith(LAZY)) lastBlockLine = text
             const source = ind(row)
             bodySourceColumns.push(sourceColumns?.[row] ?? source.L?.col ?? source.col)
             const raw = stripLazy(text)
@@ -5337,7 +5339,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              */
             // Below the body's column an opener folds into the open paragraph
             // (PART 0 O3, CARVE-P0-021); in an item it opens there unless a quote holds the band (X2).
-            const lastBlock = stripIndent(bodyLines.findLast((l) => !l.startsWith(LAZY)) ?? '')
+            const lastBlock = stripIndent(lastBlockLine)
             if (authoredCol > 0 && authoredCol < bodyColumn && (!inItem || QUOTE.test(lastBlock)) &&
                 (HEADING.test(dedented) || HR.test(dedented) || isTableRow(dedented) ||
                  QUOTE.test(dedented) || (QUOTE.test(lastBlock) && isCodeBlockOpener(dedented))) &&
@@ -5385,7 +5387,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A table row interrupts the paragraph (PART 9 §10 I1), so below
             // the body's column it ends the body rather than folding (carve#3145).
             if (isTableRow(dedented)) break
-            // A plain line folded into the open paragraph leaves it open, so the scan is not repeated per line.
+            // A line folded into the open paragraph leaves it open, whatever its shape, so the scan is not repeated per line.
             if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) &&
                 (foldedParagraphAt === bodyLines.length || bodyLeavesParagraphOpen(bodyLines))) {
               // The marker is below the lead item's content column, so it
@@ -5394,7 +5396,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               const belowLeadItem = leadItem && authoredCol < bodyColumn + leadItem.markerWidth &&
                 matchMarkerAt(indentCols(dedented))
               pushBody(lazyFence || belowLeadItem || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
-              if (foldablePlain(dedented) && !lazyFence && !CAPTION.test(dedented)) foldedParagraphAt = bodyLines.length
+              foldedParagraphAt = bodyLines.length
               i++
               continue
             }
