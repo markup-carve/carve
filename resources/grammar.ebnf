@@ -4442,6 +4442,8 @@ EOF = (* end of file *) ;
          fewer effective cells than its header renders as written and lint
          reports `table-row-cell-count` at that row. Colspan and rowspan
          markers count the cells they span; a correctly spanned row is quiet.
+         A continuation row that appends a cell (T6) gets the same finding on
+         its `+` line, with or without a header.
 
          A CELL SLOT IS COUNTED, NOT WEIGHED -- NORMATIVE [CARVE-P9-082]. The
          delimiters are T1's: an escaped `|` and a `|` inside a code span
@@ -4520,6 +4522,15 @@ EOF = (* end of file *) ;
          its content (carve#3151). A table cannot BEGIN with a continuation row (PART 2 `table`). The AST
          keeps each join as a `cell_wrap` marker, so a writer can put the
          `+` lines back (CARVE-P12-069).
+
+         A CELL PAST THE ROW'S LAST COLUMN IS A NEW CELL OF THE ROW ABOVE. A
+         non-empty fragment in a slot where that row has no cell appends one,
+         so no text is lost. A column it skips gets an empty cell, and an empty
+         slot past the last cell appends nothing. The fragment is the cell's
+         content and never a T5 span marker, so `^` and `<` there are text. The
+         new cell is a header cell when every other cell of the row is. A later
+         `+` line joins onto it like any cell. Lint reports the row at the
+         `+` line (T2).
 
          THE ROW ABOVE IS A LINE, NOT A `<tr>` -- NORMATIVE [CARVE-P9-069]. What
          a continuation joins is the row above it in the SOURCE. T7 CONSUMES
@@ -13597,6 +13608,23 @@ EOF = (* end of file *) ;
         table_cell{ colspan: 2, children: [ "a", cell_wrap{line:1}, "x",
                                             cell_wrap{line:1, col:1}, "y" ] }
 
+      A CELL A `+` LINE APPENDED (T6) has no part on the standard row, so its
+      first child is the `cell_wrap` of the line that made it. No other cell
+      starts with one: a join onto an empty cell has no joining space and so no
+      marker. A column it skipped holds that marker alone. A leading marker
+      stands for no space, so a renderer outputs nothing for it, and the Carve
+      writer gives the cell no slot on the standard row. A cell with a leading
+      marker followed by a cell without one is invalid in the sense of
+      CARVE-P12-030.
+
+        | a |
+        + b | | c |
+
+        table_row{ continuationLines: 1, cells: [
+          table_cell[ "a", cell_wrap{line:1}, "b" ],
+          table_cell[ cell_wrap{line:1} ],
+          table_cell[ cell_wrap{line:1}, "c" ] ] }
+
       AN ATOMIC INLINE NODE CARRIES THE JOIN AS AN OFFSET. When a join crosses
       a `code`, `raw_inline`, or `math` payload, the node carries an optional
       `cellWraps` array. Each entry is an object `{ offset, line, row?, col? }`:
@@ -13635,8 +13663,8 @@ EOF = (* end of file *) ;
       inline tree; literal per-line child lists are refused because the parts
       are joined BEFORE inline parsing (CARVE-P2-019 item 2), so a span that
       crosses the line could not be split. Every renderer and writer other
-      than the Carve writer outputs `cell_wrap` as one space, the joining
-      space it replaces, so no HTML, Markdown, plain or ANSI output moves.
+      than the Carve writer outputs a non-leading `cell_wrap` as one space, the
+      joining space it replaces, so no HTML, Markdown, plain or ANSI output moves.
       Normalization never merges text across a `cell_wrap` and never drops
       one.
 

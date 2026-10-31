@@ -5453,9 +5453,17 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // `continuation_row`), so they carry the same space-only padding
             // slots the cells of a standard row do.
             const add = padTrim(seg)
+            if (add === '') return
+            // Past the last column the fragment is a new cell of the row above,
+            // its text and never a span marker; a skipped column is an empty cell.
+            if (ci >= prev.cells.length) {
+              const header = prev.cells.every((c) => c.header)
+              while (prev.cells.length <= ci) {
+                prev.cells.push({ header, kindMarker: false, align: null, valign: null, attrs: null, content: '', fragment: true })
+              }
+            }
             const cell = prev.cells[ci]
-            if (add === '' || cell === undefined) return
-            if ((cell.content === '^' || cell.content === '<') && cell.attrs == null) {
+            if (!cell.fragment && (cell.content === '^' || cell.content === '<') && cell.attrs == null) {
               // the joined text belongs to the SPANNING cell (T6); applied
               // after the span walk resolves the marker's origin
               ;(cell.joins ??= []).push(add)

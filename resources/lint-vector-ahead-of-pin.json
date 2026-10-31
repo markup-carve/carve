@@ -1,4 +1,7 @@
 {
+  "table-row-cell-count/continuation-past-the-last-column": {
+    "actual": []
+  },
   "unclosed-code-fence/container-div": {
     "message": "end of the document"
   },

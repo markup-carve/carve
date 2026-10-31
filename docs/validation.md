@@ -162,7 +162,7 @@ the command-line and editor behavior stay aligned.
 | Rule | Catches |
 | ---- | ------- |
 | `table-shaped-paragraph` | a line beginning like a pipe table row that misses its closing `|` and stays paragraph text; report the first unclosed row |
-| `table-row-cell-count` | a pipe-table body row with a different effective cell count from its header, after colspan and rowspan are counted; rendering keeps the row as written |
+| `table-row-cell-count` | a pipe-table body row with a different effective cell count from its header, after colspan and rowspan are counted, or a `+` line that appends a cell past its row's last column; rendering keeps the row as written |
 | `table-separator-near-miss` | a separator-like row that remains a body row, or a cell containing only a dash run that looks like a separator |
 | `list-marker-without-blank-line` | a list marker folded into the preceding paragraph because no blank line separates them |
 | `unclosed-inline-emphasis` | a strong or emphasis opener with no closer in its paragraph |
