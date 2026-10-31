@@ -5,8 +5,8 @@
 abbreviation_definition = "*[", abbreviation_term, "]:", space+, abbreviation_expansion, newline ;
 (* DOCUMENT LEVEL ONLY: the line is a definition only as a direct child of the
    document. In a block quote, a list item or a div it is paragraph text
-   (CARVE-P12-026). A line at column 0 below one is a direct child of the
-   document (PART 9 §10). *)
+   (CARVE-P12-026). A line that misses every frame below one is a direct child
+   of the document (PART 9 §10). *)
 abbreviation_term = (letter | digit)+ ;
 (* a term is a SINGLE alphanumeric word -- a bracketed term containing
    punctuation or spaces (`*[e.g.]:`, `*[HTTP API]:`) is NOT a definition;

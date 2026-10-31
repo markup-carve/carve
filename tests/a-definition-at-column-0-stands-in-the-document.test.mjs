@@ -41,9 +41,6 @@ const STAYS_TEXT = [
   ['an outer item content column', '- - n\n  *[A]: b\n\nA\n', '<ul><li><ul><li>n *[A]: b</li></ul></li></ul><p>A</p>'],
   ['a quote marker', '> n\n> *[A]: b\n\nA\n', '<blockquote><p>n *[A]: b</p></blockquote><p>A</p>'],
   ['a description body', ':: t\n: n\n  *[A]: b\n\nA\n', '<dl><dt>t</dt><dd>n *[A]: b</dd></dl><p>A</p>'],
-  ['column 1 below an item', '- n\n *[A]: b\n\nA\n', '<ul><li>n *[A]: b</li></ul><p>A</p>'],
-  ['column 2 below an ordered item', '1. n\n  *[A]: b\n\nA\n', '<ol><li>n *[A]: b</li></ol><p>A</p>'],
-  ['column 2 below a description body', ':: t\n:  d\n  *[A]: b\n\nA\n', '<dl><dt>t</dt><dd>d *[A]: b</dd></dl><p>A</p>'],
   ['past a term', ':: t\n  *[A]: b\n\nA\n', '<dl><dt>t *[A]: b</dt></dl><p>A</p>'],
 ]
 

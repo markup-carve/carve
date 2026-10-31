@@ -322,10 +322,13 @@
          never about a member behaving differently: AN ABBREVIATION
          DEFINITION IS DOCUMENT-LEVEL ONLY (CARVE-P12-026). Inside a container
          it is paragraph text, it is VISIBLE, and it folds like any other plain
-         line. A line at column 0 is not inside a container: it stands at document
-         level, ends every container and defines, under an item, a description and
-         a quote alike (carve#4412). `- n` / `*[A]: b` closes the item and defines
-         `A`; `- n` / `  *[A]: b` stays item text. Every other member keeps its
+         line. A definition line that misses every frame is not inside a container:
+         at every column below the outermost container's content column it stands
+         at document level, ends every container and defines, under an item, a
+         description, a note and a quote alike (carve#4412). `- n` / `*[A]: b` and
+         `- n` / ` *[A]: b` close the item and define `A`; `- n` / `  *[A]: b` reaches
+         the item and stays its text, and so does a line past an open term's
+         column, since a term is no frame. Every other member keeps its
          class below a container's content column: it interrupts, closes the
          missed containers and is read in the surviving owner (PART 0 S4, S5).
 

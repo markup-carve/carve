@@ -90,10 +90,8 @@ tail
 
 :::
 
-An abbreviation definition already answered this way, because PART 12 §7
-recognizes one only as a direct child of the document; it is in the band so all
-four kinds are held by one row each rather than by an argument that three of
-them are alike.
+An abbreviation definition below the body column misses every frame too, so it
+ends the description and stands in the document (carve#4412).
 
 ::: compare
 
@@ -107,10 +105,9 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-*[A]: a
-tail</dd>
+  <dd>d</dd>
 </dl>
+<p>tail</p>
 ```
 
 :::
