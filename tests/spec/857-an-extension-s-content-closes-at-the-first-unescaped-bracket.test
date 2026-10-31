@@ -1,0 +1,19 @@
+An extension's content closes at the first unescaped bracket
+
+```
+:foo[a\]b]
+.
+<p><span class="ext-foo">a]b</span></p>
+```
+
+```
+:foo[a\\]b]
+.
+<p><span class="ext-foo">a\</span>b]</p>
+```
+
+```
+:foo[a\]
+.
+<p>:foo[a]</p>
+```

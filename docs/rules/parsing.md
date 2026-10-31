@@ -69,13 +69,13 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P3-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L11) | 3 | TRAILING ATTRIBUTES on math |
 | [`CARVE-P3-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L31) | 3 | FORMAL word-boundary guards |
 | [`CARVE-P3-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L102) | 3 | AN EMPTY BRACE PAIR IS NOT A CONSTRUCT |
-| [`CARVE-P3-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L272) | 3 | EDITORIAL COMMENT CONTENT IS LITERAL |
-| [`CARVE-P3-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L289) | 3 | ADDITION AND DELETION ATTRIBUTES BIND TO THEIR ELEMENT |
-| [`CARVE-P3-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L379) | 3 | SYMBOL ATTRIBUTES FORCE A SPAN WRAPPER |
-| [`CARVE-P3-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L395) | 3 | PRECEDENCE vs SMART TYPOGRAPHY |
-| [`CARVE-P3-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L413) | 3 | A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION |
-| [`CARVE-P3-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L425) | 3 | A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH |
-| [`CARVE-P3-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L540) | 3 | THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES |
+| [`CARVE-P3-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L273) | 3 | EDITORIAL COMMENT CONTENT IS LITERAL |
+| [`CARVE-P3-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L290) | 3 | ADDITION AND DELETION ATTRIBUTES BIND TO THEIR ELEMENT |
+| [`CARVE-P3-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L380) | 3 | SYMBOL ATTRIBUTES FORCE A SPAN WRAPPER |
+| [`CARVE-P3-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L396) | 3 | PRECEDENCE vs SMART TYPOGRAPHY |
+| [`CARVE-P3-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L414) | 3 | A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION |
+| [`CARVE-P3-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L426) | 3 | A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH |
+| [`CARVE-P3-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L541) | 3 | THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES |
 | [`CARVE-P4-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L19) | 4 | ATTRIBUTE PADDING IS SPACE-ONLY |
 | [`CARVE-P4-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L90) | 4 | THE SIGIL TAKES NO PADDING |
 | [`CARVE-P4-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L96) | 4 | LANGUAGE SHORTHAND USES THE `lang` KEY |
@@ -93,15 +93,15 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L404) | 9 | T8 ROW ATTRIBUTES |
 | [`CARVE-P9-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L443) | 9 | T10 CELL ATTRIBUTES BIND LAST |
 | [`CARVE-P9-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L462) | 9 | T11 A MARKER RUN ENDS AT A SPACE |
-| [`CARVE-P9-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L295) | 9 | AN INVISIBLE LINE IS ONE CLASSIFICATION |
-| [`CARVE-P9-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L386) | 9 | N1a HARD BOUNDARY AFTER THREE BLANK LINES |
-| [`CARVE-P9-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L473) | 9 | A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER |
-| [`CARVE-P9-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L496) | 9 | ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY |
-| [`CARVE-P9-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L751) | 9 | INLINE SPAN VS LINK DISAMBIGUATION |
-| [`CARVE-P9-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L779) | 9 | EMPTY OR INVALID ATTRIBUTE BLOCK |
-| [`CARVE-P9-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L807) | 9 | BOOLEAN ATTRIBUTES |
-| [`CARVE-P9-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L845) | 9 | A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK |
-| [`CARVE-P9-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L870) | 9 | A4 DROP IF DANGLING |
+| [`CARVE-P9-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L296) | 9 | AN INVISIBLE LINE IS ONE CLASSIFICATION |
+| [`CARVE-P9-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L387) | 9 | N1a HARD BOUNDARY AFTER THREE BLANK LINES |
+| [`CARVE-P9-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L474) | 9 | A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER |
+| [`CARVE-P9-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L497) | 9 | ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY |
+| [`CARVE-P9-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L752) | 9 | INLINE SPAN VS LINK DISAMBIGUATION |
+| [`CARVE-P9-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L780) | 9 | EMPTY OR INVALID ATTRIBUTE BLOCK |
+| [`CARVE-P9-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L808) | 9 | BOOLEAN ATTRIBUTES |
+| [`CARVE-P9-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L846) | 9 | A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK |
+| [`CARVE-P9-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L871) | 9 | A4 DROP IF DANGLING |
 | [`CARVE-P9-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L172) | 9 | L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER |
 | [`CARVE-P9-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L187) | 9 | L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION |
 | [`CARVE-P9-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L341) | 9 | L6 A COLLECTED DEFINITION LEAVES NO TRACE |
@@ -120,10 +120,10 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L361) | 9 | AN INVISIBLE LINE BELOW THE COLUMN INTERRUPTS |
 | [`CARVE-P9-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L73) | 9 | BLOCK COMMENT FENCES |
 | [`CARVE-P12-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L150) | 12 | TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES |
-| [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L472) | 3 | SMART QUOTE DIRECTION |
+| [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L473) | 3 | SMART QUOTE DIRECTION |
 | [`CARVE-P3-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L279) | 3 | AN EMPTY DESTINATION IS EXPLICIT |
 | [`CARVE-P3-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L37) | 3 | A DELIMITER IS A WHOLE GRAPHEME |
-| [`CARVE-P3-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L255) | 3 | GENERIC EXTENSION CONTENT IS INLINE CONTENT |
+| [`CARVE-P3-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L256) | 3 | GENERIC EXTENSION CONTENT IS INLINE CONTENT |
 | [`CARVE-P9-082`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L248) | 9 | A CELL SLOT IS COUNTED, NOT WEIGHED |
 | [`CARVE-P9-083`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L301) | 9 | C3 MARKER-BODY COLUMN AND EXTENT |
-| [`CARVE-P9-084`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L431) | 9 | ONE COLON-FENCE FRAME |
+| [`CARVE-P9-084`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L432) | 9 | ONE COLON-FENCE FRAME |

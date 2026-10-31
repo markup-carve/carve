@@ -248,10 +248,11 @@ extension_name = identifier ;
    `class` attribute -- the structural `ext-NAME` class comes FIRST, then the
    authored classes (`:foo[a]{.cls}` -> `class="ext-foo cls"`); never two
    `class` attributes. *)
-extension_content = {character - ']'} ;
-(* The content runs up to the FIRST `]`; a nested `]` closes the extension
-   early and the remainder is literal: `:foo[a [b] c]` ->
-   `<span class="ext-foo">a [b</span> c]`. *)
+extension_content = {escaped_char | literal_backslash | (character - ']' - '\')} ;
+(* The content runs up to the FIRST UNESCAPED `]`; a nested `]` closes the
+   extension early and the remainder is literal: `:foo[a [b] c]` ->
+   `<span class="ext-foo">a [b</span> c]`. An escaped one is content:
+   `:foo[a\]b]` -> `<span class="ext-foo">a]b</span>`. *)
 (* GENERIC EXTENSION CONTENT IS INLINE CONTENT -- NORMATIVE [CARVE-P3-026].
    Parse the captured run as inline content, including nested inline elements;
    do not render its markup as literal characters. Thus `:code[*b*]` renders
