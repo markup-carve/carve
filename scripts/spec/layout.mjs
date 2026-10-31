@@ -3230,12 +3230,24 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       }
       // A lone `+` reaches the marker column of an open marker container. A
       // marker body takes only a block at that column (§17 L3, L4).
-      if (f.markerCol !== undefined && CONT_MARKER.test(m.rest) && m.col === f.markerCol &&
+      // A quote opened on another marker line keeps that line's authored
+      // marker column even though its reader frame starts at column zero.
+      if (f.markerCol !== undefined && CONT_MARKER.test(m.rest) &&
+          (m.col === f.markerCol || f.kind === 'quote' && docColumn(lines[at], m.rest) === f.docMarker) &&
           (f.kind === 'quote' || m.col < f.col) && plusAttaches(f, at, docColumn(lines[at], m.rest))) {
         plus = f
         break
       }
       if (f.kind === 'quote') {
+        // An own-line `+` at a descendant quote's authored marker column can
+        // reach that quote without repeating the intervening quote markers.
+        // The marker and its follower are measured at the same source column.
+        if (CONT_MARKER.test(m.rest) && frames.slice(k + 1).some((child) =>
+          child.kind === 'quote' && child.docMarker === docColumn(lines[at], m.rest) &&
+          plusAttaches(child, at, child.docMarker))) {
+          out += ' '.repeat(f.markerCanon) + '> '
+          continue
+        }
         if (!QUOTE.test(m.rest)) break
         lead(frames[k - 1].canon)
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
