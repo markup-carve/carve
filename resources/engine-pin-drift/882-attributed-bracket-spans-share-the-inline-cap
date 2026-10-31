@@ -1,0 +1,1 @@
+The pinned carve-js counts attributed bracket spans separately from the shared inline nesting budget (markup-carve/carve#4681); the spec model is correct.
