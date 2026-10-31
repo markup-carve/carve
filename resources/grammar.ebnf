@@ -3513,7 +3513,11 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       An unmatched, mismatched, unclosed, duplicate or malformed marker makes
       region selection an ERROR (`include-region-invalid`, Warning + literal).
       A missing selected name has the same result. The selected source is the
-      physical lines strictly between its matching markers. Those two marker
+      physical lines strictly between its matching markers. Markers are found
+      by physical line before delimited data is decoded, so a marker line
+      inside a quoted field still opens or closes a region: `h` / `"a` /
+      `#region r` / `b"` / `#endregion r` with `@region:r` selects the one
+      line `b"` (carve#4553). Those two marker
       lines are excluded; nested marker lines remain source content, which a
       table include then reads as no record (I1d). An empty
       region selects an empty source. Positions in selected content retain
@@ -3581,8 +3585,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       well-formed region marker (I1b (b)) is NOT a record, under every selection
       or none: it is no row and no cell, and it does not count toward `@rows`
       or `header-rows`. A malformed marker is an ordinary record unless
-      `@region` is selected, and a marker-shaped line inside a quoted field is
-      the field's text. N and M follow the `@lines`
+      `@region` is selected. With no `@region`, a marker-shaped line inside a
+      quoted field is the field's text. N and M follow the `@lines`
       decimal rules in I1: no zero or leading zero, and N no greater than M.
       Invalid values give `include-rows-invalid`; a start past the last
       record gives `include-rows-out-of-range`. The end may pass the last
@@ -5511,7 +5515,11 @@ EOF = (* end of file *) ;
       compare; the paragraph simply continues.
 
       An open div's own closer is not absorbed: `:::` / `:::e` / `:::` is a div
-      holding one paragraph, in any container (carve#4397).
+      holding one paragraph, in any container (carve#4397). Only a bare run of
+      exactly the div's width closes it. A bare run of another width that such
+      a paragraph absorbs is its text, so it neither closes the div nor opens
+      one: `:::` / `:::e` / `::::` / `q` / `:::` is a div holding the one
+      paragraph `:::e`, `::::`, `q` (carve#4550).
 
       ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY -- NORMATIVE [CARVE-P9-017].
       The absorbed line has to be one the paragraph's container
