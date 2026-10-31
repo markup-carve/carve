@@ -3658,7 +3658,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       The directive's caption slot attaches to the resulting table (I1c).
       If delimited quoting is malformed, the include falls back to a code
       block holding the selected source, the full source when nothing selects,
-      with `delimited-table-malformed` as usual. An invalid `@rows` or `@lines`
+      with `delimited-table-malformed` as usual. A `@lines` range that cuts a
+      quoted record makes the selection malformed even where the whole file
+      decodes, and falls back the same way (carve#4640). An invalid `@rows` or `@lines`
       value, an out-of-range `@lines` and a missing region are refused first
       and stay literal. Malformed quoting is decided next, so a valid `@rows`
       selects nothing there: the fallback holds the full source and reports no
@@ -4508,7 +4510,8 @@ EOF = (* end of file *) ;
          at row scope. The
          implicit header uses zero rows when the table is empty or the footer
          consumes every row; an explicit overlapping header and footer is
-         invalid under the ordinary table partition rule.
+         invalid under the ordinary table partition rule, so no row is a header
+         cell, as on a pipe table (carve#4640).
          Records shorter than the widest record gain empty cells. A record
          wider than the first record is retained, never truncated, and reports
          `delimited-table-wide-row`. An empty fence has zero rows. A malformed
@@ -4631,7 +4634,9 @@ EOF = (* end of file *) ;
          so no text is lost. A column it skips gets an empty cell, and an empty
          slot past the last cell appends nothing. The fragment is the cell's
          content and never a T5 span marker, so `^` and `<` there are text. The
-         new cell is a header cell when every other cell of the row is. A later
+         new cell is a header cell when every other cell of the row is. A `^`
+         in that row counts as a data cell for this test; only a `<` counts as
+         the cell it extends (carve#4640). A later
          `+` line joins onto it like any cell. Lint reports the row at the
          `+` line (T2).
 
