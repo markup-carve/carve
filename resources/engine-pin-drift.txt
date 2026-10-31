@@ -19,6 +19,13 @@
 #     the line in the same commit that moves the pin.
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 # Format: <slug><space><space><reason>
+857-an-html-attribute-is-written-once-whatever-its-case  Pinned JavaScript predates one HTML attribute per name, structural first (carve#4457); the spec moved first
+857-an-html-attribute-is-written-once-whatever-its-case-2  Pinned JavaScript predates one HTML attribute per name, structural first (carve#4457); the spec moved first
+857-an-html-attribute-is-written-once-whatever-its-case-3  Pinned JavaScript predates one HTML attribute per name, structural first (carve#4457); the spec moved first
+857-an-html-attribute-is-written-once-whatever-its-case-6  Pinned JavaScript predates one HTML attribute per name, structural first (carve#4457); the spec moved first
+857-an-html-attribute-is-written-once-whatever-its-case-7  Pinned JavaScript predates one HTML attribute per name, structural first (carve#4457); the spec moved first
+857-an-html-attribute-is-written-once-whatever-its-case-8  Pinned JavaScript predates one HTML attribute per name, structural first (carve#4457); the spec moved first
+857-an-html-attribute-is-written-once-whatever-its-case-9  Pinned JavaScript predates one HTML attribute per name, structural first (carve#4457); the spec moved first
 856-a-continuation-cell-past-the-last-column-is-a-new-cell  Pinned JavaScript predates a continuation cell past the last column becoming a new cell (carve#4470); the spec moved first
 856-a-continuation-cell-past-the-last-column-is-a-new-cell-2  Pinned JavaScript predates a continuation cell past the last column becoming a new cell (carve#4470); the spec moved first
 856-a-continuation-cell-past-the-last-column-is-a-new-cell-4  Pinned JavaScript predates a continuation cell past the last column becoming a new cell (carve#4470); the spec moved first

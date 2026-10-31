@@ -767,59 +767,18 @@ export const classTokens = (a) => {
   const tokens = raw.split(/[\t\n\f\r ]+/).filter((t) => t !== '')
   return (tokens.length ? tokens : [raw]).map((v) => hardenAttr('class', v)?.value ?? '')
 }
-export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && a[1] === 'class')
+// PART 10 SS1: HTML attribute names compare ASCII case-insensitively in every merge.
+const foldName = (name) => name.replace(/[A-Z]/g, (c) => c.toLowerCase())
+export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && foldName(a[1]) === 'class')
 // An `id` key spells the id slot, as a `class` key spells the class slot, and
 // CARVE-P9-054 does not probe the slot (carve#4516). A bare `id` is `id=""`.
-export const idSlot = (a) => a[0] === 'id' ? a[1] : a[1] !== 'id' ? null : a[0] === 'kv' ? a[2] : a[0] === 'bool' ? '' : null
+export const idSlot = (a) => a[0] === 'id' ? a[1] : foldName(a[1]) !== 'id' ? null : a[0] === 'kv' ? a[2] : a[0] === 'bool' ? '' : null
 
-export function renderAttrs(list, structuralUrl = null) {
-  // serialization: SOURCE order; all classes merge (deduplicated, corpus
-  // 121) into one class attribute at the position of the FIRST class;
-  // a repeated id/key keeps the LAST value at its first position
-  const parts = []
-  const classes = []
-  let classAt = -1
-  const seen = new Map() // name -> index in parts
-  for (const a of list) {
-    if (structuralUrl && (a[0] === 'kv' || a[0] === 'bool') && a[1].toLowerCase() === structuralUrl) continue
-    if (isClass(a)) {
-      if (classAt === -1) {
-        classAt = parts.length
-        parts.push(null) // placeholder
-      }
-      for (const value of classTokens(a)) if (value !== '' && !classes.includes(value)) classes.push(value)
-    } else if (idSlot(a) !== null) {
-      if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAuthoredAttr(idSlot(a))}"`
-      else {
-        seen.set('#id', parts.length)
-        parts.push(` id="${escapeAuthoredAttr(idSlot(a))}"`)
-      }
-    } else if (a[0] === 'kv') {
-      const h = hardenAttr(a[1], a[2])
-      if (!h) continue
-      const value = escapeAuthoredAttr(h.value)
-      if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}="${value}"`
-      else {
-        seen.set(a[1], parts.length)
-        parts.push(` ${a[1]}="${value}"`)
-      }
-    } else {
-      // A BOOLEAN IS A KEY/VALUE WHOSE VALUE IS EMPTY, so it takes the same
-      // slot as `kv` of the same name rather than emitting a second attribute.
-      // PART 4 defines `{disabled}` as `disabled=""`, and RENDER ORDER says a
-      // repeated key keeps the LAST value at its FIRST position - pushing here
-      // unconditionally produced `a="1" a=""`, which is not valid HTML and is
-      // not what any engine writes (carve#1123).
-      if (!hardenAttr(a[1], '')) continue
-      if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}=""`
-      else {
-        seen.set(a[1], parts.length)
-        parts.push(` ${a[1]}=""`)
-      }
-    }
-  }
-  if (classAt !== -1) parts[classAt] = ` class="${escapeAuthoredAttr(classes.join(' '))}"`
-  return parts.join('')
+export const imageStructural = (title) => (title ? ['src', 'alt', 'title'] : ['src', 'alt'])
+export const linkStructural = (title) => (title ? ['href', 'title'] : ['href'])
+
+export function renderAttrs(list, structural = []) {
+  return renderBlockAttrs([list], structural)
 }
 
 // PART 10 §10: compact semantic-span attributes are an HTML rendering sugar
@@ -973,7 +932,7 @@ const sem = g.createSemantics().addOperation('h', {
   image(_b, _o, alt, _c, slot, attrs) {
     const [dest, title] = destSlotParts(slot)
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
-    const a = renderAttrs(attrsOf(attrs), 'src')
+    const a = renderAttrs(attrsOf(attrs), imageStructural(t))
     return `<img src="${escapeUrlAttr(destValue(dest))}" alt="${escapeAttr(alt.sourceString.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
   },
   imageRef(_b, _o, alt, _c, _ro, label, _rc, attrs) {
@@ -986,7 +945,7 @@ const sem = g.createSemantics().addOperation('h', {
   autolink(body, attrs) {
     const raw = body.child(1).sourceString
     const href = /@/.test(raw) && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw) ? `mailto:${raw}` : raw
-    const a = renderAttrs(attrsOf(attrs), 'href')
+    const a = renderAttrs(attrsOf(attrs), linkStructural(''))
     return `<a href="${escapeUrlAttr(href)}"${a}>${escapeHtml(raw)}</a>`
   },
   escape(_bs, ch) {
@@ -1267,7 +1226,7 @@ sem.addOperation('applyTail(text, source)', {
     // engines do - and what this pipeline already did for the INLINE note form,
     // whose sentinel this check never named (markup-carve/carve#1188).
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
-    const a = renderAttrs(attrsOf(attrs), 'href')
+    const a = renderAttrs(attrsOf(attrs), linkStructural(t))
     return `<a href="${escapeUrlAttr(destValue(dest))}"${t}${a}>${text}</a>`
   },
   refTail(_o, label, _c, attrs) {
@@ -2304,48 +2263,42 @@ export function parseBlockAttrList(text) {
 // earlier one's, and a class already present is not added twice. This used to
 // keep the duplicate, following a clause sentence no engine implemented
 // (carve#615).
-export function renderBlockAttrs(lists, structuralUrl = null) {
+export function renderBlockAttrs(lists, structural = []) {
+  // `structural` names what the element derived at R1: an authored copy is omitted.
   const parts = []
   const classes = []
   let classAt = -1
-  const seen = new Map()
-  for (const list of lists) {
-    for (const a of list) {
-      if (structuralUrl && (a[0] === 'kv' || a[0] === 'bool') && a[1].toLowerCase() === structuralUrl) continue
-      if (isClass(a)) {
-        if (classAt === -1) {
-          classAt = parts.length
-          parts.push(null)
-        }
-        for (const value of classTokens(a)) if (value !== '' && !classes.includes(value)) classes.push(value)
-      } else if (idSlot(a) !== null) {
-        if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAuthoredAttr(idSlot(a))}"`
-        else {
-          seen.set('#id', parts.length)
-          parts.push(` id="${escapeAuthoredAttr(idSlot(a))}"`)
-        }
-      } else if (a[0] === 'kv') {
-        const h = hardenAttr(a[1], a[2])
-        if (!h) continue
-        const value = escapeAuthoredAttr(h.value)
-        if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}="${value}"`
-        else {
-          seen.set(a[1], parts.length)
-          parts.push(` ${a[1]}="${value}"`)
-        }
-      } else {
-        // Same rule as the inline merge above: a boolean is a key/value with an
-        // empty value and shares that name's slot (carve#1123).
-        if (!hardenAttr(a[1], '')) continue
-        if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}=""`
-        else {
-          seen.set(a[1], parts.length)
-          parts.push(` ${a[1]}=""`)
-        }
-      }
+  let classSpelling = 'class'
+  const seen = new Map() // folded name -> { at: index in parts, name: first spelling }
+  const set = (name, value) => {
+    const key = foldName(name)
+    const slot = seen.get(key)
+    if (slot) parts[slot.at] = ` ${slot.name}="${value}"`
+    else {
+      seen.set(key, { at: parts.length, name })
+      parts.push(` ${name}="${value}"`)
     }
   }
-  if (classAt !== -1) parts[classAt] = ` class="${escapeAuthoredAttr(classes.join(' '))}"`
+  for (const a of lists.flat()) {
+    if ((a[0] === 'kv' || a[0] === 'bool') && structural.includes(foldName(a[1]))) continue
+    if (isClass(a)) {
+      if (classAt === -1) {
+        classAt = parts.length
+        parts.push(null)
+        classSpelling = a[0] === 'class' ? 'class' : a[1]
+      }
+      for (const value of classTokens(a)) if (value !== '' && !classes.includes(value)) classes.push(value)
+    } else if (idSlot(a) !== null) {
+      set(a[0] === 'id' ? 'id' : a[1], escapeAuthoredAttr(idSlot(a)))
+    } else if (a[0] === 'kv') {
+      const h = hardenAttr(a[1], a[2])
+      if (h) set(a[1], escapeAuthoredAttr(h.value))
+    } else if (hardenAttr(a[1], '')) {
+      // A boolean is a key/value with an empty value and shares that name's slot (carve#1123).
+      set(a[1], '')
+    }
+  }
+  if (classAt !== -1) parts[classAt] = ` ${classSpelling}="${escapeAuthoredAttr(classes.join(' '))}"`
   return parts.join('')
 }
 

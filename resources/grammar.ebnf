@@ -7706,8 +7706,8 @@ EOF = (* end of file *) ;
       R1 STRUCTURAL. What the element derives from its OWN marker,
          destination or resolution: `<ol>`'s `type` and `start` (PART 9 §11
          N2) and then its `data-delim` (§12), a link's `href`, an image's
-         `src` and `alt`, a link's or image's `title`, a task item's
-         `data-task-state` (§11) and, under
+         `src` and `alt`, a link's or image's `title`, a footnote reference's
+         `href` and `role`, a task item's `data-task-state` (§11) and, under
          roundtrip export, the carriers of §13, which follow the element's
          other structural attributes.
       R2 A MANDATORY BASE CLASS: math's `math inline|display`, an admonition's,
@@ -7730,7 +7730,11 @@ EOF = (* end of file *) ;
          `<pre class="x" title="f">`.
       An authored `href` or `src` on a link or image does not replace the
       URL derived at R1. The structural URL is emitted once; the colliding
-      authored URL attribute is omitted.
+      authored URL attribute is omitted. This applies to every R1 attribute
+      the element derives: the structural value is emitted once and an authored
+      attribute of that name is omitted. An attribute the element does not
+      derive stays authored: `[a](/u){title=t}` has no structural title and
+      `{start=9}` over `1. x` has no structural `start`, so both keep theirs.
       R4 GENERATED. What the engine mints on top of the authored set: the
          auto-slug id an unwrapped heading carries (CARVE-P9-019) and, where
          the author wrote no class, a marker-derived class such as
@@ -7741,6 +7745,13 @@ EOF = (* end of file *) ;
          `::: |` gives `class="verse line-block"` (carve#2328, carve#2338).
       R5 A RENDER ANNOTATION. The one in the core is `data-source-line` (the
          `sourceLine` render option), which records where a block was written.
+
+      HTML ATTRIBUTE NAMES COMPARE ASCII CASE-INSENSITIVELY IN EVERY MERGE. A name
+      written twice in any spelling is emitted once, at the first occurrence's
+      position and spelling, with the last value, so `{K=1 k=2}` gives `K="2"`.
+      The `class` and `id` slots fold the same way: `{CLASS=z}` is the class
+      slot, and `{CLASS=z}` over `::: |` gives `CLASS="z line-block"`. The R1
+      omission above compares names the same way.
 
       An authored attribute replaces a generated attribute of the same name,
       compared ASCII case-insensitively. The generated one is omitted. These
@@ -7787,6 +7798,11 @@ EOF = (* end of file *) ;
       append the declaration there: the authored value trimmed, a `;` added
       if it has none, one space, then the declaration. The appended declaration
       wins if that style already named `text-align`.
+
+      A TABLE CELL'S ALIGNMENT MERGES THE SAME WAY. A cell's `text-align` and
+      `vertical-align` declarations (PART 9 §5) are appended to an authored
+      `style` at its authored slot, as above, so `|>{style="color:red"} a |`
+      gives `<td style="color:red; text-align: right;">a</td>`.
 
       The element and value sets are closed. On `<table>`, `align` means block
       placement rather than alignment of cell text, so it remains an ordinary

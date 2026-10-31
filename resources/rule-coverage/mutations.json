@@ -681,7 +681,7 @@
       "edits": [
         {
           "file": "scripts/spec/render.mjs",
-          "find": "export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && a[1] === 'class')",
+          "find": "export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && foldName(a[1]) === 'class')",
           "replace": "export const isClass = (a) => a[0] === 'class'"
         }
       ]
@@ -971,8 +971,8 @@
       "edits": [
         {
           "file": "scripts/spec/html.mjs",
-          "find": "href=\"#fn${n}\" role=\"doc-noteref\"${remaining}>",
-          "replace": "href=\"#fn${n}\"${remaining}>"
+          "find": "href=\"#fn${n}\" role=\"doc-noteref\"${remaining.replace(",
+          "replace": "href=\"#fn${n}\"${remaining.replace("
         }
       ]
     },
