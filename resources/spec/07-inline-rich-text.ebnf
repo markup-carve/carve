@@ -482,11 +482,13 @@ smart_quote = '"' | "'" ;
    The PREVIOUS character is the last EMITTED character. A construct that
    renders nothing, including an empty braced comment, contributes no
    character: `\{{%%}"q"` renders `{“q”`, just as `\{"q"` does. The end of a
-   closed inline element (emphasis, span, link, code) counts as a word
+   closed inline element (emphasis, span, link, code, math, image, extension,
+   editorial or inline note) counts as a word
    character whatever it ends in, so the quote after it CLOSES:
    `[—]{.c}"q"` renders `<span class="c">—</span>”q”`. The START of an
    inline span's content (emphasis of every kind, bare, braced or combined,
-   a span, a link) is start-of-content, whatever precedes the span, so the
+   an editorial frame, either side of a substitution, a span, a link, an
+   inline note or an extension) is start-of-content, whatever precedes the span, so the
    quote there OPENS: `x.="q"=`, `x.*"q"*` and `x.*/"q"/*` all render `“q”`.
    An editorial frame, either side of a substitution, an extension's content
    and an inline note's content also start content. An inline literal and a
@@ -556,7 +558,8 @@ arrow = "<--" | "-->" | "<-->"      (* ← → ↔, canonical *)
    Matched longest-first, as `<->` already beats `<-`, so `<==` beats `<=` and
    `-->` beats the hyphen run. A right arrow does not start inside a longer
    hyphen run: `a--->b` is an em dash and `>`, and `a ---> b` stays a flag. `=`
-   has no run rule, so `a ===> b` is `=` and the arrow.
+   has no run rule, so `a ===> b` is `=` and the arrow. A left arrow takes
+   the first two hyphens of a longer run: `a<---b` gives `a←-b`.
 
    `<=` KEEPS ≤. `->`, `<-` AND `<->` ARE DEPRECATED, NOT REMOVED: they
    still render, with the doubled forms canonical.

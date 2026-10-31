@@ -75,11 +75,13 @@
       - DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL -- NORMATIVE
         [CARVE-P9-073]. A `::: footnotes`, `::: bibliography`, or
         `::: references` marker inside a block-level container -- a block
-        quote, a list item, a div or directive body, a table cell, a definition
+        quote, a list item, a div or directive body, a definition
         description, a footnote definition -- does not place its document-wide
         region. It renders the `<div class="{kind}">` floor of §12 where it is
         written, and the region goes where it would without THIS marker. A
-        processor with lint diagnostics reports `{kind}-placement-in-container`
+        table cell holds inline content rather than block markers, so it
+        cannot contain a placement marker and is not a host in this list.
+        A processor with lint diagnostics reports `{kind}-placement-in-container`
         for the kind it supports. This rule does not restrict `::: toc`,
         `::: glossary`, or `::: index` inside a container.
       - A MARKER IN A TOC BODY RETAINS ITS CONTAINER SCOPE -- NORMATIVE
@@ -289,8 +291,9 @@
          the gates apply to the first visible line after them (carve#4449).
          Link, note and abbreviation definitions are one class here (CARVE-P9-013):
          an abbreviation definition the `+` skips defines in the document when
-         the host stands in the document. Under a host in a quote, an item or a
-         div the line is text (CARVE-P12-026), so it is the next line. An invisible line off the marker column is itself that
+         the host stands in the document. Under a host in a quote, an item, a
+         definition body, a footnote body or a div the line is text
+         (CARVE-P12-026), so it is the next line. An invisible line off the marker column is itself that
          next line, and a note definition's body belongs to the note. A blank line, the end of
          input or a sibling after them refuses the `+`. Examples, with `/` for
          a line break:

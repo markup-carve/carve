@@ -446,6 +446,12 @@
       or a title that distinguishes one block from another -- MUST NOT be
       silently discarded.
 
+      Every caption's text is content under that floor. Plain text and the
+      terminal preserve it as readable text for each captionable host, just
+      as Markdown does. The target-capabilities caption row cites this clause
+      for that shared preservation requirement; T2 below fixes the Markdown
+      table caption's particular position.
+
       This clause decides only where the named text goes on the targets below.
       Unnamed construct/target pairs remain open, not allowed by omission.
 

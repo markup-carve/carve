@@ -276,10 +276,12 @@
       NUMBERING, PREFIXING AND JOINING REMAIN THE EXTENSION'S OWN
       BUSINESS. This governs what the TITLE part is made of, not the label
       word, not the number, and not the separator around them.
-   R5 NUMBERED CAPTIONS. Per bucket key, in document order, each caption whose
+   R5 NUMBERED CAPTIONS. Per bucket key, in rendered document order, each caption whose
       top-level text carries a bare `#` placeholder receives the next
       number for the label's plain-text bucket key (PART 2, CAPTION NUMBER
-      PLACEHOLDER); an {#id} on
+      PLACEHOLDER). A caption in an endnote body is numbered when that
+      endnote renders, after body captions; an unreferenced footnote body
+      receives no caption number. An {#id} on
       the captioned host registers it in captionIds for R4. Only the host's
       block id registers: an id glued to the image or math span inside it is
       an inline attribute and does not, so `![a](/i){#i}` over `^ Fig #`

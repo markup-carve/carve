@@ -301,7 +301,9 @@
       `[x]{abbr="gen" title="authored"}` is `<abbr title="authored">`, not two
       `title` attributes on one element. The author wrote that one in the
       output's own vocabulary; the derived one is a convenience for the case
-      where they did not. Several names nest in this fixed
+      where they did not. A derived `title` or `datetime`, when present,
+      precedes the leftover authored attributes in the rendered element.
+      Several names nest in this fixed
       INNER-TO-OUTER order, independent of the order the author typed them:
       `abbr`, `time`, `kbd`.
 

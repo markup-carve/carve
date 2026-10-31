@@ -8,8 +8,8 @@
     "block_quote": "always",
     "definition_list_term": "always",
     "table": "valid_row",
-    "code_fence": "matching_closer",
-    "raw_fence": "matching_closer",
+    "code_fence": "valid_opener",
+    "raw_fence": "valid_opener",
     "colon_fence": "always"
   },
   "invisibleOpeners": [

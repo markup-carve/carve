@@ -28,6 +28,8 @@
    so `*a %% c* d` renders `*a`. An atom or attached attribute run that starts
    before the `%%` holds it: `` `a %% b` ``, `{# a %% b #}`,
    `[a](/u "t %% b")` and `*x*{k="b %% c"}` all keep their `%%`.
+   Link text and an inline note body are runs of their own: a `%%` in either
+   runs to the matching `]`. An image's alt text holds its `%%` verbatim.
 
    Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
    the order of its atom table (escapes, code spans, math, inline

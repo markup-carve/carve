@@ -147,7 +147,8 @@
       non-blank line that is empty once its block structural prefix is
       removed: a bare `>`, an accepted continuation marker, a bare container
       fence. A list marker with no content and a refused `+` are text. It carries layout and no content. It is NOT a
-      blank line, and the `[blank_line]` of `caption_slot` never matches one.
+      blank line outside that quote. Inside a quote, a bare `>` is that quote's
+      blank line and counts toward a contained host's one-blank caption allowance.
 
       WHERE IT CHANGES THE OPEN CONTAINER, IT ENDS ANY PENDING CAPTION SCOPE.
       A structural-only line that opens or closes a container ends the scope

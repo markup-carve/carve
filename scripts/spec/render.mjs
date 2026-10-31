@@ -955,6 +955,11 @@ const sem = g.createSemantics().addOperation('h', {
     return noteFrame({ content: inner, attrs: a })
   },
   bracketed(_o, content, _c, tail) {
+    // A formed attribute span consumes the same level as a braced span.
+    // The top inline run is level one, leaving 199 wrapper levels.
+    if (tail.sourceString.startsWith('{') && inlineDepth >= MAX_NESTING_DEPTH) {
+      return escapeHtml(this.sourceString)
+    }
     // link text is FULL inline content; parse the raw source recursively
     const raw = content.sourceString
     let inner = raw === '' ? '' : renderInline(raw, '[')

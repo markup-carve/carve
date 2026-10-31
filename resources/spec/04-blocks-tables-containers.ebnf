@@ -161,8 +161,10 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    the caption's first character. MARKER REQUIRES CONTENT (CARVE-P2-009) applies
    after the run as well: a caret, the separator and nothing but whitespace
    opens no caption, and the line is ordinary paragraph text.
-   A COMMENT IS NOT CONTENT HERE EITHER (carve#4559). Removing a comment must
-   not change the output (carve#4220, CARVE-P9-013), so a caret whose content is only
+   A COMMENT IS NOT CONTENT HERE EITHER (carve#4559). Removing a braced
+   comment leaves surrounding whitespace in place, including a space before
+   the comment at the end of a line. A comment contributes no content to the
+   caption's content test (carve#4220, CARVE-P9-013), so a caret whose content is only
    `braced_comment`s, whitespace and a trailing `inline_comment` opens no
    caption: `| a |` over `^ %% x` is the table and then the paragraph `^`,
    and a quote over it gets no `<figure>`. A comment followed by text,
@@ -206,10 +208,11 @@ caption_slot = [blank_line], caption ;
    `^ ` line ends the description list and is a paragraph of its own.
 
    The optional `blank_line` matches a TRULY blank line only. A
-   structural-only line -- a bare `>`, an accepted continuation marker, a
-   bare fence -- is not blank, and where it changes
-   the open container it ends the caption scope instead of being spent as
-   the allowance (CARVE-P9-080). *)
+   structural-only line that changes the open container -- an accepted
+   continuation marker or a bare fence -- ends the caption scope instead of
+   being spent as the allowance (CARVE-P9-080). A bare `>` inside an already
+   open quote is that quote's blank line, and a captionable host inside it may
+   spend that line as its one-blank allowance. *)
 
 (* CAPTION NUMBER PLACEHOLDER -- NORMATIVE [CARVE-P2-022].
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
