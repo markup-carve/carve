@@ -487,6 +487,7 @@ function codeText(content) {
   return text
 }
 function codeOp(_o, content, _c) {
+  spanPairs?.push([this.source.startIdx, this.source.endIdx - 1])
   return `<code>${escapeHtml(codeText(content))}</code>`
 }
 // The matched span under a `code` node: a closed `codeRun`, or `codeU`.

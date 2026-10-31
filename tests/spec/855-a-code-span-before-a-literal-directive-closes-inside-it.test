@@ -1,0 +1,13 @@
+A code span before a literal directive closes inside it
+
+```
+`a *{{ `@lines:1 }}*
+.
+<p><code>a *{{ </code><span class="mention"><strong>@lines</strong></span>:1 }}*</p>
+```
+
+```
+`{{ a @lines:0 }}`
+.
+<p><code>{{ a @lines:0 }}</code></p>
+```
