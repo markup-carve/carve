@@ -29,7 +29,9 @@
    a construct is not trailing either -- `x<SP>` inside a code span, a literal
    inline or a table cell ends at the construct's delimiter, not at the line's
    end, and the line-break backslash likewise leaves the run before it
-   interior.
+   interior. A code span that crosses a line end still loses that line's final
+   run: `` `a<TAB> `` over `` b` `` is `<code>a` and a newline and `b</code>`,
+   while `` `a<TAB>` `` keeps the tab.
 
    THE LINE BLOCK IS THE ONE EXCEPTION OUTSIDE VERBATIM CONTENT
    (CARVE-P7-001 item 5): PART 9 §23 MEDIAL GAPS converts an INNER or

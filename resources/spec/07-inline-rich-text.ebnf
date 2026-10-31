@@ -152,8 +152,8 @@ reference_footnote = "[^", footnote_label, ']', [attribute_run] ;
 footnote_label = {character - ']' - newline}+ ;
 inline_footnote = "^[", inline_content, ']', [attribute_run] ;
 (* the closing `]` is the balanced, escape- and LITERAL-SPAN-aware close
-   (PART 9 §16) -- the same scan `link_text` states, and the same three spans
-   it skips; footnote recognition is DISABLED inside the content *)
+   (PART 9 §16) -- the same scan `link_text` states, and the same spans
+   it skips (CARVE-P3-001); footnote recognition is DISABLED inside the content *)
 
 footnote_definition = "[^", footnote_label, "]:", space+, inline_content, newline,
                       {footnote_continuation | continuation_marker_block
@@ -280,9 +280,10 @@ comment_content = (* any text until the matching `#}`, preserved literally;
    `{+a *b* c+}` really does emphasize `b`.
 
    AN ADDITION'S AND A DELETION'S CONTENT IS NON-EMPTY -- `inline_content` is a
-   `+` repetition, and `comment_content` says it too. `{++}`, `{--}` and `{##}`
-   are therefore text, under the same empty-brace clause the forced spans carry;
-   while braced dash and nonempty deletion spellings follow CARVE-P3-020.
+   `+` repetition, and `comment_content` says it too. `{++}` and `{##}` are
+   therefore text, under the same empty-brace clause the forced spans carry.
+   `{--}` is no deletion: it is the braced en dash, and it and the nonempty
+   deletion spellings follow CARVE-P3-020.
 
    `substitution` is NOT widened: a half-empty substitution is a real edit --
    `{~a~>~}` deletes and `{~~>b~}` inserts -- so the fully empty form follows CARVE-P3-014. `substitution` takes `inline_content` on both
@@ -535,8 +536,8 @@ smart_quote = '"' | "'" ;
    the locale's quote glyphs. Escaped `\"` and `\'` remain straight
    characters; code, raw content, URLs and attribute values are unchanged. *)
 
-arrow = "<--" | "-->" | "<-->"      (* → ← → ↔, canonical *)
-      | "<==" | "==>" | "<=>"       (* → ⇐ ⇒ ⇔ *)
+arrow = "<--" | "-->" | "<-->"      (* ← → ↔, canonical *)
+      | "<==" | "==>" | "<=>"       (* ⇐ ⇒ ⇔ *)
       | "<-" | "->" | "<->" ;       (* deprecated, still rendered *)
 (* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE [CARVE-P3-022].
    Matched longest-first, as `<->` already beats `<-`, so `<==` beats `<=` and
@@ -555,7 +556,10 @@ comparison = "!=" | "<=" | ">=" ;
 typographic_symbol = "(c)" | "(r)" | "(tm)" | "+-" ;
 
 (* --- Breaks --- *)
-hard_break = '\', newline ;  (* backslash at end of line *)
+hard_break = '\', ( newline | EOF | cell_content_end ) ;
+  (* backslash at the end of a line, of the document or of a trimmed table
+     cell (PART 9 §9's escape row) *)
+cell_content_end = (* the end of a table cell's content after trimming *) ;
 soft_break = newline ;        (* regular line ending within paragraph *)
 
 (* TYPOGRAPHY FLANK. The one class smart typography reads a neighbor
