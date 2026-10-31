@@ -1111,7 +1111,7 @@
       "edits": [
         {
           "file": "scripts/spec/render.mjs",
-          "find": "`<span class=\"mention\"><strong>@${escapeHtml(name.sourceString)}</strong></span>` +",
+          "find": "rawFrame(`<span class=\"mention\"><strong>@${escapeHtml(name.sourceString)}</strong></span>`) +",
           "replace": "`@${escapeHtml(name.sourceString)}` +"
         }
       ]
