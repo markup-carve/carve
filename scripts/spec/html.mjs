@@ -1423,9 +1423,11 @@ function renderTable(node, depth, ctx) {
   }
   if (attrWidths.some((width) => width !== null)) {
     out.push(`${pad}  <colgroup>`)
-    // One `col` per entry, not per column (CARVE-P12-039).
-    for (let c = 0; c < attrWidths.length; c++) {
-      const width = attrWidths[c]
+    // One `col` per `columns` entry, not per column (CARVE-P12-039): the
+    // array runs to the longest of the three positional lists.
+    const entries = Math.max(attrAlign.length, attrValign.length, attrWidths.length)
+    for (let c = 0; c < entries; c++) {
+      const width = attrWidths[c] ?? null
       out.push(width !== null
         ? `${pad}    <col style="width: ${width}%;">`
         : `${pad}    <col>`)

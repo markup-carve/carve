@@ -1,0 +1,32 @@
+A table writes one col per column entry
+
+```
+{aligns=left,right,center widths=25}
+| a | b | c |
+.
+<table>
+  <colgroup>
+    <col style="width: 25%;">
+    <col>
+    <col>
+  </colgroup>
+  <tbody>
+    <tr><td style="text-align: left;">a</td><td style="text-align: right;">b</td><td style="text-align: center;">c</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{valigns=top,bottom widths=40}
+| a | b | c |
+.
+<table>
+  <colgroup>
+    <col style="width: 40%;">
+    <col>
+  </colgroup>
+  <tbody>
+    <tr><td style="vertical-align: top;">a</td><td style="vertical-align: bottom;">b</td><td>c</td></tr>
+  </tbody>
+</table>
+```
