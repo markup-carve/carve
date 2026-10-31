@@ -16,10 +16,8 @@
          roundtrip export, the carriers of §13, which follow the element's
          other structural attributes.
       R2 A MANDATORY BASE CLASS: math's `math inline|display`, an admonition's,
-         a task list's `task-list` (§11), a figure group's `carve-figure-group`
-         and a panel's `carve-figure-panel` (PART 9 §4c), and a core div's
-         directive-kind class, the type word of its opener (`::: foo` gives
-         `foo`). `line-block` is
+         a task list's `task-list` (§11) and a core div's directive-kind class,
+         the type word of its opener (`::: foo` gives `foo`). `line-block` is
          not a directive-kind class; it is R4's marker-derived class. ON AN
          ADMONITION AND A CORE DIV the directive's classes hold this rank whether
          or not the author wrote a class, and the authored classes follow them
@@ -56,10 +54,6 @@
       HTML ATTRIBUTE NAMES COMPARE ASCII CASE-INSENSITIVELY IN EVERY MERGE. A name
       written twice in any spelling is emitted once, at the first occurrence's
       position and spelling, with the last value, so `{K=1 k=2}` gives `K="2"`.
-      The one exception is a code fence's header title: it is sugar for a
-      title the block-attribute line above did not set, so a `title` on that
-      line wins (CARVE-P2-005). `{title="outer"}` over ```` ```js "inner" ````
-      gives `<pre title="outer">`.
       The `class` and `id` slots fold the same way: `{CLASS=z}` is the class
       slot, and `{CLASS=z}` over `::: |` gives `CLASS="z line-block"`. The R1
       omission above compares names the same way.
@@ -155,10 +149,8 @@
       47-numbered-cross-references-8). A table keeps its attributes on
       `<table>` and holds its caption as `<caption>` (§7).
 
-      The HTML API returns a fragment with no final LF, except a matching raw
-      block's payload that ends the document: it drops only its last newline,
-      and an all-blank payload drops none (PART 2, raw blocks). A caller
-      writing an output file may add its own line ending after the fragment.
+      The HTML API returns a fragment with no final LF. A caller writing an
+      output file may add its own line ending after the fragment.
 
       AN EMPTY CONTAINER BODY -- NORMATIVE [CARVE-P10-001]. A container whose body renders
       nothing keeps a BLANK LINE where the body would be:

@@ -74,9 +74,7 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    `@code` option, is emitted as its source text with
    no inline parse of its tokens (carve#3803, corpus 715 and 735); emphasis
    or a link around it may still pair across it (carve#3804), and a token
-   inside it opens nothing (carve#4296). An opener before it that closes on a
-   token inside it breaks the directive, whose text is then read as content:
-   `` `a *{{ `@lines:1 }}* `` is a code span and the rest (corpus 855). The rules a conforming PROCESSOR that
+   inside it opens and closes nothing, in either direction (carve#4296). The rules a conforming PROCESSOR that
    DOES expand includes MUST follow:
 
    I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,

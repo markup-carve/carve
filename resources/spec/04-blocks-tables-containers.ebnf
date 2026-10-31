@@ -450,10 +450,7 @@ local_hard_break_block_open = colon_fence:open, space, backslash ;
 (* A SECOND SPELLING of the block quote, not a second block: a colon fence
    whose type token is a bare `>` opens a quote whose body is ordinary block
    content, and the node is the one `blockquote_line` produces. The two forms
-   are the same tree, so every rule that speaks of a block quote reaches both,
-   with one exception: the body is a fenced container's, so a lone `+` in it
-   is text and not a continuation marker (PART 9 §17 L5). `::: >` / `+` /
-   `# H` / `:::` gives a quote holding `<p>+</p>` and the heading.
+   are the same tree, so every rule that speaks of a block quote reaches both.
    Third member of the sigil-fence family beside `line_block_open` and
    `local_hard_break_block_open`, and it takes the same REQUIRED space before
    its token; `:::>` is not an opener.
@@ -537,10 +534,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    is. Neither the container the block sits in nor whether the closer was
    written is a parameter: an unterminated raw block runs to the end of
    whatever encloses it, and its payload still ends on the line before that
-   end. At the END of the document only the payload's LAST newline is
-   dropped, as the fragment's final LF: a payload of `a` and two blank lines
-   writes `a` and two LF. An all-blank payload keeps all of its newlines (the
-   paragraph below).
+   end. At the END of the document the payload's trailing newlines land where
+   the trailing-whitespace trim removes them.
 
    AN ALL-BLANK PAYLOAD IS NOT AN ABSENT BLOCK. If the sole line between the
    delimiters is blank, that line is still the payload and contributes its

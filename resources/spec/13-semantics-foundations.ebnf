@@ -33,11 +33,8 @@
       `quote_block`. The allowance is the same for all
       seven: adjacent OR exactly one blank line attaches, two blank lines
       detach and leave the `^ ` line an ordinary paragraph.
-      A STRUCTURAL-ONLY LINE between host and marker detaches too where it
-      changes the open container (PART 2, the caption's `blank_line`), and is
-      not one of the blanks that allowance counts -- see CARVE-P9-080. A bare
-      `>` that continues the host quote changes nothing: `> q`, `>`, `^ cap`
-      captions the quote.
+      A STRUCTURAL-ONLY LINE between host and marker detaches too, and is
+      not one of the blanks that allowance counts -- see CARVE-P9-080.
 
       THE SEVENTH IS THE SECOND SPELLING OF THE SECOND. `quote_block` is a
       block quote and captions as a figure. Like `figure_group`, its caption
@@ -158,9 +155,7 @@
       nothing a caption could be about, so it is not a captionable host.
       Comment, definition and attribute lines hold no content for this test
       either (CARVE-P0-011): `> %%` / `^ cap` captions nothing, as a bare
-      `>` does, while `> a %% c` still captions. An abbreviation definition
-      is a definition at document level only (PART 5); in a quote it is
-      paragraph text, so `> *[A]: b` / `^ cap` captions. This
+      `>` does, while `> a %% c` still captions. This
       says nothing about hosts delimited by an explicit closing fence, whose
       caption attaches at the closer: a zero-panel `::: figure` still carries
       its group caption (CARVE-P9-001).
@@ -210,7 +205,7 @@
          explicit positive `header-rows` marks that many leading rows. A value
          that is no count is absent for this rule, so the first row stays a
          header. A count past the last row marks every row a header cell and
-         synthesizes no partition (CARVE-P12-034), so they render in one body group
+         synthesizes no partition (CARVE-P12), so they render in one body group
          at row scope. The
          implicit header uses zero rows when the table is empty or the footer
          consumes every row; an explicit overlapping header and footer is
@@ -343,10 +338,8 @@
          a continuation joins is the row above it in the SOURCE. T7 CONSUMES
          the delimiter row - it produces no `<tr>` and is not a row of the
          table - so a `+` line directly under one has no row above it to join
-         and is ordinary prose, and corpus 115 pins it. An invisible line (a
-         `%%` comment, an attribute line) ends the table too, so a `+` line
-         after it is prose as well: `| a |`, `%% c`, `+ b |` is a table and a
-         paragraph `+ b |`.
+         and is ordinary prose. That is the ONLY case that declines, and
+         corpus 115 pins it.
 
          AND THE ROW ABOVE IS A LINE OF THE SAME CONTAINER. A table in a
          quote does not precede a continuation line lacking that quote's prefix.

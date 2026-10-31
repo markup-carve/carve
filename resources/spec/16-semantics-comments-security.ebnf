@@ -8,9 +8,7 @@
         cell, a figure caption, an admonition header, a container, link, span
         or fence label. A bracket run that stays literal, an inline note's body
         and an extension's content also hold a run, so a `%%` in one ends at its
-        closing `]`: `^[%% c] d` is an empty note and ` d`. An unresolved
-        reference is its literal source, `%%` included: `[a %% c][b] d` stays
-        `[a %% c][b] d`, while `[a %% c] d` renders `[a] d`.
+        closing `]`: `^[%% c] d` is an empty note and ` d`.
         Nothing else holds a run -- not markup INSIDE one, so
         an emphasis span's first content character does not start one; not a
         slot the grammar declares literal (`alt_text`, a code fence's

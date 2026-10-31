@@ -147,12 +147,12 @@
          ALL render WITHOUT `<p>` (<li>text</li>), every one of them, not
          only the first, except as CARVE-P9-081 below states; a loose
          item's paragraphs are ALL wrapped (<li><p>text</p></li>). An item can hold more than one paragraph
-         block and still be tight -- L2 and L6 below cover the ways that
-         happens without a blank line ever appearing.
          When the first visible block of an item is a paragraph, it follows
          the opening `<li>` directly, whether the list is tight or loose and
          whether later blocks follow it. Later visible blocks start on their
          own indented lines.
+         block and still be tight -- L2 and L6 below cover the ways that
+         happens without a blank line ever appearing.
          A TIGHT ITEM'S ATTRIBUTED PARAGRAPH KEEPS ITS `<p>` -- NORMATIVE
          [CARVE-P9-081]. In a tight item, a paragraph that carries block
          attributes renders as `<p>` with those attributes; the item stays
@@ -271,8 +271,11 @@
          the marker and its block refuse it. Invisible lines between the
          marker and the next line are skipped: they are read in the host, and
          the gates apply to the first visible line after them (carve#4449).
-         An invisible line off the marker column is itself that next line, and
-         a note definition's body belongs to the note. A blank line, the end of
+         Link, note and abbreviation definitions are one class here (CARVE-P9-013):
+         an abbreviation definition the `+` skips defines in the document when
+         the host stands in the document. Under a host in a quote, an item or a
+         div the line is text (CARVE-P12-026), so it is the next line. An invisible line off the marker column is itself that
+         next line, and a note definition's body belongs to the note. A blank line, the end of
          input or a sibling after them refuses the `+`. Examples, with `/` for
          a line break:
 
@@ -287,13 +290,10 @@
          - `- a` / `  - +` / `para` is refused: the inner marker column is 2.
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.
          - `- +` / `- b` is refused: `<li>+</li>` and a sibling item.
-         - `- +` / `%% c` / `text` gives the item the paragraph, and a
-           `%%%` comment fence reads the same. A `{% c %}` line is not one of
-           these: it is a paragraph holding an inline comment (CARVE-P9-042),
-           so the `+` attaches that paragraph, and `- +` / `{% c %}` / `# H`
-           gives an empty `<li>` and a heading after the list.
-           `- a` / `+` / `{x}` / `text`
-           gives the item `<p x="">`.
+         - `- +` / `%% c` / `text` gives the item the paragraph, and any
+           spelling of the comment reads the same. `- a` / `+` / `{x}` / `text`
+           gives the item `<p x="">`. `- +` / `*[A]: b` / `text` gives the
+           item `text` and defines `A`.
          - `- +` / `%% c` / blank / `text` is refused: `<li>+</li>` and a
            paragraph. So is `- +` / `%% c` / `- b`: `<li>+</li>` and a sibling
            item.
@@ -335,12 +335,10 @@
          the list.
 
       L5 NOT CONTINUATION CONTAINERS (a lone `+` keeps its plain meaning):
-         - fenced containers (admonition / generic div / line block /
-           fenced block quote `::: >`) --
+         - fenced containers (admonition / generic div / line block) --
            their bodies already hold flush-left blocks; a lone `+` inside
            is literal text;
-         - TABLE -- a `+` as a row's first non-indent character is the
-           continuation ROW (§5 T6), a
+         - TABLE -- a first-column `+` is the continuation ROW (§5 T6), a
            distinct construct;
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.

@@ -569,9 +569,7 @@ task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
    block can sit beside the box, and only a paragraph carries inline text, so
    an item whose first block is a quote, a fence, a `:::` div, a table, a
    heading or a thematic break takes NO `aria-label` - as does one whose first
-   paragraph derives to the empty string, or one whose first block is a
-   paragraph holding only a resolved image, which promotes to a block image
-   (corpus 695, 696): `- [ ] ![x](x)` is unnamed. The checkbox and its state are still
+   paragraph derives to the empty string. The checkbox and its state are still
    written in every one of those leads, which is the rule directly above. *)
 
 (* --- Definition Lists --- *)

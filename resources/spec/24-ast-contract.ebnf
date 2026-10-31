@@ -75,7 +75,10 @@
       or a div, the line is not a definition at all: it is ordinary paragraph
       text, it defines nothing, and it is preserved as the text the author
       typed. A line that misses every frame below one is not written inside it: it
-      is a direct child of the document (PART 9 §10).
+      is a direct child of the document (PART 9 §10). Neither is a definition
+      line a `+` skips on its way to its block when the `+`'s host stands in
+      the document: `- +` / `*[A]: b` / `text` gives the item `text` and
+      defines `A` (CARVE-P9-067, carve#4449).
 
           > *[HTML]: Hyper Text
 
@@ -132,10 +135,7 @@
       boolean means: every description renders its children as BLOCKS. Absent,
       each description derives its own wrapper from its own block count -- one
       block renders inline, two or more render as blocks -- which is what every
-      definition list written without the key does. The count is of RENDERED
-      blocks: a comment block is kept in the tree but renders nothing
-      (CARVE-P9-013), so it does not count, and `:: t` / `: x` / `  %% c`
-      gives `<dd>x</dd>`.
+      definition list written without the key does.
 
         {"type":"definition_list","loose":true,"items":[
           {"type":"definition_term","children":[...]},

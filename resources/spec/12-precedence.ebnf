@@ -23,10 +23,8 @@
    Recognition order is NOT interruption: which of these may interrupt an
    open paragraph is PART 9 §10.
 
-   Trailing line comments (%%, PART 9 §21) are cut as pass P1 reaches them,
-   so `*a %% c* d` renders `*a`. An atom or attached attribute run that starts
-   before the `%%` holds it: `` `a %% b` ``, `{# a %% b #}`,
-   `[a](/u "t %% b")` and `*x*{k="b %% c"}` all keep their `%%`.
+   Trailing line comments (%%, PART 9 §21) are cut from a run before its
+   inline passes, so `*a %% c* d` renders `*a`.
 
    Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
    the order of its atom table (escapes, code spans, math, inline
