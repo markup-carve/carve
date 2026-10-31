@@ -1021,8 +1021,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "          if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)\n          list.tight = false\n          if (col === contentCol) subCol = -1",
-          "replace": "          if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)\n          if (!matchMarkerAt(indentCols(head.text))) list.tight = false\n          if (col === contentCol) subCol = -1"
+          "find": "          if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)\n          if (!firstVisible) list.tight = false\n          if (col === contentCol) subCol = -1",
+          "replace": "          if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)\n          if (!firstVisible && !matchMarkerAt(indentCols(head.text))) list.tight = false\n          if (col === contentCol) subCol = -1"
         }
       ]
     },

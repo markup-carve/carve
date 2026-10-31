@@ -202,6 +202,18 @@
          is loose. `text` is a second paragraph, the blank line precedes it,
          and the comment renders nothing.
 
+         An invisible LEAD is not a first block either (carve#4639): when only
+         invisible lines precede the blank, the paragraph after it is the
+         item's first visible block, and the blank loosens nothing. Removing
+         the lead must not change the output.
+
+             - %% c
+
+               Body.
+             - x
+
+         is tight, and so is the same item led by `[r]: /u`.
+
       L1c THE BLANK IS READ AT THE LIST'S LEVEL, NOT THE ITEM'S. L1's first
          disjunct asks what stands BETWEEN one item and the next sibling
          marker. A blank line with nothing of the item after it stands between

@@ -4328,7 +4328,9 @@ EOF = (* end of file *) ;
       changes the open container (PART 2, the caption's `blank_line`), and is
       not one of the blanks that allowance counts -- see CARVE-P9-080. A bare
       `>` that continues the host quote changes nothing: `> q`, `>`, `^ cap`
-      captions the quote.
+      captions the quote. An accepted `+` reads the next line inside its
+      host, and that line never captions the host itself (carve#4639): `> q`,
+      `+`, `^ c` is a quote holding the paragraphs `q` and `^ c`.
 
       THE SEVENTH IS THE SECOND SPELLING OF THE SECOND. `quote_block` is a
       block quote and captions as a figure. Like `figure_group`, its caption
@@ -6221,6 +6223,18 @@ EOF = (* end of file *) ;
 
          is loose. `text` is a second paragraph, the blank line precedes it,
          and the comment renders nothing.
+
+         An invisible LEAD is not a first block either (carve#4639): when only
+         invisible lines precede the blank, the paragraph after it is the
+         item's first visible block, and the blank loosens nothing. Removing
+         the lead must not change the output.
+
+             - %% c
+
+               Body.
+             - x
+
+         is tight, and so is the same item led by `[r]: /u`.
 
       L1c THE BLANK IS READ AT THE LIST'S LEVEL, NOT THE ITEM'S. L1's first
          disjunct asks what stands BETWEEN one item and the next sibling

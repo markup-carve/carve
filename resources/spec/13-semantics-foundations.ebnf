@@ -37,7 +37,9 @@
       changes the open container (PART 2, the caption's `blank_line`), and is
       not one of the blanks that allowance counts -- see CARVE-P9-080. A bare
       `>` that continues the host quote changes nothing: `> q`, `>`, `^ cap`
-      captions the quote.
+      captions the quote. An accepted `+` reads the next line inside its
+      host, and that line never captions the host itself (carve#4639): `> q`,
+      `+`, `^ c` is a quote holding the paragraphs `q` and `^ c`.
 
       THE SEVENTH IS THE SECOND SPELLING OF THE SECOND. `quote_block` is a
       block quote and captions as a figure. Like `figure_group`, its caption
