@@ -470,6 +470,15 @@ function isCaptionableParagraph(para) {
   // never had to exclude one.
   layoutWork.captionHost += para.length
   const line = para.map(trimLineEnd).join('\n')
+  const host = captionHostShape(line)
+  if (host !== null) return host
+  // A comment renders nothing (PART 9R R7); promotion re-checks the rendered tree.
+  // A braced comment keeps the whitespace around it, so it holds a place until the line end is trimmed.
+  const quiet = line.replace(/\{%(?:(?!%\})[\s\S])*%\}/g, '\u0001').split('\n')
+    .map((l) => trimLineEnd(l.replace(/(^|[ \t])%%.*$/, '$1'))).join('\n').replaceAll('\u0001', '')
+  return quiet === line ? null : captionHostShape(quiet)
+}
+function captionHostShape(line) {
   if (line.startsWith('$$`')) {
     const close = line.indexOf('`', 3)
     if (close < 0) return 'math'
@@ -483,12 +492,7 @@ function isCaptionableParagraph(para) {
   // destination, a `)` in the title and a quoted `}` in the block all count
   // (carve#2122).
   if (line.slice(altEnd).includes('\n')) return null
-  if (isImageSource(line)) return 'image'
-  // A comment renders nothing (PART 9R R7); promotion re-checks the rendered tree.
-  // A braced comment keeps the whitespace around it, so it holds a place until the line end is trimmed.
-  const quiet = line.replace(/\{%(?:(?!%\})[\s\S])*%\}/g, '\u0001').split('\n')
-    .map((l) => trimLineEnd(l.replace(/(^|[ \t])%%.*$/, '$1'))).join('\n').replaceAll('\u0001', '')
-  return quiet !== line && isImageSource(quiet) ? 'image' : null
+  return isImageSource(line) ? 'image' : null
 }
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
@@ -2735,6 +2739,19 @@ function bodyHoldsOpenCommentSpan(bodyLines, closerAhead = null) {
   return bodyOpenCommentRun(bodyLines, closerAhead) !== null
 }
 
+// A body clear of live spans stays clear until another comment fence joins it,
+// because closers ahead only run out. So each body line is read once.
+function liveSpanTest(bodyLines, holds) {
+  let clearTo = 0
+  return () => {
+    while (clearTo < bodyLines.length && !COMMENT_FENCE.test(stripLazy(bodyLines[clearTo]))) clearTo++
+    if (clearTo === bodyLines.length) return false
+    if (holds()) return true
+    clearTo = bodyLines.length
+    return false
+  }
+}
+
 const keptCommentDelimiter = (line) => {
   const { col, rest } = indentCols(line)
   return col > 0 ? ' ' + rest : rest
@@ -3295,6 +3312,15 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     }
     if (reached === 0 && ABBR_DEF.test(m.rest)) abbreviationsInDocument.add(at)
     const form = classify(m.rest, owner, at, m.col)
+    // A lazy line folds into a line block's open stanza and closes nothing,
+    // so the block's closer still finds it (PART 0 S4).
+    if (inner.kind === 'fence' && inner.lineBlock && missed && form.kind === 'text' && !isBlank(lines[at - 1]) && at - 1 > inner.line) {
+      frames.push(inner)
+      lead(m.col)
+      result.push(out + src)
+      if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
+      continue
+    }
     // Past a missed note a marker opens only beside a missed list; the note's
     // open paragraph is not the item's own, so no owner takes a sublist (carve#4160).
     const missedNote = missed && frames.slice(reached + 1).some((f) => f.kind === 'note')
@@ -3320,7 +3346,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
           (sameAxes(markerAxes(frames[reached + 1].marker), form.marker) ||
            m.col === Math.min(frames[reached + 1].listCol, frames[reached + 1].markerCol) ||
            m.col <= frames[reached].col)) &&
-        !(missedNote && form.kind === 'item' && frames.slice(reached + 1).some((f) => f.kind === 'item'))) {
+        !(missedNote && form.kind === 'item' && missedFrames.some((f) => f.kind === 'item') &&
+          !missedFrames.some((f) => f.kind === 'item' && m.col > f.markerCol && m.col < f.col && !sameAxes(markerAxes(f.marker), form.marker)))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
       // the frame it missed. Past a missed note it is framed LAZY in the
       // deepest container, so every reader folds it there (carve#3885).
@@ -3573,7 +3600,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
           }
           return
         }
-        frame.boxGap = form.boxGap
         return content(frame, col + form.head, canon + form.head, form.leadTab)
       }
     }
@@ -3610,7 +3636,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       }
       const col = start + m.col
       lead(m.col)
-      apply(frame, col, form, canon + m.col, frame.kind === 'note' ? frame.reader : frame.reader + canon + m.col - frame.canon - (form.kind === 'item' ? frame.boxGap ?? 0 : 0))
+      apply(frame, col, form, canon + m.col, frame.kind === 'note' ? frame.reader : frame.reader + canon + m.col - frame.canon)
     }
   }
   const walked = frameTextFences(result, textFences)
@@ -3901,8 +3927,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     if (marker) {
       const head = rest.length - marker.text.length
       return { kind: 'item', width: marker.markerWidth, head, interrupts: false,
-        // The readers measure a child past the box as four columns, whatever gap precedes it (§24 C3).
-        boxGap: marker.task === undefined ? 0 : head - marker.markerWidth - taskBoxWidth(marker),
         axes: marker.isOrdered ? `${marker.delim}` : marker.bullet, marker, leadTab: marker.leadTab }
     }
     if (DEFLIST_TERM.test(rest)) return { kind: 'term', interrupts: true }
@@ -4533,7 +4557,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const text = trimWs(line)
         push(top
           ? { t: 'includeLiteral', text, inline: directive.quoted }
-          : { t: 'para', lines: [directive.quoted ? text : text.replace(/[!-/:-@[-`{-~]/g, '\\$&')] })
+          : { t: 'para', lines: [directive.quoted ? text : text.replace(/[!-/:-@[-`{-~]/g, '\\$&')], literalDirective: true })
       }
       const invalid = selections > 1 || hasInvalidCodeLanguage(directive) || (options.has('rows') && (!tableInclude || !range))
         || (options.has('cols') && !tableInclude)
@@ -4651,6 +4675,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let retainedParagraph = false
       let lazyParagraphOpen = null
       let openFence = -1
+      const missedLiveSpan = liveSpanTest(bodyLines, () => bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom), (run) => lastCommentCloserIn(state, lines, run) >= i))
       const endsNoteAt = (at) => (ind(at)?.col === 0 && FOOTNOTE_DEF.test(ind(at).rest)) ||
         (isBlank(lines[at]) && footnoteBlankRunEnd(lines, at, n) === -1)
       // Lazy lines open no fence and only shorten the closer search, so a
@@ -4684,6 +4709,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !attachPending) break
         // PART 0 [B-term-keep]: a marker that misses the note's body leaves a term (carve#4300).
         if (measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !attachPending && bodyEndsInTerm(bodyLines)) break
+        // A line that misses the note ends a comment span the body holds, and the body (PART 0 S1).
+        if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN && !COMMENT_LINE.test(lines[i] ?? '') && !attachPending && missedLiveSpan()) break
         if (isBlank(lines[i])) afterComment = false
         if (measured.col >= FOOTNOTE_BODY_COLUMN || isBlank(lines[i])) {
           retainedParagraph = false
@@ -5152,6 +5179,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           let retainedParagraph = false
           const sinceComment = () => commentTailSince(bodyLines, ddScanFrom)
           const bodyHoldsLiveSpan = () => bodyHoldsOpenCommentSpan(sinceComment(), (run) => lastCommentCloserIn(state, lines, run) >= i)
+          const missedLiveSpan = liveSpanTest(bodyLines, bodyHoldsLiveSpan)
           let openFence = -1
           let nestedLeadFenceColumn = descriptionLeadHasUnterminatedNestedFence(
             bodyLines[0] ?? '', lines, i, bodyColumn, endsBodyAt,
@@ -5290,6 +5318,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 !reachesBody(i) &&
                 matchMarkerAt(indentCols(dedented)) &&
                 !quoteParagraphClaim()) break
+            // A line that misses the body ends a comment span it holds, and the body (PART 0 S1).
+            if (!COMMENT_LINE.test(dedented) && missedLiveSpan()) break
             if (COMMENT_LINE.test(dedented) && !bodyHoldsLiveSpan()) {
               openFence = bodyHasFenceCandidate
                 ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt)
@@ -6036,7 +6066,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (comment && qHost.colons?.at(-1)?.mode !== 'line-block') {
           for (let j = idx + 1; j < n; j++) {
             const quoted = QUOTE.exec(lines[j] ?? '')
-            if (!quoted) break
+            // An unmarked nonblank line ends the span and the quote (PART 0 S1), it hides no closer.
+            if (!quoted && isBlank(lines[j] ?? '')) break
+            if (!quoted) continue
             const close = COMMENT_FENCE_BODY.exec(quoted[1] ?? '')
             if (close && close[1].length === comment[1].length) {
               openComment = comment[1].length
@@ -7080,9 +7112,9 @@ function matchMarkerAt(meas, tabOrigin = 0) {
       task: m[5],
       text: m[6],
       // The task box is CONTENT and the attribute block is item METADATA, so
-      // neither moves the bare marker's content column (carve#1701). The
-      // whitespace branch keeps an ordinary marker's authored separator run.
-      markerWidth: m[2].length + (m[5] !== undefined ? 1 : whitespaceWidth),
+      // neither moves the bare marker's content column (carve#1701). Every
+      // marker keeps its authored separator run (CARVE-P9-083).
+      markerWidth: m[2].length + whitespaceWidth,
     }, tabOrigin)
   }
   m = ORDERED.exec(line)
@@ -9599,6 +9631,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       (state.itemRelativeTermColumns ??= new WeakSet()).add(itemLines)
     }
     item.blocks = state.measuringListExtent ? [] : parseBlocks(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
+    // A literal directive ends its own line (PART 10 I2), so a paragraph after it is a genuine second one (§17 L2).
+    if (item.blocks.some((b, k) => k > 0 && b.t === 'para' && item.blocks[k - 1].literalDirective)) list.tight = false
     let beforeBlock = item.blocks.length
     for (let gap = captionGaps.length - 1; gap >= 0; gap--) {
       const { line, text } = captionGaps[gap]

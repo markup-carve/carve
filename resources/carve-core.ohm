@@ -404,8 +404,10 @@ CarveCore {
   // behind it is what carries the arrow, and this rule skips that run.
   // A matched insertion or deletion is an E2a boundary too, so its `~>` and
   // `~}` are its own (PART 9 SS22).
-  edSubAtom  = ~unclosedRun (escape | codeClosed | bracedComment | edCommentBody | forcedSpan
-             | edInsBody | edDelBody | noteRefBody | nested | edChar)
+  // An attribute run glued to an atom or a formed span is consumed (PART 9 SS22
+  // R3), so its characters supply no arrow and no closer.
+  edSubAtom  = ~unclosedRun (escape | edSubAttached | bracedComment | edCommentBody | forcedSpan | symbolAttr | edChar)
+  edSubAttached = (codeClosed | edInsBody | edDelBody | noteRefBody | nested) attrRun?
   edComment  = edCommentBody
   // The body, without the attribute block - see `litInlineBody`.
   edCommentBody = "{#" ~graphemeExt (~"#}" edChar)+ "#}"

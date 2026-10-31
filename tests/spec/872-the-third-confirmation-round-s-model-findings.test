@@ -1,0 +1,244 @@
+The third confirmation round's model findings
+
+```
+- [^q]: note
+ * child
+
+r[^q]
+.
+<ul>
+  <li></li>
+</ul>
+<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note
+* child<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> - [^q]: n
+>  * c
+
+r[^q]
+.
+<blockquote>
+  <ul>
+    <li></li>
+  </ul>
+</blockquote>
+<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n
+* c<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- ::: |
+  a
+lazy
+  :::
+tail
+.
+<ul>
+  <li>
+    <div class="line-block">
+      <p>a<br>
+lazy</p>
+    </div>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+:: t
+: ::: |
+  a
+lazy
+  :::
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <div class="line-block">
+      <p>a<br>
+lazy</p>
+    </div>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+```
+{#t}
+| b |
+^ #y#
+
+</#t>
+.
+<table id="t">
+  <caption><span class="tag"><strong>#y</strong></span>1</caption>
+  <tbody>
+    <tr><td>b</td></tr>
+  </tbody>
+</table>
+<p><a href="#t"><span class="tag"><strong>#y</strong></span> 1</a></p>
+```
+
+```
+| b |
+^ *a*#
+.
+<table>
+  <caption><strong>a</strong>1</caption>
+  <tbody>
+    <tr><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+> %%%
+> x
+y
+> %%%
+.
+<blockquote><p>x</p></blockquote>
+<p>y</p>
+<blockquote>
+
+</blockquote>
+```
+
+```
+:: t
+: %%%
+  x
+y
+  %%%
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>y</p>
+```
+
+```
+[^n]: %%%
+  x
+y
+  %%%
+
+r[^n]
+.
+<p>y</p>
+<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+-   [ ] q
+  # H
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="q"> q</li>
+</ul>
+<section id="H">
+  <h1>H</h1>
+</section>
+```
+
+```
+-   [ ] q
+   - [ ] r
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="q"> q</li>
+  <li><input type="checkbox" disabled aria-label="r"> r</li>
+</ul>
+```
+
+```
+- {{ _x_ @code:js }}
+  ^ c
+.
+<ul>
+  <li><p>{{ _x_ @code:js }}</p>
+    <p>^ c</p>
+  </li>
+</ul>
+```
+
+```
+{~`a`{k="~>"}b~}
+.
+<p><s><code k="~&gt;">a</code>b</s></p>
+```
+
+```
+{~{+a+}{k="~>"}b~}
+.
+<p><s><ins k="~&gt;">a</ins>b</s></p>
+```
+
+```
+{~p~>[x](/u){k="~}"}b~}
+.
+<p><del>p</del><ins><a href="/u" k="~}">x</a>b</ins></p>
+```
+
+```
+$$`a` %% c
+^ cap
+.
+<figure>
+  <p><span class="math display" role="math">\[a\]</span></p>
+  <figcaption>cap</figcaption>
+</figure>
+```
+
+```
+{%%}![a](/i)
+^ cap
+.
+<figure>
+  <img src="/i" alt="a">
+  <figcaption>cap</figcaption>
+</figure>
+```
+
+```
+{CLASS=c}
+- [ ] a
+.
+<ul CLASS="task-list c">
+  <li><input type="checkbox" disabled aria-label="a"> a</li>
+</ul>
+```
+
+```
+$`a`{CLASS=c}
+.
+<p><span CLASS="math inline c" role="math">\(a\)</span></p>
+```

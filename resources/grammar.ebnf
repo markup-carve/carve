@@ -5217,7 +5217,9 @@ EOF = (* end of file *) ;
 
       SUBSTITUTION. A `{~` span is a substitution when its content holds a
       `~>` at its own level, outside every atom and formed nested span; the
-      arrow is found before either side is read. The first such `~>` splits
+      arrow is found before either side is read. An attribute run an atom or
+      a formed nested span holds under R3 holds no arrow; a brace group after
+      a bare closer is not yet read as a run, so its `~>` counts. The first such `~>` splits
       it into two regions: {~old~>new~} ->
       <del>old</del><ins>new</ins>. The span's extent is the one its own
       reading found, and nothing read in a side reaches past it:

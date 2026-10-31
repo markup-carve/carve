@@ -81,8 +81,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "markerWidth: m[2].length + (m[5] !== undefined ? 1 : whitespaceWidth),",
-          "replace": "markerWidth: m[2].length + (m[3]?.length ?? 0) + (m[5] !== undefined ? 1 : whitespaceWidth),"
+          "find": "markerWidth: m[2].length + whitespaceWidth,",
+          "replace": "markerWidth: m[2].length + (m[3]?.length ?? 0) + whitespaceWidth,"
         }
       ]
     },
@@ -1645,8 +1645,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "markerWidth: m[2].length + (m[5] !== undefined ? 1 : whitespaceWidth),",
-          "replace": "markerWidth: m[2].length + (m[3] ?? '').length + (m[5] !== undefined ? 1 : whitespaceWidth),"
+          "find": "markerWidth: m[2].length + whitespaceWidth,",
+          "replace": "markerWidth: m[2].length + (m[3] ?? '').length + whitespaceWidth,"
         }
       ]
     },
