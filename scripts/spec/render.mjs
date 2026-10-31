@@ -806,6 +806,8 @@ export const classTokens = (a) => {
 // PART 10 SS1: HTML attribute names compare ASCII case-insensitively in every merge.
 const foldName = (name) => name.replace(/[A-Z]/g, (c) => c.toLowerCase())
 export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && foldName(a[1]) === 'class')
+// A base class joins the authored slot, so it takes the slot's spelling (PART 10 SS1).
+export const baseClass = (slot, value) => slot === undefined || slot[0] === 'class' ? ['class', value] : ['kv', slot[1], value]
 // An `id` key spells the id slot, as a `class` key spells the class slot, and
 // CARVE-P9-054 does not probe the slot (carve#4516). A bare `id` is `id=""`.
 export const idSlot = (a) => a[0] === 'id' ? a[1] : foldName(a[1]) !== 'id' ? null : a[0] === 'kv' ? a[2] : a[0] === 'bool' ? '' : null
@@ -1127,7 +1129,7 @@ const sem = g.createSemantics().addOperation('h', {
     const firstClass = list.findIndex(isClass)
     const merged = firstClass === -1
       ? [['class', `ext-${n}`], ...list]
-      : [...list.slice(0, firstClass), ['class', `ext-${n}`], ...list.slice(firstClass)]
+      : [...list.slice(0, firstClass), baseClass(list[firstClass], `ext-${n}`), ...list.slice(firstClass)]
     return `<span${renderAttrs(merged)}>${inner}</span>`
   },
   spComment(_sp, _pp, _rest) {
@@ -2216,7 +2218,7 @@ function mathSpan(kind, code, attrs) {
   // `class` attribute for the `class=V` and bare-`class` spellings of the same
   // slot, which CARVE-P4-007 forbids (carve#2460).
   const firstClass = list.findIndex(isClass)
-  const base = [['class', 'math'], ['class', kind]]
+  const base = [baseClass(list[firstClass], 'math'), baseClass(list[firstClass], kind)]
   const merged = firstClass === -1
     ? [...base, ...list]
     : [...list.slice(0, firstClass), ...base, ...list.slice(firstClass)]

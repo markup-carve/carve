@@ -536,7 +536,7 @@
 {"id":"lazy-6fe753e2df90","source":"\ntail\n","html":"<p>tail</p>"},
 {"id":"lazy-703a94497381","source":"- x\n   > a\nd\n  > b\n","html":"<ul>\n  <li>x\n    <blockquote><p>a\nd\nb</p></blockquote>\n  </li>\n</ul>"},
 {"id":"lazy-70aa70a1b480","source":"|= a |= bb |\n> :::note\n> :::\ntail\n","html":"<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">bb</th></tr>\n  </thead>\n</table>\n<blockquote><p>:::note\n:::\ntail</p></blockquote>"},
-{"id":"lazy-70acba91ccbd","source":"- intro\n > ```\n- ::: |\n  > code\nafter\n  > ```\n","html":"<ul>\n  <li>intro</li>\n</ul>\n<blockquote>\n  <pre><code></code></pre>\n</blockquote>\n<ul>\n  <li>\n    <div class=\"line-block\">\n      <p>&gt; code<br>\nafter</p>\n    </div>\n  </li>\n</ul>\n<blockquote>\n  <pre><code></code></pre>\n</blockquote>"},
+{"id":"lazy-70acba91ccbd","source":"- intro\n > ```\n- ::: |\n  > code\nafter\n  > ```\n","html":"<ul>\n  <li>intro</li>\n</ul>\n<blockquote>\n  <pre><code></code></pre>\n</blockquote>\n<ul>\n  <li>\n    <div class=\"line-block\">\n      <p>&gt; code<br>\nafter<br>\n&gt; <code></code></p>\n    </div>\n  </li>\n</ul>"},
 {"id":"lazy-70afe541d3be","source":">      child\n>       ```\n>       x\n>       ```\n>   ~~~\n after\n","html":"<blockquote>\n  <p>child</p>\n  <pre><code>x\n</code></pre>\n  <pre><code></code></pre>\n</blockquote>\n<p>after</p>"},
 {"id":"lazy-70bafa576197","source":">  a\n> ```\n> c\n> ```\ny\n\n","html":"<blockquote>\n  <p>a</p>\n  <pre><code>c\n</code></pre>\n</blockquote>\n<p>y</p>"},
 {"id":"lazy-70c7230242fd","source":"> :: t\n> :  d\n>     - ```\n\n>      x\nflush\n","html":"<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>d\n- <code></code></dd>\n  </dl>\n</blockquote>\n<blockquote><p>x\nflush</p></blockquote>"},

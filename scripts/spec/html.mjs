@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, renderInline, renderCellInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, renderInline, renderCellInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, baseClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -978,10 +978,10 @@ function renderList(list, depth, ctx) {
 function withTaskListClass(list) {
   const lists = list.battrs ?? []
   if (!list.task) return lists
-  const base = ['class', 'task-list']
   const at = lists.findIndex((attrs) => attrs.some(isClass))
-  if (at === -1) return [[base], ...lists]
+  if (at === -1) return [[baseClass(undefined, 'task-list')], ...lists]
   const first = lists[at].findIndex(isClass)
+  const base = baseClass(lists[at][first], 'task-list')
   return lists.map((attrs, i) => (i === at ? [...attrs.slice(0, first), base, ...attrs.slice(first)] : attrs))
 }
 
@@ -1168,7 +1168,8 @@ function numberCaption(text, ctx, rawId, rawPanelIds) {
       register(pid, `${shown === '' ? '' : `${shown} `}${n}${panelLetter(k)}`)
     })
   }
-  return text.slice(0, at) + n + text.slice(at + 1)
+  // The comment ends a tag or mention name before the number can join it (CARVE-P2-022).
+  return text.slice(0, at) + (at > 0 ? '{%%}' : '') + n + text.slice(at + 1)
 }
 
 function tableBodyGroups(keys, rows) {
