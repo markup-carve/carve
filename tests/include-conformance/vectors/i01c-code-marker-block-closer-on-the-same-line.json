@@ -12,7 +12,7 @@
     "a.css": "/* #region demo\n*/\np {}\n/* #endregion demo */\n"
   },
   "expected": {
-    "html": "<p>{{ a.css <span class=\"mention\"><strong>@region</strong></span>:demo <span class=\"mention\"><strong>@code</strong></span>:css }}</p>",
+    "html": "<p>{{ a.css @region:demo @code:css }}</p>",
     "fmt": "{{ a.css @region:demo @code:css }}\n",
     "warnings": [
       {

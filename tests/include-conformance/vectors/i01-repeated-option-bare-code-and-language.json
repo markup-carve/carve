@@ -13,7 +13,7 @@
     "a.js": "one()\n"
   },
   "expected": {
-    "html": "<p>{{ a.js <span class=\"mention\"><strong>@code</strong></span> <span class=\"mention\"><strong>@code</strong></span>:js }}</p>",
+    "html": "<p>{{ a.js @code @code:js }}</p>",
     "fmt": "{{ a.js @code @code:js }}\n",
     "warnings": [
       {

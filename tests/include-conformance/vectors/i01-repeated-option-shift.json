@@ -12,7 +12,7 @@
     "a.js": "one()\ntwo()\nthree()\n"
   },
   "expected": {
-    "html": "<p>{{ a.js <span class=\"mention\"><strong>@shift</strong></span>:1 <span class=\"mention\"><strong>@shift</strong></span>:2 <span class=\"mention\"><strong>@code</strong></span> }}</p>",
+    "html": "<p>{{ a.js @shift:1 @shift:2 @code }}</p>",
     "fmt": "{{ a.js @shift:1 @shift:2 @code }}\n",
     "warnings": [
       {

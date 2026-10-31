@@ -12,7 +12,7 @@
     "a.js": "x()\n"
   },
   "expected": {
-    "html": "<p>{{ a.js <span class=\"mention\"><strong>@code</strong></span>:=html }}</p>",
+    "html": "<p>{{ a.js @code:=html }}</p>",
     "fmt": "{{ a.js @code:=html }}\n",
     "warnings": [
       {

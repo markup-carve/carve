@@ -126,7 +126,7 @@ export const vectors = [
   },
   {
     name: 'i01-inverted-line-range',
-    description: 'An inverted line range is not a valid option; warns and stays literal.',
+    description: 'A reversed @lines range warns as include-lines-invalid, stays literal, and retains its resolved dependency.',
     rules: ['I1'],
     mode: 'virtual',
     resolver: 'virtual',
