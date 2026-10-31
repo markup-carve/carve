@@ -577,9 +577,11 @@ alt_text = {character} ;
    `![x /b/ y](/u)` gives `alt="x /b/ y"`. Resolve `escaped_char` in
    the scalar value: `![x \] y](/u)` gives `alt="x ] y"`, and `\|` gives
    a literal pipe, including in a table cell. A backslash before a
-   non-punctuation character stays literal. Nested links, images and literal
-   span delimiters contribute text rather than elements; escape decoding does
-   not invoke inline parsing. The matching close uses
+   non-punctuation character stays literal. Nested links and images contribute
+   their full source spelling, including brackets, destinations and titles,
+   to the scalar alt value; they do not become elements. Literal span
+   delimiters likewise contribute text. Escape decoding does not invoke
+   inline parsing. The matching close uses
    `link_text`, less the `{% %}` skip above; the value remains scalar. *)
 image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;

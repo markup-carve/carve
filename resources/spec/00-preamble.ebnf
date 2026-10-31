@@ -46,6 +46,8 @@
                  end of line).
    Character classes for guards: ws = space | tab | newline; alnum =
    letter | digit; punct = ascii_punctuation; non_ws = character - ws.
+   The letter and digit terminals are the ASCII enumerations in PART 7;
+   a non-ASCII letter does not satisfy the alnum guard.
 
    NORMATIVITY
    - The files in resources/spec/*.ebnf are the NORMATIVE specification of
