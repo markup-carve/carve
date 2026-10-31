@@ -1171,7 +1171,9 @@ task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
    block can sit beside the box, and only a paragraph carries inline text, so
    an item whose first block is a quote, a fence, a `:::` div, a table, a
    heading or a thematic break takes NO `aria-label` - as does one whose first
-   paragraph derives to the empty string. The checkbox and its state are still
+   paragraph derives to the empty string, or one whose first block is a
+   paragraph holding only a resolved image, which promotes to a block image
+   (corpus 695, 696): `- [ ] ![x](x)` is unnamed. The checkbox and its state are still
    written in every one of those leads, which is the rule directly above. *)
 
 (* --- Definition Lists --- *)
@@ -1807,8 +1809,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    is. Neither the container the block sits in nor whether the closer was
    written is a parameter: an unterminated raw block runs to the end of
    whatever encloses it, and its payload still ends on the line before that
-   end. At the END of the document the payload's trailing newlines land where
-   the trailing-whitespace trim removes them.
+   end. At the END of the document only the payload's LAST newline is
+   dropped, as the fragment's final LF: a payload of `a` and two blank lines
+   writes `a` and two LF. An all-blank payload keeps all of its newlines (the
+   paragraph below).
 
    AN ALL-BLANK PAYLOAD IS NOT AN ABSENT BLOCK. If the sole line between the
    delimiters is blank, that line is still the payload and contributes its
@@ -1853,7 +1857,9 @@ raw_content = (* any content until closing fence *) ;
    a construct is not trailing either -- `x<SP>` inside a code span, a literal
    inline or a table cell ends at the construct's delimiter, not at the line's
    end, and the line-break backslash likewise leaves the run before it
-   interior.
+   interior. A code span that crosses a line end still loses that line's final
+   run: `` `a<TAB> `` over `` b` `` is `<code>a` and a newline and `b</code>`,
+   while `` `a<TAB>` `` keeps the tab.
 
    THE LINE BLOCK IS THE ONE EXCEPTION OUTSIDE VERBATIM CONTENT
    (CARVE-P7-001 item 5): PART 9 §23 MEDIAL GAPS converts an INNER or
@@ -2610,8 +2616,8 @@ reference_footnote = "[^", footnote_label, ']', [attribute_run] ;
 footnote_label = {character - ']' - newline}+ ;
 inline_footnote = "^[", inline_content, ']', [attribute_run] ;
 (* the closing `]` is the balanced, escape- and LITERAL-SPAN-aware close
-   (PART 9 §16) -- the same scan `link_text` states, and the same three spans
-   it skips; footnote recognition is DISABLED inside the content *)
+   (PART 9 §16) -- the same scan `link_text` states, and the same spans
+   it skips (CARVE-P3-001); footnote recognition is DISABLED inside the content *)
 
 footnote_definition = "[^", footnote_label, "]:", space+, inline_content, newline,
                       {footnote_continuation | continuation_marker_block
@@ -2738,9 +2744,10 @@ comment_content = (* any text until the matching `#}`, preserved literally;
    `{+a *b* c+}` really does emphasize `b`.
 
    AN ADDITION'S AND A DELETION'S CONTENT IS NON-EMPTY -- `inline_content` is a
-   `+` repetition, and `comment_content` says it too. `{++}`, `{--}` and `{##}`
-   are therefore text, under the same empty-brace clause the forced spans carry;
-   while braced dash and nonempty deletion spellings follow CARVE-P3-020.
+   `+` repetition, and `comment_content` says it too. `{++}` and `{##}` are
+   therefore text, under the same empty-brace clause the forced spans carry.
+   `{--}` is no deletion: it is the braced en dash, and it and the nonempty
+   deletion spellings follow CARVE-P3-020.
 
    `substitution` is NOT widened: a half-empty substitution is a real edit --
    `{~a~>~}` deletes and `{~~>b~}` inserts -- so the fully empty form follows CARVE-P3-014. `substitution` takes `inline_content` on both
@@ -2993,8 +3000,8 @@ smart_quote = '"' | "'" ;
    the locale's quote glyphs. Escaped `\"` and `\'` remain straight
    characters; code, raw content, URLs and attribute values are unchanged. *)
 
-arrow = "<--" | "-->" | "<-->"      (* → ← → ↔, canonical *)
-      | "<==" | "==>" | "<=>"       (* → ⇐ ⇒ ⇔ *)
+arrow = "<--" | "-->" | "<-->"      (* ← → ↔, canonical *)
+      | "<==" | "==>" | "<=>"       (* ⇐ ⇒ ⇔ *)
       | "<-" | "->" | "<->" ;       (* deprecated, still rendered *)
 (* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE [CARVE-P3-022].
    Matched longest-first, as `<->` already beats `<-`, so `<==` beats `<=` and
@@ -3013,7 +3020,10 @@ comparison = "!=" | "<=" | ">=" ;
 typographic_symbol = "(c)" | "(r)" | "(tm)" | "+-" ;
 
 (* --- Breaks --- *)
-hard_break = '\', newline ;  (* backslash at end of line *)
+hard_break = '\', ( newline | EOF | cell_content_end ) ;
+  (* backslash at the end of a line, of the document or of a trimmed table
+     cell (PART 9 §9's escape row) *)
+cell_content_end = (* the end of a table cell's content after trimming *) ;
 soft_break = newline ;        (* regular line ending within paragraph *)
 
 (* TYPOGRAPHY FLANK. The one class smart typography reads a neighbor
@@ -3379,7 +3389,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    `@code` option, is emitted as its source text with
    no inline parse of its tokens (carve#3803, corpus 715 and 735); emphasis
    or a link around it may still pair across it (carve#3804), and a token
-   inside it opens and closes nothing, in either direction (carve#4296). The rules a conforming PROCESSOR that
+   inside it opens nothing (carve#4296). An opener before it that closes on a
+   token inside it breaks the directive, whose text is then read as content:
+   `` `a *{{ `@lines:1 }}* `` is a code span and the rest (corpus 855). The rules a conforming PROCESSOR that
    DOES expand includes MUST follow:
 
    I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
@@ -3972,7 +3984,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
         recognizes nothing.
      4. INSIDE VERBATIM CONTENT -- fenced code and inline code spans -- a tab
         is PRESERVED verbatim and never expanded. Stated in full at TABS IN
-        CODE (PART 2).
+        CODE (PART 2). A tab that ends a line inside a code span is a
+        line-final run, which 5 drops.
      5. A LINE-FINAL RUN of spaces and tabs is INSIGNIFICANT. It is dropped
         before anything reads the line, so no production sees it and 3 applies
         to what precedes it: `{.a}<TAB>` is an attribute line and
@@ -4063,7 +4076,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
 (* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE [CARVE-P7-003]. The three
    terminals below are the whole of it, and no construct reads a wider class
-   except the three wider notions named at the end of this clause. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
+   except the four wider notions named at the end of this clause. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
    CARRIAGE RETURN, or the pair. `space` is the narrower slot that admits the
    first of those and nothing else. PART 0's guard notation spells the same
    set once more and adds nothing -- `ws = space | tab | newline`.
@@ -4182,8 +4195,10 @@ EOF = (* end of file *) ;
    Recognition order is NOT interruption: which of these may interrupt an
    open paragraph is PART 9 §10.
 
-   Trailing line comments (%%, PART 9 §21) are cut from a run before its
-   inline passes, so `*a %% c* d` renders `*a`.
+   Trailing line comments (%%, PART 9 §21) are cut as pass P1 reaches them,
+   so `*a %% c* d` renders `*a`. An atom or attached attribute run that starts
+   before the `%%` holds it: `` `a %% b` ``, `{# a %% b #}`,
+   `[a](/u "t %% b")` and `*x*{k="b %% c"}` all keep their `%%`.
 
    Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
    the order of its atom table (escapes, code spans, math, inline
@@ -4234,8 +4249,11 @@ EOF = (* end of file *) ;
       `quote_block`. The allowance is the same for all
       seven: adjacent OR exactly one blank line attaches, two blank lines
       detach and leave the `^ ` line an ordinary paragraph.
-      A STRUCTURAL-ONLY LINE between host and marker detaches too, and is
-      not one of the blanks that allowance counts -- see CARVE-P9-080.
+      A STRUCTURAL-ONLY LINE between host and marker detaches too where it
+      changes the open container (PART 2, the caption's `blank_line`), and is
+      not one of the blanks that allowance counts -- see CARVE-P9-080. A bare
+      `>` that continues the host quote changes nothing: `> q`, `>`, `^ cap`
+      captions the quote.
 
       THE SEVENTH IS THE SECOND SPELLING OF THE SECOND. `quote_block` is a
       block quote and captions as a figure. Like `figure_group`, its caption
@@ -4356,7 +4374,9 @@ EOF = (* end of file *) ;
       nothing a caption could be about, so it is not a captionable host.
       Comment, definition and attribute lines hold no content for this test
       either (CARVE-P0-011): `> %%` / `^ cap` captions nothing, as a bare
-      `>` does, while `> a %% c` still captions. This
+      `>` does, while `> a %% c` still captions. An abbreviation definition
+      is a definition at document level only (PART 5); in a quote it is
+      paragraph text, so `> *[A]: b` / `^ cap` captions. This
       says nothing about hosts delimited by an explicit closing fence, whose
       caption attaches at the closer: a zero-panel `::: figure` still carries
       its group caption (CARVE-P9-001).
@@ -4406,7 +4426,7 @@ EOF = (* end of file *) ;
          explicit positive `header-rows` marks that many leading rows. A value
          that is no count is absent for this rule, so the first row stays a
          header. A count past the last row marks every row a header cell and
-         synthesizes no partition (CARVE-P12), so they render in one body group
+         synthesizes no partition (CARVE-P12-034), so they render in one body group
          at row scope. The
          implicit header uses zero rows when the table is empty or the footer
          consumes every row; an explicit overlapping header and footer is
@@ -4539,8 +4559,10 @@ EOF = (* end of file *) ;
          a continuation joins is the row above it in the SOURCE. T7 CONSUMES
          the delimiter row - it produces no `<tr>` and is not a row of the
          table - so a `+` line directly under one has no row above it to join
-         and is ordinary prose. That is the ONLY case that declines, and
-         corpus 115 pins it.
+         and is ordinary prose, and corpus 115 pins it. An invisible line (a
+         `%%` comment, an attribute line) ends the table too, so a `+` line
+         after it is prose as well: `| a |`, `%% c`, `+ b |` is a table and a
+         paragraph `+ b |`.
 
          AND THE ROW ABOVE IS A LINE OF THE SAME CONTAINER. A table in a
          quote does not precede a continuation line lacking that quote's prefix.
@@ -5126,8 +5148,9 @@ EOF = (* end of file *) ;
         code span        a backtick run of length n, to the next run of
                          exactly n backticks; verbatim, and a glued
                          `{=format}` makes it raw inline. Unclosed, the rest
-                         of the block is code, inside a braced span or frame
-                         too (carve#3973 X5).
+                         of the block, or of an extension's content, is code,
+                         inside a braced span or frame too (carve#3973 X5):
+                         ``:foo[`a] b`` closes the extension at its `]`.
         math             a dollar sign or two before a code span, to the
                          code span's end; verbatim; unclosed as a code span.
         inline literal   `!` before a code span, as math.
@@ -5516,7 +5539,8 @@ EOF = (* end of file *) ;
         custom type still renders as its generic `<div class="{type}">`
         so the document stays readable. `details` is an ordinary Tier-2
         type (`<div class="details">`); an extension that wants the
-        HTML5 `<details>/<summary>` disclosure element opts in via §4.20.
+        HTML5 `<details>/<summary>` disclosure element registers for the
+        `details` type and post-processes that div, as above.
 
       Pinned rules common to both tiers:
         a. The class is the literal type identifier (Tier 1 prefixes it
@@ -5670,7 +5694,10 @@ EOF = (* end of file *) ;
         top-level headings (`# abc` then `> # abc` gives `abc` then
         `abc-2`), and it is a valid `</#id>` crossref target. The one
         exception is the implicit `[Heading][]` reference index, which
-        declines headings under a blockquote (PART 9R R1).
+        declines headings under a blockquote (PART 9R R1). Document order
+        has one exception: a footnote definition's headings take their ids
+        after every body heading, in definition order, so `[^n]: # abc`
+        written above `# abc` leaves the body `abc` and the note `abc-2`.
         When the `sections` option below is off, the top-level shape becomes
         identical to this one, so id
         placement and attribute placement follow ONE rule everywhere in
@@ -6041,12 +6068,12 @@ EOF = (* end of file *) ;
          ALL render WITHOUT `<p>` (<li>text</li>), every one of them, not
          only the first, except as CARVE-P9-081 below states; a loose
          item's paragraphs are ALL wrapped (<li><p>text</p></li>). An item can hold more than one paragraph
+         block and still be tight -- L2 and L6 below cover the ways that
+         happens without a blank line ever appearing.
          When the first visible block of an item is a paragraph, it follows
          the opening `<li>` directly, whether the list is tight or loose and
          whether later blocks follow it. Later visible blocks start on their
          own indented lines.
-         block and still be tight -- L2 and L6 below cover the ways that
-         happens without a blank line ever appearing.
          A TIGHT ITEM'S ATTRIBUTED PARAGRAPH KEEPS ITS `<p>` -- NORMATIVE
          [CARVE-P9-081]. In a tight item, a paragraph that carries block
          attributes renders as `<p>` with those attributes; the item stays
@@ -6228,7 +6255,8 @@ EOF = (* end of file *) ;
          - fenced containers (admonition / generic div / line block) --
            their bodies already hold flush-left blocks; a lone `+` inside
            is literal text;
-         - TABLE -- a first-column `+` is the continuation ROW (§5 T6), a
+         - TABLE -- a `+` as a row's first non-indent character is the
+           continuation ROW (§5 T6), a
            distinct construct;
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.
@@ -6401,8 +6429,10 @@ EOF = (* end of file *) ;
       classes/ids/keys) is raw passthrough: the verbatim span content
       is emitted UNESCAPED when `format` matches the output format (`html`),
       and DROPPED otherwise. The `{=format}` tag is consumed, not rendered.
-      A code span with any OTHER trailing `{…}` is a generic attributed code
-      span (PART 3 `code_span` note), not raw inline. The corpus pins this
+      A code span with any other VALID trailing attribute block is a generic
+      attributed code span (PART 3 `code_span` note), not raw inline. A
+      trailing `{…}` that is no valid attribute block stays text after the
+      span: `` `<br>`{=html .c} `` is `<code>&lt;br&gt;</code>{=html .c}`. The corpus pins this
       (tests/corpus/30-raw-inline):
         `<br>`{=html}   -> <br>            (emitted verbatim)
         `\foo`{=latex}  ->                (dropped in HTML output)
@@ -6418,7 +6448,9 @@ EOF = (* end of file *) ;
         cell, a figure caption, an admonition header, a container, link, span
         or fence label. A bracket run that stays literal, an inline note's body
         and an extension's content also hold a run, so a `%%` in one ends at its
-        closing `]`: `^[%% c] d` is an empty note and ` d`.
+        closing `]`: `^[%% c] d` is an empty note and ` d`. An unresolved
+        reference is its literal source, `%%` included: `[a %% c][b] d` stays
+        `[a %% c][b] d`, while `[a %% c] d` renders `[a] d`.
         Nothing else holds a run -- not markup INSIDE one, so
         an emphasis span's first content character does not start one; not a
         slot the grammar declares literal (`alt_text`, a code fence's
@@ -7149,8 +7181,10 @@ EOF = (* end of file *) ;
         warning channel.
       - PAYLOAD INDENTATION: after the enclosing container prefixes are removed,
         every body line MUST retain its remaining leading whitespace. The
-        opener's indentation establishes no additional payload base. A body
-        line below the host's content column loses only its available prefix
+        opener's indentation establishes no additional payload base. A closer
+        below the host's content column ends the span, but any other nonblank
+        line below that column ends the host first (corpus 508-5), so no body
+        line sits below it. A body line loses only its available prefix
         whitespace; its text is never removed. A tab crossing the host column
         retains its remaining columns as spaces (PART 9 §24 C5). At document
         level there is no container prefix to remove. This also applies to a
@@ -7572,8 +7606,9 @@ EOF = (* end of file *) ;
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
       spelling of an id resolves; corpus 15-heading-ids), then captionIds for numbered captions and
       directly numbered display equations. Two headings with one explicit id
-      both keep it, and the reference resolves to the first in the order R1's
-      heading index takes them (carve#4450). The link text is LABEL + NUMBER,
+      both keep it, and the reference resolves to the first in document
+      order, quote headings included (carve#4450): unlike R1's heading index,
+      a crossref does not decline a heading in a blockquote. The link text is LABEL + NUMBER,
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string. With an empty label the link text is the
       number alone.
@@ -7711,8 +7746,10 @@ EOF = (* end of file *) ;
          roundtrip export, the carriers of §13, which follow the element's
          other structural attributes.
       R2 A MANDATORY BASE CLASS: math's `math inline|display`, an admonition's,
-         a task list's `task-list` (§11) and a core div's directive-kind class,
-         the type word of its opener (`::: foo` gives `foo`). `line-block` is
+         a task list's `task-list` (§11), a figure group's `carve-figure-group`
+         and a panel's `carve-figure-panel` (PART 9 §4c), and a core div's
+         directive-kind class, the type word of its opener (`::: foo` gives
+         `foo`). `line-block` is
          not a directive-kind class; it is R4's marker-derived class. ON AN
          ADMONITION AND A CORE DIV the directive's classes hold this rank whether
          or not the author wrote a class, and the authored classes follow them
@@ -7844,8 +7881,10 @@ EOF = (* end of file *) ;
       47-numbered-cross-references-8). A table keeps its attributes on
       `<table>` and holds its caption as `<caption>` (§7).
 
-      The HTML API returns a fragment with no final LF. A caller writing an
-      output file may add its own line ending after the fragment.
+      The HTML API returns a fragment with no final LF, except a matching raw
+      block's payload that ends the document: it drops only its last newline,
+      and an all-blank payload drops none (PART 2, raw blocks). A caller
+      writing an output file may add its own line ending after the fragment.
 
       AN EMPTY CONTAINER BODY -- NORMATIVE [CARVE-P10-001]. A container whose body renders
       nothing keeps a BLANK LINE where the body would be:
@@ -9497,7 +9536,7 @@ EOF = (* end of file *) ;
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,
-      but a separator would promote those cells under PART 9 T7.1. The
+      but a separator would promote those cells under PART 9 T7, effect 1. The
       roundtrip writer does not change a cell's meaning to preserve the field's spelling.
       A source-conversion API that refuses unspellable fields refuses this
       combination with its typed source-unspellable error. A producer providing
