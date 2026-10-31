@@ -178,7 +178,8 @@ const MAX_NESTING_DEPTH = 200
 /// scan per opener is quadratic on a body of fenced bodies, which is carve#2509,
 /// so the answer comes from an index built once per depth and this counts the
 /// lines that index reads. `closerScan` counts the lines `findCloser` reads.
-export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0, closerScan: 0, attrScan: 0 }
+/// `paragraphProbe` counts the lines the whole-body scans of `bodyLeavesParagraphOpen` read.
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0, closerScan: 0, attrScan: 0, paragraphProbe: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
@@ -193,6 +194,7 @@ export function resetLayoutWork() {
   layoutWork.ownership = 0
   layoutWork.captionHost = 0
   layoutWork.attrScan = 0
+  layoutWork.paragraphProbe = 0
 }
 
 /**
@@ -2147,8 +2149,11 @@ function bodyEndsWrappedAttr(bodyLines, depth = 0) {
 }
 
 function trailingWrappedAttr(lines, last, wrappedOnly = false, requireHost = false) {
+  // An attribute block ends in its `}`, so the scans below are skipped per line of a long body.
+  if (!trimWsEnd(lines[last]).endsWith('}')) return false
   const hostColumnBefore = []
   if (requireHost) {
+    layoutWork.paragraphProbe += last + 1
     let firstHostColumn = Infinity
     for (let j = 0; j <= last; j++) {
       hostColumnBefore[j] = firstHostColumn
@@ -2169,6 +2174,7 @@ function trailingWrappedAttr(lines, last, wrappedOnly = false, requireHost = fal
 }
 
 function bodyLeavesNoParagraphAt(bodyLines, last, quoted = false) {
+  layoutWork.paragraphProbe += last + 1
   // CARVE-P0-009 applies to a marker-line fence in a description body too.
   // Track its host column so an unfinished opener still leaves prose open.
   const host = hostLadder()
@@ -5000,7 +5006,18 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const bodyOrigins = parentOrigins === undefined || !markerLead ? undefined : []
           if (bodyOrigins) measurement.origins.set(bodyLines, bodyOrigins)
           // X2: lazy prose keeps the quote's claim until a block closes it.
-          let quoteParagraphClaim = false
+          // Asked only where a marker falls below the body, so a quote run costs one body scan.
+          let quoteClaimAt = -1
+          let quoteClaimAsked = -1
+          let quoteClaimOpen = false
+          const quoteParagraphClaim = () => {
+            if (quoteClaimAt < 0) return false
+            if (quoteClaimAsked !== quoteClaimAt) {
+              quoteClaimAsked = quoteClaimAt
+              quoteClaimOpen = bodyLeavesParagraphOpen(quoteClaimAt === bodyLines.length ? bodyLines : bodyLines.slice(0, quoteClaimAt))
+            }
+            return quoteClaimOpen
+          }
           let openBodyTermColumn = null
           let noteBodyReach = null
           let noteBodyQuoted = false
@@ -5024,15 +5041,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (!text.startsWith(LAZY) && FOOTNOTE_DEF.test(quotedContent.rest)) {
               noteBodyReach = (row === descriptionStart ? sourceBodyColumn : sourceContentCol) + FOOTNOTE_BODY_COLUMN
               noteBodyQuoted = quoteWidth > 0
-              quoteParagraphClaim = false
+              quoteClaimAt = -1
             } else if (source.rest !== '' && noteBodyReach !== null &&
                 (noteBodyQuoted ? sourceContentCol : source.col) < noteBodyReach) {
               noteBodyReach = null
               noteBodyQuoted = false
             }
-            if (QUOTE.test(stripIndent(raw)) && noteBodyReach === null && !quoteIsTermText) quoteParagraphClaim = bodyLeavesParagraphOpen(bodyLines)
+            if (QUOTE.test(stripIndent(raw)) && noteBodyReach === null && !quoteIsTermText) quoteClaimAt = bodyLines.length
             else if (isBlank(raw) || !text.startsWith(LAZY) &&
-                (startsVisibleBlock(raw) || isDefinitionOrAttributeLine(raw))) quoteParagraphClaim = false
+                (startsVisibleBlock(raw) || isDefinitionOrAttributeLine(raw))) quoteClaimAt = -1
             // A quote folded into a term has no paragraph claim of its own.
             if (DEFLIST_TERM.test(bodyLine.rest)) {
               if (openBodyTermColumn === null || bodyLine.col <= openBodyTermColumn) openBodyTermColumn = bodyLine.col
@@ -5207,7 +5224,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 (sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) >= descriptionOwnerColumn) &&
                 !reachesBody(i) &&
                 matchMarkerAt(indentCols(dedented)) &&
-                !quoteParagraphClaim) break
+                !quoteParagraphClaim()) break
             if (COMMENT_LINE.test(dedented) && !bodyHoldsLiveSpan()) {
               openFence = bodyHasFenceCandidate
                 ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt)
