@@ -43,7 +43,10 @@
     {"name":"cols-with-lines","attrs":"{table}","options":"@lines:3-3 @cols:\"Price,Name\"","file":"Name,Price\nA,1\nB,2\n","html":["<th scope=\"col\">Price</th><th scope=\"col\">Name</th>","<td>2</td><td>B</td>"],"absent":["<td>1</td>"]},
     {"name":"cols-with-noop-shift","attrs":"{table}","options":"@shift:1 @cols:\"Price,Name\"","file":"Name,Price\nA,1\n","html":["<th scope=\"col\">Price</th><th scope=\"col\">Name</th>","<td>1</td><td>A</td>"]},
     {"name":"lines-cut-through-quoted-record","attrs":"{table}","options":"@lines:3-3","file":"Name,Price\n\"A\nB\",1\nC,2\n","codeFallback":true,"html":["<pre", "B\",1"],"absent":["<table>"]},
-    {"name":"caption-follows-directive","attrs":"{table}","options":"@rows:2-2","caption":"Plans","file":"Name,Price\nA,1\n","html":["<caption>Plans</caption>"],"markdown":"| Name | Price |\n| --- | --- |\n| A | 1 |\n\nPlans"}
+    {"name":"caption-follows-directive","attrs":"{table}","options":"@rows:2-2","caption":"Plans","file":"Name,Price\nA,1\n","html":["<caption>Plans</caption>"],"markdown":"| Name | Price |\n| --- | --- |\n| A | 1 |\n\nPlans"},
+    {"name":"region-marker-is-no-header-record","attrs":"{table}","options":"","file":"%% #region r\nName,Price\nA,1\n%% #endregion r\nB,2\n","html":["<th scope=\"col\">Name</th>","<td>A</td>","<td>B</td>"],"absent":["region"]},
+    {"name":"region-marker-counts-toward-no-row","attrs":"{table}","options":"@rows:2-2","file":"%% #region r\nName,Price\nA,1\n%% #endregion r\nB,2\n","html":["<th scope=\"col\">Name</th>","<td>A</td>"],"absent":["region","<td>B</td>"]},
+    {"name":"nested-region-marker-is-no-record","attrs":"{table}","options":"@region:o","file":"Name\n%% #region o\nA\n// #region i\nB\n// #endregion i\n%% #endregion o\nC\n","html":["<td>A</td>","<td>B</td>"],"absent":["region","<td>C</td>"]}
   ],
   "lintVectors": [
     {"name":"lines-table-csv-hint","entry":"{table}\n{{ data.csv @code:csv @lines:2-3 }}\n","rule":"include-lines-table-rows-hint","severity":"Hint","line":2},

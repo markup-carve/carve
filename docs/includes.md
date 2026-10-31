@@ -215,6 +215,9 @@ source. A keyword run on by a word character, such as `#regional`, is ordinary
 text, while `#region-x` is a malformed marker. Names compare exactly and may
 occur only once per file.
 
+In a `{table}` include a well-formed marker line is not a record, with or without
+`@region`. It adds no row, and neither `@rows` nor `header-rows` counts it.
+
 A missing name, duplicate opening name, malformed marker, unmatched end,
 mismatched nested end or unclosed start emits `include-region-invalid` and
 leaves the directive literal. Combining `@region` with `#section` or `@lines` is

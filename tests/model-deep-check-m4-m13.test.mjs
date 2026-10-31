@@ -37,11 +37,26 @@ test('a malformed code language is literal with a resolver', () => {
 test('a table region include does not repeat a header record it covers', () => {
   const files = { 'u.csv': '%% #region r\nh\ni\n%% #endregion r\nz\n', 'v.csv': 'h\n%% #region r\ni\n%% #endregion r\n' }
   assert.equal(html('{table header-rows=2}\n{{ u.csv @code:csv @region:r }}\n', files),
-    '<table>\n  <thead>\n    <tr><th scope="col">%% #region r</th></tr>\n    <tr><th scope="col">h</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>i</td></tr>\n  </tbody>\n</table>')
+    '<table>\n  <thead>\n    <tr><th scope="col">h</th></tr>\n    <tr><th scope="col">i</th></tr>\n  </thead>\n</table>')
   assert.equal(html('{table}\n{{ v.csv @code:csv @region:r }}\n', files),
     '<table>\n  <thead>\n    <tr><th scope="col">h</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>i</td></tr>\n  </tbody>\n</table>')
 })
 
 test('an author span key stays where nothing computes that span', () => {
   assert.match(html('|={rowspan=3 colspan=3} a | < |\n'), /<th scope="col" colspan="2" rowspan="3">a<\/th>/)
+})
+
+test('a region marker line in a table include is no record (carve#4515)', () => {
+  const file = '%% #region r\na,b\n1,2\n%% #endregion r\n3,4\n'
+  const table = (attrs, options, files = { 'd.csv': file }) => html(`{table${attrs}}\n{{ d.csv @code:csv ${options}}}\n`, files)
+  assert.equal(table('', ''),
+    '<table>\n  <thead>\n    <tr><th scope="col">a</th><th scope="col">b</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td><td>2</td></tr>\n    <tr><td>3</td><td>4</td></tr>\n  </tbody>\n</table>')
+  assert.doesNotMatch(table(' header-rows=0', ''), /region/)
+  assert.doesNotMatch(table('', '@region:r '), /region/)
+  assert.match(table('', '@rows:2-2 '), /<td>1<\/td><td>2<\/td>/)
+  assert.doesNotMatch(table('', '@region:o ', { 'd.csv': 'a\n%% #region o\n1\n%% #region i\n2\n%% #endregion i\n%% #endregion o\n' }), /region/)
+  assert.match(table('', '', { 'd.csv': '#region-x\n1\n' }), /<th scope="col">#region-x<\/th>/)
+  assert.match(table('', '', { 'd.csv': '#region\n1\n' }), /<th scope="col">#region<\/th>/)
+  assert.match(table('', '', { 'd.csv': '"x\n%% #region r\ny"\n1\n' }), /%% #region r/)
+  assert.match(table('', '', { 'd.csv': '%%% #region r\n1\n' }), /<th scope="col">%%% #region r<\/th>/)
 })

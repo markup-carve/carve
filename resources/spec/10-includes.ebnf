@@ -176,7 +176,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       region selection an ERROR (`include-region-invalid`, Warning + literal).
       A missing selected name has the same result. The selected source is the
       physical lines strictly between its matching markers. Those two marker
-      lines are excluded; nested marker lines remain source content. An empty
+      lines are excluded; nested marker lines remain source content, which a
+      table include then reads as no record (I1d). An empty
       region selects an empty source. Positions in selected content retain
       their original source-file coordinates, as with `@lines`. A resolved
       file stays a resolved dependency even if its region is invalid.
@@ -238,7 +239,12 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       block `@code:csv` or `@code:tsv` include with a `{table}` attribute.
       It counts parsed records from 1, including header records, after
       the leading U+FEFF is removed and the whole file is decoded. A quoted
-      field containing newlines is one record. N and M follow the `@lines`
+      field containing newlines is one record. A whole physical line that is a
+      well-formed region marker (I1b (b)) is NOT a record, under every selection
+      or none: it is no row and no cell, and it does not count toward `@rows`
+      or `header-rows`. A malformed marker is an ordinary record unless
+      `@region` is selected, and a marker-shaped line inside a quoted field is
+      the field's text. N and M follow the `@lines`
       decimal rules in I1: no zero or leading zero, and N no greater than M.
       Invalid values give `include-rows-invalid`; a start past the last
       record gives `include-rows-out-of-range`. The end may pass the last
@@ -262,8 +268,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       option outside this table include context gives its `include-rows-invalid`
       or `include-cols-invalid` Warning + literal.
 
-      The first `header-rows` records of the whole file (default one) form
-      the header, projected to the chosen columns. A selection chooses only
+      The first `header-rows` records of the whole file (default one), region
+      marker lines excluded, form the header, projected to the chosen columns. A selection chooses only
       body records. A header record inside its range is not repeated.
       `header-rows=0` disables the header and makes every selected record a
       body record. Selected cells keep their positions in the included file;
