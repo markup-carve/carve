@@ -1,0 +1,31 @@
+A shifted line block keeps a lazy follower at its reader column
+
+```
+[^f]: :: t
+    - ::: |
+      a
+     b
+
+[^f]
+.
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <dl>
+        <dt>t</dt>
+      </dl>
+      <ul>
+        <li>
+          <div class="line-block">
+            <p>a<br>
+b</p>
+          </div>
+        </li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
