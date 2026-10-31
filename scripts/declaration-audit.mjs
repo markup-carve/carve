@@ -374,6 +374,8 @@ const MANIFEST = [
   // -- carve-rs --------------------------------------------------------------
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'KNOWN_GAPS', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'KNOWN_GAPS document(s) already match: move the category to IMPLEMENTED', owner: 'tests/corpus.rs' },
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'now matches the pinned corpus: delete its {list} entry', owner: 'tests/corpus.rs' },
+  // The parity sweep skips the rows corpus.rs declares, so corpus.rs's guard retires both.
+  { repo: 'carve-rs', path: 'tests/spec_wave_parity.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', stalenessFile: 'tests/corpus.rs', staleness: 'now matches the pinned corpus: delete its {list} entry', owner: 'tests/corpus.rs' },
   { repo: 'carve-rs', path: 'tests/corpus_canonical_form.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'the pin has caught up; delete its AHEAD_OF_PIN entry', owner: 'tests/corpus_canonical_form.rs' },
   // Named FMT_AHEAD_OF_PIN until carve-rs widened it past the `fmt` target; the
   // rows carry a target now, so the constant lost the prefix with them.
