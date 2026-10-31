@@ -1967,6 +1967,34 @@ function endsWithAuthoredInterrupter(line) {
   return isDefinitionOrAttributeLine(leaf) && !FOOTNOTE_DEF.test(leaf)
 }
 
+// The body of the innermost item or description whose content column the last line reaches.
+function trailingHostBody(bodyLines, last, tail, depth) {
+  let reach = tail.col
+  for (let k = last; k >= 0; k--) {
+    if (trimWs(bodyLines[k]) === '') continue
+    if (bodyLines[k].includes(LAZY)) continue
+    const measured = indentCols(bodyLines[k])
+    if (k < last && measured.col >= reach) continue
+    const marker = matchMarkerAt(measured)
+    const lead = marker ? marker.markerWidth
+      : DESCRIPTION_LEAD.test(measured.rest) && opensDescriptionAt(bodyLines, measured.col, k) ? DESCRIPTION_LEAD.exec(measured.rest)[0].length
+      : 0
+    if (lead === 0 || measured.col + lead > reach && k < last) {
+      if (measured.col === 0) return null
+      reach = measured.col
+      continue
+    }
+    // A marker under an open paragraph is that paragraph's text (PART 9 §10 I2).
+    if (marker && k > 0 && trimWs(bodyLines[k - 1]) !== '' && bodyLeavesParagraphOpen(bodyLines.slice(0, k), false, depth + 1)) return null
+    const column = measured.col + lead
+    return [
+      marker ? marker.text : measured.rest.slice(lead),
+      ...bodyLines.slice(k + 1, last + 1).map((l) => l.includes(LAZY) ? stripLazyLead(l) : dedentMeasured(indentCols(l), l, column).text),
+    ]
+  }
+  return null
+}
+
 function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   let last = -1
   for (let k = bodyLines.length - 1; k >= 0; k--) {
@@ -2050,6 +2078,12 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
       }
       if (m.col === 0) break
     }
+  }
+
+  // An item's or a description's own last block answers, read at its content column (CARVE-P9-083).
+  if (depth < MAX_NESTING_DEPTH && !bodyLines[last].includes(LAZY)) {
+    const body = trailingHostBody(bodyLines, last, tail, depth)
+    if (body && !bodyLeavesParagraphOpen(body, quoted, depth + 1)) return false
   }
 
   // A CLOSED FENCE IS NOT AN OPEN PARAGRAPH (carve#1930). `opensParagraph` is
@@ -9518,7 +9552,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       // Definition terms compare columns after the item's dedent, for spaces and tabs alike.
       const relativeColumns = itemSourceRows.map((row, index) =>
         index === 0 || !lines[row] || !ind(row) ? 0 :
-          ind(row).col < contentCol ? ind(row).col - contentCol :
+          // The walk frames a line past a missed note at the reader's column; it stands below the term.
+          ind(row).col < contentCol || stripLazyLead(lines[row]).startsWith(LAZY) ? Math.min(ind(row).col - contentCol, -1) :
             dedentMeasured(ind(row), lines[row], contentCol).meas.col);
       (state.descriptionSourceColumns ??= new WeakMap()).set(itemLines, relativeColumns);
       (state.itemRelativeTermColumns ??= new WeakSet()).add(itemLines)
