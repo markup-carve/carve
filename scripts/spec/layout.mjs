@@ -49,7 +49,8 @@ function includeColumns(raw, quote, rows, headerRows) {
   const names = []
   let name = ''
   for (let i = 0; i < raw.length; i++) {
-    if (raw[i] === '\\' && i + 1 < raw.length) name += raw[++i]
+    // `quoted_value`: a backslash escapes ASCII punctuation only (CARVE-P7-004).
+    if (raw[i] === '\\' && /[!-/:-@[-`{-~]/.test(raw[i + 1] ?? '')) name += raw[++i]
     else if (raw[i] === ',') { names.push(name); name = '' }
     else name += raw[i]
   }
@@ -478,7 +479,13 @@ function isCaptionableParagraph(para) {
   // The image itself is matched by the grammar, so a balanced `(...)` in the
   // destination, a `)` in the title and a quoted `}` in the block all count
   // (carve#2122).
-  return !line.slice(altEnd).includes('\n') && isImageSource(line) ? 'image' : null
+  if (line.slice(altEnd).includes('\n')) return null
+  if (isImageSource(line)) return 'image'
+  // A comment renders nothing (PART 9R R7); promotion re-checks the rendered tree.
+  // A braced comment keeps the whitespace around it, so it holds a place until the line end is trimmed.
+  const quiet = line.replace(/\{%(?:(?!%\})[\s\S])*%\}/g, '\u0001').split('\n')
+    .map((l) => trimLineEnd(l.replace(/(^|[ \t])%%.*$/, '$1'))).join('\n').replaceAll('\u0001', '')
+  return quiet !== line && isImageSource(quiet) ? 'image' : null
 }
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
@@ -4533,6 +4540,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const headerAttr = attrs.findLast(a => a[1] === 'header-rows' && (a[0] === 'kv' || a[0] === 'bool'))
           const headerRows = delimitedRowCount(headerAttr?.[0] === 'bool' ? '' : headerAttr?.[2]) ?? 1
           const allRows = records?.map(record => record.cells) ?? null
+          // The whole file decides malformed quoting, whatever a selection cuts (I1d).
+          if (!records) node.forceCode = true
           if (records && selectedRecords) {
             valid = valid && (!range || range[0] <= BigInt(records.length))
             if (linesRange && records.some(record =>
@@ -4549,7 +4558,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               const header = allRows.slice(0, headerRows)
               const project = row => columns === null ? row : columns.map(column => row[column] ?? '')
               // A selected record is numbered from the region; a header record inside it is not repeated.
-              const headerEnd = records[headerRows - 1]?.endLine ?? 0
+              const headerEnd = records[Math.min(headerRows, records.length) - 1]?.endLine ?? 0
               const regionBody = regionRange ? selectedRecords.filter(record => record.line + regionRange[0] - 1 > headerEnd).map(record => record.cells) : body
               node.tableRows = [...header, ...regionBody].map(project)
               node.tableHeaderRows = header.length
@@ -5538,7 +5547,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // Past the last column the fragment is a new cell of the row above,
             // its text and never a span marker; a skipped column is an empty cell.
             if (ci >= prev.cells.length) {
-              const header = prev.cells.every((c) => c.header)
+              // A `<` marker counts as the cell of the row it extends (T5). A `^`
+              // counts as itself: whether it reaches up depends on the sections.
+              const marker = (c) => c && !c.literal && !c.fragment && !c.kindMarker && c.attrs == null &&
+                c.valign == null && (c.align === null || c.align === c.delimiterAlign) && c.content === '<'
+              const covering = (c) => {
+                while (c > 0 && marker(prev.cells[c])) c--
+                return prev.cells[c]
+              }
+              const header = prev.cells.every((_, c) => covering(c).header)
               while (prev.cells.length <= ci) {
                 prev.cells.push({ header, kindMarker: false, align: null, valign: null, attrs: null, content: '', fragment: true })
               }
@@ -6315,7 +6332,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // host: it holds nothing the caption could be about, and letting it take
       // one binds the caption across the container change that opened it
       // (PART 9 SS4d, markup-carve/carve#2892).
-      const cap = children.length > 0 ? captionSlot(i) : null
+      // A nested quote or bare fence of structural-only lines holds nothing either.
+      const holdsNothing = (c) => (c.t === 'quote' || (c.t === 'colon-div' && c.type == null && c.title == null && c.label == null)) &&
+        c.children.every(holdsNothing)
+      const cap = !children.every(holdsNothing) ? captionSlot(i) : null
       if (cap) {
         node.caption = cap.text
         i = cap.next
