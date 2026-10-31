@@ -1276,6 +1276,20 @@ test('a count with no continuation cell is a shape the schema admits', () => {
   )
 })
 
+// carve#4643: an ingested span of 1 decodes and is normalized away, as a list's `start` is (CARVE-P12-042).
+test('a span count of 1 validates and a count below 1 does not', () => {
+  const cell = (extra) => ({ type: 'table_cell', header: false, children: [], ...extra })
+  const doc = (cells) => ({
+    type: 'document',
+    srcByteLength: 1,
+    children: [{ type: 'table', rows: [{ type: 'table_row', cells }] }],
+  })
+  for (const field of ['colspan', 'rowspan']) {
+    assert.equal(validate(doc([cell({ [field]: 1 })])), true, firstErrors())
+    for (const bad of [0, -1]) assert.equal(validate(doc([cell({ [field]: bad })])), false, `${field}: ${bad}`)
+  }
+})
+
 test('PART 12 §39 names the three fields whose precedence it settles', () => {
   const clause = countOnlyClause()
   const missing = ['colspan', 'rowspan', 'span'].filter((name) => !clause.includes('`' + name + '`'))
