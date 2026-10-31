@@ -1232,7 +1232,8 @@ function renderTable(node, depth, ctx) {
   const positional = (key) => tableKeys.has(key) ? String(tableKeys.get(key)).split(',').map((v) => v.trim()) : []
   const attrAlign = positional('aligns').map((v) => ['left', 'right', 'center'].includes(v) ? v : null)
   const attrValign = positional('valigns').map((v) => ['top', 'middle', 'bottom'].includes(v) ? v : null)
-  const attrWidths = positional('widths').map((v) => v === '' ? null : Number(v))
+  // A width is greater than zero and at most 100 (CARVE-P12-039); anything else is unset.
+  const attrWidths = positional('widths').map((v) => v === '' ? null : Number(v)).map((w) => w > 0 && w <= 100 ? w : null)
   for (const values of [attrAlign, attrValign, attrWidths]) values.length = Math.min(values.length, widest)
   // resolve span markers (T5): row-major; consumed positions are skipped in
   // the output; a marker whose span would cover another cell renders as an
@@ -1420,11 +1421,12 @@ function renderTable(node, depth, ctx) {
     const id = / id="([^"]*)"/i.exec(ba)?.[1]
     out.push(`${pad}  <caption>${renderInline(numberCaption(node.caption, ctx, id))}</caption>`)
   }
-  if (attrWidths.some((width) => Number.isFinite(width) && width > 0)) {
+  if (attrWidths.some((width) => width !== null)) {
     out.push(`${pad}  <colgroup>`)
-    for (let c = 0; c < widest; c++) {
+    // One `col` per entry, not per column (CARVE-P12-039).
+    for (let c = 0; c < attrWidths.length; c++) {
       const width = attrWidths[c]
-      out.push(Number.isFinite(width) && width > 0
+      out.push(width !== null
         ? `${pad}    <col style="width: ${width}%;">`
         : `${pad}    <col>`)
     }
