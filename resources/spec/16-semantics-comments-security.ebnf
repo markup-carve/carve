@@ -485,7 +485,9 @@
         matches, and ASCII-case-insensitively, so `URL(` does). An authored value is one written in an attribute block or
         one an extension copies onto its wrapper element: an extension MUST
         route authored attributes through the same hardening and MUST NOT
-        emit them raw. A value the renderer derives from text is not an
+        emit them raw. `id` and the id slot are not URL sinks and are not
+        probed: `{id="javascript:x"}` executes nothing, and blanking it would
+        break anchors and cross-references to an explicit id. A value the renderer derives from text is not an
         authored value and is not blanked: a link title (`[a](u "Shell: x")`
         keeps `title="Shell: x"`), an image's alt text, and a task box's
         accessible name stay as written.

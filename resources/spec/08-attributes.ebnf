@@ -138,7 +138,10 @@ class_attribute = '.', explicit_identifier ;
    own for CARVE-P9-054.
    An `id` key spells the id slot the same way when an element renders: `{#i id=j}`
    gives one `id`, the last value at the first position, and `{id=q}` takes the
-   slot a generated id would. *)
+   slot a generated id would: on a heading it goes on the `<section>`
+   (CARVE-P9-019) and a cross-reference resolves to it. The key reaches past
+   `explicit_identifier`, so the value is attribute-escaped wherever it is
+   written, a cross-reference's `href` included. *)
 key_value_attribute = identifier, '=', attribute_value ;
 (* A bare identifier is a VALUE-LESS BOOLEAN attribute in source. It has the same
    empty-string AST value as `name=""` and renders `name=""` (a carve

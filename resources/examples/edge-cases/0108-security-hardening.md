@@ -193,3 +193,23 @@ Text.
 ```
 
 :::
+
+A cross-reference's target is an id, not a URL sink, so `id` is not probed.
+
+::: compare
+
+```carve
+{id="javascript:x"}
+# H
+
+</#javascript:x>
+```
+
+```html
+<section id="javascript:x">
+  <h1>H</h1>
+  <p><a href="#javascript:x">H</a></p>
+</section>
+```
+
+:::
