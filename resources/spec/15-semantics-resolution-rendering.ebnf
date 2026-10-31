@@ -287,8 +287,12 @@
          - `- a` / `  - +` / `para` is refused: the inner marker column is 2.
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.
          - `- +` / `- b` is refused: `<li>+</li>` and a sibling item.
-         - `- +` / `%% c` / `text` gives the item the paragraph, and any
-           spelling of the comment reads the same. `- a` / `+` / `{x}` / `text`
+         - `- +` / `%% c` / `text` gives the item the paragraph, and a
+           `%%%` comment fence reads the same. A `{% c %}` line is not one of
+           these: it is a paragraph holding an inline comment (CARVE-P9-042),
+           so the `+` attaches that paragraph, and `- +` / `{% c %}` / `# H`
+           gives an empty `<li>` and a heading after the list.
+           `- a` / `+` / `{x}` / `text`
            gives the item `<p x="">`.
          - `- +` / `%% c` / blank / `text` is refused: `<li>+</li>` and a
            paragraph. So is `- +` / `%% c` / `- b`: `<li>+</li>` and a sibling
@@ -331,7 +335,8 @@
          the list.
 
       L5 NOT CONTINUATION CONTAINERS (a lone `+` keeps its plain meaning):
-         - fenced containers (admonition / generic div / line block) --
+         - fenced containers (admonition / generic div / line block /
+           fenced block quote `::: >`) --
            their bodies already hold flush-left blocks; a lone `+` inside
            is literal text;
          - TABLE -- a first-column `+` is the continuation ROW (§5 T6), a

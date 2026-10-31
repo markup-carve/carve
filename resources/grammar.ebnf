@@ -1723,7 +1723,10 @@ local_hard_break_block_open = colon_fence:open, space, backslash ;
 (* A SECOND SPELLING of the block quote, not a second block: a colon fence
    whose type token is a bare `>` opens a quote whose body is ordinary block
    content, and the node is the one `blockquote_line` produces. The two forms
-   are the same tree, so every rule that speaks of a block quote reaches both.
+   are the same tree, so every rule that speaks of a block quote reaches both,
+   with one exception: the body is a fenced container's, so a lone `+` in it
+   is text and not a continuation marker (PART 9 §17 L5). `::: >` / `+` /
+   `# H` / `:::` gives a quote holding `<p>+</p>` and the heading.
    Third member of the sigil-fence family beside `line_block_open` and
    `local_hard_break_block_open`, and it takes the same REQUIRED space before
    its token; `:::>` is not an opener.
@@ -6181,8 +6184,12 @@ EOF = (* end of file *) ;
          - `- a` / `  - +` / `para` is refused: the inner marker column is 2.
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.
          - `- +` / `- b` is refused: `<li>+</li>` and a sibling item.
-         - `- +` / `%% c` / `text` gives the item the paragraph, and any
-           spelling of the comment reads the same. `- a` / `+` / `{x}` / `text`
+         - `- +` / `%% c` / `text` gives the item the paragraph, and a
+           `%%%` comment fence reads the same. A `{% c %}` line is not one of
+           these: it is a paragraph holding an inline comment (CARVE-P9-042),
+           so the `+` attaches that paragraph, and `- +` / `{% c %}` / `# H`
+           gives an empty `<li>` and a heading after the list.
+           `- a` / `+` / `{x}` / `text`
            gives the item `<p x="">`.
          - `- +` / `%% c` / blank / `text` is refused: `<li>+</li>` and a
            paragraph. So is `- +` / `%% c` / `- b`: `<li>+</li>` and a sibling
@@ -6225,7 +6232,8 @@ EOF = (* end of file *) ;
          the list.
 
       L5 NOT CONTINUATION CONTAINERS (a lone `+` keeps its plain meaning):
-         - fenced containers (admonition / generic div / line block) --
+         - fenced containers (admonition / generic div / line block /
+           fenced block quote `::: >`) --
            their bodies already hold flush-left blocks; a lone `+` inside
            is literal text;
          - TABLE -- a first-column `+` is the continuation ROW (§5 T6), a
@@ -7749,6 +7757,10 @@ EOF = (* end of file *) ;
       HTML ATTRIBUTE NAMES COMPARE ASCII CASE-INSENSITIVELY IN EVERY MERGE. A name
       written twice in any spelling is emitted once, at the first occurrence's
       position and spelling, with the last value, so `{K=1 k=2}` gives `K="2"`.
+      The one exception is a code fence's header title: it is sugar for a
+      title the block-attribute line above did not set, so a `title` on that
+      line wins (CARVE-P2-005). `{title="outer"}` over ```` ```js "inner" ````
+      gives `<pre title="outer">`.
       The `class` and `id` slots fold the same way: `{CLASS=z}` is the class
       slot, and `{CLASS=z}` over `::: |` gives `CLASS="z line-block"`. The R1
       omission above compares names the same way.
@@ -12312,7 +12324,10 @@ EOF = (* end of file *) ;
       boolean means: every description renders its children as BLOCKS. Absent,
       each description derives its own wrapper from its own block count -- one
       block renders inline, two or more render as blocks -- which is what every
-      definition list written without the key does.
+      definition list written without the key does. The count is of RENDERED
+      blocks: a comment block is kept in the tree but renders nothing
+      (CARVE-P9-013), so it does not count, and `:: t` / `: x` / `  %% c`
+      gives `<dd>x</dd>`.
 
         {"type":"definition_list","loose":true,"items":[
           {"type":"definition_term","children":[...]},

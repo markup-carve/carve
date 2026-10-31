@@ -1,0 +1,12 @@
+A comment block does not count toward a description's blocks
+
+```
+:: t
+: x
+  %% c
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+```

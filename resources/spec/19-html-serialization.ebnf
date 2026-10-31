@@ -54,6 +54,10 @@
       HTML ATTRIBUTE NAMES COMPARE ASCII CASE-INSENSITIVELY IN EVERY MERGE. A name
       written twice in any spelling is emitted once, at the first occurrence's
       position and spelling, with the last value, so `{K=1 k=2}` gives `K="2"`.
+      The one exception is a code fence's header title: it is sugar for a
+      title the block-attribute line above did not set, so a `title` on that
+      line wins (CARVE-P2-005). `{title="outer"}` over ```` ```js "inner" ````
+      gives `<pre title="outer">`.
       The `class` and `id` slots fold the same way: `{CLASS=z}` is the class
       slot, and `{CLASS=z}` over `::: |` gives `CLASS="z line-block"`. The R1
       omission above compares names the same way.
