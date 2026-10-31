@@ -111,7 +111,7 @@
       A READER THAT DOES NOT KNOW THE NAME RENDERS THE FALLBACK AND REPORTS
       THE LOSS. It does not refuse the tree: an unknown extension is not an
       unknown field, and the node states its own degradation. Where the envelope
-      marks the extension `required`, refusal happens at that boundary (CARVE-P12-056),
+      marks the extension `required` (an entry omitting the field is required), refusal happens at that boundary (CARVE-P12-056),
       before reading the tree.
    34. A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE -- NORMATIVE
       [CARVE-P12-056]. At a STORAGE OR PROCESS boundary a Carve AST is carried
@@ -181,7 +181,7 @@
       produces `figure_group`; `::: |` and `::: >` produce their own block
       types (PART 2). `::: \` produces a `div` with class `hardbreaks`, and
       each soft break in a paragraph directly inside it is a `hard_break`
-      node. An ANONYMOUS or attribute-only ordinary
+      node; a writer spells that div back as `::: \`. An ANONYMOUS or attribute-only ordinary
       container is a `div`. A named one whose kind names
       GENERATED CONTENT - `bibliography`, `footnotes`, `glossary`, `index`,
       `references`, `toc` - is a `directive`. Every other named container is
