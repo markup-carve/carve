@@ -68,6 +68,8 @@
 148-colon-fence-as-a-block-opener-in-a-list-item  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 151-indented-ordered-marker-content-column-includes-the-marker-indent  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 154-an-over-indented-definition-attaches-an-under-indented-one-folds-3  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
+855-a-caret-shaped-lazy-line-keeps-a-quote-in-an-item  The pinned carve-js predates this (markup-carve/carve#4489); the spec model is correct.
+855-a-caret-shaped-lazy-line-keeps-a-quote-in-an-item-2  The pinned carve-js predates this (markup-carve/carve#4489); the spec model is correct.
 157-an-indented-attribute-line-attaches-at-top-level  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 157-an-indented-attribute-line-attaches-at-top-level-2  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
 158-an-indented-image-and-caption-form-a-figure  Rule A (markup-carve/carve#3885) is pending in the pinned engine; markup-carve/carve-js#3874.
