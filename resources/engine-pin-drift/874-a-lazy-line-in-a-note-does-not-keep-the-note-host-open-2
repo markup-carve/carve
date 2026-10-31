@@ -1,0 +1,1 @@
+The pinned carve-js does not fold the column-zero line into the note, so it and the blocks below it leave the note (markup-carve/carve#4632).
