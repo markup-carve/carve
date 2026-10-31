@@ -989,7 +989,7 @@ function loadPairs() {
  *     format that is neither convertible nor declared is an error, and a
  *     declared gap the engine has closed (probed per run) is a STALE entry.
  *   - resources/converter-drift.txt names the (engine, case) pairs known to
- *     mismatch, with reasons - the converter corpus's engine-pin-drift.txt.
+ *     mismatch, with reasons - the converter corpus's engine-pin-drift/.
  *     An undeclared mismatch fails; a declared one that now passes is STALE
  *     and fails until the line is deleted in the commit that fixed it.
  */

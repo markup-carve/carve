@@ -2,8 +2,8 @@
  * The one parser for the hand-maintained drift ledgers under `resources/`.
  *
  * They share a line format - a key, two or more spaces, the reason - and each
- * consumer parsed it for itself into a keyed collection: `engine-pin-drift.txt`
- * into a Map in `scripts/engine-report.mjs`, `engine-fmt-drift.txt` into a Set
+ * consumer parsed it for itself into a keyed collection: `engine-pin-drift`
+ * (now a directory) into a Map in `scripts/engine-report.mjs`, `engine-fmt-drift.txt` into a Set
  * in `tests/fmt-drift.mjs`, `converter-drift.txt` into a Map in
  * `scripts/compare-impls.mjs`. In every one of them a key listed twice
  * collapsed to a single entry and only the LAST line's reason survived.
@@ -19,8 +19,8 @@
  * mistake of the same kind as the missing-reason line this parser has always
  * thrown on.
  */
-import { readFileSync } from 'node:fs'
-import { basename } from 'node:path'
+import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { basename, join } from 'node:path'
 
 /**
  * The keys that appear more than once, in first-seen order.
@@ -43,8 +43,32 @@ export function duplicateKeys(keys) {
   return [...repeated]
 }
 
+const SAFE_ROW_NAME = /^[a-z0-9_-][a-z0-9._-]*$/
+
 /**
- * Parse a `<key><two or more spaces><reason>` ledger.
+ * A directory ledger: one file per key, named by the key, holding the reason on
+ * one line. Leading-dot files (the `.README`) are not rows. Parallel PRs that
+ * declare different keys add different files, so they cannot conflict.
+ *
+ * @param {string} dir
+ * @returns {Map<string, string>} key to reason, sorted by key.
+ */
+export function parseDriftDirectory(dir) {
+  const name = basename(dir)
+  const entries = new Map()
+  for (const key of readdirSync(dir).filter((file) => !file.startsWith('.')).sort()) {
+    if (!SAFE_ROW_NAME.test(key)) throw new Error(`${name}: not a file-safe key: ${key}`)
+    const reason = readFileSync(join(dir, key), 'utf8').trim()
+    if (!reason) throw new Error(`${name}: no reason in ${key}`)
+    if (reason.includes('\n')) throw new Error(`${name}: ${key} holds more than one line; the reason is one line`)
+    entries.set(key, reason)
+  }
+  return entries
+}
+
+/**
+ * Parse a `<key><two or more spaces><reason>` ledger, or a directory ledger
+ * (`parseDriftDirectory`).
  *
  * Blank lines and `#` comments are skipped. A line with no reason throws, as it
  * always did; so now does a key that is listed twice.
@@ -53,6 +77,7 @@ export function duplicateKeys(keys) {
  * @returns {Map<string, string>} key to reason, in file order.
  */
 export function parseDriftLedger(path) {
+  if (statSync(path).isDirectory()) return parseDriftDirectory(path)
   const name = basename(path)
   const entries = new Map()
   const lines = readFileSync(path, 'utf8').split('\n')

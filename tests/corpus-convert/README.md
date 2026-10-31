@@ -131,7 +131,7 @@ absence, and the runner checks both in both directions on every run:
   because the source reader needs no Carve importer.
 - **A conversion the engine is known to be behind on** is declared per
   (engine, case) in `resources/converter-drift.txt`, with the reason - the
-  converter corpus's `engine-pin-drift.txt`. An undeclared mismatch is red
+  converter corpus's `engine-pin-drift/`. An undeclared mismatch is red
   immediately; a declared one that starts passing is red as stale until the
   line goes in the commit that fixed it.
 

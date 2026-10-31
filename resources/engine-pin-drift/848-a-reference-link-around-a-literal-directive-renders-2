@@ -1,0 +1,1 @@
+markup-carve/carve#4426, the pinned carve-js reads a bare @code directive as a mention; carve-js main renders the expected output

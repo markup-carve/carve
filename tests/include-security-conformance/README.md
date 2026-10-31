@@ -164,7 +164,7 @@ carve-rs `IncludeResult::charged_bytes` (markup-carve/carve-rs#1609), carve-lsp
 ## Corpus ahead of the engines
 
 Adding a vector makes every adapter answer it, so a vector can land before an
-engine implements the requirement it pins. As with `resources/engine-pin-drift.txt`
+engine implements the requirement it pins. As with `resources/engine-pin-drift/`
 and `resources/converter-drift.txt`, that window is DECLARED rather than
 tolerated - an engine's red is expected and tracked, not discovered.
 

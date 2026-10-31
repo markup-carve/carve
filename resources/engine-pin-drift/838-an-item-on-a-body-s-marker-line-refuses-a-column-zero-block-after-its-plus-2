@@ -1,0 +1,1 @@
+markup-carve/carve#4372, the pinned carve-js leaves the column-0 block outside a note's marker-line item; fix pending in carve-js

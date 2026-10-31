@@ -1,0 +1,1 @@
+The pinned JS renderer trims a U+2028 off a task box's name with String.prototype.trim (markup-carve/carve#4252, carve-js line).

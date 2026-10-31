@@ -62,7 +62,7 @@ CI green:
    tree-sitter-carve, `tools/check-changelog-completeness.py` in carve-rs,
    `scripts/changelog-completeness.php` in carve-php - and all four take the
    same arguments.
-3. **`carve` only - reconcile the engine pin drift.** `resources/engine-pin-drift.txt`
+3. **`carve` only - reconcile the engine pin drift.** `resources/engine-pin-drift/`
    lists the corpus documents the pinned reference build does not reproduce, and
    a release is the moment that list has to be true rather than merely present:
 
@@ -77,7 +77,7 @@ CI green:
    bump script prints the same instruction, and the pre-tag check below refuses
    to run the report when the two disagree.
 
-   Delete every line the report says now reproduces, in the same commit that
+   Delete every file the report says now reproduces, in the same commit that
    moves the pin. That is the step the drift file's own header already describes
    ("emptying this file is the normal end state after `npm run bump-carve-pin`")
    and the release process used to omit.
@@ -106,7 +106,7 @@ CI green:
 
    `resources/engine-fmt-drift.txt` is not one of these. It is read by
    `tests/corpus-fmt-roundtrip.test.mjs` and its two siblings under `npm test`, so
-   its precondition is the PIN like `engine-pin-drift.txt`'s. The cross-engine
+   its precondition is the PIN like `engine-pin-drift/`'s. The cross-engine
    writer gate, `compare:impls --roundtrip`, reads one ledger:
    `resources/engine-fmt-layout.txt`, the accepted engine-vs-engine `fmt` layout
    differences (carve-js#3310). A line there excuses only the `carve`-target

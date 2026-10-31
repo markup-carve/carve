@@ -366,8 +366,9 @@ jobs:
         run: npm run property:check -- --count=2000
 
       # Fail on undeclared drift and on declarations the pin has caught up on.
-      # Add spec-ahead fixtures to resources/engine-pin-drift.txt and remove them
-      # once the pinned engine reproduces them.
+      # Add spec-ahead fixtures to resources/engine-pin-drift/ (one file per slug,
+      # the reason its content) and remove them once the pinned engine
+      # reproduces them.
       - name: Pinned reference build matches its declared drift
         if: format('{0}', matrix.node-version) == env.AUDIT_NODE
         run: npm run engine:report -- --check

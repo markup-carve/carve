@@ -1,0 +1,1 @@
+The pinned carve-js reads the wrapped attribute as paragraph text (markup-carve/carve#4104); the spec model is correct.

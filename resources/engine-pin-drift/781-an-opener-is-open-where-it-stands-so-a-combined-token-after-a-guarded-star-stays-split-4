@@ -1,0 +1,1 @@
+Pinned JavaScript opens a combined token after a guarded opener whose guard never closes, against the carve#3947 ruling; markup-carve/carve-js#3933 (also on carve-js main).

@@ -1,0 +1,1 @@
+markup-carve/carve#4511, the pinned carve-js reads the backslash of a hard break or an escaped space as a word character in a typography flank.

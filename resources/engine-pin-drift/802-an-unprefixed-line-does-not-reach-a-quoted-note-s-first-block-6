@@ -1,0 +1,1 @@
+Pinned JavaScript closes the quote at a paragraph line instead of folding it into a quoted note's refused + (markup-carve/carve#4097); pending in carve-js.

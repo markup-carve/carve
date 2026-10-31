@@ -185,7 +185,7 @@ same property in `npm test`, without needing a built engine.
 
 A golden is only as good as the engine it was generated from, so a rule this
 corpus cannot yet generate is DECLARED here rather than approximated - the same
-retention rule `resources/engine-pin-drift.txt` carries, and the same shape as
+retention rule `resources/engine-pin-drift/` carries, and the same shape as
 the security suite's "Corpus ahead of the engines" (carve#1992).
 
 - **The directive closer** (carve#2000, normative text merged in #2013). The

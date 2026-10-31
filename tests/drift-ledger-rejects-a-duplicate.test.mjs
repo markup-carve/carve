@@ -70,7 +70,7 @@ test('a line with no reason is still refused', () => {
 })
 
 test('the real ledgers parse, so a duplicate landing in one of them fails here', () => {
-  for (const name of ['engine-pin-drift.txt', 'engine-fmt-drift.txt']) {
+  for (const name of ['engine-pin-drift', 'engine-fmt-drift.txt']) {
     assert.doesNotThrow(() => parseDriftLedger(join(resources, name)), name)
   }
   assert.deepEqual(parseConverterLedger(join(resources, 'converter-drift.txt')).failures, [])

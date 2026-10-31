@@ -1,0 +1,1 @@
+The pinned JS renderer keeps a column-0 line in the outer item after a lazy line between the content columns and a heading in the nested item (markup-carve/carve#4291, carve-js line).
