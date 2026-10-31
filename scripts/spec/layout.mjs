@@ -5755,6 +5755,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // fence a list item inside a NESTED quote holds open is written at that
       // item's content column, and CARVE-P0-013 names no depth (carve#2538).
       const qNestedHost = []
+      const qNestedComments = []
+      const qNestedCommentIndex = new Map()
       let qHostedUntracked = []
       const qNestedPara = []
       const qNestedParaLines = []
@@ -5867,6 +5869,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qNestedColon.length = reached
           qNestedTable.length = reached
           qNestedHost.length = reached
+          qNestedComments.length = reached
           qNestedPara.length = reached
           qNestedParaLines.length = reached
           for (let d = 0; d < reached; d++) {
@@ -5897,6 +5900,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // reaches it, so `> > - ``` ` answered differently from `> - ``` `
               // (its own depth-invariance row).
               const host = qNestedHost[depth - 1] ??= hostLadder()
+              if (host.colons?.at(-1)?.mode !== 'line-block' &&
+                  nestedCommentStep(tail, depth - 1, idx)) return settle(false, depth)
               const { inner } = hostAdvance(host, tail, false)
               if (state.blockDepth + depth + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, (width, floor) => quotedCommentCloser(idx, depth + 1, width, floor), true, [], MAX_NESTING_DEPTH - state.blockDepth - depth - (host.columns.length - 1), (run, column, past) => closerFollows(idx, depth + 1, run, column, past))) {
                 qNestedTable[depth - 1] = false
@@ -5923,6 +5928,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // on it is literal and A FENCED BODY IS NOT A PARAGRAPH.
           const host = qNestedHost[depth] ??= hostLadder()
           if (hostFenceStep(host, text)) return settle(host.colons?.at(-1)?.mode === 'line-block', depth + 1)
+          if (host.colons?.at(-1)?.mode !== 'line-block' &&
+              nestedCommentStep(text, depth, idx)) return settle(false, depth + 1)
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
           const { inner, blockStart, popped } = hostAdvance(host, text, qNestedPara[depth] ?? false)
@@ -5976,6 +5983,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const clearNested = () => {
         qNestedTable.length = 0
         qNestedHost.length = 0
+        qNestedComments.length = 0
         qNestedPara.length = 0
         qNestedParaLines.length = 0
         qNestedColon.length = 0
@@ -6034,6 +6042,58 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           right = Math.floor(right / 2)
         }
         return minimum >= floor
+      }
+      const nestedCommentStep = (text, depth, idx) => {
+        const fence = COMMENT_FENCE_BODY.exec(indentCols(text).rest)
+        if (qNestedComments[depth] !== undefined) {
+          if (fence && fence[1].length === qNestedComments[depth]) qNestedComments[depth] = undefined
+          return true
+        }
+        if (!fence) return false
+        // A missed quote marker ends the payload at that line, but an exact
+        // closer farther on still makes the opener a span (PART 0 S1). Index
+        // each depth once so repeated unmatched openers do not rescan the tail.
+        let indexed = qNestedCommentIndex.get(depth)
+        if (!indexed) {
+          const byWidth = new Map()
+          const barriers = []
+          for (let j = 0; j < n; j++) {
+            let rest = lines[j]
+            let reached = true
+            for (let marker = 0; marker < depth + 2; marker++) {
+              const quote = QUOTE.exec(marker ? trimWsStart(rest) : rest)
+              if (!quote) { reached = false; break }
+              rest = quote[1] ?? ''
+            }
+            if (!reached) {
+              if (isBlank(lines[j])) barriers.push(j)
+              continue
+            }
+            const closer = COMMENT_FENCE_BODY.exec(indentCols(rest).rest)
+            if (closer) {
+              const width = closer[1].length
+              let rows = byWidth.get(width)
+              if (!rows) byWidth.set(width, rows = [])
+              rows.push(j)
+            }
+          }
+          indexed = { byWidth, barriers }
+          qNestedCommentIndex.set(depth, indexed)
+        }
+        const nextAfter = (rows) => {
+          if (!rows) return Infinity
+          let low = 0, high = rows.length
+          while (low < high) {
+            const mid = (low + high) >>> 1
+            if (rows[mid] <= idx) low = mid + 1
+            else high = mid
+          }
+          return rows[low] ?? Infinity
+        }
+        const closer = nextAfter(indexed.byWidth.get(fence[1].length))
+        if (closer >= nextAfter(indexed.barriers)) return false
+        qNestedComments[depth] = fence[1].length
+        return true
       }
       const trackFence = (l, idx) => {
         const sourceLine = indentCols(l)
