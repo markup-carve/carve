@@ -161,6 +161,12 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    the caption's first character. MARKER REQUIRES CONTENT (CARVE-P2-009) applies
    after the run as well: a caret, the separator and nothing but whitespace
    opens no caption, and the line is ordinary paragraph text.
+   A COMMENT IS NOT CONTENT HERE EITHER (carve#4559). Removing a comment must
+   not change the output (carve#4220, CARVE-P9-013), so a caret whose content is only
+   `braced_comment`s, whitespace and a trailing `inline_comment` opens no
+   caption: `| a |` over `^ %% x` is the table and then the paragraph `^`,
+   and a quote over it gets no `<figure>`. A comment followed by text,
+   `^ {% x %} y`, still captions.
 
    THE CONTINUATION LINE IS NOT TOUCHED BY THIS. A continuation line carries no
    marker, so its leading run is INDENTATION and it is kept as written. *)

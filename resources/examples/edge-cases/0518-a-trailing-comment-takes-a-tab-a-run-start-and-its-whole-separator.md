@@ -124,10 +124,8 @@ a  %% hidden
 ```
 
 ```html
-<figure>
-  <img src="u" alt="alt">
-  <figcaption></figcaption>
-</figure>
+<p><img src="u" alt="alt">
+^</p>
 ```
 
 :::

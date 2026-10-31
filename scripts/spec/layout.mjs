@@ -378,7 +378,10 @@ const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/s
 // is normative and names the shape: a marker followed by the separator and
 // nothing but whitespace opens no block. The lookahead is the same one `HEADING`
 // carries, for the same clause.
-const CAPTION = /^\^ +(?=.*[^ \t\n\r])(.*?)[ \t]*$/s
+// A comment is not content either: removing it must not change the output
+// (carve#4220), so a line of braced and trailing comments opens no caption (carve#4559).
+const COMMENT_ONLY = String.raw`(?:\{%(?![\p{Mn}\p{Mc}\p{Me}\u{FE00}-\u{FE0F}\u{200D}])(?:(?!%\})[\s\S])*%\}|[ \t\n\r])*(?:(?<= )%%[\s\S]*)?$`
+const CAPTION = new RegExp(String.raw`^\^ (?!${COMMENT_ONLY}) *(.*?)[ \t]*$`, 'su')
 // THE §16 BRACKETED-RUN CLOSE (carve#1197).
 //
 // `line[open]` is a `[`; the return value is the index just past the `]` that
