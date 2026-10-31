@@ -1,0 +1,25 @@
+A literal bracket run is a typography region
+
+```
+a [--x] y and a [---x] y
+.
+<p>a [--x] y and a [---x] y</p>
+```
+
+```
+a (--x) y
+.
+<p>a (–x) y</p>
+```
+
+```
+[x--] y
+.
+<p>[x–] y</p>
+```
+
+```
+a [--x y
+.
+<p>a [–x y</p>
+```
