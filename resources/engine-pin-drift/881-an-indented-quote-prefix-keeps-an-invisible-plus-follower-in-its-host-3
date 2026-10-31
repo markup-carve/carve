@@ -1,0 +1,1 @@
+The pinned carve-js keeps the indented quote prefix as text on a reference-definition follower; current JS main follows markup-carve/carve#4698.
