@@ -581,9 +581,10 @@ collected/consumed (an attribute line floats forward to the next block, §15).
 | `> text` / `> # H` | quote: paragraph + heading | heading interrupts inside the quote |
 | `> p` / `> - x` | one quoted paragraph | quoted bullet folds (paragraph interruption inside the quote) |
 | `- a` / `  - b` | nested sublist | indented sublist still nests (content column) |
-| `- a` / ` - b` | one item (folds) | below the content column → lazy continuation |
+| `- a` / ` - b` | two sibling items | a marker of the same kind below the content column is a sibling (carve#3885) |
+| `1. a` / ` - b` | one item (folds) | a marker of another kind below the content column is lazy text |
 | `1. a` / `[r]: /u` / `after` | list, then document paragraph | column-zero definition interrupts and closes the item |
-| `1. a` / ` [r]: /u` | one item (literal definition text) | nonzero column below content column reaches no definition opener |
+| `1. a` / ` [r]: /u` | list, and `r` registers | a definition below the content column closes the item (PART 0 S3) |
 | `1. a` / `   [r]: /u` / `   after` | one tight item with two paragraphs | definition is at the item's content column |
 | `- text` / `  # H` | item: text + heading | heading interrupts inside the item |
 
