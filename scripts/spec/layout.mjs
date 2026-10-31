@@ -7474,6 +7474,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
      * applies to its own; anything else extends it, which is what makes an
      * absorbed opener readable at all.
      */
+    let descQuoteLazyAt = -2
     const advanceDescendantQ1 = (text, absorbed, verbatim = false, idx = -1, lineCol = -1) => {
       if (descendantQ1.col < 0) return
       const close = () => { descendantQ1.open = false; descendantQ1.para = [] }
@@ -7551,10 +7552,17 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         return
       }
       // A quote's last block answers across its lines, as at the item's own column.
-      const opens = idx >= 0 && QUOTE.test(text)
+      const quoted = idx >= 0 && QUOTE.test(text)
+      const opens = quoted
         ? advanceQuoteRun(descendantQuote, text, idx)
         : descendantLineOpensParagraph(text, rowOpen, idx)
       if (!opens) { close(); return }
+      // A line folded into the quote's paragraph is the quote's text, as at the item's own column.
+      if (!quoted && descendantQ1.open && descendantQuote.open &&
+          (descendantQuote.at === idx - 1 || descQuoteLazyAt === idx - 1)) {
+        descQuoteLazyAt = idx
+        return
+      }
       if (!descendantQ1.open) { descendantQ1.open = true; descendantQ1.para = [] }
       descendantQ1.para.push(text)
     }
@@ -7839,6 +7847,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // The quote run at this item's content column: its last line's index, and
     // whether that line left the quote a paragraph or a table open.
     const bodyQuote = { at: -2, open: false, table: false, hosts: [], para: [] }
+    // The last line folded into that run's open paragraph from this item's content.
+    let quoteLazyAt = -2
     const advanceBodyQuote = (text, idx) => advanceQuoteRun(bodyQuote, text, idx)
     // Seed from an open-paragraph head only when a marked line follows; a
     // single-line nest would otherwise re-walk every level (quadratic).
@@ -8934,6 +8944,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
+        // A line folded into a child's or a quote's paragraph is that block's text, not this item's.
+        const lazyQuoteLine = bodyQuote.open && (bodyQuote.at === i - 1 || quoteLazyAt === i - 1) && !QUOTE.test(dmeas.rest)
+        const lazyChildLine = (!descendantOwned && deepestIsDescendant) || lazyQuoteLine
         // A closer for the span below this column leaves the paragraph exactly as
         // the span found it: closing it here would be this column answering for a
         // span written at another one, which is the whole of carve#2526.
@@ -8980,7 +8993,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         else if (COLON_FENCE.test(dedented)) {
           if (colonFenceInterrupts(dedented, openPara ? para : []) ||
               bareColonIsFence(itemLines, itemLines.length - 1, bodyColonScan)) closePara()
-          else openParaWith(dedented)
+          else if (!lazyChildLine) openParaWith(dedented)
+          else if (lazyQuoteLine) quoteLazyAt = i
         }
         // A TABLE ROW closes the paragraph, and so does the continuation row
         // that extends the table it opened. A `+ ...|` line with no table above
@@ -9090,7 +9104,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             noteFrames.push({ marker: col, base: localBase, body: noteBodyBoundary, ownerBase: outerNote?.marker ?? null, outerReach })
             // A footnote body takes a lazy line like every container (carve#3885).
             const noteText = FOOTNOTE_DEF.exec(lm.rest)[2]
-            if (opensParagraph(noteText, true)) { openPara = true; para = [noteText] }
+            // A code fence opener starts a code block, not a paragraph (CARVE-P0-013).
+            if (openerFenceRun(noteText) === null && opensParagraph(noteText, true)) { openPara = true; para = [noteText] }
           }
         }
         // A DESCRIPTION MARKER is asked what its body carries, as a sub-list
@@ -9118,7 +9133,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
          * band is the item's prose rather than definition content
          * (markup-carve/carve#1376).
          */
-        else if (dmeas.rest !== '') openParaWith(dedented)
+        else if (dmeas.rest !== '' && !lazyChildLine) openParaWith(dedented)
+        else if (dmeas.rest !== '' && lazyQuoteLine) quoteLazyAt = i
         // A block of this item below the sublist's column has ended the sublist,
         // so a later line past this column is no descendant's (CARVE-P0-004).
         if (subCol >= 0 && reach < subCol && !nm && dmeas.rest !== '' && !belowCloser && !inCommentSpan &&
