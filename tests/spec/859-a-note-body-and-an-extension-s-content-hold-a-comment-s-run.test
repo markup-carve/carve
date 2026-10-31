@@ -1,0 +1,47 @@
+A note body and an extension's content hold a comment's run
+
+```
+^[%% c] d
+.
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> d</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+^[a %% c] d
+.
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> d</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:foo[%% c] d
+.
+<p><span class="ext-foo"></span> d</p>
+```
+
+```
+:foo[a %% c] d
+.
+<p><span class="ext-foo">a</span> d</p>
+```
+
+```
+[a %% c] d
+.
+<p>[a] d</p>
+```
