@@ -2264,11 +2264,10 @@ function bodyLeavesNoParagraphAt(bodyLines, last, quoted = false) {
     const code = FENCE.exec(bodyLines[k])
     if (code && parseFenceInfo(code[2]) !== null) {
       const end = findCloser(bodyLines, k, code[1])
-      // An unterminated fence opens no block, so nothing below it is closed
-      // either: the paragraph above stays open and `opensParagraph` answers.
-      // At a block start it opens unconditionally (§10 I4) and holds no paragraph.
-      if (end === -1 && (k === 0 || trimWs(bodyLines[k - 1]) === '')) return true
-      if (end === -1 || end > last) return false
+      // An unterminated fence opens without lookahead and runs to the end of
+      // its container (§10 I4), so it holds no paragraph.
+      if (end === -1) return true
+      if (end > last) return false
       closedAt = end
       k = end + 1
       continue
@@ -2357,7 +2356,7 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
  * collected body is the rescan carve#2509 ruled out.
  */
 function hostLadder() {
-  return { columns: [0], markerCols: [], kinds: [], fence: null, unclaimed: null }
+  return { columns: [0], markerCols: [], markers: [], kinds: [], fence: null, unclaimed: null }
 }
 
 /*
@@ -2380,6 +2379,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
       const column = 1 + description[1].length + lead.col
       h.columns.push(column)
       h.markerCols.push(1 + description[1].length)
+      h.markers.push(matchMarkerAt(indentCols(description[2])))
       h.kinds.push('item')
       return { meas, inner: { col: column, rest: markerFreeContent(description[2]) }, blockStart: true, popped: false }
     }
@@ -2425,7 +2425,14 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
   const retainedFenceText = h.retainedComment && h.kinds.at(-1) === 'item' &&
     meas.col > h.markerCols.at(-1) && meas.col < h.columns.at(-1) && FENCE.test(meas.rest)
   h.retainedComment = false
-  const lazyItemLine = retainedFenceText || paraOpen && h.kinds.at(-1) === 'item' &&
+  // A marker under an item's paragraph that misses the item folds into it unless it
+  // shares the missed list's axes or column or stands at the survivor's (S4, as the walk reads it).
+  const lineMarker = paraOpen && h.kinds.at(-1) === 'item' ? matchMarkerAt(meas) : null
+  const survivor = lineMarker ? h.columns.findLastIndex((c) => c <= meas.col) : -1
+  const foldedMarker = lineMarker !== null && survivor < h.kinds.length && h.kinds[survivor] === 'item' &&
+    h.markers[survivor] && !sameAxes(markerAxes(h.markers[survivor]), lineMarker) &&
+    meas.col !== h.markerCols[survivor] && meas.col > h.columns[survivor]
+  const lazyItemLine = retainedFenceText || foldedMarker || paraOpen && h.kinds.at(-1) === 'item' &&
     (h.columns.length === 2 || h.colons?.length ||
       h.kinds.at(-2) === 'item') && matchMarkerAt(meas) === null &&
     (!FENCE.test(meas.rest) || belowFenceLazy && meas.col < h.columns.at(-1)) && !isColonBlockOpener(meas.rest) &&
@@ -2441,6 +2448,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     h.colonParagraph = null
     if (h.kinds.at(-1) === 'item' && meas.col <= h.markerCols.at(-1)) leftOfClosedItem = true
     h.markerCols.pop()
+    h.markers.pop()
     h.kinds.pop()
   }
   if (!h.kinds.includes('description')) h.descriptionParagraph = false
@@ -2457,6 +2465,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
       const column = box + marker.indent + marker.markerWidth
       while (h.colons?.length && h.colons.at(-1).base >= column) h.colons.pop()
       h.markerCols.push(box + marker.indent)
+      h.markers.push(marker)
       h.columns.push(column)
       h.kinds.push('item')
       blockStart = true
@@ -2470,6 +2479,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     const note = FOOTNOTE_DEF.exec(inner.rest)
     if (note && reachesDefinitionSite(h, inner.col)) {
       h.markerCols.push(inner.col)
+      h.markers.push(null)
       h.columns.push(inner.col + 2)
       h.kinds.push('note')
       blockStart = true
@@ -2483,6 +2493,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     if (description && inner === meas) {
       const column = inner.col + 1 + description[1].length
       h.markerCols.push(inner.col)
+      h.markers.push(null)
       h.columns.push(column)
       h.kinds.push('description')
       blockStart = true
@@ -3418,13 +3429,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       result.push(out + src)
       // The readers open a list at a folded marker (§10 I2); a lazy line framed later belongs to its item (carve#4259).
       if (form.kind === 'item') top().listContent = foldedAt + form.width
-      // The list they open there is read from the body column, so the child's source measure ends.
-      if (form.kind === 'item') for (const f of frames.slice(reached + 1)) {
-        if (!f.sourceShift) continue
-        f.col -= f.sourceShift
-        f.cut -= f.sourceShift
-        f.sourceShift = 0
-      }
       // A marker of another list kind under an item's paragraph opens a list
       // at the parent's content column (§10 I2), and so does any marker the
       // `+` refuses between its columns. The walk folds it, and the markers
@@ -3606,13 +3610,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
         if (form.kind === 'note') {
           const start = frame.col - m.col
           const measured = noteChildAtSource(m.rest) ? col + form.head : start
-          const depth = frames.length
           content(frame, measured, frame.canon - m.col)
-          // A `+` and a fence payload still read the body column (carve#4409).
-          for (let k = depth; k < frames.length; k++) {
-            if (frames[k].markerCol === undefined) continue
-            frames[k].sourceShift = measured - start
-          }
           return
         }
         return content(frame, col + form.head, canon + form.head, form.leadTab)
@@ -7531,6 +7529,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // A plain line below the child's column folded into its open paragraph.
     let childParagraphLazy = false
     let colonDescriptionBody = Infinity
+    let colonDescriptionParagraph = false
     let subCol = -1
     // A comment below the child's column ends it in the body parse (carve#3985).
     let commentBelowChild = false
@@ -8724,9 +8723,15 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // (CARVE-P0-004, CARVE-P9-083).
         const retainedAfterComment = afterComment && subCol > reach && !opensBlockAt(line, i)
         // A line at the body column of a description in that container is the description's, not a new base (CARVE-P9-083).
-        if (fence.colon.length === 0 || (lm.rest !== '' && col < colonDescriptionBody)) colonDescriptionBody = Infinity
+        // A lazy line folds into the description's paragraph and closes nothing (PART 0 S4).
+        const foldsIntoColonDescription = colonDescriptionParagraph && fence.opaque === null && foldablePlainLine(lm.rest)
+        if (fence.colon.length === 0 || (lm.rest !== '' && col < colonDescriptionBody && !foldsIntoColonDescription)) colonDescriptionBody = Infinity
+        if (lm.rest === '' || colonDescriptionBody === Infinity) colonDescriptionParagraph = false
+        else if (col >= colonDescriptionBody) colonDescriptionParagraph = foldablePlainLine(lm.rest)
         if (fence.colon.length !== 0 && fence.opaque === null && DESCRIPTION_LEAD.test(lm.rest) && opensDescriptionAt(itemLines, col - contentCol)) {
-          colonDescriptionBody = col + DESCRIPTION_LEAD.exec(lm.rest)[0].length
+          const lead = DESCRIPTION_LEAD.exec(lm.rest)[0]
+          colonDescriptionBody = col + lead.length
+          colonDescriptionParagraph = foldablePlainLine(lm.rest.slice(lead.length))
         }
         const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 && col < colonDescriptionBody &&
           col > contentCol && !descendantOwned && !COLON_CLOSER.test(lm.rest) && !inPayload && !retainedAfterComment && opensHostedColonBlock(lm.rest)
