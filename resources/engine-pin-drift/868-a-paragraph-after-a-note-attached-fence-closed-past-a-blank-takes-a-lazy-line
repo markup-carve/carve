@@ -1,0 +1,1 @@
+The pinned carve-js ends the note before the lazy line (markup-carve/carve#4392); the spec model is correct.
