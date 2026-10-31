@@ -36,7 +36,7 @@ The same holds for a heading and a div.
 
 :::
 
-::: compare
+:::: compare
 
 ```carve
 {style="url(x)" align=left}
@@ -51,4 +51,4 @@ q
 </div>
 ```
 
-:::
+::::
