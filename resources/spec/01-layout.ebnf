@@ -378,7 +378,8 @@
                       decimal, alphabetic, roman or bare-dot marker with
                       content; a marker with no content is text. [B-list-keep]
                       Items in one container group when marker kind,
-                      delimiter, dialect and task state agree. A blank
+                      delimiter, dialect and plain-or-task agree; differing
+                      checkbox states share one list. A blank
                       between items or before a second paragraph makes the
                       list loose; a blank before a child block alone does
                       not. [B-list-end] Three consecutive blanks before a

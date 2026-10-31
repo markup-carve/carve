@@ -130,7 +130,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
 (* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE [CARVE-P7-003]. The three
    terminals below are the whole of it, and no construct reads a wider class
-   except the four wider notions named at the end of this clause. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
+   except the five wider notions named at the end of this clause. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
    CARRIAGE RETURN, or the pair. `space` is the narrower slot that admits the
    first of those and nothing else. PART 0's guard notation spells the same
    set once more and adds nothing -- `ws = space | tab | newline`.
@@ -175,7 +175,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    emptiness test is not satisfied by its absence, and a line holding one is
    not a `blank_line`.
 
-   THE FOUR WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
+   THE FIVE WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
    mark takes this definition. `typography_flank` (PART 3) is the class smart
    typography reads a neighbor through: it adds the no-break space and a soft
    or hard line break to these terminals, for that test only, and recognizes
@@ -187,6 +187,10 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    parser strips, before a scheme is read, and it is a SECURITY PROBE over a
    destination rather than a reading of the source. Its `style` check removes
    all Unicode whitespace too, so `{style="u<U+00A0>rl(x)"}` is blanked.
+   Colon-opener RECOVERY (PART 2, STRICT) ends the type word at Unicode
+   White_Space or U+FEFF, for that boundary only: `::: note` + U+00A0 + `x`
+   recovers as the `note` container and drops the rest, while a valid opener
+   still takes only `space`.
 
    Constructs use this definition rather than a host language's trim,
    regular-expression or locale-aware character class. *)
