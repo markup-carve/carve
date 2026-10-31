@@ -1,0 +1,51 @@
+A task marker at a nested task item's content column nests in that item
+
+```
+- [ ] - a
+  - [ ] - b
+    - [ ] c
+      - [ ] d
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 
+        <ul>
+          <li>b</li>
+        </ul>
+        <ul class="task-list">
+          <li><input type="checkbox" disabled aria-label="c"> c
+            <ul class="task-list">
+              <li><input type="checkbox" disabled aria-label="d"> d</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- [ ] - b
+  - [ ] c
+    - [ ] d
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <ul>
+      <li>b</li>
+    </ul>
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="c"> c
+        <ul class="task-list">
+          <li><input type="checkbox" disabled aria-label="d"> d</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```

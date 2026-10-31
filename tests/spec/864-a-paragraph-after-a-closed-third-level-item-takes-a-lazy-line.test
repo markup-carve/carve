@@ -1,0 +1,23 @@
+A paragraph after a closed third-level item takes a lazy line
+
+```
+- - - ~~~
+    x
+tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+        x
+tail
+      </li>
+    </ul>
+  </li>
+</ul>
+```

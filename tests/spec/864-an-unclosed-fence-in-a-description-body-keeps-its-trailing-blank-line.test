@@ -1,0 +1,19 @@
+An unclosed fence in a description body keeps its trailing blank line
+
+````
+:: t
+: ```
+  code
+
+after
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <pre><code>code
+
+</code></pre>
+  </dd>
+</dl>
+<p>after</p>
+````

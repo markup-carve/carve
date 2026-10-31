@@ -1,0 +1,11 @@
+A bullet line after a hostless caption line leaves later indented blocks out of the paragraph
+
+```
+^ p
+- x
+  > q
+.
+<p>^ p
+- x</p>
+<blockquote><p>q</p></blockquote>
+```

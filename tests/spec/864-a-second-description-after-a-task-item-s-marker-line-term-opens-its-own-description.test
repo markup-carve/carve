@@ -1,0 +1,17 @@
+A second description after a task item's marker-line term opens its own description
+
+```
+- [ ] :: t
+      : a
+      : b
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <dl>
+      <dt>t</dt>
+      <dd>a</dd>
+      <dd>b</dd>
+    </dl>
+  </li>
+</ul>
+```

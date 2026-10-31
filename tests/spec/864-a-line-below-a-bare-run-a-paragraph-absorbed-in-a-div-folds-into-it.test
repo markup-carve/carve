@@ -1,0 +1,37 @@
+A line below a bare run a paragraph absorbed in a div folds into it
+
+```
+- :::
+  :::e
+  ::::
+l
+.
+<ul>
+  <li>
+    <div>
+      <p>:::e
+::::
+l</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- o
+
+  :::
+  :::e
+  ::::
+l
+.
+<ul>
+  <li>o
+    <div>
+      <p>:::e
+::::
+l</p>
+    </div>
+  </li>
+</ul>
+```

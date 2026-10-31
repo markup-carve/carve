@@ -1,0 +1,13 @@
+A second description in an indented description list opens its own description
+
+```
+ :: t
+ : a
+ : b
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+  <dd>b</dd>
+</dl>
+```

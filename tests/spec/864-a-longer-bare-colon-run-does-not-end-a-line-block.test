@@ -1,0 +1,17 @@
+A longer bare colon run does not end a line block
+
+```
+- m
+  ::: |
+  ::::
+l
+.
+<ul>
+  <li>m
+    <div class="line-block">
+      <p>::::<br>
+l</p>
+    </div>
+  </li>
+</ul>
+```
