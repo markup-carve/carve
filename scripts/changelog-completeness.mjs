@@ -164,7 +164,6 @@ const NOT_SHIPPED = [
     // time someone commits a regeneration on its own.
     //   tests/corpus, tests/spec  <- resources/examples, via generate-corpus
     //   tests/include-conformance <- gen-include-conformance
-    //   docs/rules                <- resources/spec, via spec-rule-index
     /^tests\/corpus\//,
     /^tests\/spec\//,
     /^tests\/include-conformance\//,

@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+// The pages are generated at docs build (`docs:pages`) and gitignored: their
+// source links carry line numbers, so committing them made every clause edit
+// rewrite them and parallel spec PRs conflict there.
+import { execFileSync } from 'node:child_process'
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -93,29 +97,16 @@ if (command === '--write') {
   for (const [file, content] of outputs) writeFileSync(resolve(outputDir, file), content)
   console.log(`wrote ${outputs.size} focused rule-index pages for ${registry.rules.length} rules`)
 } else if (command === '--check') {
-  const stale = []
-  for (const [file, expected] of outputs) {
-    let actual
-    try {
-      actual = readFileSync(resolve(outputDir, file), 'utf8')
-    } catch {
-      actual = undefined
-    }
-    if (actual !== expected) stale.push(file)
-  }
-  let unexpected = []
-  try {
-    unexpected = readdirSync(outputDir)
-      .filter((file) => file.endsWith('.md') && !outputs.has(file))
-  } catch {
-    // Missing outputDir is already represented by every expected file above.
-  }
-  if (stale.length) {
-    console.error(`stale focused rule-index page(s): ${stale.join(', ')}; run: npm run spec:rules:write`)
+  const tracked = execFileSync('git', ['ls-files', '--', 'docs/rules'], { cwd: repo, encoding: 'utf8' })
+    .split('\n').filter(Boolean)
+  if (tracked.length) {
+    console.error(`docs/rules is generated at docs build; untrack it: git rm --cached ${tracked.join(' ')}`)
     process.exitCode = 1
   }
-  if (unexpected.length) {
-    console.error(`unexpected focused rule-index page(s): ${unexpected.join(', ')}; delete them`)
+  const rows = [...outputs.values()].flatMap((page) => [...page.matchAll(/^\| \[`(CARVE-[^`]+)`\]/gm)].map((m) => m[1]))
+  const active = registry.rules.map((rule) => rule.id)
+  if (rows.length !== active.length || [...rows].sort().join() !== [...active].sort().join()) {
+    console.error(`focused views list ${rows.length} rule rows for ${active.length} active rules`)
     process.exitCode = 1
   }
   if (!process.exitCode) {
