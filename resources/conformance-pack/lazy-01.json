@@ -572,7 +572,7 @@
 {"id":"lazy-773136ffb71e","source":"> text\n> ```\n\n\nlazy\n","html":"<blockquote>\n  <p>text</p>\n  <pre><code></code></pre>\n</blockquote>\n<p>lazy</p>"},
 {"id":"lazy-77467e0b3ad2","source":"-%% c\ntail\n","html":"<p>-%% c\ntail</p>"},
 {"id":"lazy-7753aedc9422","source":" - [^n]: text\n   > q\nafter [^n]\n*[A]: b\n","html":"<ul>\n  <li>\n    <blockquote><p>q\nafter <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p></blockquote>\n  </li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"},
-{"id":"lazy-777e736ed857","source":"- a\n1.   - b\n       > q\n    lazy\n lazy\n","html":"<ul>\n  <li>a</li>\n</ul>\n<ol>\n  <li>\n    <ul>\n      <li>b\n&gt; q\nlazy\nlazy</li>\n    </ul>\n  </li>\n</ol>"},
+{"id":"lazy-777e736ed857","source":"- a\n1.   - b\n       > q\n    lazy\n lazy\n","html":"<ul>\n  <li>a</li>\n</ul>\n<ol>\n  <li>\n    <ul>\n      <li>b\n        <blockquote><p>q\nlazy\nlazy</p></blockquote>\n      </li>\n    </ul>\n  </li>\n</ol>"},
 {"id":"lazy-77923f7da3c4","source":":: t\n:  + a |\ntil\n","html":"<dl>\n  <dt>t</dt>\n  <dd>+ a |\ntil</dd>\n</dl>"},
 {"id":"lazy-77f8e69c7daf","source":"> :: t\n> : d\n> : d\ntail\n>  [^f]: n\n","html":"<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>d</dd>\n    <dd>d\ntail</dd>\n  </dl>\n</blockquote>"},
 {"id":"lazy-7809856f6eab","source":"- >lazy\nlazy\n","html":"<ul>\n  <li>&gt;lazy\nlazy</li>\n</ul>"},

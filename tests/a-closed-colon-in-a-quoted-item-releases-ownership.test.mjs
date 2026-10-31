@@ -150,7 +150,8 @@ test('absorbed bare colon runs retain the paragraph owner', () => {
   assert.equal(doc.blocks[0].t, 'quote')
 })
 
-for (const [first, next, count] of [['9.', '10.', 2], ['-', '1.', 1]]) {
+// carve#4369: `1.` after `-` opens a new list, and `::: other` misses its content column.
+for (const [first, next, count] of [['9.', '10.', 2], ['-', '1.', 2]]) {
   test(`a wider sibling marker ends the preceding colon host: ${first} to ${next}`, () => {
     const pad = ' '.repeat(first.length + 1)
     const prefix = `> ${first} ::: box\n> ${pad}text\n> ${next} sib\n> ${pad}::: other\n`

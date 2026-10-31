@@ -9,16 +9,18 @@ import { modelTrace } from '../scripts/spec/decision-trace.mjs'
 // read at its written column as text, a sibling, a child or a new list.
 const steps = (source) => modelTrace(source).map((r) => `${r.line} ${r.step} ${r.owner} ${r.form}`)
 
-test('a marker past a folded item content column is traced as its paragraph text', () => {
+// carve#4369: a list marker of another kind at column 0 opens a list whose items
+// measure against their own content column.
+test('a marker at a new list item content column is traced as its child list', () => {
   const source = '- a\n1. w\n   - deep\n'
-  assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item', '3 S5 doc/item:2 text'])
-  assert.equal(renderDoc(parse(source)), '<ul>\n  <li>a</li>\n</ul>\n<ol>\n  <li>w\n- deep</li>\n</ol>')
+  assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item', '3 S5 doc/item:2/item:3 item'])
+  assert.equal(renderDoc(parse(source)), '<ul>\n  <li>a</li>\n</ul>\n<ol>\n  <li>w\n    <ul>\n      <li>deep</li>\n    </ul>\n  </li>\n</ol>')
   assert.deepEqual(steps('1. +\n  - w\n  - v\n    - u\n').slice(2), ['3 S4 doc/item:1 lazy', '4 S5 doc/item:1/item:4 item'])
 })
 
-test('a deeper marker after the folded one is a child of the item the readers keep open', () => {
+test('a deeper marker after the nested one is a child of the item the readers keep open', () => {
   assert.deepEqual(steps('- a\n1. w1\n   - w2\n     - w3\n   more\n').slice(2),
-    ['3 S5 doc/item:2 text', '4 S5 doc/item:2/item:4 item', '5 S4 doc/item:2/item:4 lazy'])
+    ['3 S5 doc/item:2/item:3 item', '4 S5 doc/item:2/item:3/item:4 item', '5 S4 doc/item:2/item:3/item:4 lazy'])
 })
 
 test('a frame the walk keeps in an item the readers closed is not a list there', () => {

@@ -402,7 +402,12 @@
         there is text of the open paragraph, so `- a` / ` - [ ] b` and
         `1. a` / ` a. b` fold like `- a` / ` * b` (carve#4545). The same test holds
         left of the marker column while the line is past the owner's content
-        column: `  - a` / ` * b` folds and `  - a` / ` - b` is a sibling. Headings,
+        column: `  - a` / ` * b` folds and `  - a` / ` - b` is a sibling. A
+        marker of another kind at the missed list's own column, or at or left
+        of the owner's content column, is no lazy line: it opens a new list
+        (§11 N1), and every item measures its content against its own content
+        column. `- y` / `1. c` / blank / `   # h` puts the heading in the `1.`
+        item, the same as `1. c` / blank / `   # h` alone (carve#4369). Headings,
         thematic breaks, quotes, terms, tables, valid colon openers, code and
         raw openers, comments, attributes and definitions interrupt. An invalid opener is text. A fold closes
         nothing and changes the leaf operation, never which container
