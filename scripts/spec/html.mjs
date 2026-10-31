@@ -416,7 +416,7 @@ function renderBlock(b, depth, ctx) {
       return `${pad}<hr${ba}>`
     case 'code': {
       const cls = b.lang ? ` class="language-${b.lang}"` : ''
-      const title = b.title != null && !/ title="/.test(ba) ? ` title="${escapeAttr(b.title)}"` : ''
+      const title = b.title != null && !/ title="/i.test(ba) ? ` title="${escapeAttr(b.title)}"` : ''
       if (b.caption !== undefined) {
         const id = / id="([^"]*)"/i.exec(ba)?.[1]
         const cap = numberCaption(b.caption, ctx, id)

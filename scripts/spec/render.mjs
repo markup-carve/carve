@@ -2195,7 +2195,7 @@ function mathSpan(kind, code, attrs) {
   // ASCII-case-insensitive: an author's attribute NAME is emitted verbatim and
   // HTML attribute names are case-insensitive, so `ROLE` and `role` are one
   // attribute and a case-sensitive match writes a duplicate of it.
-  const authoredRole = list.some((a) => a[0] === 'kv' && a[1].toLowerCase() === 'role')
+  const authoredRole = list.some((a) => (a[0] === 'kv' || a[0] === 'bool') && a[1].toLowerCase() === 'role')
   const roleStr = authoredRole ? '' : ' role="math"'
   return `<span${rest}${roleStr}>${wrap[0]}${body}${wrap[1]}</span>`
 }
