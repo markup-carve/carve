@@ -47,6 +47,11 @@
       - Only the braced comment's own characters are removed. Spaces before
         and after it stay in the inline run, including a trailing space in
         `x {%%}`, which renders `<p>x </p>`.
+
+      In a `{~` frame, the first raw `~}` ends a `%%` comment even when its
+      body contains `~>`. That arrow is comment text and cannot split a
+      substitution. If it was the only top-level arrow, the frame is
+      unclosed: `{~a %% b~>c~} d` renders `<p>{~a d</p>`.
       - A paragraph holding only braced comments renders empty and takes
         pending attributes: `{% c %}` gives `<p></p>` and `- {% c %}` an empty
         `<li>`.
