@@ -3314,7 +3314,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       termRefuses = false
     }
     if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && !termRefuses && form.kind !== 'dd' &&
-        !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' && sameAxes(markerAxes(frames[reached + 1].marker), form.marker)) &&
+        // A marker at the missed list's column or at or left of the owner's content column opens a
+        // list of its own, so its items measure against their own columns (S4, §11 N1; carve#4369).
+        !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' &&
+          (sameAxes(markerAxes(frames[reached + 1].marker), form.marker) ||
+           m.col === Math.min(frames[reached + 1].listCol, frames[reached + 1].markerCol) ||
+           m.col <= frames[reached].col)) &&
         !(missedNote && form.kind === 'item' && frames.slice(reached + 1).some((f) => f.kind === 'item'))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
       // the frame it missed. Past a missed note it is framed LAZY in the
