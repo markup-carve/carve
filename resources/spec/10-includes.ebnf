@@ -309,12 +309,13 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       spelling. It ends at its own line and does not open a paragraph, so a
       following `^ ` line is not paragraph text. Resolution does not change
       this boundary. An unresolved or refused directive, or one with no
-      resolver, stays literal as its own paragraph, in I7's sense: its
-      source text with no inline parse of its tokens, so `{{ _a_ @code:js }}`
-      keeps its underscores. A quoted path keeps its core inline reading, so
-      `{{ "_a_" @code:js }}` has an underlined span (corpus 725). The following caption line is an ordinary
-      paragraph. A Carve-content include without `@code`
-      keeps the block/inline behavior above.
+      resolver, stays as its own paragraph. With a bare path its source text
+      has no inline parse of its tokens, so `{{ _a_ @code:js }}` keeps its
+      underscores. With a quoted path the whole directive takes its core
+      inline reading: `{{ "_a_" @code:js }}` has an underlined span (corpus
+      725), and other inline constructs in the directive are read as usual.
+      The following caption line is an ordinary paragraph. A Carve-content
+      include without `@code` keeps the block/inline behavior above.
 
    I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies a
       resolver with the contract: given (path, section?, options?,

@@ -46,6 +46,8 @@
                  end of line).
    Character classes for guards: ws = space | tab | newline; alnum =
    letter | digit; punct = ascii_punctuation; non_ws = character - ws.
+   The letter and digit terminals are the ASCII enumerations in PART 7;
+   a non-ASCII letter does not satisfy the alnum guard.
 
    NORMATIVITY
    - The files in resources/spec/*.ebnf are the NORMATIVE specification of
@@ -1208,7 +1210,7 @@ definition_entry = definition_term+, [{blank_line}, definition_body,
    three-blank boundary. A blank NOT followed by a `: ` definition ends the
    entry. The bodies are optional: `:: t` alone is a definition list holding
    one term and no description (PART 0 FAMILIES, [B-term-start]). *)
-definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
+definition_term = "::", definition_separator, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
    `::`/`: ` marker, or anything else that ends a paragraph ends it. A term
@@ -2495,9 +2497,11 @@ alt_text = {character} ;
    `![x /b/ y](/u)` gives `alt="x /b/ y"`. Resolve `escaped_char` in
    the scalar value: `![x \] y](/u)` gives `alt="x ] y"`, and `\|` gives
    a literal pipe, including in a table cell. A backslash before a
-   non-punctuation character stays literal. Nested links, images and literal
-   span delimiters contribute text rather than elements; escape decoding does
-   not invoke inline parsing. The matching close uses
+   non-punctuation character stays literal. Nested links and images contribute
+   their full source spelling, including brackets, destinations and titles,
+   to the scalar alt value; they do not become elements. Literal span
+   delimiters likewise contribute text. Escape decoding does not invoke
+   inline parsing. The matching close uses
    `link_text`, less the `{% %}` skip above; the value remains scalar. *)
 image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;
@@ -3681,12 +3685,13 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       spelling. It ends at its own line and does not open a paragraph, so a
       following `^ ` line is not paragraph text. Resolution does not change
       this boundary. An unresolved or refused directive, or one with no
-      resolver, stays literal as its own paragraph, in I7's sense: its
-      source text with no inline parse of its tokens, so `{{ _a_ @code:js }}`
-      keeps its underscores. A quoted path keeps its core inline reading, so
-      `{{ "_a_" @code:js }}` has an underlined span (corpus 725). The following caption line is an ordinary
-      paragraph. A Carve-content include without `@code`
-      keeps the block/inline behavior above.
+      resolver, stays as its own paragraph. With a bare path its source text
+      has no inline parse of its tokens, so `{{ _a_ @code:js }}` keeps its
+      underscores. With a quoted path the whole directive takes its core
+      inline reading: `{{ "_a_" @code:js }}` has an underlined span (corpus
+      725), and other inline constructs in the directive are read as usual.
+      The following caption line is an ordinary paragraph. A Carve-content
+      include without `@code` keeps the block/inline behavior above.
 
    I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies a
       resolver with the contract: given (path, section?, options?,
@@ -4178,9 +4183,10 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    AND IN THE CONSTRUCTS THAT SPELL NO RUN AT ALL, which is where this bites
    hardest, because there an implementation had to invent something. A
-   definition term, a bullet item and an ordered item take `space` -- one,
-   exactly, not a class. A heading and a caption spell `space+`, a RUN of
-   the same terminal. The CONTINUATION MARKER takes no separator: after
+   bullet item and an ordered item take `space` -- one, exactly, not a
+   class. A definition term takes `definition_separator`, a run of one or
+   more spaces as a description does. A heading and a caption spell `space+`,
+   a RUN of the same terminal. The CONTINUATION MARKER takes no separator: after
    CARVE-P7-001 item 5 drops the line-final run,
    `continuation_marker = '+', newline` requires the `+`
    to be last. A vertical tab or form feed after it is content, so the
@@ -6619,6 +6625,9 @@ EOF = (* end of file *) ;
       `/*...*/` token at its `*/`, and the rest of the braced family the same
       way. Plain prose supplies none, and this is the form for it:
       `foo {% bar %} baz` renders `<p>foo  baz</p>`.
+      - Only the braced comment's own characters are removed. Spaces before
+        and after it stay in the inline run, including a trailing space in
+        `x {%%}`, which renders `<p>x </p>`.
       - A paragraph holding only braced comments renders empty and takes
         pending attributes: `{% c %}` gives `<p></p>` and `- {% c %}` an empty
         `<li>`.

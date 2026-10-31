@@ -593,7 +593,7 @@ definition_entry = definition_term+, [{blank_line}, definition_body,
    three-blank boundary. A blank NOT followed by a `: ` definition ends the
    entry. The bodies are optional: `:: t` alone is a definition list holding
    one term and no description (PART 0 FAMILIES, [B-term-start]). *)
-definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
+definition_term = "::", definition_separator, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
    `::`/`: ` marker, or anything else that ends a paragraph ends it. A term
