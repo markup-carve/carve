@@ -7759,6 +7759,9 @@ EOF = (* end of file *) ;
       self-reference (`# A </#A>`) and a mutual cycle (`# A </#B>` +
       `# B </#A>`) each resolve once (corpus "Cyclic cross-reference resolves
       to one level"). Cloning keeps the heading's markup:
+      An inner cross-reference in the cloned heading contributes its target's
+      inline text without an inner link. References within that target are not
+      expanded again.
       `# *Setup*` yields `<a href="#…"><strong>Setup</strong></a>`. A clone
       drops every id at every depth, so no id appears twice: with `# *A*{#z}`
       the heading keeps `<strong id="z">`, and `</#A>` gives

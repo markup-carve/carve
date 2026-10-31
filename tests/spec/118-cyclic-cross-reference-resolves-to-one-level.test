@@ -4,7 +4,7 @@ Cyclic cross-reference resolves to one level
 # A </#A>
 .
 <section id="A">
-  <h1>A <a href="#A">A </a></h1>
+  <h1>A <a href="#A">A A </a></h1>
 </section>
 ```
 
@@ -14,10 +14,10 @@ Cyclic cross-reference resolves to one level
 # B </#A>
 .
 <section id="A">
-  <h1>A <a href="#B">B </a></h1>
+  <h1>A <a href="#B">B A </a></h1>
 </section>
 <section id="B">
-  <h1>B <a href="#A">A </a></h1>
+  <h1>B <a href="#A">A B </a></h1>
 </section>
 ```
 
