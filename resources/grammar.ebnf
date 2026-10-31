@@ -6674,14 +6674,18 @@ EOF = (* end of file *) ;
         body line leaves an EMPTY verse line.
 
         `comment_block` IS THE SECOND EXCEPTION, because hiding text is what
-        the construct is for. A `%%%` fence line whose FIRST character is `%`
-        opens a block comment in verse under §28's rules: the closer matches on
-        exact delimiter length, its leading whitespace is not verse and is
-        allowed, and the tails are ignored. The whole span leaves NOTHING: no
-        verse line, no line break, and a blank line in its body ends no stanza.
-        A verse block holding only such a span renders with no stanza. A fence
-        with no closer in the body degrades to a `comment_line` (§28) and leaves
-        an empty verse line like any other.
+        the construct is for. A `%%%` fence line indented by at most 3 spaces
+        opens a block comment in verse under §28's rules, as an indented
+        opener does everywhere else (carve#3885 rule A, carve#4469): the
+        closer matches on exact delimiter length, its leading whitespace is
+        not verse and is allowed, and the tails are ignored. The whole span
+        leaves NOTHING: no verse line, no line break, and a blank line in its
+        body ends no stanza. A verse block holding only such a span renders
+        with no stanza, so `::: |` / `  %%%` / `  secret` / `  %%%` / `:::`
+        renders `<div class="line-block"></div>`. A fence with no closer in
+        the body degrades to a `comment_line` (§28) and leaves an empty verse
+        line like any other; an indented one is verse text, as an indented
+        `%%` line is below.
         The span is a `comment` node in the tree, so the canonical writer emits
         it back unchanged.
 
