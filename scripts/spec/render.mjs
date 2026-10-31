@@ -465,9 +465,21 @@ const DENY = new Set(['javascript', 'vbscript', 'data', 'file',
  * character and is left alone.
  */
 const unescapeDest = (text) => text.replace(/\\([()\\])/g, '$1')
+// In a table cell `\|` is the cell's pipe escape, so a destination there reads it as `|` (carve#4549).
+const unescapeCellDest = (text) => text.replace(/\\([()\\|])/g, '$1')
+let inCell = false
+
+export function renderCellInline(text) {
+  inCell = true
+  try {
+    return renderInline(text)
+  } finally {
+    inCell = false
+  }
+}
 
 export function destValue(dest) {
-  return unescapeDest(dest.sourceString)
+  return (inCell ? unescapeCellDest : unescapeDest)(dest.sourceString)
 }
 
 // The `dest` and `destTitle?` nodes of one `destSlot`. The slot is one

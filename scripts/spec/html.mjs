@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, renderInline, renderCellInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -1398,7 +1398,7 @@ function renderTable(node, depth, ctx) {
         return ` ${name}="${lead}${declarations.join(' ')}"`
       })
     }
-    const content = cell.content === '' ? '' : cell.literal ? escapeHtml(cell.content) : renderInline(cell.content)
+    const content = cell.content === '' ? '' : cell.literal ? escapeHtml(cell.content) : renderCellInline(cell.content)
     return `<${tag}${a}>${content}</${tag}>`
   }
   const renderRow = (row, r) => {
