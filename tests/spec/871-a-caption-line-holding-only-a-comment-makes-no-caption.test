@@ -1,0 +1,54 @@
+A caption line holding only a comment makes no caption
+
+```
+| a |
+^ %% x
+.
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+<p>^</p>
+```
+
+```
+> q
+^ %% x
+.
+<blockquote><p>q
+^</p></blockquote>
+```
+
+```
+> q
+
+^ %% x
+.
+<blockquote><p>q</p></blockquote>
+<p>^</p>
+```
+
+```
+| a |
+^ {% x %}y
+.
+<table>
+  <caption>y</caption>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a |
+^ {% x %}y %% z
+.
+<table>
+  <caption>y</caption>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+```

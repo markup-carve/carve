@@ -356,8 +356,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "const CAPTION = /^\\^ +(?=",
-          "replace": "const CAPTION = /^\\^ (?="
+          "find": "(?!${COMMENT_ONLY}) *(",
+          "replace": "(?!${COMMENT_ONLY})("
         }
       ]
     },

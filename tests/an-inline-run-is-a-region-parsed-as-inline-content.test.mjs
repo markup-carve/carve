@@ -18,7 +18,8 @@ const runs = [
   ['heading text', '# %% c\n', '<h1></h1>'],
   ['definition term', ':: %% c\n: d\n', '<dt></dt>'],
   ['table cell', '| %% c | b |\n|---|---|\n', '<th scope="col"></th>'],
-  ['figure caption', '![alt](u)\n^ %% c\n', '<figcaption></figcaption>'],
+  // A caption line holding only a comment makes no caption (carve#4559).
+  ['figure caption', '![alt](u)\n^ %% c\n', '<p><img src="u" alt="alt">\n^</p>'],
   ['admonition header', '::: note "%% c"\nbody\n:::\n', 'class="admonition-title" id="adm-1"></p>'],
   ['div label', '::: note [%% c]\nbody\n:::\n', '<p class="div-label"></p>'],
   ['link label', '[%% c](/u)\n', '<a href="/u"></a>'],

@@ -32,6 +32,11 @@ for (const [host, build] of hosts) {
       assert.equal(html(source), '')
       return
     }
+    // A caption line holding only a comment makes no caption (carve#4559).
+    if (host === 'figure caption') {
+      assert.equal(html(source), '<p><img src="u" alt="alt">\n^</p>')
+      return
+    }
     assert.ok(html(source).includes(element('')), html(source))
   })
 
