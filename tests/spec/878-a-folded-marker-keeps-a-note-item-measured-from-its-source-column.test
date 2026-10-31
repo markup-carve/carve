@@ -1,0 +1,75 @@
+A folded marker keeps a note item measured from its source column
+
+```
+[^3]: - a
+   * z
+    ~~~
+q
+
+[^3]
+.
+<p>q</p>
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <ul>
+        <li>a
+* z</li>
+      </ul>
+      <pre><code></code></pre>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^3]: - - a
+   * z
+        # H
+q
+
+[^3]
+.
+<p>q</p>
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <ul>
+        <li>
+          <ul>
+            <li>a
+* z</li>
+          </ul>
+          <h1 id="H">H</h1>
+        </li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> - - a
+>  * z
+>   ~~~
+q
+.
+<blockquote>
+  <ul>
+    <li>
+      <ul>
+        <li>a
+* z</li>
+      </ul>
+      <pre><code></code></pre>
+    </li>
+  </ul>
+</blockquote>
+<p>q</p>
+```
