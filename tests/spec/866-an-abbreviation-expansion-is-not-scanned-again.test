@@ -1,0 +1,92 @@
+An abbreviation expansion is not scanned again
+
+```
+*[A]: x
+*[x]: y onmouseover=alert(1) z
+
+A
+.
+<p><abbr title="x">A</abbr></p>
+```
+
+```
+*[A]: x
+*[title]: y
+
+A
+.
+<p><abbr title="x">A</abbr></p>
+```
+
+```
+*[A]: B
+*[B]: C
+*[C]: A
+
+A B C
+.
+<p><abbr title="B">A</abbr> <abbr title="C">B</abbr> <abbr title="A">C</abbr></p>
+```
+
+```
+*[amp]: x
+
+a & amp
+.
+<p>a &amp; <abbr title="x">amp</abbr></p>
+```
+
+```
+*[gt]: x
+
+a > b
+.
+<p>a &gt; b</p>
+```
+
+````
+*[A]: x
+
+```=html
+<script>var A=1</script>
+```
+.
+<script>var A=1</script>
+````
+
+```
+*[A]: x
+
+`A<b>`{=html} A
+.
+<p>A<b> <abbr title="x">A</abbr></p>
+```
+
+````
+*[A]: x
+
+```=html
+<code>
+```
+
+A
+.
+<code>
+<p><abbr title="x">A</abbr></p>
+````
+
+````
+*[A]: x
+
+```=html
+</pre>
+```
+
+```
+A
+```
+.
+</pre>
+<pre><code>A
+</code></pre>
+````

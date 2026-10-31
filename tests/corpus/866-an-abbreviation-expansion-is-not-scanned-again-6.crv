@@ -1,0 +1,5 @@
+*[A]: x
+
+```=html
+<script>var A=1</script>
+```

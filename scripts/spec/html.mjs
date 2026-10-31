@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { escapeAuthoredAttr, idSlot, imageStructural, linkStructural, renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -108,6 +108,10 @@ function renderTextBlockAttrs(lists, tag) {
 }
 
 export function renderDoc(doc) {
+  return withRawFrames(() => renderFramedDoc(doc))
+}
+
+function renderFramedDoc(doc) {
   return renderDocPass(doc, false)
 }
 
@@ -776,7 +780,7 @@ function renderBlock(b, depth, ctx) {
       // something the source did not. Padding EVERY line was indistinguishable
       // from this on the single-line raw blocks the corpus used to hold, which
       // is how three engines gave three answers (carve#800).
-      return b.format === 'html' ? pad + rawPassthrough(b.text) : null
+      return rawFrame(b.format === 'html' ? pad + rawPassthrough(b.text) : null)
     case 'heading': {
       // a heading inside a container: no section wrapper (SS13 wraps
       // top-level headings only); the id lands on the <h*> itself
@@ -1142,7 +1146,7 @@ function numberCaption(text, ctx, id, panelIds) {
   const key = derivedText(label, renderInlineWithoutComments).replace(/[ \t\n\r]+$/, '')
   const n = (ctx.captionSeq.get(key) ?? 0) + 1
   ctx.captionSeq.set(key, n)
-  const shown = label === '' ? '' : flattenInnerLinks(renderInline(label)).replace(/\uE000(?!ref:)[\s\S]*?\uE001/g, '')
+  const shown = label === '' ? '' : flattenInnerLinks(renderInline(label)).replace(/\uE000(?!ref:|\uE001)[\s\S]*?\uE001/g, '')
   if (id && !ctx.captionIds.has(id)) ctx.captionIds.set(id, shown === '' ? `${n}` : `${shown} ${n}`)
   if (panelIds) {
     panelIds.forEach((pid, k) => {
@@ -1877,29 +1881,30 @@ function resolveCrossrefs(html, ctx) {
     // these three (see `derivedText`), and R4 binds every consumer that derives
     // display text from a heading to the same clone, so the two derivations
     // agree rather than differing by which frame each remembered to strip.
-    const text = hit.html.replace(/\uE000[\s\S]*?\uE001/g, '')
+    const text = hit.html.replace(/\uE000(?!\uE001)[\s\S]*?\uE001/g, '')
     return textOnly ? text : `<a href="#${hit.id}">${text}</a>`
   })
 }
 
 // --- PART 9R R3: abbreviations ----------------------------------------------
+const RAW_OR_TAG = new RegExp(`(${RAW_MARK}[\\s\\S]*?${RAW_MARK}|<[^>]*>)`)
+const ENTITY_OR_WORD = /&#?[0-9A-Za-z]+;|[\p{L}\p{N}]+/gu
 function applyAbbreviations(html, ctx) {
-  // transform only text segments outside tags and outside code/pre and math
+  // transform only text segments outside tags, raw output and code/pre and math
   // spans, whose content is a code span's verbatim text (PART 9 §18)
-  const parts = html.split(/(<[^>]*>)/)
+  const parts = html.split(RAW_OR_TAG)
   let inCode = 0
   let inAbbr = 0
   let inMath = false
-  const expand = (text) => {
-    let result = text
-    for (const [term, expansion] of ctx.abbrDefs) {
-      const re = new RegExp(`(^|[^\\p{L}\\p{N}])(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\p{L}\\p{N}])`, 'gu')
-      result = result.replace(re, (_, pre, hit) => `${pre}<abbr title="${escapeAttr(expansion)}">${hit}</abbr>`)
-    }
-    return result
-  }
+  // One pass over the words of the text: an expansion is never scanned again,
+  // and the name of an entity is not a word of the text.
+  const expand = (text) => text.replace(ENTITY_OR_WORD, (hit) => {
+    const expansion = ctx.abbrDefs.get(hit)
+    return expansion === undefined ? hit : `<abbr title="${escapeAttr(expansion)}">${hit}</abbr>`
+  })
   for (let i = 0; i < parts.length; i++) {
     const p = parts[i]
+    if (p.startsWith(RAW_MARK)) continue
     if (p.startsWith('<')) {
       if (/^<(code|pre)[\s>]/.test(p)) inCode++
       else if (/^<\/(code|pre)>/.test(p)) inCode--
@@ -1925,5 +1930,5 @@ function applyAbbreviations(html, ctx) {
     result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at) : expand(p.slice(at))
     parts[i] = result
   }
-  return parts.join('')
+  return parts.join('').replaceAll(RAW_MARK, '')
 }

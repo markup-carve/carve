@@ -256,7 +256,8 @@ core.rules.overCap.body = overCap
 // A bracket opener with no `]` after it fails without recursing into the
 // openers behind it, so a long run of them stays literal text instead of
 // overflowing the stack (PART 9 §25, carve#4134).
-const BRACKET_RULES = ['bracketed', 'nested', 'altNested', 'inlineNote']
+const BRACKET_RULES = ['bracketed', 'inlineNote']
+const ATOM_RULES = ['nested', 'altNested']
 // A `[` whose nested run fails ends the run around it: the outer scan would go
 // on exactly as the inner one did and fail too, so stopping keeps a long chain
 // linear (carve#4236). Every use of these rules is followed by `]`.
@@ -266,6 +267,8 @@ const g = ohm.grammar(`CarveStack <: ${core.name} {
   codeLong = "\\u0000" "\\u0000" "\\u0000"
   bracketless = "\\u0000"
 ${BRACKET_RULES.map((rule) => `  ${rule} := ~bracketless ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1]}`).join('\n')}
+${ATOM_RULES.map((rule) => `  ${rule} := overCapBracket | ${rule}Live\n  ${rule}Live = ~bracketless ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1]}`).join('\n')}
+  overCapBracket = "\\u0000"
 ${CONTENT_RULES.map((rule) => `  ${rule} := ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1].replace('(~"]" any)', '(~"]" ~"[" any)')}`).join('\n')}
   span := ~any any
   spComment := sepRun "%%" (~newline ~"*/" any)*
@@ -322,6 +325,27 @@ bracketless.eval = function (state) {
   return false
 }
 g.rules.bracketless.body = bracketless
+// PART 9 §25: a pair past the nesting cap degrades to literal text. The depth
+// cap of `renderInline` writes it; here it is one atom so the match stops there.
+let overCapPairs = { source: null, budget: 0, overCap: null }
+const overCapBracket = new ohm.pexprs.Terminal('\u0000')
+overCapBracket.eval = function (state) {
+  const { inputStream } = state
+  const { source, pos } = inputStream
+  const budget = MAX_NESTING_DEPTH + 1 - inlineDepth
+  if (overCapPairs.source !== source || overCapPairs.budget !== budget) {
+    overCapPairs = { source, budget, overCap: bracketNesting(source, budget).overCap }
+  }
+  const end = overCapPairs.overCap.get(pos)
+  if (end === undefined) {
+    state.processFailure(pos, this)
+    return false
+  }
+  inputStream.pos = end
+  state.pushBinding(new TerminalNode(end - pos), pos)
+  return true
+}
+g.rules.overCapBracket.body = overCapBracket
 // A code span whose run is longer than the last `codeRun` tier, closed by the
 // next run of exactly its length (PART 3 code_span sets no bound, carve#4134).
 // A PEG cannot compare run lengths, so the opener, body and closer read the
@@ -1045,7 +1069,7 @@ const sem = g.createSemantics().addOperation('h', {
   rawInline(code, _ob, fmt, _cb) {
     if (omitRawInline) return ''
     // PART 9 SS20: emitted UNESCAPED for the html format, dropped otherwise
-    const text = codeText(codeInner(code).child(1))
+    const text = rawFrame(codeText(codeInner(code).child(1)))
     return fmt.sourceString === 'html' ? quoteOpaque(text) : ''
   },
   litInline(span, attrs) {
@@ -2123,9 +2147,9 @@ let inlineDepth = 0
 // how deep that recursion runs before a `]` ends it (openers with no `]` after
 // them do not recurse, `bracketless`); `prewarm` keeps it shallow. `matched`
 // is the nesting of the pairs that close, which the CST and its semantics
-// recurse through, so the model REFUSES past the bound (escapes and verbatim
-// spans skipped) -- a legitimate refusal, not a crash.
-function bracketNesting(text) {
+// recurse through (escapes and verbatim spans skipped); a pair past the budget
+// is one literal atom (`overCapBracket`).
+function bracketNesting(text, budget = Infinity) {
   const lastClose = text.lastIndexOf(']')
   const open = []
   const pairs = []
@@ -2154,10 +2178,17 @@ function bracketNesting(text) {
   let depth = 0
   let matched = 0
   for (const [, step] of edges) matched = Math.max(matched, (depth += step))
-  return { chain, matched }
+  const overCap = new Map()
+  if (matched >= budget) {
+    const closeOf = new Map(pairs)
+    depth = 0
+    for (const [at, step] of edges) {
+      depth += step
+      if (step === 1 && depth > budget) overCap.set(at, closeOf.get(at) + 1)
+    }
+  }
+  return { chain, matched, overCap }
 }
-const bracketDepthExceeds = (text, limit) => bracketNesting(text).matched > limit
-
 // math attrs merge into the base `math inline|display` class (PART 9 SS18);
 // key/value and boolean attributes go through the SAME hardening path as
 // every other carrier (PART 9 SS25)
@@ -2342,6 +2373,20 @@ const QUOTE_CHARS = new Set(['"', "'"])
 const EMPHASIS_DELIMS = new Set(['*', '_', '~'])
 // The last character of a bare closer or a forced span's `X}`.
 const SPAN_CLOSER_ENDS = new Set(['/', '*', '_', '~', '=', '}'])
+// In a document render, an empty frame on each side of raw output (PART 9 §20)
+// keeps the abbreviation pass out of it. That pass, the last, removes them;
+// ingest strips U+E000, so an author cannot spell one.
+export const RAW_MARK = '\uE000\uE001'
+let rawFrames = 0
+export function withRawFrames(render) {
+  rawFrames++
+  try {
+    return render()
+  } finally {
+    rawFrames--
+  }
+}
+export const rawFrame = (text) => text === null || rawFrames === 0 ? text : RAW_MARK + text + RAW_MARK
 const QUOTE_RULES = new Set(['dquote', 'squote'])
 const ELISION_WORDS = new Set(['tis', 'tisn', 'twas', 'twasn', 'twere', 'twill', 'twould', 'em', 'cause', 'til', 'n', 'bout'])
 const quoteAlnum = (c) => c !== '' && /[\p{L}\p{N}]/u.test(c)
@@ -2442,7 +2487,9 @@ function settleQuotes(html, run, prevCtx) {
       (marker, prefix, key, id) => {
         if (key !== run.key) return marker
         let value = run.opaque[Number(id)]
-        for (let n = prefix.indexOf('u'); n >= 1; n /= 2) value = JSON.stringify(value).slice(1, -1)
+        for (let n = prefix.indexOf('u'); n >= 1; n /= 2) {
+          value = JSON.stringify(value).slice(1, -1).replace(/[]/g, (c) => `\\u${c.charCodeAt(0).toString(16)}`)
+        }
         return value
       })
 }
@@ -2684,7 +2731,6 @@ function quietOpenComments(text, read) {
 function renderInlineInner(text) {
   // Emphasis is resolved by the PART 9 SS9 delimiter stack in the `inlines`
   // semantic (resolveEmphasis) -- no pre-scan / refusal needed here.
-  if (bracketDepthExceeds(text, MAX_NESTING_DEPTH)) throw new Refuse('inline nesting exceeds MAX_NESTING_DEPTH')
   const saved = unattachedAttrs
   const savedPaired = pairedDelims
   const savedAttached = attachedAttrs
@@ -2933,7 +2979,6 @@ function contestedBlock(source, block) {
  * so a `#` it encloses is never seen.
  */
 export function captionPlaceholder(text) {
-  if (bracketDepthExceeds(text, MAX_NESTING_DEPTH)) return -1
   const m = g.match(text, 'inlines')
   if (m.failed()) return -1
   return capSem(m).capIdx()
