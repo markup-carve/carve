@@ -576,8 +576,8 @@
       "edits": [
         {
           "file": "resources/carve-core.ohm",
-          "find": "| symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag\n             | editorial",
-          "replace": "| symbol | footnoteRef | crossref | extension | symbolAttr | mention | tag\n             | editorial"
+          "find": "| symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag\n             | edSubAborted | editorial",
+          "replace": "| symbol | footnoteRef | crossref | extension | symbolAttr | mention | tag\n             | edSubAborted | editorial"
         }
       ]
     },
