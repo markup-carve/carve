@@ -803,3 +803,8 @@
 854-a-standalone-code-include-with-no-resolver-is-literal-in-every-host-2  The pinned carve-js predates this: a malformed code language reads inline (markup-carve/carve#4463); the spec model is correct.
 854-an-indented-dash-line-neither-opens-nor-closes-frontmatter  The pinned carve-js predates this: an indented dash line reads as text (markup-carve/carve#4453); the spec model is correct.
 854-an-indented-dash-line-neither-opens-nor-closes-frontmatter-2  The pinned carve-js predates this: an indented dash line reads as text (markup-carve/carve#4453); the spec model is correct.
+856-a-hard-break-is-whitespace-to-a-typography-flank  markup-carve/carve#4511, the pinned carve-js reads the backslash of a hard break or an escaped space as a word character in a typography flank.
+856-a-hard-break-is-whitespace-to-a-typography-flank-2  markup-carve/carve#4511, the pinned carve-js reads the backslash of a hard break or an escaped space as a word character in a typography flank.
+856-a-hard-break-is-whitespace-to-a-typography-flank-3  markup-carve/carve#4511, the pinned carve-js reads the backslash of a hard break or an escaped space as a word character in a typography flank.
+856-a-hard-break-is-whitespace-to-a-typography-flank-4  markup-carve/carve#4511, the pinned carve-js reads the backslash of a hard break or an escaped space as a word character in a typography flank.
+856-a-hard-break-is-whitespace-to-a-typography-flank-5  markup-carve/carve#4511, the pinned carve-js reads the backslash of a hard break or an escaped space as a word character in a typography flank.

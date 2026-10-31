@@ -1,0 +1,43 @@
+A hard break is whitespace to a typography flank
+
+```
+"a-"\
+b
+.
+<p>“a-”<br>
+b</p>
+```
+
+```
+x --\
+y
+.
+<p>x –<br>
+y</p>
+```
+
+```
+x --\ y
+.
+<p>x –&nbsp;y</p>
+```
+
+```
+"a-"\ b
+.
+<p>“a-”&nbsp;b</p>
+```
+
+```
+'a/'\
+b
+.
+<p>‘a/’<br>
+b</p>
+```
+
+```
+"a-"\\ b
+.
+<p>“a-“\ b</p>
+```
