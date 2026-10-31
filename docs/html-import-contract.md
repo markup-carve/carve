@@ -784,6 +784,7 @@ than a matter of taste. A lone content-space line parses back as a PARAGRAPH:
 ```
 - a
 
+ 
 
 - b
 ```
