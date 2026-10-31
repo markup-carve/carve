@@ -1070,6 +1070,7 @@ function parseValidColonOpener(tail) {
 function findColonCloser(lines, openIdx, len) {
   const first = COLON_FENCE.exec(lines[openIdx] ?? '')
   const stack = [{ length: len, mode: first ? parseColonOpener(first[2])?.mode : 'div' }]
+  let para = []
   for (let j = openIdx + 1; j < lines.length; j++) {
     const top = stack.at(-1)
     // A code fence, a raw block and a comment block are OPAQUE: their contents
@@ -1080,6 +1081,7 @@ function findColonCloser(lines, openIdx, len) {
     const span = top.mode === 'line-block' ? lineBlockSpanEnd(lines, j) : opaqueSpanEnd(lines, j)
     if (span !== -1) {
       j = span
+      para = []
       continue
     }
     if (top.mode === 'line-block') {
@@ -1098,14 +1100,24 @@ function findColonCloser(lines, openIdx, len) {
       if (closeLen === top.length) {
         stack.pop()
         if (stack.length === 0) return j
+      } else if (paraHasInvalidColonOpener(para)) {
+        // A run of another width is text of a paragraph that absorbs it; only
+        // the div's own width closes it (CARVE-P9-016, carve#4550).
+        para.push(lines[j])
+        continue
       } else {
         stack.push({ length: closeLen, mode: 'div' })
       }
+      para = []
       continue
     }
     const o = COLON_FENCE.exec(lines[j])
     const opener = o && parseColonOpener(o[2])
-    if (opener) stack.push({ length: o[1].length, mode: opener.mode })
+    if (opener) {
+      stack.push({ length: o[1].length, mode: opener.mode })
+      para = []
+    } else if (opensParagraph(stripLazy(lines[j]), para.length === 0)) para.push(stripLazy(lines[j]))
+    else para = []
   }
   return -1
 }
@@ -1308,15 +1320,13 @@ function bareColonIsFence(bodyLines, last, scan = { at: 0, stack: [], para: [] }
     const opener = colon && parseColonOpener(colon[2])
     if (top && bare && colon[1].length === top.length) {
       scan.stack.pop()
-      if (top.absorbed) scan.para.push(text)
-      else scan.para = []
+      scan.para = []
     } else if (top?.lineBlock) continue
+    // Inside a div, a run of another width is text of a paragraph that absorbs it (carve#4550).
+    else if (top && bare && paraHasInvalidColonOpener(scan.para)) scan.para.push(text)
     else if (top ? bare || opener : colon && colonFenceInterrupts(text, scan.para)) {
-      // The stack counts a run of another width, but the paragraph holds it as text.
-      const absorbed = !!top && bare && paraHasInvalidColonOpener(scan.para)
-      scan.stack.push({ length: colon[1].length, lineBlock: opener?.mode === 'line-block', absorbed })
-      if (absorbed) scan.para.push(text)
-      else scan.para = []
+      scan.stack.push({ length: colon[1].length, lineBlock: opener?.mode === 'line-block' })
+      scan.para = []
     } else if (opensParagraph(text, scan.para.length === 0)) scan.para.push(text)
     else scan.para = []
   }
@@ -1325,7 +1335,7 @@ function bareColonIsFence(bodyLines, last, scan = { at: 0, stack: [], para: [] }
   const run = COLON_CLOSER.exec(line)
   if (!run) return false
   const top = scan.stack.at(-1)
-  return top ? run[1].length === top.length && !top.absorbed : colonFenceInterrupts(line, scan.para)
+  return top ? run[1].length === top.length || !paraHasInvalidColonOpener(scan.para) : colonFenceInterrupts(line, scan.para)
 }
 
 const COMMENT_LINE = /^[ \t]*%%/

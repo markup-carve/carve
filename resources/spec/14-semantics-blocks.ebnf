@@ -493,7 +493,11 @@
       compare; the paragraph simply continues.
 
       An open div's own closer is not absorbed: `:::` / `:::e` / `:::` is a div
-      holding one paragraph, in any container (carve#4397).
+      holding one paragraph, in any container (carve#4397). Only a bare run of
+      exactly the div's width closes it. A bare run of another width that such
+      a paragraph absorbs is its text, so it neither closes the div nor opens
+      one: `:::` / `:::e` / `::::` / `q` / `:::` is a div holding the one
+      paragraph `:::e`, `::::`, `q` (carve#4550).
 
       ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY -- NORMATIVE [CARVE-P9-017].
       The absorbed line has to be one the paragraph's container
