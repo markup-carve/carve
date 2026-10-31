@@ -1466,7 +1466,9 @@ caption_slot = [blank_line], caption ;
    follow the same allowance under PART 9 §4 without a slot-carrying production.
    A block code include carries this slot after its directive line (PART 6 I1c).
    Any other `^ ` line is ordinary inline/paragraph content and, when a
-   paragraph is OPEN above it, folds into it (PART 9 §10 I7).
+   paragraph is OPEN above it, folds into it (PART 9 §10 I7). A definition
+   term is no paragraph and no host: under an open term, `:: t` / `^ c`, the
+   `^ ` line ends the description list and is a paragraph of its own.
 
    The optional `blank_line` matches a TRULY blank line only. A
    structural-only line -- a bare `>`, an accepted continuation marker, a
@@ -1799,7 +1801,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    >= opener, and an unclosed raw block runs to the end of its host as a code
    block does. Content is verbatim; it is emitted UNESCAPED when the format
    matches the output format (html) and DROPPED otherwise -- the block parallel
-   of raw inline (PART 9 §20).
+   of raw inline (PART 9 §20). A block-attribute line above a raw block is
+   consumed by it and written nowhere, since the payload is emitted as is:
+   `{.c}` over a matching `=html` fence writes only the payload.
 
    THE INTERIOR IS VERBATIM, THE OPENING IS PLACED -- NORMATIVE [CARVE-P2-023]. Inside a
    container, a renderer that indents its output indents the raw block's
@@ -3600,7 +3604,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       The directive's caption slot attaches to the resulting table (I1c).
       If delimited quoting is malformed, the include falls back to a code
       block holding the selected source, the full source when nothing selects,
-      with `delimited-table-malformed` as usual. Markdown
+      with `delimited-table-malformed` as usual. Malformed quoting is
+      decided first, so `@rows` selects nothing there: the fallback holds the
+      full source and reports no `include-rows-out-of-range`. Markdown
       export writes the selected cells in order as a plain GFM pipe table;
       a caption becomes a following paragraph.
 
@@ -3617,8 +3623,10 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       spelling. It ends at its own line and does not open a paragraph, so a
       following `^ ` line is not paragraph text. Resolution does not change
       this boundary. An unresolved or refused directive, or one with no
-      resolver, stays literal as its own paragraph; the following caption
-      line is an ordinary paragraph. A Carve-content include without `@code`
+      resolver, stays literal as its own paragraph, in I7's sense: its
+      source text with no inline parse of its tokens, so `{{ _a_ @code:js }}`
+      keeps its underscores. The following caption line is an ordinary
+      paragraph. A Carve-content include without `@code`
       keeps the block/inline behavior above.
 
    I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies a
@@ -4526,7 +4534,9 @@ EOF = (* end of file *) ;
          row in one `<tbody>` when a rowspan crosses a row-group boundary.
          NO origin -> the marker renders as an EMPTY cell (`<td></td>` /
          `<th></th>`, no content except the continuation fragments T6 gives
-         it, no span); never dropped, never literal.
+         it, no span); never dropped, never literal. It is a cell like any
+         other, so a later `<` in its row may widen it: `| ^ | < |` is one
+         `<td colspan="2">`.
          Covers uniformly:
            * ORPHAN -- `^` in the FIRST row / `<` in the FIRST column
              (corpus 98-table-span-marker-in-first-column);
@@ -4650,7 +4660,11 @@ EOF = (* end of file *) ;
          `}`, not `|`) is not even a table row. Applies to header and body
          rows; composes with the delimiter row and with cell attributes:
          `|{.c} a |{.r}` -> `<tr class="r">` with `<td class="c">`. Pinned
-         by corpus 100-table-row-attributes.
+         by corpus 100-table-row-attributes. The row block follows the last
+         `|`, so a pipe in one of its quoted values is no delimiter:
+         `| a |{k="b|c"}` gives `<tr k="b|c">`. A cell's block sits inside
+         the cell, where a raw pipe still ends the cell, so `|{k="a|b"} x |`
+         is two cells and `\|` spells the pipe there (PART 2, table rows).
 
       T9 A HEADER CELL STATES WHAT IT HEADS -- NORMATIVE [CARVE-P9-006]. Every `th` carries a
          `scope`: `col` for a cell in the head-row run, `row` for one below it.
@@ -4676,6 +4690,11 @@ EOF = (* end of file *) ;
 
          Otherwise `scope` precedes `rowspan`, `colspan` and the authored
          block in the serialization.
+
+         On an axis a span marker widens, the generated `colspan` or
+         `rowspan` replaces an authored one. On an axis with no marker the
+         authored copy stays an ordinary attribute and changes no grid:
+         `|{colspan=2} a | b |` writes `<td colspan="2">a</td><td>b</td>`.
 
       T10 CELL ATTRIBUTES BIND LAST -- NORMATIVE [CARVE-P9-007]. A cell's `{…}` block
          attaches AFTER the kind marker and AFTER the alignment marker, in
@@ -7106,7 +7125,9 @@ EOF = (* end of file *) ;
         U+200B yields an id with NEITHER codepoint.
       - PRESENTATION TARGETS -- HTML, Markdown, plain text, and terminal
         (ANSI) -- strip the bidi-override / isolate controls (U+202A..U+202E,
-        U+2066..U+2069) from rendered text, code and math content. An authored
+        U+2066..U+2069) from rendered text, code and math content. A link or
+        image title and an image's alt text are rendered text for this rule:
+        `[a](/u "t<U+202E>")` writes `title="t"`. An authored
         attribute value and a destination are neither (CARVE-P9-054).
         They are REMOVED, not escaped: in HTML, entity-encoding one would let
         it DECODE BACK to the raw control downstream; in the other presentation
@@ -7661,7 +7682,10 @@ EOF = (* end of file *) ;
       top-level text carries a bare `#` placeholder receives the next
       number for the label's plain-text bucket key (PART 2, CAPTION NUMBER
       PLACEHOLDER); an {#id} on
-      the captioned host registers it in captionIds for R4. For every captionIds
+      the captioned host registers it in captionIds for R4. Only the host's
+      block id registers: an id glued to the image or math span inside it is
+      an inline attribute and does not, so `![a](/i){#i}` over `^ Fig #`
+      leaves `</#i>` literal. For every captionIds
       collision, including collisions between two captions or between a
       caption and an equation, the first registration in document order wins;
       the later target remains numbered but does not replace it.
@@ -7764,7 +7788,9 @@ EOF = (* end of file *) ;
          in that one slot: `{k=v .c}` over `::: note` gives
          `class="admonition note c" k="v"`. On a task list, where the author
          wrote a class, the base class is prepended inside that class slot
-         instead. Math keeps its own slot, on its own span.
+         instead, and so is math's: `` $`a`{k=v} `` gives
+         `class="math inline" k="v"`, while `` $`a`{k=v .c} `` gives
+         `k="v" class="math inline c"`. Math's classes stay on its own span.
       R3 AUTHORED, in the author's source order (the recorded `order`; PART
          4 RENDER ORDER). All classes accumulate, space-joined, into one
          `class` slot at its first-appearance position. An Attrs built
@@ -7845,7 +7871,9 @@ EOF = (* end of file *) ;
       The declaration takes the authored `align` slot. If the author also
       supplied `style`, emit one `style` attribute at its authored slot and
       append the declaration there: the authored value trimmed, a `;` added
-      if it has none, one space, then the declaration. The appended declaration
+      if it does not already end in one, one space, then the declaration. An
+      empty trimmed value adds nothing, neither `;` nor space:
+      `{style="" align=right}` gives `style="text-align: right;"`. The appended declaration
       wins if that style already named `text-align`.
 
       A TABLE CELL'S ALIGNMENT MERGES THE SAME WAY. A cell's `text-align` and

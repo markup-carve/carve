@@ -307,7 +307,9 @@
          row in one `<tbody>` when a rowspan crosses a row-group boundary.
          NO origin -> the marker renders as an EMPTY cell (`<td></td>` /
          `<th></th>`, no content except the continuation fragments T6 gives
-         it, no span); never dropped, never literal.
+         it, no span); never dropped, never literal. It is a cell like any
+         other, so a later `<` in its row may widen it: `| ^ | < |` is one
+         `<td colspan="2">`.
          Covers uniformly:
            * ORPHAN -- `^` in the FIRST row / `<` in the FIRST column
              (corpus 98-table-span-marker-in-first-column);
@@ -431,7 +433,11 @@
          `}`, not `|`) is not even a table row. Applies to header and body
          rows; composes with the delimiter row and with cell attributes:
          `|{.c} a |{.r}` -> `<tr class="r">` with `<td class="c">`. Pinned
-         by corpus 100-table-row-attributes.
+         by corpus 100-table-row-attributes. The row block follows the last
+         `|`, so a pipe in one of its quoted values is no delimiter:
+         `| a |{k="b|c"}` gives `<tr k="b|c">`. A cell's block sits inside
+         the cell, where a raw pipe still ends the cell, so `|{k="a|b"} x |`
+         is two cells and `\|` spells the pipe there (PART 2, table rows).
 
       T9 A HEADER CELL STATES WHAT IT HEADS -- NORMATIVE [CARVE-P9-006]. Every `th` carries a
          `scope`: `col` for a cell in the head-row run, `row` for one below it.
@@ -457,6 +463,11 @@
 
          Otherwise `scope` precedes `rowspan`, `colspan` and the authored
          block in the serialization.
+
+         On an axis a span marker widens, the generated `colspan` or
+         `rowspan` replaces an authored one. On an axis with no marker the
+         authored copy stays an ordinary attribute and changes no grid:
+         `|{colspan=2} a | b |` writes `<td colspan="2">a</td><td>b</td>`.
 
       T10 CELL ATTRIBUTES BIND LAST -- NORMATIVE [CARVE-P9-007]. A cell's `{…}` block
          attaches AFTER the kind marker and AFTER the alignment marker, in

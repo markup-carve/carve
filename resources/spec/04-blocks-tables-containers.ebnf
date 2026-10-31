@@ -191,7 +191,9 @@ caption_slot = [blank_line], caption ;
    follow the same allowance under PART 9 §4 without a slot-carrying production.
    A block code include carries this slot after its directive line (PART 6 I1c).
    Any other `^ ` line is ordinary inline/paragraph content and, when a
-   paragraph is OPEN above it, folds into it (PART 9 §10 I7).
+   paragraph is OPEN above it, folds into it (PART 9 §10 I7). A definition
+   term is no paragraph and no host: under an open term, `:: t` / `^ c`, the
+   `^ ` line ends the description list and is a paragraph of its own.
 
    The optional `blank_line` matches a TRULY blank line only. A
    structural-only line -- a bare `>`, an accepted continuation marker, a
@@ -524,7 +526,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    >= opener, and an unclosed raw block runs to the end of its host as a code
    block does. Content is verbatim; it is emitted UNESCAPED when the format
    matches the output format (html) and DROPPED otherwise -- the block parallel
-   of raw inline (PART 9 §20).
+   of raw inline (PART 9 §20). A block-attribute line above a raw block is
+   consumed by it and written nowhere, since the payload is emitted as is:
+   `{.c}` over a matching `=html` fence writes only the payload.
 
    THE INTERIOR IS VERBATIM, THE OPENING IS PLACED -- NORMATIVE [CARVE-P2-023]. Inside a
    container, a renderer that indents its output indents the raw block's

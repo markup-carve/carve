@@ -282,7 +282,9 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       The directive's caption slot attaches to the resulting table (I1c).
       If delimited quoting is malformed, the include falls back to a code
       block holding the selected source, the full source when nothing selects,
-      with `delimited-table-malformed` as usual. Markdown
+      with `delimited-table-malformed` as usual. Malformed quoting is
+      decided first, so `@rows` selects nothing there: the fallback holds the
+      full source and reports no `include-rows-out-of-range`. Markdown
       export writes the selected cells in order as a plain GFM pipe table;
       a caption becomes a following paragraph.
 
@@ -299,8 +301,10 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       spelling. It ends at its own line and does not open a paragraph, so a
       following `^ ` line is not paragraph text. Resolution does not change
       this boundary. An unresolved or refused directive, or one with no
-      resolver, stays literal as its own paragraph; the following caption
-      line is an ordinary paragraph. A Carve-content include without `@code`
+      resolver, stays literal as its own paragraph, in I7's sense: its
+      source text with no inline parse of its tokens, so `{{ _a_ @code:js }}`
+      keeps its underscores. The following caption line is an ordinary
+      paragraph. A Carve-content include without `@code`
       keeps the block/inline behavior above.
 
    I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies a
