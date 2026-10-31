@@ -1,0 +1,87 @@
+A line folded into a child's paragraph is not the item's text
+
+```
+- a
+  - m
+  :::e
+  :::
+l
+.
+<ul>
+  <li>a
+    <ul>
+      <li>m
+:::e</li>
+    </ul>
+    <div>
+
+    </div>
+  </li>
+</ul>
+<p>l</p>
+```
+
+```
+- a
+  - m
+   :::e
+  :::
+l
+.
+<ul>
+  <li>a
+    <ul>
+      <li>m
+:::e</li>
+    </ul>
+    <div>
+
+    </div>
+  </li>
+</ul>
+<p>l</p>
+```
+
+```
+- a
+  > m
+   :::e
+  :::
+ l
+.
+<ul>
+  <li>a
+    <blockquote><p>m
+:::e</p></blockquote>
+    <div>
+
+    </div>
+  </li>
+</ul>
+<p>l</p>
+```
+
+```
+- x
+  - a
+    > m
+    ::::e
+    :::
+    :::
+l
+.
+<ul>
+  <li>x
+    <ul>
+      <li>a
+        <blockquote><p>m
+::::e</p></blockquote>
+        <div>
+
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>l</p>
+```

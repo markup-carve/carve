@@ -1,0 +1,23 @@
+A fence on a note line in an item holds no paragraph
+
+````
+- a
+  [^f]: ```
+c
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>c</p>
+````
+
+```
+- a
+  [^f]: ~~~
+c
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>c</p>
+```
