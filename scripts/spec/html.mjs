@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { idSlot, renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { escapeAuthoredAttr, idSlot, renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -259,7 +259,7 @@ function renderDocPass(doc, footnoteProbe) {
       if (id === null) id = ctx.headingIdByBlock.get(b)
       noteHeadingId(ctx, id, html)
       noteHeadingRef(ctx, derivedText(b.text), id)
-      out.push(`${indent()}<section id="${escapeAttr(id)}">`)
+      out.push(`${indent()}<section id="${escapeAuthoredAttr(id)}">`)
       sections.push(b.level)
       out.push(`${indent()}<h${b.level}${hAttrs}>${html}</h${b.level}>`)
     } else {
@@ -1517,7 +1517,7 @@ function resolveRefsOnce(html, ctx) {
       const heading = ctx.headingRefs.get(refKey(indexKey))
       if (heading !== undefined) {
         if (flat) return text
-        return `<a href="#${escapeAttr(heading)}"${renderAttrs(attrList ?? [], 'href')}>${text}</a>`
+        return `<a href="#${escapeAuthoredAttr(heading)}"${renderAttrs(attrList ?? [], 'href')}>${text}</a>`
       }
     }
     if (!def) {
@@ -1567,7 +1567,8 @@ function refKey(text) {
 /* Register a heading in the implicit-reference index. FIRST wins. */
 // PART 9R R4: a repeated explicit id resolves to its first heading.
 function noteHeadingId(ctx, id, html) {
-  if (!ctx.headingIds.has(id)) ctx.headingIds.set(id, { id, html })
+  // `id` here is what the cross-reference's href writes, and an id key can hold a quote.
+  if (!ctx.headingIds.has(id)) ctx.headingIds.set(id, { id: escapeAuthoredAttr(id), html })
 }
 
 function noteHeadingRef(ctx, text, id) {
@@ -1851,7 +1852,7 @@ function resolveCrossrefs(html, ctx) {
     if (!hit) {
       // A reference in the label is still a frame: refs resolved before this pass.
       const cap = ctx.captionIds.has(id) ? resolveRefs(ctx.captionIds.get(id), ctx) : undefined
-      if (cap) return textOnly ? cap : `<a href="#${id}">${cap}</a>`
+      if (cap) return textOnly ? cap : `<a href="#${escapeAuthoredAttr(id)}">${cap}</a>`
       // unresolved: literal source text (PART 9 SS19), HTML-escaped -- an
       // unresolved id may carry `<`/`>`/`&` (e.g. `</#<script>`) which must not
       // reach the output raw.

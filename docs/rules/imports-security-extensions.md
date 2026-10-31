@@ -21,7 +21,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P2-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L140) | 2 | UNRESOLVED MARKDOWN REFERENCES KEEP THEIR SYNTAX ON IMPORT |
 | [`CARVE-P2-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L343) | 2 | A GITHUB ALERT IMPORTS AS AN ADMONITION |
 | [`CARVE-P2-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/22b-writer-render-loss.ebnf#L2) | 2 | RENDER-LOSS REPORTING |
-| [`CARVE-P4-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L243) | 4 | AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED |
+| [`CARVE-P4-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L246) | 4 | AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED |
 | [`CARVE-P6-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/10-includes.ebnf#L63) | 6 | FILE INCLUSION SEMANTICS |
 | [`CARVE-P9-070`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L48) | 9 | SOCIAL LINK RESOLUTION |
 | [`CARVE-P9-071`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L287) | 9 | THE MEDIA TYPE AND THE FILE EXTENSION |
@@ -31,9 +31,9 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L31) | 9 | AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE |
 | [`CARVE-P9-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L42) | 9 | CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES |
 | [`CARVE-P9-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L400) | 9 | SECURITY REQUIREMENTS |
-| [`CARVE-P9-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L498) | 9 | A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD |
-| [`CARVE-P9-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L557) | 9 | A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT |
-| [`CARVE-P9-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L606) | 9 | AT THE RENDER CEILING, A RENDERER REFUSES |
+| [`CARVE-P9-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L500) | 9 | A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD |
+| [`CARVE-P9-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L559) | 9 | A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT |
+| [`CARVE-P9-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L608) | 9 | AT THE RENDER CEILING, A RENDERER REFUSES |
 | [`CARVE-P9-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L2) | 9 | TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING |
 | [`CARVE-P9-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L162) | 9 | THE ENGINE'S OWN WORDS ARE A RENDER OPTION |
 | [`CARVE-P9-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L200) | 9 | AN EXTENSION WRITES INTO THE SAME MAP |

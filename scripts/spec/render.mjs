@@ -423,7 +423,7 @@ export const escapeAttr = (s) => escapeMarkup(s).replaceAll('"', '&quot;').repla
 export const escapeUrlAttr = (s) => escapeMarkup(checkUrl(s), true).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
 // An authored attribute value keeps a bidi control, as a destination does: the
 // hardening probes read this value, so stripping after them could arm it (carve#4472).
-const escapeAuthoredAttr = (s) => escapeMarkup(s, true).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
+export const escapeAuthoredAttr = (s) => escapeMarkup(s, true).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
 
 // PART 9 SS25: URL sink scheme denylist -- a denylisted scheme renders an
 // EMPTY value. Scheme detection first strips ASCII controls and ALL Unicode
@@ -768,8 +768,9 @@ export const classTokens = (a) => {
   return (tokens.length ? tokens : [raw]).map((v) => hardenAttr('class', v)?.value ?? '')
 }
 export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && a[1] === 'class')
-// An `id` key spells the id slot, as a `class` key spells the class slot.
-export const idSlot = (a) => a[0] === 'id' ? a[1] : a[0] === 'kv' && a[1] === 'id' ? hardenAttr('id', a[2]).value : null
+// An `id` key spells the id slot, as a `class` key spells the class slot, and
+// CARVE-P9-054 does not probe the slot (carve#4516). A bare `id` is `id=""`.
+export const idSlot = (a) => a[0] === 'id' ? a[1] : a[1] !== 'id' ? null : a[0] === 'kv' ? a[2] : a[0] === 'bool' ? '' : null
 
 export function renderAttrs(list, structuralUrl = null) {
   // serialization: SOURCE order; all classes merge (deduplicated, corpus

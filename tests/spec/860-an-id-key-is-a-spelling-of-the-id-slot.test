@@ -1,0 +1,48 @@
+An id key is a spelling of the id slot
+
+```
+{id="x"}
+# H
+
+</#x>
+.
+<section id="x">
+  <h1>H</h1>
+  <p><a href="#x">H</a></p>
+</section>
+```
+
+```
+{#a id="b"}
+p
+.
+<p id="b">p</p>
+```
+
+```
+*x*{id="data:y"}
+.
+<p><strong id="data:y">x</strong></p>
+```
+
+```
+|{id="file:y"} x |
+.
+<table>
+  <tbody>
+    <tr><td id="file:y">x</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{id='a"b&c'}
+# H
+
+</#a"b&c>
+.
+<section id="a&quot;b&amp;c">
+  <h1>H</h1>
+  <p><a href="#a&quot;b&amp;c">H</a></p>
+</section>
+```
