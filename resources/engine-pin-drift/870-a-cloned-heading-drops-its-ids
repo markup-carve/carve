@@ -1,0 +1,1 @@
+The pinned carve-js copies the heading's ids into a cross-reference's cloned text (markup-carve/carve#4554); the spec model drops them.
