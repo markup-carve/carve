@@ -367,15 +367,15 @@ function renderLineBlockLine(line) {
 const rendersNoElement = (b) => b.t === 'raw' && b.format !== 'html'
 
 // A closed `%%%` pair in verse leaves nothing: no verse line, and a blank line
-// in its body splits no stanza (CARVE-P9-047). Its opener's first character is
-// `%`; the body is not verse, so the closer takes SS28's optional indent.
+// in its body splits no stanza (CARVE-P9-047). Its opener is indented by at
+// most three spaces, as everywhere else (carve#4469); the closer takes SS28's indent.
 function withoutCommentBlocks(lines) {
   const closerRun = (l) => /^[ \t]*(%{3,})/.exec(l)?.[1].length
   const lastCloser = new Map()
   lines.forEach((l, j) => lastCloser.set(closerRun(l), j))
   const kept = []
   for (let i = 0; i < lines.length; i++) {
-    const run = /^%{3,}/.exec(lines[i])?.[0].length
+    const run = /^ {0,3}(%{3,})/.exec(lines[i])?.[1].length
     if (run === undefined || !(lastCloser.get(run) > i)) {
       kept.push(lines[i])
       continue

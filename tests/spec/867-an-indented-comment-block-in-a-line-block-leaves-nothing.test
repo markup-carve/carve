@@ -1,0 +1,54 @@
+An indented comment block in a line block leaves nothing
+
+```
+::: |
+  %%%
+  secret
+  %%%
+:::
+.
+<div class="line-block">
+
+</div>
+```
+
+```
+::: |
+a
+   %%%
+secret
+%%%
+c
+:::
+.
+<div class="line-block">
+  <p>a<br>
+c</p>
+</div>
+```
+
+```
+::: |
+    %%%
+  x
+    %%%
+:::
+.
+<div class="line-block">
+  <p>&nbsp;&nbsp;&nbsp;&nbsp;%%%<br>
+&nbsp;&nbsp;x<br>
+&nbsp;&nbsp;&nbsp;&nbsp;%%%</p>
+</div>
+```
+
+```
+::: |
+  %%%
+x
+:::
+.
+<div class="line-block">
+  <p>&nbsp;&nbsp;%%%<br>
+x</p>
+</div>
+```

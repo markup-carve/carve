@@ -21,9 +21,9 @@ test('the closer takes the exact delimiter length, an indent and a tail', () => 
   assert.equal(verse('%%% note', 'x', '  %%% end', 'c'), verse('c'))
 })
 
-test('a fence with no closer stays a comment line and an indented opener stays verse', () => {
+test('a fence with no closer stays a comment line and an opener past 3 spaces stays verse', () => {
   assert.equal(verse('%%%', 'x'), verse('%% c', 'x'))
-  assert.match(verse('  %%%', 'x', '  %%%'), /&nbsp;&nbsp;%%%<br>\nx<br>/)
+  assert.match(verse('    %%%', 'x', '    %%%'), /&nbsp;&nbsp;&nbsp;&nbsp;%%%<br>\nx<br>/)
 })
 
 test('a line block in a container reads a pair the same way', () => {
@@ -33,4 +33,12 @@ test('a line block in a container reads a pair the same way', () => {
 
 test('a colon run inside the pair is hidden and closes nothing', () => {
   assert.equal(verse('%%%', ':::', '%%%', 'after'), verse('after'))
+})
+
+test('an opener indented by 1 to 3 spaces hides its body too (carve#4469)', () => {
+  for (const indent of [' ', '  ', '   ']) {
+    assert.equal(verse(`${indent}%%%`, 'secret', `${indent}%%%`), verse('%%%', 'secret', '%%%'), JSON.stringify(indent))
+    assert.equal(verse('a', `${indent}%%%`, 'secret', '%%%', 'c'), verse('a', 'c'), JSON.stringify(indent))
+  }
+  assert.match(verse('  %%%', 'x'), /&nbsp;&nbsp;%%%<br>\nx/)
 })
