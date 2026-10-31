@@ -7463,6 +7463,21 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // A blank line was seen, and only invisible lines have followed it so far
     // (§17 L1b). The next PARAGRAPH closes the separation and loosens.
     let pendingSeparation = false
+    // A blank after an invisible lead separates nothing visible, so it does not loosen (carve#4639).
+    // Lines only join the item, so once something shows it keeps showing.
+    let itemShows = false
+    const itemShowsNothing = () => !itemShows && !(itemShows = itemShowsSomething())
+    const itemShowsSomething = () => {
+      const rests = itemLines.map((text) => trimLineEnd(indentCols(stripLazy(text)).rest))
+      const run = (rest) => COMMENT_FENCE_BODY.exec(rest)?.[1].length
+      for (let k = 0; k < rests.length; k++) {
+        // A `%%%` opens a comment span only where its closer follows; alone it is a comment line.
+        const close = run(rests[k]) === undefined ? -1 : rests.findIndex((rest, at) => at > k && run(rest) === run(rests[k]))
+        if (close > k) k = close
+        else if (rests[k] !== '' && !COMMENT_LINE.test(rests[k]) && !isLinkDef(rests[k])) return true
+      }
+      return false
+    }
     let noteOpenerLine = null
     const noteClaimsLazyLine = (at) => {
       // A code opener interrupts the note's paragraph rather than folding (§10 I4).
@@ -8562,8 +8577,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
             continue
           }
           // a second PARAGRAPH inside the item -> loose (SS17 L1)
+          const firstVisible = itemShowsNothing()
           if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)
-          list.tight = false
+          if (!firstVisible) list.tight = false
           if (col === contentCol) subCol = -1
           startPara()
           i = j
@@ -8936,7 +8952,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           !tryAttrLine([trimLineEnd(dedented)], 0)
         ) {
           // §17 L1b: a second paragraph, still blank-line-separated.
-          list.tight = false
+          if (!itemShowsNothing()) list.tight = false
+          else blankBeforeInvisible = false
           pendingSeparation = false
         }
         // AN ATTACHED BLOCK CONSUMES THE SEPARATION, WHICHEVER LINE FILLED THE GAP.

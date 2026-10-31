@@ -1,0 +1,36 @@
+An invisible item lead and a caption line after an accepted plus
+
+```
+> q
++
+^ c
+.
+<blockquote>
+  <p>q</p>
+  <p>^ c</p>
+</blockquote>
+```
+
+```
+- %% c
+
+  Body.
+- x
+.
+<ul>
+  <li>Body.</li>
+  <li>x</li>
+</ul>
+```
+
+```
+- [r]: /u
+
+  Body.
+- x
+.
+<ul>
+  <li>Body.</li>
+  <li>x</li>
+</ul>
+```
