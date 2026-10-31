@@ -1,0 +1,23 @@
+A cloned heading drops its ids
+
+```
+# *A*{#z}
+
+</#A>
+.
+<section id="A">
+  <h1><strong id="z">A</strong></h1>
+  <p><a href="#A"><strong>A</strong></a></p>
+</section>
+```
+
+```
+# *[b]{#y abbr="T"}*{#z}
+
+</#b>
+.
+<section id="b">
+  <h1><strong id="z"><abbr title="T" id="y">b</abbr></strong></h1>
+  <p><a href="#b"><strong><abbr title="T">b</abbr></strong></a></p>
+</section>
+```

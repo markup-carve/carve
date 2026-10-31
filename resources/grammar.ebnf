@@ -7661,7 +7661,11 @@ EOF = (* end of file *) ;
       self-reference (`# A </#A>`) and a mutual cycle (`# A </#B>` +
       `# B </#A>`) each resolve once (corpus "Cyclic cross-reference resolves
       to one level"). Cloning keeps the heading's markup:
-      `# *Setup*` yields `<a href="#…"><strong>Setup</strong></a>`. A footnote
+      `# *Setup*` yields `<a href="#…"><strong>Setup</strong></a>`. A clone
+      drops every id at every depth, so no id appears twice: with `# *A*{#z}`
+      the heading keeps `<strong id="z">`, and `</#A>` gives
+      `<a href="#A"><strong>A</strong></a>`. Every other attribute, a title
+      included, stays on its own element as written. A footnote
       reference is not cloned: `# Head[^1]` yields `Head`. A `</#id>`
       to an id that is neither a heading nor a numbered target is unresolved
       and renders literally.

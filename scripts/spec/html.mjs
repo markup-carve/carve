@@ -1593,7 +1593,7 @@ function refKey(text) {
 // PART 9R R4: a repeated explicit id resolves to its first heading.
 function noteHeadingId(ctx, id, html) {
   // `id` here is what the cross-reference's href writes, and an id key can hold a quote.
-  if (!ctx.headingIds.has(id.normalize('NFC'))) ctx.headingIds.set(id.normalize('NFC'), { id: escapeAuthoredAttr(id), html })
+  if (!ctx.headingIds.has(id.normalize('NFC'))) ctx.headingIds.set(id.normalize('NFC'), { id: escapeAuthoredAttr(id), html: dropCloneIds(html) })
 }
 
 function noteHeadingRef(ctx, text, id) {
@@ -1871,6 +1871,13 @@ function resolveFootnotes(html, ctx) {
 }
 
 // --- PART 9R R4: crossrefs ---------------------------------------------------
+// A clone drops every id at every depth, so no id appears twice (carve#4554).
+// Raw output is the author's bytes and is left alone.
+const RAW_FRAME = new RegExp(`(${RAW_MARK}[\\s\\S]*?${RAW_MARK})`)
+const dropCloneIds = (html) => html.split(RAW_FRAME)
+  .map((part, i) => i % 2 ? part : part.replace(/<[A-Za-z][^>]*>/g, (tag) => tag.replace(/ id="[^"]*"/gi, '')))
+  .join('')
+
 function resolveCrossrefs(html, ctx) {
   return html.replace(/xref(text)?:(.*?)/g, (_, textOnly, id) => {
     const key = id.normalize('NFC')
