@@ -1,6 +1,6 @@
 He said "hello" and 'yes'; it's fine… a–b, c—d.
 
-Arrows → ← ↔ ⇒ and comparisons ≠ ≤ ≥ and © ® ™ ±.
+Arrows → ← ↔ ⇒ and comparisons ≠ ≤ ≥ and (c) (r) ™ ±.
 
 Typed “curly” ‘quotes’ and escaped \"plain\" stay literal.
 

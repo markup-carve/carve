@@ -186,7 +186,24 @@ const DECLARED_UNIMPLEMENTED = {
  * Each entry is `{ reason, pinned: [[fixtureFragment, pinnedFragment], ...] }`, the same shape as
  * the Tier-3 ledger: any output other than the declared substitution fails.
  */
-const AHEAD_OF_PIN = {}
+const AHEAD_OF_PIN = {
+  '66-smart-typography-quotes-off-html': {
+    reason: 'carve#4808: `(c)` and `(r)` left the typography set; carve-js follows JS-first',
+    pinned: [['and (c) (r) ™ ±.', 'and © ® ™ ±.']],
+  },
+  '66-smart-typography-quotes-off-markdown': {
+    reason: 'carve#4808: `(c)` and `(r)` left the typography set; carve-js follows JS-first',
+    pinned: [['and (c) (r) ™ ±.', 'and © ® ™ ±.']],
+  },
+  '66-smart-typography-quotes-off-plain': {
+    reason: 'carve#4808: `(c)` and `(r)` left the typography set; carve-js follows JS-first',
+    pinned: [['and (c) (r) ™ ±.', 'and © ® ™ ±.']],
+  },
+  '66-smart-typography-quotes-off-ansi': {
+    reason: 'carve#4808: `(c)` and `(r)` left the typography set; carve-js follows JS-first',
+    pinned: [['and (c) (r) ™ ±.', 'and © ® ™ ±.']],
+  },
+}
 
 /*
  * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a

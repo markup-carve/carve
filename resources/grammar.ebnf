@@ -715,7 +715,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
      - PRESERVE CASE (Unicode-aware): NON-ASCII characters AND letter case pass
        through unchanged (`Café` -> `Café`, `日本語` unchanged), except the
        glyphs the first step reverses: every glyph the typography pass can
-       produce reverses, typed or generated, so `# © x` gets `id="c-x"`
+       produce reverses, typed or generated, so `# ™ x` gets `id="tm-x"`
        (carve#4722). The text IS
        NFC-normalized before slugging (CARVE-P9-058), so a precomposed `é` and a
        decomposed `e` + U+0301 give the SAME id;
@@ -3108,9 +3108,12 @@ arrow = "<--" | "-->" | "<-->"      (* ← → ↔, canonical *)
    `x => x + 1` and `Some(x) => x`. *)
 comparison = "!=" | "<=" | ">=" ;
 (* NOT the `:name:` symbol above -- these are the fixed typographic
-   replacements (© ® ™ ±). Named `typographic_symbol` so the two do not
-   collide: `symbol` is the `:name:` placeholder (PART 9 §7). *)
-typographic_symbol = "(c)" | "(r)" | "(tm)" | "+-" ;
+   replacements (™ ±). Named `typographic_symbol` so the two do not
+   collide: `symbol` is the `:name:` placeholder (PART 9 §7).
+   `(c)` AND `(r)` ARE TEXT (carve#4808): they collide with lettered
+   enumerations, so `(a), (b) and (c)` keeps `(c)`. An author who wants
+   © or ® types the character. *)
+typographic_symbol = "(tm)" | "+-" ;
 
 (* --- Breaks --- *)
 hard_break = '\', ( newline | EOF | cell_content_end ) ;
@@ -4890,7 +4893,7 @@ EOF = (* end of file *) ;
         they collide with dates (`1/2/2024`) and paths, and djot has no
         fractions (recorded in dismissed-syntax.md). Converted set:
         dashes, ellipsis, smart quotes, arrows, comparisons, `+-`, and
-        symbols (`(c)`,`(r)`,`(tm)`).
+        the symbol `(tm)`. `(c)` and `(r)` are not converted (carve#4808).
       - SMART TYPOGRAPHY RUNS BY DEFAULT -- NORMATIVE [CARVE-P9-010]. The substitution belongs to
         the default inline layer, not to an opt-in feature: a conformant
         implementation performs it with NO extension registered. A locale
@@ -4915,7 +4918,7 @@ EOF = (* end of file *) ;
           glyph, exactly as the canonical writer already does. Every trigger
           character therefore survives as the ASCII the author typed --
           dashes, ellipsis, quotes, arrows, comparisons, and the typographic
-          symbols `(c)` `(r)` `(tm)` `+-`;
+          symbols `(tm)` `+-`;
         * the `:name:` symbol production is UNAFFECTED; it is not a
           `smart_typography` production, and its precedence over the
           typographic forms is unchanged;
@@ -9311,13 +9314,13 @@ EOF = (* end of file *) ;
       parentheses as text of their own. They are written as one run, so the
       split decides nothing: an opener that crosses a node boundary is one
       occurrence, escaped at its opener exactly as it is when the text is a
-      single node. The nodes `x (r` and `) y` are written
+      single node. The nodes `x (tm` and `) y` are written
 
-        x \(r) y
+        x \(tm) y
 
-      as the single node `x (r) y` is, and `x -` beside `- y` is written
+      as the single node `x (tm) y` is, and `x -` beside `- y` is written
       `x \-\- y`, never the half-escaped `x -\- y`. A flattened ruby whose
-      base is a lone `[` inside a span is `[\[\(r)]{.c}`; an escape on its
+      base is a lone `[` inside a span is `[\[\(tm)]{.c}`; an escape on its
       closing parenthesis would be idle.
 
       A CONTEXTUAL ESCAPE READS THAT RUN THE SAME WAY. Some occurrences are
@@ -9540,7 +9543,7 @@ EOF = (* end of file *) ;
                              `%%`, `::` and the symbol shortcode `:name:`
         `^`                  a mid-line inline footnote `^[`; the line-start
                              caret is the rule above
-        `(`                  typography shortcodes such as `(r)`
+        `(`                  typography shortcodes such as `(tm)`
         `$`                  math
 
       A character in neither set is never escaped.

@@ -548,7 +548,7 @@
         they collide with dates (`1/2/2024`) and paths, and djot has no
         fractions (recorded in dismissed-syntax.md). Converted set:
         dashes, ellipsis, smart quotes, arrows, comparisons, `+-`, and
-        symbols (`(c)`,`(r)`,`(tm)`).
+        the symbol `(tm)`. `(c)` and `(r)` are not converted (carve#4808).
       - SMART TYPOGRAPHY RUNS BY DEFAULT -- NORMATIVE [CARVE-P9-010]. The substitution belongs to
         the default inline layer, not to an opt-in feature: a conformant
         implementation performs it with NO extension registered. A locale
@@ -573,7 +573,7 @@
           glyph, exactly as the canonical writer already does. Every trigger
           character therefore survives as the ASCII the author typed --
           dashes, ellipsis, quotes, arrows, comparisons, and the typographic
-          symbols `(c)` `(r)` `(tm)` `+-`;
+          symbols `(tm)` `+-`;
         * the `:name:` symbol production is UNAFFECTED; it is not a
           `smart_typography` production, and its precedence over the
           typographic forms is unchanged;

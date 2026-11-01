@@ -3407,8 +3407,9 @@ the 'tmp/' folder, and/"or" too
 
 ## Smart typography arrows and symbols
 
-Arrows, comparisons, plus/minus and symbols are converted. Fractions are
-intentionally **not** converted (they collide with dates and paths; see
+Arrows, comparisons, plus/minus and `(tm)` are converted. `(c)` and `(r)`
+stay text, because they collide with lettered enumerations (carve#4808).
+Fractions are intentionally **not** converted (they collide with dates and paths; see
 `docs/dismissed-syntax.md`).
 
 ::: compare
@@ -3420,7 +3421,7 @@ Flow: a --> b <-- c <--> d ==> e; x != y, p <= q, r >= s, +-1.
 
 ```html
 <p>Flow: a → b ← c ↔ d ⇒ e; x ≠ y, p ≤ q, r ≥ s, ±1.
-© 2024, ®, ™. Dates like 1/2/2024 stay literal.</p>
+(c) 2024, (r), ™. Dates like 1/2/2024 stay literal.</p>
 ```
 
 :::
