@@ -1,0 +1,33 @@
+An unresolved reference in a cell reads the unescaped pipe
+
+```
+| [a\|b][m] |
+.
+<table>
+  <tbody>
+    <tr><td>[a|b][m]</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| ![a\|b][m] |
+.
+<table>
+  <tbody>
+    <tr><td>![a|b][m]</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| [x][r\|s] |
+
+[r|s]: /u
+.
+<table>
+  <tbody>
+    <tr><td><a href="/u">x</a></td></tr>
+  </tbody>
+</table>
+```

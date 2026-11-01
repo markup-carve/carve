@@ -50,7 +50,9 @@
       that key resolves to an empty href or src and retains its reference
       provenance; an absent key remains unresolved. The existing label key,
       duplicate precedence, hoisting and container rules apply unchanged.
-      Unresolved -> the bracketed run renders as literal source text. Carve
+      Unresolved -> the bracketed run renders as literal source text; in a
+      table cell that source is the cell content after the `\|` unescape
+      (PART 4 table cells, carve#4718), so `| [a\|b][m] |` gives `[a|b][m]`. Carve
       has NO shortcut reference: a bare [label] or ![alt] never resolves
       (PART 9 §14). A collapsed image `![alt][]` takes its alt text as the
       label, so the alt text must be non-empty; the full `![alt][ref]` form

@@ -494,10 +494,39 @@ const unescapeDest = (text) => text.replace(/\\([()\\])/g, '$1')
 const unescapeCellDest = (text) => text.replace(/\\([()\\|])/g, '$1')
 let inCell = false
 
+// Cell splitting runs before the inline pass (`04:40`, carve#4718): outside a
+// code span `\|` is already the pipe, so no construct sees its backslash.
+// The scan mirrors the splitter's escapes and backtick runs.
+function unescapeCellPipes(text) {
+  if (!text.includes('\\|')) return text
+  let out = ''
+  let inCode = 0
+  for (let i = 0; i < text.length;) {
+    const c = text[i]
+    if (c === '\\' && !inCode && /^[!-/:-@[-`{-~]$/.test(text[i + 1] ?? '')) {
+      out += text[i + 1] === '|' ? '|' : c + text[i + 1]
+      i += 2
+      continue
+    }
+    if (c === '`') {
+      let run = 1
+      while (text[i + run] === '`') run++
+      if (!inCode) inCode = run
+      else if (inCode === run) inCode = 0
+      out += '`'.repeat(run)
+      i += run
+      continue
+    }
+    out += c
+    i++
+  }
+  return out
+}
+
 export function renderCellInline(text) {
   inCell = true
   try {
-    return renderInline(text)
+    return renderInline(unescapeCellPipes(text))
   } finally {
     inCell = false
   }
