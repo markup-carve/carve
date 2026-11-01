@@ -382,6 +382,7 @@ const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/s
 // (carve#4220), so a line of braced and trailing comments opens no caption (carve#4559).
 const COMMENT_ONLY = String.raw`(?:\{%(?![\p{Mn}\p{Mc}\p{Me}\u{FE00}-\u{FE0F}\u{200D}])(?:(?!%\})[\s\S])*%\}|[ \t\n\r])*(?:(?<= )%%[\s\S]*)?$`
 const CAPTION = new RegExp(String.raw`^\^ (?!${COMMENT_ONLY}) *(.*?)[ \t]*$`, 'su')
+const COMMENT_ONLY_PARA = new RegExp(`^${COMMENT_ONLY}`, 'su')
 // THE §16 BRACKETED-RUN CLOSE (carve#1197).
 //
 // `line[open]` is a `[`; the return value is the index just past the `]` that
@@ -6621,9 +6622,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // host: it holds nothing the caption could be about, and letting it take
       // one binds the caption across the container change that opened it
       // (PART 9 SS4d, markup-carve/carve#2892).
-      // A nested quote or bare fence of structural-only lines holds nothing either.
-      const holdsNothing = (c) => (c.t === 'quote' || (c.t === 'colon-div' && c.type == null && c.title == null && c.label == null)) &&
-        c.children.every(holdsNothing)
+      // A nested quote or bare fence of structural-only lines holds nothing either,
+      // and neither does a paragraph of only braced comments (carve#4799).
+      const holdsNothing = (c) => c.t === 'para'
+        ? COMMENT_ONLY_PARA.test(c.lines.join('\n'))
+        : (c.t === 'quote' || (c.t === 'colon-div' && c.type == null && c.title == null && c.label == null)) &&
+          c.children.every(holdsNothing)
       const cap = !children.every(holdsNothing) ? captionSlot(i) : null
       if (cap) {
         node.caption = cap.text

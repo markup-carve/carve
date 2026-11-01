@@ -1,0 +1,1 @@
+The pinned carve-js build predates the ruling that a paragraph of only braced comments holds no content for the caption-host test (markup-carve/carve#4799); the spec moved first.
