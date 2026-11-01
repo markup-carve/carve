@@ -22,7 +22,7 @@ test('a line at the sibling task item content column nests in it', () => {
     `<ul class="task-list"><li>${box('c')} c <ul class="task-list"><li>${box('d')} d</li></ul></li></ul></li></ul></li></ul>`)
 })
 
-test('while the marker-line child is open, a box-column line still folds', () => {
+test('while the marker-line child is open, a box-column marker opens a new list', () => {
   assert.equal(html('- [x] - p\n    1. a\n'),
-    '<ul class="task-list"><li data-task-state="x"><input type="checkbox" checked disabled><ul><li>p 1. a</li></ul></li></ul>')
+    '<ul class="task-list"><li data-task-state="x"><input type="checkbox" checked disabled><ul><li>p</li></ul><ol><li>a</li></ol></li></ul>')
 })

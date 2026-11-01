@@ -21,14 +21,18 @@ z
     <ul>
       <li>a
         <ul>
-          <li>y
-1. ~~~
-z</li>
+          <li>y</li>
         </ul>
+        <ol>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ol>
       </li>
     </ul>
   </li>
 </ol>
+<p>z</p>
 ```
 
 ::::

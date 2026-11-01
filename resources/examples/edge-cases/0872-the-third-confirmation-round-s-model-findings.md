@@ -4,7 +4,7 @@ page: edge-definitions
 
 ## The third confirmation round's model findings
 
-A marker between an item's columns folds into a note on the item's marker line (carve#4545, carve#4614). A lazy line closes no line block (PART 0 S4, carve#4615). A caption number stays out of the tag before it (CARVE-P2-022, carve#4616). A line that misses a comment fence's owner ends the fence in every host (PART 0 S1, carve#4617). A task item's content column keeps its authored separator (CARVE-P9-083, carve#4618). A paragraph after a literal directive loosens an item (PART 10 I2, carve#4619). An attached attribute run holds no substitution arrow (PART 9 SS22 R3, carve#4620). Comments do not hide a caption host (PART 9R, carve#4621). A base class takes the class slot's spelling (PART 10 §1, carve#4622).
+A marker between an item's columns reads as at the marker column, also below a note on the item's marker line (carve#4545, carve#4614). A lazy line closes no line block (PART 0 S4, carve#4615). A caption number stays out of the tag before it (CARVE-P2-022, carve#4616). A line that misses a comment fence's owner ends the fence in every host (PART 0 S1, carve#4617). A task item's content column keeps its authored separator (CARVE-P9-083, carve#4618). A paragraph after a literal directive loosens an item (PART 10 I2, carve#4619). An attached attribute run holds no substitution arrow (PART 9 SS22 R3, carve#4620). Comments do not hide a caption host (PART 9R, carve#4621). A base class takes the class slot's spelling (PART 10 §1, carve#4622).
 
 ::::: compare
 
@@ -19,13 +19,15 @@ r[^q]
 <ul>
   <li></li>
 </ul>
+<ul>
+  <li>child</li>
+</ul>
 <p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>note
-* child<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -47,14 +49,16 @@ r[^q]
   <ul>
     <li></li>
   </ul>
+  <ul>
+    <li>c</li>
+  </ul>
 </blockquote>
 <p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>n
-* c<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

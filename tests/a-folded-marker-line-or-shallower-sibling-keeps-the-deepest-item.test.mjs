@@ -16,13 +16,13 @@ test('a nested first-block + paragraph takes a lazy line at any depth', () => {
   for (const [source, expected] of cases) assert.equal(flat(source), expected, source)
 })
 
-// carve#4345: a marker line no sibling of the deepest item folds into its paragraph and opens no fence.
-test('a folded marker line leaves the deepest paragraph open', () => {
+// carve#4345, carve#4545: a marker line no sibling of the deepest item opens a new list, and its fence is live.
+test('a marker line of another kind opens a new list', () => {
   const cases = [
-    ['1. 1. a\n    1. y\n      - ~~~\nz\n', '<ol><li><ol><li>a</li><li>y - ~~~ z</li></ol></li></ol>'],
-    ['- 1. a\n   1. y\n     - ~~~\nz\n', '<ul><li><ol><li>a</li><li>y - ~~~ z</li></ol></li></ul>'],
-    ['1. 1. a\n    1. y\n      - ```\nz\n', '<ol><li><ol><li>a</li><li>y - <code> z</code></li></ol></li></ol>'],
-    ['1. - a\n     - y\n      1. ~~~\nz\n', '<ol><li><ul><li>a <ul><li>y 1. ~~~ z</li></ul></li></ul></li></ol>'],
+    ['1. 1. a\n    1. y\n      - ~~~\nz\n', '<ol><li><ol><li>a</li><li>y</li></ol><ul><li><pre><code></code></pre></li></ul></li></ol><p>z</p>'],
+    ['- 1. a\n   1. y\n     - ~~~\nz\n', '<ul><li><ol><li>a</li><li>y</li></ol><ul><li><pre><code></code></pre></li></ul></li></ul><p>z</p>'],
+    ['1. 1. a\n    1. y\n      - ```\nz\n', '<ol><li><ol><li>a</li><li>y</li></ol><ul><li><pre><code></code></pre></li></ul></li></ol><p>z</p>'],
+    ['1. - a\n     - y\n      1. ~~~\nz\n', '<ol><li><ul><li>a <ul><li>y</li></ul><ol><li><pre><code></code></pre></li></ol></li></ul></li></ol><p>z</p>'],
   ]
   for (const [source, expected] of cases) assert.equal(flat(source), expected, source)
 })

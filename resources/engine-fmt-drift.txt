@@ -75,3 +75,5 @@
 916-a-comment-does-not-split-a-nested-list-boundary-2  The pinned writer reduces the blank run around an erased comment in a nested list, so the spec model reads its output as one loose list (carve#4760; engine follow-up carve#4728).
 924-a-task-item-reads-a-definition-after-extra-box-padding  The pinned writer spells an empty task item as + after lifting its marker-line footnote definition; the spec model still reads the + as text (carve#4409).
 924-a-task-item-reads-a-definition-after-extra-box-padding-2  The pinned writer spells an empty task item as + after lifting its marker-line footnote definition in a note; the spec model still reads the + as text (carve#4409).
+872-the-third-confirmation-round-s-model-findings-2  The pinned writer's output for a marker between an item's columns reads differently since the carve#4545 ruling.
+872-the-third-confirmation-round-s-model-findings  The pinned writer's output for a marker between an item's columns reads differently since the carve#4545 ruling.

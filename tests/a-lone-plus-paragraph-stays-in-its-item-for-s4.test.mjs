@@ -22,8 +22,8 @@ test('the walk owns the attached paragraph in the item', () => {
 
 test('lines after the attached paragraph read as they do without the `+`', () => {
   const cases = [
-    ['- a\n+\nq\n * c\n', '<ul><li>a q * c</li></ul>'],
-    ['- a\n+\nq\n 2. c\nz\n', '<ul><li>a q 2. c z</li></ul>'],
+    ['- a\n+\nq\n * c\n', '<ul><li>a q</li></ul><ul><li>c</li></ul>'],
+    ['- a\n+\nq\n 2. c\nz\n', '<ul><li>a q</li></ul><ol start="2"><li>c z</li></ol>'],
     ['- a\n+\nq\n  - c\n', '<ul><li>a q<ul><li>c</li></ul></li></ul>'],
     ['- a\n+\nq\n  # h\n', '<ul><li>a q<h1 id="h">h</h1></li></ul>'],
     ['- a\n+\nq\n  > z\n- c\n', '<ul><li>a q<blockquote><p>z</p></blockquote></li><li>c</li></ul>'],

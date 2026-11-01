@@ -7,11 +7,12 @@ const html = (src) => renderDoc(parse(src)).replace(/\n[ \t]*(?=<)/g, '').trim()
 const body = (src) => html(src).split('<section')[0]
 const note = (src) => /<li id="fn1">(.*?)<a href="#fnref1"/s.exec(html(src))?.[1]
 
-test('a marker between an item\'s columns on another axis folds into the note (carve#4614)', () => {
+test('a marker between an item\'s columns on another axis leaves the note (carve#4614, carve#4545)', () => {
   for (const [marker, other] of [['- ', '* c'], ['- ', '- [ ] c'], ['1. ', '* c'], ['1. ', '2) c'], ['- [ ] ', '- c']]) {
-    assert.match(note(`${marker}[^q]: n\n ${other}\n\nr[^q]\n`), /<p>n\n/, `${marker}${other}`)
+    assert.match(note(`${marker}[^q]: n\n ${other}\n\nr[^q]\n`), /<p>n/, `${marker}${other}`)
+    assert.doesNotMatch(note(`${marker}[^q]: n\n ${other}\n\nr[^q]\n`), /<p>n\n/, `${marker}${other}`)
   }
-  assert.match(note('> - [^q]: n\n>  * c\n\nr[^q]\n'), /<p>n\n\* c/)
+  assert.doesNotMatch(note('> - [^q]: n\n>  * c\n\nr[^q]\n'), /\* c/)
 })
 
 test('a full sibling and a marker at the list column still leave the note (carve#4614)', () => {

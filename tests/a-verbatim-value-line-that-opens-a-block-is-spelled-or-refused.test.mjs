@@ -40,8 +40,8 @@ function candidates(host, value) {
 test('verbatim opener line fixture names its clause', () => {
   assert.equal(fixture.version, 1)
   assert.equal(fixture.clause, 'CARVE-P11-078')
-  assert.equal(fixture.rows.filter(row => row.source).length, 15)
-  assert.equal(fixture.rows.filter(row => !row.source).length, 34)
+  assert.equal(fixture.rows.filter(row => row.source).length, 14)
+  assert.equal(fixture.rows.filter(row => !row.source).length, 35)
 })
 
 for (const row of fixture.rows) {
