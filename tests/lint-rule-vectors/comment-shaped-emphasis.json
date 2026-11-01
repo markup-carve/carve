@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "rule": "comment-shaped-emphasis",
+  "vectors": [
+    {
+      "name": "c-comment",
+      "description": "c comment.",
+      "source": "/* foo */\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "comment"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "c-comment-mid-line",
+      "description": "c comment mid line.",
+      "source": "x /* a */ y\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "comment"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "strong-with-slashes",
+      "description": "strong with slashes.",
+      "source": "*/ x /*\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "comment"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "plain-emphasis",
+      "description": "plain emphasis.",
+      "source": "/foo/ bar\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "code-span",
+      "description": "code span.",
+      "source": "`/* foo */`\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "escaped-delimiters",
+      "description": "escaped delimiters.",
+      "source": "\\/* foo *\\/\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

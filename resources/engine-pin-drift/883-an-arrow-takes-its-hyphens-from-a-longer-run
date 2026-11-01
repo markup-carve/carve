@@ -1,0 +1,1 @@
+carve#4815: the single-hyphen arrows `->`, `<-` and `<->` are removed (ruling 2026-11-01); the pinned carve-js build still renders them.

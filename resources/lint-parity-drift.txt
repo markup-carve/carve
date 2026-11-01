@@ -27,3 +27,9 @@ rust/heading-level-skip  The rust engine does not carry the default authoring ru
 rust/bare-html-tag  The rust engine does not carry the default authoring rule yet (carve#3792).
 rust/markdown-definition-paragraph  The rust engine does not carry the default authoring rule yet (carve#3792).
 rust/github-alert-marker  The rust engine does not carry the default authoring rule yet (carve#3792).
+js/comment-shaped-emphasis  The js engine does not carry the default authoring rule yet (carve#4815).
+js/glob-shaped-strong  The js engine does not carry the default authoring rule yet (carve#4815).
+php/comment-shaped-emphasis  The php engine does not carry the default authoring rule yet (carve#4815).
+php/glob-shaped-strong  The php engine does not carry the default authoring rule yet (carve#4815).
+rust/comment-shaped-emphasis  The rust engine does not carry the default authoring rule yet (carve#4815).
+rust/glob-shaped-strong  The rust engine does not carry the default authoring rule yet (carve#4815).

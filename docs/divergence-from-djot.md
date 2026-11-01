@@ -85,7 +85,7 @@ modes belong to each implementation, and a folded id is outside conformance.
 Smart-typography substitutions are also reversed to their ASCII source before
 the id is computed, so an id never depends on presentational typography:
 `# Don't repeat yourself` slugs to `Don-t-repeat-yourself` (not a curly `’`),
-and `# Step 1 -> done...` to `Step-1-done`. A literally-typed em dash is
+and `# Step 1 --> done...` to `Step-1-done`. A literally-typed em dash is
 likewise normalized; a genuine non-typography symbol such as `•` is kept.
 
 ## 1b. Heading-id punctuation model

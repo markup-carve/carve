@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "rule": "glob-shaped-strong",
+  "vectors": [
+    {
+      "name": "glob-list",
+      "description": "glob list.",
+      "source": "*.js,*.ts\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "glob"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "glob-mid-line",
+      "description": "glob mid line.",
+      "source": "Use *.md files* here.\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "glob"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "plain-strong",
+      "description": "plain strong.",
+      "source": "*bold* text\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "code-span",
+      "description": "code span.",
+      "source": "`*.js,*.ts`\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "escaped-star",
+      "description": "escaped star.",
+      "source": "\\*.js,*.ts\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

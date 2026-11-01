@@ -12,8 +12,10 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (src) => renderDoc(parse(src)).trim()
 
 test('the ruling cases', () => {
-  assert.equal(html('b#->\n'), '<p>b#→</p>')
-  assert.equal(html('b@->\n'), '<p>b@→</p>')
+  // `->` is text since carve#4815; the doubled arrow keeps the case.
+  assert.equal(html('b#->\n'), '<p>b#-&gt;</p>')
+  assert.equal(html('b@->\n'), '<p>b@-&gt;</p>')
+  assert.equal(html('b@-->\n'), '<p>b@→</p>')
   assert.equal(html('b#-->\n'), '<p>b#→</p>')
 })
 

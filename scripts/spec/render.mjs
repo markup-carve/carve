@@ -926,12 +926,11 @@ function unclosedCode(content) {
   return `<code>${escapeHtml(unclosedBody(content))}</code>`
 }
 
-// carve#1442: doubled runs are canonical in both families; the single
-// forms are deprecated but still render; `=>` is removed.
+// carve#1442: doubled runs are the arrows in both families; the single-hyphen
+// forms (carve#4815) and `=>` are removed.
 const ARROWS = {
   '<-->': '\u2194', '-->': '\u2192', '<--': '\u2190',
   '<=>': '\u21d4', '==>': '\u21d2', '<==': '\u21d0',
-  '<->': '\u2194', '->': '\u2192', '<-': '\u2190',
   '!=': '\u2260', '<=': '\u2264', '>=': '\u2265', '+-': '\u00b1',
 }
 const COMPARISONS = new Set(['!=', '<=', '>='])
@@ -2821,7 +2820,7 @@ export function renderInlineWithoutRaw(text, prevCtx = '') {
  * carry the same glyphs on both sides.
  */
 const SMART_TO_ASCII = {
-  '\u2194': '<->', '\u2122': '(tm)', '\u2026': '...', '\u2192': '->', '\u2190': '<-',
+  '\u2194': '<-->', '\u2122': '(tm)', '\u2026': '...', '\u2192': '-->', '\u2190': '<--',
   '\u21d2': '==>', '\u21d0': '<==', '\u21d4': '<=>', '\u2264': '<=', '\u2265': '>=', '\u2260': '!=', '\u00b1': '+-',
   '\u2013': '-', '\u2014': '-',
   '\u2018': "'", '\u2019': "'", '\u201a': "'", '\u201b': "'",

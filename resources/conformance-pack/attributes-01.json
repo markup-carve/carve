@@ -250,7 +250,7 @@
 {"id":"attributes-33bbfdbd25fe","source":"- a\n  {.k}\n  code\ntail\n  ```\n","html":"<ul>\n  <li>a\n    <p class=\"k\">code\ntail</p>\n    <pre><code></code></pre>\n  </li>\n</ul>"},
 {"id":"attributes-33f02e8ff018","source":"A [danger]{srcdoc=\"<script>\"} span.\n- a\n\n* \n","html":"<p>A <span>danger</span> span.\n- a</p>\n<p>*</p>"},
 {"id":"attributes-346bda587b6d","source":"[x]{class=w1/2 .bar}\n","html":"<p><span class=\"w1/2 bar\">x</span></p>"},
-{"id":"attributes-3481180e4ffd","source":"-> --\n|~{.x} |\n","html":"<p>→ –</p>\n<table>\n  <tbody>\n    <tr><td class=\"x\" style=\"text-align: center;\"></td></tr>\n  </tbody>\n</table>"},
+{"id":"attributes-3481180e4ffd","source":"-> --\n|~{.x} |\n","html":"<p>-&gt; –</p>\n<table>\n  <tbody>\n    <tr><td class=\"x\" style=\"text-align: center;\"></td></tr>\n  </tbody>\n</table>"},
 {"id":"attributes-3488141ed144","source":"+  _**a*{t=\"_\"} b/{t=c_}\n","html":"<p>+  <u>**a*{t=“</u>”} b/{t=c_}</p>"},
 {"id":"attributes-34e790b41e42","source":"*x*{.a .b}\n+ \n+ *y*{ .c}\n*z*{.d }\n\n[w]{ }\n","html":"<p><strong class=\"a b\">x</strong>\n+\n+ <strong class=\"c\">y</strong>\n<strong class=\"d\">z</strong></p>\n<p><span>w</span></p>"},
 {"id":"attributes-352c4ea2913a","source":"![a](safe.png){srcset=\"safe.png 1x, javascript:alert(1) 2x\"}\n- b\n{{.x}\n","html":"<p><img src=\"safe.png\" alt=\"a\" srcset=\"\">\n- b\n{{.x}</p>"},
