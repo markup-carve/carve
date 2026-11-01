@@ -1894,7 +1894,7 @@ function resolveCrossrefs(html, ctx) {
     if (!source) {
       // A reference in the label is still a frame: refs resolved before this pass.
       const target = ctx.captionIds.get(key)
-      const cap = target ? resolveRefs(target.label, ctx) : undefined
+      const cap = target ? dropCloneIds(resolveRefs(target.label, ctx)) : undefined
       if (cap) return textOnly ? cap : `<a href="#${escapeAuthoredAttr(target.id)}">${cap}</a>`
       // unresolved: literal source text (PART 9 SS19), HTML-escaped -- an
       // unresolved id may carry `<`/`>`/`&` (e.g. `</#<script>`) which must not

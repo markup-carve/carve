@@ -428,7 +428,7 @@ CarveCore {
   // content (ruled 2026-10-15). Bodies only, as in `brContent`: an attribute
   // block after any of them is still scanned. A nested matched braced span is
   // skipped too (E2a), body only, except a frame of the scan's own kind (PART 9 SS22).
-  edScan<d>  = ~unclosedRun (escape | codeClosed | crossref | autolinkBody | edCommentBody | bracedComment | noteRefBody | nested
+  edScan<d>  = ~unclosedRun (fEscComment<d> | fSpComment<d> | escape | codeClosed | crossref | autolinkBody | edCommentBody | bracedComment | noteRefBody | nested
              | forcedBody | ~("{" d) (edSub | edInsBody | edDelBody) | any)
   forcedBody = fBody<"/"> | fBody<"*"> | fBody<"_"> | fBody<"~"> | fBody<"^"> | fBody<","> | fBody<"=">
   fBody<d>   = ~("{" d graphemeExt) "{" d fInner<d>+ d "}"

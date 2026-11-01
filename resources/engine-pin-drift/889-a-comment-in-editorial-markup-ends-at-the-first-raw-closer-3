@@ -1,0 +1,1 @@
+The pinned carve-js reads a code span inside a `/*` comment instead of ending at the first raw `*/` (markup-carve/carve#4720); the spec model already did.
