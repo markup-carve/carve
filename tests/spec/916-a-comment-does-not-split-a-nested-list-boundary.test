@@ -1,0 +1,44 @@
+A comment does not split a nested list boundary
+
+```
+- o
+  - a
+
+
+
+  %% c
+
+  - b
+.
+<ul>
+  <li>o
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- o
+  - a
+
+
+  %% c
+
+  - b
+.
+<ul>
+  <li>o
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```

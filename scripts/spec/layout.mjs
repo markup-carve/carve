@@ -8683,7 +8683,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // PART 9 SS11 N1a: an entry after the run sees all of it, as a sibling marker does (carve#4759).
         const entryAfterRun = col >= contentCol && /^::? (?=[ \t]*[^ \t\n\r])/.test(jm.rest) && !/^:::/.test(jm.rest)
         const pushGap = () => {
-          if (!entryAfterRun) return pushLine('', BLANK_MEAS)
+          // A descendant list must see the original run after an invisible
+          // line is erased; one forwarded blank loses N1a's hard boundary.
+          if (!entryAfterRun && subCol < 0 && !headSubActive) return pushLine('', BLANK_MEAS)
           for (let k = i; k < j; k++) if (!skipped.has(k)) pushLine('', BLANK_MEAS)
         }
         if (nestedOpaque?.kind === 'code' && CONT_MARKER.test(jm.rest) &&
@@ -8761,7 +8763,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             // the recursive parse of itemLines decides the sub-list's looseness.
             //
             if (!descendantFence && !closedMarkerFence) {
-              const blanks = CAPTION.test(jm.rest) ? visibleDistance(i, j) : 1
+              // Every ancestor must forward the run to a descendant list
+              // before an invisible line; otherwise that list cannot count
+              // the blanks across the erased line for N1a.
+              const blanks = CAPTION.test(jm.rest) || invisibleAt(j) ? visibleDistance(i, j) : 1
               for (let k = 0; k < blanks; k++) pushLine('', BLANK_MEAS)
             }
             closePara()
