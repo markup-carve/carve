@@ -571,9 +571,12 @@ arrow = "<--" | "-->" | "<-->"      (* ← → ↔, canonical *)
    `x => x + 1` and `Some(x) => x`. *)
 comparison = "!=" | "<=" | ">=" ;
 (* NOT the `:name:` symbol above -- these are the fixed typographic
-   replacements (© ® ™ ±). Named `typographic_symbol` so the two do not
-   collide: `symbol` is the `:name:` placeholder (PART 9 §7). *)
-typographic_symbol = "(c)" | "(r)" | "(tm)" | "+-" ;
+   replacements (™ ±). Named `typographic_symbol` so the two do not
+   collide: `symbol` is the `:name:` placeholder (PART 9 §7).
+   `(c)` AND `(r)` ARE TEXT (carve#4808): they collide with lettered
+   enumerations, so `(a), (b) and (c)` keeps `(c)`. An author who wants
+   © or ® types the character. *)
+typographic_symbol = "(tm)" | "+-" ;
 
 (* --- Breaks --- *)
 hard_break = '\', ( newline | EOF | cell_content_end ) ;

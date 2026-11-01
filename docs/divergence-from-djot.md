@@ -538,7 +538,7 @@ rather than a parsing one: the nodes are still produced, and the presentation
 renderers emit each node's source run instead of its glyph, exactly as the
 canonical writer already does. The AST does not depend on the switch; the output
 is the author's ASCII across the whole converted set - dashes, ellipsis, quotes,
-arrows, comparisons, `(c)` `(r)` `(tm)` `+-`:
+arrows, comparisons, `(tm)` `+-`:
 
 ::: code-group
 

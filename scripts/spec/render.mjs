@@ -1321,7 +1321,7 @@ const sem = g.createSemantics().addOperation('h', {
     return { '<=': '\u2264', '<': '&lt;', '>': '&gt;', '!': '!' }[this.sourceString]
   },
   symbol(tok) {
-    return { '(c)': '\u00a9', '(r)': '\u00ae', '(tm)': '\u2122' }[tok.sourceString]
+    return { '(tm)': '\u2122' }[tok.sourceString]
   },
   ellipsis(_e) {
     return '\u2026'
@@ -2812,7 +2812,7 @@ export function renderInlineWithoutRaw(text, prevCtx = '') {
 const SMART_TO_ASCII = {
   '\u2194': '<->', '\u2122': '(tm)', '\u2026': '...', '\u2192': '->', '\u2190': '<-',
   '\u21d2': '==>', '\u21d0': '<==', '\u21d4': '<=>', '\u2264': '<=', '\u2265': '>=', '\u2260': '!=', '\u00b1': '+-',
-  '\u00a9': '(c)', '\u00ae': '(r)', '\u2013': '-', '\u2014': '-',
+  '\u2013': '-', '\u2014': '-',
   '\u2018': "'", '\u2019': "'", '\u201a': "'", '\u201b': "'",
   '\u201c': '"', '\u201d': '"', '\u201e': '"', '\u201f': '"',
   '\u00ab': '"', '\u00bb': '"',

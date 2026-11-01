@@ -876,7 +876,7 @@ CarveCore {
   // An arrow whose `=` may close a bare highlight instead (PART 8 items 7
   // and 11). Like `litDelim` it carries the block a closer would take.
   eqArrow    = ("<=>" | "<==" | "==>" | "<=" | "!=" | ">=") looseAttrs?
-  symbol     = "(c)" | "(r)" | "(tm)"
+  symbol     = "(tm)"
   ellipsis   = "..."
   dashRun    = "-" "-"+
   // The BRACED en dash (carve#1447): the bare run carries a flanking guard, so

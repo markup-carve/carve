@@ -50,7 +50,7 @@ shows complete input and output.
 | Write | Get | Mnemonic |
 |-------|-----|----------|
 | `\*literal\*` | escape | backslash + any ASCII punctuation |
-| `--` `---` `...` `-->` `==>` `(c)` | – — … → ⇒ © | smart typography; see the note below |
+| `--` `---` `...` `-->` `==>` `(tm)` | – — … → ⇒ ™ | smart typography; see the note below |
 | `{--}` | – | braced en dash — converts in the flag position the bare run refuses |
 | `\` at end of line | hard break | `\ ` is a hard break here too — the trailing space is stripped before the escape is read |
 | `\ ` mid-line | no-break space | backslash-space; in the last column it is the hard break above |

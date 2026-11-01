@@ -344,13 +344,13 @@
       parentheses as text of their own. They are written as one run, so the
       split decides nothing: an opener that crosses a node boundary is one
       occurrence, escaped at its opener exactly as it is when the text is a
-      single node. The nodes `x (r` and `) y` are written
+      single node. The nodes `x (tm` and `) y` are written
 
-        x \(r) y
+        x \(tm) y
 
-      as the single node `x (r) y` is, and `x -` beside `- y` is written
+      as the single node `x (tm) y` is, and `x -` beside `- y` is written
       `x \-\- y`, never the half-escaped `x -\- y`. A flattened ruby whose
-      base is a lone `[` inside a span is `[\[\(r)]{.c}`; an escape on its
+      base is a lone `[` inside a span is `[\[\(tm)]{.c}`; an escape on its
       closing parenthesis would be idle.
 
       A CONTEXTUAL ESCAPE READS THAT RUN THE SAME WAY. Some occurrences are
@@ -573,7 +573,7 @@
                              `%%`, `::` and the symbol shortcode `:name:`
         `^`                  a mid-line inline footnote `^[`; the line-start
                              caret is the rule above
-        `(`                  typography shortcodes such as `(r)`
+        `(`                  typography shortcodes such as `(tm)`
         `$`                  math
 
       A character in neither set is never escaped.

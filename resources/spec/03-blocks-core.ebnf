@@ -93,7 +93,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
      - PRESERVE CASE (Unicode-aware): NON-ASCII characters AND letter case pass
        through unchanged (`Café` -> `Café`, `日本語` unchanged), except the
        glyphs the first step reverses: every glyph the typography pass can
-       produce reverses, typed or generated, so `# © x` gets `id="c-x"`
+       produce reverses, typed or generated, so `# ™ x` gets `id="tm-x"`
        (carve#4722). The text IS
        NFC-normalized before slugging (CARVE-P9-058), so a precomposed `é` and a
        decomposed `e` + U+0301 give the SAME id;
