@@ -33,8 +33,8 @@ const pinned = [
   ['an attributed symbol closes the quote (CARVE-P3-023)', ':a:{.x}"q"\n', '<p><span class="x">:a:</span>”q”</p>'],
   ['an opening underscore is start of content (§7)', '_@a_\n', '<p><u><span class="mention"><strong>@a</strong></span></u></p>'],
   ['a closing underscore guards a tag (§7)', '_a_#b\n', '<p><u>a</u>#b</p>'],
-  ['a braced-comment paragraph renders empty (§21)', '{% c %}\n', '<p></p>'],
-  ['a braced-comment paragraph takes pending attributes (§21)', '{.k}\n{% c %}\n', '<p class="k"></p>'],
+  ['a braced-comment paragraph renders nothing (§21)', '{% c %}\n', ''],
+  ['pending attributes float past a braced-comment paragraph (§21)', '{.k}\n{% c %}\n\np\n', '<p class="k">p</p>'],
   ['a backslash ending the document is a hard break (§9)', 'a\\', '<p>a<br></p>'],
   ['a backslash ending a trimmed cell is a hard break (§9)', '| a\\ |\n', '<table><tbody><tr><td>a<br></td></tr></tbody></table>'],
 ]

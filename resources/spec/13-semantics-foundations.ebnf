@@ -161,11 +161,9 @@
       nothing a caption could be about, so it is not a captionable host.
       Comment, definition and attribute lines hold no content for this test
       either (CARVE-P0-011): `> %%` / `^ cap` captions nothing, as a bare
-      `>` does, while `> a %% c` still captions. A paragraph holding only
-      braced comments holds no content for this test: `> {% c %}` / `^ cap`
-      keeps the quote's empty paragraph and captions nothing. An abbreviation
-      definition is a definition at document level only (PART 5); in a quote
-      it is paragraph text, so `> *[A]: b` / `^ cap` captions. This
+      `>` does, while `> a %% c` still captions. An abbreviation definition
+      is a definition at document level only (PART 5); in a quote it is
+      paragraph text, so `> *[A]: b` / `^ cap` captions. This
       says nothing about hosts delimited by an explicit closing fence, whose
       caption attaches at the closer: a zero-panel `::: figure` still carries
       its group caption (CARVE-P9-001).

@@ -4,7 +4,7 @@ page: edge-tables
 
 ## A quote holding only braced comments is not a caption host
 
-CARVE-P9-080 (carve#4799). A paragraph of only braced comments holds no content for the host test, so the caret line is a paragraph. The quote keeps its empty paragraph (PART 9 comments).
+carve#4799. A paragraph of only braced comments renders nothing (PART 9 comments), so the quote holds nothing and the caret line is a paragraph.
 
 :::::: compare
 
@@ -14,7 +14,9 @@ CARVE-P9-080 (carve#4799). A paragraph of only braced comments holds no content 
 `````
 
 ```html
-<blockquote><p></p></blockquote>
+<blockquote>
+
+</blockquote>
 <p>^ cap</p>
 ```
 
