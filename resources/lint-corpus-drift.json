@@ -10,22 +10,6 @@
   },
   "differences": [
     {
-      "file": "tests/corpus/246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-2.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            2,
-            3
-          ]
-        ],
-        "php": [],
-        "rust": []
-      }
-    },
-    {
       "file": "tests/corpus/246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -507,72 +491,6 @@
       }
     },
     {
-      "file": "tests/corpus/726-a-second-plus-starts-its-own-paragraph-after-attachment-3.crv",
-      "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "continuation-marker-refused",
-            4,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            4,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/726-a-second-plus-starts-its-own-paragraph-after-attachment-4.crv",
-      "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "continuation-marker-refused",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/726-a-second-plus-starts-its-own-paragraph-after-attachment.crv",
-      "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "continuation-marker-refused",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/728-a-refused-first-block-plus-folds-its-content-column-line-and-the-next-root-block-ends-the-item-4.crv",
       "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -628,6 +546,54 @@
             "continuation-marker-refused",
             3,
             5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/884-a-failed-cross-line-reference-label-stays-verbatim.crv",
+      "reason": "The JavaScript pin reports the unused definition left by a failed cross-line reference label; PHP and Rust omit that warning (carve#4706).",
+      "issue": "https://github.com/markup-carve/carve/issues/4706",
+      "diagnostics": {
+        "js": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            4,
+            1
+          ],
+          [
+            "unresolved-reference-link",
+            6,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ],
+          [
+            "unresolved-reference-link",
+            6,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ],
+          [
+            "unresolved-reference-link",
+            6,
+            1
           ]
         ]
       }
