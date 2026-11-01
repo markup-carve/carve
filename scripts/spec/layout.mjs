@@ -5854,6 +5854,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qItemPara = false // and is that paragraph an item's?
       let qTermOpen = false
+      let qStanzaCandidate = false
+      let qStanzaOpen = false
+      let qStanzaColumn = 0
       let qDescriptionBodyCol = null
       let qNoteBodyCol = null
       let qPara = [] // its lines, for SS12's absorption test below
@@ -6485,6 +6488,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qLastMarked = i
           carryPrefixMemo(state, lines, i, inner, inner.length)
           inner.push(qm[1] ?? '')
+          if (LINE_BLOCK_SHAPED.test(qm[1] ?? '')) {
+            qStanzaCandidate = true
+            qStanzaOpen = false
+          }
           if (!qHost.fence && openComment === null) {
             const colon = COLON_FENCE.exec(qm[1] ?? '')
             if (colon && COLON_CLOSER.test(qm[1] ?? '') && colon[1].length === qColonRuns.at(-1)?.length) qColonRuns.pop()
@@ -6495,6 +6502,28 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
           // The final line has no follower whose ownership needs this state.
           if (i + 1 < n) trackFence(qm[1] ?? '', i)
+          // A nested host's line-block payload is still an open stanza even
+          // when its spelling made the quote's ordinary paragraph tracker close.
+          if (trimWs(qm[1] ?? '') === '') {
+            qStanzaCandidate = false
+            qStanzaOpen = false
+          } else if (!qOpenPara && qStanzaCandidate) {
+            const row = qm[1] ?? ''
+            const col = indentCols(row).col
+            // A same-column payload extends the known stanza in constant time.
+            // A closer or a line that retreats toward the host needs the full
+            // ownership walk, which also decides whether the stanza has ended.
+            const stillOpen = qStanzaOpen && trimWs(row) !== '' &&
+              col >= qStanzaColumn && !COLON_CLOSER.test(trimWsStart(row))
+            if (stillOpen || hostEndsInLineBlockStanza(inner, 0)) {
+              qOpenPara = true
+              qStanzaOpen = true
+              qStanzaColumn = col
+            } else if (!LINE_BLOCK_SHAPED.test(row)) {
+              qStanzaCandidate = false
+              qStanzaOpen = false
+            }
+          }
           i++
           continue
         }
@@ -7879,6 +7908,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
      * own `openPara` answers only while this item IS the deepest frame.
      */
     const deepestParagraphOpen = () => {
+      // The innermost open line-block stanza owns its payload as inline content,
+      // even when an enclosing item or quote has no ordinary paragraph open.
+      if (holdsLineBlock && !isBlank(lines[i - 1] ?? '') && ind(i)?.col < contentCol && hostEndsInLineBlockStanza(itemLines, 0)) return true
       if (!paragraphIsOpen()) return false
       if (bodyQuote.at === i - 1 && bodyQuote.open &&
           !COLON_CLOSER.test(QUOTE.exec(ind(i - 1)?.rest ?? '')?.[1] ?? '')) return true
@@ -7895,9 +7927,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             bodyLeavesNoParagraphAt(itemLines, itemLines.length - 1)) return false
         return true
       }
-      // A descendant's line block owns its stanza even when a payload line
-      // looks like a definition, marker, or fence to this outer item.
-      if (holdsLineBlock && ind(i)?.col < contentCol && hostEndsInLineBlockStanza(itemLines, 0)) return true
       const d = descendantQ1At(descendantQ1.col)
       return d === null ? true : d.open
     }
