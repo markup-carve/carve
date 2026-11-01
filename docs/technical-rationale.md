@@ -160,23 +160,17 @@ rewind and try a second parse tree for the same delimiter sequence.
 A useful example is:
 
 ```carve
-/usr/local/
+/a /b/
 ```
 
 The intended parse is:
 
 ```html
-<em>usr/local</em>
+<em>a /b</em>
 ```
 
-not:
-
-```html
-<em>usr</em>local/
-```
-
-Why? Because the inner slash is treated as literal content, not as the end of a
-shorter earlier span. The grammar calls this out directly, and the same rule is
+not a nested span. Why? Because the inner slash is treated as literal content,
+not as a second opener. The grammar calls this out directly, and the same rule is
 what lets mixed delimiters nest cleanly:
 
 ```carve
@@ -526,12 +520,12 @@ Examples:
 Use /italic/ for emphasis.
 Open `docs/index.md` for the homepage.
 The route is a/b/c.
-The path /usr/local/ italicizes because it is in emphasizing position.
 ```
 
-That last case is deliberate. If a path sits exactly where valid emphasis would
-sit, Carve treats it as emphasis. The rule stays simple, and technical content
-still has a straightforward escape hatch: code spans.
+A path has its own rule. A span holding a `/` between two word
+characters does not form, because a path with two or more segments is never meant
+as italics. A single segment has the shape of an italic word and cannot be told
+apart without context, so it needs a code span.
 
 ## `^` meaning "caption" vs "footnote" vs "rowspan"
 

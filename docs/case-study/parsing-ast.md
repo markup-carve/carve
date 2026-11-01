@@ -34,13 +34,14 @@ Parse in this precedence order:
 1. **Literal over markup.** A delimiter with no valid match (per the
    word-boundary conditions) is literal text.
 2. **Opener → nearest valid same-type closer.** Bare same-type delimiters between
-   them are literal content (bare same-type spans do not nest), so `/usr/local/`
-   is `<em>usr/local</em>`, *not* `<em>usr</em>local/`.
+   them are literal content (bare same-type spans do not nest), so `/a /b/`
+   is `<em>a /b</em>`. A bare `/` span holding a `/` between two word characters
+   does not form, so `/usr/local/` stays text.
 3. **Different-type spans and explicit braced same-kind children nest**, resolved with a delimiter stack in a single
    left-to-right pass: linear time, no backtracking (Design Principle 1).
 
-This is *not* "shortest span / earliest opening wins": that rule would truncate
-`/usr/local/` to `<em>usr</em>` and break nested emphasis. See
+This is *not* "shortest span / earliest opening wins": that rule would break nested
+emphasis. See
 `resources/grammar.ebnf` PART 8 and PART 9 §9, and `docs/parsing-ambiguities.md` §1, §8.
 
 ### 5.4 Whitespace Rules

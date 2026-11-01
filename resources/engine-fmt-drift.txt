@@ -20,6 +20,7 @@
 # resources/engine-pin-drift/.README says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+01-emphasis-13  The pinned writer unwraps {/a/b/} to the bare /a/b/, which the spec model reads as text (carve#4810); carve-js ports the ruling first.
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-11  The pinned writer respells a combined token it reads as open after a guarded opener, against the carve#3947 ruling; markup-carve/carve-js#3933.
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-27  The pinned writer respells a combined token it reads as open after a guarded opener, against the carve#3947 ruling; markup-carve/carve-js#3933.
 781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-guarded-star-stays-split-43  The pinned writer respells a combined token it reads as open after a guarded opener, against the carve#3947 ruling; markup-carve/carve-js#3933.

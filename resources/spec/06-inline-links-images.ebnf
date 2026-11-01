@@ -7,7 +7,7 @@ inline_content = {inline_element | text_run | literal_special}+ ;
 (* A special_char that does not begin (or close) a construct under PART 8
    precedence + PART 9 conditions is literal text. Without this production
    the grammar cannot represent "a/b/c", "x = a*b", or an inner delimiter
-   such as the middle '/' of /usr/local/ -- yet these are canonical outputs
+   such as every '/' of /usr/local/ -- yet these are canonical outputs
    (corpus 01-emphasis). The "is this a construct?"
    decision is the semantic constraint in PART 9, not a context-free one. *)
 literal_special = special_char ;
