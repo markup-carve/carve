@@ -1,0 +1,23 @@
+An indented caption line captions its host
+
+```
+| a |
+  ^ cap
+.
+<table>
+  <caption>cap</caption>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+![a](/i)
+  ^ cap
+.
+<figure>
+  <img src="/i" alt="a">
+  <figcaption>cap</figcaption>
+</figure>
+```
