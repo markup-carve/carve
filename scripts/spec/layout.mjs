@@ -2088,9 +2088,11 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
 
   // A footnote body's own last block answers, read at the note's body column.
   if (depth < MAX_NESTING_DEPTH) {
+    // A tail outside a nested note's body may still be in the body of a note that holds it.
+    let outside = Infinity
     for (let k = last; k >= 0; k--) {
       const m = indentCols(bodyLines[k])
-      if (m.rest === '' || bodyLines[k].includes(LAZY)) continue
+      if (m.rest === '' || bodyLines[k].includes(LAZY) || m.col >= outside) continue
       const note = FOOTNOTE_DEF.exec(m.rest)
       if (note) {
         if (k === last && openerFenceRun(note[2]) === null) break
@@ -2099,7 +2101,9 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
         if (bodyLines.slice(k + 1, last + 1).every((l) => trimWs(l) === '' || l.includes(LAZY) || indentCols(l).col >= m.col + FOOTNOTE_BODY_COLUMN)) {
           return !bodyEndsInOpenFence(body) && bodyLeavesParagraphOpen(body, false, depth + 1)
         }
-        break
+        if (m.col === 0) break
+        outside = m.col
+        continue
       }
       if (m.col === 0) break
     }
