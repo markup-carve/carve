@@ -783,6 +783,11 @@
    (carve#4815): a strong span delimited by bare `*` whose content begins
    with a literal `.`. `*.js,*.ts` renders `<strong>.js,</strong>.ts`. It
    reports the opening delimiter. Code and an escaped `\*` are quiet.
+   `html-comment-renders-as-text` warns that an HTML comment in text,
+   `<!--` through the first `-->` in one paragraph, renders as visible text
+   (carve#4812). The message names `%%` and `%%%` as the Carve comment
+   spellings. It reports the `<!--`. A comment in code or raw content, and
+   a `<!--` with no `-->` after it in the paragraph, are quiet.
    `markdown-definition-paragraph` reports `term` followed by `: definition`
    when both remain paragraph text. A `:: term` definition is quiet.
    `github-alert-marker` reports `[!NOTE]`, `[!WARNING]` and the other GitHub

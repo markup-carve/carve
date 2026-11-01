@@ -55,6 +55,7 @@
   "bare-html-tag": "Use <b>bold</b>.\n",
   "comment-shaped-emphasis": "/* foo */\n",
   "glob-shaped-strong": "*.js,*.ts\n",
+  "html-comment-renders-as-text": "<!-- TODO secret -->\n",
   "markdown-definition-paragraph": "Term\n: definition\n",
   "github-alert-marker": "> [!WARNING]\n> Careful.\n"
 }

@@ -397,6 +397,30 @@ lazy_continuation_line = inline_content, newline ;
        alert's body.
    `github-alert-marker` keeps reporting the label in those quotes. *)
 
+(* A MARKDOWN HTML COMMENT IMPORTS AS A CARVE COMMENT -- NORMATIVE [CARVE-P2-034].
+   A Markdown importer writes an HTML block that holds exactly one HTML
+   comment, `<!--` through the first `-->`, with nothing but spaces and tabs
+   around it, as a Carve comment rather than as raw HTML (carve#4812). The
+   body is the text between the delimiters with the whitespace at its two
+   ends removed:
+     - a body on one line becomes a `%%` line comment, `%%`, one space and
+       the body, or `%%` alone when the body is empty;
+     - a body that spans lines becomes a `%%%` comment fence holding the
+       body's lines, widened past any `%` fence line inside it as a code
+       fence widens.
+   So
+
+       <!-- TODO secret -->
+
+   imports as
+
+       %% TODO secret
+
+   An HTML block holding anything else, and an HTML comment inside a
+   paragraph, import as before. The migration report records each conversion
+   as `markdown-html-comment` with `normalized` fidelity at the comment's
+   first line. *)
+
 (* --- Lists --- *)
 list = unordered_list | ordered_list | definition_list ;
 

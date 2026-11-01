@@ -1671,6 +1671,7 @@
     "CARVE-P2-031": "Markdown importer fragment rewriting; the model has no importer",
     "CARVE-P2-032": "Markdown importer reference handling; the model has no importer",
     "CARVE-P2-033": "Markdown importer GitHub-alert conversion; the model has no importer",
+    "CARVE-P2-034": "Markdown importer HTML-comment conversion; the model has no importer",
     "CARVE-P2-018": "implemented through the shared P0 S3 machinery for definition bodies; no targeted site found within the time box",
     "CARVE-P2-024": "render-loss reporting (losses/totalLosses result of a checked renderer); the model renderer has no loss channel",
     "CARVE-P4-008": "djot importer behavior; the model has no importer",
