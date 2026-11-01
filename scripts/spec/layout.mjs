@@ -2088,9 +2088,11 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
 
   // A footnote body's own last block answers, read at the note's body column.
   if (depth < MAX_NESTING_DEPTH) {
+    // A tail outside a nested note's body may still be in the body of a note that holds it.
+    let outside = Infinity
     for (let k = last; k >= 0; k--) {
       const m = indentCols(bodyLines[k])
-      if (m.rest === '' || bodyLines[k].includes(LAZY)) continue
+      if (m.rest === '' || bodyLines[k].includes(LAZY) || m.col >= outside) continue
       const note = FOOTNOTE_DEF.exec(m.rest)
       if (note) {
         if (k === last && openerFenceRun(note[2]) === null) break
@@ -2099,7 +2101,9 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
         if (bodyLines.slice(k + 1, last + 1).every((l) => trimWs(l) === '' || l.includes(LAZY) || indentCols(l).col >= m.col + FOOTNOTE_BODY_COLUMN)) {
           return !bodyEndsInOpenFence(body) && bodyLeavesParagraphOpen(body, false, depth + 1)
         }
-        break
+        if (m.col === 0) break
+        outside = m.col
+        continue
       }
       if (m.col === 0) break
     }
@@ -2328,6 +2332,12 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
         const lead = description ? description[0].length : note[0].length - note[2].length
         columns.push(column)
         fenceAt = { col: body.col + lead, rest: body.rest.slice(lead) }
+        // Markers behind the body's lead nest in it, so a fence after them is its payload too.
+        for (let inner = matchMarkerAt(fenceAt); inner; inner = matchMarkerAt(fenceAt)) {
+          const next = indentCols(inner.text)
+          columns.push(inner.indent + inner.markerWidth)
+          fenceAt = { col: inner.indent + inner.markerWidth + next.col, rest: next.rest }
+        }
       }
     }
     const code = FENCE.exec(fenceAt.rest)
@@ -2965,8 +2975,10 @@ function advanceQuoteRun(run, text, idx) {
         (hostedDefinitionAt(host, inner) && !FOOTNOTE_DEF.test(inner.rest))) { opaque = true; break }
     // A colon fence line of a hosted container leaves no paragraph open, except
     // in a line block's payload.
+    const colonDepth = host.colons?.length ?? 0
     if (hostColonStep(host, inner, () => false, blockStart, run.para ?? [])) {
-      if (host.colons?.at(-1)?.mode === 'line-block' && trimWs(text) !== '') stanza = true
+      // The opener itself holds no stanza yet, so nothing is open for a lazy line.
+      if (host.colons?.at(-1)?.mode === 'line-block' && host.colons.length <= colonDepth && trimWs(text) !== '') stanza = true
       opaque = true
       break
     }
@@ -5230,7 +5242,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (reachesBody(i) || isBlank(cur)) retainedParagraph = false
             // A line in the body below that fence's column ends it (§24 C3), at every depth (carve#4162).
             if (!isBlank(cur) && reachesBody(i) && indentCols(cur).col < nestedLeadFenceColumn) nestedLeadFenceColumn = 0
-            if (nestedLeadFenceColumn) {
+            // A blank run takes the blank branch below, which keeps a trailing run (carve#4033).
+            if (nestedLeadFenceColumn && !isBlank(cur)) {
               if (endsBodyAt(i)) break
               const measured = indentCols(cur)
               if (measured.rest !== '' && measured.col < bodyColumn) break
@@ -5459,12 +5472,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A line folded into the open paragraph leaves it open, whatever its shape, so the scan is not repeated per line.
             if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) &&
                 (foldedParagraphAt === bodyLines.length || bodyLeavesParagraphOpen(bodyLines))) {
-              // The marker is below the lead item's content column, so it
-              // continues that paragraph even when the description dedents it.
-              const leadItem = matchMarkerAt(indentCols(bodyLines[0] ?? ''))
-              const belowLeadItem = leadItem && authoredCol < bodyColumn + leadItem.markerWidth &&
-                matchMarkerAt(indentCols(dedented))
-              pushBody(lazyFence || belowLeadItem || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
+              // A marker below the body's column is no sibling of a list in the body,
+              // so it continues the open paragraph once the description dedents it (PART 0 S4).
+              const foldedMarker = matchMarkerAt(indentCols(dedented))
+              pushBody(lazyFence || foldedMarker || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
               foldedParagraphAt = bodyLines.length
               i++
               continue
@@ -6828,6 +6839,19 @@ const opensDescriptionAt = (bodyLines, col, end = bodyLines.length) => {
   }
   return false
 }
+// `opensDescriptionAt` for the line just pushed, reading the entry above behind its markers.
+const entryAbove = (bodyLines, col) => {
+  for (let k = bodyLines.length - 2; k >= 0; k--) {
+    let measured = indentCols(bodyLines[k])
+    if (measured.rest === '' || measured.col > col) continue
+    for (let marker; measured.col < col && (marker = matchMarkerAt(measured)); ) {
+      const next = indentCols(marker.text)
+      measured = { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
+    }
+    return measured.col === col && DESCRIPTION_RUN.test(measured.rest)
+  }
+  return false
+}
 // Whether a body's last block is a heading, break, table or definition that a
 // nested description holds, at its marker line or past its content column.
 const endsInClosedDescription = (bodyLines) => {
@@ -7642,6 +7666,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // A plain line below the child's column folded into its open paragraph.
     let childParagraphLazy = false
     let colonDescriptionBody = Infinity
+    let colonDescriptionColumn = -1
     let colonDescriptionParagraph = false
     let subCol = -1
     // A comment below the child's column ends it in the body parse (carve#3985).
@@ -8112,6 +8137,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const lead = markerFenceSummary(dmeas.rest, prefixMemo(state, lines, idx).markerFence ??= new Map())
         if (lead) return { kind: 'code', run: lead.run, col: dmeas.col + lead.col, markerLine: true }
       }
+      // So does a fence on a description's marker line, behind any markers (PART 0 S2).
+      if (markerOpens && DESCRIPTION_LEAD.test(dmeas.rest) && entryAbove(itemLines, dmeas.col)) {
+        const width = DESCRIPTION_LEAD.exec(dmeas.rest)[0].length
+        const lead = markerFenceSummary(dmeas.rest.slice(width), new Map())
+        if (lead) return { kind: 'code', run: lead.run, col: dmeas.col + width + lead.col, markerLine: true }
+      }
       if (dmeas.col === 0 || !descendantOwned) return null
       const comment = COMMENT_FENCE_BODY.exec(dmeas.rest)
       if (comment) {
@@ -8321,7 +8352,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         i++
         continue
       }
-      if (lm.rest !== '' && !insideFence() && !nestedVerbatim()) {
+      // A line below a descendant's fence ends that fence before it is read (trackNestedFence).
+      if (lm.rest !== '' && !insideFence() && (!nestedVerbatim() || lm.col - contentCol < nestedOpaque.col)) {
         while (descriptionBodyColumns.length && lm.col < descriptionBodyColumns.at(-1)) descriptionBodyColumns.pop()
         const description = /^:( +)(?=[ \t]*[^ \t])/.exec(lm.rest)
         if (description && lm.col >= contentCol) descriptionBodyColumns.push(lm.col + 1 + description[1].length)
@@ -8757,6 +8789,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
         headSubActive = false
       }
+      // A line below the child's column that its open paragraph cannot take is this item's block (PART 0 S4).
+      // A line below the child's fence ends that fence, which holds no paragraph.
+      const endsChildFence = nestedVerbatim() && lm.col - contentCol < nestedOpaque.col
+      if (headSubActive && reach < headSubCol && lm.rest !== '' &&
+          (endsChildFence || !nestedVerbatim() && !descendantParagraphBefore && !childParagraphOpen) &&
+          !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
+        headSubActive = false
+      }
       // A marker at the task item's content column opens a list in the item
       // (PART 0 S3), which ends the marker-line child and its box-column rebase.
       if (head.task !== undefined && headSubMarker && col === contentCol && matchMarkerAt(lm) && !insideFence()) {
@@ -8840,13 +8880,23 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // A line at the body column of a description in that container is the description's, not a new base (CARVE-P9-083).
         // A lazy line folds into the description's paragraph and closes nothing (PART 0 S4).
         const foldsIntoColonDescription = colonDescriptionParagraph && fence.opaque === null && foldablePlainLine(lm.rest)
+        // A lazy line between two descriptions hides the first from `opensDescriptionAt`.
+        const siblingColonDescription = fence.colon.length !== 0 && colonDescriptionBody !== Infinity &&
+          col === colonDescriptionColumn && DESCRIPTION_LEAD.test(lm.rest)
         if (fence.colon.length === 0 || (lm.rest !== '' && col < colonDescriptionBody && !foldsIntoColonDescription)) colonDescriptionBody = Infinity
+        // A `:` line in the body of a description whose paragraph is open is that paragraph's text, never a sibling (PART 0 S4).
+        const leadFoldsIntoColonDescription = colonDescriptionParagraph && col >= colonDescriptionBody && DESCRIPTION_LEAD.test(lm.rest)
         if (lm.rest === '' || colonDescriptionBody === Infinity) colonDescriptionParagraph = false
-        else if (col >= colonDescriptionBody) colonDescriptionParagraph = foldablePlainLine(lm.rest)
-        if (fence.colon.length !== 0 && fence.opaque === null && DESCRIPTION_LEAD.test(lm.rest) && opensDescriptionAt(itemLines, col - contentCol)) {
+        else if (col >= colonDescriptionBody) colonDescriptionParagraph = foldablePlainLine(lm.rest) || leadFoldsIntoColonDescription
+        if (fence.colon.length !== 0 && fence.opaque === null && !leadFoldsIntoColonDescription && DESCRIPTION_LEAD.test(lm.rest) &&
+            (siblingColonDescription || opensDescriptionAt(itemLines, col - contentCol))) {
           const lead = DESCRIPTION_LEAD.exec(lm.rest)[0]
+          colonDescriptionColumn = col
           colonDescriptionBody = col + lead.length
-          colonDescriptionParagraph = foldablePlainLine(lm.rest.slice(lead.length))
+          // Markers on the marker line hold the body's paragraph in their item.
+          let leadText = indentCols(lm.rest.slice(lead.length))
+          for (let marker; (marker = matchMarkerAt(leadText)); ) leadText = indentCols(marker.text)
+          colonDescriptionParagraph = foldablePlainLine(leadText.rest)
         }
         const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 && col < colonDescriptionBody &&
           col > contentCol && !descendantOwned && !COLON_CLOSER.test(lm.rest) && !inPayload && !retainedAfterComment && opensHostedColonBlock(lm.rest)

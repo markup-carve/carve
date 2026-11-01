@@ -1,0 +1,84 @@
+Folded separator lines keep a description in a div in an item
+
+```
+- :::
+  :: t
+  : t
+      : e
+      : f
+      :: u
+.
+<ul>
+  <li>
+    <div>
+      <dl>
+        <dt>t</dt>
+        <dd>
+          <p>t
+: e
+: f</p>
+          <dl>
+            <dt>u</dt>
+          </dl>
+        </dd>
+      </dl>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- :::
+  :: t
+  : e
+  x
+  : f
+    :: u
+.
+<ul>
+  <li>
+    <div>
+      <dl>
+        <dt>t</dt>
+        <dd>e
+x</dd>
+        <dd>
+          <p>f</p>
+          <dl>
+            <dt>u</dt>
+          </dl>
+        </dd>
+      </dl>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- :::
+  :: t
+  : - t
+    : e
+    : f
+    :: u
+.
+<ul>
+  <li>
+    <div>
+      <dl>
+        <dt>t</dt>
+        <dd>
+          <ul>
+            <li>t
+: e
+: f</li>
+          </ul>
+          <dl>
+            <dt>u</dt>
+          </dl>
+        </dd>
+      </dl>
+    </div>
+  </li>
+</ul>
+```

@@ -1,0 +1,39 @@
+A line-block opener in a quote leaves no paragraph for a lazy line
+
+```
+- > ::: |
+  a
+b
+.
+<ul>
+  <li>
+    <blockquote>
+      <div class="line-block">
+
+      </div>
+    </blockquote>
+    a
+b
+  </li>
+</ul>
+```
+
+```
+> - > ::: |
+>   a
+b
+.
+<blockquote>
+  <ul>
+    <li>
+      <blockquote>
+        <div class="line-block">
+
+        </div>
+      </blockquote>
+      a
+b
+    </li>
+  </ul>
+</blockquote>
+```

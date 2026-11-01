@@ -1,0 +1,59 @@
+A marker below a description body continues its open paragraph
+
+```
+:: t
+: :: t
+  - x
+- y
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <dl>
+      <dt>t</dt>
+    </dl>
+    <ul>
+      <li>x
+- y</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: :: t
+  - x
+* y
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <dl>
+      <dt>t</dt>
+    </dl>
+    <ul>
+      <li>x
+* y</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: # h
+  - x
+1. y
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <h1 id="h">h</h1>
+    <ul>
+      <li>x
+1. y</li>
+    </ul>
+  </dd>
+</dl>
+```
