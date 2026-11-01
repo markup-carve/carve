@@ -4833,10 +4833,10 @@ EOF = (* end of file *) ;
          Otherwise `scope` precedes `rowspan`, `colspan` and the authored
          block in the serialization.
 
-         On an axis a span marker widens, the generated `colspan` or
-         `rowspan` replaces an authored one. On an axis with no marker the
-         authored copy stays an ordinary attribute and changes no grid:
-         `|{colspan=2} a | b |` writes `<td colspan="2">a</td><td>b</td>`.
+         An authored `colspan` or `rowspan` on a cell is always dropped,
+         whether or not a marker computes a span on that axis. Only the
+         span markers shape the grid: `|{colspan=2} a | b |` writes
+         `<td>a</td><td>b</td>`.
 
       T10 CELL ATTRIBUTES BIND LAST -- NORMATIVE [CARVE-P9-007]. A cell's `{…}` block
          attaches AFTER the kind marker and AFTER the alignment marker, in
