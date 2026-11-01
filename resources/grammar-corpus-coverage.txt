@@ -58,3 +58,4 @@ fBiInner       LOOKAHEAD  reached only through `fSpan`
 fBiCloser      LOOKAHEAD  reached only through `fSpan`
 unclosedRun    LOOKAHEAD  only in the `edScan` and `edSubAtom` guards: an unclosed run leaves an editorial frame without its closer (carve#3973 X5)
 eqCloseCut     GAP        closed by `{=a>=}` (a forced highlight whose closer ends a `>=`)
+extFirst GAP        closed by `:foo[[a] b` (an extension whose unbalanced `[` falls back to the first `]`)

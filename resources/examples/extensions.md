@@ -341,7 +341,7 @@ An `identifier` must start with a letter or `_`, so a digit-first name is not a 
 
 :::
 
-The `extension_content` runs up to the **first** `]` (`extension_content = {character - ']'}`); a nested `]` therefore closes the extension early and the remainder is literal text.
+The `extension_content` runs up to the `]` at bracket depth zero, so a balanced `[...]` inside it is content. With an unbalanced `[` it falls back to the first unescaped `]`.
 
 ::: compare
 
@@ -350,7 +350,7 @@ The `extension_content` runs up to the **first** `]` (`extension_content = {char
 ```
 
 ```html
-<p><span class="ext-foo">a [b</span> c]</p>
+<p><span class="ext-foo">a [b] c</span></p>
 ```
 
 :::

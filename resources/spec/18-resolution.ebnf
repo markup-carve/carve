@@ -219,17 +219,13 @@
       BOUNDARIES only and emits <abbr>. A boundary exists on a side of the
       term when the adjacent character is absent or is not a Unicode letter
       or number (general category L or N). CARVE-P3-013 uses the same
-      Unicode boundary class for emphasis. Literal source text emitted for an
-      unresolved link or image reference (R1) is not scanned for abbreviations;
-      ordinary bracket text remains eligible. The text of a code span, an
-      inline literal and a mention is not scanned (carve#4560). Tag text and
-      autolink display text are likewise opaque to abbreviation expansion.
-      So are a cross-reference's link text, whether it clones a heading or a
-      numbered caption's label and number, and the literal an unresolved
-      cross-reference renders (R4, carve#4742). Neither is the text of an
-      editorial comment nor a symbol that no map resolves (its literal text,
-      with or without an attribute block): with `*[A]: y`, `{#A#} and :A:`
-      renders `<span class="critic-comment">A</span> and :A:` (carve#4801).
+      Unicode boundary class for emphasis. A term matches only in ordinary
+      text the author wrote in the inline flow, at any depth of inline markup,
+      so the content of emphasis and of a bracket run counts. Anything else
+      is outside the scan: what a construct holds verbatim, as its name or as
+      its target, the literal a fallback renders for something unresolved,
+      and text a resolution pass generates. With `*[A]: y`, `{#A#} and :A:`
+      renders `<span class="critic-comment">A</span> and :A:`.
       Expansion follows PART 9 §25 RESOURCE BOUNDS.
    R4 CROSSREFS. </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII

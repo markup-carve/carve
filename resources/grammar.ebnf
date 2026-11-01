@@ -1091,7 +1091,14 @@ ordered_item = ordered_marker, [item_attributes], space+, list_item_content ;
    The two delimiters are the trailing `.` and `)` only. djot's
    parenthesized `(1)` / `(a)` form is INTENTIONALLY NOT a marker -- it is
    too easily confused with a prose parenthetical -- so `(1) text` stays
-   literal paragraph text. *)
+   literal paragraph text.
+   INITIALS ARE NOT MARKERS (carve#4811). A letter or roman numeral followed
+   by `.` (any case, any length) is an ordered marker only when TWO OR MORE
+   spaces separate it, and its item_attributes if any, from the
+   list_item_content. With one space the line is not a marker line, so
+   `J. R. R. Tolkien wrote it` and `e. g. foo` are paragraph text and
+   `a.  first` opens a list. A digit marker and a `)` marker keep the single
+   space: `10. x` and `a) x` are unchanged. *)
 ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')')
                | '.' ;
 (* A BARE DOT OPENS A DECIMAL LIST -- NORMATIVE [CARVE-P2-011] (Carve addition; no Djot or CommonMark equivalent).
@@ -2051,8 +2058,8 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
 (* UNCLOSED RUN. An opener with no equal-length closer ANYWHERE LATER IN THE
    BLOCK is NOT literal text: it opens a verbatim span that runs to
    END_OF_BLOCK (the block's trailing whitespace is stripped; no surrounding
-   single-space strip, which applies only to a closed span). Nothing but an
-   extension's first unescaped `]` bounds
+   single-space strip, which applies only to a closed span). Nothing but the
+   `]` that closes an extension bounds
    it earlier, a forced or editorial `X}` included: an unclosed run inside a
    braced span or an editorial frame takes the rest of the block too, so that
    span has no closer and its opener is text (carve#3973 X5). `{*a `b*} c` is
@@ -2628,7 +2635,9 @@ grapheme_extender = (* a character of Unicode general category Mn, Mc or Me *)
                   | (* U+200D ZERO WIDTH JOINER *) ;
 (* The look-behind reads the source character before d. Which `_` or `/`
    before an opener is markup rather than a guard is PART 9 §9 GUARD
-   EXEMPTION. *)
+   EXEMPTION. A braced comment counts as nothing on either side of d, so
+   removing one never changes what pairs: `a{% c %}*b*` renders `a*b*`
+   as `a*b*` does (carve#4719). *)
 
 (* gt_if(d) = '>' when d = '=', otherwise nothing: `=>` is never a highlight
    opener (CARVE-P3-022), so `=>y=` is text. *)
@@ -2821,11 +2830,16 @@ extension_name = identifier ;
    `class` attribute -- the structural `ext-NAME` class comes FIRST, then the
    authored classes (`:foo[a]{.cls}` -> `class="ext-foo cls"`); never two
    `class` attributes. *)
-extension_content = {escaped_char | literal_backslash | (character - ']' - '\')} ;
-(* The content runs up to the FIRST UNESCAPED `]`; a nested `]` closes the
-   extension early and the remainder is literal: `:foo[a [b] c]` ->
-   `<span class="ext-foo">a [b</span> c]`. An escaped one is content:
-   `:foo[a\]b]` -> `<span class="ext-foo">a]b</span>`. *)
+extension_content = {escaped_char | literal_backslash | '[', extension_content, ']' | (character - '[' - ']' - '\')} ;
+(* The content runs up to the unescaped `]` at bracket depth zero, as a bracket
+   run and an inline note do: `:foo[a [b] c]` ->
+   `<span class="ext-foo">a [b] c</span>`, and `:foo[[x](u) y]` holds a link.
+   With an unbalanced `[` it falls back to the first unescaped `]`:
+   `:foo[a [b c] d` -> `<span class="ext-foo">a [b c</span> d`. A `]` past depth
+   zero is text: `:foo[a]b]` -> `<span class="ext-foo">a</span>b]`. An escaped
+   bracket is content: `:foo[a\]b]` -> `<span class="ext-foo">a]b</span>`.
+   The depth count reads only escapes, so a code span does not hide a bracket
+   from it. *)
 (* GENERIC EXTENSION CONTENT IS INLINE CONTENT -- NORMATIVE [CARVE-P3-026].
    Parse the captured run as inline content, including nested inline elements;
    do not render its markup as literal characters. Thus `:code[*b*]` renders
@@ -3018,8 +3032,9 @@ ellipsis = "..." ;    (* → … *)
    An editorial frame, either side of a substitution, an extension's content
    and an inline note's content each start content in this sense. Thus
    `2{+--x+}` keeps the hyphens in the insertion.
-   Unlike quote direction, this clause reads SOURCE neighbors, so the closing
-   brace of a braced comment is the preceding character: `{% c %}--x` converts.
+   A braced comment counts as nothing on either side of the run, so removing
+   one never changes it: `{% c %}--x` keeps its hyphens as `--x` does
+   (carve#4719).
    The backslash of a hard break or an escaped space is no following
    character: the run reads the break or space it renders (`typography_flank`),
    so `x --\` before a line break and `x --\ y` both convert.
@@ -3135,16 +3150,14 @@ arrow = "<--" | "-->" | "<-->"      (* ← → ↔ *)
       | "<==" | "==>" | "<=>" ;     (* ⇐ ⇒ ⇔ *)
 (* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE [CARVE-P3-022].
    Matched longest-first, so `<-->` beats `<--`, `<==` beats `<=` and
-   `-->` beats the hyphen run. A right arrow does not start inside a longer
-   hyphen run: `a--->b` is an em dash and `>`, and `a ---> b` stays a flag. `=`
-   has no run rule, so `a ===> b` is `=` and the arrow. An arrow takes its own
-   hyphens from the start of a longer run. A left arrow therefore takes
-   the first two hyphens of `a<---b` and gives `a←-b`.
+   `-->` beats the hyphen run. An arrow needs its exact run: a hyphen run longer
+   than the arrow's is a dash run, at either end. `a--->b` is an em dash and
+   `>`, `a<---b` is `<` and an em dash, `<--->` is an em dash between `<` and
+   `>`, and `a ---> b` stays a flag. `=` has no run rule, so `a ===> b` is `=`
+   and the arrow.
 
    `<=` KEEPS ≤. `->`, `<-` AND `<->` ARE REMOVED (carve#4815) and stay
    ordinary text: `a<-b` renders `a&lt;-b` and `x->y` renders `x-&gt;y`.
-   A run longer than an arrow keeps the rest as text, so `<--->` is `←` and
-   `->`.
    `=>` IS REMOVED and stays ordinary text, including `key => value`,
    `x => x + 1` and `Some(x) => x`. *)
 comparison = "!=" | "<=" | ">=" ;
@@ -5284,16 +5297,17 @@ EOF = (* end of file *) ;
       R2 CLOSE FIRST. If d can close and an entry of kind d is on the stack,
          close the nearest such entry. Every entry above it is removed and
          becomes text; spans nest, never overlap. The new span is final.
-         A BARE `/` SPAN HOLDING A PATH DOES NOT FORM (carve#4810). If d is a
-         bare `/` and the content this closer would end holds, in this region,
-         a literal `/` with a word character (letter or digit, with any
+         A BARE SPAN HOLDING ITS OWN DELIMITER DOES NOT FORM (carve#4810). If
+         d is bare and the content this closer would end holds, in this region,
+         a literal d with a word character (letter or digit, with any
          grapheme extenders) on each side in source, no span forms: this
-         entry leaves the stack, every other entry stays, and both slashes
-         are text. /usr/local/ and /a/b *c/ d* render /usr/local/ and
-         /a/b <strong>c/ d</strong>; /etc/ forms. The nested reading of a
-         braced span and an atom are not this region, and a combined token
-         and a braced span are not bare `/` spans: {/a/b/}, /*a/b*/ and
-         /x `a/b` y/ form. An escaped slash has the backslash beside it:
+         entry leaves the stack, every other entry stays, and both delimiters
+         are text. /usr/local/, _my_var_, *a*b* and /a/b *c/ d* render
+         /usr/local/, _my_var_, *a*b* and /a/b <strong>c/ d</strong>; /etc/
+         and _a_ form. The nested reading of a braced span, an atom and the
+         name of a mention or tag are not this region, and a combined token
+         and a braced span are not bare spans: {/a/b/}, /*a/b*/, /x `a/b` y/
+         and _@a_b_ form. An escaped delimiter has the backslash beside it:
          /a\/b/ forms.
       R3 ATTACH. A glued attribute_run (PART 4) directly after a closer that
          closed a span, a formed nested span, a bracket run, an extension, a
@@ -5377,9 +5391,10 @@ EOF = (* end of file *) ;
                          (CARVE-P3-016). Unmatched, it is text.
         inline note      `^[`, to the balanced `]` (§16); a region.
         note reference   `[^` and a label, to the first `]`.
-        extension        `:`, an extension_name and `[`, to the FIRST
-                         unescaped `]` (PART 3); a region: :foo[a [b] c]
-                         holds `a [b`.
+        extension        `:`, an extension_name and `[`, to the unescaped
+                         `]` at bracket depth zero, or with an unbalanced
+                         `[` to the first unescaped `]` (PART 3); a region:
+                         :foo[a [b] c] holds `a [b] c`.
         bracket run      `[`, to the balanced `]`, skipping what
                          CARVE-P3-001 names; a region. Unbalanced, the `[`
                          is text.
@@ -5648,6 +5663,12 @@ EOF = (* end of file *) ;
          defaults to roman, any other lone letter to alpha. A next sibling
          that is neither consecutive form leaves the first marker lone:
          `v.` over `vii.` is an alpha list and a roman list.
+         A letter or roman marker with `.` is a marker only before two or
+         more spaces (PART 2 ordered_item), so the tie-break reads
+           I.  x             produces:    <ol type="I"><li>x</li></ol>
+           A.  y                          <ol type="A"><li>y</li><li>z</li></ol>
+           B.  z
+         and the same three lines with one space each are one paragraph.
       N1 looks only one item back; N2/N3 carry the FIRST item's
       classification (with N3's one-item-forward tie-break) for the rest of
       the list.
@@ -6795,7 +6816,9 @@ EOF = (* end of file *) ;
       - VERBATIM CONTEXTS ARE OPAQUE, as for `%%` (§21): a code span or raw
         inline passes `{%` through.
       - TRANSPARENT TO INLINE STRUCTURE. A comment inside an emphasis run does
-        not break it: `*bo{% c %}ld*` is one `<strong>`.
+        not break it: `*bo{% c %}ld*` is one `<strong>`. It counts as nothing
+        for every flank test: quote direction (CARVE-P3-023), the hyphen run's
+        flag test (CARVE-P3-021) and the bare emphasis guards (CARVE-P3-013).
       - NO ATTRIBUTE ATTACHMENT. The comment takes no inline attribute slot
         and never joins an attribute run (CARVE-P3-017). A following inline
         attribute block is text: `*x*{% c %}{.k}` renders
@@ -7913,17 +7936,13 @@ EOF = (* end of file *) ;
       BOUNDARIES only and emits <abbr>. A boundary exists on a side of the
       term when the adjacent character is absent or is not a Unicode letter
       or number (general category L or N). CARVE-P3-013 uses the same
-      Unicode boundary class for emphasis. Literal source text emitted for an
-      unresolved link or image reference (R1) is not scanned for abbreviations;
-      ordinary bracket text remains eligible. The text of a code span, an
-      inline literal and a mention is not scanned (carve#4560). Tag text and
-      autolink display text are likewise opaque to abbreviation expansion.
-      So are a cross-reference's link text, whether it clones a heading or a
-      numbered caption's label and number, and the literal an unresolved
-      cross-reference renders (R4, carve#4742). Neither is the text of an
-      editorial comment nor a symbol that no map resolves (its literal text,
-      with or without an attribute block): with `*[A]: y`, `{#A#} and :A:`
-      renders `<span class="critic-comment">A</span> and :A:` (carve#4801).
+      Unicode boundary class for emphasis. A term matches only in ordinary
+      text the author wrote in the inline flow, at any depth of inline markup,
+      so the content of emphasis and of a bracket run counts. Anything else
+      is outside the scan: what a construct holds verbatim, as its name or as
+      its target, the literal a fallback renders for something unresolved,
+      and text a resolution pass generates. With `*[A]: y`, `{#A#} and :A:`
+      renders `<span class="critic-comment">A</span> and :A:`.
       Expansion follows PART 9 §25 RESOURCE BOUNDS.
    R4 CROSSREFS. </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
@@ -9586,16 +9605,13 @@ EOF = (* end of file *) ;
         Nowhere else. `f(x)`, `(see above)` and `[a] (b)` stay bare, and so
         does `[a](b c)`, whose tail is not a complete link destination.
 
-        TWO PLACES ARE EXEMPT FROM BOTH HALVES.
-
-        An INLINE EXTENSION's content (`:name[...]`) is not bracketed
-        content. Its reader ends at the first unescaped `]` without pairing brackets,
-        so a `[` inside it pairs with nothing and its escape would be idle.
-        Corpus `45-inline-extensions-6` is the case, written as authored:
+        An INLINE EXTENSION's content (`:name[...]`) is bracketed content
+        (carve#4513). Corpus `45-inline-extensions-6` is a balanced pair,
+        written as authored:
 
           :foo[a [b] c]
 
-        not `:foo[a \[b] c]`.
+        ONE PLACE IS EXEMPT FROM BOTH HALVES.
 
         A run holding an EMPTY CODE SPAN, directly or inside emphasis, takes
         §2's test whole: neither half selects any bracket or `(` in it.
@@ -9630,6 +9646,11 @@ EOF = (* end of file *) ;
       attributes. A spelling the AST records is the author's and is reproduced
       (`*` vs `-` bullets, ordered-list dialect, thematic-break marker).
       A spelling it does not record is chosen by the writer canonically.
+
+      THE SPACE AFTER A LIST MARKER is one space, except after a letter or
+      roman numeral followed by `.`, which takes two (PART 2 ordered_item,
+      carve#4811): `a.  x`, `A.  x`, `iv.  x`. The item's content column moves
+      with the second space, and the item's later lines are indented to it.
 
       FENCE LENGTH IS NOT ONE OF THEM: `code_block` records neither fence
       length nor character (PART 12 §3).

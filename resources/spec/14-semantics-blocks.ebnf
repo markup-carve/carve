@@ -99,16 +99,17 @@
       R2 CLOSE FIRST. If d can close and an entry of kind d is on the stack,
          close the nearest such entry. Every entry above it is removed and
          becomes text; spans nest, never overlap. The new span is final.
-         A BARE `/` SPAN HOLDING A PATH DOES NOT FORM (carve#4810). If d is a
-         bare `/` and the content this closer would end holds, in this region,
-         a literal `/` with a word character (letter or digit, with any
+         A BARE SPAN HOLDING ITS OWN DELIMITER DOES NOT FORM (carve#4810). If
+         d is bare and the content this closer would end holds, in this region,
+         a literal d with a word character (letter or digit, with any
          grapheme extenders) on each side in source, no span forms: this
-         entry leaves the stack, every other entry stays, and both slashes
-         are text. /usr/local/ and /a/b *c/ d* render /usr/local/ and
-         /a/b <strong>c/ d</strong>; /etc/ forms. The nested reading of a
-         braced span and an atom are not this region, and a combined token
-         and a braced span are not bare `/` spans: {/a/b/}, /*a/b*/ and
-         /x `a/b` y/ form. An escaped slash has the backslash beside it:
+         entry leaves the stack, every other entry stays, and both delimiters
+         are text. /usr/local/, _my_var_, *a*b* and /a/b *c/ d* render
+         /usr/local/, _my_var_, *a*b* and /a/b <strong>c/ d</strong>; /etc/
+         and _a_ form. The nested reading of a braced span, an atom and the
+         name of a mention or tag are not this region, and a combined token
+         and a braced span are not bare spans: {/a/b/}, /*a/b*/, /x `a/b` y/
+         and _@a_b_ form. An escaped delimiter has the backslash beside it:
          /a\/b/ forms.
       R3 ATTACH. A glued attribute_run (PART 4) directly after a closer that
          closed a span, a formed nested span, a bracket run, an extension, a
@@ -192,9 +193,10 @@
                          (CARVE-P3-016). Unmatched, it is text.
         inline note      `^[`, to the balanced `]` (§16); a region.
         note reference   `[^` and a label, to the first `]`.
-        extension        `:`, an extension_name and `[`, to the FIRST
-                         unescaped `]` (PART 3); a region: :foo[a [b] c]
-                         holds `a [b`.
+        extension        `:`, an extension_name and `[`, to the unescaped
+                         `]` at bracket depth zero, or with an unbalanced
+                         `[` to the first unescaped `]` (PART 3); a region:
+                         :foo[a [b] c] holds `a [b] c`.
         bracket run      `[`, to the balanced `]`, skipping what
                          CARVE-P3-001 names; a region. Unbalanced, the `[`
                          is text.
@@ -463,6 +465,12 @@
          defaults to roman, any other lone letter to alpha. A next sibling
          that is neither consecutive form leaves the first marker lone:
          `v.` over `vii.` is an alpha list and a roman list.
+         A letter or roman marker with `.` is a marker only before two or
+         more spaces (PART 2 ordered_item), so the tie-break reads
+           I.  x             produces:    <ol type="I"><li>x</li></ol>
+           A.  y                          <ol type="A"><li>y</li><li>z</li></ol>
+           B.  z
+         and the same three lines with one space each are one paragraph.
       N1 looks only one item back; N2/N3 carry the FIRST item's
       classification (with N3's one-item-forward tie-break) for the rest of
       the list.

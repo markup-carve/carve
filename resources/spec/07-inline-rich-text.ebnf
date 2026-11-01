@@ -57,7 +57,9 @@ grapheme_extender = (* a character of Unicode general category Mn, Mc or Me *)
                   | (* U+200D ZERO WIDTH JOINER *) ;
 (* The look-behind reads the source character before d. Which `_` or `/`
    before an opener is markup rather than a guard is PART 9 §9 GUARD
-   EXEMPTION. *)
+   EXEMPTION. A braced comment counts as nothing on either side of d, so
+   removing one never changes what pairs: `a{% c %}*b*` renders `a*b*`
+   as `a*b*` does (carve#4719). *)
 
 (* gt_if(d) = '>' when d = '=', otherwise nothing: `=>` is never a highlight
    opener (CARVE-P3-022), so `=>y=` is text. *)
@@ -250,11 +252,16 @@ extension_name = identifier ;
    `class` attribute -- the structural `ext-NAME` class comes FIRST, then the
    authored classes (`:foo[a]{.cls}` -> `class="ext-foo cls"`); never two
    `class` attributes. *)
-extension_content = {escaped_char | literal_backslash | (character - ']' - '\')} ;
-(* The content runs up to the FIRST UNESCAPED `]`; a nested `]` closes the
-   extension early and the remainder is literal: `:foo[a [b] c]` ->
-   `<span class="ext-foo">a [b</span> c]`. An escaped one is content:
-   `:foo[a\]b]` -> `<span class="ext-foo">a]b</span>`. *)
+extension_content = {escaped_char | literal_backslash | '[', extension_content, ']' | (character - '[' - ']' - '\')} ;
+(* The content runs up to the unescaped `]` at bracket depth zero, as a bracket
+   run and an inline note do: `:foo[a [b] c]` ->
+   `<span class="ext-foo">a [b] c</span>`, and `:foo[[x](u) y]` holds a link.
+   With an unbalanced `[` it falls back to the first unescaped `]`:
+   `:foo[a [b c] d` -> `<span class="ext-foo">a [b c</span> d`. A `]` past depth
+   zero is text: `:foo[a]b]` -> `<span class="ext-foo">a</span>b]`. An escaped
+   bracket is content: `:foo[a\]b]` -> `<span class="ext-foo">a]b</span>`.
+   The depth count reads only escapes, so a code span does not hide a bracket
+   from it. *)
 (* GENERIC EXTENSION CONTENT IS INLINE CONTENT -- NORMATIVE [CARVE-P3-026].
    Parse the captured run as inline content, including nested inline elements;
    do not render its markup as literal characters. Thus `:code[*b*]` renders
@@ -447,8 +454,9 @@ ellipsis = "..." ;    (* → … *)
    An editorial frame, either side of a substitution, an extension's content
    and an inline note's content each start content in this sense. Thus
    `2{+--x+}` keeps the hyphens in the insertion.
-   Unlike quote direction, this clause reads SOURCE neighbors, so the closing
-   brace of a braced comment is the preceding character: `{% c %}--x` converts.
+   A braced comment counts as nothing on either side of the run, so removing
+   one never changes it: `{% c %}--x` keeps its hyphens as `--x` does
+   (carve#4719).
    The backslash of a hard break or an escaped space is no following
    character: the run reads the break or space it renders (`typography_flank`),
    so `x --\` before a line break and `x --\ y` both convert.
@@ -564,16 +572,14 @@ arrow = "<--" | "-->" | "<-->"      (* ← → ↔ *)
       | "<==" | "==>" | "<=>" ;     (* ⇐ ⇒ ⇔ *)
 (* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE [CARVE-P3-022].
    Matched longest-first, so `<-->` beats `<--`, `<==` beats `<=` and
-   `-->` beats the hyphen run. A right arrow does not start inside a longer
-   hyphen run: `a--->b` is an em dash and `>`, and `a ---> b` stays a flag. `=`
-   has no run rule, so `a ===> b` is `=` and the arrow. An arrow takes its own
-   hyphens from the start of a longer run. A left arrow therefore takes
-   the first two hyphens of `a<---b` and gives `a←-b`.
+   `-->` beats the hyphen run. An arrow needs its exact run: a hyphen run longer
+   than the arrow's is a dash run, at either end. `a--->b` is an em dash and
+   `>`, `a<---b` is `<` and an em dash, `<--->` is an em dash between `<` and
+   `>`, and `a ---> b` stays a flag. `=` has no run rule, so `a ===> b` is `=`
+   and the arrow.
 
    `<=` KEEPS ≤. `->`, `<-` AND `<->` ARE REMOVED (carve#4815) and stay
    ordinary text: `a<-b` renders `a&lt;-b` and `x->y` renders `x-&gt;y`.
-   A run longer than an arrow keeps the rest as text, so `<--->` is `←` and
-   `->`.
    `=>` IS REMOVED and stays ordinary text, including `key => value`,
    `x => x + 1` and `Some(x) => x`. *)
 comparison = "!=" | "<=" | ">=" ;

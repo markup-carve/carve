@@ -442,10 +442,15 @@ CarveCore {
   rawInline  = code "{=" ident "}"
 
   // --- Inline extensions: :name[content] -> ext span (PART 8 rank 9);
-  // content ends at the FIRST unescaped "]" (corpus 16-5)
+  // content ends at the "]" at bracket depth zero; with an unbalanced "[" it
+  // falls back to the first unescaped "]" (carve#4513)
   extension  = ":" extName "[" extContent "]" attrRun?
   extName    = identStart identRest*
-  extContent = (escape | (~"]" any))*
+  extContent = extClosed | extFirst
+  extClosed  = extBalanced &"]"
+  extBalanced = (escape | extGroup | (~"]" ~"[" any))*
+  extGroup   = "[" extBalanced "]"
+  extFirst   = (escape | (~"]" any))*
 
   // An attributed symbol shortcode `:name:{...}` wraps in a <span> carrying
   // the attribute block. Core has no symbol map, so an UNMAPPED symbol resolves
@@ -868,7 +873,8 @@ CarveCore {
   // there.
   //
   // `<==` must precede `<=`, and `-->` must precede the `dashRun` rule below.
-  arrow      = "<-->" | "-->" | "<--"
+  // A hyphen run longer than the arrow's is a dash run (carve#4645).
+  arrow      = "<-->" | "-->" | "<--" ~"-"
              | "<=>" | "==>" | "<=="
              | "!=" | "<=" | ">=" | "+-"
   // An arrow whose `=` may close a bare highlight instead (PART 8 items 7

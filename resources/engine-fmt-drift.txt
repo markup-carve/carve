@@ -77,3 +77,17 @@
 924-a-task-item-reads-a-definition-after-extra-box-padding-2  The pinned writer spells an empty task item as + after lifting its marker-line footnote definition in a note; the spec model still reads the + as text (carve#4409).
 872-the-third-confirmation-round-s-model-findings-2  The pinned writer's output for a marker between an item's columns reads differently since the carve#4545 ruling.
 872-the-third-confirmation-round-s-model-findings  The pinned writer's output for a marker between an item's columns reads differently since the carve#4545 ruling.
+235-an-uppercase-roman-numeral-is-a-list-marker  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+837-an-ambiguous-first-marker-keeps-its-own-dialect-3  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+926-a-single-capital-with-a-dot-needs-two-spaces-4  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+926-a-single-capital-with-a-dot-needs-two-spaces-9  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+289-a-structural-attribute-leads-the-author-s-own  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+32-ordered-list-dialects-2  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+32-ordered-list-dialects  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+425-an-ordered-item-s-separator-width-sets-its-content-column-12  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+425-an-ordered-item-s-separator-width-sets-its-content-column-13  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+837-an-ambiguous-first-marker-keeps-its-own-dialect-2  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+837-an-ambiguous-first-marker-keeps-its-own-dialect  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+868-a-list-marker-between-an-item-s-columns-is-a-sibling-only-on-every-axis-5  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+90-list-item-attributes-3  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+926-a-single-capital-with-a-dot-needs-two-spaces-12  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.

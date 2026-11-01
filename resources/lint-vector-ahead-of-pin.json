@@ -28,5 +28,35 @@
   },
   "unclosed-code-fence/under-quote-paragraph": {
     "actual": []
+  },
+  "list-marker-below-content-column/ordered-continuation": {
+    "message": "sibling item"
+  },
+  "list-marker-below-content-column/after-blank-same-kind": {
+    "message": "sibling item"
+  },
+  "list-marker-below-content-column/after-blank-continuing-number": {
+    "actual": []
+  },
+  "list-marker-below-content-column/same-kind-run": {
+    "message": "sibling item"
+  },
+  "list-marker-below-content-column/same-kind-rising": {
+    "actual": [[2, 2]]
+  },
+  "list-marker-below-content-column/same-kind-after-blank-run": {
+    "actual": [[3, 2]]
+  },
+  "list-marker-below-content-column/same-kind-past-an-item-paragraph": {
+    "message": "sibling item"
+  },
+  "list-marker-below-content-column/same-kind-nested": {
+    "message": "sibling item"
+  },
+  "list-marker-below-content-column/same-kind-in-a-quote": {
+    "message": "sibling item"
+  },
+  "list-marker-below-content-column/same-kind-letter-marker": {
+    "message": "sibling item"
   }
 }

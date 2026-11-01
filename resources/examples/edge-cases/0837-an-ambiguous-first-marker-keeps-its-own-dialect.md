@@ -4,13 +4,13 @@ page: edge-lists
 
 ## An ambiguous first marker keeps its own dialect
 
-A first marker that reads as a roman numeral and as a letter takes the PART 9 §11 N3 tie-break: roman when the next marker is the consecutive numeral, alpha when it is the consecutive letter, and otherwise roman for `i` and alpha for any other letter. A next marker outside that dialect starts a new list (carve#4351).
+A first marker that reads as a roman numeral and as a letter takes the PART 9 §11 N3 tie-break: roman when the next marker is the consecutive numeral, alpha when it is the consecutive letter, and otherwise roman for `i` and alpha for any other letter. A next marker outside that dialect starts a new list (carve#4351). A single uppercase letter with `.` takes two spaces before its content (carve#4811).
 
 :::: compare
 
 ```carve
-i. x
-b. y
+i.  x
+b.  y
 ```
 
 ```html
@@ -27,8 +27,8 @@ b. y
 :::: compare
 
 ```carve
-v. x
-ii. y
+v.  x
+ii.  y
 ```
 
 ```html
@@ -45,9 +45,9 @@ ii. y
 :::: compare
 
 ```carve
-I. x
-A. y
-B. z
+I.  x
+A.  y
+B.  z
 ```
 
 ```html

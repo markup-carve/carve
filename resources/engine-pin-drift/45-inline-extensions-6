@@ -1,0 +1,1 @@
+carve#4513: an extension's content closes at the `]` at bracket depth zero (superseding ruling 2026-11-01); the pinned carve-js build still closes at the first `]`.

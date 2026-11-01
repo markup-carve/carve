@@ -10,7 +10,7 @@ const noteBody = html => flat(html.match(/<li id="fn1">([\s\S]*)<\/li>\s*<\/ol>\
 const ddBody = html => flat(html.match(/<dd>([\s\S]*)<\/dd>/)[1])
 
 // A wider list before a narrower one left the walk's LAZY frame behind a space (carve#4259, fixed by #4275).
-const firsts = ['1. +', '1. a', '10. a', '1) a', '* - +', 'x\n\n  1. a', 'i. a']
+const firsts = ['1. +', '1. a', '10. a', '1) a', '* - +', 'x\n\n  1. a', 'i.  a']
 const seconds = ['- y', '* y', '- [ ] y', '- y\n    - z']
 const tails = ['tail', ' tail', 'tail\nmore', '> q']
 

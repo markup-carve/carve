@@ -72,28 +72,48 @@ const HIDING = /[`$\\[\]<%\n\r\p{M}\u200D\uFE00-\uFE0F]/u
 // A code span or bracket run that closes and holds no brace cannot hide a
 // closer, so its characters do not count as hiding. Read left to right as the
 // atom table reads them; an unclosed code run ends the scan.
+const escapedAt = (source, at) => {
+  let n = 0
+  while (source[at - 1 - n] === '\\') n++
+  return n % 2 === 1
+}
 function opensExtension(source, at) {
   let j = at
   while (j > 0 && /[A-Za-z0-9_-]/.test(source[j - 1])) j--
   return j < at && source[j - 1] === ':' && /[A-Za-z_]/.test(source[j])
 }
+// For each `[`, the `]` an extension opened there closes at: the one at bracket
+// depth zero, or the first unescaped one when the `[` is unbalanced (carve#4513).
+let extensionCloses = { source: null, close: null }
+function extensionClose(source, at) {
+  if (extensionCloses.source !== source) {
+    const close = new Int32Array(source.length + 1).fill(-1)
+    const open = []
+    let unclosed = -1
+    for (let i = 0; i < source.length; i++) {
+      if (source[i] === '\\') i++
+      else if (source[i] === '[') open.push(i)
+      else if (source[i] === ']' && open.length) close[open.pop()] = i
+    }
+    for (let i = source.length - 1; i >= 0; i--) {
+      if (source[i] === ']' && !escapedAt(source, i)) unclosed = i
+      if (source[i] === '[' && close[i] === -1) close[i] = unclosed
+    }
+    extensionCloses = { source, close }
+  }
+  return extensionCloses.close[at]
+}
 function softHiding(source) {
   const soft = new Uint8Array(source.length)
   const braces = [0]
   for (let i = 0; i < source.length; i++) braces.push(braces[i] + (source[i] === '{' || source[i] === '}' ? 1 : 0))
-  // An inline extension ends at its first unescaped `]`, so no bracket in it
-  // pairs.
-  const nextClose = new Int32Array(source.length + 1).fill(-1)
-  for (let i = source.length - 1; i >= 0; i--) {
-    nextClose[i] = source[i] === ']' && source[i - 1] !== '\\' ? i : nextClose[i + 1]
-  }
   const open = []
   for (let i = 0; i < source.length; ) {
     const c = source[i]
     if (c === '\\') {
       i += 2
-    } else if (c === '[' && opensExtension(source, i) && nextClose[i] !== -1) {
-      i = nextClose[i] + 1
+    } else if (c === '[' && opensExtension(source, i) && extensionClose(source, i) !== -1) {
+      i = extensionClose(source, i) + 1
     } else if (c === '`') {
       let n = 1
       while (source[i + n] === '`') n++
@@ -268,6 +288,8 @@ const g = ohm.grammar(`CarveStack <: ${core.name} {
   bracketAtom = "\\u0000"
   codeClosed += codeLong
   codeLong = "\\u0000" "\\u0000" "\\u0000"
+  extContent := extRun
+  extRun = "\\u0000"
   bracketless = "\\u0000"
 ${BRACKET_RULES.map((rule) => `  ${rule} := ~bracketless ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1]}`).join('\n')}
 ${ATOM_RULES.map((rule) => `  ${rule} := overCapBracket | ${rule}Live\n  ${rule}Live = ~bracketless ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1]}`).join('\n')}
@@ -313,6 +335,21 @@ markupContent.eval = function (state) {
   return false
 }
 g.rules.markupContent.body = markupContent
+// The core rule recurses per `[`, so a long chain would overflow the stack.
+const extRun = new ohm.pexprs.Terminal('')
+extRun.eval = function (state) {
+  const { inputStream } = state
+  const pos = inputStream.pos
+  const close = extensionClose(inputStream.source, pos - 1)
+  if (close === -1) {
+    state.processFailure(pos, this)
+    return false
+  }
+  inputStream.pos = close
+  state.pushBinding(new TerminalNode(close - pos), pos)
+  return true
+}
+g.rules.extRun.body = extRun
 let lastCloser = { source: null, at: -1, deep: false }
 // A chain of openers that each recurse into the next before one closes
 // (carve#4236) is read right to left first, so each opener finds the ones
@@ -1354,10 +1391,11 @@ const sem = g.createSemantics().addOperation('h', {
       const src = this.source.sourceString
       const at = this.source.startIdx
       const end = this.source.endIdx
-      const prev = at > 0 ? src[at - 1] : ''
+      const pi = quotePrevIdx(src, at, true)
+      const prev = src[pi - 1] ?? ''
       const prevIsSpace = prev === '' || isTypographyFlank(prev) ||
-        (FLAG_OPENERS.has(prev) && (at === 1 || isTypographyFlank(src[at - 2])))
-      const nextIsSpace = flankAfter(src, end)
+        (FLAG_OPENERS.has(prev) && (pi === 1 || isTypographyFlank(src[quotePrevIdx(src, pi - 1, true) - 1])))
+      const nextIsSpace = flankAfter(src, quoteNextIdx(src, end, true))
       if (prevIsSpace && !nextIsSpace) return escapeHtml(this.sourceString)
     }
     // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot allocateDashes):
@@ -1568,23 +1606,24 @@ function guardedBy(d, prev) {
 function bareCloser(d, prev, next) {
   return prev !== undefined && !isWs(prev) && (next === undefined || !isAlnum(next))
 }
-// A `/` with a word character on each side, read on source, so an escaped slash
-// does not count. A trailing extender belongs to the character before it.
-function isPathSlash(src, at) {
+// A delimiter with a word character on each side, read on source, so an escaped
+// one does not count. A trailing extender belongs to the character before it.
+function isIntraword(src, at) {
   let p = at - 1
   while (p > 0 && extendsGrapheme(src, p)) p--
   return isAlnum(charBefore(src, p + 1)) && isAlnum(charAfter(src, at + 1))
 }
-// A word holds its intraword `/` as text, so the literal slashes are read from
+// A word holds its intraword `_` as text, so the literal delimiters are read from
 // the words and the candidates between the span's two delimiters (CARVE-P9-043 R2).
-function holdsPathSlash(toks, from, to, src) {
+// A name's `_` belongs to the marker, not to this region's text.
+function holdsOwnDelimiter(toks, from, to, d, src) {
   for (let i = from + 1; i < to; i++) {
     const t = toks[i]
     if (t.dead || t.hidden) continue
-    if (t.k === 'd' && t.ch === '/' && isPathSlash(src, t.at)) return true
+    if (t.k === 'd' && t.ch === d && !t.ofName && isIntraword(src, t.at)) return true
     if (t.wordAt === undefined) continue
-    for (let at = src.indexOf('/', t.wordAt); at !== -1 && at < t.wordEnd; at = src.indexOf('/', at + 1)) {
-      if (isPathSlash(src, at)) return true
+    for (let at = src.indexOf(d, t.wordAt); at !== -1 && at < t.wordEnd; at = src.indexOf(d, at + 1)) {
+      if (isIntraword(src, at)) return true
     }
   }
   return false
@@ -1601,9 +1640,11 @@ function forcedUnder(alt) {
 // E1 CLASSIFY for one candidate.
 function classify(t, src) {
   if (t.k !== 'd') return
-  const prev = charBefore(src, t.at)
-  const next = charAfter(src, t.at + 1)
-  if (extendsGrapheme(src, t.at + 1)) {
+  // A braced comment counts as nothing for these guards (carve#4719).
+  const prev = charBefore(src, quotePrevIdx(src, t.at, true))
+  const nextAt = quoteNextIdx(src, t.at + 1, true)
+  const next = charAfter(src, nextAt)
+  if (extendsGrapheme(src, nextAt)) {
     t.canOpen = t.canClose = false
     return
   }
@@ -2058,13 +2099,19 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
   const openMap = new Map() // open index -> close index
   // A `_` or `/` guard is markup only while it is an open entry where the
   // opener after it stands, whether or not it closes later (carve#3973 X1).
-  const guarded = (j, ch, at) => at > contentAt && guardedBy(ch, src[at - 1]) &&
-    !(toks[j - 1]?.k === 'd' && toks[j - 1].at === at - 1 && openers.includes(j - 1))
+  const guarded = (j, ch, at) => {
+    const pi = quotePrevIdx(src, at, true)
+    if (pi <= contentAt || !guardedBy(ch, src[pi - 1])) return false
+    let left = j - 1
+    while (left >= 0 && toks[left].at === undefined) left--
+    return !(toks[left]?.k === 'd' && toks[left].at === pi - 1 && openers.includes(left))
+  }
   const delimAt = (k, ch) => toks[k] !== undefined && (toks[k].k === 'd' ? toks[k].ch === ch : toks[k].own === ch)
   // A combined closer token: a `*` not after whitespace, then a `/` that is
   // not followed by alnum.
   const closerToken = (k) => delimAt(k, '*') && delimAt(k + 1, '/') && toks[k + 1].at === toks[k].at + 1 &&
-    !isWs(charBefore(src, toks[k].at)) && !isAlnum(charAfter(src, toks[k].at + 2)) && !extendsGrapheme(src, toks[k].at + 2)
+    !isWs(charBefore(src, quotePrevIdx(src, toks[k].at, true))) && !isAlnum(charAfter(src, quoteNextIdx(src, toks[k].at + 2, true))) &&
+    !extendsGrapheme(src, quoteNextIdx(src, toks[k].at + 2, true))
   // The first closer token at or after each index, built right to left once,
   // so each combined opener's lookahead is constant time.
   const nextCloser = new Array(toks.length + 1).fill(-1)
@@ -2073,8 +2120,9 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
   // whether the opener forms: a comment inside the shape ends there (carve#4042).
   const shapeCloses = new Set()
   for (let k = 0; k + 1 < toks.length; k++) {
-    if (delimAt(k, '/') && delimAt(k + 1, '*') && toks[k + 1].at === toks[k].at + 1 && !isAlnum(charBefore(src, toks[k].at)) &&
-      !isWs(src[toks[k].at + 2]) && !extendsGrapheme(src, toks[k].at + 2) && nextCloser[k + 2] !== -1) shapeCloses.add(nextCloser[k + 2])
+    const after = quoteNextIdx(src, toks[k]?.at + 2, true)
+    if (delimAt(k, '/') && delimAt(k + 1, '*') && toks[k + 1].at === toks[k].at + 1 && !isAlnum(charBefore(src, quotePrevIdx(src, toks[k].at, true))) &&
+      !isWs(src[after]) && !extendsGrapheme(src, after) && nextCloser[k + 2] !== -1) shapeCloses.add(nextCloser[k + 2])
   }
   const hideBlock = (block, hidden) => {
     for (let b = block.blockFrom; b < block.blockTo; b++) toks[b].hidden = hidden
@@ -2105,8 +2153,8 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
     // THE COMBINED TOKEN: an opener with a closer token ahead in its region
     // pushes one entry; without one its `/` and `*` are two bare candidates.
     if (d === '/' && !t.bare && delimAt(j + 1, '*') && toks[j + 1].at === t.at + 1 &&
-      (t.k === 'd' ? t.canOpen : bareOpener('/', t.at > contentAt ? charBefore(src, t.at) : undefined, charAfter(src, t.at + 1))) &&
-      !guarded(j, '/', t.at) && !isWs(src[t.at + 2]) && !extendsGrapheme(src, t.at + 2) &&
+      (t.k === 'd' ? t.canOpen : bareOpener('/', quotePrevIdx(src, t.at, true) > contentAt ? charBefore(src, quotePrevIdx(src, t.at, true)) : undefined, charAfter(src, t.at + 1))) &&
+      !guarded(j, '/', t.at) && !isWs(src[quoteNextIdx(src, t.at + 2, true)]) && !extendsGrapheme(src, quoteNextIdx(src, t.at + 2, true)) &&
       !openers.some((oi) => holds(oi, '/') || holds(oi, '*'))) {
       let close = nextCloser[j + 2]
       if (close !== -1 && toks[close].at === t.at + 2) close = nextCloser[close + 1]
@@ -2163,8 +2211,8 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
           j++
           continue
         }
-        // The path decline is local: entries above stay open, this closer is text.
-        if (d === '/' && t.k === 'd' && holdsPathSlash(toks, openers[k], j, src)) {
+        // The decline is local: entries above stay open, this closer is text.
+        if (t.k === 'd' && holdsOwnDelimiter(toks, openers[k], j, d, src)) {
           openers.splice(k, 1)
           continue
         }
@@ -2235,15 +2283,17 @@ function applyDashFlanks(toks, openMap, src, contentAt, spanContent, contentEnd)
   for (const t of toks) {
     if (!t.dash) continue
     const { at, raw } = t.dash
+    const pi = quotePrevIdx(src, at, true)
+    const ni = quoteNextIdx(src, at + raw.length, true)
     const startsContent = (p) => opens.has(p - 1) || (spanContent && p === contentAt)
     // An opening `(`, `"` or `'` at the start of content is the flag's whitespace.
-    const atStart = startsContent(at) || (FLAG_OPENERS.has(src[at - 1]) && startsContent(at - 1))
-    const atEnd = closes.has(at + raw.length) || (spanContent && at + raw.length === contentEnd)
+    const atStart = startsContent(pi) || (FLAG_OPENERS.has(src[pi - 1]) && startsContent(quotePrevIdx(src, pi - 1, true)))
+    const atEnd = closes.has(ni) || (spanContent && ni === contentEnd)
     if (!atStart && !atEnd) continue
-    const prev = at > 0 ? src[at - 1] : ''
+    const prev = src[pi - 1] ?? ''
     const prevIsSpace = atStart || prev === '' || isTypographyFlank(prev) ||
-      (FLAG_OPENERS.has(prev) && (at === 1 || isTypographyFlank(src[at - 2])))
-    const nextIsSpace = atEnd || flankAfter(src, at + raw.length)
+      (FLAG_OPENERS.has(prev) && (pi === 1 || isTypographyFlank(src[quotePrevIdx(src, pi - 1, true) - 1])))
+    const nextIsSpace = atEnd || flankAfter(src, ni)
     t.h = prevIsSpace && !nextIsSpace ? escapeHtml(raw) : dashGlyphs(raw.length)
   }
 }
@@ -2546,9 +2596,13 @@ export function renderBlockAttrs(lists, structural = []) {
 // apostrophe ('70s, '24).
 // Comments emit nothing; step back over them when checking an emphasis boundary.
 let readComments = { src: '', opens: new Map() }
-function quotePrevIdx(src, at) {
+// A caption number stands behind a comment no author can spell, because ingest
+// strips U+E000: it renders nothing, but it is a flank for the guards.
+export const NUMBER_JOINER = '{%\uE000%}'
+function quotePrevIdx(src, at, stopAtJoiner = false) {
   let i = at
   while (i >= 4 && src[i - 1] === '}' && src[i - 2] === '%') {
+    if (stopAtJoiner && src.startsWith(NUMBER_JOINER, i - NUMBER_JOINER.length)) break
     // The comment the grammar read opens at the leftmost `{%`, not the nearest.
     const read = readComments.src === src ? readComments.opens.get(i) : undefined
     const open = read ?? src.lastIndexOf('{%', i - 3)
@@ -2562,13 +2616,15 @@ function quotePrevIdx(src, at) {
 // well as before it (carve#4719): `"a-"{%%}` closes as `"a-"` does.
 // The closer search is cached, so a run of unclosed `{%` stays linear.
 let commentCloser = { src: null, from: 0, at: -1 }
-function quoteNextIdx(src, at) {
+function quoteNextIdx(src, at, stopAtJoiner = false) {
   let i = at
+  if (stopAtJoiner && src.startsWith(NUMBER_JOINER, i)) return i
   while (src[i] === '{' && src[i + 1] === '%' && !extendsGrapheme(src, i + 2)) {
     const c = commentCloser
     if (c.src !== src || i + 2 < c.from || (c.at >= 0 && i + 2 > c.at)) commentCloser = { src, from: i + 2, at: src.indexOf('%}', i + 2) }
     if (commentCloser.at < 0) break
     i = commentCloser.at + 2
+    if (stopAtJoiner && src.startsWith(NUMBER_JOINER, i)) break
   }
   return i
 }
@@ -3235,10 +3291,13 @@ const capSem = g.createSemantics().addOperation('capIdx', {
         const alt = c.child(0)
         const at = alt.source.startIdx
         if (alt.ctorName === 'wordSlash') {
-          return [{ k: 'word', at }, { k: 'd', ch: '/', at: alt.child(1).source.startIdx }]
+          const head = alt.child(0)
+          const word = head.ctorName === 'word' ? { wordAt: at, wordEnd: head.source.endIdx } : {}
+          return [{ k: 'word', at, ...word }, { k: 'd', ch: '/', at: alt.child(1).source.startIdx }]
         }
         const ch = alt.ctorName === 'litDelim' ? alt.child(0).sourceString : ''
-        return STACK_DELIMS.has(ch) ? { k: 'd', ch, at } : { k: alt.ctorName, at }
+        if (STACK_DELIMS.has(ch)) return { k: 'd', ch, at }
+        return alt.ctorName === 'word' ? { k: 'word', at, wordAt: at, wordEnd: alt.source.endIdx } : { k: alt.ctorName, at }
       }).flat()
     const toks = build()
     const openMap = pairDelims(toks, this.source.sourceString)

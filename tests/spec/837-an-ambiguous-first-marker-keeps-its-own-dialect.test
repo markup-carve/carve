@@ -1,8 +1,8 @@
 An ambiguous first marker keeps its own dialect
 
 ```
-i. x
-b. y
+i.  x
+b.  y
 .
 <ol type="i">
   <li>x</li>
@@ -13,8 +13,8 @@ b. y
 ```
 
 ```
-v. x
-ii. y
+v.  x
+ii.  y
 .
 <ol type="a" start="22">
   <li>x</li>
@@ -25,9 +25,9 @@ ii. y
 ```
 
 ```
-I. x
-A. y
-B. z
+I.  x
+A.  y
+B.  z
 .
 <ol type="I">
   <li>x</li>
