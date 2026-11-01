@@ -1,0 +1,67 @@
+A column-0 line after an unclosed fence in a description in an item leaves the list
+
+````
+- :: t
+  : ```
+    a
+z
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <pre><code>a
+</code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>z</p>
+````
+
+````
+- :: t
+  : - ```
+z
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>z</p>
+````
+
+````
+- - :: t
+    : ```
+      a
+z
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <dl>
+          <dt>t</dt>
+          <dd>
+            <pre><code>a
+</code></pre>
+          </dd>
+        </dl>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>z</p>
+````

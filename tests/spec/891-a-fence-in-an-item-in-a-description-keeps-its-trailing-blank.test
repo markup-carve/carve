@@ -1,0 +1,65 @@
+A fence in an item in a description keeps its trailing blank
+
+````
+:: t
+: . ```
+     ```
+
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ol>
+      <li>
+        <pre><code> ```
+
+</code></pre>
+      </li>
+    </ol>
+  </dd>
+</dl>
+````
+
+````
+:: t
+: - ```
+    x
+
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code>x
+
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+````
+
+````
+- :: t
+  : - ```
+      x
+
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <ul>
+          <li>
+            <pre><code>x
+
+</code></pre>
+          </li>
+        </ul>
+      </dd>
+    </dl>
+  </li>
+</ul>
+````

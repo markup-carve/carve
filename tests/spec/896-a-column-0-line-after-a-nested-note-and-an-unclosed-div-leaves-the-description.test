@@ -1,0 +1,31 @@
+A column-0 line after a nested note and an unclosed div leaves the description
+
+```
+:: t
+: [^1]: :
+    [^4]: p
+    ::::
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>z</p>
+```
+
+```
+:: t
+: [^1]: :
+    [^4]: p
+    ::::
+- z
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<ul>
+  <li>z</li>
+</ul>
+```
