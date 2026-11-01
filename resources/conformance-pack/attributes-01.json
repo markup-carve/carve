@@ -20,7 +20,7 @@
 {"id":"attributes-02d824fa1265","source":"- a\n\n\n  {.x}\ntail\n","html":"<ul>\n  <li>a</li>\n</ul>\n<p>tail</p>"},
 {"id":"attributes-031e60c290f0","source":"1. {k==v}{+i+}\n{k==v}{+i+}\n","html":"<ol>\n  <li>{k==v}<ins>i</ins>\n{k==v}<ins>i</ins></li>\n</ol>"},
 {"id":"attributes-0353016df81b","source":"{k=v}{+i+}{.c\n","html":"<p>{k=v}<ins>i</ins>{.c</p>"},
-{"id":"attributes-039947672a58","source":"- a\n\n  {.x}\n  ```\n  code\n  ````\n[a]: /u {.c}\n\n- c\n","html":"<ul>\n  <li>a\n    <pre class=\"x\"><code>code\n</code></pre>\n  </li>\n</ul>\n<ul>\n  <li>c</li>\n</ul>"},
+{"id":"attributes-039947672a58","source":"- a\n\n  {.x}\n  ```\n  code\n  ````\n[a]: /u {.c}\n\n- c\n","html":"<ul>\n  <li><p>a</p>\n    <pre class=\"x\"><code>code\n</code></pre>\n  </li>\n  <li><p>c</p></li>\n</ul>"},
 {"id":"attributes-03dd9056d2b0","source":"[[a </#x~s~]> b]{.c}\n","html":"<p>[<span class=\"c\">a &lt;/#x~s~]&gt; b</span></p>"},
 {"id":"attributes-03e85bde5458","source":"b\"}\n*x*{k=\"a\n*x*{k=\"a\n","html":"<p>b”}\n<strong>x</strong>{k=“a\n<strong>x</strong>{k=“a</p>"},
 {"id":"attributes-03f127a36662","source":"[x]{.a.b}\n. \n- b\n{.x}\n","html":"<p>[x]{.a.b}\n.\n- b</p>"},

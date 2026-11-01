@@ -153,7 +153,7 @@
 {"id":"lazy-20d907d6aae5","source":"> > # H\n> > # H\ntaill\n","html":"<blockquote>\n  <blockquote>\n    <h1 id=\"H\">H</h1>\n    <h1 id=\"H-2\">H</h1>\n  </blockquote>\n</blockquote>\n<p>taill</p>"},
 {"id":"lazy-2113d2a35d69","source":":: t\n : ::\ny\n","html":"<dl>\n  <dt>t</dt>\n  <dd>::\ny</dd>\n</dl>"},
 {"id":"lazy-2122b962349e","source":":: term\n:  definition\n    > q\nt``ail\n","html":"<dl>\n  <dt>term</dt>\n  <dd>\n    <p>definition</p>\n    <blockquote><p>q\nt<code>ail</code></p></blockquote>\n  </dd>\n</dl>"},
-{"id":"lazy-21cb87fd7067","source":":: t\n%%%tail\n:  > a\n   > + b |\ntail\n","html":"<dl>\n  <dt>t</dt>\n</dl>\n<p>:  &gt; a</p>\n<blockquote><p>+ b |\ntail</p></blockquote>"},
+{"id":"lazy-21cb87fd7067","source":":: t\n%%%tail\n:  > a\n   > + b |\ntail\n","html":"<dl>\n  <dt>t</dt>\n  <dd>\n    <blockquote><p>a</p></blockquote>\n  </dd>\n</dl>\n<blockquote><p>+ b |\ntail</p></blockquote>"},
 {"id":"lazy-21ed5a2aad1f","source":"> - para\n>   [^f]:*  n\nta~s~il\n","html":"<blockquote>\n  <ul>\n    <li>para\n[^f]:*  n\nta~s~il</li>\n  </ul>\n</blockquote>"},
 {"id":"lazy-220338b46eb4","source":"> %% hidden\ntail\n\n","html":"<blockquote>\n\n</blockquote>\n<p>tail</p>"},
 {"id":"lazy-224b3879682d","source":"- - > q\n","html":"<ul>\n  <li>\n    <ul>\n      <li>\n        <blockquote><p>q</p></blockquote>\n      </li>\n    </ul>\n  </li>\n</ul>"},

@@ -165,7 +165,10 @@
         owner, it takes the `line_comment` / `fenced_comment` row of T there,
         and below a container's content column it does not fold and closes
         that container (S5). A comment between two sibling items closes the
-        first one and leaves the list open for the second.
+        first one and leaves the list open for the second. Every invisible
+        line does the same (PART 9 §10 CARVE-P9-013): a reference or
+        abbreviation definition between two items, or between two entries of
+        a description list, leaves that list open (carve#4716).
 
      S2 OWNER. Walk the open frames from the outside in. A quote frame
         consumes its marker; any other frame consumes indentation up to its

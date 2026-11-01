@@ -1714,6 +1714,24 @@ function isDefinitionOrAttributeLine(line) {
   return FOOTNOTE_DEF.test(line) || isLinkDef(line) || !!tryAttrLine([line], 0)
 }
 
+// CARVE-P9-013: one class between siblings (carve#4716). An abbreviation definition is one only at document level.
+function invisibleSiblingLine(rest, top) {
+  return COMMENT_LINE.test(rest) || isLinkDef(rest) && !FOOTNOTE_DEF.test(rest) || top && ABBR_DEF.test(rest)
+}
+
+// A definition skipped between siblings still registers, in source order.
+function registerSkippedDefinitions(lines, from, to, restOf, state, top) {
+  for (let k = from; k < to; k++) {
+    const rest = restOf(k)
+    if (COMMENT_LINE.test(rest)) {
+      const fence = COMMENT_FENCE_BODY.exec(rest)?.[1]
+      if (fence) while (k + 1 < to && COMMENT_FENCE_BODY.exec(restOf(k + 1))?.[1] !== fence) k++
+      continue
+    }
+    if (rest !== '' && invisibleSiblingLine(rest, top)) parseBlocks([rest], state, top)
+  }
+}
+
 function isBlank(line) {
   return /^[ \t]*$/.test(line)
 }
@@ -5539,17 +5557,26 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           node.items.push({ ddBlocks: bodyLines.length ? parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, undefined, undefined, undefined, descriptionOwnerColumn ?? sourceBodyColumn) : [] })
           continue
         }
-        if (isBlank(cur0)) {
-          // A blank line between entries. A blank before another `:  `/`:: `
-          // entry is a separator (djot parity) -- consume it; otherwise it ends
-          // the list.
-          let look = i + 1
-          while (look < n && isBlank(lines[look])) look++
+        // A blank or invisible line between entries is skipped when the next
+        // entry follows it (djot parity; CARVE-P9-013, carve#4716); otherwise
+        // it ends the list.
+        const restAt = (k) => (lines[k] ?? '').startsWith(LAZY) ? null : indentCols(lines[k] ?? '').rest
+        const invisibleAt = (k) => restAt(k) !== null && invisibleSiblingLine(restAt(k), top)
+        if (isBlank(cur0) || invisibleAt(i)) {
+          let look = i
+          while (look < n && (isBlank(lines[look]) || invisibleAt(look))) {
+            const fence = COMMENT_FENCE.exec(restAt(look) ?? '')?.[1]
+            let close = -1
+            for (let k = look + 1; fence && k < n; k++) {
+              if (COMMENT_FENCE.exec(restAt(k) ?? '')?.[1].length === fence.length) { close = k; break }
+            }
+            look = close === -1 ? look + 1 : close + 1
+          }
           if (look < n && isEntry(lines[look] ?? '')) {
+            registerSkippedDefinitions(lines, i, look, (k) => restAt(k) ?? '', state, top)
             i = look
             continue
           }
-          break
         }
         break
       }
@@ -6573,7 +6600,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- lists ---
     if (matchMarkerAt(ind(i))) {
       const before = blocks.length
-      i = parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem)
+      i = parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top)
       if (blocks.length > before) {
         if (pending.length) flushAttrs(blocks[before])
         // PART 9 SS17 L7: the consumed boolean loosens the list it rides.
@@ -7237,7 +7264,7 @@ function takeOneBlock(lines, start, state, column = 0, quoteHost = false) {
 }
 
 // --- lists: PART 9 SS11 N1-N3, SS17 L1-L4, SS24 C3/C4 ----------------------
-function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem) {
+function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top) {
   const n = lines.length
   while (i < n) {
     const head = matchMarkerAt(ind(i))
@@ -7253,7 +7280,7 @@ function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem
     if (head.isOrdered) {
       list.ord = { delim: head.delim, dialects: head.dialects }
     }
-    i = collectItems(lines, i, list, state, ind, meas, inItem)
+    i = collectItems(lines, i, list, state, ind, meas, inItem, top)
     finalizeOrdered(list)
     blocks.push(list)
     // a marker-mismatch sibling list continues the run (SS11 N1)
@@ -7367,7 +7394,7 @@ function sameAxes(list, head) {
   return (head.task !== undefined) === list.task
 }
 
-function collectItems(lines, i, list, state, ind, meas, inItem) {
+function collectItems(lines, i, list, state, ind, meas, inItem, top) {
   const n = lines.length
   const skipped = new Set()
   const nextVisible = (at) => {
@@ -7384,16 +7411,17 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     return count
   }
   const baseIndent = matchMarkerAt(ind(i)).indent
+  const invisibleAt = (k) => invisibleSiblingLine(ind(k).rest, top)
   const commentsBeforeSibling = (at) => {
-    if (at >= n || !COMMENT_LINE.test(ind(at).rest)) return at
-    // Comments are erased from layout, so blank lines on either side belong
-    // to the same run (PART 0 S1, CARVE-P9-014).
+    if (at >= n || !invisibleAt(at)) return at
+    // Invisible lines are erased from layout, so blank lines on either side
+    // belong to the same run (PART 0 S1, CARVE-P9-013, CARVE-P9-014).
     let run = 0
     for (let k = at - 1; k >= 0 && ind(k).rest === ''; k--) run++
     let blanks = run
     let longest = run
     let k = at
-    while (k < n && (ind(k).rest === '' || COMMENT_LINE.test(ind(k).rest))) {
+    while (k < n && (ind(k).rest === '' || invisibleAt(k))) {
       if (ind(k).rest === '') {
         blanks++
         longest = Math.max(longest, ++run)
@@ -7413,6 +7441,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     const next = matchMarkerAt(ind(k))
     if (!next || next.indent !== baseIndent || !sameAxes(list, next)) return at
     if (blanks > 0) list.tight = false
+    registerSkippedDefinitions(lines, at, k, (j) => ind(j).rest, state, top)
     return k
   }
   const sourceMarkerCol = ind(i).L?.col ?? ind(i).col
