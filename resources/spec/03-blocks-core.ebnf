@@ -6,8 +6,7 @@
 (* ATX (`#` prefix) only. Setext (underline) headings are intentionally
    NOT supported, matching djot: a `---` underline collides with the
    thematic break and frontmatter delimiter, reintroducing the ambiguity
-   djot removed and breaking Design Principle 1 ("one syntax, one
-   meaning"). *)
+   djot removed and giving one syntax two meanings. *)
 heading = atx_heading ;
 
 atx_heading = heading_first_line ;

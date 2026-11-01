@@ -158,7 +158,7 @@ link_text = {inline_element | text_run | literal_special} ;
    closes at the `]` in the value for the same reason `[t{# c #}{title="]"}x]`
    does. Without the destination in this set the `]` in
    `a [b [x](http://u/]) c` closed the outstanding `[` and the line went
-   literal, losing the link . *)
+   literal, losing the link. *)
 (* SEMANTIC CONSTRAINT (links never nest): a link MUST NOT contain another
    link. The link text is inline content, so parsing it may yield a link --
    written explicitly (`[[x](y)](z)`), as a crossref/auto_text_link, or

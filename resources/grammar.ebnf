@@ -628,8 +628,7 @@ blank_line = {whitespace}, newline ;
 (* ATX (`#` prefix) only. Setext (underline) headings are intentionally
    NOT supported, matching djot: a `---` underline collides with the
    thematic break and frontmatter delimiter, reintroducing the ambiguity
-   djot removed and breaking Design Principle 1 ("one syntax, one
-   meaning"). *)
+   djot removed and giving one syntax two meanings. *)
 heading = atx_heading ;
 
 atx_heading = heading_first_line ;
@@ -1362,8 +1361,7 @@ continuation_cell = {space}, cell_content, {space} ;
       not widen what a row is: `| a | b`, with content dangling after the last
       pipe, is prose exactly as before. An attribute value is one of those
       positions: a writer spells a value holding `|` quoted, as
-      `{k="a\|b"}`, and the quoted value reads the escape back as the pipe
-. *)
+      `{k="a\|b"}`, and the quoted value reads the escape back as the pipe. *)
 
 (* Row-level attributes: a `{…}` attribute block GLUED to the row's closing `|`
    (no intervening space) sets the row's `<tr>` attributes -- the row-level twin
@@ -1539,7 +1537,7 @@ caption_slot = [blank_line], caption ;
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
    placeholder. "Bare" = a `#` that does NOT begin a tag (a `#`
    followed by whitespace, `:`, `.`, end-of-caption, or any
-   non-tag-name character). `#word` stays a tag (PART 9 §19). `\#` is
+   non-tag-name character). `#word` stays a tag (PART 9 §7). `\#` is
    a literal `#`, never a placeholder. Only the first bare `#` is a
    placeholder; later bare `#` render literally. A `#` INSIDE inline
    markup (emphasis, link, span) is NOT a placeholder -- put it in the
@@ -2100,7 +2098,7 @@ link_text = {inline_element | text_run | literal_special} ;
    closes at the `]` in the value for the same reason `[t{# c #}{title="]"}x]`
    does. Without the destination in this set the `]` in
    `a [b [x](http://u/]) c` closed the outstanding `[` and the line went
-   literal, losing the link . *)
+   literal, losing the link. *)
 (* SEMANTIC CONSTRAINT (links never nest): a link MUST NOT contain another
    link. The link text is inline content, so parsing it may yield a link --
    written explicitly (`[[x](y)](z)`), as a crossref/auto_text_link, or
@@ -3844,11 +3842,10 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       the PRIMARY guard. As a SECONDARY DoS bound, implementations MUST
       enforce a FINITE include-depth limit; the RECOMMENDED default is at
       least 16 (a small, human-scale nesting bound, far under the structural
-      MAX_NESTING = 200 of PART 9 §25) and the host MAY configure it. No exact hard
+      MAX_NESTING_DEPTH = 200 of PART 9 §25) and the host MAY configure it. No exact hard
       constant is pinned. A directive at greater depth is left literal with
-      a Warning. Total expanded output is charged against the same per-
-      render byte budget as other amplifying features -- `max(1 MB,
-      8 x input length)` (PART 9 §25); once exceeded, further expansion degrades
+      a Warning. Total expanded output is charged against a per-render byte budget of
+      `max(1 MB, 8 x input length)`; once exceeded, further expansion degrades
       to the literal directive with a Warning. The byte budget bounds the
       expanded OUTPUT; it does NOT bound the WORK done to produce it,
       because a target is resolved before its size is known and a document
@@ -5353,7 +5350,7 @@ EOF = (* end of file *) ;
       DEPTH. Bare and braced spans share the nesting cap; a braced span over
       it stays literal as a whole (§22).
 
-      LINEAR TIME (Design Principle 1, carve#3936). The result MUST be
+      LINEAR TIME (carve#3936). The result MUST be
       computed in time linear in the block; reading a range again once per
       failed braced or editorial opener does not meet this. Two facts make
       it possible. A nested reading depends only on where it starts, so each
@@ -6007,7 +6004,7 @@ EOF = (* end of file *) ;
       over, inside an unquoted VALUE (`{k=a:b}`), which `unquoted_value` admits.
 
    15. BLOCK ATTRIBUTE LINES -- OPERATIONAL SEMANTICS (governs
-      `block_attributes` in PART 2; matches djot). STATE: pending := the
+      `block_attributes` in PART 4; matches djot). STATE: pending := the
       ordered list of collected attribute blocks not yet attached.
       A1 COLLECT. A `{…}` alone on a line (the `}` may arrive on a later
          line, A5) that parses as a valid attribute list appends to
@@ -6272,7 +6269,7 @@ EOF = (* end of file *) ;
          tight and its other paragraphs stay bare. The attributes belong on
          the paragraph's own element, so they are neither dropped nor moved
          to the `<li>`. A description body that holds one paragraph does the
-         same (CARVE-P9-067): an attributed paragraph renders as `<p>` inside
+         same (PART 12 §8): an attributed paragraph renders as `<p>` inside
          the `<dd>`, and an unattributed one stays bare.
 
              - {.c}            ->  <ul><li><p class="c">text</p></li></ul>
@@ -6363,7 +6360,7 @@ EOF = (* end of file *) ;
          second PARAGRAPH (blank + indented plain prose), or a blank line
          BETWEEN items, loosens. An image-only or display-math paragraph counts
          as a paragraph here, promoted or captioned (corpus 618). The blank line is still required to START
-         the block, so recognition and the uniformity principle are
+         the block, so block recognition is
          unchanged -- only the tight/loose RENDERING differs (djot renders
          these loose). Pinned by corpus compact-list-blocks.
       L3 CONTINUATION MARKER `+` -- Carve addition. PART 0 S2 and its `+`
@@ -6657,7 +6654,7 @@ EOF = (* end of file *) ;
 
    ============================================================================ *)
 (* ============================================================================
-   21. TRAILING LINE COMMENTS -- NORMATIVE [CARVE-P9-041] (governs `inline_comment` in PART 3).
+   21. TRAILING LINE COMMENTS -- NORMATIVE [CARVE-P9-041] (governs `inline_comment` in PART 2).
       - A `%%` token is a trailing comment marker only when the character
         immediately before it is a space or it starts the
         inline run (its first content character after leading whitespace).
@@ -6723,7 +6720,7 @@ EOF = (* end of file *) ;
       - A WHOLE OPENER (CARVE-P3-025). `{%` followed by a grapheme_extender
         opens nothing and is text, like every braced opener.
       - UNTERMINATED STAYS LITERAL. `a {% oops` renders the braces (matching
-        Djot, and the same visible-failure principle as `- {.notattr} Milk`).
+        Djot, and the visible literal fallback of `- {.notattr} Milk`.
       - VERBATIM CONTEXTS ARE OPAQUE, as for `%%` (§21): a code span or raw
         inline passes `{%` through.
       - TRANSPARENT TO INLINE STRUCTURE. A comment inside an emphasis run does
@@ -6927,7 +6924,7 @@ EOF = (* end of file *) ;
         CARVE-P11-020.
 
         A TRAILING COMMENT IS A DIFFERENT CONSTRUCT and this clause does not
-        reach it. `x %% secret` is `inline_comment` (PART 3, CARVE-P9-041), not
+        reach it. `x %% secret` is `inline_comment` (PART 2, CARVE-P9-041), not
         `comment_line`, and CARVE-P9-041's verbatim rule governs it: inside a verbatim
         run there is no comment there at all, only two percent characters in
         content. The asymmetry is deliberate: an engine may leave a `%%`
@@ -7526,7 +7523,7 @@ EOF = (* end of file *) ;
    footnote strings.
 
    AN EXTENSION WRITES INTO THE SAME MAP -- NORMATIVE [CARVE-P9-064]. The map is the
-   renderer's, not core's: Extensions §1.5 states which strings an EXTENSION
+   renderer's, not core's: docs/extension-contract.md §1.5 states which strings an EXTENSION
    contributes to it, and those keys are part of the same map a host passes
    once. So the list above is what CORE defines and not the whole map an engine
    honors -- `indexBackref`, `tabsGroup` and `codeGroup` are honored beside the
@@ -7549,7 +7546,7 @@ EOF = (* end of file *) ;
    the renderer derives for that element, and KEEPS every other one. It is the
    rule already applied to a `<th>`'s generated `scope` and to a generated
    `colspan` / `rowspan`, and it governs every string this clause and
-   Extensions §1.5 make engine-written: the accessible name on an untitled
+   docs/extension-contract.md §1.5 make engine-written: the accessible name on an untitled
    admonition, on an endnotes section, on a footnote backlink, on a tab set and
    on a `css`-mode tab panel, together with the `role` that accompanies each.
 
@@ -7594,7 +7591,7 @@ EOF = (* end of file *) ;
    a `<section>` at all. So unwrapping it removes nothing an author wrote, and
    an importer does not report the unwrapping -- not as `element-unwrapped`, and
    not as an `attribute-dropped` naming the `doc-endnotes` role or the
-   `endnotes` name that came with it..
+   `endnotes` name that came with it.
 
    THE IMPORT'S OUTCOME DOES NOT CHANGE THE ANSWER. Derivation is a property of
    the element being READ, not of what the import goes on to do with it. Both
@@ -7678,7 +7675,7 @@ EOF = (* end of file *) ;
       duplicate precedence, hoisting and container rules apply unchanged.
       Unresolved -> the bracketed run renders as literal source text; in a
       table cell that source is the cell content after the `\|` unescape
-      (PART 4 table cells, carve#4718), so `| [a\|b][m] |` gives `[a|b][m]`. Carve
+      (PART 2 table cells, carve#4718), so `| [a\|b][m] |` gives `[a|b][m]`. Carve
       has NO shortcut reference: a bare [label] or ![alt] never resolves
       (PART 9 §14). A collapsed image `![alt][]` takes its alt text as the
       label, so the alt text must be non-empty; the full `![alt][ref]` form
@@ -7718,7 +7715,7 @@ EOF = (* end of file *) ;
       that names nothing is not retried as heading prose and renders literally.
       ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, like the
       heading: `# *bold* heading` and `[*bold* heading][]` both contribute
-      `bold heading` after inline markup is stripped. The four normalizations
+      `bold heading` after inline markup is stripped. The three normalizations
       above apply to that plain text.
       VISIBLE LEAVES STAY VISIBLE. An autolink contributes its display text
       and an image contributes its alternative text to both the slug and this
@@ -7854,7 +7851,7 @@ EOF = (* end of file *) ;
       numbered caption's label and number, and the literal an unresolved
       cross-reference renders (R4, carve#4742).
       Expansion follows PART 9 §25 RESOURCE BOUNDS.
-   R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
+   R4 CROSSREFS. </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
       spelling of an id resolves; corpus 15-heading-ids), then captionIds for numbered captions and
       directly numbered display equations. Two headings with one explicit id
@@ -8590,7 +8587,7 @@ EOF = (* end of file *) ;
       S1 OFF BY DEFAULT on every surface. The default bytes are the ones §1
          to §12 and PART 11 pin, and enabling the option neither removes nor
          reorders anything those sections write.
-      S4 A VALUE OUTSIDE ITS GRAMMAR IS NOT A CARRIER, AND IT IS REPORTED.
+      S2 A VALUE OUTSIDE ITS GRAMMAR IS NOT A CARRIER, AND IT IS REPORTED.
          Nothing is rebuilt from it, and only that carrier falls with it, except
          that an invalid Markdown opener marker falls together with its closer
          (CARVE-P10-017, CARVE-P11-063). A Markdown marker set
@@ -8651,7 +8648,7 @@ EOF = (* end of file *) ;
 
       A CARRIER IS STRUCTURAL (§1 R1). It sits after the element's other
       structural attributes (`type`, `start`, `data-delim`, `href`, `src`,
-      `alt`, `title`; §16 R1) and before the first attribute the author wrote, and
+      `alt`, `title`; §1 R1) and before the first attribute the author wrote, and
       the placement does not vary by carrier:
         > {.c #i}
         > ***            -> <hr data-char="*" class="c" id="i">
@@ -12562,7 +12559,7 @@ EOF = (* end of file *) ;
 
       FRONTMATTER IS A BLOCK NODE, `type: "frontmatter"`, carrying:
         format   the info word on the opening fence (`frontmatter_format` in
-                 PART 2), or `"yaml"` when the fence carries none
+                 PART 1), or `"yaml"` when the fence carries none
         content  the text between the fences, VERBATIM
       It is the FIRST child when present, since that is where it is written.
 
@@ -12843,7 +12840,7 @@ EOF = (* end of file *) ;
          spellings that cannot be re-derived from the tree win over the ones
          that can.
       F5 `blankLinesBefore`, `blankLinesAfter` -- how many lines holding
-         nothing but PART 2 `whitespace` sit immediately before and after the
+         nothing but PART 7 `whitespace` sit immediately before and after the
          node's range within its own container. The count is the AUTHORED one,
          which is what makes it a fact rather than a re-derivation: the parse
          reads a longer run and a single blank the same way in most positions.
@@ -13772,7 +13769,7 @@ EOF = (* end of file *) ;
       and `citation_group.items` references it directly, so nothing about a
       group's payload moves.
 
-      A CITATION IS NOT AN INDEPENDENT INLINE. PART 7 makes the bracket the
+      A CITATION IS NOT AN INDEPENDENT INLINE. PART 3 makes the bracket the
       unit a source spells -- `citation_group = '[', ['+'], citation_item,
       {';', citation_item}, ']'` -- and an item's `prefix`, `locator` and
       `suffix` mean nothing outside one. No clause defines what a bare
@@ -14017,8 +14014,7 @@ EOF = (* end of file *) ;
       except where code-span padding stripping removed the joining space:
       that entry sits at the padding boundary, offset 0 for a join right
       after the opening backtick run and the value's length for one right
-      before the closing run
-. A
+      before the closing run. A
       `cellWraps` entry stands for the join a `cell_wrap` would otherwise
       mark; no `cell_wrap` is placed beside or inside the atomic node for
       that join. Rendering is unchanged, and `table_row.continuationLines`

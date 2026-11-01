@@ -51,8 +51,7 @@ continuation_cell = {space}, cell_content, {space} ;
       not widen what a row is: `| a | b`, with content dangling after the last
       pipe, is prose exactly as before. An attribute value is one of those
       positions: a writer spells a value holding `|` quoted, as
-      `{k="a\|b"}`, and the quoted value reads the escape back as the pipe
-. *)
+      `{k="a\|b"}`, and the quoted value reads the escape back as the pipe. *)
 
 (* Row-level attributes: a `{…}` attribute block GLUED to the row's closing `|`
    (no intervening space) sets the row's `<tr>` attributes -- the row-level twin
@@ -228,7 +227,7 @@ caption_slot = [blank_line], caption ;
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
    placeholder. "Bare" = a `#` that does NOT begin a tag (a `#`
    followed by whitespace, `:`, `.`, end-of-caption, or any
-   non-tag-name character). `#word` stays a tag (PART 9 §19). `\#` is
+   non-tag-name character). `#word` stays a tag (PART 9 §7). `\#` is
    a literal `#`, never a placeholder. Only the first bare `#` is a
    placeholder; later bare `#` render literally. A `#` INSIDE inline
    markup (emphasis, link, span) is NOT a placeholder -- put it in the

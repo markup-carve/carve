@@ -52,7 +52,7 @@
       duplicate precedence, hoisting and container rules apply unchanged.
       Unresolved -> the bracketed run renders as literal source text; in a
       table cell that source is the cell content after the `\|` unescape
-      (PART 4 table cells, carve#4718), so `| [a\|b][m] |` gives `[a|b][m]`. Carve
+      (PART 2 table cells, carve#4718), so `| [a\|b][m] |` gives `[a|b][m]`. Carve
       has NO shortcut reference: a bare [label] or ![alt] never resolves
       (PART 9 §14). A collapsed image `![alt][]` takes its alt text as the
       label, so the alt text must be non-empty; the full `![alt][ref]` form
@@ -92,7 +92,7 @@
       that names nothing is not retried as heading prose and renders literally.
       ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, like the
       heading: `# *bold* heading` and `[*bold* heading][]` both contribute
-      `bold heading` after inline markup is stripped. The four normalizations
+      `bold heading` after inline markup is stripped. The three normalizations
       above apply to that plain text.
       VISIBLE LEAVES STAY VISIBLE. An autolink contributes its display text
       and an image contributes its alternative text to both the slug and this
@@ -228,7 +228,7 @@
       numbered caption's label and number, and the literal an unresolved
       cross-reference renders (R4, carve#4742).
       Expansion follows PART 9 §25 RESOURCE BOUNDS.
-   R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
+   R4 CROSSREFS. </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
       spelling of an id resolves; corpus 15-heading-ids), then captionIds for numbered captions and
       directly numbered display equations. Two headings with one explicit id

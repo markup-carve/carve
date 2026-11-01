@@ -162,7 +162,7 @@
          tight and its other paragraphs stay bare. The attributes belong on
          the paragraph's own element, so they are neither dropped nor moved
          to the `<li>`. A description body that holds one paragraph does the
-         same (CARVE-P9-067): an attributed paragraph renders as `<p>` inside
+         same (PART 12 §8): an attributed paragraph renders as `<p>` inside
          the `<dd>`, and an unattributed one stays bare.
 
              - {.c}            ->  <ul><li><p class="c">text</p></li></ul>
@@ -253,7 +253,7 @@
          second PARAGRAPH (blank + indented plain prose), or a blank line
          BETWEEN items, loosens. An image-only or display-math paragraph counts
          as a paragraph here, promoted or captioned (corpus 618). The blank line is still required to START
-         the block, so recognition and the uniformity principle are
+         the block, so block recognition is
          unchanged -- only the tight/loose RENDERING differs (djot renders
          these loose). Pinned by corpus compact-list-blocks.
       L3 CONTINUATION MARKER `+` -- Carve addition. PART 0 S2 and its `+`
