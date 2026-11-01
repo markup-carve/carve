@@ -2548,7 +2548,7 @@ function smartQuote(node, open, close, single) {
   const record = {
     single, open, close, next,
     contentStart: (at === 0 || at === leadingCommentsEnd(src)) && quoteRun.depth === 1,
-    initialContext: at === 0 ? quotePrevCtx : undefined,
+    initialContext: at === 0 || at === leadingCommentsEnd(src) ? quotePrevCtx : undefined,
     elision: ELISION_WORDS.has(word.toLowerCase()) && !(src[end] === "'" && !quoteAlnum(String.fromCodePoint(src.codePointAt(end + 1) ?? 0).replace('\0', ''))),
   }
   const id = quoteRun.records.push(record) - 1

@@ -1,0 +1,33 @@
+A term continuation in a description keeps spaces past the body column
+
+```
+:: t
+: :: t
+  u
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <dl>
+      <dt>t
+u</dt>
+    </dl>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: :: t
+    u
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <dl>
+      <dt>t
+  u</dt>
+    </dl>
+  </dd>
+</dl>
+```

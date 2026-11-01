@@ -5151,11 +5151,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           let noteBodyReach = null
           let noteBodyQuoted = false
           let lastBlockLine = ''
-          const pushBody = (text, row = i) => {
+          const pushBody = (text, row = i, column = null) => {
             bodyLines.push(text)
             if (!text.startsWith(LAZY)) lastBlockLine = text
             const source = ind(row)
-            bodySourceColumns.push(sourceColumns?.[row] ?? source.L?.col ?? source.col)
+            bodySourceColumns.push(column ?? sourceColumns?.[row] ?? source.L?.col ?? source.col)
             const raw = stripLazy(text)
             let quoted = stripIndent(raw)
             let quoteWidth = 0
@@ -5205,7 +5205,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           let attachedFrom = -1
           if (leadTab) pushBody(lazyFrame(trimLineEnd(dm[2])), i - 1)
           else if (!attachPending) {
-            pushBody(stripIndent(dm[2]).replace(/[ \t]+$/, ''), i - 1)
+            // The marker-line content stands at the body column, not at the marker.
+            pushBody(stripIndent(dm[2]).replace(/[ \t]+$/, ''), i - 1, sourceBodyColumn)
           }
           const endsBodyAt = (at) => {
             const cur = lines[at] ?? ''
