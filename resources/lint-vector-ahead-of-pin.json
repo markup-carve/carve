@@ -1,4 +1,16 @@
 {
+  "document-unclaimed-before-list": {
+    "actual": [[2, 1]]
+  },
+  "quote-unclaimed-indented": {
+    "actual": [[2, 5]]
+  },
+  "document-unclaimed-before-table": {
+    "actual": [[2, 1]]
+  },
+  "document-unclaimed-before-heading": {
+    "actual": [[2, 1]]
+  },
   "table-row-cell-count/continuation-past-the-last-column": {
     "actual": []
   },
