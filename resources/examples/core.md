@@ -4280,8 +4280,8 @@ the first item fixes the dialect and `start`.
 ::: compare
 
 ```carve
-a. apple
-b. banana
+a.  apple
+b.  banana
 ```
 
 ```html
@@ -4296,9 +4296,9 @@ b. banana
 ::: compare
 
 ```carve
-iv. four
-v. five
-vi. six
+iv.  four
+v.  five
+vi.  six
 ```
 
 ```html

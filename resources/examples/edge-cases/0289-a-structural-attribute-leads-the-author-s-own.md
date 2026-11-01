@@ -10,7 +10,7 @@ it split the engines (`markup-carve/carve#1090`).
 
 ```carve
 {k=v .attr}
-a. alpha
+a.  alpha
 ```
 
 ```html

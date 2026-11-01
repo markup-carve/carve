@@ -517,7 +517,9 @@ const TASK_MARKER_SOURCE_WIDTH = 4 // `[x] ` is content on the marker line.
 // The value is optional before a `.`: a bare `. ` is a decimal marker
 // counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
 // marker, so the empty alternative is guarded by a lookahead at the dot.
-const ORDERED = new RegExp(`^([ \\t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\\.))([.)])(${ATTR_BLOCK})?( +)(.+)$`, 's')
+// A letter or roman marker with `.` needs two spaces before its content, so
+// initials and `e. g.` stay text (carve#4811).
+const ORDERED = new RegExp(`^([ \\t]*)(?![A-Za-z]+\\.(?:${ATTR_BLOCK})? (?! ))([0-9]+|[a-z]+|[A-Z]+|(?=\\.))([.)])(${ATTR_BLOCK})?( +)(.+)$`, 's')
 const CONT_MARKER = /^\+[ \t]*$/
 // marks a lazily-folded line (PART 9 SS10 I2): always paragraph text, never
 // re-classified as structure when an item's content is re-parsed

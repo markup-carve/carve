@@ -1,8 +1,8 @@
 Ordered list dialects
 
 ```
-a. apple
-b. banana
+a.  apple
+b.  banana
 .
 <ol type="a">
   <li>apple</li>
@@ -11,9 +11,9 @@ b. banana
 ```
 
 ```
-iv. four
-v. five
-vi. six
+iv.  four
+v.  five
+vi.  six
 .
 <ol type="i" start="4">
   <li>four</li>

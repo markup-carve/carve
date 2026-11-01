@@ -73,7 +73,9 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 . auto-numbered              (preferred native Carve form; counts from 1 and
                               keeps nested indentation stable at 10, 100, ...)
 1. ordered                   (explicit number: Markdown/Djot-portable, sets the
-                              start; dialects: a. A. i. I. and the ) delimiter)
+                              start; dialects: a. A. i. I. and the ) delimiter;
+                              a letter or roman marker with a dot needs two
+                              spaces, a.  item, so J. Smith stays text)
 - [ ] open task              (task items: one per line)
 - [_] open alias             (keeps the authored marker)
 - [/] task in progress

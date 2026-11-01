@@ -2,7 +2,7 @@ A structural attribute leads the author's own
 
 ```
 {k=v .attr}
-a. alpha
+a.  alpha
 .
 <ol type="a" k="v" class="attr">
   <li>alpha</li>

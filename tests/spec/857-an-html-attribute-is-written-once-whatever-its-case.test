@@ -2,7 +2,7 @@ An HTML attribute is written once, whatever its case
 
 ```
 {type=text}
-a. alpha
+a.  alpha
 .
 <ol type="a">
   <li>alpha</li>

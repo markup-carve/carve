@@ -11,7 +11,7 @@ const cases = [
   },
   {
     name: 'three mixed levels at the innermost marker column',
-    source: '* - a. :: t\n    : a\n',
+    source: '* - a.  :: t\n    : a\n',
     afterTerm: '</ol>\n        : a',
   },
   {

@@ -463,6 +463,12 @@
          defaults to roman, any other lone letter to alpha. A next sibling
          that is neither consecutive form leaves the first marker lone:
          `v.` over `vii.` is an alpha list and a roman list.
+         A letter or roman marker with `.` is a marker only before two or
+         more spaces (PART 2 ordered_item), so the tie-break reads
+           I.  x             produces:    <ol type="I"><li>x</li></ol>
+           A.  y                          <ol type="A"><li>y</li><li>z</li></ol>
+           B.  z
+         and the same three lines with one space each are one paragraph.
       N1 looks only one item back; N2/N3 carry the FIRST item's
       classification (with N3's one-item-forward tie-break) for the rest of
       the list.

@@ -19,7 +19,7 @@ List item attributes
 ```
 
 ```
-a.{.c} An alpha item.
+a.{.c}  An alpha item.
 .
 <ol type="a">
   <li class="c">An alpha item.</li>

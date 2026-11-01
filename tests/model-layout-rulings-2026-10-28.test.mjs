@@ -62,7 +62,7 @@ test('1,000 task items have the ordered control ownership at the ruled column', 
 
 test('250 two-level lazy quote variants keep the deepest literal plus', () => {
   let checked = 0
-  for (const marker of ['- ', '* ', '1. ', '. ', 'a. '])
+  for (const marker of ['- ', '* ', '1. ', '. ', 'a.  '])
     for (const tail of ['s', 'tail', 'q', 'alpha', 'x9', 'more', 'body', 'next', 'z', 'line'])
       for (const items of [2, 3, 4, 5, 6]) {
         const source = ('> > ' + marker + '> +\n').repeat(items) + '>  ' + tail + '\n'
