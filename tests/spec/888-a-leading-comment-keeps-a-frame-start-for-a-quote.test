@@ -1,0 +1,19 @@
+A leading comment keeps a frame start for a quote
+
+```
+x{+{%%}"q"+}
+.
+<p>x<ins>“q”</ins></p>
+```
+
+```
+x{-{%%}"q"-}
+.
+<p>x<del>“q”</del></p>
+```
+
+```
+x{~{%%}"a"~>{%%}"b"~}
+.
+<p>x<del>“a”</del><ins>“b”</ins></p>
+```
