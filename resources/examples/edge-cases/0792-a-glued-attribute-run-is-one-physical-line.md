@@ -1,6 +1,6 @@
 ## A glued attribute run is one physical line
 
-Two glued blocks on a line of their own are one attribute line (PART 4 `block_attributes`). Only a lone block may wrap across lines (PART 9 §15 A5, carve#4078): a line break inside or after any block of a longer run leaves the lines paragraph text, so no source disappears.
+The section name is append-only and predates the superseding ruling on carve#4078. Two glued blocks on a line of their own are one attribute line (PART 4 `block_attributes`). Each block of the run wraps by a lone block's rule (PART 9 §15 A5, carve#4078), and a run that attaches to nothing renders nothing, like a lone block.
 
 ::: compare
 
@@ -24,9 +24,7 @@ p
 ```
 
 ```html
-<p>{.a}{.b
-}
-p</p>
+<p class="a b">p</p>
 ```
 
 :::
@@ -40,14 +38,12 @@ p
 ```
 
 ```html
-<p>{.a
-}{.b}
-p</p>
+<p class="a b">p</p>
 ```
 
 :::
 
-::: compare
+::: compare no-final-newline
 
 ```carve
 {k=""}{c
@@ -55,8 +51,7 @@ p</p>
 ```
 
 ```html
-<p>{k=““}{c
-}</p>
+
 ```
 
 :::
