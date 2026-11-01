@@ -869,7 +869,8 @@ CarveCore {
   // there.
   //
   // `<==` must precede `<=`, and `-->` must precede the `dashRun` rule below.
-  arrow      = "<-->" | "-->" | "<--"
+  // A hyphen run longer than the arrow's is a dash run (carve#4645).
+  arrow      = "<-->" | "-->" | "<--" ~"-"
              | "<=>" | "==>" | "<=="
              | "!=" | "<=" | ">=" | "+-"
   // An arrow whose `=` may close a bare highlight instead (PART 8 items 7
