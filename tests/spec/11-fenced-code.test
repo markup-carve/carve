@@ -97,9 +97,8 @@ code
 code
 ```
 .
-<p><code>js title="x"
-code</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">code
+</code></pre>
 ````
 
 ````
@@ -107,9 +106,8 @@ code</code></p>
 code
 ```
 .
-<p><code>php [Composer] "x"
-code</code></p>
-<pre><code></code></pre>
+<pre><code class="language-php">code
+</code></pre>
 ````
 
 ```

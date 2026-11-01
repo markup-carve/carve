@@ -6,11 +6,16 @@ string (`fenced_code_block`, spelled `[space]`), and the `"header"` and
 after the fence run, which has already decided the block, so all three are
 padding and all three take a space.
 
-The fallback here is the INVALID-FENCE FALLBACK the grammar already names: the
-opener is not a fence opener, so the run is read as an inline verbatim span in
-a paragraph and every character of its line survives. The bare `` ``` `` line
-below it is a valid opener, so it interrupts that paragraph and opens an empty
-code block that runs to the end of the document.
+A tab in the slot before the info string leaves no language token at the
+start, so the line takes the INVALID-FENCE FALLBACK: the opener is not a fence
+opener, the run is read as an inline verbatim span in a paragraph, and every
+character of its line survives. The bare `` ``` `` line below it is a valid
+opener, so it interrupts that paragraph and opens an empty code block that runs
+to the end of the document.
+
+A tab in the `"header"` or `[label]` slot comes after the language token, so
+the opener RECOVERS (carve#4807): it opens a code block with that language and
+drops the rest of its metadata, the title included.
 
 Each slot is pinned separately, because implementations decide them in three
 places and a document carrying a tab in all three cannot tell a partial fix
@@ -68,7 +73,7 @@ x</code></p>
 
 :::
 
-The `"header"` slot, which sits after the language token and reverts
+The `"header"` slot, which sits after the language token and recovers
 independently of the slot before it:
 
 ::: compare
@@ -80,9 +85,8 @@ x
 ````
 
 ````html
-<p><code>js	"T"
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 :::
@@ -96,9 +100,8 @@ x
 ````
 
 ````html
-<p><code>js 	"T"
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 :::
@@ -112,14 +115,13 @@ x
 ````
 
 ````html
-<p><code>js	 "T"
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 :::
 
-And the `[label]` slot, which reverts independently of both:
+And the `[label]` slot, which recovers independently of both:
 
 ::: compare
 
@@ -130,9 +132,8 @@ x
 ````
 
 ````html
-<p><code>js "T"	[L]
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 :::
@@ -146,9 +147,8 @@ x
 ````
 
 ````html
-<p><code>js "T" 	[L]
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 :::
@@ -162,9 +162,8 @@ x
 ````
 
 ````html
-<p><code>js "T"	 [L]
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 :::

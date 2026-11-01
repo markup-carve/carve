@@ -65,10 +65,10 @@ test('a new outer-item paragraph after a nested fence stores its own lazy claim'
 })
 
 test('an invalid fence opener starts a paragraph with a lazy claim', () => {
-  const source = '- - ```\n  ```foo bar\ntail\n'
+  const source = '- - ```\n  ```foo,bar\ntail\n'
   const ast = parse(source)
   assert.equal(ast.blocks.length, 1)
-  assert.deepEqual(ast.blocks[0].items[0].blocks.at(-1), { t: 'para', lines: ['```foo bar', 'tail'] })
+  assert.deepEqual(ast.blocks[0].items[0].blocks.at(-1), { t: 'para', lines: ['```foo,bar', 'tail'] })
 })
 
 test('a new outer-item fence after a nested fence stores no lazy claim', () => {

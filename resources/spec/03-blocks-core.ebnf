@@ -244,13 +244,25 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
    which renders on the <pre> (language stays `language-…` on the <code>). If
    the preceding line ALSO sets `title`, the preceding line wins (the explicit
    attribute channel overrides the opener-header sugar).
-   INVALID-FENCE FALLBACK: when the text after the language token is anything
-   other than an optional "header" then an optional [label] in that order -- a
-   bare second word, a key="value" pair (```js title="x"), an inline `{...}`
-   block (``` php {.x}), or the wrong order (```php [l] "h") -- the line is NOT
-   a fenced code block; it falls back to ordinary inline parsing (the backtick
-   run typically opens an inline code span). Quotes and brackets are the only
-   delimiters that admit metadata. The raw passthrough opener (```=FORMAT,
+   INVALID METADATA: the text after the language token is anything other than
+   an optional "header" then an optional [label] in that order -- a bare
+   second word, a key="value" pair (```js title="x"), an inline `{...}` block
+   (``` php {.x}), or the wrong order (```php [l] "h"). Quotes and brackets
+   are the only delimiters that admit metadata.
+   RECOVERY (carve#4807, the colon-fence recovery of PART 9 §12 applied to a
+   code fence): a backtick or tilde opener whose language_info token ends at
+   Unicode White_Space, U+FEFF, a straight or curly double quote, `{`, or `[`
+   and is followed by invalid metadata IS a fenced code block with that
+   language. It reports fence-title-syntax and drops all opener metadata, a
+   valid header or label included: ```js {1,3} opens a `js` code block with
+   no title. Recovery is confined to the opener line. It does not apply when
+   the rest of the line holds a run of the opener's fence character at least
+   as long as the opener, so ```js foo``` is inline keeps its inline code
+   span.
+   INVALID-FENCE FALLBACK: any other opener with invalid metadata -- no
+   language token (``` {.x}), or a token that ends at another character
+   (```js, x) -- is NOT a fenced code block; it falls back to ordinary inline
+   parsing (the backtick run typically opens an inline code span). The raw passthrough opener (```=FORMAT,
    PART 9 §20) is a SEPARATE production matched before this one (a leading `=`
    is never a language, and a raw block takes no header). *)
 (* AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE -- NORMATIVE

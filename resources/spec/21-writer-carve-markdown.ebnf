@@ -751,8 +751,11 @@
         - a last line that is a COLON RUN ALONE is written with its closer on
           it, `:::` followed by the closer, and opens no fence in any host.
         - a last line that is a CODE FENCE OPENER (`~~~`, `~~~js`) is written
-          with its closer on it, the run followed by the closer. A backtick in
-          the info string is invalid metadata, so the line opens no fence.
+          with its closer on it, the run followed by the closer. A backtick
+          glued to the language token is invalid metadata that does not
+          recover (PART 9 §2), so the line opens no fence. A last line whose
+          language token already ends at whitespace or metadata (`~~~js x`)
+          recovers whatever follows, so it has no spelling and is refused.
 
       A LIST MARKER IN AN ITEM is written one column below the item's content
       column, where the line is a lazy continuation of the item's paragraph,

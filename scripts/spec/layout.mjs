@@ -742,7 +742,7 @@ const leadRunEnd = (lines, at) => {
 }
 const opensCodeFence = (line) => {
   const m = FENCE.exec(line ?? '')
-  return !!m && parseFenceInfo(m[2]) !== null
+  return !!m && parseFenceInfo(m[2], m[1]) !== null
 }
 const leadsFence = (lines, at) => opensCodeFence(lines[leadRunEnd(lines, at)])
 // The same over framed lines, reading only as far as the run reaches.
@@ -1176,7 +1176,7 @@ function leavesParagraphOpen(lines, idx, wasOpen, inItem = false) {
 function opaqueSpanEnd(lines, idx) {
   const line = lines[idx] ?? ''
   const fence = FENCE.exec(line)
-  if (fence && parseFenceInfo(fence[2]) !== null) {
+  if (fence && parseFenceInfo(fence[2], fence[1]) !== null) {
     const close = findCloser(lines, idx, fence[1])
     if (close !== -1) return close
   }
@@ -1239,7 +1239,7 @@ function endsInLineBlockStanza(bodyLines, last) {
 const payloadRuns = new WeakMap()
 function lineBlockSpanEnd(lines, idx) {
   const fence = FENCE.exec((lines[idx] ?? '').replace(/^[ \t]+/, ''))
-  if (fence && parseFenceInfo(fence[2]) !== null) {
+  if (fence && parseFenceInfo(fence[2], fence[1]) !== null) {
     let runs = payloadRuns.get(lines)
     if (!runs) {
       runs = { '`': [], '~': [] }
@@ -1765,7 +1765,7 @@ export const TERM_COMMENT = '\uE0FE'
 
 function isCodeBlockOpener(line) {
   const fence = FENCE.exec(line)
-  return !!(fence && parseFenceInfo(fence[2]) !== null)
+  return !!(fence && parseFenceInfo(fence[2], fence[1]) !== null)
 }
 
 function foldablePlainLine(cur) {
@@ -1820,7 +1820,7 @@ function markerFenceSummary(text, memo) {
     const marker = matchMarkerAt(measured)
     if (!marker) {
       const fence = FENCE.exec(measured.rest)
-      summary = fence && parseFenceInfo(fence[2]) !== null
+      summary = fence && parseFenceInfo(fence[2], fence[1]) !== null
         ? { run: fence[1], col: measured.col } : null
       memo.set(text.length, summary)
       break
@@ -1966,7 +1966,7 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
     if (budget-- <= 0) return true
     if (QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; openTable = false; inQuote = true; continue }
     if (HEADING.test(text) || HR.test(text)) return finish(false)
-    if (inQuote && atBlockPosition && ((FENCE.test(text) && parseFenceInfo(FENCE.exec(text)[2]) !== null) ||
+    if (inQuote && atBlockPosition && (fenceLineInfo(text) !== null ||
         isColonBlockOpener(text))) return finish(false)
     // A LIST MARKER is asked the SAME question about what it carries, for the
     // same reason a quote is, and S4's clause names this case outright: the
@@ -2350,7 +2350,7 @@ function bodyLeavesNoParagraphAt(bodyLines, last, quoted = false) {
   let k = 0
   while (k <= last) {
     const code = FENCE.exec(bodyLines[k])
-    if (code && parseFenceInfo(code[2]) !== null) {
+    if (code && parseFenceInfo(code[2], code[1]) !== null) {
       const end = findCloser(bodyLines, k, code[1])
       // An unterminated fence opens without lookahead and runs to the end of
       // its container (§10 I4), so it holds no paragraph.
@@ -2425,7 +2425,7 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
       }
     }
     const code = FENCE.exec(fenceAt.rest)
-    if (!lines[k].startsWith(LAZY) && !scan.foldedFences?.has(k) && code && parseFenceInfo(code[2]) !== null) opaque = { kind: 'code', run: code[1], column: fenceAt.col, base: columns.at(-1) }
+    if (!lines[k].startsWith(LAZY) && !scan.foldedFences?.has(k) && code && parseFenceInfo(code[2], code[1]) !== null) opaque = { kind: 'code', run: code[1], column: fenceAt.col, base: columns.at(-1) }
     else {
       const comment = COMMENT_FENCE_BODY.exec(line)
       if (comment && (commentFenceCloserAhead(lines, k, comment[1]) || hasFutureCommentCloser(comment[1], columns.at(-1)))) opaque = { kind: 'comment', run: comment[1] }
@@ -2650,7 +2650,7 @@ function hostColonStep(h, inner, commentCloses = () => false, markerLine = false
     // Payload is inline, so its span pairs at any column past the host's
     // (ruled on carve-php#3137).
     const fence = FENCE.exec(inner.rest)
-    if (inner.col >= top.column && fence && parseFenceInfo(fence[2]) !== null && codeCloses(fence[1], top.base, true)) {
+    if (inner.col >= top.column && fence && parseFenceInfo(fence[2], fence[1]) !== null && codeCloses(fence[1], top.base, true)) {
       h.payloadSpan = { run: fence[1], column: inner.col, host: top.base }
     }
   }
@@ -2734,7 +2734,7 @@ function hostFenceOpener(h, inner) {
   if (inner.col < column) return null
   if (h.unclaimed !== null && h.unclaimed.host > column) h.unclaimed = null
   const f = FENCE.exec(inner.rest)
-  const opener = f && parseFenceInfo(f[2]) !== null ? f : null
+  const opener = f && parseFenceInfo(f[2], f[1]) !== null ? f : null
   if (inner.col !== column) {
     if (h.kinds.at(-1) === 'description' && h.descriptionParagraph &&
         !(h.descriptionMarker && opener)) return null
@@ -2770,7 +2770,7 @@ function hostFenceOpener(h, inner) {
 // The run of a code fence a body's marker-line content opens, bare or behind list markers.
 function openerFenceRun(line) {
   const f = FENCE.exec(line)
-  if (f) return parseFenceInfo(f[2]) === null ? null : f[1]
+  if (f) return parseFenceInfo(f[2], f[1]) === null ? null : f[1]
   return matchMarkerAt(indentCols(line)) ? markerFenceSummary(line, new Map())?.run ?? null : null
 }
 
@@ -2799,7 +2799,7 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) 
     k = lineBlockEnd(bodyLines, k)
     if (k >= bodyLines.length) break
     const f = FENCE.exec(bodyLines[k])
-    if (k === 0 ? openerFenceRun(bodyLines[k]) === null : !f || parseFenceInfo(f[2]) === null) continue
+    if (k === 0 ? openerFenceRun(bodyLines[k]) === null : !f || parseFenceInfo(f[2], f[1]) === null) continue
     const end = bodyFenceEnd(bodyLines, k)
     if (end !== -1) {
       k = end
@@ -2921,7 +2921,7 @@ function bodyOpenCommentRun(bodyLines, closerAhead = null) {
     const opener = atBlockStart ? markerFreeContent(line) : line
     atBlockStart = false
     const code = FENCE.exec(opener)
-    if (code && parseFenceInfo(code[2]) !== null) {
+    if (code && parseFenceInfo(code[2], code[1]) !== null) {
       opaque = { kind: 'code', run: code[1] }
       continue
     }
@@ -2962,7 +2962,7 @@ function descriptionLeadHasUnterminatedNestedFence(line, lines, start, bodyColum
   }
   if (!nested) return 0
   const fence = FENCE.exec(text)
-  if (!fence || parseFenceInfo(fence[2]) === null) return 0
+  if (!fence || parseFenceInfo(fence[2], fence[1]) === null) return 0
   for (let k = start; k < lines.length; k++) {
     if (endsBodyAt(k)) break
     const measured = indentCols(lines[k] ?? '')
@@ -2980,7 +2980,7 @@ function findColonCloserSkippingCode(bodyLines, openIdx, run, last) {
   let j = openIdx + 1
   while (j <= last) {
     const code = FENCE.exec(bodyLines[j])
-    if (code && parseFenceInfo(code[2]) !== null) {
+    if (code && parseFenceInfo(code[2], code[1]) !== null) {
       const inner = findCloser(bodyLines, j, code[1])
       if (inner === -1 || inner > last) return -1
       j = inner + 1
@@ -3002,7 +3002,7 @@ function opensSubBlock(line) {
   const f = FENCE.exec(line)
   // an INVALID info string is not a fence at all (PART 2 INVALID-FENCE
   // FALLBACK) -- the line is prose and loosens the item
-  if (f) return parseFenceInfo(f[2]) !== null
+  if (f) return parseFenceInfo(f[2], f[1]) !== null
   return isColonBlockOpener(line)
 }
 
@@ -3010,7 +3010,7 @@ function opensHostedColonBlock(line) {
   if (FOOTNOTE_DEF.test(line) || isLinkDef(line) || parseAttrList(trimLineEnd(line)) !== null) return true
   if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) || isTableRow(line) || DEFLIST_TERM.test(line)) return true
   const fence = FENCE.exec(line)
-  if (fence) return parseFenceInfo(fence[2]) !== null
+  if (fence) return parseFenceInfo(fence[2], fence[1]) !== null
   const colon = COLON_FENCE.exec(line)
   const opener = colon && parseColonOpener(colon[2])
   return !!(opener && (opener.type || opener.mode === 'line-block'))
@@ -3437,7 +3437,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
         // A span in a line-block payload pairs past the column too (carve-php#3137).
         const f = FENCE.exec(m.rest)
         const comment = COMMENT_FENCE_BODY.exec(m.rest)
-        if (f && parseFenceInfo(f[2]) !== null && (closerRuns().widest[f[1][0]][at + 1] ?? 0) >= f[1].length) inner.span = f[1]
+        if (f && parseFenceInfo(f[2], f[1]) !== null && (closerRuns().widest[f[1][0]][at + 1] ?? 0) >= f[1].length) inner.span = f[1]
         else if (comment && (closerRuns().lastComment.get(comment[1].length) ?? -1) > at) inner.span = comment[1]
       }
       result.push(out + src)
@@ -4036,7 +4036,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       return { kind: 'colon', run, interrupts }
     }
     const fence = FENCE.exec(rest)
-    if (fence && parseFenceInfo(fence[2]) !== null) {
+    if (fence && parseFenceInfo(fence[2], fence[1]) !== null) {
       const run = fence[1]
       // A run indented past its opener is code content (CARVE-P2-006).
       const closes = (r, closerCol) => {
@@ -5035,7 +5035,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const boundary = state.attachmentBoundaries?.get(lines)?.find(index => index > i) ?? n
       const fenceLines = boundary < n ? lines.slice(0, boundary) : lines
       const run = m[1]
-      const info = parseFenceInfo(m[2])
+      const info = parseFenceInfo(m[2], m[1])
       if (info && info.lang.startsWith('=')) {
         const close = findCloser(fenceLines, i, run)
         if (close !== -1) {
@@ -6032,7 +6032,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         if (atStart && qNestedTable.length === 0) {
           const summary = quotePrefixSummary(line, prefixMemo(state, lines, idx).quote)
-          if (summary && markerQuoteText(summary.tail, prefixMemo(state, lines, idx).markerQuote ??= new Map()) === null && !isColonBlockOpener(summary.tail) && !(FENCE.test(summary.tail) && parseFenceInfo(FENCE.exec(summary.tail)[2]) !== null)) {
+          if (summary && markerQuoteText(summary.tail, prefixMemo(state, lines, idx).markerQuote ??= new Map()) === null && !isColonBlockOpener(summary.tail) && fenceLineInfo(summary.tail) === null) {
             const { depth, tail } = summary
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
               const remaining = MAX_NESTING_DEPTH - state.blockDepth
@@ -6306,7 +6306,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
         }
         const belowRun = FENCE.exec(indentCols(l).rest)
-        const belowFenceLazy = !!(belowRun && parseFenceInfo(belowRun[2]) === null)
+        const belowFenceLazy = !!(belowRun && parseFenceInfo(belowRun[2], belowRun[1]) === null)
         const { meas, inner: inner0, blockStart, popped } = hostAdvance(qHost, l, qOpenPara, belowFenceLazy)
         if (qHost.kinds.at(-1) === 'description') qOpenPara = qHost.descriptionParagraph
         if (blockStart) qPara = []
@@ -6770,7 +6770,7 @@ const leavesFenceOpen = (block) => {
     else break
   }
   const m = FENCE.exec(block[at] ?? '')
-  return !!m && parseFenceInfo(m[2]) !== null && findCloser(block, at, m[1]) === -1
+  return !!m && parseFenceInfo(m[2], m[1]) !== null && findCloser(block, at, m[1]) === -1
 }
 // The same for a quote's attached block: a list's fence may stand behind its
 // markers or on a later line, and a separator would become that fence's payload.
@@ -6784,7 +6784,7 @@ const attachedLeavesFenceOpen = (block) => {
   })
   for (let at = 0; at < read.length; at++) {
     const m = FENCE.exec(read[at])
-    if (!m || parseFenceInfo(m[2]) === null) continue
+    if (!m || parseFenceInfo(m[2], m[1]) === null) continue
     at = findCloser(read, at, m[1])
     if (at === -1) return true
   }
@@ -6797,12 +6797,12 @@ const attachedLeavesFenceOpen = (block) => {
 // not a closer follows (carve#4018).
 function opensFence(lines, idx) {
   const m = FENCE.exec(lines[idx] ?? '')
-  return !!m && parseFenceInfo(m[2]) !== null
+  return !!m && parseFenceInfo(m[2], m[1]) !== null
 }
 
 function hasCloser(lines, idx) {
   const m = FENCE.exec(lines[idx])
-  if (!m || parseFenceInfo(m[2]) === null) return false
+  if (!m || parseFenceInfo(m[2], m[1]) === null) return false
   return findCloser(lines, idx, m[1]) !== -1
 }
 
@@ -6820,9 +6820,9 @@ function findCloser(lines, openIdx, run) {
 
 // CODE-FENCE INFO STRING (PART 2): language token, then an optional quoted
 // "header", then an optional [label], in that fixed order. Returns
-// { lang, title, label } or null on any other shape (INVALID-FENCE
-// FALLBACK: the line is not a fence).
-function parseFenceInfo(raw) {
+// { lang, title, label }, a recovered { lang, invalidMetadata } (carve#4807),
+// or null on any other shape (INVALID-FENCE FALLBACK: the line is not a fence).
+function parseFenceInfo(raw, run) {
   // The opener slot before the info string, and the `"header"` / `[label]`
   // slots inside it, are all PADDING and all take `space` (PART 7; carve#901):
   // each sits after the first non-whitespace character of the line, and a tab
@@ -6859,8 +6859,20 @@ function parseFenceInfo(raw) {
     out.label = lb.label
     s = lb.rest
   }
-  if (!/^[ \t]*$/.test(s)) return null
-  return out
+  if (/^[ \t]*$/.test(s)) return out
+  // Recovery (carve#4807), the colon-fence rule of PART 9 §12 on a code fence:
+  // a language token that ends where metadata would start keeps the block and
+  // drops the rest. A later run of the opener's character at least as long as
+  // the opener keeps the line's inline code span reading.
+  if (!out.lang || run === undefined) return null
+  if (!/^[\s\u0085"{[“”]/.test(raw.replace(/^ ?/, '').slice(out.lang.length))) return null
+  if (raw.includes(run)) return null
+  return { lang: out.lang, title: null, label: null, invalidMetadata: true }
+}
+
+const fenceLineInfo = (line) => {
+  const m = FENCE.exec(line)
+  return m ? parseFenceInfo(m[2], m[1]) : null
 }
 
 /** The LAST line of a FENCED block opening at `start`, or -1 when none opens
@@ -7057,7 +7069,7 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
           !(at.rest[0] === '{' && tryAttrLine([at.rest], 0))
         if (read.length === 0) {
           const open = FENCE.exec(at.rest)
-          if (open && parseFenceInfo(open[2]) !== null) fence = { run: open[1], col: at.col }
+          if (open && parseFenceInfo(open[2], open[1]) !== null) fence = { run: open[1], col: at.col }
         } else if (fence && at.col === fence.col) {
           const close = PURE_FENCE.exec(at.rest)
           if (close && close[1][0] === fence.run[0] && close[1].length >= fence.run.length) fence = null
@@ -7257,7 +7269,7 @@ function foldedDefinitionEnd(lines, start, end, seen) {
     }
     if (DEFLIST_TERM.test(rest)) termCol = col
     const code = FENCE.exec(rest)
-    if (code && parseFenceInfo(code[2]) !== null) {
+    if (code && parseFenceInfo(code[2], code[1]) !== null) {
       opaque = { kind: 'code', run: code[1] }
       continue
     }
@@ -7750,7 +7762,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const atFrameColumn = (col) => col === 0
     const bodyFenceOpens = (idx, dedented, blockBase = contentCol, endedDescendant = false) => {
       const m = FENCE.exec(dedented)
-      if (!m || parseFenceInfo(m[2]) === null) return false // INVALID-FENCE FALLBACK
+      if (!m || parseFenceInfo(m[2], m[1]) === null) return false // INVALID-FENCE FALLBACK
       return true
     }
     // A blank line was seen, and what followed it attached INVISIBLY (a comment,
@@ -8187,7 +8199,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const payload = fence.colon.length !== 0 && colonLineBlock.at(-1) === true
       const unindented = payload ? line.replace(/^[ \t]+/, '') : line
       const code = FENCE.exec(unindented)
-      if (code && parseFenceInfo(code[2]) !== null) {
+      if (code && parseFenceInfo(code[2], code[1]) !== null) {
         const payloadCloser = payload ? cachedForwardSearch(payloadCloserSearches, `${contentCol}:${code[1]}`, index + 1, lines.length, (at) => {
           const measured = ind(at)
           const marker = matchMarkerAt(measured)
@@ -8374,7 +8386,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           : null
       }
       const f = FENCE.exec(dmeas.rest)
-      if (!f || parseFenceInfo(f[2]) === null) return null
+      if (!f || parseFenceInfo(f[2], f[1]) === null) return null
       return { kind: 'code', run: f[1], col: dmeas.col }
     }
     // Only a below-column comment grants a continuation claim after closure.
@@ -8470,7 +8482,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // The block an attribute run leads decides how it ends, not the run (carve#4271).
       const opener = attachedOpener(attached, ind(i).col)
       const codeMatch = FENCE.exec(attached[opener] ?? '')
-      const code = codeMatch && parseFenceInfo(codeMatch[2]) !== null ? codeMatch : null
+      const code = codeMatch && parseFenceInfo(codeMatch[2], codeMatch[1]) !== null ? codeMatch : null
       const colon = COLON_FENCE.exec(attached[opener] ?? '')
       const unclosedAttached = code && i + opener + 1 < n && !hasCloser(lines.slice(i + opener), 0) && !lines.slice(i).some(isBlank)
       if (unclosedAttached) end = n
@@ -9190,7 +9202,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           } else if (closer >= 0) noteFenceEnd = closer
           else absorbedNoteFence = true
         } else if (!markerNoteEligible && noteFrames.length && !descendantOwned && !insideFence() &&
-            noteFence && parseFenceInfo(noteFence[2]) !== null && col >= noteFrames.at(-1).body) {
+            noteFence && parseFenceInfo(noteFence[2], noteFence[1]) !== null && col >= noteFrames.at(-1).body) {
           // A note opened on its own line asks the same lookahead: a closer past
           // a below-column line still opens the fence (CARVE-P0-014).
           const body = noteFrames.at(-1).body

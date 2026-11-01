@@ -15,7 +15,7 @@ const outside = (out, depth) => (depth > 0
 
 const between = { none: [], hr: ['  ---'], heading: ['  # h'], table: ['  | t |'], comment: ['  %% c'], attrs: ['  {.x}'], div: ['  ::: d', '  :::'] }
 // The lead is a fence run that opens nothing: its info string is invalid (carve#4018).
-for (const depth of [0, 1, 2]) for (const lead of ['    ```js title="x"', '  ```js title="x"', '    ~~~~js title="x"']) for (const blank of [false, true]) {
+for (const depth of [0, 1, 2]) for (const lead of ['    ```js,title="x"', '  ```js,title="x"', '    ~~~~js,title="x"']) for (const blank of [false, true]) {
   for (const [name, mid] of Object.entries(between)) for (const tail of ['TAIL', '1. TAIL']) {
     const fence = lead.includes('~') ? '```' : '~~~'
     const body = ['- a', lead, ...(blank ? [''] : []), ...mid, '  ' + fence, '  code', '  ' + fence]

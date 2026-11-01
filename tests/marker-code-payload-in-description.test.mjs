@@ -67,11 +67,11 @@ for (const priorParagraph of [false, true]) {
 
 test('does not treat a marker-shaped paragraph as an opaque list fence', () => {
   // An invalid info string keeps the fence line paragraph text (carve#4018).
-  const source = ':: term\n: para\n  - [ ] ~~~\n        ```js title="x"\n       [r]: /in\n  +\n     [s]: /s\n'
+  const source = ':: term\n: para\n  - [ ] ~~~\n        ```js,title="x"\n       [r]: /in\n  +\n     [s]: /s\n'
   const ast = parse(source)
   assert.equal(leaves(ast.blocks).length, 0)
   // A definition past the body's column registers there (CARVE-P0-020, carve#3279).
-  assert.deepEqual(ast.blocks[0].items[1].ddBlocks, [{ t: 'para', lines: ['para', '- [ ] ~~~', '```js title="x"'] }, { t: 'para', lines: ['+'] }])
+  assert.deepEqual(ast.blocks[0].items[1].ddBlocks, [{ t: 'para', lines: ['para', '- [ ] ~~~', '```js,title="x"'] }, { t: 'para', lines: ['+'] }])
   assert.deepEqual([...ast.linkDefs.keys()], ['r', 's'])
 })
 

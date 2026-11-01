@@ -1919,7 +1919,7 @@ code
 
 :::
 
-Anything else after the language token — a bare second word, a `key="value"` pair, an inline `{…}` block, or a header and label in the wrong order — is **not** a fenced code block. There is no error: the backtick run falls back to ordinary inline parsing (an inline code span). Quotes and brackets are the only delimiters that admit metadata, and only in the order header-then-label. The bare `` ``` `` line below is a valid opener, so it interrupts that paragraph and opens an empty code block that runs to the end of the document.
+Anything else after the language token — a bare second word, a `key="value"` pair, an inline `{…}` block, or a header and label in the wrong order — is invalid metadata. Quotes and brackets are the only delimiters that admit metadata, and only in the order header-then-label. When the language token ends at whitespace, a quote, `{` or `[`, the opener recovers the way a colon fence does: it opens a code block with that language, drops all of its metadata and reports `fence-title-syntax`.
 
 ::: compare
 
@@ -1930,9 +1930,8 @@ code
 `````
 
 ```html
-<p><code>js title="x"
-code</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">code
+</code></pre>
 ```
 
 :::
@@ -1946,9 +1945,8 @@ code
 `````
 
 ```html
-<p><code>php [Composer] "x"
-code</code></p>
-<pre><code></code></pre>
+<pre><code class="language-php">code
+</code></pre>
 ```
 
 :::

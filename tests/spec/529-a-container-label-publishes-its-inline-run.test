@@ -103,3 +103,14 @@ c
 <pre><code class="language-js">c
 </code></pre>
 ````
+
+```
+:::[a `]` b]
+body
+:::
+.
+<div>
+  <p class="div-label">a <code>]</code> b</p>
+  <p>body</p>
+</div>
+```
