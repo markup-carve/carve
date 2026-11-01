@@ -88,6 +88,15 @@
               "properties": { "severity": { "const": "info" }, "fidelity": { "const": "normalized" }, "confidence": { "const": "exact" }, "path": { "type": "string", "pattern": "^line:[1-9][0-9]*$" } }
             }
           }
+        ,
+          {
+            "$comment": "CARVE-P2-034: an HTML block holding one HTML comment imported as a Carve %% comment or %%% comment fence, located at the comment's first line.",
+            "if": { "properties": { "code": { "const": "markdown-html-comment" } }, "required": ["code"] },
+            "then": {
+              "required": ["path"],
+              "properties": { "severity": { "const": "info" }, "fidelity": { "const": "normalized" }, "confidence": { "const": "exact" }, "path": { "type": "string", "pattern": "^line:[1-9][0-9]*$" } }
+            }
+          }
         ]
       }
     }
@@ -125,6 +134,7 @@
                           "markdown-escape",
                           "markdown-fenced-code",
                           "markdown-github-alert",
+                          "markdown-html-comment",
                           "markdown-hard-break",
                           "markdown-image",
                           "markdown-indented-code",

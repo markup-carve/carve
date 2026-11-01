@@ -71,6 +71,18 @@ test('the ratchet fails a new uncovered rule, a stale entry and a grown baseline
   assert.match(grown.join('\n'), /^B: added to the uncovered baseline/m)
 })
 
+test('a new rule the model has no code for may join the baseline, an existing one may not', () => {
+  const gated = ['A', 'B', 'N']
+  const killed = new Map([['A', null], ['B', null]])
+  const base = { uncovered: ['B'], killers: { A: 'row-1' } }
+  const unmapped = { A: 'importer only', N: 'importer only' }
+  const failures = ratchet({ gated, killed, baseline: { uncovered: ['A', 'B', 'N'] }, base, unmapped }).failures
+  assert.match(failures.join('\n'), /^A: added to the uncovered baseline/m)
+  assert.doesNotMatch(failures.join('\n'), /^N:/m)
+  const undeclared = ratchet({ gated, killed, baseline: { uncovered: ['B', 'N'] }, base }).failures
+  assert.match(undeclared.join('\n'), /^N: added to the uncovered baseline/m)
+})
+
 test('rules failing the same rows are redundant', () => {
   const groups = redundantGroups(new Map([['A', ['r1', 'r2']], ['B', ['r2', 'r1']], ['C', ['r1']], ['D', []], ['E', []]]))
   assert.deepEqual(groups, [['A', 'B']])

@@ -235,3 +235,16 @@ rust/90-markdown-an-important-alert-is-an-info-admonition  CARVE-P2-033: keeps a
 rust/91-markdown-a-warning-alert-is-a-warning-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
 rust/92-markdown-a-caution-alert-is-a-danger-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
 rust/100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote  CARVE-P2-033: keeps a GitHub alert as a blockquote
+
+# CARVE-P2-034, ruled 2026-11-01 (carve#4812): an HTML block holding one HTML
+# comment imports as a `%%` comment or a `%%%` comment fence. Cases 101 and 102
+# are ahead of every engine: carve-js at this repo's pin `572e7b72` keeps the
+# block as raw HTML (measured through tests/corpus-convert.test.mjs); carve-php
+# and carve-rs are inferred to do the same, and the next scheduled run confirms
+# or reports STALE.
+js/101-markdown-an-html-comment-block-imports-as-a-line-comment  CARVE-P2-034: keeps an HTML comment block as raw HTML
+js/102-markdown-a-multi-line-html-comment-imports-as-a-comment-fence  CARVE-P2-034: keeps an HTML comment block as raw HTML
+php/101-markdown-an-html-comment-block-imports-as-a-line-comment  CARVE-P2-034: keeps an HTML comment block as raw HTML
+php/102-markdown-a-multi-line-html-comment-imports-as-a-comment-fence  CARVE-P2-034: keeps an HTML comment block as raw HTML
+rust/101-markdown-an-html-comment-block-imports-as-a-line-comment  CARVE-P2-034: keeps an HTML comment block as raw HTML
+rust/102-markdown-a-multi-line-html-comment-imports-as-a-comment-fence  CARVE-P2-034: keeps an HTML comment block as raw HTML

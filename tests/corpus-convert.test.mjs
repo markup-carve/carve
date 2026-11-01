@@ -152,6 +152,8 @@ const PINNED_DRIFT = {
   '91-markdown-a-warning-alert-is-a-warning-admonition': 'CARVE-P2-033, ruled 2026-10-28: the pinned carve-js keeps a GitHub alert as a quote',
   '92-markdown-a-caution-alert-is-a-danger-admonition': 'CARVE-P2-033, ruled 2026-10-28: the pinned carve-js keeps a GitHub alert as a quote',
   '100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote': 'CARVE-P2-033, ruled 2026-10-28: the pinned carve-js keeps a GitHub alert as a quote',
+  '101-markdown-an-html-comment-block-imports-as-a-line-comment': 'CARVE-P2-034, ruled 2026-11-01: the pinned carve-js keeps an HTML comment block as raw HTML',
+  '102-markdown-a-multi-line-html-comment-imports-as-a-comment-fence': 'CARVE-P2-034, ruled 2026-11-01: the pinned carve-js keeps an HTML comment block as raw HTML',
 }
 const PINNED_SOURCE_DRIFT = {}
 

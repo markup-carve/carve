@@ -73,9 +73,11 @@ export function gatedRules (map, registry) {
 /*
  * Compare a measured result against the committed baseline and, when given, the
  * baseline of the base branch. `killed` maps every mapped rule to its killing
- * row or null.
+ * row or null. `unmapped` is the mutation map's reason list: a rule the base
+ * did not know at all may join the baseline only when it is listed there,
+ * because the model has no code a corpus row could kill (an importer rule).
  */
-export function ratchet ({ gated, killed, baseline, base }) {
+export function ratchet ({ gated, killed, baseline, base, unmapped = {} }) {
   const failures = []
   const uncovered = gated.filter((id) => !killed.get(id)).sort()
   const listed = new Set(baseline.uncovered)
@@ -88,8 +90,10 @@ export function ratchet ({ gated, killed, baseline, base }) {
   }
   if (base) {
     const before = new Set(base.uncovered)
+    const known = new Set([...base.uncovered, ...Object.keys(base.killers ?? {})])
     for (const id of baseline.uncovered) {
-      if (!before.has(id)) failures.push(`${id}: added to the uncovered baseline; the list may only shrink`)
+      if (before.has(id) || (!known.has(id) && Object.hasOwn(unmapped, id))) continue
+      failures.push(`${id}: added to the uncovered baseline; the list may only shrink`)
     }
   }
   return { uncovered, failures }

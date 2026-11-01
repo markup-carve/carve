@@ -197,6 +197,12 @@
       "scope": "imports-security-extensions"
     },
     {
+      "id": "CARVE-P2-034",
+      "part": "2",
+      "title": "A MARKDOWN HTML COMMENT IMPORTS AS A CARVE COMMENT",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P2-006",
       "part": "2",
       "title": "COLUMN-EXACT DELIMITERS",

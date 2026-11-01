@@ -33,3 +33,6 @@ php/comment-shaped-emphasis  The php engine does not carry the default authoring
 php/glob-shaped-strong  The php engine does not carry the default authoring rule yet (carve#4815).
 rust/comment-shaped-emphasis  The rust engine does not carry the default authoring rule yet (carve#4815).
 rust/glob-shaped-strong  The rust engine does not carry the default authoring rule yet (carve#4815).
+js/html-comment-renders-as-text  The js engine does not carry the default authoring rule yet (carve#4812).
+php/html-comment-renders-as-text  The php engine does not carry the default authoring rule yet (carve#4812).
+rust/html-comment-renders-as-text  The rust engine does not carry the default authoring rule yet (carve#4812).

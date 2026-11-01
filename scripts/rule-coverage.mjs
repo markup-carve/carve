@@ -162,7 +162,7 @@ if (args.write) {
   writeFileSync(baselinePath, `${JSON.stringify({ uncovered, killers }, null, 2)}\n`)
   console.log(`rule-coverage: wrote ${BASELINE_PATH}: ${gated.length - uncovered.length}/${gated.length} gated rules covered, ${uncovered.length} uncovered`)
 } else {
-  const { uncovered, failures } = ratchet({ gated, killed, baseline, base })
+  const { uncovered, failures } = ratchet({ gated, killed, baseline, base, unmapped: map.unmapped })
   console.log(`rule-coverage: ${report.covered}/${report.gated} gated rules covered over ${report.rows} core rows (${report.mapped} mapped, ${report.unmapped.length} without a mutation, ${report.survived.length} survived; ${report.outsideScopes} rules outside the gated scopes)`)
   if (report.survived.length) console.log(`survived: ${report.survived.join(' ')}`)
   for (const failure of failures) console.error(`rule-coverage: ${failure}`)
