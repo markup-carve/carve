@@ -7647,6 +7647,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     // A plain line below the child's column folded into its open paragraph.
     let childParagraphLazy = false
     let colonDescriptionBody = Infinity
+    let colonDescriptionColumn = -1
     let colonDescriptionParagraph = false
     let subCol = -1
     // A comment below the child's column ends it in the body parse (carve#3985).
@@ -8845,13 +8846,23 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // A line at the body column of a description in that container is the description's, not a new base (CARVE-P9-083).
         // A lazy line folds into the description's paragraph and closes nothing (PART 0 S4).
         const foldsIntoColonDescription = colonDescriptionParagraph && fence.opaque === null && foldablePlainLine(lm.rest)
+        // A lazy line between two descriptions hides the first from `opensDescriptionAt`.
+        const siblingColonDescription = fence.colon.length !== 0 && colonDescriptionBody !== Infinity &&
+          col === colonDescriptionColumn && DESCRIPTION_LEAD.test(lm.rest)
         if (fence.colon.length === 0 || (lm.rest !== '' && col < colonDescriptionBody && !foldsIntoColonDescription)) colonDescriptionBody = Infinity
+        // A `:` line in the body of a description whose paragraph is open is that paragraph's text, never a sibling (PART 0 S4).
+        const leadFoldsIntoColonDescription = colonDescriptionParagraph && col >= colonDescriptionBody && DESCRIPTION_LEAD.test(lm.rest)
         if (lm.rest === '' || colonDescriptionBody === Infinity) colonDescriptionParagraph = false
-        else if (col >= colonDescriptionBody) colonDescriptionParagraph = foldablePlainLine(lm.rest)
-        if (fence.colon.length !== 0 && fence.opaque === null && DESCRIPTION_LEAD.test(lm.rest) && opensDescriptionAt(itemLines, col - contentCol)) {
+        else if (col >= colonDescriptionBody) colonDescriptionParagraph = foldablePlainLine(lm.rest) || leadFoldsIntoColonDescription
+        if (fence.colon.length !== 0 && fence.opaque === null && !leadFoldsIntoColonDescription && DESCRIPTION_LEAD.test(lm.rest) &&
+            (siblingColonDescription || opensDescriptionAt(itemLines, col - contentCol))) {
           const lead = DESCRIPTION_LEAD.exec(lm.rest)[0]
+          colonDescriptionColumn = col
           colonDescriptionBody = col + lead.length
-          colonDescriptionParagraph = foldablePlainLine(lm.rest.slice(lead.length))
+          // Markers on the marker line hold the body's paragraph in their item.
+          let leadText = indentCols(lm.rest.slice(lead.length))
+          for (let marker; (marker = matchMarkerAt(leadText)); ) leadText = indentCols(marker.text)
+          colonDescriptionParagraph = foldablePlainLine(leadText.rest)
         }
         const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 && col < colonDescriptionBody &&
           col > contentCol && !descendantOwned && !COLON_CLOSER.test(lm.rest) && !inPayload && !retainedAfterComment && opensHostedColonBlock(lm.rest)
