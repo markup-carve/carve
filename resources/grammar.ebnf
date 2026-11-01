@@ -7972,8 +7972,12 @@ EOF = (* end of file *) ;
       ONE PHASE, AFTER R1. A paragraph whose whole content resolves to a single
       image becomes a BLOCK IMAGE (PART 9 §4's image-paragraph host,
       CARVE-P11-004's writer-side collapse, PART 10's bare `<img>`). A construct
-      that renders nothing does not count as content. This is the ONLY place the
-      question is asked. Nothing before it may treat an image
+      that renders nothing does not count as content. Characters left in the
+      resolved inline run DO count, including spaces preserved beside a removed
+      braced comment (PART 9 §21a). Thus `![a](x) {% c %}` stays a paragraph,
+      while `![a](x) %% c` promotes because the line comment takes its
+      separating space. This is the ONLY place the question is asked. Nothing
+      before it may treat an image
       paragraph as a block image, and nothing after it may re-derive the answer
       -- a renderer, a writer and an importer all READ it (PART 12 §23 names
       the field they read it from).
