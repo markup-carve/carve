@@ -1,0 +1,43 @@
+Abbreviations skip caption cross-reference text and an unresolved cross-reference
+
+```
+*[A]: x
+
+</#A>
+.
+<p>&lt;/#A&gt;</p>
+```
+
+```
+*[A]: x
+
+{#t}
+| a |
+^ A #: c
+
+See </#t>.
+.
+<table id="t">
+  <caption><abbr title="x">A</abbr> 1: c</caption>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+<p>See <a href="#t">A 1</a>.</p>
+```
+
+```
+*[A]: x
+
+See </#f>.
+
+{#f}
+![i](i.png)
+^ A #: c
+.
+<p>See <a href="#f">A 1</a>.</p>
+<figure id="f">
+  <img src="i.png" alt="i">
+  <figcaption><abbr title="x">A</abbr> 1: c</figcaption>
+</figure>
+```

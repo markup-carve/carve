@@ -7832,6 +7832,9 @@ EOF = (* end of file *) ;
       ordinary bracket text remains eligible. The text of a code span, an
       inline literal and a mention is not scanned (carve#4560). Tag text and
       autolink display text are likewise opaque to abbreviation expansion.
+      So are a cross-reference's link text, whether it clones a heading or a
+      numbered caption's label and number, and the literal an unresolved
+      cross-reference renders (R4, carve#4742).
       Expansion follows PART 9 §25 RESOURCE BOUNDS.
    R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
@@ -7848,7 +7851,10 @@ EOF = (* end of file *) ;
       `# B </#A>`) each resolve once (corpus "Cyclic cross-reference resolves
       to one level"). Cloning keeps the heading's markup:
       A cloned heading's text is opaque to abbreviation expansion; the heading
-      itself remains eligible at its authored position.
+      itself remains eligible at its authored position. The same holds for a
+      numbered caption's link text (LABEL + NUMBER): with `*[A]: x`, a table
+      caption `^ A #: c` expands `A` in the caption, and `</#t>` gives the link
+      text `A 1` with no `abbr` (carve#4742).
       An inner cross-reference in the cloned heading contributes its target's
       inline text without an inner link. References within that target are not
       expanded again.
@@ -7860,7 +7866,9 @@ EOF = (* end of file *) ;
       included, stays on its own element as written. A footnote
       reference is not cloned: `# Head[^1]` yields `Head`. A `</#id>`
       to an id that is neither a heading nor a numbered target is unresolved
-      and renders literally.
+      and renders literally; that literal is source text and is not scanned
+      for abbreviations (R3): with `*[A]: x`, an unresolved `</#A>` renders
+      `&lt;/#A&gt;` (carve#4742).
       WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE [CARVE-P9R-005].
       "Cloned heading text" means the nodes, not a rendered string. A node
       carries its SOURCE RUN, and a string does not, so an implementation that
