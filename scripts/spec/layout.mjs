@@ -8692,7 +8692,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           // its closer. An unfinished fence also owns the run at its boundary.
           for (let k = i; k < j; k++) {
             if (skipped.has(k)) continue
-            const dd = dedentMeasured(ind(k), lines[k], authoredBlockBase ?? contentCol)
+            // The descendant's opener may have established a deeper source
+            // base than this item. Its blank payload uses that same base.
+            const dd = dedentMeasured(ind(k), lines[k], nestedOpaque?.sourceBase ?? authoredBlockBase ?? contentCol)
             pushLine(dd.text, dd.meas, k)
           }
         }
@@ -9396,7 +9398,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // the base folds with it. `descendantOwned` is the collector's existing
         // spelling of "a known descendant item owns this column".
         absorbedFenceSeen = null
-        if (!inPayload) nestedOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody, !markerFolds)
+        if (!inPayload) {
+          const nextOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody, !markerFolds)
+          if (nextOpaque?.kind === 'code' && nextOpaque !== nestedOpaque) nextOpaque.sourceBase = localBase
+          nestedOpaque = nextOpaque
+        }
         if ((absorbedFenceSeen && !fence.opaque) || foldedChildFence) (residueFence.foldedFences ??= new Set()).add(itemLines.length - 1)
         if (opens && !absorbedFenceSeen && !foldedChildFence) fenceOpensAt.add(itemLines.length - 1)
         // A line the note paragraph claims is note text; it opens no fence here.
