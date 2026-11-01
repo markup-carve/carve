@@ -71,6 +71,17 @@
 868-a-plus-at-the-column-of-a-container-opened-on-another-marker-line-attaches-the-next-block-2  The pinned writer spells the + under a note's marker-line item at the note's body column, which the carve#4623 ruling refuses; it belongs at the item's authored marker column.
 873-an-item-on-a-note-marker-line-takes-its-plus-at-its-own-marker-column  The pinned writer spells the + under a note's marker-line item at the note's body column, which the carve#4623 ruling refuses; it belongs at the item's authored marker column.
 914-three-blank-lines-end-a-description-list-4  The pinned writer predates CARVE-P11-036's three-blank boundary between two description lists (markup-carve/carve#4759) and merges them; the spec moved first.
+103-a-heading-marker-opens-at-an-indented-top-level-column  The moved carve-js pin emits the heading in Markdown where the older sidecar escaped its marker (markup-carve/carve#4838).
+103-a-heading-marker-opens-at-an-indented-top-level-column-2  The moved carve-js pin emits the heading in Markdown where the older sidecar escaped its marker (markup-carve/carve#4838).
+159-indented-reference-and-footnote-definitions-register-2  The moved carve-js pin emits the registered footnote definition in Markdown where the older sidecar escaped it (markup-carve/carve#4838).
+184-a-definition-below-every-content-column-ends-the-item-and-registers  The moved carve-js pin emits the registered footnote definition in Markdown where the older sidecar kept it nested and escaped (markup-carve/carve#4838).
+187-a-comment-fence-is-a-comment-at-any-column-too  The moved carve-js pin adds blank lines around this comment fence instead of writing the pinned canonical fixture (markup-carve/carve#4838).
+192-a-comment-fence-under-a-nested-item-does-not-close-it-either  The moved carve-js pin adds blank lines around this nested comment fence instead of writing the pinned canonical fixture (markup-carve/carve#4838).
+422-a-recognized-opener-in-a-body-needs-no-blank-line-above-it-6  The moved carve-js pin emits this body opener differently from the older Markdown sidecar (markup-carve/carve#4838).
+637-definition-body-note-and-fence-owner-boundaries-5  The moved carve-js pin changes the fence layout instead of writing the pinned canonical fixture (markup-carve/carve#4838).
+821-a-quote-after-a-caption-starts-fresh-2  The moved carve-js pin writes a quote after a caption that the spec model reads as a different document (markup-carve/carve#4838).
+854-an-indented-dash-line-neither-opens-nor-closes-frontmatter  The moved carve-js pin changes the AST when it formats this indented dash line (markup-carve/carve#4838).
+854-an-indented-dash-line-neither-opens-nor-closes-frontmatter-2  The moved carve-js pin changes the AST when it formats this indented dash line (markup-carve/carve#4838).
 916-a-comment-does-not-split-a-nested-list-boundary  The pinned writer reduces the blank run around an erased comment in a nested list, so the spec model reads its output as one loose list (carve#4760; engine follow-up carve#4728).
 916-a-comment-does-not-split-a-nested-list-boundary-2  The pinned writer reduces the blank run around an erased comment in a nested list, so the spec model reads its output as one loose list (carve#4760; engine follow-up carve#4728).
 924-a-task-item-reads-a-definition-after-extra-box-padding  The pinned writer spells an empty task item as + after lifting its marker-line footnote definition; the spec model still reads the + as text (carve#4409).
