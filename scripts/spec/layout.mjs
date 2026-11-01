@@ -4079,14 +4079,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
 }
 
 // Whether a note's marker-line content is a chain of items or notes measured from its source
-// column. One ending in a code fence keeps the body column.
+// column, a code fence included (CARVE-P9-083).
 function noteChildAtSource(rest) {
   let text = rest
   let chained = false
   for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
     const measured = indentCols(trimLineEnd(text))
     const next = matchMarkerAt(measured)?.text ?? FOOTNOTE_DEF.exec(measured.rest)?.[2]
-    if (next === undefined) return chained && !isCodeBlockOpener(measured.rest)
+    if (next === undefined) return chained
     text = next
     chained = true
   }
