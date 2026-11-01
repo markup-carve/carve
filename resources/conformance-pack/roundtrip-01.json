@@ -1073,7 +1073,7 @@
 {"id":"roundtrip-e32a269d3e5e","source":"  \\{\"q\"\n","html":"<p>{“q”</p>"},
 {"id":"roundtrip-e36c6bf8a393","source":"[^a]: +\nflush\nsee[^a]\n- \n","html":""},
 {"id":"roundtrip-e373e2577042","source":"> :: t\n:: t\n: 1. para\n> : d\n>   [^f]: n\ntail\n","html":"<blockquote>\n  <dl>\n    <dt>t</dt>\n  </dl>\n</blockquote>\n<dl>\n  <dt>t</dt>\n  <dd>\n    <ol>\n      <li>para</li>\n    </ol>\n  </dd>\n</dl>\n<blockquote><p>: d</p></blockquote>"},
-{"id":"roundtrip-e3b6651f99d3","source":":: t\n %% c\n : 1. para\n</#h>```\nx\n","html":"<dl>\n  <dt>t</dt>\n</dl>\n<p>: 1. para\n&lt;/#h&gt;<code>\nx</code></p>"},
+{"id":"roundtrip-e3b6651f99d3","source":":: t\n %% c\n : 1. para\n</#h>```\nx\n","html":"<dl>\n  <dt>t</dt>\n  <dd>\n    <ol>\n      <li>para\n&lt;/#h&gt;<code>\nx</code></li>\n    </ol>\n  </dd>\n</dl>"},
 {"id":"roundtrip-e3e0e75480dc","source":"  hidden\n- %%%%\n  %%%\n  tail\n","html":"<p>hidden\n-</p>\n<p>tail</p>"},
 {"id":"roundtrip-e3e67b549d50","source":"- a\n\n/i/\n  more\n- :: tb\n_u_\n","html":"<ul>\n  <li>a</li>\n</ul>\n<p><em>i</em>\nmore\n- :: tb\n<u>u</u></p>"},
 {"id":"roundtrip-e3fcbdf815c1","source":":: t\n: para\n | a |\n | a |\n","html":"<dl>\n  <dt>t</dt>\n  <dd>para</dd>\n</dl>\n<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>"},

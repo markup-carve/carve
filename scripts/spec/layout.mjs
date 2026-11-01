@@ -3687,8 +3687,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // marker-line content starts at its body column.
     function apply(owner, col, form, canon = owner.canon, reader = owner.reader ?? owner.canon) {
       // A caption spills onto following lines like a paragraph (CARVE-P2-021).
-      owner.para = !!form.caption
-      owner.last = form.kind
+      // An invisible leaf between a term and its first description does not
+      // close the term. Keep its classification state for the next visible line.
+      const invisibleAfterTerm = form.kind === 'leaf' && owner.last === 'term' &&
+        (COMMENT_LINE.test(m.rest) || isLinkDef(m.rest) || ABBR_DEF.test(m.rest))
+      if (!invisibleAfterTerm) {
+        owner.para = !!form.caption
+        owner.last = form.kind
+      }
       owner.tableLine = form.table ? at : undefined
       if (form.attrLines) attrRest = { left: form.attrLines, cut: col - canon }
       if (form.kind === 'term') {
