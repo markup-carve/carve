@@ -1,0 +1,64 @@
+An attached colon frame stops at a description sibling
+
+```
+:: t
+: +
+:::
+: b
+:::
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <div>
+
+    </div>
+  </dd>
+  <dd>b</dd>
+</dl>
+<div>
+
+</div>
+```
+
+```
+:: t
+: +
+:::
+:: u
+: v
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <div>
+
+    </div>
+  </dd>
+  <dt>u</dt>
+  <dd>v</dd>
+</dl>
+```
+
+```
+:: t
+: a
++
+:::
+: b
+:::
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <div>
+
+    </div>
+  </dd>
+  <dd>b</dd>
+</dl>
+<div>
+
+</div>
+```

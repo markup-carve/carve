@@ -5374,10 +5374,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             // Either the block a `+` attached, or a lazy continuation of the open paragraph.
             if (attachPending) {
-              // A sibling description ends the pulled block, as a sibling marker ends an item's (carve#4080).
-              const siblingAt = (k) => DESCRIPTION_TEXT.test(ind(k)?.rest ?? '') &&
+              // A sibling description or term ends the pulled block, as a sibling marker ends an item's (carve#4080).
+              const siblingAt = (k) => (DESCRIPTION_TEXT.test(ind(k)?.rest ?? '') || DEFLIST_TERM.test(ind(k)?.rest ?? '')) &&
                 (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceDescriptionCol
-              const end = attachedBlockEnd(lines, i, state, (k) => attachmentBoundary(lines)(k) || siblingAt(k))
+              let end = attachedBlockEnd(lines, i, state, (k) => attachmentBoundary(lines)(k) || siblingAt(k))
+              end = attachedColonSiblingEnd(lines, i, end, attachedOpener(lines.slice(i, end), ind(i).col), siblingAt)
               attachedFrom = bodyLines.length
               for (let k = i; k < end; k++) pushBody(lines[k], k)
               attachPending = false
@@ -7266,6 +7267,31 @@ function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, q
   }
 }
 
+// A leading comment or attribute run belongs to the one block being attached.
+// Locate its actual opener before checking whether it is a colon frame.
+function attachedOpener(attached, column) {
+  let opener = 0
+  for (let attrs; ; ) {
+    if (isOneLineComment(attached[opener]) && opener + 1 < attached.length) opener++
+    else if ((attrs = tryAttrLine(dedentedWindow(attached, opener, column), 0)) && opener + attrs.next < attached.length) opener += attrs.next
+    else break
+  }
+  return opener
+}
+
+// A colon frame ends at the host's sibling even when a matching closer follows
+// later. An opaque code or comment payload can contain a sibling-shaped line.
+function attachedColonSiblingEnd(lines, start, end, opener, isSibling) {
+  const colon = COLON_FENCE.exec(lines[start + opener] ?? '')
+  if (!colon || parseColonOpener(colon[2]) === null) return end
+  for (let k = start + opener + 1; k < end; k++) {
+    const span = opaqueSpanEnd(lines, k)
+    if (span !== -1) k = span
+    else if (isSibling(k)) return k
+  }
+  return end
+}
+
 // The boundary set for a container with no marker column of its own - a block
 // quote, a footnote body, a definition description: a blank line or a further
 // `+`. A list item adds its sibling marker to this and is otherwise identical.
@@ -8413,28 +8439,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         matchMarkerAt(ind(idx))?.indent === baseIndent, Math.min(ind(i).col, blockColumn))
       const attached = lines.slice(i, end)
       // The block an attribute run leads decides how it ends, not the run (carve#4271).
-      let opener = 0
-      for (let attrs; ; ) {
-        if (isOneLineComment(attached[opener]) && opener + 1 < attached.length) opener++
-        else if ((attrs = tryAttrLine(dedentedWindow(attached, opener, ind(i).col), 0)) && opener + attrs.next < attached.length) opener += attrs.next
-        else break
-      }
+      const opener = attachedOpener(attached, ind(i).col)
       const codeMatch = FENCE.exec(attached[opener] ?? '')
       const code = codeMatch && parseFenceInfo(codeMatch[2]) !== null ? codeMatch : null
       const colon = COLON_FENCE.exec(attached[opener] ?? '')
       const unclosedAttached = code && i + opener + 1 < n && !hasCloser(lines.slice(i + opener), 0) && !lines.slice(i).some(isBlank)
       if (unclosedAttached) end = n
-      // A div does not look ahead for its closer: the host's next sibling marker ends it (14:280, carve#4717).
-      if (colon && parseColonOpener(colon[2]) !== null) {
-        for (let k = i + opener + 1; k < end; k++) {
-          const span = opaqueSpanEnd(lines, k)
-          if (span !== -1) k = span
-          else if (matchMarkerAt(ind(k))?.indent === baseIndent) {
-            end = k
-            break
-          }
-        }
-      }
+      end = attachedColonSiblingEnd(lines, i, end, opener, (k) => matchMarkerAt(ind(k))?.indent === baseIndent)
       const captionable = code ? hasCloser(attached, opener) : colon && isFigureGroupOpener(parseColonOpener(colon[2])) && COLON_CLOSER.test(attached.at(-1) ?? '')
       if (captionable && CAPTION.test(lines[end] ?? '')) end++
       // After a lone `+` the item stays open, so a block at its content column
