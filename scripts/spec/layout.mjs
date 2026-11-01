@@ -9683,7 +9683,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // so a later line past this column is no descendant's (CARVE-P0-004).
         if (subCol >= 0 && reach < subCol && !nm && dmeas.rest !== '' && !belowCloser && !inCommentSpan &&
             !inDefBody && !COMMENT_LINE.test(dedented) && i >= descendantBlockEnd &&
-            (!paragraphIsOpen() ||
+            (!descLive || !paragraphIsOpen() ||
               (col === contentCol && opensBlockAt(dedented, i)))) subCol = -1
         // A FENCED BODY IS NOT A PARAGRAPH whichever container opened it
         // (CARVE-P0-013, CARVE-P0-014). The branches above classify the line in
