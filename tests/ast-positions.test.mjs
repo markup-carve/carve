@@ -979,7 +979,9 @@ test('a nested list starting part way into the indent run is accepted', () => {
  * list with a count that no longer matches. Deleting lines here is the closing
  * step of each engine's fix.
  */
-const DECLARED_LEAF_INDENT_START = []
+const DECLARED_LEAF_INDENT_START = [
+  '855-invisible-lines-after-a-plus-are-skipped-and-the-first-visible-line-decides-6.crv 1  a comment fence the + skips is published as one empty line comment per line (markup-carve/carve-js#4173)',
+]
 
 test('no corpus document begins a span away from its opening markup', () => {
   // The synthetic documents above prove the rule fires; this proves it does not

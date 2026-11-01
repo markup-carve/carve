@@ -1,1 +1,0 @@
-The pinned carve-js predates this: a sibling behind an attribute run refuses the + (markup-carve/carve#4447); the spec model is correct.

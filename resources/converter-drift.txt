@@ -217,12 +217,6 @@
 # lint, so its six lines are an inference the next scheduled run confirms or
 # reports STALE. carve-js is being changed in parallel; its lines go in the
 # commit that proves it matches.
-js/88-markdown-a-note-alert-is-a-note-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-js/89-markdown-a-tip-alert-is-a-tip-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-js/90-markdown-an-important-alert-is-an-info-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-js/91-markdown-a-warning-alert-is-a-warning-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-js/92-markdown-a-caution-alert-is-a-danger-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-js/100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote  CARVE-P2-033: keeps a GitHub alert as a blockquote
 php/88-markdown-a-note-alert-is-a-note-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
 php/89-markdown-a-tip-alert-is-a-tip-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
 php/90-markdown-an-important-alert-is-an-info-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
@@ -242,9 +236,11 @@ rust/100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote  CARVE-P2-033: k
 # block as raw HTML (measured through tests/corpus-convert.test.mjs); carve-php
 # and carve-rs are inferred to do the same, and the next scheduled run confirms
 # or reports STALE.
-js/101-markdown-an-html-comment-block-imports-as-a-line-comment  CARVE-P2-034: keeps an HTML comment block as raw HTML
-js/102-markdown-a-multi-line-html-comment-imports-as-a-comment-fence  CARVE-P2-034: keeps an HTML comment block as raw HTML
 php/101-markdown-an-html-comment-block-imports-as-a-line-comment  CARVE-P2-034: keeps an HTML comment block as raw HTML
 php/102-markdown-a-multi-line-html-comment-imports-as-a-comment-fence  CARVE-P2-034: keeps an HTML comment block as raw HTML
 rust/101-markdown-an-html-comment-block-imports-as-a-line-comment  CARVE-P2-034: keeps an HTML comment block as raw HTML
 rust/102-markdown-a-multi-line-html-comment-imports-as-a-comment-fence  CARVE-P2-034: keeps an HTML comment block as raw HTML
+rust/html-import--adjacent-definition-lists  The pinned carve-rs predates the three-blank boundary between two description lists (markup-carve/carve#4759); fixed on carve-rs main, pending the pin.
+php/html-import--adjacent-definition-lists  The pinned carve-php predates the three-blank boundary between two description lists (markup-carve/carve#4759); fixed on carve-php main, pending the pin.
+rust/html-import--list-table-for-block-cells  The pinned carve-rs writes an empty item as - +, which the one attach rule refuses (markup-carve/carve#4409, #4442); pending the pin.
+php/html-import--list-table-for-block-cells  The pinned carve-php writes an empty item as - +, which the one attach rule refuses (markup-carve/carve#4409, #4442); pending the pin.

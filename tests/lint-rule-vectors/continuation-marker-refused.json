@@ -77,7 +77,7 @@
             "column": 3,
             "includes": [
               "blank line",
-              "stays empty"
+              "remains text"
             ]
           }
         ]
@@ -94,7 +94,7 @@
             "column": 3,
             "includes": [
               "end of the document",
-              "stays empty"
+              "remains text"
             ]
           }
         ]
@@ -278,18 +278,10 @@
     },
     {
       "name": "nested-task-checkbox-column",
-      "description": "The refused plus is reported at its source column.",
+      "description": "A plus at a task item's content column is a letter under PART 0 S2 and is quiet (carve#4648).",
       "source": "- foo\n  - [ ] task\n    +\n  - x\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 5,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -335,7 +327,7 @@
             "column": 3,
             "includes": [
               "+",
-              "stays empty"
+              "remains text"
             ]
           }
         ]
@@ -352,7 +344,7 @@
             "column": 4,
             "includes": [
               "+",
-              "stays empty"
+              "remains text"
             ]
           }
         ]
@@ -369,7 +361,7 @@
             "column": 7,
             "includes": [
               "+",
-              "stays empty"
+              "remains text"
             ]
           }
         ]
@@ -377,70 +369,34 @@
     },
     {
       "name": "footnote-first-block-list",
-      "description": "The first-block form does not pull a column-0 list (carve#3482).",
+      "description": "The first-block form attaches a list at its host's marker column (carve#4409).",
       "source": "[^a]: +\n- a list\n",
       "expected": {
-        "findings": [
-          {
-            "line": 1,
-            "column": 7,
-            "includes": [
-              "a list",
-              "remains text"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
       "name": "footnote-first-block-ordered-list",
-      "description": "The first-block form does not pull a column-0 list (carve#3482).",
+      "description": "The first-block form attaches a list at its host's marker column (carve#4409).",
       "source": "[^a]: +\n1. b\n",
       "expected": {
-        "findings": [
-          {
-            "line": 1,
-            "column": 7,
-            "includes": [
-              "a list",
-              "remains text"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
       "name": "description-first-block-list",
-      "description": "The first-block form does not pull a column-0 list (carve#3482).",
+      "description": "The first-block form attaches a list at its host's marker column (carve#4409).",
       "source": ":: t\n: +\n- a list\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 3,
-            "includes": [
-              "a list",
-              "stays empty"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
       "name": "description-first-block-ordered-list",
-      "description": "The first-block form does not pull a column-0 list (carve#3482).",
+      "description": "The first-block form attaches a list at its host's marker column (carve#4409).",
       "source": ":: t\n: +\n1. b\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 3,
-            "includes": [
-              "a list",
-              "stays empty"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -513,7 +469,7 @@
             "column": 3,
             "includes": [
               "end of the document",
-              "stays empty"
+              "remains text"
             ]
           }
         ]
@@ -530,7 +486,7 @@
             "column": 3,
             "includes": [
               "+",
-              "column rules"
+              "remains text"
             ]
           }
         ]
@@ -563,7 +519,7 @@
             "column": 3,
             "includes": [
               "blank line",
-              "stays empty"
+              "remains text"
             ]
           }
         ]
@@ -571,10 +527,19 @@
     },
     {
       "name": "item-first-block-indented",
-      "description": "A first-block plus attaches the following block at the item content column (CARVE-P9-067).",
+      "description": "A follower right or left of the first-block plus's column refuses it (carve#4409).",
       "source": "- +\n  x\n",
       "expected": {
-        "findings": []
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "+",
+              "remains text"
+            ]
+          }
+        ]
       }
     },
     {
@@ -647,19 +612,10 @@
     },
     {
       "name": "quote-first-block-list",
-      "description": "The first-block form does not pull a column-0 list (CARVE-P9-067).",
+      "description": "The first-block form attaches a list at its host's marker column (carve#4409).",
       "source": "> +\n- a\n",
       "expected": {
-        "findings": [
-          {
-            "line": 1,
-            "column": 3,
-            "includes": [
-              "a list",
-              "remains text"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -697,18 +653,36 @@
     },
     {
       "name": "stacked-quote-first-block-in-nested-item",
-      "description": "A stacked list and quote opener attaches a paragraph at that line's column.",
+      "description": "A follower right or left of the first-block plus's column refuses it (carve#4409).",
       "source": "- a\n  - > +\n  b\n",
       "expected": {
-        "findings": []
+        "findings": [
+          {
+            "line": 2,
+            "column": 7,
+            "includes": [
+              "+",
+              "remains text"
+            ]
+          }
+        ]
       }
     },
     {
       "name": "stacked-quote-first-block-heading-in-nested-item",
-      "description": "A stacked list and quote opener attaches a heading at that line's column.",
+      "description": "A follower right or left of the first-block plus's column refuses it (carve#4409).",
       "source": "- a\n  - > +\n  # h\n",
       "expected": {
-        "findings": []
+        "findings": [
+          {
+            "line": 2,
+            "column": 7,
+            "includes": [
+              "+",
+              "remains text"
+            ]
+          }
+        ]
       }
     },
     {
@@ -843,7 +817,7 @@
             "column": 5,
             "includes": [
               "end of the document",
-              "stays empty"
+              "remains text"
             ]
           }
         ]
@@ -892,7 +866,7 @@
             "column": 5,
             "includes": [
               "end of the document",
-              "stays empty"
+              "remains text"
             ]
           }
         ]

@@ -1,48 +1,39 @@
 {
-  "document-unclaimed-before-list": {
-    "actual": [[2, 1]]
-  },
-  "quote-unclaimed-indented": {
-    "actual": [[2, 5]]
-  },
-  "document-unclaimed-before-table": {
-    "actual": [[2, 1]]
-  },
-  "document-unclaimed-before-heading": {
-    "actual": [[2, 1]]
-  },
-  "table-row-cell-count/continuation-past-the-last-column": {
+  "ordered-list-split-by-indent/right-aligned-pair": {
     "actual": []
   },
-  "unclosed-code-fence/container-div": {
-    "message": "end of the document"
-  },
-  "unclosed-code-fence/under-paragraph": {
+  "ordered-list-split-by-indent/default-start": {
     "actual": []
   },
-  "unclosed-code-fence/under-paragraph-indented": {
+  "ordered-list-split-by-indent/right-aligned-three": {
     "actual": []
   },
-  "unclosed-code-fence/under-item-paragraph": {
+  "ordered-list-split-by-indent/three-digit-transition": {
     "actual": []
   },
-  "unclosed-code-fence/under-quote-paragraph": {
+  "ordered-list-split-by-indent/parenthesis-delimiter": {
+    "actual": []
+  },
+  "ordered-list-split-by-indent/blank-between": {
+    "actual": []
+  },
+  "ordered-list-split-by-indent/shift-right": {
     "actual": []
   },
   "list-marker-below-content-column/ordered-continuation": {
-    "message": "sibling item"
+    "actual": []
   },
   "list-marker-below-content-column/after-blank-same-kind": {
     "message": "sibling item"
   },
   "list-marker-below-content-column/after-blank-continuing-number": {
-    "actual": []
-  },
-  "list-marker-below-content-column/same-kind-run": {
     "message": "sibling item"
   },
+  "list-marker-below-content-column/same-kind-run": {
+    "actual": []
+  },
   "list-marker-below-content-column/same-kind-rising": {
-    "actual": [[2, 2]]
+    "actual": []
   },
   "list-marker-below-content-column/same-kind-after-blank-run": {
     "actual": [[3, 2]]
@@ -51,12 +42,12 @@
     "message": "sibling item"
   },
   "list-marker-below-content-column/same-kind-nested": {
-    "message": "sibling item"
+    "actual": []
   },
   "list-marker-below-content-column/same-kind-in-a-quote": {
-    "message": "sibling item"
+    "actual": []
   },
   "list-marker-below-content-column/same-kind-letter-marker": {
-    "message": "sibling item"
+    "actual": []
   }
 }

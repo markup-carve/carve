@@ -1,1 +1,0 @@
-Pinned JavaScript attaches a block to a forced span's own literal delimiter, hiding the span's closer inside it; fixed on carve-js main by markup-carve/carve-js#3909.

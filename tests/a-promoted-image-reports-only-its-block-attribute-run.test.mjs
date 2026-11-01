@@ -7,18 +7,7 @@ import { carveToMarkdownWithReport } from '@markup-carve/carve'
 // carve#3975: default Markdown export of a promoted image reports
 // markdown-attributes-dropped only for a block attribute run merged into it.
 // The pinned carve-js predates the fix and still reports glued attributes.
-const AHEAD_OF_PIN = new Set([
-  '155-image-trailing-attribute-is-strict-about-the-glue',
-  '342-url-list-attributes-are-probed-token-wise',
-  '342-url-list-attributes-are-probed-token-wise-2',
-  '342-url-list-attributes-are-probed-token-wise-3',
-  '342-url-list-attributes-are-probed-token-wise-4',
-  '342-url-list-attributes-are-probed-token-wise-8',
-  '342-url-list-attributes-are-probed-token-wise-9',
-  '342-url-list-attributes-are-probed-token-wise-12',
-  '71-attribute-edge-cases-5',
-  '737-model-inline-frames-and-html-attributes-2',
-])
+const AHEAD_OF_PIN = new Set([])
 const schema = JSON.parse(readFileSync(new URL('../resources/render-loss-report.schema.json', import.meta.url), 'utf8'))
 const validate = new Ajv2020({ strict: false }).compile(schema)
 const dropped = (pos) => ({
