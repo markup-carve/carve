@@ -1,0 +1,92 @@
+Three blank lines end a description list
+
+```
+:: t
+: x
+
+
+
+:: u
+: v
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<dl>
+  <dt>u</dt>
+  <dd>v</dd>
+</dl>
+```
+
+```
+:: t
+: x
+
+
+:: u
+: v
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+  <dt>u</dt>
+  <dd>v</dd>
+</dl>
+```
+
+```
+:: t
+
+
+
+: d
+.
+<dl>
+  <dt>t</dt>
+</dl>
+<p>: d</p>
+```
+
+```
+- o
+
+  :: t
+  : x
+
+  %% c
+
+
+  :: u
+  : v
+.
+<ul>
+  <li>o
+    <dl>
+      <dt>t</dt>
+      <dd>x</dd>
+    </dl>
+    <dl>
+      <dt>u</dt>
+      <dd>v</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+:: t
+: x
+
+
+
+  more
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>x</p>
+    <p>more</p>
+  </dd>
+</dl>
+```

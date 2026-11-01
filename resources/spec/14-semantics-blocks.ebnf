@@ -428,6 +428,16 @@
          loose item.
          Two blank lines remain ordinary decorative spacing; three establish
          the boundary.
+         DESCRIPTION LISTS TOO (carve#4759). The same run ends a description
+         list: after it a `:: ` term opens a NEW description list, and a `: `
+         description has no term above it and is read as a paragraph. As for
+         items, the run closes no description on its own: a continuation at
+         the description's body column after it stays in that description.
+           :: t             produces:    <dl><dt>t</dt><dd>x</dd></dl>
+           : x                           <dl><dt>u</dt><dd>v</dd></dl>
+           (three blank lines)
+           :: u
+           : v
       N2 ORDERED DIALECT. A list's dialect (decimal / lower- or upper-alpha
          / lower- or upper-roman) and delimiter are fixed by its FIRST
          item; a later marker outside the dialect, or with the other
