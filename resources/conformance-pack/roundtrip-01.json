@@ -468,7 +468,7 @@
 {"id":"roundtrip-5f12ae5890e7","source":" > :::\t\\\n x\n:::\n","html":"<blockquote><p>:::\t<br>\nx</p></blockquote>\n<div>\n\n</div>"},
 {"id":"roundtrip-5f97758a6917","source":"> - [d]: u\n\n\n::: note\n[go][d]\n","html":"<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>\n<aside class=\"admonition note\" aria-label=\"Note\">\n  <p><a href=\"u\">go</a></p>\n</aside>"},
 {"id":"roundtrip-600b6e265ced","source":"> :: [^f]t\n>  %% c\n> :  x\n   more\n","html":"<blockquote>\n  <dl>\n    <dt>[^f]t</dt>\n    <dd>x\nmore</dd>\n  </dl>\n</blockquote>"},
-{"id":"roundtrip-603bc6197796","source":"\n->  + a |\ntail\n","html":"<p>→  + a |\ntail</p>"},
+{"id":"roundtrip-603bc6197796","source":"\n->  + a |\ntail\n","html":"<p>-&gt;  + a |\ntail</p>"},
 {"id":"roundtrip-606d6f46796c","source":"\n{table}\n```csv\n\"bad\n```\n","html":"<pre table=\"\"><code class=\"language-csv\">\"bad\n</code></pre>"},
 {"id":"roundtrip-606df97e2404","source":" @a1. nn #tag\n @a1. nn #tag\n","html":"<p><span class=\"mention\"><strong>@a1</strong></span>. nn <span class=\"tag\"><strong>#tag</strong></span>\n<span class=\"mention\"><strong>@a1</strong></span>. nn <span class=\"tag\"><strong>#tag</strong></span></p>"},
 {"id":"roundtrip-6075ab465795","source":"- a\n\n  - b\n  *[A]: a\n- c\n","html":"<ul>\n  <li>a\n    <ul>\n      <li>b\n*[A]: a</li>\n    </ul>\n  </li>\n  <li>c</li>\n</ul>"},

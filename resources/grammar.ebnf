@@ -3104,19 +3104,20 @@ smart_quote = '"' | "'" ;
    the locale's quote glyphs. Escaped `\"` and `\'` remain straight
    characters; code, raw content, URLs and attribute values are unchanged. *)
 
-arrow = "<--" | "-->" | "<-->"      (* ← → ↔, canonical *)
-      | "<==" | "==>" | "<=>"       (* ⇐ ⇒ ⇔ *)
-      | "<-" | "->" | "<->" ;       (* deprecated, still rendered *)
+arrow = "<--" | "-->" | "<-->"      (* ← → ↔ *)
+      | "<==" | "==>" | "<=>" ;     (* ⇐ ⇒ ⇔ *)
 (* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE [CARVE-P3-022].
-   Matched longest-first, as `<->` already beats `<-`, so `<==` beats `<=` and
+   Matched longest-first, so `<-->` beats `<--`, `<==` beats `<=` and
    `-->` beats the hyphen run. A right arrow does not start inside a longer
    hyphen run: `a--->b` is an em dash and `>`, and `a ---> b` stays a flag. `=`
    has no run rule, so `a ===> b` is `=` and the arrow. An arrow takes its own
    hyphens from the start of a longer run. A left arrow therefore takes
    the first two hyphens of `a<---b` and gives `a←-b`.
 
-   `<=` KEEPS ≤. `->`, `<-` AND `<->` ARE DEPRECATED, NOT REMOVED: they
-   still render, with the doubled forms canonical.
+   `<=` KEEPS ≤. `->`, `<-` AND `<->` ARE REMOVED (carve#4815) and stay
+   ordinary text: `a<-b` renders `a&lt;-b` and `x->y` renders `x-&gt;y`.
+   A run longer than an arrow keeps the rest as text, so `<--->` is `←` and
+   `->`.
    `=>` IS REMOVED and stays ordinary text, including `key => value`,
    `x => x + 1` and `Some(x) => x`. *)
 comparison = "!=" | "<=" | ">=" ;
@@ -5132,6 +5133,16 @@ EOF = (* end of file *) ;
    heading, or a paragraph with surrounding visible prose, is quiet.
    `bare-html-tag` hints that an HTML-like tag in text is escaped. A tag in
    code or raw HTML is quiet.
+   `comment-shaped-emphasis` hints that a span reads like a C comment
+   (carve#4815): an emphasis span delimited by bare `/` whose content begins
+   or ends with a literal `*`, or a strong span delimited by bare `*` whose
+   content begins or ends with a literal `/`. `/* foo */` renders
+   `<em>* foo *</em>`. It reports the opening delimiter. Code, raw content
+   and escaped delimiters are quiet.
+   `glob-shaped-strong` hints that a strong span reads like a file glob
+   (carve#4815): a strong span delimited by bare `*` whose content begins
+   with a literal `.`. `*.js,*.ts` renders `<strong>.js,</strong>.ts`. It
+   reports the opening delimiter. Code and an escaped `\*` are quiet.
    `markdown-definition-paragraph` reports `term` followed by `: definition`
    when both remain paragraph text. A `:: term` definition is quiet.
    `github-alert-marker` reports `[!NOTE]`, `[!WARNING]` and the other GitHub

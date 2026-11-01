@@ -53,6 +53,8 @@
   "markdown-italic-underline": "This is _not_ intended.\n",
   "heading-level-skip": "# One\n\n### Three\n",
   "bare-html-tag": "Use <b>bold</b>.\n",
+  "comment-shaped-emphasis": "/* foo */\n",
+  "glob-shaped-strong": "*.js,*.ts\n",
   "markdown-definition-paragraph": "Term\n: definition\n",
   "github-alert-marker": "> [!WARNING]\n> Careful.\n"
 }

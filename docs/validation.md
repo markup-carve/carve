@@ -175,6 +175,8 @@ the command-line and editor behavior stay aligned.
 | `non-descriptive-link-text` | a link is labeled `here`, `click here`, or `read more` without a more specific accessible name; opt-in |
 | `emphasis-as-heading` | a paragraph consists only of emphasis or strong text; opt-in |
 | `bare-html-tag` | an HTML-like tag in prose renders as escaped text; default-on hint |
+| `comment-shaped-emphasis` | a C-comment shape such as `/* foo */` renders as emphasis around `* foo *`; use a code span or escape the delimiters. Default-on hint |
+| `glob-shaped-strong` | a file glob such as `*.js,*.ts` renders as strong text; use a code span or escape the `*`. Default-on hint |
 | `markdown-definition-paragraph` | `term` followed by `: definition` remains a paragraph; Carve needs `:: term` |
 | `github-alert-marker` | `[!NOTE]` or `[!WARNING]` in a blockquote stays literal text |
 | `caption-looking-paragraph` | opt-in hint for a caption-like paragraph directly before or after a table or image |

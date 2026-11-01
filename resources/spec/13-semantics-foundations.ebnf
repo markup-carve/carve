@@ -773,6 +773,16 @@
    heading, or a paragraph with surrounding visible prose, is quiet.
    `bare-html-tag` hints that an HTML-like tag in text is escaped. A tag in
    code or raw HTML is quiet.
+   `comment-shaped-emphasis` hints that a span reads like a C comment
+   (carve#4815): an emphasis span delimited by bare `/` whose content begins
+   or ends with a literal `*`, or a strong span delimited by bare `*` whose
+   content begins or ends with a literal `/`. `/* foo */` renders
+   `<em>* foo *</em>`. It reports the opening delimiter. Code, raw content
+   and escaped delimiters are quiet.
+   `glob-shaped-strong` hints that a strong span reads like a file glob
+   (carve#4815): a strong span delimited by bare `*` whose content begins
+   with a literal `.`. `*.js,*.ts` renders `<strong>.js,</strong>.ts`. It
+   reports the opening delimiter. Code and an escaped `\*` are quiet.
    `markdown-definition-paragraph` reports `term` followed by `: definition`
    when both remain paragraph text. A `:: term` definition is quiet.
    `github-alert-marker` reports `[!NOTE]`, `[!WARNING]` and the other GitHub
