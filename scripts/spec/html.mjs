@@ -1380,10 +1380,9 @@ function renderTable(node, depth, ctx) {
     if (isHeader && !/ scope="/i.test(parsed)) {
       a += contexts[r].header ? ' scope="col"' : ' scope="row"'
     }
-    // PART 5: a computed span is authoritative, so an author copy of its key is dropped.
+    // PART 5: only the `^` and `<` markers shape the grid, so an author copy of a span key is always dropped (carve#4715).
     for (const key of ['rowspan', 'colspan']) {
-      if (!cell[key]) continue
-      a += ` ${key}="${cell[key]}"`
+      if (cell[key]) a += ` ${key}="${cell[key]}"`
       parsed = parsed.replace(new RegExp(` ${key}="[^"]*"`, 'gi'), '')
     }
     a += parsed

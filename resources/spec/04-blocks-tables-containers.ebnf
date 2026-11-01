@@ -97,8 +97,12 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
    `|{.x} < |` is `<td class="x">&lt;</td>`; `| {.x} < |` has ordinary
    text `{.x} <` because the space precedes the brace.
-   A computed rowspan/colspan/alignment is authoritative, so an author copy of
-   those keys is dropped.
+   Only the `^` and `<` span markers shape the grid, so an authored `rowspan`
+   or `colspan` is always dropped, whether or not a span is computed:
+   `|{rowspan=2} a | b |` over `| c | d |` gives a plain `<td>a</td>` in a grid
+   of two rows (carve#4715). An authored `align` follows PART 10 like any
+   other key: a cell is outside the text-block set, so it keeps the attribute,
+   and a computed alignment adds its `text-align` declaration beside it.
 
    `|{#x}=R|` is a data cell whose content is `{#x}=R`; no marker run ends
    without a space (T11). `|{#x} =R |` has id `x` and content `=R`. *)
