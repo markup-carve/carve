@@ -38,8 +38,4 @@
 #
 # Format: <document id><space><space><reason>
 docs/validation.md#4  points at the engine: a same-kind marker below the content column is a sibling (markup-carve/carve#3885, markup-carve/carve#4835), so the pinned build still folds it into the item until markup-carve/carve-js#3874 lands
-docs/validation.md#6  points at the engine: siblings group by their container (markup-carve/carve#3885), so the pinned build still splits the list until markup-carve/carve-js#3874 lands
-docs/validation.md#7  points at the engine: an opener past the document's content column opens there (PART 0 S3, markup-carve/carve#3885), so the pinned build still reads `  # Heading` as text until markup-carve/carve-js#3874 lands
-docs/format-bridges.md#3  points at the engine: a typed div's kind word dedups against an authored class (CARVE-P4-002, markup-carve/carve#4143), so the pinned build still renders `class="calculation calculation"` until markup-carve/carve#4203 lands in carve-js
-docs/parsing-ambiguities.md#4  points at the engine: a column-0 abbreviation definition below an item ends it and defines (PART 9 §10, markup-carve/carve#4412), so the pinned build still folds the line until its pin moves
 docs/validation.md#2  points at the engine: a marker between an item's columns reads as at the marker column (PART 0 S3 and S4, markup-carve/carve#4545), so the pinned build still folds it into the paragraph until its port.
