@@ -2053,6 +2053,18 @@ function endsWithAuthoredInterrupter(line) {
 }
 
 // The body of the innermost item or description whose content column the last line reaches.
+// Does the marker-shaped line at `k` stand in an open line-block stanza? The payload lines
+// between the block's opener and `k` stand in as neutral text, so no marker there is asked again.
+function markerIsStanzaPayload(bodyLines, k, col, depth) {
+  let opener = k - 1
+  while (opener >= 0 && !LINE_BLOCK_SHAPED.test(bodyLines[opener])) opener--
+  if (opener < 0) return false
+  const neutral = (l) => {
+    const m = indentCols(l)
+    return !l.includes(LAZY) && matchMarkerAt(m) ? ' '.repeat(m.col) + 'x' : l
+  }
+  return hostEndsInLineBlockStanza([...bodyLines.slice(0, opener + 1), ...bodyLines.slice(opener + 1, k).map(neutral), ' '.repeat(col) + 'x'], depth + 1)
+}
 function trailingHostBody(bodyLines, last, tail, depth) {
   let reach = tail.col
   for (let k = last; k >= 0; k--) {
@@ -2066,6 +2078,13 @@ function trailingHostBody(bodyLines, last, tail, depth) {
       : 0
     if (lead === 0 || measured.col + lead > reach && k < last) {
       if (measured.col === 0) return null
+      reach = measured.col
+      continue
+    }
+    // A marker-shaped line-block payload line is no host, so the walk goes on to the block's own host (PART 2 line_block).
+    if (marker && measured.col > 0 && markerIsStanzaPayload(bodyLines, k, measured.col, depth)) {
+      // The lines up to the block's opener are payload too, so the walk resumes there.
+      while (k > 0 && !LINE_BLOCK_SHAPED.test(bodyLines[k - 1])) k--
       reach = measured.col
       continue
     }
@@ -7474,6 +7493,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // The column a line-block payload line was last found at; lines at or past it stay payload.
     let stanzaPayloadCol = null
     let holdsLineBlock = LINE_BLOCK_SHAPED.test(head.text)
+    let lineBlockFenceCol = holdsLineBlock ? contentCol + head.text.indexOf(':::') : -1
     const captionGaps = []
     const residueFence = { index: 0, opaque: null }
     const commentClosersByColumn = new Map()
@@ -9084,7 +9104,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const noteClaimsBelow = defBodyIndent !== null && noteBodyBoundary !== null &&
           col < noteBodyBoundary && noteClaimsLazyLine(i)
         holdsLineBlock ||= LINE_BLOCK_SHAPED.test(lm.rest)
-        if (lm.rest !== '' && (col <= contentCol || col < stanzaPayloadCol || COLON_CLOSER.test(lm.rest))) stanzaPayloadCol = null
+        if (LINE_BLOCK_SHAPED.test(lm.rest)) lineBlockFenceCol = col + lm.rest.indexOf(':::')
+        // A bare colon run past the block's fence column is no closer: a line block closes only at its own column.
+        if (lm.rest !== '' && (col <= contentCol || col < stanzaPayloadCol || COLON_CLOSER.test(lm.rest) && col <= lineBlockFenceCol)) stanzaPayloadCol = null
         // A line-block payload line is inline content whatever its shape (PART 2 line_block).
         const stanzaPayload = () => {
           if (!holdsLineBlock || col <= contentCol || lm.rest === '') return false
@@ -9422,6 +9444,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           defBodyIndent = defBody
           notePara = i
         }
+        // A comment line in verse is an empty verse line, so its stanza stays open (PART 9 §23).
+        else if (COMMENT_LINE.test(dedented) && stanzaPayload()) openParaWith(dedented)
         else if (COMMENT_LINE.test(dedented)) {
           closePara()
           if (markerNoteEligible && col >= markerNoteBodyColumn) defBodyIndent = defBody
