@@ -434,8 +434,10 @@ ellipsis = "..." ;    (* → … *)
    direction (CARVE-P3-023): `*--x*` keeps its run, while a `*` that opens
    nothing is the preceding character, so `2*--x` converts. A bracket run that
    stays literal is a region like a span (PART 9 §9), so its content
-   starts the same way: `[--x] y` keeps its run, while `(` opens no region and
-   `(--x) y` converts. A span's closing
+   starts the same way: `[--x] y` keeps its run. An opening `(`, `"` or `'` that
+   itself follows whitespace or the start of the inline content counts as
+   whitespace for this test (carve#4813): `(--x) y` and `"--x"` keep their runs,
+   while `(1--10)`, `a(--x)` and `((--x))` convert. A span's closing
    delimiter is not a following character: nothing follows a run at the end
    of a span's content, so `*a --*` converts as `a --` does.
    An editorial frame, either side of a substitution, an extension's content

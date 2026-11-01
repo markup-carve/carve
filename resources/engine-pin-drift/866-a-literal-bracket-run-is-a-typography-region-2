@@ -1,0 +1,1 @@
+An opening parenthesis or quote after whitespace counts as whitespace for the flag test (markup-carve/carve#4813); pending in the pinned engine.

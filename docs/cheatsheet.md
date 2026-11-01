@@ -56,7 +56,7 @@ shows complete input and output.
 | `\ ` mid-line | no-break space | backslash-space; in the last column it is the hard break above |
 | `` `<br>`{=html} `` | raw inline | emitted only in HTML output; other format names are retained for external converters ([security and configuration](/security)) |
 
-A bare hyphen run stays literal when it looks like a CLI flag: `x --next`.
+A bare hyphen run stays literal when it looks like a CLI flag: `x --next`, also inside an opening parenthesis or quote: `x (--next)`.
 Arrows still convert in that position, so `x -->next` becomes `x →next`.
 
 Bare delimiters work only at word boundaries; force one intraword with the brace form, e.g. `H{,2,}O`, `mc{^2^}`. The braces need content: an empty pair like `{^^}` is text.
