@@ -4,6 +4,8 @@ A quote holding only braced comments is not a caption host
 > {% c %}
 ^ cap
 .
-<blockquote><p></p></blockquote>
+<blockquote>
+
+</blockquote>
 <p>^ cap</p>
 ```

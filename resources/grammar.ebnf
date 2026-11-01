@@ -4548,11 +4548,9 @@ EOF = (* end of file *) ;
       nothing a caption could be about, so it is not a captionable host.
       Comment, definition and attribute lines hold no content for this test
       either (CARVE-P0-011): `> %%` / `^ cap` captions nothing, as a bare
-      `>` does, while `> a %% c` still captions. A paragraph holding only
-      braced comments holds no content for this test: `> {% c %}` / `^ cap`
-      keeps the quote's empty paragraph and captions nothing. An abbreviation
-      definition is a definition at document level only (PART 5); in a quote
-      it is paragraph text, so `> *[A]: b` / `^ cap` captions. This
+      `>` does, while `> a %% c` still captions. An abbreviation definition
+      is a definition at document level only (PART 5); in a quote it is
+      paragraph text, so `> *[A]: b` / `^ cap` captions. This
       says nothing about hosts delimited by an explicit closing fence, whose
       caption attaches at the closer: a zero-panel `::: figure` still carries
       its group caption (CARVE-P9-001).
@@ -6781,9 +6779,11 @@ EOF = (* end of file *) ;
       body contains `~>`. That arrow is comment text and cannot split a
       substitution. If it was the only top-level arrow, the frame is
       unclosed: `{~a %% b~>c~} d` renders `<p>{~a d</p>`.
-      - A paragraph holding only braced comments renders empty and takes
-        pending attributes: `{% c %}` gives `<p></p>` and `- {% c %}` an empty
-        `<li>`.
+      - A paragraph holding only braced comments renders nothing, as a `%%`
+        line does: `{% c %}` gives no output, `- {% c %}` an empty `<li>` and
+        `> {% c %}` an empty quote. Pending attributes float past it (§15 A2a),
+        and it separates nothing in a list (§17 L1b). It is still a paragraph
+        while open: `x` / `{% c %}` interrupts nothing.
       - SPELLING. `{%` opens, the FIRST `%}` closes. One character per meaning,
         like the rest of the braced family ({^x^}, {,x,}, {+x+}, {-x-}), and the
         same spelling Djot uses, so a Djot document's comments keep working.

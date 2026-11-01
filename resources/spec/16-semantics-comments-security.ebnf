@@ -54,9 +54,11 @@
       body contains `~>`. That arrow is comment text and cannot split a
       substitution. If it was the only top-level arrow, the frame is
       unclosed: `{~a %% b~>c~} d` renders `<p>{~a d</p>`.
-      - A paragraph holding only braced comments renders empty and takes
-        pending attributes: `{% c %}` gives `<p></p>` and `- {% c %}` an empty
-        `<li>`.
+      - A paragraph holding only braced comments renders nothing, as a `%%`
+        line does: `{% c %}` gives no output, `- {% c %}` an empty `<li>` and
+        `> {% c %}` an empty quote. Pending attributes float past it (§15 A2a),
+        and it separates nothing in a list (§17 L1b). It is still a paragraph
+        while open: `x` / `{% c %}` interrupts nothing.
       - SPELLING. `{%` opens, the FIRST `%}` closes. One character per meaning,
         like the rest of the braced family ({^x^}, {,x,}, {+x+}, {-x-}), and the
         same spelling Djot uses, so a Djot document's comments keep working.

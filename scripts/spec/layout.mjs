@@ -1719,6 +1719,11 @@ function invisibleSiblingLine(rest, top) {
   return COMMENT_LINE.test(rest) || isLinkDef(rest) && !FOOTNOTE_DEF.test(rest) || top && ABBR_DEF.test(rest)
 }
 
+// A one-line paragraph of only comments renders nothing, so a list reads it as it reads a `%%` line (carve#4799).
+function commentOnlyParaLine(rest, next) {
+  return rest.startsWith('{%') && COMMENT_ONLY_PARA.test(rest) && (next === undefined || isBlank(next))
+}
+
 // A definition skipped between siblings still registers, in source order.
 function registerSkippedDefinitions(lines, from, to, restOf, state, top) {
   for (let k = from; k < to; k++) {
@@ -5587,7 +5592,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // entry follows it (djot parity; CARVE-P9-013, carve#4716); otherwise
         // it ends the list.
         const restAt = (k) => (lines[k] ?? '').startsWith(LAZY) ? null : indentCols(lines[k] ?? '').rest
-        const invisibleAt = (k) => restAt(k) !== null && invisibleSiblingLine(restAt(k), top)
+        const invisibleAt = (k) => restAt(k) !== null && (invisibleSiblingLine(restAt(k), top) || commentOnlyParaLine(restAt(k), lines[k + 1]))
         if (isBlank(cur0) || invisibleAt(i)) {
           // PART 9 SS11 N1a: three blank lines end a description list too
           // (carve#4759); invisible lines do not split the run.
@@ -6650,12 +6655,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // host: it holds nothing the caption could be about, and letting it take
       // one binds the caption across the container change that opened it
       // (PART 9 SS4d, markup-carve/carve#2892).
-      // A nested quote or bare fence of structural-only lines holds nothing either,
-      // and neither does a paragraph of only braced comments (carve#4799).
-      const holdsNothing = (c) => c.t === 'para'
-        ? COMMENT_ONLY_PARA.test(c.lines.join('\n'))
-        : (c.t === 'quote' || (c.t === 'colon-div' && c.type == null && c.title == null && c.label == null)) &&
-          c.children.every(holdsNothing)
+      // A nested quote or bare fence of structural-only lines holds nothing either.
+      const holdsNothing = (c) => (c.t === 'quote' || (c.t === 'colon-div' && c.type == null && c.title == null && c.label == null)) &&
+        c.children.every(holdsNothing)
       const cap = !children.every(holdsNothing) ? captionSlot(i) : null
       if (cap) {
         node.caption = cap.text
@@ -6720,6 +6722,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
       i++
     }
+    // A paragraph of only comments emits nothing and leaves pending attributes floating (carve#4799).
+    if (COMMENT_ONLY_PARA.test(para.join('\n'))) continue
     const pnode = { t: 'para', lines: para }
     // AN UNBOUND CAPTION SLOT, NOT A CAPTION (PART 9 SS4; one blank line
     // allowed). carve#1784: block-image status is a property of the RESOLVED
@@ -7516,7 +7520,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     return count
   }
   const baseIndent = matchMarkerAt(ind(i)).indent
-  const invisibleAt = (k) => invisibleSiblingLine(ind(k).rest, top)
+  const invisibleAt = (k) => invisibleSiblingLine(ind(k).rest, top) || commentOnlyParaLine(ind(k).rest, lines[k + 1])
   const commentsBeforeSibling = (at) => {
     if (at >= n || !invisibleAt(at)) return at
     // Invisible lines are erased from layout, so blank lines on either side
@@ -7803,7 +7807,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const close = run(rests[k]) === undefined ? -1 : rests.findIndex((rest, at) => at > k && run(rest) === run(rests[k]))
         if (close > k) k = close
         else if (rests[k] !== '' && !COMMENT_LINE.test(rests[k]) &&
-            !isDefinitionOrAttributeLine(rests[k])) return true
+            !isDefinitionOrAttributeLine(rests[k]) && !commentOnlyParaLine(rests[k], rests[k + 1])) return true
       }
       return false
     }
@@ -8923,7 +8927,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             FOOTNOTE_DEF.test(dedented) ||
             isLinkDef(dedented) ||
             parseAttrList(trimLineEnd(dedented)) !== null ||
-            !!tryAttrLine(dedentedWindow(lines, j, contentCol), 0)
+            !!tryAttrLine(dedentedWindow(lines, j, contentCol), 0) ||
+            commentOnlyParaLine(dedented, lines[j + 1])
           ) {
             // An INVISIBLE construct is not a second paragraph, and SS17 L1
             // asks for one: "some item holds a blank-line-separated second
@@ -9355,7 +9360,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           !noteClaimsBelow &&
           parseAttrList(trimLineEnd(dedented)) === null &&
           // A glued run (`{.a}{.b}`) is one attribute line too (carve#4078).
-          !tryAttrLine([trimLineEnd(dedented)], 0)
+          !tryAttrLine([trimLineEnd(dedented)], 0) &&
+          !commentOnlyParaLine(dedented, lines[i + 1])
         ) {
           // §17 L1b: a second paragraph, still blank-line-separated.
           if (!itemShowsNothing()) list.tight = false

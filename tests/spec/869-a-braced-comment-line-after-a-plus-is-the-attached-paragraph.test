@@ -6,9 +6,8 @@ A braced comment line after a plus is the attached paragraph
 # H
 .
 <ul>
-  <li></li>
+  <li>
+    <h1 id="H">H</h1>
+  </li>
 </ul>
-<section id="H">
-  <h1>H</h1>
-</section>
 ```
