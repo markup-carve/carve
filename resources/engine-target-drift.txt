@@ -75,3 +75,13 @@ html/rust/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-un
 html/js/741-visible-footnote-headings-4  markup-carve/carve-js#3775, engine HTML differs from the normative corpus fixture
 html/php/741-visible-footnote-headings-4  markup-carve/carve-php#4119, engine HTML differs from the normative corpus fixture
 html/rust/741-visible-footnote-headings-4  markup-carve/carve-rs#3385, engine HTML differs from the normative corpus fixture
+html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-2  markup-carve/carve#4798, the pinned Rust parser keeps a term inside an attached frame
+plain/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-2  markup-carve/carve#4798, the pinned Rust parser keeps a term inside an attached frame
+carve/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-2  markup-carve/carve#4798, the pinned Rust parser keeps a term inside an attached frame
+ansi/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-2  markup-carve/carve#4798, the pinned Rust parser keeps a term inside an attached frame
+html/js/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-carve/carve#4798, the pinned parser retains a description sibling inside an attached frame
+html/php/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-carve/carve#4798, the pinned parser retains a description sibling inside an attached frame
+html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-carve/carve#4798, the pinned parser retains a description sibling inside an attached frame
+html/js/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
+html/php/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
+html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
