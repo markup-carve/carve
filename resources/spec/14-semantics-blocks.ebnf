@@ -467,9 +467,8 @@
       frame a `+` attaches in a list item or definition body ends at its host's
       next sibling marker whether or not a later `:::` exists. That later line
       opens a frame of its own after the host (carve#4717, carve#4798).
-      Resolve the closer
-      before classifying its
-      body line. A nested opener starts a child frame when the kind permits
+      Resolve the closer before classifying its body line. A nested opener starts
+      a child frame when the kind permits
       nesting; the same extent and column rule applies at every depth.
       The selected kind changes only the body mode, its output, and any
       placement or nesting restriction stated by that kind. In block mode,
