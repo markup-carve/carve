@@ -558,8 +558,9 @@ arrow = "<--" | "-->" | "<-->"      (* ← → ↔, canonical *)
    Matched longest-first, as `<->` already beats `<-`, so `<==` beats `<=` and
    `-->` beats the hyphen run. A right arrow does not start inside a longer
    hyphen run: `a--->b` is an em dash and `>`, and `a ---> b` stays a flag. `=`
-   has no run rule, so `a ===> b` is `=` and the arrow. A left arrow takes
-   the first two hyphens of a longer run: `a<---b` gives `a←-b`.
+   has no run rule, so `a ===> b` is `=` and the arrow. An arrow takes its own
+   hyphens from the start of a longer run. A left arrow therefore takes
+   the first two hyphens of `a<---b` and gives `a←-b`.
 
    `<=` KEEPS ≤. `->`, `<-` AND `<->` ARE DEPRECATED, NOT REMOVED: they
    still render, with the doubled forms canonical.
