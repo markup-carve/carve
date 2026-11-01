@@ -1,1 +1,0 @@
-markup-carve/carve#4396, the pinned carve-js ends a note's refused + at a list marker; a refused + reads like a letter (spec first, port pending)

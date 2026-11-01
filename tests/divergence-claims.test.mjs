@@ -84,7 +84,7 @@ const CLAIMS = [
   { section: '13', input: ':::\nX\n', differs: false, note: 'an unclosed container closes at end of input in BOTH' },
   { section: '13', input: ':::\nOuter\n\n::::\nInner\n::::\n:::\n', differs: true, note: 'widening inward nests in Carve, closes the outer in Djot' },
   { section: '14', input: '# One\ntwo\n', differs: true, note: 'a heading ends at the newline in Carve, folds in Djot' },
-  { section: '15', input: ' # H\n', differs: true, note: 'an indented block opener is prose in Carve, a heading in Djot' },
+  { section: '15', input: ' # H\n', differs: false, note: 'an indented block opener is a heading in both (PART 0 S3)' },
   { section: '15', input: '>\tq\n', differs: true, note: 'a tab does not satisfy the quote separator in Carve' },
   { section: '16', input: '[x]{12=v}\n', differs: true, note: 'a generic attribute name may not start with a digit in Carve, so the braces stay literal' },
   { section: '17', input: '-{.c} x\n', differs: true, note: 'the attribute block binds to the marker in Carve, to a span in Djot' },

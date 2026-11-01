@@ -3,76 +3,46 @@
 # corpus row and target. A unanimous engine difference needs an expected fixture
 # and a declaration for each engine. The gate rejects any stale declaration.
 # Format: target/engine/slug  owner/repo#issue and reason
-html/js/739-opaque-reference-and-inline-bounds-7  markup-carve/carve-js#3764, pinned JS drops the quoted body
-html/js/739-opaque-reference-and-inline-bounds-8  markup-carve/carve-js#3764, pinned JS drops the quoted body
-markdown/js/739-opaque-reference-and-inline-bounds-7  markup-carve/carve-js#3764, pinned JS drops the quoted body
-markdown/js/739-opaque-reference-and-inline-bounds-8  markup-carve/carve-js#3764, pinned JS drops the quoted body
-plain/js/739-opaque-reference-and-inline-bounds-7  markup-carve/carve-js#3764, pinned JS drops the quoted body
-plain/js/739-opaque-reference-and-inline-bounds-8  markup-carve/carve-js#3764, pinned JS drops the quoted body
-ansi/js/739-opaque-reference-and-inline-bounds-7  markup-carve/carve-js#3764, pinned JS drops the quoted body
-ansi/js/739-opaque-reference-and-inline-bounds-8  markup-carve/carve-js#3764, pinned JS drops the quoted body
-html/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
 markdown/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
-carve/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
 ansi/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
 html/php/741-visible-footnote-headings  markup-carve/carve-php#4119, used-note implicit heading reference pending
-html/js/741-visible-footnote-headings-2  markup-carve/carve-js#3775, unused-note heading incorrectly indexed
 html/rust/741-visible-footnote-headings-2  markup-carve/carve-rs#3385, unused-note heading incorrectly indexed
 markdown/php/741-visible-footnote-headings  markup-carve/carve-php#4119, used-note implicit heading reference pending
-markdown/js/741-visible-footnote-headings-2  markup-carve/carve-js#3775, unused-note heading incorrectly indexed
 markdown/rust/741-visible-footnote-headings-2  markup-carve/carve-rs#3385, unused-note heading incorrectly indexed
 plain/php/741-visible-footnote-headings  markup-carve/carve-php#4119, used-note implicit heading reference pending
-plain/js/741-visible-footnote-headings-2  markup-carve/carve-js#3775, unused-note heading incorrectly indexed
 plain/rust/741-visible-footnote-headings-2  markup-carve/carve-rs#3385, unused-note heading incorrectly indexed
 ansi/php/741-visible-footnote-headings  markup-carve/carve-php#4119, used-note implicit heading reference pending
-ansi/js/741-visible-footnote-headings-2  markup-carve/carve-js#3775, unused-note heading incorrectly indexed
 ansi/rust/741-visible-footnote-headings-2  markup-carve/carve-rs#3385, unused-note heading incorrectly indexed
-html/js/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/287-a-column-zero-definition-ends-an-open-list-item-2  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/358-what-a-content-column-block-does-not-reach-2  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/358-what-a-content-column-block-does-not-reach-2  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/358-what-a-content-column-block-does-not-reach-2  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/374-a-collected-definition-closes-the-item-paragraph-3  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/374-a-collected-definition-closes-the-item-paragraph-3  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/374-a-collected-definition-closes-the-item-paragraph-3  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/435-the-continuation-marker-s-column-gate-reaches-every-container-2  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/435-the-continuation-marker-s-column-gate-reaches-every-container-4  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-2  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-2  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/437-a-first-block-marker-in-a-footnote-body-or-a-quote-attaches-only-at-its-marker-column-2  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-3  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/620-generated-container-documents-16  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/620-generated-container-documents-16  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/620-generated-container-documents-16  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, engine HTML differs from the normative corpus fixture
 html/php/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-php#4118, engine HTML differs from the normative corpus fixture
 html/rust/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-rs#3383, engine HTML differs from the normative corpus fixture
-html/js/741-visible-footnote-headings-4  markup-carve/carve-js#3775, engine HTML differs from the normative corpus fixture
 html/php/741-visible-footnote-headings-4  markup-carve/carve-php#4119, engine HTML differs from the normative corpus fixture
 html/rust/741-visible-footnote-headings-4  markup-carve/carve-rs#3385, engine HTML differs from the normative corpus fixture
 html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-2  markup-carve/carve#4798, the pinned Rust parser keeps a term inside an attached frame
@@ -91,3 +61,83 @@ html/rust/704-a-non-ascii-letter-does-not-block-a-bare-delimiter  markup-carve/c
 html/js/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
 html/php/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
 html/rust/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
+carve/rust/326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-7  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-7  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/379-a-reference-definition-cannot-take-its-destination-from-the-next-line-2  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/379-a-reference-definition-cannot-take-its-destination-from-the-next-line-2  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-4  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-4  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-5  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-5  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/428-a-wrapped-attribute-line-leaves-no-paragraph-open  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/428-a-wrapped-attribute-line-leaves-no-paragraph-open  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/428-a-wrapped-attribute-line-leaves-no-paragraph-open-3  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/428-a-wrapped-attribute-line-leaves-no-paragraph-open-3  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-4  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-4  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-8  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-8  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/556-a-closed-block-leaves-no-frame-for-the-line-below-11  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/556-a-closed-block-leaves-no-frame-for-the-line-below-11  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/556-a-closed-block-leaves-no-frame-for-the-line-below-12  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/556-a-closed-block-leaves-no-frame-for-the-line-below-12  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note-2  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note-2  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/585-a-comment-in-a-marker-line-note-changes-nothing  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/585-a-comment-in-a-marker-line-note-changes-nothing  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/585-a-comment-in-a-marker-line-note-changes-nothing-2  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/585-a-comment-in-a-marker-line-note-changes-nothing-2  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2  markup-carve/carve#4409, the pinned carve-rs writer spells a + the one attach rule refuses, which changes the document; pending the carve-rs pin
+carve/php/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2  markup-carve/carve#4409, the pinned carve-php writer spells a + the one attach rule refuses, which changes the document; pending the carve-php pin
+carve/rust/09-tables-3  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/09-tables-3  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/100-table-row-attributes  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/100-table-row-attributes  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/106-blocked-span-marker-renders-as-empty-cell  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/106-blocked-span-marker-renders-as-empty-cell  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/107-colspan-marker-scans-left-past-a-consumed-cell  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/107-colspan-marker-scans-left-past-a-consumed-cell  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/115-a-continuation-row-needs-a-body-row  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/115-a-continuation-row-needs-a-body-row  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/203-a-footnote-body-holds-blocks-and-they-render-where-they-were-written  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/203-a-footnote-body-holds-blocks-and-they-render-where-they-were-written  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/218-a-footnote-body-s-authored-base-can-open-a-table-past-column-two  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/218-a-footnote-body-s-authored-base-can-open-a-table-past-column-two  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-3  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-3  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/256-table-cell-padding-must-be-a-space-19  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/256-table-cell-padding-must-be-a-space-19  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/318-composite-figures-10  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/318-composite-figures-10  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/321-delimited-comments-8  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/321-delimited-comments-8  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-3  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-3  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-6  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-6  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-5  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-5  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-6  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-6  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-28  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-28  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-6  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-6  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/574-a-head-row-alignment-marker-sets-the-whole-column  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/574-a-head-row-alignment-marker-sets-the-whole-column  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/574-a-head-row-alignment-marker-sets-the-whole-column-2  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/574-a-head-row-alignment-marker-sets-the-whole-column-2  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-32  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-32  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
+carve/rust/682-escaped-table-hyphens-stay-literal  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
+carve/php/682-escaped-table-hyphens-stay-literal  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin

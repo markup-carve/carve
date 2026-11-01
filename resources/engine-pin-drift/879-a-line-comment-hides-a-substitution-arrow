@@ -1,1 +1,0 @@
-The pinned carve-js build predates the ruled comment-boundary spec model fix for this row (markup-carve/carve#4641); the spec moved first.

@@ -1,1 +1,0 @@
-Pinned JavaScript closes a bare highlight at the = of a <= or >= (markup-carve/carve#4131); pending in carve-js.

@@ -2,7 +2,6 @@
 # Each row must differ from the pinned writer's bytes and preserve the input's rendering.
 # Remove a row when the JavaScript pin reaches the native header ruling.
 # Format: <slug><two spaces><reason>
-284-a-ragged-table-keeps-each-row-s-cell-count-2  PART 11 section 6h requires native headers; the pinned writer still emits a separator row.
-284-a-ragged-table-keeps-each-row-s-cell-count-3  PART 11 section 6h requires native headers; the pinned writer still emits a separator row.
-285-adjacent-block-openers-in-an-attached-run-stay-separate-2  PART 11 section 6h requires native headers; the pinned writer still emits separator rows.
-99-table-cell-attributes  PART 11 section 6h requires native headers; the pinned writer still emits a separator row.
+187-a-comment-fence-is-a-comment-at-any-column-too  PART 11 section 2 pins the .fmt bytes; the pinned writer adds blank lines or moves the comment or fence, keeping the rendering (markup-carve/carve-js#4187).
+192-a-comment-fence-under-a-nested-item-does-not-close-it-either  PART 11 section 2 pins the .fmt bytes; the pinned writer adds blank lines or moves the comment or fence, keeping the rendering (markup-carve/carve-js#4187).
+637-definition-body-note-and-fence-owner-boundaries-5  PART 11 section 2 pins the .fmt bytes; the pinned writer adds blank lines or moves the comment or fence, keeping the rendering (markup-carve/carve-js#4187).

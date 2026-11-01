@@ -282,10 +282,19 @@
     },
     {
       "name": "invalid-opener-is-not-a-fence",
-      "description": "An opener with invalid metadata stays paragraph text and opens no code block.",
+      "description": "An opener with invalid metadata still opens a code block under the carve#4807 recovery, so an unclosed one is reported.",
       "source": "para\n```js title=\"x\"\ncode\n",
       "expected": {
-        "findings": []
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "```",
+              "end of the document"
+            ]
+          }
+        ]
       }
     },
     {

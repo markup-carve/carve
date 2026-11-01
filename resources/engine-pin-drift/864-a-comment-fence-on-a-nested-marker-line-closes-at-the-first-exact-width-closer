@@ -1,1 +1,0 @@
-The pinned carve-js skips the first exact-width comment closer (markup-carve/carve#4116); the spec model is correct.

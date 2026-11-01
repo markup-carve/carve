@@ -3183,6 +3183,66 @@
         ],
         "exit": 1,
         "engines": {
+          "js": {
+            "diagnostics": [
+              {
+                "code": "markdown-bullet-list",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-list-item",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-ordered-list",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:2"
+              },
+              {
+                "code": "markdown-list-item",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:2"
+              },
+              {
+                "code": "structure-unspellable",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "exact",
+                "path": "line:2"
+              },
+              {
+                "code": "markdown-ordered-list",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:4"
+              },
+              {
+                "code": "markdown-list-item",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:4"
+              },
+              {
+                "code": "structure-unspellable",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "exact",
+                "path": "line:4"
+              }
+            ]
+          },
           "rust": {
             "output": "- a\n  1. [x] b\n\n1. [x] c\n",
             "diagnostics": [

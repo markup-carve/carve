@@ -174,8 +174,7 @@
           7
         ]
       ],
-      "aheadOfPin": [],
-      "pinned": [
+      "aheadOfPin": [
         [
           "list-marker-below-content-column",
           6
@@ -185,6 +184,7 @@
           7
         ]
       ],
+      "pinned": [],
       "optIn": []
     },
     {
