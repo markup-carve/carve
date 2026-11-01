@@ -2328,6 +2328,12 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
         const lead = description ? description[0].length : note[0].length - note[2].length
         columns.push(column)
         fenceAt = { col: body.col + lead, rest: body.rest.slice(lead) }
+        // Markers behind the body's lead nest in it, so a fence after them is its payload too.
+        for (let inner = matchMarkerAt(fenceAt); inner; inner = matchMarkerAt(fenceAt)) {
+          const next = indentCols(inner.text)
+          columns.push(inner.indent + inner.markerWidth)
+          fenceAt = { col: inner.indent + inner.markerWidth + next.col, rest: next.rest }
+        }
       }
     }
     const code = FENCE.exec(fenceAt.rest)
@@ -5460,12 +5466,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A line folded into the open paragraph leaves it open, whatever its shape, so the scan is not repeated per line.
             if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) &&
                 (foldedParagraphAt === bodyLines.length || bodyLeavesParagraphOpen(bodyLines))) {
-              // The marker is below the lead item's content column, so it
-              // continues that paragraph even when the description dedents it.
-              const leadItem = matchMarkerAt(indentCols(bodyLines[0] ?? ''))
-              const belowLeadItem = leadItem && authoredCol < bodyColumn + leadItem.markerWidth &&
-                matchMarkerAt(indentCols(dedented))
-              pushBody(lazyFence || belowLeadItem || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
+              // A marker below the body's column is no sibling of a list in the body,
+              // so it continues the open paragraph once the description dedents it (PART 0 S4).
+              const foldedMarker = matchMarkerAt(indentCols(dedented))
+              pushBody(lazyFence || foldedMarker || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
               foldedParagraphAt = bodyLines.length
               i++
               continue
