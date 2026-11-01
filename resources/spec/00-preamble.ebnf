@@ -45,9 +45,10 @@
    - START, EOL = virtual zero-width terminals (start of inline run /
                  end of line).
    Character classes for guards: ws = space | tab | newline; alnum =
-   letter | digit; punct = ascii_punctuation; non_ws = character - ws.
-   The letter and digit terminals are the ASCII enumerations in PART 7;
-   a non-ASCII letter does not satisfy the alnum guard.
+   Unicode letter | Unicode number (general categories L or N);
+   punct = ascii_punctuation; non_ws = character - ws.
+   The alnum guard reads a complete Unicode code point. The letter and digit
+   terminals enumerated in PART 7 remain ASCII where productions name them.
 
    NORMATIVITY
    - The files in resources/spec/*.ebnf are the NORMATIVE specification of

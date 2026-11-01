@@ -1533,11 +1533,17 @@ sem.addOperation('parseAttrs', {
 // tokens; this resolver pairs them into spans.
 const STACK_DELIMS = new Set(['/', '*', '_', '~', '='])
 const TAG = { '/': 'em', '*': 'strong', _: 'u', '~': 's', '=': 'mark' }
-// `alnum` in the guard templates below is the grammar header's `letter |
-// digit` over PART 7's enumerated ASCII alphabet, so `é` is punctuation to
-// these guards: `café*bold*` opens a strong span and `y *x*é` closes one, as
-// all three engines read them (carve#2126).
-const isAlnum = (c) => c !== undefined && /[A-Za-z0-9]/.test(c)
+// CARVE-P3-013 reads a complete Unicode letter or number at either flank.
+// Token offsets are UTF-16 indices, so the preceding code point may occupy
+// two units. Reading one unit would miss supplementary-plane letters.
+const isAlnum = (c) => c !== undefined && /[\p{L}\p{N}]/u.test(c)
+const charBefore = (src, at) => {
+  if (at <= 0) return undefined
+  const prev = src.codePointAt(at - 1)
+  if (prev >= 0xdc00 && prev <= 0xdfff && at > 1) return String.fromCodePoint(src.codePointAt(at - 2))
+  return String.fromCodePoint(prev)
+}
+const charAfter = (src, at) => at < src.length ? String.fromCodePoint(src.codePointAt(at)) : undefined
 const isWs = (c) => c === undefined || c === ' ' || c === '\t' || c === '\n' || c === '\r'
 
 // The formal word-boundary guard templates (grammar.ebnf PART 3):
@@ -1594,8 +1600,8 @@ function forcedUnder(alt) {
 // E1 CLASSIFY for one candidate.
 function classify(t, src) {
   if (t.k !== 'd') return
-  const prev = t.at > 0 ? src[t.at - 1] : undefined
-  const next = src[t.at + 1]
+  const prev = charBefore(src, t.at)
+  const next = charAfter(src, t.at + 1)
   if (extendsGrapheme(src, t.at + 1)) {
     t.canOpen = t.canClose = false
     return
@@ -2057,7 +2063,7 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
   // A combined closer token: a `*` not after whitespace, then a `/` that is
   // not followed by alnum.
   const closerToken = (k) => delimAt(k, '*') && delimAt(k + 1, '/') && toks[k + 1].at === toks[k].at + 1 &&
-    !isWs(src[toks[k].at - 1]) && !isAlnum(src[toks[k].at + 2]) && !extendsGrapheme(src, toks[k].at + 2)
+    !isWs(charBefore(src, toks[k].at)) && !isAlnum(charAfter(src, toks[k].at + 2)) && !extendsGrapheme(src, toks[k].at + 2)
   // The first closer token at or after each index, built right to left once,
   // so each combined opener's lookahead is constant time.
   const nextCloser = new Array(toks.length + 1).fill(-1)
@@ -2066,7 +2072,7 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
   // whether the opener forms: a comment inside the shape ends there (carve#4042).
   const shapeCloses = new Set()
   for (let k = 0; k + 1 < toks.length; k++) {
-    if (delimAt(k, '/') && delimAt(k + 1, '*') && toks[k + 1].at === toks[k].at + 1 && !isAlnum(src[toks[k].at - 1]) &&
+    if (delimAt(k, '/') && delimAt(k + 1, '*') && toks[k + 1].at === toks[k].at + 1 && !isAlnum(charBefore(src, toks[k].at)) &&
       !isWs(src[toks[k].at + 2]) && !extendsGrapheme(src, toks[k].at + 2) && nextCloser[k + 2] !== -1) shapeCloses.add(nextCloser[k + 2])
   }
   const hideBlock = (block, hidden) => {
@@ -2098,7 +2104,7 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
     // THE COMBINED TOKEN: an opener with a closer token ahead in its region
     // pushes one entry; without one its `/` and `*` are two bare candidates.
     if (d === '/' && !t.bare && delimAt(j + 1, '*') && toks[j + 1].at === t.at + 1 &&
-      (t.k === 'd' ? t.canOpen : bareOpener('/', t.at > contentAt ? src[t.at - 1] : undefined, src[t.at + 1])) &&
+      (t.k === 'd' ? t.canOpen : bareOpener('/', t.at > contentAt ? charBefore(src, t.at) : undefined, charAfter(src, t.at + 1))) &&
       !guarded(j, '/', t.at) && !isWs(src[t.at + 2]) && !extendsGrapheme(src, t.at + 2) &&
       !openers.some((oi) => holds(oi, '/') || holds(oi, '*'))) {
       let close = nextCloser[j + 2]

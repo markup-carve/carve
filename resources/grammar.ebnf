@@ -45,9 +45,10 @@
    - START, EOL = virtual zero-width terminals (start of inline run /
                  end of line).
    Character classes for guards: ws = space | tab | newline; alnum =
-   letter | digit; punct = ascii_punctuation; non_ws = character - ws.
-   The letter and digit terminals are the ASCII enumerations in PART 7;
-   a non-ASCII letter does not satisfy the alnum guard.
+   Unicode letter | Unicode number (general categories L or N);
+   punct = ascii_punctuation; non_ws = character - ws.
+   The alnum guard reads a complete Unicode code point. The letter and digit
+   terminals enumerated in PART 7 remain ASCII where productions name them.
 
    NORMATIVITY
    - The files in resources/spec/*.ebnf are the NORMATIVE specification of
@@ -2596,7 +2597,8 @@ math_display = "$$", code_span ;
    procedure: these productions name the spans it forms, and §9 decides which
    characters pair. Every bare delimiter is one character, `/ * _ ~ =`, and
    none opens or closes intraword: `foo*bar*baz`, `snake_case`, `a/b/c` and
-   `x = 5` stay literal. This is STRICTER than Djot, whose rule is
+   `x = 5` stay literal. The same rule applies to Unicode words, such as
+   `Москва/Питер/Киев`. This is STRICTER than Djot, whose rule is
    whitespace-only. `^` and `,` are not bare delimiters: superscript and
    subscript exist only in the braced form (`H{,2,}O`, `mc{^2^}`), because
    they attach to characters rather than words and because a stray `,` in
@@ -5195,9 +5197,9 @@ EOF = (* end of file *) ;
       A REGION is that content, or the content of a bracket run, inline note,
       extension, braced span or editorial frame. Pairing never crosses a
       region boundary, in either direction. The bare delimiters are `/`, `*`,
-      `_`, `~` and `=`. A character is ALNUM when it is an ASCII letter or
-      digit (`alnum`, PART 7), and WHITESPACE when it is a space, a tab or a
-      line end (`ws`); a no-break space is neither. A delimiter followed by a
+      `_`, `~` and `=`. A character is ALNUM when it is a Unicode letter or
+      number (general category L or N), and WHITESPACE when it is a space,
+      a tab or a line end (`ws`); a no-break space is neither. A delimiter followed by a
       grapheme_extender is part of a larger character (CARVE-P3-025): it is
       text and takes part in no step below, and a braced opener whose mark is
       followed by one is text.
@@ -7911,8 +7913,8 @@ EOF = (* end of file *) ;
    R3 ABBREVIATIONS. Each abbrDefs term matches in rendered text at WORD
       BOUNDARIES only and emits <abbr>. A boundary exists on a side of the
       term when the adjacent character is absent or is not a Unicode letter
-      or number (general category L or N). The ASCII alnum guard of
-      CARVE-P3-013 applies to emphasis, not to abbreviations. Literal source text emitted for an
+      or number (general category L or N). CARVE-P3-013 uses the same
+      Unicode boundary class for emphasis. Literal source text emitted for an
       unresolved link or image reference (R1) is not scanned for abbreviations;
       ordinary bracket text remains eligible. The text of a code span, an
       inline literal and a mention is not scanned (carve#4560). Tag text and

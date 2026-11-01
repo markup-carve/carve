@@ -10,9 +10,9 @@
       A REGION is that content, or the content of a bracket run, inline note,
       extension, braced span or editorial frame. Pairing never crosses a
       region boundary, in either direction. The bare delimiters are `/`, `*`,
-      `_`, `~` and `=`. A character is ALNUM when it is an ASCII letter or
-      digit (`alnum`, PART 7), and WHITESPACE when it is a space, a tab or a
-      line end (`ws`); a no-break space is neither. A delimiter followed by a
+      `_`, `~` and `=`. A character is ALNUM when it is a Unicode letter or
+      number (general category L or N), and WHITESPACE when it is a space,
+      a tab or a line end (`ws`); a no-break space is neither. A delimiter followed by a
       grapheme_extender is part of a larger character (CARVE-P3-025): it is
       text and takes part in no step below, and a braced opener whose mark is
       followed by one is text.
