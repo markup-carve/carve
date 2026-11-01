@@ -1,0 +1,19 @@
+A comment on the new side of a substitution ends at the first raw closer
+
+```
+{~a~>b %% `~}` c~} d
+.
+<p><del>a</del><ins>b</ins><code> c~} d</code></p>
+```
+
+```
+{~a~>b %% x~} d
+.
+<p><del>a</del><ins>b</ins> d</p>
+```
+
+```
+{~a~>b `%%` c~} d
+.
+<p><del>a</del><ins>b <code>%%</code> c</ins> d</p>
+```

@@ -406,7 +406,7 @@ CarveCore {
   // this frame's closer, leaving the unclosed opener to read as ordinary text.
   edSubAborted = "{~" ~graphemeExt edSubBeforeComment* sepRun "%%" (~newline ~"~}" ~"~>" any)* "~>" (~newline ~"~}" any)* "~}"
   edSubBeforeComment = ~"~>" ~(sepRun "%%") (crossref | autolink | ~"~}" edSubAtom)
-  edSubNew   = ~"~}" (crossref | autolink | edSubAtom)
+  edSubNew   = ~"~}" (edSubComment | crossref | autolink | edSubAtom)
   // A `$` or `!` prefix needs no alternative of its own: the backtick run
   // behind it is what carries the arrow, and this rule skips that run.
   // A matched insertion or deletion is an E2a boundary too, so its `~>` and
