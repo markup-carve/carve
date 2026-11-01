@@ -3140,6 +3140,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     }
     let src = lines[at]
     let out = ''
+    // Where the innermost quote prefix taken so far ends, in document columns.
+    let viewDoc = 0
     let m = walkIndent(src)
     // The leading run of the current segment, written at `col`.
     const lead = (target, spaces = false) => {
@@ -3233,7 +3235,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       // A quote opened on another marker line keeps that line's authored
       // marker column even though its reader frame starts at column zero.
       if (f.markerCol !== undefined && CONT_MARKER.test(m.rest) &&
-          (m.col === f.markerCol || f.kind === 'quote' && docColumn(lines[at], m.rest) === f.docMarker) &&
+          (f.kind === 'quote' ? docColumn(lines[at], m.rest) - viewDoc === f.viewMarker : m.col === f.markerCol) &&
           (f.kind === 'quote' || m.col < f.col) && plusAttaches(f, at, docColumn(lines[at], m.rest))) {
         plus = f
         break
@@ -3246,11 +3248,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
           child.kind === 'quote' && child.docMarker === docColumn(lines[at], m.rest) &&
           plusAttaches(child, at, child.docMarker))) {
           out += ' '.repeat(f.markerCanon) + '> '
+          viewDoc = f.viewEnd
           continue
         }
         if (!QUOTE.test(m.rest)) break
         lead(frames[k - 1].canon)
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
+        viewDoc = docColumn(lines[at], src)
         m = walkIndent(src)
         stripped = null
         segment = k + 1
@@ -3603,9 +3607,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       }
       if (form.kind === 'quote') {
         const quote = { kind: 'quote', col: 0, canon: 0, cut: 0, para: false, last: null, markerCol: col, markerCanon: canon,
-          docMarker: docColumn(lines[at], src), line: at }
+          docMarker: docColumn(lines[at], src), viewMarker: docColumn(lines[at], src) - viewDoc, line: at }
         frames.push(quote)
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
+        viewDoc = quote.viewEnd = docColumn(lines[at], src)
         m = walkIndent(src)
         return content(quote, 0, 0)
       }

@@ -1,0 +1,1 @@
+The pinned build reads an inner quote marker indented inside the outer quote content as text; carve-js main reads it as a quote (carve#4710).
