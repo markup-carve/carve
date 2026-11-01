@@ -5545,6 +5545,16 @@ EOF = (* end of file *) ;
          loose item.
          Two blank lines remain ordinary decorative spacing; three establish
          the boundary.
+         DESCRIPTION LISTS TOO (carve#4759). The same run ends a description
+         list: after it a `:: ` term opens a NEW description list, and a `: `
+         description has no term above it and is read as a paragraph. As for
+         items, the run closes no description on its own: a continuation at
+         the description's body column after it stays in that description.
+           :: t             produces:    <dl><dt>t</dt><dd>x</dd></dl>
+           : x                           <dl><dt>u</dt><dd>v</dd></dl>
+           (three blank lines)
+           :: u
+           : v
       N2 ORDERED DIALECT. A list's dialect (decimal / lower- or upper-alpha
          / lower- or upper-roman) and delimiter are fixed by its FIRST
          item; a later marker outside the dialect, or with the other
@@ -6971,8 +6981,8 @@ EOF = (* end of file *) ;
          A recognized block opener there begins a child block. A blank run of
          any length remains in the body when the next nonblank line reaches
          that column. A blank run without such a follower ends the body before
-         the next line. The list-only three-blank sibling boundary in §11 N1a
-         decides list grouping, not body ownership. A line below the column
+         the next line. The three-blank sibling boundary in §11 N1a decides
+         list and description-list grouping, not body ownership. A line below the column
          follows PART 0 S4 and S5 (CARVE-P0-024): it may continue the deepest
          open paragraph lazily when §10 permits, and otherwise closes the body
          and is read in the nearest surviving owner. This applies to footnotes
@@ -11089,6 +11099,19 @@ EOF = (* end of file *) ;
 
       One blank line would merge the lists, violating §1. PART 9 §11 N1a reads THREE
       OR MORE, so three is the canonical form for every hard-boundary run.
+
+      TWO ADJACENT DESCRIPTION LISTS ARE WRITTEN THE SAME WAY (carve#4759). N1a's
+      boundary ends a description list too, so the writer emits exactly three
+      blank lines between two description lists with nothing spellable between
+      them, a hand-built tree included. It adds no node:
+
+        :: t                     is written as:   :: t
+        : x                                       : x
+        (five blank lines)                        (three blank lines)
+        :: u                                      :: u
+        : v                                       : v
+
+      CARVE-P11-037 applies to them as it does to lists.
 
       A RUN THAT IS NOT THE BOUNDARY NORMALIZES AS USUAL. Three blank lines
       between two paragraphs, or between two lists that already differ on a PART 9 §11 N1

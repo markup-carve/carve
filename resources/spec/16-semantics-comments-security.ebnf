@@ -339,8 +339,8 @@
          A recognized block opener there begins a child block. A blank run of
          any length remains in the body when the next nonblank line reaches
          that column. A blank run without such a follower ends the body before
-         the next line. The list-only three-blank sibling boundary in §11 N1a
-         decides list grouping, not body ownership. A line below the column
+         the next line. The three-blank sibling boundary in §11 N1a decides
+         list and description-list grouping, not body ownership. A line below the column
          follows PART 0 S4 and S5 (CARVE-P0-024): it may continue the deepest
          open paragraph lazily when §10 permits, and otherwise closes the body
          and is read in the nearest surviving owner. This applies to footnotes

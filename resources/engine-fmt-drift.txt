@@ -69,3 +69,4 @@
 868-a-separator-below-a-term-in-a-note-item-stays-term-text  The pinned writer spells the empty outer item as a + the one attach rule refuses (carve#4409) and writes the folded term line outside the note.
 868-a-plus-at-the-column-of-a-container-opened-on-another-marker-line-attaches-the-next-block-2  The pinned writer spells the + under a note's marker-line item at the note's body column, which the carve#4623 ruling refuses; it belongs at the item's authored marker column.
 873-an-item-on-a-note-marker-line-takes-its-plus-at-its-own-marker-column  The pinned writer spells the + under a note's marker-line item at the note's body column, which the carve#4623 ruling refuses; it belongs at the item's authored marker column.
+914-three-blank-lines-end-a-description-list-4  The pinned writer predates CARVE-P11-036's three-blank boundary between two description lists (markup-carve/carve#4759) and merges them; the spec moved first.

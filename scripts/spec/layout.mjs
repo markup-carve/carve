@@ -5582,8 +5582,18 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const restAt = (k) => (lines[k] ?? '').startsWith(LAZY) ? null : indentCols(lines[k] ?? '').rest
         const invisibleAt = (k) => restAt(k) !== null && invisibleSiblingLine(restAt(k), top)
         if (isBlank(cur0) || invisibleAt(i)) {
+          // PART 9 SS11 N1a: three blank lines end a description list too
+          // (carve#4759); invisible lines do not split the run.
+          let run = 0
+          for (let k = i - 1; k >= 0 && isBlank(lines[k]); k--) run++
+          let longest = run
           let look = i
           while (look < n && (isBlank(lines[look]) || invisibleAt(look))) {
+            if (isBlank(lines[look])) {
+              longest = Math.max(longest, ++run)
+              look++
+              continue
+            }
             const fence = COMMENT_FENCE.exec(restAt(look) ?? '')?.[1]
             let close = -1
             for (let k = look + 1; fence && k < n; k++) {
@@ -5591,7 +5601,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             look = close === -1 ? look + 1 : close + 1
           }
-          if (look < n && isEntry(lines[look] ?? '')) {
+          if (look < n && longest < 3 && isEntry(lines[look] ?? '')) {
             registerSkippedDefinitions(lines, i, look, (k) => restAt(k) ?? '', state, top)
             i = look
             continue
@@ -8659,6 +8669,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const jm = ind(j)
         const { col } = jm
         const nm = matchMarkerAt(jm, col >= contentCol ? contentCol : 0)
+        // PART 9 SS11 N1a: an entry after the run sees all of it, as a sibling marker does (carve#4759).
+        const entryAfterRun = col >= contentCol && /^::? (?=[ \t]*[^ \t\n\r])/.test(jm.rest) && !/^:::/.test(jm.rest)
+        const pushGap = () => {
+          if (!entryAfterRun) return pushLine('', BLANK_MEAS)
+          for (let k = i; k < j; k++) if (!skipped.has(k)) pushLine('', BLANK_MEAS)
+        }
         if (nestedOpaque?.kind === 'code' && CONT_MARKER.test(jm.rest) &&
             jm.col >= contentCol && jm.col <= Math.max(nestedOpaque.col, contentCol)) {
           // §17 L3: a descendant's marker ends its fence after every blank payload line.
@@ -8718,7 +8734,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (authoredContainer && (descriptionBodyColumns.some(body => col >= body) ||
               j < heldContainerEnd ||
               authoredBlockLimit !== null && j < authoredBlockLimit)) {
-            if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)
+            if (!descendantFence && !closedMarkerFence) pushGap()
             closePara()
             i = j
             continue
@@ -8794,7 +8810,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           }
           if (opensSubBlock(dedented)) {
             // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
-            if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)
+            if (!descendantFence && !closedMarkerFence) pushGap()
             closePara()
             i = j
             continue
@@ -8817,7 +8833,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             // of a line that produces no output at all. carve-rs renders every
             // one of these tight; carve-js does for two of the three.
             if (!descendantFence && !closedMarkerFence &&
-                (tryAttrLine(dedentedWindow(lines, j, contentCol), 0)?.next ?? 0) <= 1) pushLine('', BLANK_MEAS)
+                (tryAttrLine(dedentedWindow(lines, j, contentCol), 0)?.next ?? 0) <= 1) pushGap()
             closePara()
             blankBeforeInvisible = true
             // §17 L1b: the invisible line is not a separator either, so the
@@ -8833,6 +8849,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           }
           // a second PARAGRAPH inside the item -> loose (SS17 L1)
           const firstVisible = itemShowsNothing()
+          if (entryAfterRun && !descendantFence && !closedMarkerFence) for (let k = 1; k < visibleDistance(i, j); k++) pushLine('', BLANK_MEAS)
           if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)
           if (!firstVisible) list.tight = false
           if (col === contentCol) subCol = -1
