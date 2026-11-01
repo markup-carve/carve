@@ -1585,7 +1585,7 @@
       "edits": [
         {
           "file": "scripts/spec/render.mjs",
-          "find": "if (extendsGrapheme(src, t.at + 1)) {\n    t.canOpen",
+          "find": "if (extendsGrapheme(src, nextAt)) {\n    t.canOpen",
           "replace": "if (false) {\n    t.canOpen"
         }
       ]

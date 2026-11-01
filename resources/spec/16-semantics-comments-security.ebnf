@@ -71,7 +71,9 @@
       - VERBATIM CONTEXTS ARE OPAQUE, as for `%%` (§21): a code span or raw
         inline passes `{%` through.
       - TRANSPARENT TO INLINE STRUCTURE. A comment inside an emphasis run does
-        not break it: `*bo{% c %}ld*` is one `<strong>`.
+        not break it: `*bo{% c %}ld*` is one `<strong>`. It counts as nothing
+        for every flank test: quote direction (CARVE-P3-023), the hyphen run's
+        flag test (CARVE-P3-021) and the bare emphasis guards (CARVE-P3-013).
       - NO ATTRIBUTE ATTACHMENT. The comment takes no inline attribute slot
         and never joins an attribute run (CARVE-P3-017). A following inline
         attribute block is text: `*x*{% c %}{.k}` renders
