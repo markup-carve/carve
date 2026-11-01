@@ -35,7 +35,7 @@ Press [Ctrl+C]{kbd} to copy.
 ```
 :foo[a [b] c]
 .
-<p><span class="ext-foo">a [b</span> c]</p>
+<p><span class="ext-foo">a [b] c</span></p>
 ```
 
 ```

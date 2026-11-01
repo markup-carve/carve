@@ -192,9 +192,10 @@
                          (CARVE-P3-016). Unmatched, it is text.
         inline note      `^[`, to the balanced `]` (§16); a region.
         note reference   `[^` and a label, to the first `]`.
-        extension        `:`, an extension_name and `[`, to the FIRST
-                         unescaped `]` (PART 3); a region: :foo[a [b] c]
-                         holds `a [b`.
+        extension        `:`, an extension_name and `[`, to the unescaped
+                         `]` at bracket depth zero, or with an unbalanced
+                         `[` to the first unescaped `]` (PART 3); a region:
+                         :foo[a [b] c] holds `a [b] c`.
         bracket run      `[`, to the balanced `]`, skipping what
                          CARVE-P3-001 names; a region. Unbalanced, the `[`
                          is text.

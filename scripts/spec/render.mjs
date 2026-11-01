@@ -72,28 +72,48 @@ const HIDING = /[`$\\[\]<%\n\r\p{M}\u200D\uFE00-\uFE0F]/u
 // A code span or bracket run that closes and holds no brace cannot hide a
 // closer, so its characters do not count as hiding. Read left to right as the
 // atom table reads them; an unclosed code run ends the scan.
+const escapedAt = (source, at) => {
+  let n = 0
+  while (source[at - 1 - n] === '\\') n++
+  return n % 2 === 1
+}
 function opensExtension(source, at) {
   let j = at
   while (j > 0 && /[A-Za-z0-9_-]/.test(source[j - 1])) j--
   return j < at && source[j - 1] === ':' && /[A-Za-z_]/.test(source[j])
 }
+// For each `[`, the `]` an extension opened there closes at: the one at bracket
+// depth zero, or the first unescaped one when the `[` is unbalanced (carve#4513).
+let extensionCloses = { source: null, close: null }
+function extensionClose(source, at) {
+  if (extensionCloses.source !== source) {
+    const close = new Int32Array(source.length + 1).fill(-1)
+    const open = []
+    let unclosed = -1
+    for (let i = 0; i < source.length; i++) {
+      if (source[i] === '\\') i++
+      else if (source[i] === '[') open.push(i)
+      else if (source[i] === ']' && open.length) close[open.pop()] = i
+    }
+    for (let i = source.length - 1; i >= 0; i--) {
+      if (source[i] === ']' && !escapedAt(source, i)) unclosed = i
+      if (source[i] === '[' && close[i] === -1) close[i] = unclosed
+    }
+    extensionCloses = { source, close }
+  }
+  return extensionCloses.close[at]
+}
 function softHiding(source) {
   const soft = new Uint8Array(source.length)
   const braces = [0]
   for (let i = 0; i < source.length; i++) braces.push(braces[i] + (source[i] === '{' || source[i] === '}' ? 1 : 0))
-  // An inline extension ends at its first unescaped `]`, so no bracket in it
-  // pairs.
-  const nextClose = new Int32Array(source.length + 1).fill(-1)
-  for (let i = source.length - 1; i >= 0; i--) {
-    nextClose[i] = source[i] === ']' && source[i - 1] !== '\\' ? i : nextClose[i + 1]
-  }
   const open = []
   for (let i = 0; i < source.length; ) {
     const c = source[i]
     if (c === '\\') {
       i += 2
-    } else if (c === '[' && opensExtension(source, i) && nextClose[i] !== -1) {
-      i = nextClose[i] + 1
+    } else if (c === '[' && opensExtension(source, i) && extensionClose(source, i) !== -1) {
+      i = extensionClose(source, i) + 1
     } else if (c === '`') {
       let n = 1
       while (source[i + n] === '`') n++
@@ -268,6 +288,8 @@ const g = ohm.grammar(`CarveStack <: ${core.name} {
   bracketAtom = "\\u0000"
   codeClosed += codeLong
   codeLong = "\\u0000" "\\u0000" "\\u0000"
+  extContent := extRun
+  extRun = "\\u0000"
   bracketless = "\\u0000"
 ${BRACKET_RULES.map((rule) => `  ${rule} := ~bracketless ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1]}`).join('\n')}
 ${ATOM_RULES.map((rule) => `  ${rule} := overCapBracket | ${rule}Live\n  ${rule}Live = ~bracketless ${coreSource.match(new RegExp(`^  ${rule} *= (.*)$`, 'm'))[1]}`).join('\n')}
@@ -313,6 +335,21 @@ markupContent.eval = function (state) {
   return false
 }
 g.rules.markupContent.body = markupContent
+// The core rule recurses per `[`, so a long chain would overflow the stack.
+const extRun = new ohm.pexprs.Terminal('')
+extRun.eval = function (state) {
+  const { inputStream } = state
+  const pos = inputStream.pos
+  const close = extensionClose(inputStream.source, pos - 1)
+  if (close === -1) {
+    state.processFailure(pos, this)
+    return false
+  }
+  inputStream.pos = close
+  state.pushBinding(new TerminalNode(close - pos), pos)
+  return true
+}
+g.rules.extRun.body = extRun
 let lastCloser = { source: null, at: -1, deep: false }
 // A chain of openers that each recurse into the next before one closes
 // (carve#4236) is read right to left first, so each opener finds the ones
