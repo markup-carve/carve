@@ -1,0 +1,1 @@
+The pinned carve-js build predates the spec model fix that ends a plus-attached div in a list item at its host's next sibling marker without looking ahead for a closer (markup-carve/carve#4717); the spec moved first.
