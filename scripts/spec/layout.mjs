@@ -3299,9 +3299,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     if (plus) {
       frames.length = frames.indexOf(plus) + 1
       plus.para = false
-      skipInvisible(plus, at, docColumn(lines[at], m.rest))
-      attachedTo = attachedBlock(plus, skipped?.end ?? at + 1)
       lead(plus.markerCanon)
+      skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
+      attachedTo = attachedBlock(plus, skipped?.end ?? at + 1)
       result.push(out + src)
       afterPlus = true
       if (trace) emit(at, 'S2', ownerPath(), 'CARVE-P9-067', 'plus', { cell: 'B-plus-start' })
@@ -3808,14 +3808,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   }
 
   // The readers meet the skipped lines where the block stands, one line for a
-  // line, so each host reads them as it reads a comment before its block.
-  function skipInvisible(host, at, column) {
+  // line, so each host reads them as it reads a comment before its block. An
+  // own-line marker passes its normalized prefix; its raw follower may still
+  // carry quote indentation the walk has already removed.
+  function skipInvisible(host, at, column, markerLead = null) {
     const hostIndex = frames.indexOf(host)
     const fenced = new Set()
     const end = firstVisibleLine(at + 1, hostIndex, column, fenced)
     if (end === at + 1) return
     const rest = throughQuotes(lines[end], hostIndex).rest
-    skipped = { host, at, end, hostIndex, fenced, lead: lines[end].slice(0, lines[end].length - rest.length) + ' '.repeat(host.markerCanon) }
+    skipped = { host, at, end, hostIndex, fenced, lead: markerLead ?? lines[end].slice(0, lines[end].length - rest.length) + ' '.repeat(host.markerCanon) }
   }
 
   // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Off the

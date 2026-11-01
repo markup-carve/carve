@@ -1,0 +1,43 @@
+An indented quote prefix keeps an invisible plus follower in its host
+
+```
+> > a
+ > +
+ > {x}
+ > b
+.
+<blockquote>
+  <blockquote>
+    <p>a</p>
+    <p x="">b</p>
+  </blockquote>
+</blockquote>
+```
+
+```
+> > a
+ > +
+ > %% c
+ > b
+.
+<blockquote>
+  <blockquote>
+    <p>a</p>
+    <p>b</p>
+  </blockquote>
+</blockquote>
+```
+
+```
+> > a
+ > +
+ > [r]: /u
+ > b
+.
+<blockquote>
+  <blockquote>
+    <p>a</p>
+    <p>b</p>
+  </blockquote>
+</blockquote>
+```
