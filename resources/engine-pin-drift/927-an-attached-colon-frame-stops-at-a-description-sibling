@@ -1,0 +1,1 @@
+The pinned carve-js build still scans past a definition sibling for an attached colon closer; carve#4798 ends the frame at the sibling.
