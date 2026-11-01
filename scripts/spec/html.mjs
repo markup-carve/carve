@@ -1895,12 +1895,13 @@ function resolveCrossrefs(html, ctx) {
       // A reference in the label is still a frame: refs resolved before this pass.
       const target = ctx.captionIds.get(key)
       const cap = target ? dropCloneIds(resolveRefs(target.label, ctx)) : undefined
-      if (cap) return textOnly ? cap : `<a href="#${escapeAuthoredAttr(target.id)}">${cap}</a>`
+      // A numbered label and an unresolved literal are not scanned for abbreviations either (carve#4742).
+      if (cap) return rawFrame(textOnly ? cap.replaceAll(RAW_MARK, '') : `<a href="#${escapeAuthoredAttr(target.id)}">${cap.replaceAll(RAW_MARK, '')}</a>`)
       // unresolved: literal source text (PART 9 SS19), HTML-escaped -- an
       // unresolved id may carry `<`/`>`/`&` (e.g. `</#<script>`) which must not
       // reach the output raw.
       const esc = id.replace(/[\u202A-\u202E\u2066-\u2069]/g, '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-      return `&lt;/#${esc}&gt;`
+      return rawFrame(`&lt;/#${esc}&gt;`)
     }
     // ONE LEVEL (R4): an inner crossref contributes its target's inline
     // content, but frames in that target are not expanded again. This also
