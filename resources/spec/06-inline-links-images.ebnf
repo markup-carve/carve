@@ -77,8 +77,8 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
 (* UNCLOSED RUN. An opener with no equal-length closer ANYWHERE LATER IN THE
    BLOCK is NOT literal text: it opens a verbatim span that runs to
    END_OF_BLOCK (the block's trailing whitespace is stripped; no surrounding
-   single-space strip, which applies only to a closed span). Nothing but an
-   extension's first unescaped `]` bounds
+   single-space strip, which applies only to a closed span). Nothing but the
+   `]` that closes an extension bounds
    it earlier, a forced or editorial `X}` included: an unclosed run inside a
    braced span or an editorial frame takes the rest of the block too, so that
    span has no closer and its opener is text (carve#3973 X5). `{*a `b*} c` is

@@ -250,11 +250,16 @@ extension_name = identifier ;
    `class` attribute -- the structural `ext-NAME` class comes FIRST, then the
    authored classes (`:foo[a]{.cls}` -> `class="ext-foo cls"`); never two
    `class` attributes. *)
-extension_content = {escaped_char | literal_backslash | (character - ']' - '\')} ;
-(* The content runs up to the FIRST UNESCAPED `]`; a nested `]` closes the
-   extension early and the remainder is literal: `:foo[a [b] c]` ->
-   `<span class="ext-foo">a [b</span> c]`. An escaped one is content:
-   `:foo[a\]b]` -> `<span class="ext-foo">a]b</span>`. *)
+extension_content = {escaped_char | literal_backslash | '[', extension_content, ']' | (character - '[' - ']' - '\')} ;
+(* The content runs up to the unescaped `]` at bracket depth zero, as a bracket
+   run and an inline note do: `:foo[a [b] c]` ->
+   `<span class="ext-foo">a [b] c</span>`, and `:foo[[x](u) y]` holds a link.
+   With an unbalanced `[` it falls back to the first unescaped `]`:
+   `:foo[a [b c] d` -> `<span class="ext-foo">a [b c</span> d`. A `]` past depth
+   zero is text: `:foo[a]b]` -> `<span class="ext-foo">a</span>b]`. An escaped
+   bracket is content: `:foo[a\]b]` -> `<span class="ext-foo">a]b</span>`.
+   The depth count reads only escapes, so a code span does not hide a bracket
+   from it. *)
 (* GENERIC EXTENSION CONTENT IS INLINE CONTENT -- NORMATIVE [CARVE-P3-026].
    Parse the captured run as inline content, including nested inline elements;
    do not render its markup as literal characters. Thus `:code[*b*]` renders

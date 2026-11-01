@@ -120,6 +120,7 @@ test('the grammar has no orphan production that the ledger does not declare', ()
 const CLOSING_SPELLINGS = {
   braceUnderscore: ['a {#_} b', 'inlines'],
   eqCloseCut: ['{=a>=}', 'inlines'],
+  extFirst: [':foo[[a] b', 'inlines'],
 }
 
 test('every declared GAP has a spelling, and every spelling reaches its rule', () => {
