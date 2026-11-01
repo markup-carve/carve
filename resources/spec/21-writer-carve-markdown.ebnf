@@ -4,6 +4,11 @@
       (`*` vs `-` bullets, ordered-list dialect, thematic-break marker).
       A spelling it does not record is chosen by the writer canonically.
 
+      THE SPACE AFTER A LIST MARKER is one space, except after a letter or
+      roman numeral followed by `.`, which takes two (PART 2 ordered_item,
+      carve#4811): `a.  x`, `A.  x`, `iv.  x`. The item's content column moves
+      with the second space, and the item's later lines are indented to it.
+
       FENCE LENGTH IS NOT ONE OF THEM: `code_block` records neither fence
       length nor character (PART 12 §3).
 

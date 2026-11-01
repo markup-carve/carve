@@ -16,7 +16,7 @@ grow([], 3)
 const held = chains.filter((chain) => chain.includes('> ') && chain.filter((part) => part === '[^n]: ').length < 2)
 const followers = []
 for (const indent of [0, 1, 2, 3, 4, 5, 6]) {
-  for (const form of ['- x', '1. x', '* x', 'a. x', '- [ ] x', ':  d', ': d', ':   d']) followers.push(' '.repeat(indent) + form)
+  for (const form of ['- x', '1. x', '* x', 'a.  x', '- [ ] x', ':  d', ': d', ':   d']) followers.push(' '.repeat(indent) + form)
 }
 const lead = (chain) => (chain.includes('[^n]: ') ? 'r[^n]\n\n' : '')
 

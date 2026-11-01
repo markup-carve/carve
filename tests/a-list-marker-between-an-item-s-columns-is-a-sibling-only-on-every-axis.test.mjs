@@ -7,8 +7,8 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (source) => renderDoc(parse(source)).replace(/\n\s*/g, '')
 const lists = (source) => (html(source).match(/<(ul|ol)[ >]/g) ?? []).length
 
-const differing = [['- a', '- [ ] b'], ['- [ ] a', '- b'], ['- a', '* b'], ['1. a', 'a. b'], ['1. a', 'i. b'], ['a. a', '1. b'], ['1. a', '2) b'], ['- a', '1. b']]
-const siblings = [['- a', '- b'], ['- [ ] a', '- [x] b'], ['1. a', '2. b'], ['a. a', 'b. b'], ['h. a', 'i. b']]
+const differing = [['- a', '- [ ] b'], ['- [ ] a', '- b'], ['- a', '* b'], ['1. a', 'a.  b'], ['1. a', 'i.  b'], ['a.  a', '1. b'], ['1. a', '2) b'], ['- a', '1. b']]
+const siblings = [['- a', '- b'], ['- [ ] a', '- [x] b'], ['1. a', '2. b'], ['a.  a', 'b.  b'], ['h.  a', 'i.  b']]
 
 test('a marker that differs on any axis opens a new list between the columns', () => {
   for (const [first, second] of differing) {

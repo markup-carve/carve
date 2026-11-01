@@ -10,7 +10,7 @@ A value the element derives from its own marker wins, and the authored copy of t
 
 ```carve
 {type=text}
-a. alpha
+a.  alpha
 ```
 
 ```html

@@ -37,7 +37,7 @@ Ordered markers carry the abutting block the same way, before the required space
 ::: compare
 
 ```carve
-a.{.c} An alpha item.
+a.{.c}  An alpha item.
 ```
 
 ```html

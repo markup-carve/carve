@@ -27,6 +27,8 @@ const fits = (t, type) => type === 'i' || type === 'I'
   ? roman(t) && typeOf(t, true) === type
   : letter(t) && typeOf(t, false) === type
 
+// A letter or roman marker with `.` needs two spaces (carve#4811).
+const dot = (t) => /^[A-Za-z]+$/.test(t) ? `${t}.  ` : `${t}. `
 const tokens = ['i', 'ii', 'iv', 'v', 'vi', 'x', 'xi', 'c', 'ci', 'd', 'l', 'm', 'a', 'b', 'j', 'w', 'y', 'I', 'II', 'J', 'A', 'V', 'W']
 
 test('the first marker takes the N3 tie-break and the next joins only inside that dialect (carve#4351)', () => {
@@ -35,7 +37,7 @@ test('the first marker takes the N3 tie-break and the next joins only inside tha
     for (const b of tokens) {
       const type = firstType(a, b)
       const want = fits(b, type) ? [type] : [type, firstType(b, '')]
-      for (const src of [`${a}. x\n${b}. y\n`, `> ${a}) x\n>\n> ${b}) y\n`, `- p\n\n  ${a}. x\n  ${b}. y\n`]) {
+      for (const src of [`${dot(a)}x\n${dot(b)}y\n`, `> ${a}) x\n>\n> ${b}) y\n`, `- p\n\n  ${dot(a)}x\n  ${dot(b)}y\n`]) {
         assert.deepEqual(lists(src), want, JSON.stringify(src))
         n++
       }
@@ -45,10 +47,10 @@ test('the first marker takes the N3 tie-break and the next joins only inside tha
 })
 
 test('the shapes the issue names', () => {
-  assert.deepEqual(lists('i. x\nb. y\n'), ['i', 'a'])
-  assert.deepEqual(lists('v. x\nii. y\n'), ['a', 'i'])
-  assert.deepEqual(lists('i. x\nj. y\n'), ['a'])
-  assert.deepEqual(lists('v. x\nvi. y\n'), ['i'])
-  assert.deepEqual(lists('i. x\n'), ['i'])
-  assert.deepEqual(lists('c. x\n'), ['a'])
+  assert.deepEqual(lists('i.  x\nb.  y\n'), ['i', 'a'])
+  assert.deepEqual(lists('v.  x\nii.  y\n'), ['a', 'i'])
+  assert.deepEqual(lists('i.  x\nj.  y\n'), ['a'])
+  assert.deepEqual(lists('v.  x\nvi.  y\n'), ['i'])
+  assert.deepEqual(lists('i.  x\n'), ['i'])
+  assert.deepEqual(lists('c.  x\n'), ['a'])
 })

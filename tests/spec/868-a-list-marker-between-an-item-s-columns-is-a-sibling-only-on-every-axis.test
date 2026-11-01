@@ -26,7 +26,7 @@ A list marker between an item's columns is a sibling only on every axis
 
 ```
 1. a
- a. b
+ a.  b
 .
 <ol>
   <li>a</li>
@@ -38,7 +38,7 @@ A list marker between an item's columns is a sibling only on every axis
 
 ```
 1. a
- i. b
+ i.  b
 .
 <ol>
   <li>a</li>
@@ -49,7 +49,7 @@ A list marker between an item's columns is a sibling only on every axis
 ```
 
 ```
-a. a
+a.  a
  1. b
 .
 <ol type="a">

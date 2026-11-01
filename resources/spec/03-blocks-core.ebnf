@@ -474,7 +474,14 @@ ordered_item = ordered_marker, [item_attributes], space+, list_item_content ;
    The two delimiters are the trailing `.` and `)` only. djot's
    parenthesized `(1)` / `(a)` form is INTENTIONALLY NOT a marker -- it is
    too easily confused with a prose parenthetical -- so `(1) text` stays
-   literal paragraph text. *)
+   literal paragraph text.
+   INITIALS ARE NOT MARKERS (carve#4811). A letter or roman numeral followed
+   by `.` (any case, any length) is an ordered marker only when TWO OR MORE
+   spaces separate it, and its item_attributes if any, from the
+   list_item_content. With one space the line is not a marker line, so
+   `J. R. R. Tolkien wrote it` and `e. g. foo` are paragraph text and
+   `a.  first` opens a list. A digit marker and a `)` marker keep the single
+   space: `10. x` and `a) x` are unchanged. *)
 ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')')
                | '.' ;
 (* A BARE DOT OPENS A DECIMAL LIST -- NORMATIVE [CARVE-P2-011] (Carve addition; no Djot or CommonMark equivalent).

@@ -6,7 +6,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (src) => renderDoc(parse(src)).replace(/\n\s*/g, '')
 
 test('a structural value wins and the authored copy is omitted (carve#4457)', () => {
-  assert.equal(html('{type=x}\na. alpha\n'), '<ol type="a"><li>alpha</li></ol>')
+  assert.equal(html('{type=x}\na.  alpha\n'), '<ol type="a"><li>alpha</li></ol>')
   assert.equal(html('{START=9}\n3. x\n'), '<ol start="3"><li>x</li></ol>')
   assert.equal(html('{data-delim=x}\n3) x\n'), '<ol start="3" data-delim=")"><li>x</li></ol>')
   assert.equal(html('![a](/u.png){ALT=z SRC=/v}\n'), '<img src="/u.png" alt="a">')

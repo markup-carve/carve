@@ -126,3 +126,9 @@ php/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-carve/car
 js/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned writer removes authored braces around an intraword emphasis span under the Unicode bare delimiter rule
 php/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned writer removes authored braces around an intraword emphasis span under the Unicode bare delimiter rule
 rust/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned writer removes authored braces around an intraword emphasis span under the Unicode bare delimiter rule
+js/425-an-ordered-item-s-separator-width-sets-its-content-column-12  markup-carve/carve#4811, the pinned writer emits one space after a letter or roman marker, which the ruling reads as text
+js/425-an-ordered-item-s-separator-width-sets-its-content-column-13  markup-carve/carve#4811, the pinned writer emits one space after a letter or roman marker, which the ruling reads as text
+php/425-an-ordered-item-s-separator-width-sets-its-content-column-12  markup-carve/carve#4811, the pinned writer emits one space after a letter or roman marker, which the ruling reads as text
+php/425-an-ordered-item-s-separator-width-sets-its-content-column-13  markup-carve/carve#4811, the pinned writer emits one space after a letter or roman marker, which the ruling reads as text
+rust/425-an-ordered-item-s-separator-width-sets-its-content-column-12  markup-carve/carve#4811, the pinned writer emits one space after a letter or roman marker, which the ruling reads as text
+rust/425-an-ordered-item-s-separator-width-sets-its-content-column-13  markup-carve/carve#4811, the pinned writer emits one space after a letter or roman marker, which the ruling reads as text

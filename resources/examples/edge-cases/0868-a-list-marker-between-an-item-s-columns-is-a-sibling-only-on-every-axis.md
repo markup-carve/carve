@@ -50,7 +50,7 @@ A different ordered type opens a new list too: decimal, alphabetic and roman are
 
 `````carve
 1. a
- a. b
+ a.  b
 `````
 
 ```html
@@ -68,7 +68,7 @@ A different ordered type opens a new list too: decimal, alphabetic and roman are
 
 `````carve
 1. a
- i. b
+ i.  b
 `````
 
 ```html
@@ -85,7 +85,7 @@ A different ordered type opens a new list too: decimal, alphabetic and roman are
 :::::: compare
 
 `````carve
-a. a
+a.  a
  1. b
 `````
 

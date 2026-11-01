@@ -1,0 +1,108 @@
+A single capital with a dot needs two spaces
+
+```
+J. R. R. Tolkien wrote it
+.
+<p>J. R. R. Tolkien wrote it</p>
+```
+
+```
+A. Smith said so
+.
+<p>A. Smith said so</p>
+```
+
+```
+para
+
+P. S. see below
+.
+<p>para</p>
+<p>P. S. see below</p>
+```
+
+```
+A.  first
+B.  second
+.
+<ol type="A">
+  <li>first</li>
+  <li>second</li>
+</ol>
+```
+
+```
+A.  first
+B. second
+.
+<ol type="A">
+  <li>first
+B. second</li>
+</ol>
+```
+
+```
+I. one
+II. two
+.
+<p>I. one
+II. two</p>
+```
+
+```
+A) one
+B) two
+.
+<ol type="A" data-delim=")">
+  <li>one</li>
+  <li>two</li>
+</ol>
+```
+
+```
+a. one
+b. two
+.
+<p>a. one
+b. two</p>
+```
+
+```
+A.{.c}  x
+.
+<ol type="A">
+  <li class="c">x</li>
+</ol>
+```
+
+```
+A.{.c} x
+.
+<p>A.{.c} x</p>
+```
+
+```
+e. g. foo
+.
+<p>e. g. foo</p>
+```
+
+```
+a.  one
+b.  two
+.
+<ol type="a">
+  <li>one</li>
+  <li>two</li>
+</ol>
+```
+
+```
+1. one
+2. two
+.
+<ol>
+  <li>one</li>
+  <li>two</li>
+</ol>
+```
