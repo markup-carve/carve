@@ -6835,6 +6835,19 @@ const opensDescriptionAt = (bodyLines, col, end = bodyLines.length) => {
   }
   return false
 }
+// `opensDescriptionAt` for the line just pushed, reading the entry above behind its markers.
+const entryAbove = (bodyLines, col) => {
+  for (let k = bodyLines.length - 2; k >= 0; k--) {
+    let measured = indentCols(bodyLines[k])
+    if (measured.rest === '' || measured.col > col) continue
+    for (let marker; measured.col < col && (marker = matchMarkerAt(measured)); ) {
+      const next = indentCols(marker.text)
+      measured = { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
+    }
+    return measured.col === col && DESCRIPTION_RUN.test(measured.rest)
+  }
+  return false
+}
 // Whether a body's last block is a heading, break, table or definition that a
 // nested description holds, at its marker line or past its content column.
 const endsInClosedDescription = (bodyLines) => {
@@ -6856,7 +6869,8 @@ const endsInClosedDescription = (bodyLines) => {
 }
 const descriptionCarriesParagraph = (line) => {
   const content = line.slice(DESCRIPTION_LEAD.exec(line)[0].length)
-  return !CONT_MARKER.test(content) && opensParagraph(content, true)
+  // A code fence opens its block with or without a closer (§10 I4).
+  return !CONT_MARKER.test(content) && !isCodeBlockOpener(content) && opensParagraph(content, true)
 }
 
 // The measurement a parse holds for each line of its array, so a nested reading
@@ -8119,6 +8133,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (markerOpens && matchMarkerAt(dmeas)) {
         const lead = markerFenceSummary(dmeas.rest, prefixMemo(state, lines, idx).markerFence ??= new Map())
         if (lead) return { kind: 'code', run: lead.run, col: dmeas.col + lead.col, markerLine: true }
+      }
+      // So does a fence on a description's marker line, behind any markers (PART 0 S2).
+      if (markerOpens && DESCRIPTION_LEAD.test(dmeas.rest) && entryAbove(itemLines, dmeas.col)) {
+        const width = DESCRIPTION_LEAD.exec(dmeas.rest)[0].length
+        const lead = markerFenceSummary(dmeas.rest.slice(width), new Map())
+        if (lead) return { kind: 'code', run: lead.run, col: dmeas.col + width + lead.col, markerLine: true }
       }
       if (dmeas.col === 0 || !descendantOwned) return null
       const comment = COMMENT_FENCE_BODY.exec(dmeas.rest)
