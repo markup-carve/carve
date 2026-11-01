@@ -1,0 +1,68 @@
+A line block in an item child keeps its stanza after a comment or marker-shaped payload
+
+```
+- - ::: |
+    %% c
+b
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="line-block">
+          <p><br>
+b</p>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- :: u
+  : ::: |
+    x
+    %% c
+b
+.
+<ul>
+  <li>
+    <dl>
+      <dt>u</dt>
+      <dd>
+        <div class="line-block">
+          <p>x<br>
+<br>
+b</p>
+        </div>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+- :: u
+  : ::: |
+     [x]: /u
+    - l
+       :::
+b
+.
+<ul>
+  <li>
+    <dl>
+      <dt>u</dt>
+      <dd>
+        <div class="line-block">
+          <p>&nbsp;[x]: /u<br>
+- l<br>
+&nbsp;&nbsp;&nbsp;:::<br>
+b</p>
+        </div>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
