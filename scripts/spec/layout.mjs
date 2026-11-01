@@ -2971,8 +2971,10 @@ function advanceQuoteRun(run, text, idx) {
         (hostedDefinitionAt(host, inner) && !FOOTNOTE_DEF.test(inner.rest))) { opaque = true; break }
     // A colon fence line of a hosted container leaves no paragraph open, except
     // in a line block's payload.
+    const colonDepth = host.colons?.length ?? 0
     if (hostColonStep(host, inner, () => false, blockStart, run.para ?? [])) {
-      if (host.colons?.at(-1)?.mode === 'line-block' && trimWs(text) !== '') stanza = true
+      // The opener itself holds no stanza yet, so nothing is open for a lazy line.
+      if (host.colons?.at(-1)?.mode === 'line-block' && host.colons.length <= colonDepth && trimWs(text) !== '') stanza = true
       opaque = true
       break
     }
