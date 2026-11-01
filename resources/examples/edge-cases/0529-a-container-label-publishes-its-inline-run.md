@@ -185,3 +185,22 @@ c
 ````
 
 :::
+
+A code span inside the label keeps its `]`, so the label runs to the bracket after it:
+
+:::: compare
+
+````carve
+:::[a `]` b]
+body
+:::
+````
+
+````html
+<div>
+  <p class="div-label">a <code>]</code> b</p>
+  <p>body</p>
+</div>
+````
+
+::::
