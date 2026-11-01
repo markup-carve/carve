@@ -7351,7 +7351,7 @@ function matchMarkerAt(meas, tabOrigin = 0) {
       bullet: m[2],
       attrs: m[3] ?? null, // marker-glued item attribute block (SS15 ext)
       task: m[5],
-      text: m[6],
+      text: m[5] === undefined ? m[6] : m[6].replace(/^ +/, ''),
       // The task box is CONTENT and the attribute block is item METADATA, so
       // neither moves the bare marker's content column (carve#1701). Every
       // marker keeps its authored separator run (CARVE-P9-083).
