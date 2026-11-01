@@ -1572,7 +1572,7 @@ function bareCloser(d, prev, next) {
 function isPathSlash(src, at) {
   let p = at - 1
   while (p > 0 && extendsGrapheme(src, p)) p--
-  return isAlnum(src[p]) && isAlnum(src[at + 1])
+  return isAlnum(charBefore(src, p + 1)) && isAlnum(charAfter(src, at + 1))
 }
 // A word holds its intraword `/` as text, so the literal slashes are read from
 // the words and the candidates between the span's two delimiters (CARVE-P9-043 R2).

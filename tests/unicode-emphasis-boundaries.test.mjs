@@ -14,3 +14,9 @@ test('bare emphasis respects Unicode letters and numbers at both boundaries', ()
   assert.equal(renderInline('日本{/中国/}韩国'), '日本<em>中国</em>韩国')
   assert.equal(renderInline('a *x* b'), 'a <strong>x</strong> b')
 })
+
+test('an intraword slash sees complete supplementary-plane code points', () => {
+  for (const source of ['/a/𐐀/b/', '/a/𝟘/b/', '/a/𐐀́/b/']) {
+    assert.equal(renderInline(source), source)
+  }
+})
