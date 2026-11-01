@@ -5590,7 +5590,11 @@ EOF = (* end of file *) ;
       directive use the same `:::` frame. An opener has at least three colons;
       an exact-length colon closer read in the frame's owner ends it. A
       longer or shorter line is not its closer. A frame without its closer
-      ends at its host boundary. Resolve the closer before classifying its
+      ends at its host boundary, and no closer further down is looked for: a
+      frame a `+` attaches in a list item ends at its host's next sibling
+      marker whether or not a later `:::` exists, and that later line opens
+      a frame of its own after the list (carve#4717). Resolve the closer
+      before classifying its
       body line. A nested opener starts a child frame when the kind permits
       nesting; the same extent and column rule applies at every depth.
       The selected kind changes only the body mode, its output, and any

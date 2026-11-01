@@ -1,0 +1,40 @@
+A plus-attached div in a list item ends at the next sibling marker
+
+```
+- +
+:::
+- b
+:::
+.
+<ul>
+  <li>
+    <div>
+
+    </div>
+  </li>
+  <li>b</li>
+</ul>
+<div>
+
+</div>
+```
+
+```
+1. +
+::: note
+x
+2. b
+:::
+.
+<ol>
+  <li>
+    <aside class="admonition note" aria-label="Note">
+      <p>x</p>
+    </aside>
+  </li>
+  <li>b</li>
+</ol>
+<div>
+
+</div>
+```

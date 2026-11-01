@@ -8390,6 +8390,17 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const colon = COLON_FENCE.exec(attached[opener] ?? '')
       const unclosedAttached = code && i + opener + 1 < n && !hasCloser(lines.slice(i + opener), 0) && !lines.slice(i).some(isBlank)
       if (unclosedAttached) end = n
+      // A div does not look ahead for its closer: the host's next sibling marker ends it (14:280, carve#4717).
+      if (colon && parseColonOpener(colon[2]) !== null) {
+        for (let k = i + opener + 1; k < end; k++) {
+          const span = opaqueSpanEnd(lines, k)
+          if (span !== -1) k = span
+          else if (matchMarkerAt(ind(k))?.indent === baseIndent) {
+            end = k
+            break
+          }
+        }
+      }
       const captionable = code ? hasCloser(attached, opener) : colon && isFigureGroupOpener(parseColonOpener(colon[2])) && COLON_CLOSER.test(attached.at(-1) ?? '')
       if (captionable && CAPTION.test(lines[end] ?? '')) end++
       // After a lone `+` the item stays open, so a block at its content column
