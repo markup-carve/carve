@@ -317,7 +317,10 @@ reference_label = (character - ']' - '@' - newline), {character - ']' - newline}
    NOT hand the interior back to the inline scanner. That is already the rule
    for every other declining reference: `[t][*a*]` keeps its asterisks rather
    than emphasizing `a`, and `[text][missing]{.wide}` keeps its braces as text
-   rather than parsing them as `attributes`. So the `@a` inside a declining
+   rather than parsing them as `attributes`. A reference label that crosses a
+   line and fails to pair or resolve also stays verbatim, with no rescan of its
+   interior, in both collapsed and explicit reference forms. So the `@a`
+   inside a declining
    `[t][@a]` is text and nothing else: it is NOT re-read as a mention, and NOT
    as a citation with the Tier-2 extension on.
 
