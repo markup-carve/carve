@@ -1,1 +1,0 @@
-The pinned carve-js build predates the spec model fix for a block-shaped line-block payload in a note or description host (markup-carve/carve#4748); the spec moved first.

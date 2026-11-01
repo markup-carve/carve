@@ -1,1 +1,0 @@
-The pinned carve-js writer dedents the refused `+` paragraph line and escapes the sublist marker, so its output renders differently (markup-carve/carve#4239); carve-js main writes it faithfully.

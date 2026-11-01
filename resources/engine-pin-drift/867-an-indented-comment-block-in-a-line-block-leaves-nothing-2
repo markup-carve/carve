@@ -1,1 +1,0 @@
-The pinned carve-js publishes an indented `%%%` pair in a line block as verse (markup-carve/carve#4469); the spec model is correct.

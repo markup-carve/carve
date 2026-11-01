@@ -1,1 +1,0 @@
-The pinned carve-js moves the line out of the item at the quote's end (markup-carve/carve#4385); the spec model is correct.

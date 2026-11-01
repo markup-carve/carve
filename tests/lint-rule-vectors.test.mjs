@@ -69,8 +69,9 @@ for (const file of files) {
   const carried = lintSource.includes(`'${data.rule}'`) || lintSource.includes(`"${data.rule}"`)
   test(`${file}: carve-js`, { skip: carried ? false : `${engineDir} does not carry ${data.rule}` }, () => {
     for (const v of data.vectors) {
+      // An opt-in rule (the #3808 ruling) runs enabled; enabling a default-on rule changes nothing.
       const actual = lintCarve(v.source, data.rule === 'caption-looking-paragraph'
-        ? { captionLookingParagraph: true } : {}).filter((w) => w.rule === data.rule)
+        ? { captionLookingParagraph: true } : { enabledRules: [data.rule] }).filter((w) => w.rule === data.rule)
       // Other rules key their pin-window declarations `<rule>/<vector>`.
       const pinned = data.rule === 'continuation-marker-refused' ? ahead[v.name] : ahead[`${data.rule}/${v.name}`]
       const expected = v.expected.findings.map((f) => [f.line, f.column])

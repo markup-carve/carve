@@ -1,1 +1,0 @@
-An indented bare `:::` under a paragraph opens a div (§10 I1, markup-carve/carve#3894); the pinned engine keeps it as text, tracked at markup-carve/carve-js#3888.
