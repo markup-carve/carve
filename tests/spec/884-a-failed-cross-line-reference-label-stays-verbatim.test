@@ -1,0 +1,16 @@
+A failed cross-line reference label stays verbatim
+
+```
+[*x*
+y][]
+
+[*x* y]: /u
+
+[*z*
+w][missing]
+.
+<p>[*x*
+y][]</p>
+<p>[*z*
+w][missing]</p>
+```
