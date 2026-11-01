@@ -1,0 +1,1 @@
+The pinned carve-js build predates the spec model fix that measures a fence on a note's marker-line item from the item's content column (markup-carve/carve#4755); the spec moved first.
