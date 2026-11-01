@@ -36,18 +36,10 @@
     },
     {
       "name": "double-colon",
-      "description": "A term marker below the definition list column folds into the term as text.",
+      "description": "A term marker past the column the item closed at opens a new list there (carve#3885); block-opener-overindented reports it (carve#3992).",
       "source": "- a\n  :: term\n :: next\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 2,
-            "includes": [
-              "column 2"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {

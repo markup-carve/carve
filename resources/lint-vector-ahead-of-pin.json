@@ -1,32 +1,29 @@
 {
-  "document-unclaimed-before-list": {
-    "actual": [[2, 1]]
-  },
-  "quote-unclaimed-indented": {
-    "actual": [[2, 5]]
-  },
-  "document-unclaimed-before-table": {
-    "actual": [[2, 1]]
-  },
-  "document-unclaimed-before-heading": {
-    "actual": [[2, 1]]
-  },
-  "table-row-cell-count/continuation-past-the-last-column": {
+  "list-marker-below-content-column/ordered-continuation": {
     "actual": []
   },
-  "unclosed-code-fence/container-div": {
-    "message": "end of the document"
+  "list-marker-below-content-column/after-blank-continuing-number": {
+    "actual": [[3, 2]]
   },
-  "unclosed-code-fence/under-paragraph": {
+  "ordered-list-split-by-indent/right-aligned-pair": {
     "actual": []
   },
-  "unclosed-code-fence/under-paragraph-indented": {
+  "ordered-list-split-by-indent/default-start": {
     "actual": []
   },
-  "unclosed-code-fence/under-item-paragraph": {
+  "ordered-list-split-by-indent/right-aligned-three": {
     "actual": []
   },
-  "unclosed-code-fence/under-quote-paragraph": {
+  "ordered-list-split-by-indent/three-digit-transition": {
+    "actual": []
+  },
+  "ordered-list-split-by-indent/parenthesis-delimiter": {
+    "actual": []
+  },
+  "ordered-list-split-by-indent/blank-between": {
+    "actual": []
+  },
+  "ordered-list-split-by-indent/shift-right": {
     "actual": []
   },
   "list-marker-below-content-column/ordered-continuation": {

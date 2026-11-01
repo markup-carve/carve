@@ -78,7 +78,30 @@ const TRIGGERS = {
     source: 'Intro [@a].\n\n> ::: references\n> :::\n\n[@a]: Author. Title. 2020.\n',
     options: { extensions: [citations()] },
   },
+  'unused-link-reference-definition': '[r]: /u\n',
+  'empty-link-destination': '[x]()\n',
+  'duplicate-reference-url': { source: '[a]: /u\n[b]: /u\n', options: { enabledRules: ['duplicate-reference-url'] } },
+  'non-descriptive-link-text': { source: '[click here](/u)\n', options: { enabledRules: ['non-descriptive-link-text'] } },
+  'emphasis-as-heading': { source: '*Title*\n', options: { enabledRules: ['emphasis-as-heading'] } },
+  'block-opener-overindented': '  # h\n',
+  'emphasis-marker-before-attributes': 'a*{.x} b*\n',
 }
+
+/*
+ * A documented rule the pinned build no longer emits from its trigger.
+ *
+ * Under markup-carve/carve#3885 the column traps these rules describe stopped
+ * existing in carve-js: an over-indented opener opens (and `block-opener-
+ * overindented` reports it), and ordered siblings group by their container.
+ * The page keeps the rows while other engines still emit them. Like
+ * NOT_IN_THE_PIN_YET it fails in both directions: a trigger that provokes its
+ * rule again means the line is stale.
+ */
+const NOT_EMITTED_BY_THE_PIN = new Map([
+  ['definition-term-block-folded', 'retired by carve#3885; the page says it retires as each engine adopts the ruling'],
+  ['ordered-list-split-by-indent', 'retired by carve#3885; the page says it retires as each engine adopts the ruling'],
+  ['fence-delimiter-indentation', 'superseded by block-opener-overindented under carve#3885 and carve#3992; pending markup-carve/carve#4834'],
+])
 
 /*
  * A rule id the build carries but no trigger names.
@@ -114,13 +137,6 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  ['unused-link-reference-definition', 'specified by the #3808 ruling; engine rollout follows'],
-  ['empty-link-destination', 'specified by the #3808 ruling; engine rollout follows'],
-  ['duplicate-reference-url', 'specified by the #3808 ruling; engine rollout follows'],
-  ['non-descriptive-link-text', 'specified by the #3808 ruling; engine rollout follows'],
-  ['emphasis-as-heading', 'specified by the #3808 ruling; engine rollout follows'],
-  ['block-opener-overindented', 'specified by the #3992 ruling; engine rollout follows'],
-  ['emphasis-marker-before-attributes', 'specified by the #3992 ruling; engine rollout follows'],
   ['comment-shaped-emphasis', 'specified by the #4815 ruling; engine rollout follows'],
   ['glob-shaped-strong', 'specified by the #4815 ruling; engine rollout follows'],
   ['html-comment-renders-as-text', 'specified by the #4812 ruling; engine rollout follows'],
@@ -144,6 +160,7 @@ const INCLUDE_FILES = {
   'deep2.crv': 'x\n',
   'bin.dat': new Uint8Array([0, 159, 146, 150, 0, 255]),
   'big.crv': `${'y'.repeat(50)}\n`,
+  'data.csv': 'a,b\n1,2\n3,4\n',
 }
 function withIncludes(source, limits = {}) {
   const resolve = (path) => (path in INCLUDE_FILES ? { source: INCLUDE_FILES[path], id: path } : null)
@@ -164,6 +181,7 @@ const INCLUDE_TRIGGERS = {
   'include-depth': withIncludes('{{ deep.crv }}\n', { maxDepth: 1 }),
   'include-budget': withIncludes('{{ big.crv }}\n', { maxBytes: 10 }),
   'include-call-limit': withIncludes('{{ a.crv }}\n\n{{ a.crv }}\n', { maxResolverCalls: 1 }),
+  'include-lines-table-rows-hint': withIncludes('{table}\n{{ data.csv @code:csv @lines:1-2 }}\n'),
 }
 
 /** The rules this map calls with options, i.e. the ones that are not default-on. */
@@ -213,6 +231,10 @@ test('every trigger provokes the rule it names', () => {
     // A trigger may land with the spec while the pin catches up; the "arrived" check retires this skip.
     if (NOT_IN_THE_PIN_YET.has(rule)) continue
     const ids = rulesFor(trigger(entry))
+    if (NOT_EMITTED_BY_THE_PIN.has(rule)) {
+      if (ids.includes(rule)) broken.push(`${rule} (emitted again; delete its NOT_EMITTED_BY_THE_PIN line)`)
+      continue
+    }
     if (!ids.includes(rule)) broken.push(`${rule} (got ${ids.join(', ') || 'nothing'})`)
   }
   assert.deepEqual(broken, [], `trigger(s) that no longer provoke their rule: ${broken.join('; ')}`)
@@ -306,6 +328,10 @@ const NOT_A_RULE = new Set([
   'include-heading-clamp',
   'wrong-column',
   'fence-payload',
+  // `aria-label` is the attribute non-descriptive-link-text reads; `disable-next-line`
+  // is a suppression directive keyword, not a finding.
+  'aria-label',
+  'disable-next-line',
 ])
 
 function ruleIdsInBuild() {
