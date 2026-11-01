@@ -1,18 +1,15 @@
 /*
- * The two word-boundary classes in the executable reference read the alphabet
- * the normative text spells, not Unicode.
+ * The two word-boundary classes in the executable reference differ: mention,
+ * tag and symbol boundaries are ASCII, while emphasis boundaries are Unicode.
  *
  * PART 9 §7 gives the mention / tag / symbol boundary as `[A-Za-z0-9_]`, and
- * the grammar header gives `alnum` - the class in the `bare_opener` /
- * `bare_closer` templates - as `letter | digit` over PART 7's enumerated ASCII
- * alphabet. Ohm's built-in `letter` and a `\p{L}\p{N}` regex both follow
- * Unicode, so `wordChar` and the delimiter guards were too WIDE on a non-ASCII
- * letter, and `wordChar` was too NARROW on the `_` §7 names.
+ * CARVE-P3-013 gives the `alnum` class in the `bare_opener` / `bare_closer`
+ * templates as Unicode letters and numbers. The `wordChar` class for markers
+ * remains ASCII and includes `_`.
  *
  * `scripts/formal-core-check.mjs` cannot see it: no corpus document puts a
- * marker or a bare delimiter against a non-ASCII letter or an underscore, so
- * all 1740 inputs stayed conformant with either alphabet. Hence a test rather
- * than corpus cases.
+ * marker or a bare delimiter against a non-ASCII letter or an underscore in
+ * its original corpus. These tests preserve the distinct classes.
  *
  * Every row carries its ASCII control, because a boundary that suppresses
  * everything passes a suppression table on its own.
@@ -26,7 +23,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (src) => renderDoc(parse(src)).trim()
 
 // U+00E9 (Ll), U+4F8B (Lo) and U+0430 (Ll, Cyrillic) are letters to Unicode
-// and not to PART 7. The full-width digit is the same claim for `digit`.
+// and not to the ASCII marker class. The full-width digit tests numbers too.
 const NON_ASCII = ['é', '例', 'а', '３']
 
 test('a marker after a non-ASCII letter opens its construct', () => {
@@ -109,16 +106,14 @@ test('an inline extension keeps its lack of a left boundary', () => {
   assert.equal(html('é:kbd[x] y\n'), '<p>é<span class="ext-kbd">x</span> y</p>')
 })
 
-test('a bare delimiter opens and closes against a non-ASCII letter', () => {
+test('a bare delimiter stays literal against a Unicode letter or number', () => {
   for (const ch of NON_ASCII) {
-    assert.equal(html(`${ch}*x* y\n`), `<p>${ch}<strong>x</strong> y</p>`, `open after ${ch}`)
-    assert.equal(html(`y *x*${ch}\n`), `<p>y <strong>x</strong>${ch}</p>`, `close before ${ch}`)
-    assert.equal(html(`${ch}/x/ y\n`), `<p>${ch}<em>x</em> y</p>`, `italic after ${ch}`)
+    assert.equal(html(`${ch}*x* y\n`), `<p>${ch}*x* y</p>`, `open after ${ch}`)
+    assert.equal(html(`y *x*${ch}\n`), `<p>y *x*${ch}</p>`, `close before ${ch}`)
+    assert.equal(html(`${ch}/x/ y\n`), `<p>${ch}/x/ y</p>`, `italic after ${ch}`)
   }
-  // Intraword emphasis after a non-ASCII letter is what all three engines
-  // ship. Whether the clause should read `\p{L}\p{N}` instead is a separate
-  // question; this row holds the reference to what is normative today.
-  assert.equal(html('café*bold*\n'), '<p>café<strong>bold</strong></p>')
+  // carve#4806 ruled that the Unicode class applies to every bare delimiter.
+  assert.equal(html('café*bold*\n'), '<p>café*bold*</p>')
   // The ASCII control: the same shapes against an ASCII letter stay literal.
   assert.equal(html('e*x* y\n'), '<p>e*x* y</p>')
   assert.equal(html('y *x*e\n'), '<p>y *x*e</p>')

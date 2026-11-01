@@ -85,3 +85,9 @@ html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-car
 html/js/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
 html/php/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
 html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
+html/js/704-a-non-ascii-letter-does-not-block-a-bare-delimiter  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
+html/php/704-a-non-ascii-letter-does-not-block-a-bare-delimiter  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
+html/rust/704-a-non-ascii-letter-does-not-block-a-bare-delimiter  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
+html/js/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
+html/php/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
+html/rust/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard

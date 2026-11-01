@@ -22,7 +22,8 @@ math_display = "$$", code_span ;
    procedure: these productions name the spans it forms, and §9 decides which
    characters pair. Every bare delimiter is one character, `/ * _ ~ =`, and
    none opens or closes intraword: `foo*bar*baz`, `snake_case`, `a/b/c` and
-   `x = 5` stay literal. This is STRICTER than Djot, whose rule is
+   `x = 5` stay literal. The same rule applies to Unicode words, such as
+   `Москва/Питер/Киев`. This is STRICTER than Djot, whose rule is
    whitespace-only. `^` and `,` are not bare delimiters: superscript and
    subscript exist only in the braced form (`H{,2,}O`, `mc{^2^}`), because
    they attach to characters rather than words and because a stray `,` in
