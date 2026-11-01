@@ -15,8 +15,10 @@ q
   <ol>
     <li id="fn1">
       <ul>
-        <li>a
-* z</li>
+        <li>a</li>
+      </ul>
+      <ul>
+        <li>z</li>
       </ul>
       <pre><code></code></pre>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
@@ -42,9 +44,12 @@ q
       <ul>
         <li>
           <ul>
-            <li>a
-* z</li>
+            <li>a</li>
           </ul>
+        </li>
+      </ul>
+      <ul>
+        <li>z
           <h1 id="H">H</h1>
         </li>
       </ul>
@@ -64,12 +69,14 @@ q
   <ul>
     <li>
       <ul>
-        <li>a
-* z</li>
+        <li>a</li>
       </ul>
-      <pre><code></code></pre>
     </li>
   </ul>
+  <ul>
+    <li>z</li>
+  </ul>
+  <pre><code></code></pre>
 </blockquote>
 <p>q</p>
 ```

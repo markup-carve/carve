@@ -1,6 +1,6 @@
 ## A marker folds into the paragraph a first-block plus took
 
-List markers never interrupt a paragraph (PART 9 §10 I2). A list marker of another kind between the item's marker and content columns folds into the paragraph a first-block `+` took, as it does after `- b` (carve#4235). It folds the same way when a refused `+` opened the paragraph (carve#4409).
+PART 0 S4 (carve#4545). The section name predates the superseding ruling and is append-only. A list marker of another kind between the item's marker and content columns opens a new list, also after the paragraph a first-block `+` took.
 
 :::: compare
 
@@ -13,8 +13,10 @@ List markers never interrupt a paragraph (PART 9 §10 I2). A list marker of anot
 ```html
 <ul>
   <li>+
-b
-* w1</li>
+b</li>
+</ul>
+<ul>
+  <li>w1</li>
 </ul>
 ```
 
@@ -30,9 +32,11 @@ b
 
 ```html
 <ol>
-  <li>+ w1
-- w2</li>
+  <li>+ w1</li>
 </ol>
+<ul>
+  <li>w2</li>
+</ul>
 ```
 
 ::::
@@ -50,9 +54,11 @@ b
 <ul>
   <li>a
     <ul>
-      <li>+ w1
-9. w2</li>
+      <li>+ w1</li>
     </ul>
+    <ol start="9">
+      <li>w2</li>
+    </ol>
   </li>
 </ul>
 ```

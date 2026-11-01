@@ -8,7 +8,7 @@ const note = (src) => html(src).replace(/\n *(?=<)/g, '').replace(/^[^]*<li id="
 
 test('a list after a refused item + on a note marker line takes a lazy line (carve#4259)', () => {
   assert.equal(note('[^a]: 1. +\n  - y\ntail\n\nr[^a]\n'), '<ol><li>+</li></ol><ul><li>y\ntail</li></ul>')
-  assert.equal(note('[^a]: * - +\n   - y\ntail\n\nr[^a]\n'), '<ul><li><ul><li>+\n- y\ntail</li></ul></li></ul>')
+  assert.equal(note('[^a]: * - +\n   - y\ntail\n\nr[^a]\n'), '<ul><li><ul><li>+</li></ul></li></ul><ul><li>y\ntail</li></ul>')
   assert.equal(note('[^a]: - - +\n  1. y\ntail\n\nr[^a]\n'), '<ul><li><ul><li>+</li></ul></li></ul><ol><li>y\ntail</li></ol>')
 })
 

@@ -283,18 +283,12 @@
         blank, and its form does not interrupt a paragraph. The deepest
         paragraph is found by following the last child container to its leaf
         at every depth. The test is the same at every depth and in every
-        family. A list marker interrupts only as the sibling of an open list.
-        Between an item's marker and content columns a marker is a sibling
-        only when it matches the open list on every §11 N1 axis (bullet
-        character, ordered type, delimiter, plain or task); any other marker
-        there is text of the open paragraph, so `- a` / ` - [ ] b` and
-        `1. a` / ` a. b` fold like `- a` / ` * b` (carve#4545). The same test holds
-        left of the marker column while the line is past the owner's content
-        column: `  - a` / ` * b` folds and `  - a` / ` - b` is a sibling. A
-        marker of another kind at the missed list's own column, or at or left
-        of the owner's content column, is no lazy line: it opens a new list
-        (§11 N1), and every item measures its content against its own content
-        column. `- y` / `1. c` / blank / `   # h` puts the heading in the `1.`
+        family. A list marker that misses an item's content column is no lazy
+        line: leading space stops no line form (S3), so it is a sibling
+        when it matches the list on every §11 N1 axis and otherwise a new list,
+        so `- a` / ` - b` is one list and `- a` / ` * b` and `1. a` / ` a. b`
+        are two (carve#4545). Every item measures its content against its own
+        content column. `- y` / `1. c` / blank / `   # h` puts the heading in the `1.`
         item, the same as `1. c` / blank / `   # h` alone (carve#4369). Headings,
         thematic breaks, quotes, terms, tables, valid colon openers, code and
         raw openers, comments, attributes and definitions interrupt. An invalid opener is text. A fold closes

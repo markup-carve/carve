@@ -7,8 +7,10 @@ A marker folds into the paragraph a first-block plus took
 .
 <ul>
   <li>+
-b
-* w1</li>
+b</li>
+</ul>
+<ul>
+  <li>w1</li>
 </ul>
 ```
 
@@ -18,9 +20,11 @@ b
  - w2
 .
 <ol>
-  <li>+ w1
-- w2</li>
+  <li>+ w1</li>
 </ol>
+<ul>
+  <li>w2</li>
+</ul>
 ```
 
 ```
@@ -32,9 +36,11 @@ b
 <ul>
   <li>a
     <ul>
-      <li>+ w1
-9. w2</li>
+      <li>+ w1</li>
     </ul>
+    <ol start="9">
+      <li>w2</li>
+    </ol>
   </li>
 </ul>
 ```

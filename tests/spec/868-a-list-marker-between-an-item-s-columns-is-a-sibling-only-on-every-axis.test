@@ -5,8 +5,10 @@ A list marker between an item's columns is a sibling only on every axis
  - [ ] b
 .
 <ul>
-  <li>a
-- [ ] b</li>
+  <li>a</li>
+</ul>
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="b"> b</li>
 </ul>
 ```
 
@@ -15,8 +17,10 @@ A list marker between an item's columns is a sibling only on every axis
  - b
 .
 <ul class="task-list">
-  <li><input type="checkbox" disabled aria-label="a - b"> a
-- b</li>
+  <li><input type="checkbox" disabled aria-label="a"> a</li>
+</ul>
+<ul>
+  <li>b</li>
 </ul>
 ```
 
@@ -25,8 +29,10 @@ A list marker between an item's columns is a sibling only on every axis
  a. b
 .
 <ol>
-  <li>a
-a. b</li>
+  <li>a</li>
+</ol>
+<ol type="a">
+  <li>b</li>
 </ol>
 ```
 
@@ -35,8 +41,10 @@ a. b</li>
  i. b
 .
 <ol>
-  <li>a
-i. b</li>
+  <li>a</li>
+</ol>
+<ol type="i">
+  <li>b</li>
 </ol>
 ```
 
@@ -45,8 +53,10 @@ a. a
  1. b
 .
 <ol type="a">
-  <li>a
-1. b</li>
+  <li>a</li>
+</ol>
+<ol>
+  <li>b</li>
 </ol>
 ```
 
@@ -58,8 +68,10 @@ a. a
 <ul>
   <li>x
     <ul>
-      <li>a
-- [ ] b</li>
+      <li>a</li>
+    </ul>
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="b"> b</li>
     </ul>
   </li>
 </ul>

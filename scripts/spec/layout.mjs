@@ -2522,14 +2522,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
   const retainedFenceText = h.retainedComment && h.kinds.at(-1) === 'item' &&
     meas.col > h.markerCols.at(-1) && meas.col < h.columns.at(-1) && FENCE.test(meas.rest)
   h.retainedComment = false
-  // A marker under an item's paragraph that misses the item folds into it unless it
-  // shares the missed list's axes or column or stands at the survivor's (S4, as the walk reads it).
-  const lineMarker = paraOpen && h.kinds.at(-1) === 'item' ? matchMarkerAt(meas) : null
-  const survivor = lineMarker ? h.columns.findLastIndex((c) => c <= meas.col) : -1
-  const foldedMarker = lineMarker !== null && survivor < h.kinds.length && h.kinds[survivor] === 'item' &&
-    h.markers[survivor] && !sameAxes(markerAxes(h.markers[survivor]), lineMarker) &&
-    meas.col !== h.markerCols[survivor] && meas.col > h.columns[survivor]
-  const lazyItemLine = retainedFenceText || foldedMarker || paraOpen && h.kinds.at(-1) === 'item' &&
+  const lazyItemLine = retainedFenceText || paraOpen && h.kinds.at(-1) === 'item' &&
     (h.columns.length === 2 || h.colons?.length ||
       h.kinds.at(-2) === 'item') && matchMarkerAt(meas) === null &&
     (!FENCE.test(meas.rest) || belowFenceLazy && meas.col < h.columns.at(-1)) && !isColonBlockOpener(meas.rest) &&
@@ -3488,12 +3481,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && !termRefuses && form.kind !== 'dd' &&
         // A marker at the missed list's column or at or left of the owner's content column opens a
         // list of its own, so its items measure against their own columns (S4, §11 N1; carve#4369).
-        !(form.kind === 'item' && frames[reached + 1]?.kind === 'item' &&
-          (sameAxes(markerAxes(frames[reached + 1].marker), form.marker) ||
-           m.col === Math.min(frames[reached + 1].listCol, frames[reached + 1].markerCol) ||
-           m.col <= frames[reached].col)) &&
-        !(missedNote && form.kind === 'item' && missedFrames.some((f) => f.kind === 'item') &&
-          !missedFrames.some((f) => f.kind === 'item' && m.col > f.markerCol && m.col < f.col && !sameAxes(markerAxes(f.marker), form.marker)))) {
+        !(form.kind === 'item' && missedFrames.some((f) => f.kind === 'item'))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
       // the frame it missed. Past a missed note it is framed LAZY in the
       // deepest container, so every reader folds it there (carve#3885).
@@ -7871,7 +7859,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // The marker-line child owns this column until an outer authored block opens.
     let headSubActive = headSubCol >= 0
     // The deepest descendant item's marker, for a marker line that cannot be its sibling.
-    let deepestMarker = headSubMarker ? { mk: headSubMarker, indent: headSubCol - headSubMarker.markerWidth, content: headSubCol } : null
     // A sibling list at the content column has ended the marker-line child.
     let headSubEnded = false
     // A plain line below the child's column folded into its open paragraph.
@@ -9071,10 +9058,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // So is one in an open code or comment fence's payload (PART 0 opacity).
       const inOpaque = col >= contentCol && fence.opaque !== null && fence.opaque.opens !== false
       const lineMarker = inPayload || inOpaque ? null : matchMarkerAt(lm, col >= contentCol ? contentCol : 0)
-      // A marker inside the deepest item's marker width that is no sibling folds into its paragraph as text (PART 0 S4).
-      const markerFolds = lineMarker !== null && descendantParagraphBefore && deepestMarker !== null && !insideFence() &&
-        lineMarker.indent > deepestMarker.indent && lineMarker.indent < deepestMarker.content && !sameAxes(markerAxes(deepestMarker.mk), lineMarker)
-      const nm = markerFolds ? null : lineMarker
+      const nm = lineMarker
       if (nm && col >= contentCol) descendantColumns.add(nm.indent + nm.markerWidth)
       if (DEFLIST_TERM.test(lm.rest) && col >= contentCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) {
@@ -9469,7 +9453,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // spelling of "a known descendant item owns this column".
         absorbedFenceSeen = null
         if (!inPayload) {
-          const nextOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody, !markerFolds)
+          const nextOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody, true)
           if (nextOpaque?.kind === 'code' && nextOpaque !== nestedOpaque) nextOpaque.sourceBase = localBase
           nestedOpaque = nextOpaque
         }
@@ -9502,7 +9486,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (dmeas.rest !== '') {
             if (nm && nm.indent >= contentCol && !inDefBody) {
               descLive = true
-              deepestMarker = { mk: nm, indent: nm.indent, content: nm.indent + nm.markerWidth }
             } else if (!descendantOwned && !COMMENT_LINE.test(dedented)) {
               if (foldedChildFence) foldedChildParagraph = true
               if (!foldedChildParagraph || !descendantParagraphBefore || mayOpenAuthoredBlock) {

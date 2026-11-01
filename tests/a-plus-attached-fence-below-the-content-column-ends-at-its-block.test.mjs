@@ -28,8 +28,8 @@ test("a descendant's attached fence runs through its closer past a blank", () =>
     '<ul>\n  <li>foo\n    <ol>\n      <li>\n        <pre><code>x\n\n</code></pre>\n      </li>\n    </ol>\n  </li>\n</ul>')
 })
 
-test("a marker in a task box's columns folds after a lazy line", () => {
+test("a marker in a task box's columns opens a new list after a lazy line", () => {
   const out = html('- [ ] - [ ] a\n        - [x] - c\n      c\n    * [ ] c\n')
-  assert.match(out, /<li>c\nc\n\* \[ \] c<\/li>/)
-  assert.equal((out.match(/<ul/g) ?? []).length, 4)
+  assert.match(out, /<li>c\nc<\/li>/)
+  assert.equal((out.match(/<ul/g) ?? []).length, 5)
 })

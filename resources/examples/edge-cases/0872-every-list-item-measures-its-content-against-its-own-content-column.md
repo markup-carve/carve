@@ -142,9 +142,11 @@ PART 0 S4, PART 9 §11 N1 (carve#4369). A list marker of another kind at column 
       <li>w</li>
     </ul>
     <ol>
-      <li>v
-- u</li>
+      <li>v</li>
     </ol>
+    <ul>
+      <li>u</li>
+    </ul>
   </li>
 </ul>
 ```

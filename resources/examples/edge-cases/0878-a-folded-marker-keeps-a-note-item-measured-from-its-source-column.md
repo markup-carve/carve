@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A folded marker keeps a note item measured from its source column
 
-CARVE-P9-083 and PART 0 S4 (carve#4631). A marker of another list kind below a note item's column folds into the item's paragraph and changes no column, so a fence below the item's source content column leaves the item, as it does after a plain lazy line.
+CARVE-P9-083 and PART 0 S4 (carve#4631, carve#4545). The section name predates the superseding ruling on carve#4545 and is append-only. A marker of another list kind below a note item's column opens a new list, and each list's items measure their content from their own columns.
 
 ::: compare
 
@@ -25,8 +25,10 @@ q
   <ol>
     <li id="fn1">
       <ul>
-        <li>a
-* z</li>
+        <li>a</li>
+      </ul>
+      <ul>
+        <li>z</li>
       </ul>
       <pre><code></code></pre>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
@@ -58,9 +60,12 @@ q
       <ul>
         <li>
           <ul>
-            <li>a
-* z</li>
+            <li>a</li>
           </ul>
+        </li>
+      </ul>
+      <ul>
+        <li>z
           <h1 id="H">H</h1>
         </li>
       </ul>
@@ -86,12 +91,14 @@ q
   <ul>
     <li>
       <ul>
-        <li>a
-* z</li>
+        <li>a</li>
       </ul>
-      <pre><code></code></pre>
     </li>
   </ul>
+  <ul>
+    <li>z</li>
+  </ul>
+  <pre><code></code></pre>
 </blockquote>
 <p>q</p>
 ````

@@ -63,12 +63,6 @@
       "source": "::: d\n`a\n:::`\n:::\n"
     },
     {
-      "id": "dot-marker-in-a-bullet-item",
-      "host": "bullet",
-      "value": "a\n. b",
-      "source": "- `a\n . b`\n"
-    },
-    {
       "id": "marker-in-a-quoted-item",
       "host": "quotedItem",
       "value": "a\n- b",
@@ -78,6 +72,11 @@
       "host": "paragraph",
       "value": "a\n> b",
       "id": "refused-1"
+    },
+    {
+      "host": "bullet",
+      "value": "a\n. b",
+      "id": "dot-marker-in-a-bullet-item"
     },
     {
       "host": "bullet",
