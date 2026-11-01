@@ -7803,7 +7803,8 @@ EOF = (* end of file *) ;
       CARVE-P3-013 applies to emphasis, not to abbreviations. Literal source text emitted for an
       unresolved link or image reference (R1) is not scanned for abbreviations;
       ordinary bracket text remains eligible. The text of a code span, an
-      inline literal and a mention is not scanned (carve#4560).
+      inline literal and a mention is not scanned (carve#4560). Tag text and
+      autolink display text are likewise opaque to abbreviation expansion.
       Expansion follows PART 9 §25 RESOURCE BOUNDS.
    R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
@@ -7819,6 +7820,8 @@ EOF = (* end of file *) ;
       self-reference (`# A </#A>`) and a mutual cycle (`# A </#B>` +
       `# B </#A>`) each resolve once (corpus "Cyclic cross-reference resolves
       to one level"). Cloning keeps the heading's markup:
+      A cloned heading's text is opaque to abbreviation expansion; the heading
+      itself remains eligible at its authored position.
       An inner cross-reference in the cloned heading contributes its target's
       inline text without an inner link. References within that target are not
       expanded again.

@@ -982,6 +982,10 @@ function bracketAtoms(content) {
   return byStart
 }
 
+function renderAutolink(href, a, raw) {
+  return `<a href="${escapeUrlAttr(href)}"${a}>${escapeHtml(raw)}</a>`
+}
+
 const sem = g.createSemantics().addOperation('h', {
   inlineAtom(_atom) {
     return atomScope.byStart.get(this.source.startIdx).render()
@@ -1095,7 +1099,7 @@ const sem = g.createSemantics().addOperation('h', {
     const raw = body.child(1).sourceString
     const href = /@/.test(raw) && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw) ? `mailto:${raw}` : raw
     const a = renderAttrs(attrsOf(attrs), linkStructural(''))
-    return `<a href="${escapeUrlAttr(href)}"${a}>${escapeHtml(raw)}</a>`
+    return rawFrame(renderAutolink(href, a, raw))
   },
   escape(_bs, ch) {
     return escapeHtml(ch.sourceString)
@@ -1146,7 +1150,7 @@ const sem = g.createSemantics().addOperation('h', {
   tag(_h, name, glued) {
     if (!name.sourceString) return escapeHtml(`#${glued.sourceString}`)
     return (
-      `<span class="tag"><strong>#${escapeHtml(name.sourceString)}</strong></span>` +
+      rawFrame(`<span class="tag"><strong>#${escapeHtml(name.sourceString)}</strong></span>`) +
       escapeHtml(glued.sourceString)
     )
   },

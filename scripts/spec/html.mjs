@@ -1883,6 +1883,10 @@ const dropCloneIds = (html) => html.split(RAW_FRAME)
   .map((part, i) => i % 2 ? part : part.replace(/<[A-Za-z][^>]*>/g, (tag) => tag.replace(/ id="[^"]*"/gi, '')))
   .join('')
 
+function renderClonedHeadingLink(textOnly, text, hit) {
+  return textOnly ? text : `<a href="#${hit.id}">${text}</a>`
+}
+
 function resolveCrossrefs(html, ctx) {
   return html.replace(/xref(text)?:(.*?)/g, (_, textOnly, id) => {
     const key = id.normalize('NFC')
@@ -1915,7 +1919,10 @@ function resolveCrossrefs(html, ctx) {
       return inner.html.replace(/\uE000(?!ref:|\uE001)[\s\S]*?\uE001/g, '')
     }) }
     const text = resolveRefs(flattenInnerLinks(hit.html).replace(/\uE000(?!ref:|\uE001)[\s\S]*?\uE001/g, ''), ctx)
-    return textOnly ? text : `<a href="#${hit.id}">${text}</a>`
+    // The clone is link-derived text. Strip inner raw frames before wrapping
+    // the whole clone so the final abbreviation pass cannot enter it.
+    const opaque = text.replaceAll(RAW_MARK, '')
+    return rawFrame(renderClonedHeadingLink(textOnly, opaque, hit))
   })
 }
 
