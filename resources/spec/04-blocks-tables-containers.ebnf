@@ -39,6 +39,11 @@ continuation_cell = {space}, cell_content, {space} ;
       the row closes there; the escape decides what the CELL holds, which is a
       literal pipe rather than an orphaned backslash -- `\|` is the only way to
       write a literal pipe in a cell, in every position cell splitting reads.
+      Cell splitting runs before the inline pass, so every inline construct
+      outside a backtick run reads the cell content after that unescape: an
+      unresolved reference's literal source is `[a|b][m]` for
+      `| [a\|b][m] |`, and `[x][r\|s]` in a cell matches an `[r|s]: /u`
+      definition (carve#4718).
       A code span is verbatim (1. above) and keeps `\|` as written:
       | `a\|b` | holds the code `a\|b`. A link or image destination is one of
       those positions and receives the unescaped pipe, so a pipe in a URL can

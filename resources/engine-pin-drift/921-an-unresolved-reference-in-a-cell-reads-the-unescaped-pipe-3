@@ -1,0 +1,1 @@
+The pinned carve-js build predates the spec model fix that reads a table cell's `\|` before the inline pass, so an unresolved reference in a cell keeps no backslash (markup-carve/carve#4718); the spec moved first.
