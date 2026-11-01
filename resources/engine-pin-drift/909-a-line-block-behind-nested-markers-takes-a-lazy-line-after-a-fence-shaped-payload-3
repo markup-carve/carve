@@ -1,0 +1,1 @@
+The pinned carve-js build predates the spec model fix for a fence-shaped line-block payload behind nested list markers (markup-carve/carve#4661); the spec moved first.

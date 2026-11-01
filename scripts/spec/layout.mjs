@@ -7803,6 +7803,18 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
     }
     // The quote run the deepest descendant holds, read like the item's own.
     const descendantQuote = { at: -2, open: false, table: false, hosts: [], para: [] }
+    // A line block behind further markers (`- - ::: |`) holds payload too.
+    const markerLineBlock = (col, text) => {
+      if (!text.includes(':::') || !text.includes('|')) return null
+      const lead = indentCols(text)
+      let at = { col: col + lead.col, rest: lead.rest }
+      for (let m = matchMarkerAt(at); m; m = matchMarkerAt(at)) {
+        const next = indentCols(m.text)
+        at = { col: m.indent + m.markerWidth + next.col, rest: next.rest }
+      }
+      const colon = at.col > col && COLON_FENCE.exec(at.rest)
+      return colon && parseColonOpener(colon[2])?.mode === 'line-block' ? { length: colon[1].length, lineBlock: true, column: at.col } : null
+    }
     const seedDescendantQ1 = (col, text, memo = null, idx = -1) => {
       descendantQ1.col = col
       descendantQuote.at = -2
@@ -7818,6 +7830,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       if (quoted === null && isColonBlockOpener(text)) {
         const colon = COLON_FENCE.exec(text)
         descColons.push({ length: colon[1].length, lineBlock: parseColonOpener(colon[2])?.mode === 'line-block', column: col })
+      } else if (quoted === null) {
+        const inner = markerLineBlock(col, text)
+        if (inner) descColons.push(inner)
       }
     }
     /*
@@ -7890,8 +7905,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         descendantQ1.para.push(text)
         return
       }
+      // A span pairing across payload lines hides a closer-shaped line (carve-php#3137).
+      if (lineBlock && idx >= 0 && idx > (top.spanEnd ?? -1)) {
+        const end = lineBlockSpanEnd(lines, idx)
+        if (end > idx) top.spanEnd = end
+      }
+      const inSpan = lineBlock && idx >= 0 && idx <= (top.spanEnd ?? -1)
       const run = COLON_FENCE.exec(text)?.[1].length
-      const closes = COLON_CLOSER.test(text) && top !== undefined && run === top.length &&
+      const closes = !inSpan && COLON_CLOSER.test(text) && top !== undefined && run === top.length &&
         (!lineBlock || ind(idx).col <= top.column)
       // Inside a line block only its own closer is a fence line.
       const bare = !lineBlock && COLON_CLOSER.test(text) && !closes
@@ -8174,6 +8195,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         return c && c[1][0] === open.run[0] && c[1].length >= open.run.length ? null : open
       }
       if (fence.opaque) return null
+      // A descendant line block's payload is inline content (PART 2 line_block): it opens no fence.
+      if (descColons.at(-1)?.lineBlock && descendantQ1.col >= 0 && sourceCol >= descColons.at(-1).column) return null
       const markerSpan = markerComment(dmeas.rest, idx, dmeas.col)
       if (markerSpan) return markerSpan
       // A fence on a sublist's marker line opens at a block start (§10 I4), so
@@ -9267,7 +9290,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           if (nm && nm.indent >= contentCol && !inDefBody &&
               !fence.opaque && !nestedOpaque && (!wasNested || endedBelow) && !inPayload &&
               // A quote or a div on the marker line starts the descendant's run there.
-              (descendantQ1.col < 0 ? QUOTE.test(nm.text) || COLON_FENCE.test(nm.text) : nm.indent < descendantQ1.col)) {
+              (descendantQ1.col < 0 ? QUOTE.test(nm.text) || COLON_FENCE.test(nm.text) || markerLineBlock(nm.indent + nm.markerWidth, nm.text) : nm.indent < descendantQ1.col)) {
             seedDescendantQ1(nm.indent + nm.markerWidth, nm.text, prefixMemo(state, lines, i).paragraph, i)
           }
           if (descendantOwned) {
