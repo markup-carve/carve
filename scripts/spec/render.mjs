@@ -2132,7 +2132,8 @@ function applyQuotes(toks, openMap, src, contentAt, spanContent, contentEnd) {
     if (!t.quote) continue
     // A span's closer is no next character: the quote reads as at the end of
     // the paragraph (CARVE-P3-023 R1, carve#4318).
-    if (closes.has(t.quote.at + 1) || (spanContent && t.quote.at + 1 === contentEnd)) t.quote.record.spanEnd = true
+    const ni = quoteNextIdx(src, t.quote.at + 1)
+    if (closes.has(ni) || (spanContent && ni === contentEnd)) t.quote.record.spanEnd = true
     const pi = quotePrevIdx(src, t.quote.at)
     const prev = pi > 0 ? src[pi - 1] : quotePrevCtx
     // CARVE-P3-023: an opener of any kind starts content (carve#3898).
@@ -2484,6 +2485,21 @@ function quotePrevIdx(src, at) {
   return i
 }
 
+// A braced comment counts as nothing for quote direction after the quote as
+// well as before it (carve#4719): `"a-"{%%}` closes as `"a-"` does.
+// The closer search is cached, so a run of unclosed `{%` stays linear.
+let commentCloser = { src: null, from: 0, at: -1 }
+function quoteNextIdx(src, at) {
+  let i = at
+  while (src[i] === '{' && src[i + 1] === '%' && !extendsGrapheme(src, i + 2)) {
+    const c = commentCloser
+    if (c.src !== src || i + 2 < c.from || (c.at >= 0 && i + 2 > c.at)) commentCloser = { src, from: i + 2, at: src.indexOf('%}', i + 2) }
+    if (commentCloser.at < 0) break
+    i = commentCloser.at + 2
+  }
+  return i
+}
+
 // CARVE-P3-021 and CARVE-P3-023: typography flanks include soft and hard breaks, represented here by \n.
 export const TYPOGRAPHY_FLANK = new Set([' ', '\t', '\n', '\r', '\u00a0'])
 export const isTypographyFlank = (ch) => TYPOGRAPHY_FLANK.has(ch)
@@ -2541,15 +2557,16 @@ const leadingCommentsEnd = (src) => {
 function smartQuote(node, open, close, single) {
   const src = node.source.sourceString
   const at = node.source.startIdx
-  const next = src[at + 1] === '\\' && flankAfter(src, at + 1) ? ' ' : String.fromCodePoint(src.codePointAt(at + 1) ?? 0).replace('\0', '')
-  QUOTE_LETTER_RUN.lastIndex = at + 1
+  const ni = quoteNextIdx(src, at + 1)
+  const next = src[ni] === '\\' && flankAfter(src, ni) ? ' ' : String.fromCodePoint(src.codePointAt(ni) ?? 0).replace('\0', '')
+  QUOTE_LETTER_RUN.lastIndex = ni
   const word = single ? (QUOTE_LETTER_RUN.exec(src)?.[0] ?? '') : ''
-  const end = at + 1 + word.length
+  const end = ni + word.length
   const record = {
     single, open, close, next,
     contentStart: (at === 0 || at === leadingCommentsEnd(src)) && quoteRun.depth === 1,
     initialContext: at === 0 || at === leadingCommentsEnd(src) ? quotePrevCtx : undefined,
-    elision: ELISION_WORDS.has(word.toLowerCase()) && !(src[end] === "'" && !quoteAlnum(String.fromCodePoint(src.codePointAt(end + 1) ?? 0).replace('\0', ''))),
+    elision: ELISION_WORDS.has(word.toLowerCase()) && !(src[end] === "'" && !quoteAlnum(String.fromCodePoint(src.codePointAt(quoteNextIdx(src, end + 1)) ?? 0).replace('\0', ''))),
   }
   const id = quoteRun.records.push(record) - 1
   return `\uE000quote:${quoteRun.key}:${id}\uE001`

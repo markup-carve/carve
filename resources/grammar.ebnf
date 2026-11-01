@@ -3047,6 +3047,9 @@ smart_quote = '"' | "'" ;
    A span's closing delimiter is not the next source character: nothing
    follows a quote at the end of a span's content, so `*"Wait-"*` renders
    `<strong>“Wait-”</strong>`, as `"Wait-"` closes at the end of a paragraph.
+   A braced inline comment counts as nothing on either side of a quote, so
+   removing one never changes a quote: `"a-"{%%}` renders `“a-”` as `"a-"`
+   does, and `'{%%}90s` renders `’90s` (carve#4719).
 
    R2. LISTED ELISIONS. A single quote that would open and is followed by
    a maximal run of Unicode letters equal, case-insensitively, to one of
