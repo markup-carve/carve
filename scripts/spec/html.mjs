@@ -1471,8 +1471,8 @@ function resolveImageRef(parsed, ctx, literal, blockAttrs = null) {
   // with links and definitions. `alt` remains the authored source string, and
   // a newline still prevents the bracket run from becoming an identifier.
   const rawKey = label ?? alt
-  if (/[\r\n]/.test(rawKey)) return literal
-  const key = labelKey(rawKey)
+  // A label across a line fails like an unresolved one (CARVE-P3-004).
+  const key = /[\r\n]/.test(rawKey) ? null : labelKey(rawKey)
   const def = ctx.linkDefs.get(key)
   // UNRESOLVED -> LITERAL, attribute block INCLUDED. The block is part of
   // what the author wrote, and dropping it deleted content silently. All
@@ -1529,8 +1529,8 @@ function resolveRefsOnce(html, ctx) {
     // fallback below stays deliberately looser; see `refKey`.
     const rawKey = label ?? (typeof source === 'string' ? source : stripTags(text))
     const key = /[\r\n]/.test(rawKey) ? null : labelKey(rawKey)
-    if (key === null) return `[${source ?? text}][${label ?? ''}]${attrSrc ?? ''}`
-    const def = ctx.linkDefs.get(key)
+    // A label across a line fails like an unresolved one (CARVE-P3-004).
+    const def = key === null ? undefined : ctx.linkDefs.get(key)
     if (!def && label === null) {
       // R1 IMPLICIT HEADING FALLBACK. Link definitions win the tie above, so
       // this only runs for a collapsed reference with no definition. Every production engine
@@ -1544,7 +1544,7 @@ function resolveRefsOnce(html, ctx) {
       // `[a :smile: b][]` and not by `[a b][]`, while all three engines
       // resolve both (markup-carve/carve#1011).
       const indexKey = typeof source === 'string' ? derivedText(source) : text
-      const heading = ctx.headingRefs.get(refKey(indexKey))
+      const heading = key === null ? undefined : ctx.headingRefs.get(refKey(indexKey))
       if (heading !== undefined) {
         if (flat) return text
         return `<a href="#${escapeAuthoredAttr(heading)}"${renderAttrs(attrList ?? [], linkStructural(''))}>${text}</a>`

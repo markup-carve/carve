@@ -513,7 +513,8 @@ CarveCore {
                | destTitle " "* -- emptyTitle
                | " "* -- empty
   refTail    = "[" refLabel? "]" attrRun?
-  refLabel   = (~"]" ~newline any)+
+  // A label may cross a line; it then fails and stays verbatim (CARVE-P3-004).
+  refLabel   = (~"]" any)+
   // A destination's parentheses BALANCE (grammar link_destination), so a URL
   // carrying one is written plainly; the run ends at the first `)` with no
   // opener left to pair with. An escaped parenthesis, and an escaped
