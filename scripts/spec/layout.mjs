@@ -1189,6 +1189,8 @@ function opaqueSpanEnd(lines, idx) {
   return -1
 }
 
+// Cheap test before the stanza walk: no line of this shape, no line block.
+const LINE_BLOCK_SHAPED = /:::.*\|[ \t]*$/
 const opensLineBlock = (line) => {
   const colon = COLON_FENCE.exec(stripLazy(line))
   return !!colon && parseColonOpener(colon[2])?.mode === 'line-block'
@@ -7440,6 +7442,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       ? contentCol + dedentMeasured(m, line, contentCol).meas.col
       : m.col
     const itemLines = []
+    // The column a line-block payload line was last found at; lines at or past it stay payload.
+    let stanzaPayloadCol = null
+    let holdsLineBlock = LINE_BLOCK_SHAPED.test(head.text)
     const captionGaps = []
     const residueFence = { index: 0, opaque: null }
     const commentClosersByColumn = new Map()
@@ -9049,11 +9054,23 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         const inNoteBody = i <= noteFenceEnd || absorbedNoteFence
         const noteClaimsBelow = defBodyIndent !== null && noteBodyBoundary !== null &&
           col < noteBodyBoundary && noteClaimsLazyLine(i)
+        holdsLineBlock ||= LINE_BLOCK_SHAPED.test(lm.rest)
+        if (lm.rest !== '' && (col <= contentCol || col < stanzaPayloadCol || COLON_CLOSER.test(lm.rest))) stanzaPayloadCol = null
+        // A line-block payload line is inline content whatever its shape (PART 2 line_block).
+        const stanzaPayload = () => {
+          if (!holdsLineBlock || col <= contentCol || lm.rest === '') return false
+          if (stanzaPayloadCol !== null) return true
+          // A neutral line stands in, so a marker-shaped payload line is not read as a host; a closer keeps its width.
+          const probe = COLON_CLOSER.test(lm.rest) ? lm.rest : 'x'
+          if (!hostEndsInLineBlockStanza([...itemLines, ' '.repeat(col - contentCol) + probe], 0)) return false
+          stanzaPayloadCol = col
+          return true
+        }
         const mayOpenAuthoredBlock = !inNoteBody && !foldsIntoLeadTerm && !descendantOwned &&
           !foldedChildFence &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest) &&
           // A fence with no closer under an open paragraph is text (§10 I4), as the walk read it.
-          (!isCodeBlockOpener(lm.rest) || bodyFenceOpens(i, lm.rest, col))
+          (!isCodeBlockOpener(lm.rest) || bodyFenceOpens(i, lm.rest, col)) && !stanzaPayload()
         if (pendingHeadQuote !== null && mayOpenAuthoredBlock) {
           const start = pendingHeadQuote
           const candidate = [head.text]
@@ -9342,7 +9359,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
           blank: dmeas.rest === '',
         })
         // record the first sub-list's content column (carve#322)
-        if (subCol < 0 && nm && nm.indent >= contentCol && !inDefBody) {
+        if (subCol < 0 && nm && nm.indent >= contentCol && !inDefBody && !stanzaPayload()) {
           subCol = reach + nm.markerWidth
           paraBeforeSublist = paragraphIsOpen() ? [...para] : []
         } else if (nm && nm.indent >= contentCol && !inDefBody && reach + nm.markerWidth < subCol && !insideFence()) {
@@ -9498,7 +9515,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         // definition, and an abbreviation definition is recognized at document
         // level only (line 1453), so inside an item the line is paragraph text
         // and reopening the paragraph is the correct answer for it.
-        else if (isLinkDef(dedented) || FOOTNOTE_DEF.test(lm.rest)) {
+        else if ((isLinkDef(dedented) || FOOTNOTE_DEF.test(lm.rest)) && !stanzaPayload()) {
           const outerReach = { def: defBodyIndent, boundary: noteBodyBoundary }
           closePara()
           // ONLY A FOOTNOTE DEFINITION HAS A BODY. A link reference definition

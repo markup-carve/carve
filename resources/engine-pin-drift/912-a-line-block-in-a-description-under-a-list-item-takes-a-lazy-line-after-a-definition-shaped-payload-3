@@ -1,0 +1,1 @@
+The pinned carve-js build predates the spec model fix that keeps a line-block stanza open after a definition-shaped payload line in a description under a list item (markup-carve/carve#4757); the spec moved first.

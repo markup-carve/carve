@@ -1,0 +1,67 @@
+A line block in a description under a list item takes a lazy line after a definition-shaped payload
+
+```
+- :: u
+  : ::: |
+    [x]: /u
+b
+
+[x]
+.
+<ul>
+  <li>
+    <dl>
+      <dt>u</dt>
+      <dd>
+        <div class="line-block">
+          <p>[x]: /u<br>
+b</p>
+        </div>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>[x]</p>
+```
+
+```
+1. :: u
+   : ::: |
+     [^1]: n
+b
+.
+<ol>
+  <li>
+    <dl>
+      <dt>u</dt>
+      <dd>
+        <div class="line-block">
+          <p>[^1]: n<br>
+b</p>
+        </div>
+      </dd>
+    </dl>
+  </li>
+</ol>
+```
+
+```
+- :: u
+  :  ::: |
+       [x]: /u "t"
+b
+.
+<ul>
+  <li>
+    <dl>
+      <dt>u</dt>
+      <dd>
+        <div class="line-block">
+          <p>&nbsp;&nbsp;[x]: /u “t”<br>
+b</p>
+        </div>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
