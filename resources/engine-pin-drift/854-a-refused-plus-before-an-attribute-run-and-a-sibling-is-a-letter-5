@@ -1,1 +1,0 @@
-The pinned carve-js predates this: invisible lines after a + are skipped and the first visible line decides (markup-carve/carve#4449); the spec model is correct.

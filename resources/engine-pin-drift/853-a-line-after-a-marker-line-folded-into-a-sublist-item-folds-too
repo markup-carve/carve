@@ -1,1 +1,0 @@
-The pinned carve-js predates this: a line after a fold folds too (markup-carve/carve#4371); the spec model is correct.

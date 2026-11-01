@@ -1,1 +1,0 @@
-Pinned JavaScript folds a shifted : line into the nested description instead of opening the outer list's next description (markup-carve/carve#4180 ruling C); pending in carve-js.

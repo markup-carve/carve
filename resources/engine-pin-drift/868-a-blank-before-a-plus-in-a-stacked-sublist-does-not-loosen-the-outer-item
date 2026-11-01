@@ -1,1 +1,0 @@
-The pinned carve-js loosens the outer item at the blank before the plus (markup-carve/carve#4398); the spec model is correct.

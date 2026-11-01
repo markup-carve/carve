@@ -1,1 +1,0 @@
-The pinned carve-js ends the item before the heading at its content column (markup-carve/carve#4208); the spec model is correct.

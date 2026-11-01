@@ -1,1 +1,0 @@
-The pinned carve-js keeps a caption off a lone image followed by a comment; the spec model binds it, since a comment renders nothing (markup-carve/carve#4568)

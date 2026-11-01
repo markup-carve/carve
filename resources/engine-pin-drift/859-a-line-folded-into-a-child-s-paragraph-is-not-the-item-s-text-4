@@ -1,1 +1,0 @@
-markup-carve/carve#4526, the pinned carve-js keeps a column-0 line in an item whose quote took a lazy invalid opener before a bare run; the spec model, carve-php and carve-rs end the item.

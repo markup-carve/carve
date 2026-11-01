@@ -1,1 +1,0 @@
-markup-carve/carve#4550, the pinned carve-js keeps a div open past its own closer after an absorbed run of another width; fix pending in carve-js
