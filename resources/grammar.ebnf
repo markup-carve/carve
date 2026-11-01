@@ -46,7 +46,7 @@
                  end of line).
    Character classes for guards: ws = space | tab | newline; alnum =
    Unicode letter | Unicode number (general categories L or N);
-   punct = ascii_punctuation; non_ws = character - ws.
+   The non_ws class means character - ws.
    The alnum guard reads a complete Unicode code point. The letter and digit
    terminals enumerated in PART 7 remain ASCII where productions name them.
 
