@@ -745,6 +745,7 @@ index: examples/edge-cases/index.md
   line-block-inline-note
   a-line-block-takes-a-lazy-line-whatever-its-last-payload-line
   a-line-block-in-a-note-or-description-takes-a-lazy-line-whatever-its-last-payload-line
+  a-line-block-behind-nested-markers-takes-a-lazy-line-after-a-fence-shaped-payload
   a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run
   a-terminal-comment-in-a-quote-leaves-no-paragraph-open
   a-terminal-comment-line-still-leaves-an-empty-verse-line

@@ -1,0 +1,111 @@
+A line block behind nested markers takes a lazy line after a fence-shaped payload
+
+```
+- - ::: |
+    ~~~
+b
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="line-block">
+          <p>~~~<br>
+b</p>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- 1. ::: |
+     ~~~~ js
+b
+c
+.
+<ul>
+  <li>
+    <ol>
+      <li>
+        <div class="line-block">
+          <p>~~~~ js<br>
+b<br>
+c</p>
+        </div>
+      </li>
+    </ol>
+  </li>
+</ul>
+```
+
+```
+- - - ::: |
+      ~~~
+      x
+b
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <div class="line-block">
+              <p>~~~<br>
+x<br>
+b</p>
+            </div>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - - ::: |
+      ~~~
+b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <div class="line-block">
+              <p>~~~<br>
+b</p>
+            </div>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- - ::: |
+    - ~~~
+    x
+b
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="line-block">
+          <p>- ~~~<br>
+x<br>
+b</p>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
