@@ -1161,13 +1161,14 @@ const sem = g.createSemantics().addOperation('h', {
     // token is what keeps smart typography out of the name (`:+-:` stays the
     // symbol `+-`, it does not become `:±:`).
     if (omitSymbols) return ''
-    return `:${escapeHtml(name.sourceString)}:`
+    // An unresolved symbol's literal is not scanned for abbreviations (carve#4801).
+    return rawFrame(`:${escapeHtml(name.sourceString)}:`)
   },
   symbolAttr(_c1, name, _c2, attrs) {
     // `:name:{...}`: an UNMAPPED symbol renders as its literal `:name:` text,
     // wrapped in a <span> that carries the attribute block (PART 9 §7).
     if (omitSymbols) return ''
-    return `<span${renderAttrs(attrs.parseAttrs())}>:${escapeHtml(name.sourceString)}:</span>`
+    return rawFrame(symbolSpan(name, attrs))
   },
   mention(_a, name, glued) {
     if (!name.sourceString) return escapeHtml(`@${glued.sourceString}`)
@@ -1224,8 +1225,8 @@ const sem = g.createSemantics().addOperation('h', {
   edComment(body) {
     // CARVE-P2-004: a comment is about the text, not part of it (carve#3899).
     if (omitComments) return ''
-    // comment content is verbatim (spaces preserved)
-    return `<span class="critic-comment">${escapeHtml(body.child(1).sourceString)}</span>`
+    // comment content is verbatim (spaces preserved) and not scanned for abbreviations (carve#4801)
+    return rawFrame(commentSpan(body))
   },
   rawInline(code, _ob, fmt, _cb) {
     if (omitRawInline) return ''
@@ -2601,6 +2602,14 @@ function smartQuote(node, open, close, single) {
   return `\uE000quote:${quoteRun.key}:${id}\uE001`
 }
 
+function symbolSpan(name, attrs) {
+  return `<span${renderAttrs(attrs.parseAttrs())}>:${escapeHtml(name.sourceString)}:</span>`
+}
+
+function commentSpan(body) {
+  return `<span class="critic-comment">${escapeHtml(body.child(1).sourceString)}</span>`
+}
+
 function* quotePieces(text) {
   for (let i = 0; i < text.length;) {
     const start = i
@@ -2646,6 +2655,8 @@ function settleQuotes(html, run, prevCtx) {
         }
         r.glyph = apostrophe ? '’' : opening ? r.open : r.close
         prev = r.glyph
+      } else if (piece === RAW_MARK) {
+        // A raw frame's edge is no character (carve#4801).
       } else if (piece.startsWith('\uE000ref:')) {
         const payload = JSON.parse(piece.slice(5, -1))
         if (payload.text !== undefined) scan(payload.text)
