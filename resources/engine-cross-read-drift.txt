@@ -123,3 +123,6 @@ php/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/c
 rust/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-carve/carve#4798, the pinned writer retains a description sibling inside a first-block plus frame
 js/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-carve/carve#4798, the pinned writer retains a description sibling inside a first-block plus frame
 php/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-carve/carve#4798, the pinned writer retains a description sibling inside a first-block plus frame
+js/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned writer removes authored braces around an intraword emphasis span under the Unicode bare delimiter rule
+php/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned writer removes authored braces around an intraword emphasis span under the Unicode bare delimiter rule
+rust/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned writer removes authored braces around an intraword emphasis span under the Unicode bare delimiter rule
