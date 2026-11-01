@@ -1,0 +1,27 @@
+A wrapped attribute lead is invisible to list looseness
+
+```
+- {x
+  y}
+
+  b
+- a
+.
+<ul>
+  <li><p x="" y="">b</p></li>
+  <li>a</li>
+</ul>
+```
+
+```
+1. {x
+   y}
+
+   b
+2. a
+.
+<ol>
+  <li><p x="" y="">b</p></li>
+  <li>a</li>
+</ol>
+```

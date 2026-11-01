@@ -7703,6 +7703,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const rests = itemLines.map((text) => trimLineEnd(indentCols(stripLazy(text)).rest))
       const run = (rest) => COMMENT_FENCE_BODY.exec(rest)?.[1].length
       for (let k = 0; k < rests.length; k++) {
+        // A wrapped attribute block is one invisible line, not visible opener
+        // text followed by visible continuation text (PART 9 §17 L1a).
+        const attrs = tryAttrLine(rests, k)
+        if (attrs) {
+          k = attrs.next - 1
+          continue
+        }
         // A `%%%` opens a comment span only where its closer follows; alone it is a comment line.
         const close = run(rests[k]) === undefined ? -1 : rests.findIndex((rest, at) => at > k && run(rest) === run(rests[k]))
         if (close > k) k = close
