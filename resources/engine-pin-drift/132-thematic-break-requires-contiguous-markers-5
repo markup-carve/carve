@@ -1,0 +1,1 @@
+carve#4814: spaced `* * *` and `- - -` are thematic breaks (ruling 2026-11-01); the pinned engines still read a nested list.

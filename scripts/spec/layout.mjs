@@ -240,7 +240,7 @@ export function ownershipTransition(boundary, deepestParagraphOpen = false) {
 // b` was `a-b` before this and is `a-b` after. What moves is the heading's TEXT
 // and therefore a crossref's auto-text (PART 9 §19).
 const HEADING = /^(#{1,6}) +(?=.*[^ \t\n\r])(.*)$/s
-const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
+const HR = /^(-{3,}|\*{3,}|_{3,}|-(?: -){2,}|\*(?: \*){2,})[ \t]*$/
 const FENCE = /^(`{3,}|~{3,})(.*)$/s
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/
 const QUOTE_LINE = /^>(?: ([^\r\n]*)|[ \t]*$)/
