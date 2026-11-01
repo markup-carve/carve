@@ -1,0 +1,39 @@
+A line-block stanza remains open after a paired payload run
+
+```
+:: u
+: ::: |
+  ~~~
+  ~~~
+b
+.
+<dl>
+  <dt>u</dt>
+  <dd>
+    <div class="line-block">
+      <p>~~~<br>
+~~~<br>
+b</p>
+    </div>
+  </dd>
+</dl>
+```
+
+````
+:: u
+: ::: |
+  ```
+  ```
+b
+.
+<dl>
+  <dt>u</dt>
+  <dd>
+    <div class="line-block">
+      <p><code>
+</code><br>
+b</p>
+    </div>
+  </dd>
+</dl>
+````

@@ -1225,7 +1225,8 @@ function endsInLineBlockStanza(bodyLines, last) {
   const scan = { at: 0, stack: [], para: [] }
   bareColonIsFence(bodyLines, last, scan)
   const top = scan.stack.at(-1)
-  if (scan.at !== last || !top?.lineBlock) return false
+  // A paired inline span may advance the scan past the final payload line.
+  if (scan.at < last || !top?.lineBlock) return false
   const run = COLON_CLOSER.exec(stripLazy(bodyLines[last]))
   return !(run && run[1].length === top.length)
 }

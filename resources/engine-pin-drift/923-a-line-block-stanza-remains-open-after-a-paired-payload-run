@@ -1,0 +1,1 @@
+The pinned carve-js build predates the spec model fix that keeps a line-block stanza open after paired inline payload runs (markup-carve/carve#4748); the spec moved first.
