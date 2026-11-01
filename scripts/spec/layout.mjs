@@ -6088,11 +6088,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               if (!quote) { reached = false; break }
               rest = quote[1] ?? ''
             }
-            if (!reached) {
-              if (isBlank(lines[j])) barriers.push(j)
-              continue
-            }
+            if (!reached && isBlank(lines[j])) barriers.push(j)
+            if (!reached && isBlank(rest)) continue
+            // A closer that misses this depth's marker still closes it (CARVE-P9-060).
             const closer = COMMENT_FENCE_BODY.exec(indentCols(rest).rest)
+            if (!reached && !closer) continue
             if (closer) {
               const width = closer[1].length
               let rows = byWidth.get(width)
@@ -6169,8 +6169,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const quoted = QUOTE.exec(lines[j] ?? '')
             // An unmarked nonblank line ends the span and the quote (PART 0 S1), it hides no closer.
             if (!quoted && isBlank(lines[j] ?? '')) break
-            if (!quoted) continue
-            const close = COMMENT_FENCE_BODY.exec(quoted[1] ?? '')
+            // An unmarked closer below the quote's column still closes it (CARVE-P9-060).
+            const close = quoted ? COMMENT_FENCE_BODY.exec(quoted[1] ?? '') : COMMENT_FENCE.exec(lines[j] ?? '')
             if (close && close[1].length === comment[1].length) {
               openComment = comment[1].length
               break
@@ -6410,6 +6410,17 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
           i--
           break
+        }
+        // S1 tests an open comment span's closer before ownership, so an
+        // unmarked exact closer ends the span inside the quote (carve#4721).
+        const unmarkedCloser = COMMENT_FENCE.exec(lines[i] ?? '')
+        if (unmarkedCloser && !qHost.fence &&
+            (openComment ?? qNestedComments.findLast((width) => width !== undefined)) === unmarkedCloser[1].length) {
+          const closerText = trimWsStart(lines[i])
+          inner.push(closerText)
+          if (i + 1 < n) trackFence(closerText, i)
+          i++
+          continue
         }
         if (qHost.fence || openComment !== null) break
         // A COMMENT IS COLUMN-EXEMPT (§10 I5's first exception, §24 C3). The

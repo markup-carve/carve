@@ -1,0 +1,65 @@
+A comment span in a quote closes at an unmarked closer
+
+```
+> %%%
+> secret
+%%%
+.
+<blockquote>
+
+</blockquote>
+```
+
+```
+> %%%
+> secret
+%%%
+> more
+.
+<blockquote><p>more</p></blockquote>
+```
+
+```
+> %%%
+> secret
+  %%%
+after
+.
+<blockquote>
+
+</blockquote>
+<p>after</p>
+```
+
+```
+> > %%%
+> > secret
+%%%
+.
+<blockquote>
+  <blockquote>
+
+  </blockquote>
+</blockquote>
+```
+
+```
+> > %%%
+> > secret
+%%%
+> more
+.
+<blockquote>
+  <blockquote>
+
+  </blockquote>
+  <p>more</p>
+</blockquote>
+```
+
+```
+> %%%
+> secret
+.
+<blockquote><p>secret</p></blockquote>
+```

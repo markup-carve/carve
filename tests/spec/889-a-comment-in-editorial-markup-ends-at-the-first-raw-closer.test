@@ -1,0 +1,31 @@
+A comment in editorial markup ends at the first raw closer
+
+```
+{+a %% `+}` b+} c
+.
+<p><ins>a</ins><code> b+} c</code></p>
+```
+
+```
+{-a %% `-}` b-} c
+.
+<p><del>a</del><code> b-} c</code></p>
+```
+
+```
+/*a %% `*/` b*/ c
+.
+<p><strong><em>a</em></strong><code> b*/ c</code></p>
+```
+
+```
+{+a\ %% `+}` b+} c
+.
+<p><ins>a&nbsp;</ins><code> b+} c</code></p>
+```
+
+```
+{+a `%%` b+} c
+.
+<p><ins>a <code>%%</code> b</ins> c</p>
+```
