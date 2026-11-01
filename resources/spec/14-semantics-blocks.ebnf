@@ -224,7 +224,7 @@
       DEPTH. Bare and braced spans share the nesting cap; a braced span over
       it stays literal as a whole (§22).
 
-      LINEAR TIME (Design Principle 1, carve#3936). The result MUST be
+      LINEAR TIME (carve#3936). The result MUST be
       computed in time linear in the block; reading a range again once per
       failed braced or editorial opener does not meet this. Two facts make
       it possible. A nested reading depends only on where it starts, so each
@@ -878,7 +878,7 @@
       over, inside an unquoted VALUE (`{k=a:b}`), which `unquoted_value` admits.
 
    15. BLOCK ATTRIBUTE LINES -- OPERATIONAL SEMANTICS (governs
-      `block_attributes` in PART 2; matches djot). STATE: pending := the
+      `block_attributes` in PART 4; matches djot). STATE: pending := the
       ordered list of collected attribute blocks not yet attached.
       A1 COLLECT. A `{…}` alone on a line (the `}` may arrive on a later
          line, A5) that parses as a valid attribute list appends to

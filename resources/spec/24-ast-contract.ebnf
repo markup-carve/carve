@@ -35,7 +35,7 @@
 
       FRONTMATTER IS A BLOCK NODE, `type: "frontmatter"`, carrying:
         format   the info word on the opening fence (`frontmatter_format` in
-                 PART 2), or `"yaml"` when the fence carries none
+                 PART 1), or `"yaml"` when the fence carries none
         content  the text between the fences, VERBATIM
       It is the FIRST child when present, since that is where it is written.
 
@@ -316,7 +316,7 @@
          spellings that cannot be re-derived from the tree win over the ones
          that can.
       F5 `blankLinesBefore`, `blankLinesAfter` -- how many lines holding
-         nothing but PART 2 `whitespace` sit immediately before and after the
+         nothing but PART 7 `whitespace` sit immediately before and after the
          node's range within its own container. The count is the AUTHORED one,
          which is what makes it a fact rather than a re-derivation: the parse
          reads a longer run and a single blank the same way in most positions.

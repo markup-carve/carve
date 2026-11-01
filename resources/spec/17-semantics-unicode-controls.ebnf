@@ -203,7 +203,7 @@
    footnote strings.
 
    AN EXTENSION WRITES INTO THE SAME MAP -- NORMATIVE [CARVE-P9-064]. The map is the
-   renderer's, not core's: Extensions §1.5 states which strings an EXTENSION
+   renderer's, not core's: docs/extension-contract.md §1.5 states which strings an EXTENSION
    contributes to it, and those keys are part of the same map a host passes
    once. So the list above is what CORE defines and not the whole map an engine
    honors -- `indexBackref`, `tabsGroup` and `codeGroup` are honored beside the
@@ -226,7 +226,7 @@
    the renderer derives for that element, and KEEPS every other one. It is the
    rule already applied to a `<th>`'s generated `scope` and to a generated
    `colspan` / `rowspan`, and it governs every string this clause and
-   Extensions §1.5 make engine-written: the accessible name on an untitled
+   docs/extension-contract.md §1.5 make engine-written: the accessible name on an untitled
    admonition, on an endnotes section, on a footnote backlink, on a tab set and
    on a `css`-mode tab panel, together with the `role` that accompanies each.
 
@@ -271,7 +271,7 @@
    a `<section>` at all. So unwrapping it removes nothing an author wrote, and
    an importer does not report the unwrapping -- not as `element-unwrapped`, and
    not as an `attribute-dropped` naming the `doc-endnotes` role or the
-   `endnotes` name that came with it..
+   `endnotes` name that came with it.
 
    THE IMPORT'S OUTCOME DOES NOT CHANGE THE ANSWER. Derivation is a property of
    the element being READ, not of what the import goes on to do with it. Both

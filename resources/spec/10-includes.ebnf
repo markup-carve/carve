@@ -429,11 +429,10 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       the PRIMARY guard. As a SECONDARY DoS bound, implementations MUST
       enforce a FINITE include-depth limit; the RECOMMENDED default is at
       least 16 (a small, human-scale nesting bound, far under the structural
-      MAX_NESTING = 200 of PART 9 §25) and the host MAY configure it. No exact hard
+      MAX_NESTING_DEPTH = 200 of PART 9 §25) and the host MAY configure it. No exact hard
       constant is pinned. A directive at greater depth is left literal with
-      a Warning. Total expanded output is charged against the same per-
-      render byte budget as other amplifying features -- `max(1 MB,
-      8 x input length)` (PART 9 §25); once exceeded, further expansion degrades
+      a Warning. Total expanded output is charged against a per-render byte budget of
+      `max(1 MB, 8 x input length)`; once exceeded, further expansion degrades
       to the literal directive with a Warning. The byte budget bounds the
       expanded OUTPUT; it does NOT bound the WORK done to produce it,
       because a target is resolved before its size is known and a document

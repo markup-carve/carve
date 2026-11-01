@@ -1,5 +1,5 @@
 (* ============================================================================
-   21. TRAILING LINE COMMENTS -- NORMATIVE [CARVE-P9-041] (governs `inline_comment` in PART 3).
+   21. TRAILING LINE COMMENTS -- NORMATIVE [CARVE-P9-041] (governs `inline_comment` in PART 2).
       - A `%%` token is a trailing comment marker only when the character
         immediately before it is a space or it starts the
         inline run (its first content character after leading whitespace).
@@ -65,7 +65,7 @@
       - A WHOLE OPENER (CARVE-P3-025). `{%` followed by a grapheme_extender
         opens nothing and is text, like every braced opener.
       - UNTERMINATED STAYS LITERAL. `a {% oops` renders the braces (matching
-        Djot, and the same visible-failure principle as `- {.notattr} Milk`).
+        Djot, and the visible literal fallback of `- {.notattr} Milk`.
       - VERBATIM CONTEXTS ARE OPAQUE, as for `%%` (§21): a code span or raw
         inline passes `{%` through.
       - TRANSPARENT TO INLINE STRUCTURE. A comment inside an emphasis run does
@@ -269,7 +269,7 @@
         CARVE-P11-020.
 
         A TRAILING COMMENT IS A DIFFERENT CONSTRUCT and this clause does not
-        reach it. `x %% secret` is `inline_comment` (PART 3, CARVE-P9-041), not
+        reach it. `x %% secret` is `inline_comment` (PART 2, CARVE-P9-041), not
         `comment_line`, and CARVE-P9-041's verbatim rule governs it: inside a verbatim
         run there is no comment there at all, only two percent characters in
         content. The asymmetry is deliberate: an engine may leave a `%%`

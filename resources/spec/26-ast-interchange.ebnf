@@ -248,7 +248,7 @@
       and `citation_group.items` references it directly, so nothing about a
       group's payload moves.
 
-      A CITATION IS NOT AN INDEPENDENT INLINE. PART 7 makes the bracket the
+      A CITATION IS NOT AN INDEPENDENT INLINE. PART 3 makes the bracket the
       unit a source spells -- `citation_group = '[', ['+'], citation_item,
       {';', citation_item}, ']'` -- and an item's `prefix`, `locator` and
       `suffix` mean nothing outside one. No clause defines what a bare
@@ -493,8 +493,7 @@
       except where code-span padding stripping removed the joining space:
       that entry sits at the padding boundary, offset 0 for a join right
       after the opening backtick run and the value's length for one right
-      before the closing run
-. A
+      before the closing run. A
       `cellWraps` entry stands for the join a `cell_wrap` would otherwise
       mark; no `cell_wrap` is placed beside or inside the atomic node for
       that join. Rendering is unchanged, and `table_row.continuationLines`
