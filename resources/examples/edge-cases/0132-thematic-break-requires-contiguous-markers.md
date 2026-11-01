@@ -1,10 +1,9 @@
 ## Thematic break requires contiguous markers
 
-A thematic break is three or more of the same marker (`-`, `*`, `_`) contiguous
-at column zero. Spacing the markers apart, or indenting the run, disqualifies it:
-the line is parsed as ordinary block content instead.
+A thematic break is three or more of the same marker. A `-` or `*` run may also
+space its markers apart with single spaces; a `_` run may not (carve#4814).
 
-Spaced `*` markers are a bullet list, not a break.
+Spaced `*` markers are a break.
 
 ::: compare
 
@@ -13,13 +12,7 @@ Spaced `*` markers are a bullet list, not a break.
 ```
 
 ```html
-<ul>
-  <li>
-    <ul>
-      <li>*</li>
-    </ul>
-  </li>
-</ul>
+<hr>
 ```
 
 :::
@@ -62,6 +55,40 @@ A contiguous run at column zero is still a thematic break.
 
 ```html
 <hr>
+```
+
+:::
+
+Spaced `-` markers are a break too.
+
+::: compare
+
+```carve
+- - -
+```
+
+```html
+<hr>
+```
+
+:::
+
+Only a single space separates the markers, so a wider gap is a nested list.
+
+::: compare
+
+```carve
+*  *  *
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>*</li>
+    </ul>
+  </li>
+</ul>
 ```
 
 :::

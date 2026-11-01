@@ -36,3 +36,12 @@ rust/glob-shaped-strong  The rust engine does not carry the default authoring ru
 js/html-comment-renders-as-text  The js engine does not carry the default authoring rule yet (carve#4812).
 php/html-comment-renders-as-text  The php engine does not carry the default authoring rule yet (carve#4812).
 rust/html-comment-renders-as-text  The rust engine does not carry the default authoring rule yet (carve#4812).
+js/setext-heading-underline  The js engine does not carry the default authoring rule yet (carve#4814).
+js/heading-closing-hashes  The js engine does not carry the default authoring rule yet (carve#4814).
+js/indented-code-block  The js engine does not carry the default authoring rule yet (carve#4814).
+php/setext-heading-underline  The php engine does not carry the default authoring rule yet (carve#4814).
+php/heading-closing-hashes  The php engine does not carry the default authoring rule yet (carve#4814).
+php/indented-code-block  The php engine does not carry the default authoring rule yet (carve#4814).
+rust/setext-heading-underline  The rust engine does not carry the default authoring rule yet (carve#4814).
+rust/heading-closing-hashes  The rust engine does not carry the default authoring rule yet (carve#4814).
+rust/indented-code-block  The rust engine does not carry the default authoring rule yet (carve#4814).

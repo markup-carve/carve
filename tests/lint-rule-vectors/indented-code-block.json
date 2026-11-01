@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "rule": "indented-code-block",
+  "vectors": [
+    {
+      "name": "after-a-paragraph",
+      "description": "after a paragraph.",
+      "source": "para\n\n    code line\n    more\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 5,
+            "includes": [
+              "fence"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "deeper-indent",
+      "description": "deeper indent.",
+      "source": "para\n\n        code\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 9,
+            "includes": [
+              "fence"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "after-a-closed-list",
+      "description": "after a closed list.",
+      "source": "- item\n\npara\n\n    code\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 5,
+            "column": 5,
+            "includes": [
+              "fence"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "three-spaces",
+      "description": "three spaces.",
+      "source": "para\n\n   text\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "below-a-list-content-column",
+      "description": "below a list content column; the line follows a list, and list-item-body-detached is the rule for that shape.",
+      "source": "-    e\n\n    f\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "no-blank-line",
+      "description": "no blank line.",
+      "source": "para\n    more\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "item-continuation",
+      "description": "item continuation.",
+      "source": "- item\n\n    more\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "ordered-item-continuation",
+      "description": "ordered item continuation.",
+      "source": "1. item\n\n       more\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "quote-body",
+      "description": "quote body.",
+      "source": "> para\n>\n>     more\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "container-body",
+      "description": "container body.",
+      "source": "::: note\npara\n\n    more\n:::\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "fence-payload",
+      "description": "fence payload.",
+      "source": "```\na\n\n    b\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "comment-fence",
+      "description": "comment fence.",
+      "source": "%%%\na\n\n    b\n%%%\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

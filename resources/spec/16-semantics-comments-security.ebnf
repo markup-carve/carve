@@ -608,9 +608,7 @@
           an unresolved reference likewise renders its literal source.
         - REFUSE the whole operation with a typed failure, as the render
           ceiling below requires.
-        A returned document MUST NOT lack text the author typed. An unresolved
-        footnote reference's attribute run is consumed (PART 9R R2), which is
-        that construct's rule and not such a bound.
+        A returned document MUST NOT lack text the author typed.
 
         THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP -- NORMATIVE
         [CARVE-P9-078]. Over-cap flattening owes it no spellable tree: the

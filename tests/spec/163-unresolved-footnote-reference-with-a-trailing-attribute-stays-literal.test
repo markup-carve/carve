@@ -3,7 +3,7 @@ Unresolved footnote reference with a trailing attribute stays literal
 ```
 Text[^a]{.ref}.
 .
-<p>Text[^a].</p>
+<p>Text[^a]{.ref}.</p>
 ```
 
 ```

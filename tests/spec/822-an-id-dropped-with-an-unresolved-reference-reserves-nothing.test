@@ -5,7 +5,7 @@ x[^n]{#i}
 
 ## {#i}
 .
-<p>x[^n]</p>
+<p>x[^n]{#i}</p>
 <section id="i">
   <h2>{<span class="tag"><strong>#i</strong></span>}</h2>
 </section>
@@ -16,7 +16,7 @@ x[^n]{#i}
 
 ## i
 .
-<p>x[^n]</p>
+<p>x[^n]{#i}</p>
 <section id="i">
   <h2>i</h2>
 </section>

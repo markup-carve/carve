@@ -190,6 +190,9 @@ the command-line and editor behavior stay aligned.
 | `unresolved-footnote` | a `[^label]` footnote reference with no matching `[^label]: ...` definition |
 | `duplicate-footnote-definition` | a repeated `[^label]: ...` definition; the first definition wins and later ones are ignored |
 | `unused-footnote-definition` | a footnote definition that is never referenced and is omitted from rendered output |
+| `setext-heading-underline` | a `---` or `===` run (three or more markers) directly under a paragraph line; Carve has no underline heading, so `---` renders a break and `===` stays paragraph text. Use `#` |
+| `heading-closing-hashes` | a heading line ending in a space and a `#` run; the run stays heading text, so delete it |
+| `indented-code-block` | a top-level paragraph after a blank line whose first line is indented four or more spaces; it renders as a paragraph, not code. Use a fence. Silent inside a list item, quote or other container, and directly after a list, where the indent reads as a continuation |
 | `heading-trailing-attribute` | a trailing `{#id}` or `{.class}` on a heading line; attributes must go on the line above the heading |
 | `raw-block-syntax` | a legacy `` ```raw FORMAT `` fence; Carve raw blocks use `` ```=FORMAT `` |
 | `blockquote-marker-without-space` | a line starting with `>` that is neither a bare quote marker nor `> `; it renders as prose, not a block quote |

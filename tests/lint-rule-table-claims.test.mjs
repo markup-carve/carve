@@ -123,6 +123,9 @@ const NOT_IN_THE_PIN_YET = new Map([
   ['emphasis-marker-before-attributes', 'specified by the #3992 ruling; engine rollout follows'],
   ['comment-shaped-emphasis', 'specified by the #4815 ruling; engine rollout follows'],
   ['glob-shaped-strong', 'specified by the #4815 ruling; engine rollout follows'],
+  ['setext-heading-underline', 'specified by the #4814 ruling; engine rollout follows'],
+  ['heading-closing-hashes', 'specified by the #4814 ruling; engine rollout follows'],
+  ['indented-code-block', 'specified by the #4814 ruling; engine rollout follows'],
   ['html-comment-renders-as-text', 'specified by the #4812 ruling; engine rollout follows'],
   [
     'bibliography-placement-in-container',

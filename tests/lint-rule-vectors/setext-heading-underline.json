@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "rule": "setext-heading-underline",
+  "vectors": [
+    {
+      "name": "hyphen-underline",
+      "description": "hyphen underline.",
+      "source": "Title\n---\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "equals-underline",
+      "description": "equals underline.",
+      "source": "Title\n===\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "longer-run",
+      "description": "longer run.",
+      "source": "Title\n-----\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "inside-a-quote",
+      "description": "inside a quote.",
+      "source": "> Title\n> ---\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "heading"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "blank-line-above",
+      "description": "blank line above.",
+      "source": "Title\n\n---\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "document-start",
+      "description": "document start.",
+      "source": "---\n\nTitle\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "asterisk-run",
+      "description": "asterisk run.",
+      "source": "Title\n***\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "short-equals",
+      "description": "short equals.",
+      "source": "Title\n==\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "frontmatter",
+      "description": "frontmatter.",
+      "source": "---\ntitle: x\n---\n\nBody\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "fence-payload",
+      "description": "fence payload.",
+      "source": "```\nTitle\n---\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "under-a-heading",
+      "description": "under a heading.",
+      "source": "# Title\n---\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

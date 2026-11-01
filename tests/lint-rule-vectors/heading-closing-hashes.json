@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "rule": "heading-closing-hashes",
+  "vectors": [
+    {
+      "name": "closing-run",
+      "description": "closing run.",
+      "source": "## h ##\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 6,
+            "includes": [
+              "#"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "run-of-another-length",
+      "description": "run of another length.",
+      "source": "# h ###\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 5,
+            "includes": [
+              "#"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "inside-a-quote",
+      "description": "inside a quote.",
+      "source": "> ## h ##\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 8,
+            "includes": [
+              "#"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "no-closing-run",
+      "description": "no closing run.",
+      "source": "## h\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "glued-hash",
+      "description": "glued hash.",
+      "source": "## C#\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "hash-and-more",
+      "description": "hash and more.",
+      "source": "## h #2\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "escaped-hash",
+      "description": "escaped hash.",
+      "source": "## h \\#\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "code-span",
+      "description": "code span.",
+      "source": "## `h ##`\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "only-hashes",
+      "description": "only hashes.",
+      "source": "## ##\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "paragraph",
+      "description": "paragraph.",
+      "source": "a ##\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

@@ -91,3 +91,4 @@
 868-a-list-marker-between-an-item-s-columns-is-a-sibling-only-on-every-axis-5  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
 90-list-item-attributes-3  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
 926-a-single-capital-with-a-dot-needs-two-spaces-12  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
+132-thematic-break-requires-contiguous-markers-6  carve#4814: the pinned carve-js writer collapses `*  *  *` to `* * *`, which the ruling makes a thematic break
