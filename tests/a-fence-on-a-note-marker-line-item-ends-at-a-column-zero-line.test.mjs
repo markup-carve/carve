@@ -34,6 +34,6 @@ test('an over-indented fence line is payload, not a closer', () => {
 })
 
 test('a closed fence and a line at the item column are unchanged', () => {
-  assert.match(render('[^n]: - ``` js\n    x\n    ```\n\n[^n]\n'), /<code class="language-js">x\n<\/code>/)
+  assert.match(render('[^n]: - ``` js\n        x\n        ```\n\n[^n]\n'), /<code class="language-js">x\n<\/code>/)
   assert.match(render('[^n]: - ``` js\n  tail\n\n[^n]\n'), /<p>tail<a href="#fnref1"/)
 })

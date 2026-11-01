@@ -1,0 +1,102 @@
+A fence on a note's marker-line item reads its payload at the item's content column
+
+````
+x[^n]
+
+[^n]: - ```js
+        a
+        ```
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <ul>
+        <li>
+          <pre><code class="language-js">a
+</code></pre>
+        </li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+````
+x[^n]
+
+[^n]: - ```js
+    a
+    ```
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <ul>
+        <li>
+          <pre><code class="language-js"></code></pre>
+        </li>
+      </ul>
+      <p>a</p>
+      <pre><code></code></pre>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+```
+x[^n]
+
+[^n]: 1. ~~~
+         a
+         ~~~
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <ol>
+        <li>
+          <pre><code>a
+</code></pre>
+        </li>
+      </ol>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+````
+> x[^n]
+>
+> [^n]: - - ```
+>           a
+>           ```
+.
+<blockquote><p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p></blockquote>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <ul>
+        <li>
+          <ul>
+            <li>
+              <pre><code>a
+</code></pre>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
