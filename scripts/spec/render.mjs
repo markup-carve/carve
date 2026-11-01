@@ -1355,7 +1355,8 @@ const sem = g.createSemantics().addOperation('h', {
       const at = this.source.startIdx
       const end = this.source.endIdx
       const prev = at > 0 ? src[at - 1] : ''
-      const prevIsSpace = prev === '' || isTypographyFlank(prev)
+      const prevIsSpace = prev === '' || isTypographyFlank(prev) ||
+        (FLAG_OPENERS.has(prev) && (at === 1 || isTypographyFlank(src[at - 2])))
       const nextIsSpace = flankAfter(src, end)
       if (prevIsSpace && !nextIsSpace) return escapeHtml(this.sourceString)
     }
@@ -2203,6 +2204,10 @@ function applyQuotes(toks, openMap, src, contentAt, spanContent, contentEnd) {
   }
 }
 
+// CARVE-P3-021: an opening one of these after whitespace or the start of content
+// counts as whitespace for the flag test (carve#4813).
+const FLAG_OPENERS = new Set(['(', '"', "'"])
+
 function dashGlyphs(n) {
   if (n % 3 === 0) return '\u2014'.repeat(n / 3)
   if (n % 2 === 0) return '\u2013'.repeat(n / 2)
@@ -2224,11 +2229,14 @@ function applyDashFlanks(toks, openMap, src, contentAt, spanContent, contentEnd)
   for (const t of toks) {
     if (!t.dash) continue
     const { at, raw } = t.dash
-    const atStart = opens.has(at - 1) || (spanContent && at === contentAt)
+    const startsContent = (p) => opens.has(p - 1) || (spanContent && p === contentAt)
+    // An opening `(`, `"` or `'` at the start of content is the flag's whitespace.
+    const atStart = startsContent(at) || (FLAG_OPENERS.has(src[at - 1]) && startsContent(at - 1))
     const atEnd = closes.has(at + raw.length) || (spanContent && at + raw.length === contentEnd)
     if (!atStart && !atEnd) continue
     const prev = at > 0 ? src[at - 1] : ''
-    const prevIsSpace = atStart || prev === '' || isTypographyFlank(prev)
+    const prevIsSpace = atStart || prev === '' || isTypographyFlank(prev) ||
+      (FLAG_OPENERS.has(prev) && (at === 1 || isTypographyFlank(src[at - 2])))
     const nextIsSpace = atEnd || flankAfter(src, at + raw.length)
     t.h = prevIsSpace && !nextIsSpace ? escapeHtml(raw) : dashGlyphs(raw.length)
   }

@@ -18,7 +18,7 @@ a [--x] y and a [---x] y
 
 :::
 
-A parenthesis opens no region, so the same run after `(` converts.
+A parenthesis opens no region, but an opening `(` after whitespace counts as whitespace for the same test (markup-carve/carve#4813).
 
 ::: compare
 
@@ -27,7 +27,7 @@ a (--x) y
 ```
 
 ```html
-<p>a (–x) y</p>
+<p>a (--x) y</p>
 ```
 
 :::
