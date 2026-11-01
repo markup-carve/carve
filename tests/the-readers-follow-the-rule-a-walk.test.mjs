@@ -16,7 +16,7 @@ for (const [marker, column] of [['-', 2], ['1.', 3], ['*', 2]]) {
       const other = run[0] === '~' ? '```' : '~~~'
       const lines = (opener) => [`${marker} a`, ' '.repeat(column + offset) + opener, `${pad}- c`,
         `${pad}  ${other}`, `${pad}  y`, `${pad}  ${other}`, ''].join('\n')
-      const source = lines(run + 'js title="x"')
+      const source = lines(run + 'js,title="x"')
       const tag = marker === '1.' ? 'ol' : 'ul'
       test(`an invalid ${run} opener at ${offset} past a ${marker} item keeps the sub-item's fence`, () => {
         assert.match(html(source), new RegExp(`<li>c<pre><code>y</code></pre></li></ul></li></${tag}>$`))

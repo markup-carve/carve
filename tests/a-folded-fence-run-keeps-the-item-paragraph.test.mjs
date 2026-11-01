@@ -6,11 +6,11 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const render = source => renderDoc(parse(source))
 
 // Only an invalid opener folds: a valid one always opens (carve#4018).
-const bad = (run) => `${run}js title="x"`
+const bad = (run) => `${run}js,title="x"`
 
 test('a folded fence run leaves a later blank-separated paragraph loose', () => {
   assert.equal(render(`- o\n  ${bad('```')}\n${bad('```')}\n\n  t\n`),
-    '<ul>\n  <li><p>o\n<code>js title="x"\n</code>js title=“x”</p>\n    <p>t</p>\n  </li>\n</ul>')
+    '<ul>\n  <li><p>o\n<code>js,title="x"\n</code>js,title=“x”</p>\n    <p>t</p>\n  </li>\n</ul>')
   for (const run of ['```', '~~~']) {
     const source = `- o\n  ${bad(run)}\n${bad(run)}\n\n  t\n`
     assert.match(render(source), /<li><p>o/)
@@ -29,11 +29,11 @@ test('a folded fence run leaves a later blank-separated paragraph loose', () => 
 
 test('a folded nested fence run keeps the next below-column line in the child paragraph', () => {
   assert.equal(render(`- o\n  - h\n    ${bad('```')}\n${bad('```')}\n`),
-    '<ul>\n  <li>o\n    <ul>\n      <li>h\n<code>js title="x"\n</code>js title=“x”</li>\n    </ul>\n  </li>\n</ul>')
+    '<ul>\n  <li>o\n    <ul>\n      <li>h\n<code>js,title="x"\n</code>js,title=“x”</li>\n    </ul>\n  </li>\n</ul>')
   for (const run of ['```', '~~~']) {
     const html = render(`- o\n  - h\n    ${bad(run)}\n${bad(run)}\n`)
     assert.doesNotMatch(html, /<pre>/)
-    if (run === '~~~') assert.match(html, /<li>h\n~~~js title=“x”\n~~~js title=“x”<\/li>/)
+    if (run === '~~~') assert.match(html, /<li>h\n~~~js,title=“x”\n~~~js,title=“x”<\/li>/)
 
     const letter = render(`- o\n  - h\n    ${bad(run)}\nx\n`)
     assert.doesNotMatch(letter, /<p>x<\/p>/)

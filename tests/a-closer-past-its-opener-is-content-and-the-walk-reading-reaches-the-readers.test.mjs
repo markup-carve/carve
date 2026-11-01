@@ -19,22 +19,22 @@ for (const run of [F, '~~~']) {
 // An invalid fence line is paragraph text; the later unclosed opener opens on its own.
 for (const [host, pad, close] of [['', '', ''], ['- ', '  ', '</li>\n</ul>'], ['> ', '> ', '</blockquote>']]) {
   test(`a text fence line and a later unclosed opener stay apart, host ${JSON.stringify(host)}`, () => {
-    const lines = [`${host}x`, `${pad}${F}js title="x"`, `${pad}a`, pad.trimEnd(), `${pad} ${F}`]
+    const lines = [`${host}x`, `${pad}${F}js,title="x"`, `${pad}a`, pad.trimEnd(), `${pad} ${F}`]
     const out = html(lines.join('\n') + '\n')
-    assert.match(out, /<code>js title="x"\na<\/code>/)
+    assert.match(out, /<code>js,title="x"\na<\/code>/)
     assert.match(out, /<pre><code><\/code><\/pre>/)
     if (close) assert.ok(out.includes(close))
   })
 }
 
 test('an unclosed opener after a blank leaves a below-column line outside the item', () => {
-  assert.equal(html(`- x\n  ${F}js title="x"\n  a\n\n   ${F}\ntail\n`),
-    `<ul>\n  <li>x\n<code>js title="x"\na</code>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>tail</p>`)
+  assert.equal(html(`- x\n  ${F}js,title="x"\n  a\n\n   ${F}\ntail\n`),
+    `<ul>\n  <li>x\n<code>js,title="x"\na</code>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>tail</p>`)
 })
 
 // §17 L3, L4: a marker body takes a `+` only with a block at its marker column.
 test('a `+` with no block at the marker column stays text in the lazy child paragraph', () => {
-  const out = html(`- outer\n  - inner\n  ${F}js title="x"\n  +\nnext\n`)
+  const out = html(`- outer\n  - inner\n  ${F}js,title="x"\n  +\nnext\n`)
   assert.doesNotMatch(out, /<pre>/)
   assert.match(out, /\+\nnext<\/code><\/li>/)
 })

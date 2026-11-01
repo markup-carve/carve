@@ -35,9 +35,8 @@ x</code></p>
 x
 ```
 .
-<p><code>js	"T"
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 ````
@@ -45,9 +44,8 @@ x</code></p>
 x
 ```
 .
-<p><code>js 	"T"
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 ````
@@ -55,9 +53,8 @@ x</code></p>
 x
 ```
 .
-<p><code>js	 "T"
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 ````
@@ -65,9 +62,8 @@ x</code></p>
 x
 ```
 .
-<p><code>js "T"	[L]
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 ````
@@ -75,9 +71,8 @@ x</code></p>
 x
 ```
 .
-<p><code>js "T" 	[L]
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 ````
@@ -85,9 +80,8 @@ x</code></p>
 x
 ```
 .
-<p><code>js "T"	 [L]
-x</code></p>
-<pre><code></code></pre>
+<pre><code class="language-js">x
+</code></pre>
 ````
 
 ````

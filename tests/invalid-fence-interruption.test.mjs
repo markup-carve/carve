@@ -5,9 +5,9 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 import { carveToHtml } from '@markup-carve/carve'
 
 const invalidInfo = [
-  'raw html', 'js title="x"', 'php {.x}', 'php [tab] "title"', '\tjs', '  js',
+  'raw,html', 'js,title="x"', 'php,{.x}', 'php,[tab] "title"', '\tjs', '  js',
   '=html "title"', '=html [label]', '=html ""', '=html []', '=', '=text/html', 'js=html',
-  'js"title"', 'js[label]', '"title"[label]', 'js "title"[label]', '  "title"', '  [label]',
+  '"title"[label]', '  "title"', '  [label]',
 ]
 for (const run of ['```', '~~~']) for (const info of invalidInfo) {
   for (const depth of [1, 2, 4]) test(`invalid ${JSON.stringify(run + info)} stays in a quote at depth ${depth}`, () => {
@@ -91,7 +91,7 @@ for (const run of ['```', '~~~']) test(`valid ${run} metadata retains its title 
   assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
 })
 
-for (const run of ['```', '~~~']) for (const info of ['raw html', '=html "title"']) {
+for (const run of ['```', '~~~']) for (const info of ['raw,html', '=html "title"']) {
   for (const comment of [' %% hidden', ' %%%\n hidden\n %%%']) {
     const lines = [run + info, 'payload']
     const tail = { t: 'para', lines }

@@ -326,8 +326,8 @@ admonition = admonition_open, newline,
 
    An unclosed code fence takes no closer from its host, and nothing is
    searched for: the opener is read where it stands, whether a paragraph is
-   open or not (PART 9 §10 I4). A ``` or ~~~ line with invalid metadata is
-   not an opener, so it continues an open paragraph and the colon lines
+   open or not (PART 9 §10 I4). A ``` or ~~~ line with invalid metadata that
+   does not recover (PART 9 §2) is not an opener, so it continues an open paragraph and the colon lines
    after it are read under PART 2 as usual. *)
 
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it

@@ -24,7 +24,7 @@ for (const prefix of ['', '> ', '> > ']) {
       }
     }
   }
-  for (const info of [' bad info', '  js', '\tjs']) {
+  for (const info of [' bad,info', '  js', '\tjs']) {
     test(`invalid CODE info remains term text: ${prefix}, ${JSON.stringify(info)}`, () => {
       const source = ['- :: term', '  ```' + info, '  a', '', '- next']
         .map(line => line ? prefix + line : '').join('\n') + '\n'
@@ -51,7 +51,7 @@ for (const prefix of ['', '> ', '> > ']) {
 }
 
 for (const run of ['```', '~~~']) {
-  for (const info of [' bad info', '  js', '\tjs']) {
+  for (const info of [' bad,info', '  js', '\tjs']) {
     test(`top-level invalid info folds into the term: ${run}, ${JSON.stringify(info)}`, () => {
       const document = parse(`:: term\n${run}${info}\na\n`)
       assert.equal(document.blocks.length, 1)

@@ -16,7 +16,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 import { parse } from '../scripts/spec/layout.mjs'
 
 // An invalid info string: the run opens nothing, while a valid one always opens (carve#4018).
-const T = '~'.repeat(3) + 'js title="x"'
+const T = '~'.repeat(3) + 'js,title="x"'
 const render = (source) => renderDoc(parse(source))
 
 test('an absorbed paragraph still claims a flush-left line in a quote host', () => {

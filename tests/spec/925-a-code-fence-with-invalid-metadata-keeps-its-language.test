@@ -1,0 +1,86 @@
+A code fence with invalid metadata keeps its language
+
+````
+```js {1,3}
+a
+```
+
+text *x*
+
+```py
+b
+```
+
+after
+.
+<pre><code class="language-js">a
+</code></pre>
+<p>text <strong>x</strong></p>
+<pre><code class="language-py">b
+</code></pre>
+<p>after</p>
+````
+
+```
+~~~py {.x}
+b
+~~~
+.
+<pre><code class="language-py">b
+</code></pre>
+```
+
+````
+```js{1,3}
+a
+```
+.
+<pre><code class="language-js">a
+</code></pre>
+````
+
+````
+```js "T" junk
+a
+```
+.
+<pre><code class="language-js">a
+</code></pre>
+````
+
+````
+para
+```js title="x"
+a
+```
+.
+<p>para</p>
+<pre><code class="language-js">a
+</code></pre>
+````
+
+````
+```js foo``` is inline
+.
+<p><code>js foo</code> is inline</p>
+````
+
+````
+``` {.x}
+a
+```
+.
+<p><code> {.x}
+a</code></p>
+<pre><code></code></pre>
+````
+
+````
+```js, foo
+a
+```
+.
+<p><code>js, foo
+a</code></p>
+<pre><code></code></pre>
+````

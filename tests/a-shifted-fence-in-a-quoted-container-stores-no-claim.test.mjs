@@ -22,7 +22,7 @@ for (const depth of [1, 2]) for (const nested of [false, true]) {
   test(`unopened shifted run keeps lazy continuation: depth ${depth}, nested ${nested}`, () => {
     const prefix = '> '.repeat(depth)
     const source = ['- ::: box', ...(nested ? ['  - inner', '    %% c'] : []),
-      '  paragraph', '   ```js title="x"', '   code'].map(line => prefix + line).join('\n') + '\ntail\n'
+      '  paragraph', '   ```js,title="x"', '   code'].map(line => prefix + line).join('\n') + '\ntail\n'
     const doc = parse(source)
     const out = renderDoc(doc)
     assert.equal(doc.blocks.length, 1, out)

@@ -280,7 +280,8 @@
       I4 FENCE OPENERS INTERRUPT WITHOUT LOOKAHEAD. A valid ``` or ~~~
          code or raw opener interrupts an open paragraph, as in CommonMark.
          No closer is searched for: an unclosed fence runs to the end of its
-         container (PART 0 S1), and a line with invalid metadata is not an
+         container (PART 0 S1). A recovered opener (PART 9 §2) interrupts
+         too; a line with invalid metadata that does not recover is not an
          opener and stays paragraph text. Pinned by corpus
          81-paragraph-interruption-19: `Text` / ``` / `code` as a paragraph
          followed by a code block holding `code` (carve#4018).

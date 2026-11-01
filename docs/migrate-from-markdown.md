@@ -162,7 +162,7 @@ def hello():
 ```
 ````
 
-Carve is lenient about the leading space: one space after the fence (the Djot style) is also accepted and parses identically. Exactly one - the slot is spelled `[space]`, so two spaces are not padding and the line is not a fence opener at all. One difference worth knowing: Carve's info string is structured - an optional language token, then an optional `"title"`, then an optional `[label]` - rather than free-form text. For everyday `language`-only fences there is nothing to migrate.
+Carve is lenient about the leading space: one space after the fence (the Djot style) is also accepted and parses identically. Exactly one - the slot is spelled `[space]`, so two spaces are not padding and the line is not a fence opener at all. One difference worth knowing: Carve's info string is structured - an optional language token, then an optional `"title"`, then an optional `[label]` - rather than free-form text. For everyday `language`-only fences there is nothing to migrate. Markdown metadata such as `js {1,3}` or `js title="x"` still opens a `js` code block; the parser reports `fence-title-syntax` and drops the metadata. Move a title into the quoted header (`js "x"`) and attributes onto the line above.
 
 ## Tables
 

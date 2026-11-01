@@ -1,6 +1,6 @@
 ## Fenced code language with punctuation
 
-A language tag may contain punctuation (`c++`, `c#`, `f#`, `asp.net`). The info string is still a single token, so a multiword or quoted info (e.g. `js title="x"`) is not a fence.
+A language tag may contain punctuation (`c++`, `c#`, `f#`, `asp.net`). The language is still a single token, so in a multiword info (e.g. `js title="x"`) the rest is invalid metadata, which the opener drops.
 
 ::: compare
 
