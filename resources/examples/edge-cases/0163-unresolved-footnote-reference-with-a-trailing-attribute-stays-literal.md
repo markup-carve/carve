@@ -2,7 +2,7 @@
 
 A `[^a]` footnote reference with no matching definition is not a footnote and
 does not become an attributed span: it stays literal text, and a following
-`{...}` attribute block does not attach to it.
+`{...}` attribute block stays text with it (carve#4816).
 
 ::: compare
 
@@ -11,7 +11,7 @@ Text[^a]{.ref}.
 ```
 
 ```html
-<p>Text[^a].</p>
+<p>Text[^a]{.ref}.</p>
 ```
 
 :::

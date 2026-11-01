@@ -3,13 +3,7 @@ Thematic break requires contiguous markers
 ```
 * * *
 .
-<ul>
-  <li>
-    <ul>
-      <li>*</li>
-    </ul>
-  </li>
-</ul>
+<hr>
 ```
 
 ```
@@ -28,4 +22,22 @@ _ _ _
 ***
 .
 <hr>
+```
+
+```
+- - -
+.
+<hr>
+```
+
+```
+*  *  *
+.
+<ul>
+  <li>
+    <ul>
+      <li>*</li>
+    </ul>
+  </li>
+</ul>
 ```

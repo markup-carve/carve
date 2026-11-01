@@ -852,7 +852,8 @@ export function noteFrame(payload) {
  * BOTH PART 9R R2 FRAMES, IN ONE PATTERN.
  *
  * The note frame above, or a labeled reference: `fn:` then the label, the
- * U+0002 separator, then the rendered attributes.
+ * U+0002 separator, the encoded attribute source an unresolved reference keeps
+ * as text, U+0002, then the rendered attributes.
  *
  * R2 numbers both forms from ONE shared document-order counter, so the pass
  * that numbers them has to meet them in the order the document writes them.
@@ -873,7 +874,7 @@ export function noteFrame(payload) {
  * directly would be the copy that rots.
  */
 export const FOOTNOTE_FRAMES = new RegExp(
-  `${NOTE_FRAME.source}|\\uE000fn:([\\s\\S]*?)\\u0002(.*?)\\uE001`,
+  `${NOTE_FRAME.source}|\\uE000fn:([\\s\\S]*?)\\u0002([^\\u0002]*)\\u0002(.*?)\\uE001`,
   'g',
 )
 
@@ -1104,7 +1105,7 @@ const sem = g.createSemantics().addOperation('h', {
   },
   footnoteRef(_o, label, _c, attrs) {
     const a = renderAttrs(attrsOf(attrs))
-    return `fn:${label.sourceString}\u0002${a}`
+    return `fn:${label.sourceString}\u0002${encodeURIComponent(attrs.sourceString)}\u0002${a}`
   },
   inlineNote(_o, content, _c, attrs) {
     // anonymous note: content renders now; numbering happens in PART 9R.

@@ -102,9 +102,9 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        is a valid HTML id but an invalid CSS selector); an empty result becomes
        `s`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix. Only
-       an id the document renders takes part: an id dropped with an unresolved
-       reference's attributes (PART 9R) reserves nothing, so `x[^n]{#i}` above
-       `## {#i}` leaves the heading `id="i"` (carve#4288).
+       an id the document renders takes part: an `{#i}` an unresolved
+       reference keeps as text (PART 9R) reserves nothing, so `x[^n]{#i}` above
+       `## {#i}` leaves the heading `id="i"` (carve#4288, carve#4816).
    An explicit {#id} is used verbatim (case preserved), so two headings may
    carry the same id; a cross-reference resolves to the first (PART 9R R4,
    carve#4450). Implementations MAY offer OPT-IN, orthogonal lowercasing and
@@ -149,7 +149,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    items. The reference remains available for later definition resolution. *)
 
 (* --- Thematic Breaks --- *)
-thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
+thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})
+                  | ('-', ' ', '-', ' ', '-', {' ', '-'}) | ('*', ' ', '*', ' ', '*', {' ', '*'})), newline ;
+
+(* A `-` or `*` run may space its markers with single spaces: `* * *` and
+   `- - -` are breaks, and the thematic break is tested before a list marker.
+   A wider gap, a mixed run or a `_` run is not spaced this way: `*  *  *` is a
+   nested list and `_ _ _` is a paragraph (carve#4814). *)
 
 (* A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A
    MAPPING -- NORMATIVE [CARVE-P2-030]. A Markdown importer meeting a BARE
