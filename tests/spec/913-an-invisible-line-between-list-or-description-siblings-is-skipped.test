@@ -1,0 +1,51 @@
+An invisible line between list or description siblings is skipped
+
+```
+- a
+[r]: /u
+- b [x][r]
+.
+<ul>
+  <li>a</li>
+  <li>b <a href="/u">x</a></li>
+</ul>
+```
+
+```
+- a
+*[A]: x
+- b A
+.
+<ul>
+  <li>a</li>
+  <li>b <abbr title="x">A</abbr></li>
+</ul>
+```
+
+```
+:: t
+%% c
+: d
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+```
+
+```
+> :: t
+> : x
+> [r]: /u
+> :: u
+> : v [y][r]
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>x</dd>
+    <dt>u</dt>
+    <dd>v <a href="/u">y</a></dd>
+  </dl>
+</blockquote>
+```

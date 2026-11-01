@@ -284,7 +284,10 @@
         owner, it takes the `line_comment` / `fenced_comment` row of T there,
         and below a container's content column it does not fold and closes
         that container (S5). A comment between two sibling items closes the
-        first one and leaves the list open for the second.
+        first one and leaves the list open for the second. Every invisible
+        line does the same (PART 9 §10 CARVE-P9-013): a reference or
+        abbreviation definition between two items, or between two entries of
+        a description list, leaves that list open (carve#4716).
 
      S2 OWNER. Walk the open frames from the outside in. A quote frame
         consumes its marker; any other frame consumes indentation up to its
@@ -5434,6 +5437,14 @@ EOF = (* end of file *) ;
          that states an action, a pipeline ORDER, a source-map overlap or column
          ARITHMETIC is not, and stays where it is.
 
+         BETWEEN SIBLINGS EVERY MEMBER IS SKIPPED (carve#4716). A run of
+         blank and invisible lines between two items of one list, or between
+         two entries of one description list, ends neither: `- a` /
+         `[r]: /u` / `- b` is one list, as `- a` / `%% c` / `- b` is, and
+         `:: t` / `%% c` / `: d` is one description list whose term has the
+         description `d`. A definition in the run still registers in source
+         order. Without a following sibling the run is read where it stands.
+
          PROPERTY 3 DOES NOT SAY WHICH OWNER. PART 0 S2 selects it.
 
          THE CLASSIFICATION HAS ONE EXCEPTION, and it is about MEMBERSHIP,
@@ -5512,8 +5523,9 @@ EOF = (* end of file *) ;
          four newline bytes between the two item lines (`item\n\n\n\nitem`)
          against two for the tight spelling and three for the loose one.
          Count the run in the layout stream after comments are erased by
-         PART 0 S1 (CARVE-P0-005). A comment between blank lines does not
-         split the run; removing it leaves this boundary unchanged.
+         PART 0 S1 (CARVE-P0-005) and the other invisible lines are skipped
+         (§10 CARVE-P9-013). A comment or definition between blank lines does
+         not split the run; removing it leaves this boundary unchanged.
          Example:
            - apples         produces:    <ul><li>apples</li></ul>
                                          <ul><li>oranges</li></ul>
