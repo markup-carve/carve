@@ -14,7 +14,7 @@ A #tag here, but not in foo#bar.
 
 :::
 
-A tag name may be all digits, so `#123` is a tag (not literal) — `Issue #123` tags the number. Only a leading word boundary is required, not a leading letter.
+A tag name needs at least one ASCII letter (carve#4809), so `#123` stays literal text while `#v2` is a tag. The letter may stand anywhere in the name.
 
 ::: compare
 
@@ -23,7 +23,7 @@ Issue #123 and #v2 here.
 ```
 
 ```html
-<p>Issue <span class="tag"><strong>#123</strong></span> and <span class="tag"><strong>#v2</strong></span> here.</p>
+<p>Issue #123 and <span class="tag"><strong>#v2</strong></span> here.</p>
 ```
 
 :::

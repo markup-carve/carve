@@ -206,7 +206,7 @@ AND a valid closer ahead.
 | `@john!` | `@john` | `!` |
 | `email@domain.com` | - | (not a mention, no word boundary before @) |
 
-The same name rule applies to `#tags` (`#release-1.0` is one tag).
+The same name rule applies to `#tags` (`#release-1.0` is one tag). A name holds at least one ASCII letter, so `@5` and `#123` are text.
 
 ---
 
@@ -219,7 +219,7 @@ The same name rule applies to `#tags` (`#release-1.0` is one tag).
 
 **Resolution rules:**
 1. **Heading:** `#` at line start, followed by space, then text
-2. **Tag:** `#` preceded by whitespace or start of inline content, followed by alphanumeric
+2. **Tag:** `#` preceded by whitespace or start of inline content, followed by a name that holds at least one ASCII letter
 
 **Examples:**
 ```carve
@@ -227,7 +227,9 @@ The same name rule applies to `#tags` (`#release-1.0` is one tag).
 
 Check out #project-x           # Tag
 
-Issue #123                     # Tag (#123 — digit-only tags are valid)
+Issue #123                     # Text (a tag name needs a letter)
+
+Version #v2                    # Tag
 
 #notaheading                   # Tag (no space after #)
 ```

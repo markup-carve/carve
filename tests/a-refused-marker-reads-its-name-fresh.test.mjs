@@ -25,7 +25,9 @@ test('the rest reads its first dash run after the marker', () => {
 })
 
 test('a tag that opens keeps its dash', () => {
-  assert.equal(html('x #->\n'), '<p>x <span class="tag"><strong>#-</strong></span>&gt;</p>')
+  assert.equal(html('x #a->\n'), '<p>x <span class="tag"><strong>#a-</strong></span>&gt;</p>')
+  // `#-` names no letter, so it is no tag (carve#4809).
+  assert.equal(html('x #->\n'), '<p>x #-&gt;</p>')
 })
 
 for (const left of ['b', '1', 'b_', '#i', '@a'])

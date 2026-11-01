@@ -46,7 +46,7 @@ A caption's placeholder is any `#` that does not begin a tag
 .
 <figure>
   <img src="p.png" alt="p">
-  <figcaption>Figure <span class="tag"><strong>#1</strong></span> q</figcaption>
+  <figcaption>Figure #1 q</figcaption>
 </figure>
 ```
 

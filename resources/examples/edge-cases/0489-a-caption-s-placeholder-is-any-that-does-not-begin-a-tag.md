@@ -70,7 +70,7 @@ leaves the `#` bare (markup-carve/carve#2165).
 
 :::
 
-CONTROL. A `#` that does begin a tag is a tag, and the caption is unnumbered.
+A `#` glued to digits begins no tag, because a tag name needs a letter (carve#4809), and a `#` before a tag-name character is never the placeholder (carve#4642), so `#1` stays text.
 
 ::: compare
 
@@ -82,7 +82,7 @@ CONTROL. A `#` that does begin a tag is a tag, and the caption is unnumbered.
 ```html
 <figure>
   <img src="p.png" alt="p">
-  <figcaption>Figure <span class="tag"><strong>#1</strong></span> q</figcaption>
+  <figcaption>Figure #1 q</figcaption>
 </figure>
 ```
 

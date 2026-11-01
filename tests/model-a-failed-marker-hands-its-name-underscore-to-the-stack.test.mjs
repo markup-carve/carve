@@ -25,7 +25,8 @@ test('a failed marker\'s name underscore opens', () => {
 })
 
 test('a marker that may still stand keeps its name', () => {
-  assert.equal(html('@_\\{.c}_\n'), '<p><span class="mention"><strong>@_</strong></span>{.c}_</p>')
+  // A name needs a letter (carve#4809), so `@_` is no marker and the `_` pairs.
+  assert.equal(html('@_\\{.c}_\n'), '<p>@<u>{.c}</u></p>')
   assert.equal(html('_@ex_\n'), '<p><u><span class="mention"><strong>@ex</strong></span></u></p>')
   assert.equal(html('_@ex_{.k}\n'), '<p><u class="k"><span class="mention"><strong>@ex</strong></span></u></p>')
   assert.equal(html('a_@ex\n'), '<p>a_@ex</p>')

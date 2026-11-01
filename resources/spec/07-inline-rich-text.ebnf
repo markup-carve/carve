@@ -317,10 +317,13 @@ comment_content = (* any text until the matching `#}`, preserved literally;
 
 (* --- Mentions and Tags --- *)
 mention = '@', mention_name ;
-mention_name = dotted_name ;
+mention_name = dotted_name ;  (* holding at least one `letter` *)
 
 tag = '#', tag_name ;
-tag_name = dotted_name ;
+tag_name = dotted_name ;  (* holding at least one `letter` *)
+(* A NAME HOLDS A LETTER (carve#4809). A `@` or `#` whose name run has no ASCII
+   letter begins nothing and stays text: `#123`, `#1.2` and `@5` are literal,
+   while `#v2`, `#1a`, `#fff` and `@a1` are a tag or a mention. *)
 
 (* A mention and a tag spell the same name; only the sigil differs. *)
 (* AN INERT MENTION OR TAG RENDERS ITS FULL SPELLING IN STRONG -- NORMATIVE

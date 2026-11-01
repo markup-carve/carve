@@ -50,8 +50,8 @@ the heading still receives the fallback id `s`, but no empty index key exists.
 
 ```html
 <section id="a-65-b">
-  <h1>a &amp;<span class="tag"><strong>#65</strong></span>; b</h1>
-  <p><a href="#a-65-b">a &amp;<span class="tag"><strong>#65</strong></span>; b</a></p>
+  <h1>a &amp;#65; b</h1>
+  <p><a href="#a-65-b">a &amp;#65; b</a></p>
 </section>
 ```
 

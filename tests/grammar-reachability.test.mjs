@@ -118,7 +118,6 @@ test('the grammar has no orphan production that the ledger does not declare', ()
  * next person to write a corpus document that changes nothing.
  */
 const CLOSING_SPELLINGS = {
-  braceUnderscore: ['a {#_} b', 'inlines'],
   eqCloseCut: ['{=a>=}', 'inlines'],
 }
 

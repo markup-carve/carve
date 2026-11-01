@@ -1,0 +1,1 @@
+carve#4809: a tag or mention name needs an ASCII letter (superseding ruling 2026-11-01); the pinned carve-js build still reads a digit-only `#` name as a tag.

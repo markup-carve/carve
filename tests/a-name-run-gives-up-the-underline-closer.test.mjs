@@ -40,7 +40,9 @@ test('an underline closes on the name run that would have taken its delimiter', 
 test('the name keeps every underscore that pairs with nothing', () => {
   assert.equal(html('a @ex_ b\n'), `<p>a ${mention('@ex_')} b</p>`)
   assert.equal(html('a @ex__ b\n'), `<p>a ${mention('@ex__')} b</p>`)
-  assert.equal(html('#_ x\n'), `<p>${tag('#_')} x</p>`)
+  // A tag name needs a letter (carve#4809), so `#_` is text and `#a_` keeps it.
+  assert.equal(html('#_ x\n'), '<p>#_ x</p>')
+  assert.equal(html('#a_ x\n'), `<p>${tag('#a_')} x</p>`)
   // The leading `_` never opened, so the trailing one is name.
   assert.equal(html('_ @ex_ y\n'), `<p>_ ${mention('@ex_')} y</p>`)
   // The open span is of another kind, so the name keeps its own character.

@@ -36,9 +36,10 @@ test('the first = of an arrow that can close a bare highlight closes it', () => 
   assert.equal(html('a >=b= c\n'), '<p>a ≥b= c</p>')
 })
 
-test('a name may be the underscore against a brace', () => {
-  assert.equal(html('a {#_} b\n'), '<p>a {<span class="tag"><strong>#_</strong></span>} b</p>')
-  assert.equal(html('a {@_} b\n'), '<p>a {<span class="mention"><strong>@_</strong></span>} b</p>')
+test('a name of only an underscore is text', () => {
+  // A name needs a letter (carve#4809), so `#_` and `@_` are text.
+  assert.equal(html('a {#_} b\n'), '<p>a {#_} b</p>')
+  assert.equal(html('a {@_} b\n'), '<p>a {@_} b</p>')
   // A closer that takes the underscore leaves no name.
   assert.equal(html('{_#_}\n'), '<p><u>#</u></p>')
   assert.equal(html('{_@_}\n'), '<p><u>@</u></p>')
