@@ -7702,6 +7702,15 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemShowsSomething = () => {
       const rests = itemLines.map((text) => trimLineEnd(indentCols(stripLazy(text)).rest))
       const run = (rest) => COMMENT_FENCE_BODY.exec(rest)?.[1].length
+      // If the note still owns the last nonblank source line, its predicate
+      // has checked the entire run since the opener. Reuse that answer for
+      // the run instead of rescanning each growing prefix.
+      let noteOwnedThrough = -1
+      if (markerNoteEligible || noteOpenerLine !== null) {
+        const last = rests.findLastIndex((rest) => rest !== '')
+        if (last >= 0 && noteClaimsLazyLine(itemSourceRows[last])) noteOwnedThrough = itemSourceRows[last]
+      }
+      const noteStart = noteOpenerLine ?? headIndex
       for (let k = 0; k < rests.length; k++) {
         // A wrapped attribute block is one invisible line, not visible opener
         // text followed by visible continuation text (PART 9 §17 L1a).
@@ -7710,6 +7719,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           k = attrs.next - 1
           continue
         }
+        // A footnote paragraph can claim a lazy source line retained in this
+        // item for its nested parse. That line is not visible item content.
+        if (itemSourceRows[k] > noteStart &&
+            (itemSourceRows[k] <= noteOwnedThrough || noteClaimsLazyLine(itemSourceRows[k]))) continue
         // A `%%%` opens a comment span only where its closer follows; alone it is a comment line.
         const close = run(rests[k]) === undefined ? -1 : rests.findIndex((rest, at) => at > k && run(rest) === run(rests[k]))
         if (close > k) k = close
