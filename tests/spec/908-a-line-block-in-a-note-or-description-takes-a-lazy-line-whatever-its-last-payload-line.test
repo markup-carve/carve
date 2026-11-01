@@ -1,0 +1,99 @@
+A line block in a note or description takes a lazy line whatever its last payload line
+
+```
+:: t
+: > :::: |
+  > ~~~
+b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote>
+      <div class="line-block">
+        <p>~~~<br>
+b</p>
+      </div>
+    </blockquote>
+  </dd>
+</dl>
+```
+
+```
+r[^1]
+
+[^1]: ::: |
+  # h
+b
+.
+<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <div class="line-block">
+        <p># h<br>
+b</p>
+      </div>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: t
+: ::: |
+  ~~~
+b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <div class="line-block">
+      <p>~~~<br>
+b</p>
+    </div>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: - ::: |
+    # h
+b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <div class="line-block">
+          <p># h<br>
+b</p>
+        </div>
+      </li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: > ::: |
+  > {.k}
+b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote>
+      <div class="line-block">
+        <p>{.k}<br>
+b</p>
+      </div>
+    </blockquote>
+  </dd>
+</dl>
+```

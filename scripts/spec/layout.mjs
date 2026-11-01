@@ -1189,6 +1189,45 @@ function opaqueSpanEnd(lines, idx) {
   return -1
 }
 
+const opensLineBlock = (line) => {
+  const colon = COLON_FENCE.exec(stripLazy(line))
+  return !!colon && parseColonOpener(colon[2])?.mode === 'line-block'
+}
+// A line block's payload opens no fence: from an opener at `k`, the index of its closer, or past the body.
+function lineBlockEnd(bodyLines, k) {
+  if (bodyLines[k].includes(LAZY) || !opensLineBlock(bodyLines[k])) return k
+  const run = COLON_FENCE.exec(bodyLines[k])[1].length
+  for (let j = k + 1; j < bodyLines.length; j++) if (COLON_CLOSER.exec(stripLazy(bodyLines[j]))?.[1].length === run) return j
+  return bodyLines.length
+}
+// The same for the line block an item or description at the body's end holds.
+function hostEndsInLineBlockStanza(bodyLines, depth) {
+  let last = bodyLines.length - 1
+  while (last >= 0 && trimWs(bodyLines[last]) === '') last--
+  if (last < 0 || bodyLines[last].includes(LAZY)) return false
+  if (endsInLineBlockStanza(bodyLines, last)) return true
+  if (depth >= MAX_NESTING_DEPTH) return false
+  if (QUOTE.test(bodyLines[last])) {
+    let first = last
+    while (first > 0 && QUOTE.test(bodyLines[first - 1])) first--
+    const inner = bodyLines.slice(first, last + 1).map((l) => QUOTE.exec(l)[1] ?? '')
+    return trimWs(inner.at(-1)) !== '' && hostEndsInLineBlockStanza(inner, depth + 1)
+  }
+  const body = trailingHostBody(bodyLines, last, indentCols(bodyLines[last]), depth)
+  return !!body && hostEndsInLineBlockStanza(body, depth + 1)
+}
+function endsInLineBlockStanza(bodyLines, last) {
+  let opener = false
+  for (let k = 0; k < last && !opener; k++) opener = opensLineBlock(bodyLines[k])
+  if (!opener) return false
+  const scan = { at: 0, stack: [], para: [] }
+  bareColonIsFence(bodyLines, last, scan)
+  const top = scan.stack.at(-1)
+  if (scan.at !== last || !top?.lineBlock) return false
+  const run = COLON_CLOSER.exec(stripLazy(bodyLines[last]))
+  return !(run && run[1].length === top.length)
+}
+
 // A line-block payload is inline content, so a span in it pairs wherever its
 // lines start: indentation is payload, not a column (ruled on carve-php#3137).
 // The pure runs are indexed once per body, each row with the widest run at or
@@ -1254,6 +1293,8 @@ function bodyEndsInTerm(bodyLines) {
 // code fence it opened and did not close?
 function bodyEndsInOpenFence(bodyLines) {
   for (let k = 0; k < bodyLines.length; k++) {
+    k = lineBlockEnd(bodyLines, k)
+    if (k >= bodyLines.length) break
     const line = stripLazy(bodyLines[k])
     if (trimWs(line) === '' || COMMENT_LINE.test(line)) continue
     // A LAZY line is paragraph text, whatever it looks like.
@@ -2032,6 +2073,8 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   // paragraph anywhere in the stack". So the peel below cannot borrow this
   // return, and `:: t` / `:  >` / `tail` must leave the definition.
   if (last < 0) return !quoted
+  // A line-block payload line is inline content whatever its shape, so its stanza stays open (PART 2 line_block).
+  if (hostEndsInLineBlockStanza(bodyLines, depth)) return true
   // An attribute-shaped line without its nested quote marker, or short of an
   // item's content column, is a lazy continuation of that host's paragraph.
   // Its braces do not close the paragraph when the description asks whether
@@ -2712,6 +2755,8 @@ function bodyFenceEnd(bodyLines, k) {
 // opens (§10 I4), under a paragraph too.
 function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) {
   for (let k = 0; k < bodyLines.length; k++) {
+    k = lineBlockEnd(bodyLines, k)
+    if (k >= bodyLines.length) break
     const f = FENCE.exec(bodyLines[k])
     if (k === 0 ? openerFenceRun(bodyLines[k]) === null : !f || parseFenceInfo(f[2]) === null) continue
     const end = bodyFenceEnd(bodyLines, k)
