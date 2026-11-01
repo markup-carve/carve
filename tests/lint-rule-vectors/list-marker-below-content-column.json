@@ -52,7 +52,7 @@
     },
     {
       "name": "ordered-continuation",
-      "description": "A folded ordered marker is reported.",
+      "description": "A same-kind ordered marker below the content column is a sibling, and is reported.",
       "source": "9. nine\n 10. ten\n",
       "expected": {
         "findings": [
@@ -60,7 +60,8 @@
             "line": 2,
             "column": 2,
             "includes": [
-              "content column 3"
+              "content column 3",
+              "sibling item"
             ]
           }
         ]
@@ -190,7 +191,8 @@
             "column": 2,
             "includes": [
               "content column 2",
-              "after a blank line"
+              "after a blank line",
+              "sibling item"
             ]
           }
         ]
@@ -254,8 +256,171 @@
     },
     {
       "name": "after-blank-continuing-number",
-      "description": "Numbering that continues is ordered-list-split-by-indent's finding, not this rule's.",
+      "description": "A continuing number after a blank line is a sibling, and is reported.",
       "source": "1. a\n\n 2. b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 2,
+            "includes": [
+              "content column 3",
+              "after a blank line",
+              "sibling item"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "same-kind-run",
+      "description": "Each same-kind marker past an earlier item's marker column is reported.",
+      "source": "- a\n - b\n - c\n- d\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 2,
+            "includes": [
+              "content column 2",
+              "sibling item"
+            ]
+          },
+          {
+            "line": 3,
+            "column": 2,
+            "includes": [
+              "content column 2",
+              "sibling item"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "same-kind-rising",
+      "description": "A marker below the content column of the item just above is reported.",
+      "source": "- a\n - b\n  - c\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 2,
+            "includes": [
+              "content column 2",
+              "sibling item"
+            ]
+          },
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "content column 3",
+              "sibling item"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "same-kind-after-blank-run",
+      "description": "Every same-kind marker of the list is reported after a blank line too.",
+      "source": "- a\n\n - b\n\n - c\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 2,
+            "includes": [
+              "content column 2",
+              "after a blank line",
+              "sibling item"
+            ]
+          },
+          {
+            "line": 5,
+            "column": 2,
+            "includes": [
+              "content column 2",
+              "after a blank line",
+              "sibling item"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "same-kind-past-an-item-paragraph",
+      "description": "A paragraph inside the item does not end the list.",
+      "source": "- a\n\n  p\n\n - c\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 5,
+            "column": 2,
+            "includes": [
+              "content column 2",
+              "sibling item"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "same-kind-nested",
+      "description": "A nested list measures against its own items.",
+      "source": "- x\n  - a\n   - b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 4,
+            "includes": [
+              "content column 4",
+              "sibling item"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "same-kind-in-a-quote",
+      "description": "Columns count from the start of the line, as in the rest of this rule.",
+      "source": "> - a\n>  - b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 4,
+            "includes": [
+              "content column 4",
+              "sibling item"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "same-kind-letter-marker",
+      "description": "A letter marker with two spaces measures against its content column.",
+      "source": "a.  x\n b.  y\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 2,
+            "includes": [
+              "content column 4",
+              "sibling item"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "same-kind-outdented",
+      "description": "A marker left of the first item's marker column is quiet.",
+      "source": "  - a\n - b\n",
       "expected": {
         "findings": []
       }
