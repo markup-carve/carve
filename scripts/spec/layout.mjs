@@ -8984,7 +8984,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         while (noteFrames.length && col < noteFrames.at(-1).body) {
           const frame = noteFrames.at(-1)
           // A lazy line continues the note's open paragraph and keeps the note open.
-          if (openPara && foldablePlainLine(lm.rest) && !isDefinitionOrAttributeLine(lm.rest)) break
+          if (openPara && noteClaimsLazyLine(i) && foldablePlainLine(lm.rest) && !isDefinitionOrAttributeLine(lm.rest)) break
           noteFrames.pop()
           // The enclosing note's body takes back the reach this note borrowed.
           defBodyIndent = frame.outerReach.def
