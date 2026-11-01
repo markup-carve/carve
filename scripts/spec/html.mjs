@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, renderInline, renderCellInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, baseClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, renderInline, renderCellInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, NUMBER_JOINER, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, baseClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -1168,8 +1168,8 @@ function numberCaption(text, ctx, rawId, rawPanelIds) {
       register(pid, `${shown === '' ? '' : `${shown} `}${n}${panelLetter(k)}`)
     })
   }
-  // The comment ends a tag or mention name before the number can join it (CARVE-P2-022).
-  return text.slice(0, at) + (at > 0 ? '{%%}' : '') + n + text.slice(at + 1)
+  // The joiner ends a tag or mention name before the number can join it (CARVE-P2-022).
+  return text.slice(0, at) + (at > 0 ? NUMBER_JOINER : '') + n + text.slice(at + 1)
 }
 
 function tableBodyGroups(keys, rows) {

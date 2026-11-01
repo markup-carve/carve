@@ -57,7 +57,9 @@ grapheme_extender = (* a character of Unicode general category Mn, Mc or Me *)
                   | (* U+200D ZERO WIDTH JOINER *) ;
 (* The look-behind reads the source character before d. Which `_` or `/`
    before an opener is markup rather than a guard is PART 9 §9 GUARD
-   EXEMPTION. *)
+   EXEMPTION. A braced comment counts as nothing on either side of d, so
+   removing one never changes what pairs: `a{% c %}*b*` renders `a*b*`
+   as `a*b*` does (carve#4719). *)
 
 (* gt_if(d) = '>' when d = '=', otherwise nothing: `=>` is never a highlight
    opener (CARVE-P3-022), so `=>y=` is text. *)
@@ -444,8 +446,9 @@ ellipsis = "..." ;    (* → … *)
    An editorial frame, either side of a substitution, an extension's content
    and an inline note's content each start content in this sense. Thus
    `2{+--x+}` keeps the hyphens in the insertion.
-   Unlike quote direction, this clause reads SOURCE neighbors, so the closing
-   brace of a braced comment is the preceding character: `{% c %}--x` converts.
+   A braced comment counts as nothing on either side of the run, so removing
+   one never changes it: `{% c %}--x` keeps its hyphens as `--x` does
+   (carve#4719).
    The backslash of a hard break or an escaped space is no following
    character: the run reads the break or space it renders (`typography_flank`),
    so `x --\` before a line break and `x --\ y` both convert.

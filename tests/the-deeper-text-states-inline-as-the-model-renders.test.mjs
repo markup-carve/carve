@@ -22,7 +22,7 @@ const pinned = [
   ['a colon-bearing id is inline content (§14)', '{#a:b}\n', '<p>{<span class="tag"><strong>#a</strong></span>:b}</p>'],
   ['an unresolved note reference consumes its attribute run (PART 9R R2)', 'a[^nope]{.c}\n', '<p>a[^nope]</p>'],
   ['an extension ends at its first ] (PART 3)', ':foo[a `b] c`\n', '<p><span class="ext-foo">a <code>b</code></span> c<code></code></p>'],
-  ['a hyphen run reads source neighbors (CARVE-P3-021)', '{% c %}--x\n', '<p>–x</p>'],
+  ['a braced comment counts as nothing for a hyphen run (CARVE-P3-021)', '{% c %}--x\n', '<p>--x</p>'],
   ['a quote reads emitted neighbors (CARVE-P3-023)', '{% c %}"x"\n', '<p>“x”</p>'],
   ['an arrow does not start inside a longer run (CARVE-P3-022)', 'a--->b\n', '<p>a—&gt;b</p>'],
   ['a flag-shaped run keeps its arrow out (CARVE-P3-022)', 'a ---> b\n', '<p>a ---&gt; b</p>'],
