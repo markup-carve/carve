@@ -552,9 +552,10 @@
 
       FENCE OPENER WITH A NESTED-LIST BODY: a `:::` opener inside a LIST
       ITEM opens its block even when the opener's body is a nested list
-      (`- item` / `1. item`). The matching closer is located at the ITEM
-      CONTENT COLUMN (the column the opener starts at), not at column zero;
-      a `:::` at column zero is outside the item and does NOT close it. With
+      (`- item` / `1. item`). An exact-length closer read in the same item
+      owner ends the frame, whether or not it stands at the opener's column
+      (CARVE-P9-084). A
+      `:::` at column zero is outside the item and does NOT close it. With
       a valid closer, the bullet/ordered marker lines are the admonition's
       body and the block wraps the nested `<ul>`/`<ol>`. A blank line
       between the opener and the nested list still opens the block, and an

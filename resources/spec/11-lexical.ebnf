@@ -162,9 +162,9 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    AND IN THE CONSTRUCTS THAT SPELL NO RUN AT ALL, which is where this bites
    hardest, because there an implementation had to invent something. A
-   bullet item and an ordered item take `space` -- one, exactly, not a
-   class. A definition term takes `definition_separator`, a run of one or
-   more spaces as a description does. A heading and a caption spell `space+`,
+   bullet item and an ordered item take `space+` -- a run of one or more
+   ASCII spaces, not a wider character class. A definition term takes
+   `definition_separator`, a run of one or more spaces as a description does. A heading and a caption spell `space+`,
    a RUN of the same terminal. The CONTINUATION MARKER takes no separator: after
    CARVE-P7-001 item 5 drops the line-final run,
    `continuation_marker = '+', newline` requires the `+`

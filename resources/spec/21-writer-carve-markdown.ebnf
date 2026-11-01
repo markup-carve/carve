@@ -55,7 +55,7 @@
       document named.
 
       `---` and `---yaml` parse identically; the AST records no difference.
-      PART 1 ALREADY NAMES THE FORM: `---yaml` is the canonical whole opener.
+      THIS CLAUSE NAMES THE FORM: `---yaml` is the canonical whole opener.
       A READER'S LENIENCY IS NOT A WRITER'S LICENSE: accepting bare `---`
       as yaml does not change the writer's required spelling.
 

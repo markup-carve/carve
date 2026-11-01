@@ -4,7 +4,7 @@
 
 (* PROCESSOR-LEVEL (CARVE-P6-001 below): includes are NOT part of the core parser
    and the directive is deliberately NOT reachable from `block`/`inline` --
-   a conformant core may leave `{{ … }}` literal. *)
+   a conformant core expands no `{{ … }}` directive. *)
 include_directive = "{{", space+, include_path, [[space+], include_section], [include_options], space+, "}}" ;
 (* The padding is a RUN of spaces, not one space: at least one is required on
    EACH side, so `{{c.crv}}` and `{{ c.crv}}` are literal text. A tab is
@@ -66,10 +66,10 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
 (* FILE INCLUSION SEMANTICS -- NORMATIVE [CARVE-P6-001]. `{{ … }}` is a
    PROCESSOR-LEVEL directive, NOT part of the core parser. Its normative
    semantics are below and mirrored, with worked examples, in
-   docs/includes.md. A conformant CORE never recognizes the directive
-   (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL: its
-   source is parsed as ordinary inline content, as if no include feature
-   existed. A bare-path directive
+   docs/includes.md. A conformant CORE never expands the directive
+   (unreachable from `block`/`inline`). It recognizes directive-shaped spans
+   for the literal fallback and opacity rules below; other `{{ … }}` source
+   is parsed as ordinary inline content. A bare-path directive
    with no active inline markers emits verbatim (corpus "Include directive
    with no resolver renders literal"). A directive that is invalid on its
    face, an `@lines` value that is not a valid I1 range, a `@code:lang` value

@@ -14,7 +14,7 @@
         (PART 0 S1, §10 I4);
       - colon_fence_close (§12): len(close) = len(open), matched against the
         INNERMOST open colon fence; the closer is optional and an unclosed
-        container ends at end of input;
+        container ends at its host boundary (CARVE-P9-084);
       - comment_block_close: len(close) = len(open). Only the LEADING RUN of
         `%` is compared -- trailing text on either fence line is insignificant,
         and an opener with no matching closer ahead opens nothing (§28).
