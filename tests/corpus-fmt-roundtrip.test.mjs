@@ -246,6 +246,8 @@ const canonicalAst = (value, inAttrs = false) => {
     const out = {}
     for (const key of Object.keys(value).sort()) {
       if (!inAttrs && (key === 'pos' || key === 'srcByteLength')) continue
+      // fmt writes `|=` headers whatever the author spelled (PART 11 §6h, CARVE-P11-066).
+      if (!inAttrs && key === 'separatorWidths' && value.type === 'table') continue
       out[key] = canonicalAst(value[key], inAttrs || key === 'attrs')
     }
     if (!inAttrs && out.type === 'escaped_text') out.type = 'text'
