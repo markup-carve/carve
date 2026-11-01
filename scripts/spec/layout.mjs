@@ -5381,7 +5381,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                   indentCols(quotedLast).col >= FOOTNOTE_BODY_COLUMN) ||
                  (quotedLeadItem && indentCols(quotedLast).col >= quotedLeadItem.markerWidth &&
                   isDefinitionOrAttributeLine(indentCols(quotedLast).rest)))
-              if (nestedDescriptionClosed || nestedItemClosed || nestedQuoteClosed || endsInClosedDescription(bodyLines)) break
+              // A line-block payload line is inline content, so its stanza stays open (PART 2 line_block).
+              if ((nestedDescriptionClosed || nestedItemClosed || nestedQuoteClosed || endsInClosedDescription(bodyLines)) &&
+                !hostEndsInLineBlockStanza(bodyLines, 0)) break
             }
             /*
              * AN INVISIBLE CONSTRUCT AT DOCUMENT COLUMN 0 IS NOT LAZY TEXT --
