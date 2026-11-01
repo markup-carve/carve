@@ -1,0 +1,13 @@
+A braced comment after a quote does not change its direction
+
+```
+"a-"{%%}
+.
+<p>“a-”</p>
+```
+
+```
+"Wait---"{% c %} he said. '{%%}90s
+.
+<p>“Wait—” he said. ’90s</p>
+```
