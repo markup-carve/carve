@@ -41,9 +41,8 @@ literal: `**x**`, `~~x~~`, and `==x==` render verbatim, exactly like `//x//` and
 delimiters at all; superscript/subscript are the braced `{^x^}` / `{,x,}`
 forms only.)
 
-**A path with two or more segments stays text:** `/usr/local/` renders as
-written, because a bare `/` span whose content holds a `/` between two word
-characters does not form. A single segment has the shape of an italic word, so
+**A span holding its own delimiter between two word characters does not form:**
+`/usr/local/`, `_my_var_` and `*a*b*` render as written. A single segment has the shape of an italic word, so
 `/etc/` still renders `<em>etc</em>`. An intraword path fragment like `a/b/c` stays literal because the `/`
 is alphanumeric-flanked and cannot open; `x /a/b y` stays literal because the
 closing `/` is followed by an alphanumeric.
@@ -279,8 +278,8 @@ stack in a single left-to-right pass: linear time, no backtracking.
 For `/This /does not/ nest/`, the slash before `does` cannot close because it
 follows whitespace. The slash after `not` is the nearest reachable valid
 closer, so the output is `<em>This /does not</em> nest/` inside a paragraph.
-A span whose content holds a `/` between two word characters does not form, so
-`/usr/local/` stays text. See PART 8's disambiguation rule and PART 9 §9.
+A span whose content holds its own delimiter between two word characters does
+not form, so `/usr/local/` and `_my_var_` stay text. See PART 8's disambiguation rule and PART 9 §9.
 
 ---
 

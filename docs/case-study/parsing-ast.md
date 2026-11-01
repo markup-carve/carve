@@ -35,8 +35,8 @@ Parse in this precedence order:
    word-boundary conditions) is literal text.
 2. **Opener → nearest valid same-type closer.** Bare same-type delimiters between
    them are literal content (bare same-type spans do not nest), so `/a /b/`
-   is `<em>a /b</em>`. A bare `/` span holding a `/` between two word characters
-   does not form, so `/usr/local/` stays text.
+   is `<em>a /b</em>`. A bare span holding its own delimiter between two word
+   characters does not form, so `/usr/local/` and `_my_var_` stay text.
 3. **Different-type spans and explicit braced same-kind children nest**, resolved with a delimiter stack in a single
    left-to-right pass: linear time, no backtracking (Design Principle 1).
 
