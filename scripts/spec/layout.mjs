@@ -6873,8 +6873,7 @@ const endsInClosedDescription = (bodyLines) => {
 }
 const descriptionCarriesParagraph = (line) => {
   const content = line.slice(DESCRIPTION_LEAD.exec(line)[0].length)
-  // A code fence opens its block with or without a closer (§10 I4).
-  return !CONT_MARKER.test(content) && !isCodeBlockOpener(content) && opensParagraph(content, true)
+  return !CONT_MARKER.test(content) && opensParagraph(content, true)
 }
 
 // The measurement a parse holds for each line of its array, so a nested reading
@@ -8353,7 +8352,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
         i++
         continue
       }
-      if (lm.rest !== '' && !insideFence() && !nestedVerbatim()) {
+      // A line below a descendant's fence ends that fence before it is read (trackNestedFence).
+      if (lm.rest !== '' && !insideFence() && (!nestedVerbatim() || lm.col - contentCol < nestedOpaque.col)) {
         while (descriptionBodyColumns.length && lm.col < descriptionBodyColumns.at(-1)) descriptionBodyColumns.pop()
         const description = /^:( +)(?=[ \t]*[^ \t])/.exec(lm.rest)
         if (description && lm.col >= contentCol) descriptionBodyColumns.push(lm.col + 1 + description[1].length)
@@ -8786,6 +8786,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem) {
       const taskPlusColumn = head.task !== undefined && headSubMarker ? headSubCol - headSubMarker.markerWidth : -1
       if (headSubActive && reach < headSubCol && !foldsIntoChild &&
           (opensAuthoredBase(lm.rest) || reach >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(lm.rest)) &&
+          !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
+        headSubActive = false
+      }
+      // A line below the child's column that its open paragraph cannot take is this item's block (PART 0 S4).
+      // A line below the child's fence ends that fence, which holds no paragraph.
+      const endsChildFence = nestedVerbatim() && lm.col - contentCol < nestedOpaque.col
+      if (headSubActive && reach < headSubCol && lm.rest !== '' &&
+          (endsChildFence || !nestedVerbatim() && !descendantParagraphBefore && !childParagraphOpen) &&
           !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
         headSubActive = false
       }
