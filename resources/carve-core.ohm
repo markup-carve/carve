@@ -286,10 +286,9 @@ CarveCore {
   // (carve#1156).
   mention    = "@" markName gluedMarker*
   tag        = "#" markName gluedMarker*
-  // A name that is only the `_` `tagChar` gives up (`{#_}`): the name run is
-  // empty here and `nameCuts` hands the `_` back when nothing pairs with it.
-  markName   = tagName | braceUnderscore
-  braceUnderscore = &("_" ("{" | "}"))
+  // A name holds at least one ASCII letter (carve#4809): `#123` and `@5` are text.
+  markName   = &nameLetter tagName
+  nameLetter = (~asciiLetter (tagChar | tagDot))* asciiLetter
   // Only the marker is absorbed; the name after it is read fresh (carve#4329).
   gluedMarker = ("@" | "#") &(asciiLetter | digit | "-")
   tagName    = tagChar+ (tagDot tagChar+)*
@@ -895,7 +894,8 @@ CarveCore {
   // CARVE-P2-022's BARE `#`: one that does not begin a tag. `tag` is tried
   // first and claims every `#` that does, so what reaches here is the whole
   // complement -- which is what the caption placeholder reads.
-  hash       = "#"
+  // `#1` begins no tag and is still no caption placeholder (carve#4642, carve#4809).
+  hash       = "#" ~(asciiLetter | digit | "_" | "-")
   dot        = "." ~".."
   dash       = "-" ~"-"
   plus       = "+" ~"-"

@@ -1576,7 +1576,9 @@ caption_slot = [blank_line], caption ;
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
    placeholder. "Bare" = a `#` that does NOT begin a tag (a `#`
    followed by whitespace, `:`, `.`, end-of-caption, or any
-   non-tag-name character). `#word` stays a tag (PART 9 §7). `\#` is
+   non-tag-name character). `#word` stays a tag (PART 9 §7), and a `#`
+   before a tag-name character is never the placeholder, so `#1` stays
+   text. `\#` is
    a literal `#`, never a placeholder. Only the first bare `#` is a
    placeholder; later bare `#` render literally. A `#` INSIDE inline
    markup (emphasis, link, span) is NOT a placeholder -- put it in the
@@ -2900,10 +2902,13 @@ comment_content = (* any text until the matching `#}`, preserved literally;
 
 (* --- Mentions and Tags --- *)
 mention = '@', mention_name ;
-mention_name = dotted_name ;
+mention_name = dotted_name ;  (* holding at least one `letter` *)
 
 tag = '#', tag_name ;
-tag_name = dotted_name ;
+tag_name = dotted_name ;  (* holding at least one `letter` *)
+(* A NAME HOLDS A LETTER (carve#4809). A `@` or `#` whose name run has no ASCII
+   letter begins nothing and stays text: `#123`, `#1.2` and `@5` are literal,
+   while `#v2`, `#1a`, `#fff` and `@a1` are a tag or a mention. *)
 
 (* A mention and a tag spell the same name; only the sigil differs. *)
 (* AN INERT MENTION OR TAG RENDERS ITS FULL SPELLING IN STRONG -- NORMATIVE

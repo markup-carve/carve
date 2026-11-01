@@ -43,3 +43,5 @@ docs/validation.md#7  points at the engine: an opener past the document's conten
 docs/format-bridges.md#3  points at the engine: a typed div's kind word dedups against an authored class (CARVE-P4-002, markup-carve/carve#4143), so the pinned build still renders `class="calculation calculation"` until markup-carve/carve#4203 lands in carve-js
 docs/parsing-ambiguities.md#4  points at the engine: a column-0 abbreviation definition below an item ends it and defines (PART 9 §10, markup-carve/carve#4412), so the pinned build still folds the line until its pin moves
 docs/validation.md#2  points at the engine: a marker between an item's columns reads as at the marker column (PART 0 S3 and S4, markup-carve/carve#4545), so the pinned build still folds it into the paragraph until its port.
+docs/format-bridges.md#1  points at the engine: a tag name needs an ASCII letter (markup-carve/carve#4809), so the pinned build still renders `#12` as a tag until carve-js ports the ruling
+docs/parsing-ambiguities.md#6  points at the engine: a tag name needs an ASCII letter (markup-carve/carve#4809), so the pinned build still renders `#123` as a tag until carve-js ports the ruling
