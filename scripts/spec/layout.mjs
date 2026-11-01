@@ -5230,7 +5230,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (reachesBody(i) || isBlank(cur)) retainedParagraph = false
             // A line in the body below that fence's column ends it (§24 C3), at every depth (carve#4162).
             if (!isBlank(cur) && reachesBody(i) && indentCols(cur).col < nestedLeadFenceColumn) nestedLeadFenceColumn = 0
-            if (nestedLeadFenceColumn) {
+            // A blank run takes the blank branch below, which keeps a trailing run (carve#4033).
+            if (nestedLeadFenceColumn && !isBlank(cur)) {
               if (endsBodyAt(i)) break
               const measured = indentCols(cur)
               if (measured.rest !== '' && measured.col < bodyColumn) break
