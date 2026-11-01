@@ -7884,6 +7884,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             bodyLeavesNoParagraphAt(itemLines, itemLines.length - 1)) return false
         return true
       }
+      // A descendant's line block owns its stanza even when a payload line
+      // looks like a definition, marker, or fence to this outer item.
+      if (holdsLineBlock && ind(i)?.col < contentCol && hostEndsInLineBlockStanza(itemLines, 0)) return true
       const d = descendantQ1At(descendantQ1.col)
       return d === null ? true : d.open
     }
