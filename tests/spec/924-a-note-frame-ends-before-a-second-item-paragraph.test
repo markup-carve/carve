@@ -1,0 +1,16 @@
+A note frame ends before a second item paragraph
+
+```
+- [r]: /u
+  [^f]: a
+
+  x
+
+    y
+.
+<ul>
+  <li><p>x</p>
+    <p>y</p>
+  </li>
+</ul>
+```
