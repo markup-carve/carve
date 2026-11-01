@@ -1207,7 +1207,9 @@ function lineBlockEnd(bodyLines, k) {
 function hostEndsInLineBlockStanza(bodyLines, depth) {
   let last = bodyLines.length - 1
   while (last >= 0 && trimWs(bodyLines[last]) === '') last--
-  if (last < 0 || bodyLines[last].includes(LAZY)) return false
+  // A lazy line folded into whatever was open before it and closes nothing (PART 0 S4).
+  while (last >= 0 && bodyLines[last].startsWith(LAZY)) last--
+  if (last < 0 || trimWs(bodyLines[last]) === '' || bodyLines[last].includes(LAZY)) return false
   if (endsInLineBlockStanza(bodyLines, last)) return true
   if (depth >= MAX_NESTING_DEPTH) return false
   if (QUOTE.test(bodyLines[last])) {
@@ -4483,6 +4485,7 @@ function consumeLooseKey(node) {
 }
 
 function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, stop = undefined, descriptionOwnerColumn = null) {
+  if (process.env.DBG) console.error('PB', JSON.stringify(lines))
   const blocks = []
   let i = 0
   const n = lines.length
@@ -6327,7 +6330,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // SS25 counts the HOST's containers too: at the cap the block reader
         // degrades the opener to literal text, so a fence recognized here would
         // open a block it does not (raised by codex review).
-        const isOpener = !!(f &&
+        // A fence run in a nested host's stanza is payload (PART 2 line_block).
+        const runCol = indentCols(l).col
+        const stanzaRun = !!f && qStanzaCandidate && inner.at(-1) === l &&
+          ((qStanzaOpen && runCol >= qStanzaColumn) || hostEndsInLineBlockStanza(inner, 0))
+        if (stanzaRun) {
+          qStanzaOpen = true
+          qStanzaColumn = runCol
+        }
+        const isOpener = !!(f && !stanzaRun &&
           state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH)
         if (isOpener) qHost.fence = { run: f[1], column: inner0.col, host: qHost.columns.at(-1) }
         // PART 1 S4 makes the fold conditional on an OPEN PARAGRAPH, so every
@@ -7571,6 +7582,20 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // The column a line-block payload line was last found at; lines at or past it stay payload.
     let stanzaPayloadCol = null
     let holdsLineBlock = LINE_BLOCK_SHAPED.test(head.text)
+    // The body length at which a descendant's stanza was last found open; each
+    // lazy line pushed after it extends that answer without another walk.
+    let stanzaOpenAt = -1
+    const descendantStanzaOpen = () => {
+      if (!holdsLineBlock) return false
+      if (stanzaOpenAt === itemLines.length) return true
+      if (stanzaOpenAt >= 0 && stanzaOpenAt === itemLines.length - 1 && itemLines.at(-1).startsWith(LAZY)) {
+        stanzaOpenAt = itemLines.length
+        return true
+      }
+      if (!hostEndsInLineBlockStanza(itemLines, 0)) return false
+      stanzaOpenAt = itemLines.length
+      return true
+    }
     let lineBlockFenceCol = holdsLineBlock ? contentCol + head.text.indexOf(':::') : -1
     const captionGaps = []
     const residueFence = { index: 0, opaque: null }
@@ -7934,10 +7959,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
      * frame; otherwise it closes the list and begins a new block. This item's
      * own `openPara` answers only while this item IS the deepest frame.
      */
-    const deepestParagraphOpen = () => {
+    const deepestParagraphOpen = () => { const _r = _dpo(); if (process.env.DBG) console.error('DPO', i, JSON.stringify(lines[i]), JSON.stringify(itemLines), contentCol, holdsLineBlock, _r); return _r }
+    const _dpo = () => {
       // The innermost open line-block stanza owns its payload as inline content,
       // even when an enclosing item or quote has no ordinary paragraph open.
-      if (holdsLineBlock && !isBlank(lines[i - 1] ?? '') && ind(i)?.col < contentCol && hostEndsInLineBlockStanza(itemLines, 0)) return true
+      if (!isBlank(lines[i - 1] ?? '') && ind(i)?.col < contentCol && descendantStanzaOpen()) return true
       if (!paragraphIsOpen()) return false
       if (bodyQuote.at === i - 1 && bodyQuote.open &&
           !COLON_CLOSER.test(QUOTE.exec(ind(i - 1)?.rest ?? '')?.[1] ?? '')) return true
@@ -8633,7 +8659,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (line.startsWith(LAZY)) {
         // a lazy line from an OUTER context propagates to the deepest open
         // paragraph (PART 9 SS10 I2).
-        if (!paragraphIsOpen()) break
+        if (!paragraphIsOpen() && !descendantStanzaOpen()) break
         pushLine(line, lm)
         i++
         continue
@@ -9225,6 +9251,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           stanzaPayloadCol = col
           return true
         }
+        // A fence run in a descendant's stanza is payload and opens no nested fence.
+        const fenceInStanza = FENCE.test(lm.rest) && stanzaPayload()
         const mayOpenAuthoredBlock = !inNoteBody && !foldsIntoLeadTerm && !descendantOwned &&
           !foldedChildFence &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest) &&
@@ -9452,7 +9480,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // the base folds with it. `descendantOwned` is the collector's existing
         // spelling of "a known descendant item owns this column".
         absorbedFenceSeen = null
-        if (!inPayload) {
+        if (!inPayload && !fenceInStanza) {
           const nextOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody, true)
           if (nextOpaque?.kind === 'code' && nextOpaque !== nestedOpaque) nextOpaque.sourceBase = localBase
           nestedOpaque = nextOpaque
