@@ -37,7 +37,7 @@ foo*bar*baz and a/b/c stay literal.
 ```
 /usr/local/
 .
-<p><em>usr/local</em></p>
+<p>/usr/local/</p>
 ```
 
 ```

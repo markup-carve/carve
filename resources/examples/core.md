@@ -86,7 +86,7 @@ Emphasis nests freely; inner spans render inside outer ones.
 
 :::
 
-Inner slashes inside a `/…/` span are literal content — a path-like span still parses as emphasis.
+A bare `/` span whose content holds a `/` between two word characters does not form, so a path with two or more segments stays text. A single segment such as `/etc/` is still italic, and `{/a/b/}` is the form for a slash inside italic text.
 
 ::: compare
 
@@ -95,7 +95,7 @@ Inner slashes inside a `/…/` span are literal content — a path-like span sti
 ```
 
 ```html
-<p><em>usr/local</em></p>
+<p>/usr/local/</p>
 ```
 
 :::

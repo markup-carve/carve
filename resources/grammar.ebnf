@@ -1948,7 +1948,7 @@ inline_content = {inline_element | text_run | literal_special}+ ;
 (* A special_char that does not begin (or close) a construct under PART 8
    precedence + PART 9 conditions is literal text. Without this production
    the grammar cannot represent "a/b/c", "x = a*b", or an inner delimiter
-   such as the middle '/' of /usr/local/ -- yet these are canonical outputs
+   such as every '/' of /usr/local/ -- yet these are canonical outputs
    (corpus 01-emphasis). The "is this a construct?"
    decision is the semantic constraint in PART 9, not a context-free one. *)
 literal_special = special_char ;
@@ -5232,6 +5232,17 @@ EOF = (* end of file *) ;
       R2 CLOSE FIRST. If d can close and an entry of kind d is on the stack,
          close the nearest such entry. Every entry above it is removed and
          becomes text; spans nest, never overlap. The new span is final.
+         A BARE `/` SPAN HOLDING A PATH DOES NOT FORM (carve#4810). If d is a
+         bare `/` and the content this closer would end holds, in this region,
+         a literal `/` with a word character (letter or digit, with any
+         grapheme extenders) on each side in source, no span forms: this
+         entry leaves the stack, every other entry stays, and both slashes
+         are text. /usr/local/ and /a/b *c/ d* render /usr/local/ and
+         /a/b <strong>c/ d</strong>; /etc/ forms. The nested reading of a
+         braced span and an atom are not this region, and a combined token
+         and a braced span are not bare `/` spans: {/a/b/}, /*a/b*/ and
+         /x `a/b` y/ form. An escaped slash has the backslash beside it:
+         /a\/b/ forms.
       R3 ATTACH. A glued attribute_run (PART 4) directly after a closer that
          closed a span, a formed nested span, a bracket run, an extension, a
          code span, math, an inline literal, a symbol, an inline note, a note
@@ -5245,8 +5256,8 @@ EOF = (* end of file *) ;
          counts. A run that attaches to nothing is text.
       R4 OPEN. Otherwise, if d can open, is not an own kind and no entry of
          kind d is on the stack, push d. A further bare d while one is open
-         is text (NO BARE SAME-TYPE NESTING): /usr/local/ ->
-         <em>usr/local</em> and /b// -> <em>b</em>/.
+         is text (NO BARE SAME-TYPE NESTING): /a /b/ -> <em>a /b</em> and
+         /b// -> <em>b</em>/.
       R5 TEXT. Otherwise d is text. A closer token `X}` that ends no nested
          reading is a bare X followed by a literal `}`: *a b*} closes a bare
          strong span and leaves } outside it.

@@ -824,7 +824,7 @@
 {"id":"inline-b4dbe7cefa0f","source":"1. {^a^}]\n","html":"<ol>\n  <li><sup>a</sup>]</li>\n</ol>"},
 {"id":"inline-b4e4f4a41dd4","source":"_*a*{t=\"_\"} /a/{t=a_}\n[x]{kbd onclick=\"alert(1)\"}\n","html":"<p>_<strong t=\"_\">a</strong> <em t=\"a_\">a</em>\n<kbd>x</kbd></p>"},
 {"id":"inline-b523b01677dd","source":"\n_*x*_ q\n/_x_/ q\n\n_*x* y_ q\n","html":"<p><u><strong>x</strong></u> q\n<em><u>x</u></em> q</p>\n<p><u><strong>x</strong> y</u> q</p>"},
-{"id":"inline-b57dce59e1d6","source":"*[A]: b\n2/*a*/ and /*b/i/*/3\n","html":"<p>2/<strong>a</strong>/ and <em>*b/i</em>*/3</p>"},
+{"id":"inline-b57dce59e1d6","source":"*[A]: b\n2/*a*/ and /*b/i/*/3\n","html":"<p>2/<strong>a</strong>/ and /<strong>b/i/</strong>/3</p>"},
 {"id":"inline-b5a2a4228f80","source":"|=<{.h} ~~~Name |=>{.c} Score |{.head}\n","html":"<table>\n  <thead>\n    <tr class=\"head\"><th scope=\"col\" class=\"h\" style=\"text-align: left;\">~~~Name</th><th scope=\"col\" class=\"c\" style=\"text-align: right;\">Score</th></tr>\n  </thead>\n</table>"},
 {"id":"inline-b63890002ce1","source":"{header-rows=1 aligns=right,left}\n|> First|< Second|\n |a|b|\n","html":"<table>\n  <thead>\n    <tr><th scope=\"col\" style=\"text-align: right;\">First</th><th scope=\"col\" style=\"text-align: left;\">Second</th></tr>\n  </thead>\n  <tbody>\n    <tr><td style=\"text-align: right;\">a</td><td style=\"text-align: left;\">b</td></tr>\n  </tbody>\n</table>"},
 {"id":"inline-b669a889e10f","source":"\n/see <http://a.b/c> now/\n","html":"<p><em>see <a href=\"http://a.b/c\">http://a.b/c</a> now</em></p>"},

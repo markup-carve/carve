@@ -1,6 +1,7 @@
 # Each engine/corpus pair where the new spec model reads that engine's formatted output differently from the source.
 # The formatter comparison rejects undeclared differences and stale declarations on a full three-engine run.
 # Format: engine/slug  owner/repo#issue and reason
+js/01-emphasis-13  markup-carve/carve#4810, the engine writer unwraps {/a/b/} to a bare /a/b/, which the ruling leaves as text
 js/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-js#3769, footnote body ownership pending
 js/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-js#3769, footnote body ownership pending
 js/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-js#3769, footnote body ownership pending
@@ -14,6 +15,7 @@ js/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-
 js/620-generated-container-documents-16  markup-carve/carve-js#3769, footnote body ownership pending
 js/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-js#3769, footnote body ownership pending
 js/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-js#3769, footnote body ownership pending
+php/01-emphasis-13  markup-carve/carve#4810, the engine writer unwraps {/a/b/} to a bare /a/b/, which the ruling leaves as text
 php/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-php#4118, footnote body ownership pending
 php/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-php#4118, footnote body ownership pending
 php/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-php#4118, footnote body ownership pending
@@ -27,6 +29,7 @@ php/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph
 php/620-generated-container-documents-16  markup-carve/carve-php#4118, footnote body ownership pending
 php/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4  markup-carve/carve-php#4118, footnote body ownership pending
 php/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8  markup-carve/carve-php#4118, footnote body ownership pending
+rust/01-emphasis-13  markup-carve/carve#4810, the engine writer unwraps {/a/b/} to a bare /a/b/, which the ruling leaves as text
 rust/212-a-flush-left-line-after-a-footnote-definition-belongs-to-the-document  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  markup-carve/carve-rs#3383, footnote body ownership pending
 rust/279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-4  markup-carve/carve-rs#3383, footnote body ownership pending

@@ -1562,6 +1562,27 @@ function guardedBy(d, prev) {
 function bareCloser(d, prev, next) {
   return prev !== undefined && !isWs(prev) && (next === undefined || !isAlnum(next))
 }
+// A `/` with a word character on each side, read on source, so an escaped slash
+// does not count. A trailing extender belongs to the character before it.
+function isPathSlash(src, at) {
+  let p = at - 1
+  while (p > 0 && extendsGrapheme(src, p)) p--
+  return isAlnum(src[p]) && isAlnum(src[at + 1])
+}
+// A word holds its intraword `/` as text, so the literal slashes are read from
+// the words and the candidates between the span's two delimiters (CARVE-P9-043 R2).
+function holdsPathSlash(toks, from, to, src) {
+  for (let i = from + 1; i < to; i++) {
+    const t = toks[i]
+    if (t.dead || t.hidden) continue
+    if (t.k === 'd' && t.ch === '/' && isPathSlash(src, t.at)) return true
+    if (t.wordAt === undefined) continue
+    for (let at = src.indexOf('/', t.wordAt); at !== -1 && at < t.wordEnd; at = src.indexOf('/', at + 1)) {
+      if (isPathSlash(src, at)) return true
+    }
+  }
+  return false
+}
 
 // The `forced` node under an `inline` / `fInner` child, through the wrapper
 // rules that carry no other meaning, or null where the child is not one.
@@ -1761,6 +1782,10 @@ function buildToks(children, literalDelims = '') {
     const t = { k: 't', h: c.h() + boundary }
     if (alt.sourceString === '{') t.braceAt = alt.source.startIdx
     if (marker.ctorName === 'dashRun') t.dash = { at: marker.source.startIdx, raw: marker.sourceString }
+    if (marker.ctorName === 'word') {
+      t.wordAt = marker.source.startIdx
+      t.wordEnd = marker.source.endIdx
+    }
     push(t)
   }
   if (comment) comment.tok.tailEnd = toks.length
@@ -2130,6 +2155,11 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
           if (toks[j + 2]?.heldBlock && toks[j + 2].at === toks[j + 1].at + 1) hideBlock(toks[j + 2], true)
           openers.length = k
           j++
+          continue
+        }
+        // The path decline is local: entries above stay open, this closer is text.
+        if (d === '/' && t.k === 'd' && holdsPathSlash(toks, openers[k], j, src)) {
+          openers.splice(k, 1)
           continue
         }
         openMap.set(openers[k], j)
