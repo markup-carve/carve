@@ -351,7 +351,7 @@
 {"id":"attributes-4a4e884173fb","source":"-  a\n\n/i/\n   {.c}\n   - b\n","html":"<ul>\n  <li>a</li>\n</ul>\n<p><em>i</em></p>\n<ul class=\"c\">\n  <li>b</li>\n</ul>"},
 {"id":"attributes-4a8dd969a656","source":"- t\n  {.c}\n  %%% c\n  ````\n  x\n","html":"<ul>\n  <li>t\n    <pre class=\"c\"><code>x\n</code></pre>\n  </li>\n</ul>"},
 {"id":"attributes-4a92abdfc59d","source":"|{#x} < content |\n[[t](/v)]{.c}\n","html":"<table>\n  <tbody>\n    <tr><td id=\"x\">&lt; content</td></tr>\n  </tbody>\n</table>\n<p><span class=\"c\"><a href=\"/v\">t</a></span></p>"},
-{"id":"attributes-4a9626ec0fde","source":"_*_u_a*{title=\"@user_\"} b_\n","html":"<p><u><strong title=\"@user_\">_u_a</strong> b</u></p>"},
+{"id":"attributes-4a9626ec0fde","source":"_*_u_a*{title=\"@user_\"} b_\n","html":"<p>_<strong title=\"@user_\">_u_a</strong> b_</p>"},
 {"id":"attributes-4ab067b336a6","source":"\n- text\n  [a]: /u {.c}\n\n[a][]\n","html":"<ul>\n  <li>text</li>\n</ul>\n<p><a href=\"/u\" class=\"c\">a</a></p>"},
 {"id":"attributes-4ba3d55341d1","source":"::: note\n- para\n - {#x}\n```\ncode\n::::\n:::\nafter *b*\n","html":"<aside class=\"admonition note\" aria-label=\"Note\">\n  <ul>\n    <li>para</li>\n    <li></li>\n  </ul>\n  <pre><code>code\n::::\n:::\nafter *b*\n</code></pre>\n</aside>"},
 {"id":"attributes-4bbfd0d7246c","source":"[^f][x]{k='a\\\\b'}\n\n","html":"<p>[^f]<span k=\"a\\b\">x</span></p>"},

@@ -49,10 +49,12 @@ test('a name may be the underscore against a brace', () => {
 })
 
 test('an opener before a literal directive closes inside it', () => {
-  assert.equal(html('_a {{ a_b_.csv @lines:2-1 }} tail\n'),
-    '<p><u>a {{ a_b</u>.csv <span class="mention"><strong>@lines</strong></span>:2-1 }} tail</p>')
-  assert.equal(html('_a {{ a_b_.csv @code }} tail\n'),
-    '<p><u>a {{ a_b</u>.csv <span class="mention"><strong>@code</strong></span> }} tail</p>')
+  assert.equal(html('_a {{ ab_.csv @lines:2-1 }} tail\n'),
+    '<p><u>a {{ ab</u>.csv <span class="mention"><strong>@lines</strong></span>:2-1 }} tail</p>')
+  // A span holding its own delimiter between word characters does not form (carve#4810).
+  assert.equal(html('_a {{ a_b_.csv @lines:2-1 }} tail\n'), '<p>_a {{ a_b_.csv @lines:2-1 }} tail</p>')
+  assert.equal(html('_a {{ ab_.csv @code }} tail\n'),
+    '<p><u>a {{ ab</u>.csv <span class="mention"><strong>@code</strong></span> }} tail</p>')
   // A directive nothing closes into stays verbatim.
   assert.equal(html('x {{ a_b_.csv @code }} y\n'), '<p>x {{ a_b_.csv @code }} y</p>')
   assert.equal(html('_a {{ a_b.csv @code }} c_\n'), '<p><u>a {{ a_b.csv @code }} c</u></p>')

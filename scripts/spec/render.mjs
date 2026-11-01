@@ -1568,23 +1568,24 @@ function guardedBy(d, prev) {
 function bareCloser(d, prev, next) {
   return prev !== undefined && !isWs(prev) && (next === undefined || !isAlnum(next))
 }
-// A `/` with a word character on each side, read on source, so an escaped slash
-// does not count. A trailing extender belongs to the character before it.
-function isPathSlash(src, at) {
+// A delimiter with a word character on each side, read on source, so an escaped
+// one does not count. A trailing extender belongs to the character before it.
+function isIntraword(src, at) {
   let p = at - 1
   while (p > 0 && extendsGrapheme(src, p)) p--
   return isAlnum(charBefore(src, p + 1)) && isAlnum(charAfter(src, at + 1))
 }
-// A word holds its intraword `/` as text, so the literal slashes are read from
+// A word holds its intraword `_` as text, so the literal delimiters are read from
 // the words and the candidates between the span's two delimiters (CARVE-P9-043 R2).
-function holdsPathSlash(toks, from, to, src) {
+// A name's `_` belongs to the marker, not to this region's text.
+function holdsOwnDelimiter(toks, from, to, d, src) {
   for (let i = from + 1; i < to; i++) {
     const t = toks[i]
     if (t.dead || t.hidden) continue
-    if (t.k === 'd' && t.ch === '/' && isPathSlash(src, t.at)) return true
+    if (t.k === 'd' && t.ch === d && !t.ofName && isIntraword(src, t.at)) return true
     if (t.wordAt === undefined) continue
-    for (let at = src.indexOf('/', t.wordAt); at !== -1 && at < t.wordEnd; at = src.indexOf('/', at + 1)) {
-      if (isPathSlash(src, at)) return true
+    for (let at = src.indexOf(d, t.wordAt); at !== -1 && at < t.wordEnd; at = src.indexOf(d, at + 1)) {
+      if (isIntraword(src, at)) return true
     }
   }
   return false
@@ -2163,8 +2164,8 @@ function pairDelims(toks, src, literalDelims = '', contentAt = 0) {
           j++
           continue
         }
-        // The path decline is local: entries above stay open, this closer is text.
-        if (d === '/' && t.k === 'd' && holdsPathSlash(toks, openers[k], j, src)) {
+        // The decline is local: entries above stay open, this closer is text.
+        if (t.k === 'd' && holdsOwnDelimiter(toks, openers[k], j, d, src)) {
           openers.splice(k, 1)
           continue
         }
@@ -3235,10 +3236,13 @@ const capSem = g.createSemantics().addOperation('capIdx', {
         const alt = c.child(0)
         const at = alt.source.startIdx
         if (alt.ctorName === 'wordSlash') {
-          return [{ k: 'word', at }, { k: 'd', ch: '/', at: alt.child(1).source.startIdx }]
+          const head = alt.child(0)
+          const word = head.ctorName === 'word' ? { wordAt: at, wordEnd: head.source.endIdx } : {}
+          return [{ k: 'word', at, ...word }, { k: 'd', ch: '/', at: alt.child(1).source.startIdx }]
         }
         const ch = alt.ctorName === 'litDelim' ? alt.child(0).sourceString : ''
-        return STACK_DELIMS.has(ch) ? { k: 'd', ch, at } : { k: alt.ctorName, at }
+        if (STACK_DELIMS.has(ch)) return { k: 'd', ch, at }
+        return alt.ctorName === 'word' ? { k: 'word', at, wordAt: at, wordEnd: alt.source.endIdx } : { k: alt.ctorName, at }
       }).flat()
     const toks = build()
     const openMap = pairDelims(toks, this.source.sourceString)

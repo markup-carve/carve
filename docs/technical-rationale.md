@@ -522,9 +522,8 @@ Open `docs/index.md` for the homepage.
 The route is a/b/c.
 ```
 
-A path has its own rule. A span holding a `/` between two word
-characters does not form, because a path with two or more segments is never meant
-as italics. A single segment has the shape of an italic word and cannot be told
+A span holding its own delimiter between two word characters does not form, so a
+path with two or more segments is never italics and `_my_var_` is never underlined. A single segment has the shape of an italic word and cannot be told
 apart without context, so it needs a code span.
 
 ## `^` meaning "caption" vs "footnote" vs "rowspan"

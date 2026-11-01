@@ -685,7 +685,7 @@
 {"id":"inline-96f398718bd7","source":" [[http\\:\\/\\/u\\/\\]](http://u/])\n","html":"<p>[<a href=\"http://u/]\">http://u/]</a></p>"},
 {"id":"inline-971be01bef2d","source":"# a `x %% b`{=html} c\n{#raw-heading}\n","html":"<section id=\"a-c\">\n  <h1>a x %% b c</h1>\n</section>"},
 {"id":"inline-9759655e44dc","source":"{[d]: u~a~>{+b~}+}~}\n","html":"<p>{[d]: u~a~&gt;<ins>b~}</ins>~}</p>"},
-{"id":"inline-97a7245ea9b9","source":"\nsee snake_/*glob*b**/ now\n","html":"<p>see snake_/<strong>glob*b</strong>*/ now</p>"},
+{"id":"inline-97a7245ea9b9","source":"\nsee snake_/*glob*b**/ now\n","html":"<p>see snake_/*glob*b**/ now</p>"},
 {"id":"inline-97ca54d15f96","source":"```=html\n\n<custtom onclick=\"reveal()\">t</custom>\n```\n","html":"<custtom onclick=\"reveal()\">t</custom>"},
 {"id":"inline-97d0d86beff5","source":"| a | b |A {/a\nbb/} run.\n","html":"<p>| a | b |A <em>a\nbb</em> run.</p>"},
 {"id":"inline-97d57b764934","source":"[[t](/v)](/u)\n@user\n<http://a.com/\"q\">\n","html":"<p><a href=\"/u\">t</a>\n<span class=\"mention\"><strong>@user</strong></span>\n&lt;http://a.com/“q”&gt;</p>"},
