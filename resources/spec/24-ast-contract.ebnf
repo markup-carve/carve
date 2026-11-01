@@ -71,8 +71,9 @@
 
       AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL --
       NORMATIVE [CARVE-P12-026]. `*[TERM]: expansion` is an `abbreviation_definition` only as a
-      direct child of the document. Written inside a block quote, a list item
-      or a div, the line is not a definition at all: it is ordinary paragraph
+      direct child of the document. Written inside a block quote, a list item,
+      a definition body, a footnote body or a div, the line is not a
+      definition at all: it is ordinary paragraph
       text, it defines nothing, and it is preserved as the text the author
       typed. A line that misses every frame below one is not written inside it: it
       is a direct child of the document (PART 9 §10). Neither is a definition

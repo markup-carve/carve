@@ -941,10 +941,11 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
      - a paragraph IS open at the quote's deepest frame (CARVE-P0-006,
        PART 0 S4); and the line is
      - not blank (a blank line ends the blockquote), and
-     - not an interrupting opener in the selected owner's coordinates: a
-       heading, table, fenced code opener (§10 I4), `:::` div, thematic break,
-       or an invisible definition or comment recognized there ends the quote
-       and starts outside it, and
+     - not a line that interrupts a paragraph under PART 9 §10 I1 to I5 in
+       the selected owner's coordinates: a heading, table, fenced code opener
+       (§10 I4), `:::` div, thematic break, `:: ` term, or an invisible
+       definition or comment recognized there ends the quote and starts
+       outside it, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
    A LIST MARKER (bullet or ordered) is NOT an exclusion: it folds into the
    open paragraph (PART 9 §10 I2, I6), so "> quoted \n - item" is ONE quote whose
@@ -1480,9 +1481,10 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    its text spills onto following lines exactly like a PARAGRAPH (PART 9 §10), NOT like
    a heading. It ends the same way an open paragraph does:
      1. a blank line ends the caption;
-     2. a line that INTERRUPTS a paragraph -- a heading, blockquote, table,
-        fenced code, `:::` div, thematic break, or `%%%` comment -- ends the
-        caption and starts that block;
+     2. a line that INTERRUPTS a paragraph under PART 9 §10 I1 to I5 -- a
+        heading, blockquote, table, fenced code, `:::` div, thematic break,
+        `:: ` term, `%%%` comment, or a reference, note or abbreviation
+        definition -- ends the caption and starts that block;
      3. a LIST MARKER does NOT end the caption (PART 9 §10 I2): `^ cap` + `- x`
         yields the caption `cap\n- x`;
      4. a further `^ ` line does NOT continue the caption (there is no repeated
@@ -6657,9 +6659,9 @@ EOF = (* end of file *) ;
       ends at `|`, link text at `]`, and ANY CONSTRUCT WITH AN EXPLICIT CLOSER
       ends at that closer -- a forced span `{X...X}` at its `X}`, the combined
       `/*...*/` token at its `*/`, and the rest of the braced family the same
-      way. In an editorial `{~...~>...~}` frame, the first side's run ends
-      at `~>` and the second side's run ends at `~}`; `%%` stops at that
-      side's closer. Plain prose supplies none, and this is the form for it:
+      way. In an editorial `{~...~>...~}` frame, a `%%` in either side runs
+      to the frame's first raw `~}`; a `~>` after it is comment text (see the
+      `{~` paragraph below). Plain prose supplies none, and this is the form for it:
       `foo {% bar %} baz` renders `<p>foo  baz</p>`.
       - Only the braced comment's own characters are removed. Spaces before
         and after it stay in the inline run, including a trailing space in
@@ -9301,16 +9303,18 @@ EOF = (* end of file *) ;
       sufficient. Two spellings that render alike are still two spellings, and
       removing that is what a CANONICAL writer is for.
 
-      These counterexamples render identically but re-parse to different ASTs:
+      This counterexample renders identically but re-parses to a different AST:
 
         source     written as    what changed
-        `* %%`     `* +`         a line comment became the CONTINUATION MARKER
-                                 (PART 9 §17 L3 first-block form), a different construct with a body
         `| %%%`    `| %% %`      a comment-block fence (CARVE-P9-060) split into a line
                                  comment plus text
 
-      The second also violates §2's THE UNIT IS THE OPENER: an opener run
+      It also violates §2's THE UNIT IS THE OPENER: an opener run
       such as `%%%` must not be split into a partial opener and stray text.
+      Writing `* %%` as `* +` changes the output as well as the tree: a lone
+      `+` with nothing to attach is refused and reads as the letter `+`
+      (CARVE-P9-085), so `* +` renders `<li>+</li>` where `* %%` renders an
+      empty `<li></li>`.
 
       The escaping half remains §2's test: omit an escape unless doing so
       changes the re-parsed AST.
@@ -12527,8 +12531,9 @@ EOF = (* end of file *) ;
 
       AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL --
       NORMATIVE [CARVE-P12-026]. `*[TERM]: expansion` is an `abbreviation_definition` only as a
-      direct child of the document. Written inside a block quote, a list item
-      or a div, the line is not a definition at all: it is ordinary paragraph
+      direct child of the document. Written inside a block quote, a list item,
+      a definition body, a footnote body or a div, the line is not a
+      definition at all: it is ordinary paragraph
       text, it defines nothing, and it is preserved as the text the author
       typed. A line that misses every frame below one is not written inside it: it
       is a direct child of the document (PART 9 §10). Neither is a definition

@@ -322,10 +322,11 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
      - a paragraph IS open at the quote's deepest frame (CARVE-P0-006,
        PART 0 S4); and the line is
      - not blank (a blank line ends the blockquote), and
-     - not an interrupting opener in the selected owner's coordinates: a
-       heading, table, fenced code opener (§10 I4), `:::` div, thematic break,
-       or an invisible definition or comment recognized there ends the quote
-       and starts outside it, and
+     - not a line that interrupts a paragraph under PART 9 §10 I1 to I5 in
+       the selected owner's coordinates: a heading, table, fenced code opener
+       (§10 I4), `:::` div, thematic break, `:: ` term, or an invisible
+       definition or comment recognized there ends the quote and starts
+       outside it, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
    A LIST MARKER (bullet or ordered) is NOT an exclusion: it folds into the
    open paragraph (PART 9 §10 I2, I6), so "> quoted \n - item" is ONE quote whose

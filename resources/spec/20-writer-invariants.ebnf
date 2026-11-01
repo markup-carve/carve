@@ -391,16 +391,18 @@
       sufficient. Two spellings that render alike are still two spellings, and
       removing that is what a CANONICAL writer is for.
 
-      These counterexamples render identically but re-parse to different ASTs:
+      This counterexample renders identically but re-parses to a different AST:
 
         source     written as    what changed
-        `* %%`     `* +`         a line comment became the CONTINUATION MARKER
-                                 (PART 9 §17 L3 first-block form), a different construct with a body
         `| %%%`    `| %% %`      a comment-block fence (CARVE-P9-060) split into a line
                                  comment plus text
 
-      The second also violates §2's THE UNIT IS THE OPENER: an opener run
+      It also violates §2's THE UNIT IS THE OPENER: an opener run
       such as `%%%` must not be split into a partial opener and stray text.
+      Writing `* %%` as `* +` changes the output as well as the tree: a lone
+      `+` with nothing to attach is refused and reads as the letter `+`
+      (CARVE-P9-085), so `* +` renders `<li>+</li>` where `* %%` renders an
+      empty `<li></li>`.
 
       The escaping half remains §2's test: omit an escape unless doing so
       changes the re-parsed AST.
