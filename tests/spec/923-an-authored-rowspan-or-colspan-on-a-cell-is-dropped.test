@@ -1,0 +1,35 @@
+An authored rowspan or colspan on a cell is dropped
+
+```
+|{rowspan=2} a | b |
+| c | d |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|{colspan=3 .k} a | b |
+| ^ | d |
+.
+<table>
+  <tbody>
+    <tr><td rowspan="2" class="k">a</td><td>b</td></tr>
+    <tr><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|>{align=left} a |
+.
+<table>
+  <tbody>
+    <tr><td align="left" style="text-align: right;">a</td></tr>
+  </tbody>
+</table>
+```

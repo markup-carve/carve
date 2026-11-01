@@ -125,8 +125,10 @@
 
       The element and value sets are closed. On `<table>`, `align` means block
       placement rather than alignment of cell text, so it remains an ordinary
-      attribute. Every element outside the text-block set, and every value
-      outside the three named values, likewise keeps the authored attribute.
+      attribute. Every element outside the text-block set, a table cell
+      included, and every value outside the three named values, likewise
+      keeps the authored attribute; a cell's computed alignment still adds
+      its declaration to `style` (carve#4715).
       Rewriting a table's placement as `text-align` would change the document,
       not modernize an equivalent spelling.
 

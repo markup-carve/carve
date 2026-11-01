@@ -42,8 +42,8 @@ test('a table region include does not repeat a header record it covers', () => {
     '<table>\n  <thead>\n    <tr><th scope="col">h</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>i</td></tr>\n  </tbody>\n</table>')
 })
 
-test('an author span key stays where nothing computes that span', () => {
-  assert.match(html('|={rowspan=3 colspan=3} a | < |\n'), /<th scope="col" colspan="2" rowspan="3">a<\/th>/)
+test('an author span key is dropped where nothing computes that span (carve#4715)', () => {
+  assert.match(html('|={rowspan=3 colspan=3} a | < |\n'), /<th scope="col" colspan="2">a<\/th>/)
 })
 
 test('a region marker line in a table include is no record (carve#4515)', () => {
