@@ -1,0 +1,10 @@
+An arrow takes its hyphens from a longer run
+
+```
+a<---b
+
+<--->
+.
+<p>a←-b</p>
+<p>←→</p>
+```
