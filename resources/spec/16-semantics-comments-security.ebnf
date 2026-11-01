@@ -42,9 +42,9 @@
       ends at `|`, link text at `]`, and ANY CONSTRUCT WITH AN EXPLICIT CLOSER
       ends at that closer -- a forced span `{X...X}` at its `X}`, the combined
       `/*...*/` token at its `*/`, and the rest of the braced family the same
-      way. In an editorial `{~...~>...~}` frame, the first side's run ends
-      at `~>` and the second side's run ends at `~}`; `%%` stops at that
-      side's closer. Plain prose supplies none, and this is the form for it:
+      way. In an editorial `{~...~>...~}` frame, a `%%` in either side runs
+      to the frame's first raw `~}`; a `~>` after it is comment text (see the
+      `{~` paragraph below). Plain prose supplies none, and this is the form for it:
       `foo {% bar %} baz` renders `<p>foo  baz</p>`.
       - Only the braced comment's own characters are removed. Spaces before
         and after it stay in the inline run, including a trailing space in

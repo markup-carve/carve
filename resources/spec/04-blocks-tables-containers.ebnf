@@ -176,9 +176,10 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    its text spills onto following lines exactly like a PARAGRAPH (PART 9 §10), NOT like
    a heading. It ends the same way an open paragraph does:
      1. a blank line ends the caption;
-     2. a line that INTERRUPTS a paragraph -- a heading, blockquote, table,
-        fenced code, `:::` div, thematic break, or `%%%` comment -- ends the
-        caption and starts that block;
+     2. a line that INTERRUPTS a paragraph under PART 9 §10 I1 to I5 -- a
+        heading, blockquote, table, fenced code, `:::` div, thematic break,
+        `:: ` term, `%%%` comment, or a reference, note or abbreviation
+        definition -- ends the caption and starts that block;
      3. a LIST MARKER does NOT end the caption (PART 9 §10 I2): `^ cap` + `- x`
         yields the caption `cap\n- x`;
      4. a further `^ ` line does NOT continue the caption (there is no repeated
