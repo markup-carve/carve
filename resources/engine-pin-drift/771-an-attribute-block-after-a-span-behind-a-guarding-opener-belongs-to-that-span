@@ -1,1 +1,0 @@
-Pinned JavaScript leaves the attribute block of a span behind a guarding opener unattached; markup-carve/carve-js#3894.

@@ -1,1 +1,0 @@
-The pinned carve-js predates this: a line below a comment closer leaves the container (markup-carve/carve#4086); the spec model is correct.

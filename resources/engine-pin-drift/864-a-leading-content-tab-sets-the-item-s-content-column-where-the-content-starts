@@ -1,1 +1,0 @@
-The pinned carve-js predates this: a tab after a marker's separator is content and does not move the content column (markup-carve/carve#4610); the spec model is correct.

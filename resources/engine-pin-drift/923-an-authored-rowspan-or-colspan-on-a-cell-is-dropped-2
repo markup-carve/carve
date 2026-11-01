@@ -1,1 +1,0 @@
-The pinned carve-js build predates the spec model fix that always drops an authored rowspan or colspan on a table cell (markup-carve/carve#4715); the spec moved first.

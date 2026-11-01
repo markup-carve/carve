@@ -1,1 +1,0 @@
-The pinned carve-js drops the text-align declaration when CARVE-P9-054 blanks the authored style (markup-carve/carve#4548); the spec model appends it after hardening.

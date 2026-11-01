@@ -1,1 +1,0 @@
-The pinned carve-js build predates the spec model fix that reads quote direction past a braced comment after the quote (markup-carve/carve#4719); the spec moved first.

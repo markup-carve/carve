@@ -1,1 +1,0 @@
-The pinned carve-js demotes a single quote after a braced comment that opens the content (markup-carve/carve#4552); the spec model keeps the opener.

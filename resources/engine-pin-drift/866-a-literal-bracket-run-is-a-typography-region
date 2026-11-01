@@ -1,1 +1,0 @@
-The pinned carve-js converts a dash run at the start of a literal bracket run (markup-carve/carve#4551); the spec model keeps it, as CARVE-P3-021 states.

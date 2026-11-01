@@ -1,1 +1,0 @@
-Pinned JavaScript ends a %% comment inside an unformed /* ... */ shape at the line end, not at the shape's closer token (carve#4042).

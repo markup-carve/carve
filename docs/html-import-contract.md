@@ -911,13 +911,11 @@ what it said. A bare empty `<p>` has nothing of the sort and takes no row.
 
 `empty-heading` pins a bare empty heading and an attributed whitespace-only one.
 
-## Adjacent definition lists become one
+## Adjacent definition lists stay apart
 
-Carve source has no boundary between two definition lists: a blank line
-between two entries separates nothing, and the hard list boundary of PART 9
-§11 N1a is a rule about item markers. So a `<dl>` with no attributes of its own
-that directly follows another definition list JOINS it, in both exits
-(markup-carve/carve#2369):
+Three blank lines end a description list (PART 9 §11 N1a, markup-carve/carve#4759),
+so two adjacent `<dl>` elements import as two definition lists, written with
+that boundary between them, in both exits:
 
 ```html
 <dl><dt>a</dt><dd>x</dd></dl><dl><dt>b</dt><dd>y</dd></dl>
@@ -926,18 +924,16 @@ that directly follows another definition list JOINS it, in both exits
 ```
 :: a
 : x
+
+
+
 :: b
 : y
 ```
 
-The joined list takes the entries of both in order, and is loose if either was.
-Each merged `<dl>` takes one `element-unwrapped` row at `info`, located at that
-`<dl>`: its entries survive and its grouping does not.
-
-A `<dl>` that carries attributes is not merged. Its attribute line stands
-between the two lists and keeps them apart, so it is written as its own list.
-Anything else that spells a block between the two, a paragraph or a comment,
-keeps them apart the same way.
+No element is unwrapped and no report row is added. This replaces the earlier
+join (markup-carve/carve#2369), which held only while Carve had no boundary
+between two definition lists.
 
 ## A figure and its target share one attribute line
 

@@ -1,1 +1,0 @@
-Pinned JavaScript still ends an unclosed code run at a braced closer (carve#3973 X5); tracked at markup-carve/carve-js#3961.
