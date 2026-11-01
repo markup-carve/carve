@@ -209,9 +209,9 @@ thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '
 
 (* --- Code Blocks --- *)
 code_block = fenced_code_block, [caption_slot] ;
-(* A trailing caption (PART 9 §4) wraps the code block in a figure: a
-   numbered LISTING. The caption may carry a `#` number placeholder, and a
-   `</#id>` to the block resolves to "Listing N" (PART 9 §19). *)
+(* A trailing caption (PART 9 §4) wraps the code block in a figure. When
+   its text carries a `#` number placeholder, the caption's own label names
+   the counter bucket and the text of a resolved `</#id>` (PART 9 §4b, §19). *)
 
 fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
                     code_content,
@@ -389,7 +389,7 @@ lazy_continuation_line = inline_content, newline ;
 list = unordered_list | ordered_list | definition_list ;
 
 unordered_list = unordered_item+ ;
-unordered_item = bullet_marker, [item_attributes], space, [task_marker], list_item_content ;
+unordered_item = bullet_marker, [item_attributes], space+, [task_marker], list_item_content ;
 (* the optional task_marker makes the item a TASK item (checkbox); the
    plain-vs-task axis is a PART 9 §11 same-list criterion *)
 bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
@@ -430,7 +430,7 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    `: ` + VT and `: ` + NBSP each open a description. *)
 
 ordered_list = ordered_item+ ;
-ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
+ordered_item = ordered_marker, [item_attributes], space+, list_item_content ;
 (* The first item fixes the dialect (decimal / alpha / roman) and the
    delimiter (`.` or `)`); classification and the ambiguous-letter
    tie-break are in PART 9 §11. Whether a marker line interrupts a paragraph is
@@ -590,12 +590,13 @@ task_state = ' ' | 'x' | 'X' | '_' | '-' | '/' | '!' | '>' | '?' ;
 definition_list = definition_entry+ ;
 definition_entry = definition_term+, [{blank_line}, definition_body,
                    {{blank_line}, definition_body}] ;
-(* Any run of blank lines may separate a term from its definition, one
-   definition from the next, and one entry from the next, for readability --
-   the run is a separator only (djot parity), and a definition list has no
-   three-blank boundary. A blank NOT followed by a `: ` definition ends the
-   entry. The bodies are optional: `:: t` alone is a definition list holding
-   one term and no description (PART 0 FAMILIES, [B-term-start]). *)
+(* One or two blank lines may separate a term from its definition, one
+   definition from the next, and one entry from the next, for readability.
+   Three blank lines before a new `:: ` term start a new definition list; a
+   body continuation after the run stays in its description (PART 9 §11 N1a).
+   A blank NOT followed by a `: ` definition ends the entry. The bodies are
+   optional: `:: t` alone is a definition list holding one term and no
+   description (PART 0 FAMILIES, [B-term-start]). *)
 definition_term = "::", definition_separator, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
