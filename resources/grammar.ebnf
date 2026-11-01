@@ -7852,7 +7852,10 @@ EOF = (* end of file *) ;
       autolink display text are likewise opaque to abbreviation expansion.
       So are a cross-reference's link text, whether it clones a heading or a
       numbered caption's label and number, and the literal an unresolved
-      cross-reference renders (R4, carve#4742).
+      cross-reference renders (R4, carve#4742). Neither is the text of an
+      editorial comment nor a symbol that no map resolves (its literal text,
+      with or without an attribute block): with `*[A]: y`, `{#A#} and :A:`
+      renders `<span class="critic-comment">A</span> and :A:` (carve#4801).
       Expansion follows PART 9 §25 RESOURCE BOUNDS.
    R4 CROSSREFS. </#id> matches the
       case-preserved headingIds EXACTLY (neither a case-only nor an ASCII

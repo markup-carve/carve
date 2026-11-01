@@ -1,0 +1,17 @@
+Abbreviations skip an editorial comment and an unresolved symbol
+
+```
+{#A#} and :A:
+
+*[A]: y
+.
+<p><span class="critic-comment">A</span> and :A:</p>
+```
+
+```
+:A:{.c} and A
+
+*[A]: y
+.
+<p><span class="c">:A:</span> and <abbr title="y">A</abbr></p>
+```
