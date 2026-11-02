@@ -1,0 +1,13 @@
+A braced comment before a flag opener counts as nothing
+
+```
+{%c%}(--force) y
+.
+<p>(--force) y</p>
+```
+
+```
+{%c%}(1--10) and {%c%}((--x))
+.
+<p>(1–10) and ((–x))</p>
+```
