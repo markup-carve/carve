@@ -1948,6 +1948,19 @@
       ]
     },
     {
+      "id": "quote-caption-continuation-line",
+      "source": "> Stay hungry.\n^ Steve Jobs\nand friends\n",
+      "carrierFragments": [
+        "<!-- carve: ^ Steve Jobs\nand friends -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "figure",
+          "target.type": "block_quote"
+        }
+      ]
+    },
+    {
       "id": "table-caption",
       "source": "|= Fruit |= Price |\n| Apple | $1 |\n^ Fruit prices\n",
       "carrierFragments": [
@@ -2363,13 +2376,18 @@
       "id": "definition-list-wrapped-term",
       "source": ":: A term that\nwraps onto the next line\n: its definition\n",
       "carrierFragments": [
-        "<!-- carve: :: A term that\nwraps onto the next line -->"
+        "<!-- carve: :: A term that -->"
       ],
       "expectedNodes": [
         {
           "type": "definition_list"
         }
-      ]
+      ],
+      "aheadOfPin": {
+        "fails": [
+          "<!-- carve: :: A term that -->"
+        ]
+      }
     },
     {
       "id": "reference-link-full",
