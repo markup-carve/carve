@@ -185,17 +185,17 @@ test('GUARD: a payload line below the column still ends the container', () => {
   }
 })
 
-test('GUARD: a comment OPENER below the column still ends the container', () => {
+test('GUARD: a span opened below the column leaves the next line to decide', () => {
   // The span this fix keeps is one the container already HOLDS. An opener below
-  // the column opens nothing there - carve#1930 for the `dd`, carve#618/#629 for
-  // the item - and the container ends at it exactly as before.
+  // the column closes no container (carve#4862): a follower at column 0 ends it,
+  // one at the content column stays in it.
   assert.equal(
     html(':: t\n:  head\n\n%%%\na\n%%%\n\nafter\n'),
     '<dl>\n  <dt>t</dt>\n  <dd>head</dd>\n</dl>\n<p>after</p>',
   )
   assert.equal(
     html('- head\n\n%%%\na\n%%%\n\n  tail\n'),
-    '<ul>\n  <li>head</li>\n</ul>\n<p>tail</p>',
+    '<ul>\n  <li><p>head</p>\n    <p>tail</p>\n  </li>\n</ul>',
   )
 })
 

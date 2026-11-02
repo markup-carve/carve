@@ -36,9 +36,11 @@ Rule: CARVE-P0-024.
 
 An open code, raw or comment fence tests the line against its closer first. A
 nonblank line that misses the fence's owner ends the fence. Comments are then
-classified before S3 reads the visible residue, but a comment is still an
-ordinary line for ownership: below a container's content column it closes that
-container. Rule: CARVE-P0-005.
+classified before S3 reads the visible residue. A comment closes no list item,
+description body or footnote body at any column: the next visible line picks the
+owner. An unmarked comment still ends a quote, a region marker below a list closes
+every item, and a line that ended a fence is read where it stands. Rules:
+CARVE-P0-005, CARVE-P9-013.
 
 ## S2 Owner
 
@@ -66,8 +68,9 @@ ownership of its own. Rules: CARVE-P0-008, CARVE-P0-010 and CARVE-P0-011.
 A line that missed a frame folds into the deepest open paragraph, found by
 following the last child container to its leaf, when the line is not blank and
 its form does not interrupt. The test is the same at every depth and in every
-family. Comments, attributes and definitions interrupt, so a below-column
-invisible line closes the container (CARVE-P9-051, CARVE-P9-052). A heading
+family. Attribute lines and footnote definitions interrupt, so below the column
+they close the container (CARVE-P9-051, CARVE-P9-052); comments and link and
+abbreviation definitions close none (CARVE-P9-013). A heading
 leaves no paragraph open. A fold closes nothing. Rules: CARVE-P0-006,
 CARVE-P0-012 and CARVE-P0-015.
 

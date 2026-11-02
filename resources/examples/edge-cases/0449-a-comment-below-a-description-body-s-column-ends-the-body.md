@@ -6,11 +6,11 @@ run below it makes it a comment BLOCK, and the line between the two delimiters
 renders nothing (markup-carve/carve#1930). A list item answers the same way
 (PART 0 X1, corpus 214).
 
-Every other comment below the body's column ends the body as well: a comment is
-an ordinary line for ownership (rule A, carve#3885, which replaced the
-retention reading of markup-carve/carve#2978), so the line after it is not taken
-back into the body. That holds for the `%%` line form, a `%%%` with no closer
-ahead, and a matched span written past column 0, as in a list item.
+What ends the body there is the column-0 line after the span. A comment itself
+closes no description body at any column (carve#4862, which replaced the closing
+reading of carve#3885): the next visible line picks the owner, so a follower at
+the body's column stays in the body. That holds for the `%%` line form, a `%%%`
+with no closer ahead, and a matched span, as in a list item.
 
 TERMINATED IS WHAT MAKES IT A BLOCK, and the degraded control below is why that
 has to be said: §28's degradation is total, so an opener with no exact-width
@@ -183,10 +183,9 @@ b
 
 :::
 
-A FOLLOWER AT THE BODY'S OWN COLUMN after a line comment below it is a
-document paragraph: a comment is an ordinary line for ownership (rule A,
-carve#3885), so below the column it closes the body, and a closed body takes no
-later line back. The `%%` line form first.
+A FOLLOWER AT THE BODY'S OWN COLUMN after a line comment below it stays in the
+body: a comment closes no description body, so the follower's column decides
+(carve#4862). The `%%` line form first.
 
 ::: compare
 
@@ -200,9 +199,11 @@ later line back. The `%%` line form first.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>
+    <p>x</p>
+    <p>more</p>
+  </dd>
 </dl>
-<p>more</p>
 ```
 
 :::
@@ -221,15 +222,17 @@ The DEGRADED fence, same answer: with no closer ahead it is a line comment.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>
+    <p>x</p>
+    <p>more</p>
+  </dd>
 </dl>
-<p>more</p>
 ```
 
 :::
 
-The terminated fence at column 0 ends the body too, so the same follower is a
-document paragraph.
+The terminated fence at column 0 closes no body either, so the same follower
+stays in it.
 
 ::: compare
 
@@ -245,9 +248,11 @@ y
 ```html
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>
+    <p>x</p>
+    <p>more</p>
+  </dd>
 </dl>
-<p>more</p>
 ```
 
 :::
@@ -301,7 +306,7 @@ z
 :::
 
 And the line form one column in, with a follower back at the body's column,
-which the closed body does not take back.
+which the body keeps.
 
 ::: compare
 
@@ -315,9 +320,11 @@ which the closed body does not take back.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>
+    <p>x</p>
+    <p>more</p>
+  </dd>
 </dl>
-<p>more</p>
 ```
 
 :::

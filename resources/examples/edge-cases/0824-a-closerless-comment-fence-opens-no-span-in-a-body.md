@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A closerless comment fence opens no span in a body
 
-A `%%%` with no exact-width closer ahead is the line form of a comment and opens no span (CARVE-P9-053). A comment below the body column after it closes the body like any other comment (CARVE-P9-052), in a description and a footnote body as in a list item, so the line after it does not return to the body.
+A `%%%` with no exact-width closer ahead is the line form of a comment and opens no span (CARVE-P9-053). A comment below the body column after it closes no body (carve#4862), in a description and a footnote body as in a list item, so a line after it at the body column stays in the body.
 
 ::::::: compare
 
@@ -21,9 +21,11 @@ A `%%%` with no exact-width closer ahead is the line form of a comment and opens
 ````html
 <dl>
   <dt>t</dt>
-  <dd>head</dd>
+  <dd>
+    <p>head</p>
+    <p>tail</p>
+  </dd>
 </dl>
-<p>tail</p>
 ````
 
 :::::::
@@ -42,13 +44,13 @@ r[^n]
 ````
 
 ````html
-<p>tail</p>
 <p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>head<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>head</p>
+      <p>tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

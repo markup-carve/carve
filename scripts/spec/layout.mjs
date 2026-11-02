@@ -1351,6 +1351,8 @@ function scanColonFences(bodyLines, last, scan) {
 }
 
 const COMMENT_LINE = /^[ \t]*%%/
+// CARVE-P11-073: a region marker below a list closes every item.
+const REGION_MARKER = /^%%[ \t]*#(?:end)?region(?![A-Za-z0-9_])/
 // A fence line is DELIMITER + INSIGNIFICANT TAIL (SS28): only the leading run
 // of `%` is structural, so `%%% TODO` opens and `%%% end` closes.
 const COMMENT_FENCE = /^[ \t]*(%{3,})(.*)$/s
@@ -3155,6 +3157,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   }
   let reach = 0
   let runs = null
+  let nextVisible = -1
+  let movedSpan = null
   // Fence-shaped lines the walk read as paragraph text.
   const textFences = []
   // The line after an accepted `+` keeps its column: the marker reads it.
@@ -3325,6 +3329,24 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
         if (stripped === null || stripped < f.col) break
       }
       reached = k
+    }
+    // A comment or one-line definition closes no indentation frame: the next
+    // visible line picks the owner (CARVE-P9-013).
+    if (movedSpan && at <= movedSpan.end) {
+      // The rest of a matched `%%%` span moves with its opener.
+      src = ' '.repeat(top().col) + m.rest
+      m = walkIndent(src)
+      reached = frames.length - 1
+    } else if (!plus && reached < frames.length - 1 && top().kind !== 'fence' && transparentLine(m.rest, at)) {
+      // A line that misses an open fence's owner ends that fence first (S1), so it is read where it stands.
+      const deeper = nextVisibleReach(at, reached)
+      if (deeper > reached) {
+        src = ' '.repeat(frames[deeper].col) + m.rest
+        m = walkIndent(src)
+        reached = deeper
+        const end = commentSpanEnd(trimLineEnd(m.rest), at)
+        movedSpan = end === -1 ? null : { end }
+      }
     }
     // A lone `+` nothing took is a plain letter and ends nothing (carve#4396). Payload stays as written.
     if (!plus && CONT_MARKER.test(m.rest) && !(top().kind === 'fence' && reached === frames.length - 1)) {
@@ -3909,6 +3931,50 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       }
     }
     return lines.length
+  }
+
+  function transparentLine(rest, k) {
+    const text = trimLineEnd(rest)
+    if (REGION_MARKER.test(text) || FOOTNOTE_DEF.test(text)) return false
+    return commentSpanEnd(text, k) !== -1 || COMMENT_LINE.test(text) || isDefinitionLine(text)
+  }
+
+  function commentSpanEnd(text, k) {
+    const comment = COMMENT_FENCE_BODY.exec(text)
+    if (!comment || (closerRuns().lastComment.get(comment[1].length) ?? -1) <= k) return -1
+    for (let j = k + 1; j < lines.length; j++) {
+      const close = COMMENT_FENCE_BODY.exec(trimLineEnd(lines[j]).replace(/^[ \t>]*/, ''))
+      if (close && close[1].length === comment[1].length) return j
+    }
+    return -1
+  }
+
+  // How deep the next visible line reaches through the indentation frames below `from`.
+  function nextVisibleReach(at, from) {
+    if (nextVisible <= at) {
+      const own = commentSpanEnd(trimLineEnd(walkIndent(lines[at].replace(/^[ \t>]*(?=>)>? ?/, '')).rest), at)
+      nextVisible = (own === -1 ? at : own) + 1
+      for (; nextVisible < lines.length; nextVisible++) {
+        const stands = walkIndent(lines[nextVisible].replace(/^[ \t>]*(?=>)>? ?/, ''))
+        const text = trimLineEnd(stands.rest)
+        if (text === '') continue
+        const span = commentSpanEnd(text, nextVisible)
+        if (span !== -1) nextVisible = span
+        else if (!transparentLine(text, nextVisible)) break
+      }
+    }
+    if (nextVisible >= lines.length) return from
+    let depth = 0
+    for (let k = 1; k <= from; k++) if (frames[k].kind === 'quote') depth++
+    const stands = stripQuotes(lines[nextVisible], depth)
+    if (!stands) return from
+    const next = walkIndent(stands.rest)
+    let deepest = from
+    for (let k = from + 1; k < frames.length; k++) {
+      if (!['item', 'dd', 'note'].includes(frames[k].kind) || next.col < frames[k].col) break
+      deepest = k
+    }
+    return deepest
   }
 
   // The line behind the quotes around frame `hostIndex`. A `>` left of a frame

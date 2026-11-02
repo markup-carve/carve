@@ -14,7 +14,7 @@ const source = (depth, fence, column, closed, tail) => {
 
 for (const depth of [0, 1, 2]) {
   for (const character of ['`', '~']) {
-    // A span below the item's content column closes the item, as one at the list's own column does.
+    // A span below the item's content column reads as one at the list's own column does.
     for (const column of [1]) {
       for (const closed of [false, true]) {
         for (const [kind, tail] of [['text', 'tail'], ['marker', '- tail'], ['blank then text', '\ntail']]) {
@@ -30,6 +30,7 @@ for (const depth of [0, 1, 2]) {
 }
 
 test('513-a-comment-span-opened-below-every-content-column-is-located-there-8 leaves tail at document level', () => {
+  // The span closes no item (carve#4862): the fence opens in the item and `tail` ends it.
   assert.equal(html('- item\n %%%\n hidden\n  %%%\n  ```\ntail\n'),
-    '<ul>\n  <li>item</li>\n</ul>\n<pre><code>tail\n</code></pre>')
+    '<ul>\n  <li>item\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>tail</p>')
 })

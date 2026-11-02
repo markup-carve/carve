@@ -289,14 +289,16 @@
         A body line that misses the matched comment span's owner ends that
         span under S1; the line is classified in its selected owner.
 
-        A comment is still an ordinary line for ownership. S2 selects its
-        owner, it takes the `line_comment` / `fenced_comment` row of T there,
-        and below a container's content column it does not fold and closes
-        that container (S5). A comment between two sibling items closes the
-        first one and leaves the list open for the second. Every invisible
-        line does the same (PART 9 §10 CARVE-P9-013): a reference or
-        abbreviation definition between two items, or between two entries of
-        a description list, leaves that list open (carve#4716).
+        A comment takes the `line_comment` / `fenced_comment` row of T in its
+        owner and does not fold. It ends the open paragraph and closes no list
+        item, description body or footnote body at any column: the next visible
+        line picks the owner, and the comment is read there (PART 9 §10
+        CARVE-P9-013). A matched span's extent is fixed where it is written,
+        and the whole span moves with its opener. A quote is reached only by its marker, so an unmarked
+        comment ends it (S2). Two lines keep the authored column: a region
+        marker below a list closes every item (CARVE-P11-073), and a line that
+        misses an open fence's owner has ended that fence above, so it is read
+        where it stands.
 
      S2 OWNER. Walk the open frames from the outside in. A quote frame
         consumes its marker; any other frame consumes indentation up to its
@@ -390,9 +392,9 @@
         CONTAINER -- NORMATIVE [CARVE-P0-010]. A link, footnote or abbreviation
         definition registers in the owner S2 selects and only there. `- a` / `  [r]: /u`
         / `tail` registers `r`, then ends the item and publishes `tail` at
-        document level. Below every open content column a definition
-        interrupts (S4), so `- a` / ` [r]: /u` / `tail` closes the item and
-        registers `r` in the document. An abbreviation definition reads the same
+        document level. Below every open content column it reads the same: `- a`
+        / ` [r]: /u` / `  tail` stays in the item, and `- a` / ` [r]: /u` / `tail`
+        closes it, because the next visible line picks the owner (CARVE-P9-013). An abbreviation definition reads the same
         way and its scope is the document (CARVE-P12-026). A definition either
         registers or remains visible text; it never disappears from both.
 
@@ -5540,19 +5542,26 @@ EOF = (* end of file *) ;
          that states an action, a pipeline ORDER, a source-map overlap or column
          ARITHMETIC is not, and stays where it is.
 
-         BETWEEN SIBLINGS EVERY MEMBER IS SKIPPED (carve#4716). A run of
-         blank and invisible lines between two items of one list, or between
-         two entries of one description list, ends neither: `- a` /
-         `[r]: /u` / `- b` is one list, as `- a` / `%% c` / `- b` is, and
-         `:: t` / `%% c` / `: d` is one description list whose term has the
-         description `d`. A definition in the run still registers in source
-         order. Without a following sibling the run is read where it stands.
+         A COMMENT OR ONE-LINE DEFINITION CLOSES NO INDENTATION CONTAINER. A `%%`
+         line, a matched `%%%` span, a link reference definition and an
+         abbreviation definition close no list item, description body or
+         footnote body at any column. They end the open paragraph and take
+         effect, and the next visible line picks the owner as if they were
+         absent: `- a` / `%% c` / `  b` stays in the item, and `- a` / `%% c` /
+         `b` closes it. `- a` / `[r]: /u` / `- b` is therefore one list, and
+         `:: t` / `%% c` / `: d` one description list (carve#4716). An unmarked
+         one ends a quote, as an unmarked blank does (S2). A block-attribute
+         line belongs to the next block and a footnote definition opens a
+         frame, so both keep the reading below. A region marker below a list
+         closes every item (CARVE-P11-073), and a line that misses an open
+         fence's owner ends that fence first and is read where it stands (PART
+         0 S1). Ruled on carve#4862.
 
          PROPERTY 3 DOES NOT SAY WHICH OWNER. PART 0 S2 selects it.
 
-         Every member keeps its
-         class below a container's content column: it interrupts, closes the
-         missed containers and is read in the surviving owner (PART 0 S4, S5).
+         A block-attribute line and a footnote definition keep their class below
+         a container's content column: they interrupt, close the missed containers
+         and are read in the surviving owner (PART 0 S4, S5).
 
          Comments in this list are classified in PART 0 S1, before S3
          classifies the visible residue; their AST/source extent is retained
@@ -7082,16 +7091,15 @@ EOF = (* end of file *) ;
              THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE [CARVE-P9-051].
              A fold continues an open paragraph. Where none is open the line
              is classified in the owner that SURVIVES: after a blank line the
-             item has ended, and a comment below the content column closes the
-             item like any other interrupter (PART 0 S1, S5). It holds for
+             item has ended (PART 0 S5). It holds for
              bullet, ordered, task and attributed markers alike.
 
-             AN INVISIBLE LINE BELOW THE COLUMN INTERRUPTS -- NORMATIVE [CARVE-P9-052].
-             Below the column an invisible line keeps its class (§10 I5): a
-             comment, link, footnote or abbreviation definition or block-attribute line
-             interrupts, closes the item and is read in the surviving owner,
-             where a definition registers (CARVE-P0-010) and an attribute line
-             is pending (§15 A2).
+             A NOTE DEFINITION OR ATTRIBUTE LINE BELOW THE COLUMN INTERRUPTS -- NORMATIVE [CARVE-P9-052].
+             Below the column a footnote definition or block-attribute line
+             keeps its class (§10 I5): it interrupts, closes the item and is read
+             in the surviving owner, where a definition registers (CARVE-P0-010)
+             and an attribute line is pending (§15 A2). A comment, link reference
+             definition or abbreviation definition closes no item (CARVE-P9-013).
            - AT OR PAST content_column: a block opener nests and a list marker
              opens a sublist. A non-list opener past the column opens in the
              item, measured from its own line (PART 0 S3); a sublist marker
@@ -10268,16 +10276,17 @@ EOF = (* end of file *) ;
           thematic break, comment, table, link reference definition, list, or
           a div, admonition or block quote written with a closing `:::` fence,
           since a `%%` line written directly below anything else can be read
-          into it. A marker written below a list stands at the list's own
-          column, which closes every item of it (PART 0 S2, S5), so it is the
-          list's sibling. Otherwise, and in a tree without positions, the
-          ordinary separator applies.
+          into it. A region marker is the one comment that still closes
+          containers (the exception to PART 0 S1, carve#4862): written below a
+          list it stands at the list's own column and closes every item of it,
+          so it is the list's sibling. Otherwise, and in a tree without
+          positions, the ordinary separator applies.
 
       (b) A MARKER KEPT IN A LIST ITEM KEEPS ITS COLUMN. A region marker that
           is a list item's child, adjacent under (a) to the paragraph or block
           image above it in that item (or to a marker this rule placed),
           is written at the item's content column: at its marker column it
-          would close the item (PART 0 S2, S5).
+          would close the item (the exception in (a)).
 
       (c) A HOISTED DEFINITION DOES NOT CROSS A MARKER. A link reference, abbreviation or
           footnote definition with a region marker anywhere below its source

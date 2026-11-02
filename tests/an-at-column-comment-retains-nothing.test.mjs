@@ -74,12 +74,13 @@ for (const depth of [0, 1, 2]) for (const column of [2, 3]) {
 }
 
 for (const depth of [0, 1, 2]) for (const nested of [1, 2]) {
-  test(`a span below every item column closes the items: depth ${depth}, item depth ${nested}`, () => {
+  // The span closes no item, so FOLLOW's column puts it in the parent item (carve#4862).
+  test(`a span below every item column leaves FOLLOW to its column: depth ${depth}, item depth ${nested}`, () => {
     const parents = Array.from({length: nested}, (_, n) => ' '.repeat(n * 2) + '- outer')
     const source = [...parents, ' '.repeat(nested * 2) + '- HEAD', ' %%%', ' HIDDEN', ' %%%', ' '.repeat(nested * 2 + 1) + 'FOLLOW']
       .map(line => '> '.repeat(depth) + line).join('\n') + '\n'
     assert.deepEqual(leaf(parse(source).blocks), [{t: 'para', lines: ['HEAD']}], html(source))
-    assert.ok(html(source).includes('<p>FOLLOW</p>'), html(source))
+    assert.match(html(source), /<\/ul>\n[ >]*FOLLOW\n[ >]*<\/li>/, html(source))
     assert.ok(!html(source).includes('HIDDEN'), html(source))
   })
 }

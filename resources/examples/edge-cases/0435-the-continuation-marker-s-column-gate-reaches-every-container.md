@@ -65,9 +65,9 @@ The body's OWN minimum column is not column 0 either, so it is refused for the
 same reason - the marker names one column, not a range reaching down to the
 container's floor. An indented comment at that column is a different document
 and stays inside the body, which is pinned above under "A comment in a footnote
-body is invisible in both spellings". The comment where the marker was is an
-ordinary line below the body column, so it closes the body (rule A,
-carve#3885) and the follower is a document paragraph.
+body is invisible in both spellings". The comment where the marker was closes
+no footnote body (carve#4862, which replaced the closing reading of carve#3885),
+so the follower at the body column stays in the note.
 
 ::: compare
 
@@ -80,13 +80,13 @@ see[^a]
 ```
 
 ```html
-<p>more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro</p>
+      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

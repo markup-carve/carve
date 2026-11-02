@@ -300,11 +300,10 @@ below
 <ul>
   <li>
     <div class="box">
-
+      <p>x</p>
     </div>
   </li>
 </ul>
-<p>x</p>
 ```
 
 ```
@@ -314,7 +313,8 @@ below
   x
 .
 <ul>
-  <li>a</li>
+  <li>a
+    x
+  </li>
 </ul>
-<p>x</p>
 ```

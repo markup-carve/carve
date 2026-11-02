@@ -665,16 +665,17 @@
           thematic break, comment, table, link reference definition, list, or
           a div, admonition or block quote written with a closing `:::` fence,
           since a `%%` line written directly below anything else can be read
-          into it. A marker written below a list stands at the list's own
-          column, which closes every item of it (PART 0 S2, S5), so it is the
-          list's sibling. Otherwise, and in a tree without positions, the
-          ordinary separator applies.
+          into it. A region marker is the one comment that still closes
+          containers (the exception to PART 0 S1, carve#4862): written below a
+          list it stands at the list's own column and closes every item of it,
+          so it is the list's sibling. Otherwise, and in a tree without
+          positions, the ordinary separator applies.
 
       (b) A MARKER KEPT IN A LIST ITEM KEEPS ITS COLUMN. A region marker that
           is a list item's child, adjacent under (a) to the paragraph or block
           image above it in that item (or to a marker this rule placed),
           is written at the item's content column: at its marker column it
-          would close the item (PART 0 S2, S5).
+          would close the item (the exception in (a)).
 
       (c) A HOISTED DEFINITION DOES NOT CROSS A MARKER. A link reference, abbreviation or
           footnote definition with a region marker anywhere below its source

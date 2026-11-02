@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A comment or link definition at a body's column refuses a first-block plus
 
-A first-block `+` takes a block only at its marker column (CARVE-P9-067, carve#4409). A line comment or a link definition at the body's content column or at column zero refuses it, and the `+` stays the item's text. The comment or definition renders nothing and ends that paragraph, so the line after it starts its own block (carve#4307).
+A first-block `+` takes a block only at its marker column (CARVE-P9-067, carve#4409). A line comment or a link definition at the body's content column or at column zero refuses it, and the `+` stays the item's text. The comment or definition renders nothing and ends that paragraph, so the line after it starts its own block (carve#4307). It closes no item, so that line's column picks its owner (carve#4862).
 
 ::::: compare
 
@@ -103,9 +103,9 @@ z
     <ul>
       <li>+</li>
     </ul>
+    after
   </li>
 </ul>
-<p>after</p>
 ```
 
 :::::
@@ -125,9 +125,9 @@ z
     <ul>
       <li>+</li>
     </ul>
+    after
   </li>
 </ul>
-<p>after</p>
 ```
 
 :::::

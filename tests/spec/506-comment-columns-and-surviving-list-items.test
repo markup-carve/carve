@@ -30,9 +30,10 @@ c
   tail
 .
 <ul>
-  <li>intro</li>
+  <li>intro
+    tail
+  </li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -77,9 +78,10 @@ tail
   tail
 .
 <ul>
-  <li>intro</li>
+  <li>intro
+    tail
+  </li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -91,7 +93,8 @@ b
   tail
 .
 <ul>
-  <li>intro</li>
+  <li>intro
+    tail
+  </li>
 </ul>
-<p>tail</p>
 ```
