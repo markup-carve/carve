@@ -1553,6 +1553,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-079",
+      "part": "11",
+      "title": "A COLLECTED DEFINITION, A COMMENT AND A BLOCK BELOW A BODY HAVE ONE LAYOUT",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P12-001",
       "part": "12",
       "title": "AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY",
