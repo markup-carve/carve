@@ -38,8 +38,9 @@ for (const depth of [0, 1, 2]) {
       assert.match(renderDoc(parse(prefix + 'tail\n')), /<dt>term\ntail<\/dt>/)
     }
   })
-  test(`comment before heading matches a heading at the outer item column at depth ${depth}`, () => {
-    assert.equal(renderDoc(parse(wrap(shapes[2][1]) + 'tail\n')), renderDoc(parse(wrap('- - intro\n  # h') + 'tail\n')))
+  // The comment closes no item, so the heading stays at its own column (carve#4862).
+  test(`comment before heading matches a heading at the inner item column at depth ${depth}`, () => {
+    assert.equal(renderDoc(parse(wrap(shapes[2][1]) + 'tail\n')), renderDoc(parse(wrap('- - intro\n    # h') + 'tail\n')))
   })
   for (const [name, source] of noteShapes) {
     test(`a ${name} takes a flush-left line at quote depth ${depth}`, () => {

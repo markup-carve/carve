@@ -396,8 +396,9 @@ after a container closed on the next line.
 :::
 
 An unmatched comment fence is the line form (`CARVE-P9-053`), so it grants and
-refuses ownership exactly as `%%` does. Neither item survives the comment below
-its column (markup-carve/carve#2950).
+refuses ownership exactly as `%%` does. A comment below the item's column closes
+neither item (carve#4862, which replaced markup-carve/carve#2950), so the
+follower at the item's column stays where it was.
 
 ::: compare
 
@@ -412,11 +413,10 @@ its column (markup-carve/carve#2950).
 <ul>
   <li>
     <div class="box">
-
+      <p>x</p>
     </div>
   </li>
 </ul>
-<p>x</p>
 ```
 
 ````carve
@@ -428,9 +428,10 @@ its column (markup-carve/carve#2950).
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+    x
+  </li>
 </ul>
-<p>x</p>
 ```
 
 :::

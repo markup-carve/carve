@@ -11,9 +11,11 @@ A closerless comment fence opens no span in a body
 .
 <dl>
   <dt>t</dt>
-  <dd>head</dd>
+  <dd>
+    <p>head</p>
+    <p>tail</p>
+  </dd>
 </dl>
-<p>tail</p>
 ```
 
 ```
@@ -26,13 +28,13 @@ A closerless comment fence opens no span in a body
 
 r[^n]
 .
-<p>tail</p>
 <p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>head<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>head</p>
+      <p>tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

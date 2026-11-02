@@ -318,10 +318,8 @@ not form, so `/usr/local/` and `_my_var_` stay text. See PART 8's disambiguation
   interrupts an open paragraph and renders nothing (it leaves no empty
   paragraph)
 - The column does not matter **inside a container** either. Below a list item's
-  or a blockquote's content column a reference definition or an attribute line
-  is ordinary text and folds into the open paragraph, but a comment is still a
-  comment: it closes the paragraph and renders nothing. Folding one would
-  publish the text a comment exists to hide (PART 9 §10 I5, §24 C3)
+  content column a comment still ends the open paragraph and renders nothing,
+  and it closes no item (PART 9 §10 I5, CARVE-P9-013)
 
 **Block comments:**
 - `%%%` must start the line to open/close; the **leading run of `%` is the
@@ -340,9 +338,9 @@ not form, so `/usr/local/` and `_my_var_` stay text. See PART 8's disambiguation
   (nothing is lost); a closer's trailing text is dropped
 
 **Container ownership:** An unmatched `%%%` opener is a line comment for both
-visibility and ownership. A comment is an ordinary line for ownership, so
-below the item's content column it closes the item, and the following plain
-line is a document paragraph:
+visibility and ownership. A comment closes no list item, description body or
+footnote body at any column: the next visible line picks the owner. Here that
+line stands at column 0, so it closes the item and is a document paragraph:
 
 ```text
 - x
@@ -357,8 +355,9 @@ y
 <p>y</p>
 ```
 
-Replacing `%%%` with `%% z` gives the same result. At the item's content
-column a comment stays in the item and ends its paragraph. See
+Replacing `%%%` with `%% z` gives the same result. With `  y` at the item's
+content column, `y` stays in the item, because the comment ended the paragraph
+and closed nothing. See
 [S2 in the ownership procedure](./ownership-procedure#s2-owner).
 
 **Provenance marker (tool-written):**

@@ -380,16 +380,15 @@
              THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE [CARVE-P9-051].
              A fold continues an open paragraph. Where none is open the line
              is classified in the owner that SURVIVES: after a blank line the
-             item has ended, and a comment below the content column closes the
-             item like any other interrupter (PART 0 S1, S5). It holds for
+             item has ended (PART 0 S5). It holds for
              bullet, ordered, task and attributed markers alike.
 
-             AN INVISIBLE LINE BELOW THE COLUMN INTERRUPTS -- NORMATIVE [CARVE-P9-052].
-             Below the column an invisible line keeps its class (§10 I5): a
-             comment, link, footnote or abbreviation definition or block-attribute line
-             interrupts, closes the item and is read in the surviving owner,
-             where a definition registers (CARVE-P0-010) and an attribute line
-             is pending (§15 A2).
+             A NOTE DEFINITION OR ATTRIBUTE LINE BELOW THE COLUMN INTERRUPTS -- NORMATIVE [CARVE-P9-052].
+             Below the column a footnote definition or block-attribute line
+             keeps its class (§10 I5): it interrupts, closes the item and is read
+             in the surviving owner, where a definition registers (CARVE-P0-010)
+             and an attribute line is pending (§15 A2). A comment, link reference
+             definition or abbreviation definition closes no item (CARVE-P9-013).
            - AT OR PAST content_column: a block opener nests and a list marker
              opens a sublist. A non-list opener past the column opens in the
              item, measured from its own line (PART 0 S3); a sublist marker

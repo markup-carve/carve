@@ -1,9 +1,8 @@
 ## Comment columns and surviving list items
 
-A below-column line comment can retain an ordinary follower. A comment at the
-content column clears that retention. A later below-column comment then has
-no prefix or claim to admit it, so the item ends before that comment. A sibling
-marker still starts the next item.
+A comment closes no list item at any column (carve#4862), so a follower at the
+content column stays in the item after any run of line comments and spans,
+wherever they stand. A sibling marker still starts the next item.
 
 ::: compare
 
@@ -51,9 +50,10 @@ c
 
 ```html
 <ul>
-  <li>intro</li>
+  <li>intro
+    tail
+  </li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -122,9 +122,10 @@ tail
 
 ```html
 <ul>
-  <li>intro</li>
+  <li>intro
+    tail
+  </li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -142,9 +143,10 @@ b
 
 ```html
 <ul>
-  <li>intro</li>
+  <li>intro
+    tail
+  </li>
 </ul>
-<p>tail</p>
 ```
 
 :::

@@ -871,7 +871,7 @@
     {
       "id": "CARVE-P9-052",
       "part": "9",
-      "title": "AN INVISIBLE LINE BELOW THE COLUMN INTERRUPTS",
+      "title": "A NOTE DEFINITION OR ATTRIBUTE LINE BELOW THE COLUMN INTERRUPTS",
       "scope": "parsing"
     },
     {

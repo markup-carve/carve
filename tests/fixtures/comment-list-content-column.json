@@ -5,7 +5,7 @@
   },
   {
     "source": "- intro\n%% c\n  - tail\n",
-    "html": "<ul>\n  <li>intro</li>\n  <li>tail</li>\n</ul>"
+    "html": "<ul>\n  <li>intro\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "source": "- intro\n%% c\n 1. tail\n",
@@ -13,7 +13,7 @@
   },
   {
     "source": "- intro\n%% c\n  1. tail\n",
-    "html": "<ul>\n  <li>intro</li>\n</ul>\n<ol>\n  <li>tail</li>\n</ol>"
+    "html": "<ul>\n  <li>intro\n    <ol>\n      <li>tail</li>\n    </ol>\n  </li>\n</ul>"
   },
   {
     "source": "- intro\n%% c\n - [x] tail\n",
@@ -21,7 +21,7 @@
   },
   {
     "source": "- intro\n%% c\n  - [x] tail\n",
-    "html": "<ul>\n  <li>intro</li>\n</ul>\n<ul class=\"task-list\">\n  <li data-task-state=\"x\"><input type=\"checkbox\" checked disabled aria-label=\"tail\"> tail</li>\n</ul>"
+    "html": "<ul>\n  <li>intro\n    <ul class=\"task-list\">\n      <li data-task-state=\"x\"><input type=\"checkbox\" checked disabled aria-label=\"tail\"> tail</li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "source": "- intro\n%% c\n -{.y} tail\n",
@@ -29,7 +29,7 @@
   },
   {
     "source": "- intro\n%% c\n  -{.y} tail\n",
-    "html": "<ul>\n  <li>intro</li>\n  <li class=\"y\">tail</li>\n</ul>"
+    "html": "<ul>\n  <li>intro\n    <ul>\n      <li class=\"y\">tail</li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "source": "- intro\n  %% c\n - tail\n",

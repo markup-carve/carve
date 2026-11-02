@@ -337,19 +337,26 @@
          that states an action, a pipeline ORDER, a source-map overlap or column
          ARITHMETIC is not, and stays where it is.
 
-         BETWEEN SIBLINGS EVERY MEMBER IS SKIPPED (carve#4716). A run of
-         blank and invisible lines between two items of one list, or between
-         two entries of one description list, ends neither: `- a` /
-         `[r]: /u` / `- b` is one list, as `- a` / `%% c` / `- b` is, and
-         `:: t` / `%% c` / `: d` is one description list whose term has the
-         description `d`. A definition in the run still registers in source
-         order. Without a following sibling the run is read where it stands.
+         A COMMENT OR ONE-LINE DEFINITION CLOSES NO INDENTATION CONTAINER. A `%%`
+         line, a matched `%%%` span, a link reference definition and an
+         abbreviation definition close no list item, description body or
+         footnote body at any column. They end the open paragraph and take
+         effect, and the next visible line picks the owner as if they were
+         absent: `- a` / `%% c` / `  b` stays in the item, and `- a` / `%% c` /
+         `b` closes it. `- a` / `[r]: /u` / `- b` is therefore one list, and
+         `:: t` / `%% c` / `: d` one description list (carve#4716). An unmarked
+         one ends a quote, as an unmarked blank does (S2). A block-attribute
+         line belongs to the next block and a footnote definition opens a
+         frame, so both keep the reading below. A region marker below a list
+         closes every item (CARVE-P11-073), and a line that misses an open
+         fence's owner ends that fence first and is read where it stands (PART
+         0 S1). Ruled on carve#4862.
 
          PROPERTY 3 DOES NOT SAY WHICH OWNER. PART 0 S2 selects it.
 
-         Every member keeps its
-         class below a container's content column: it interrupts, closes the
-         missed containers and is read in the surviving owner (PART 0 S4, S5).
+         A block-attribute line and a footnote definition keep their class below
+         a container's content column: they interrupt, close the missed containers
+         and are read in the surviving owner (PART 0 S4, S5).
 
          Comments in this list are classified in PART 0 S1, before S3
          classifies the visible residue; their AST/source extent is retained

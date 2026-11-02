@@ -161,14 +161,16 @@
         A body line that misses the matched comment span's owner ends that
         span under S1; the line is classified in its selected owner.
 
-        A comment is still an ordinary line for ownership. S2 selects its
-        owner, it takes the `line_comment` / `fenced_comment` row of T there,
-        and below a container's content column it does not fold and closes
-        that container (S5). A comment between two sibling items closes the
-        first one and leaves the list open for the second. Every invisible
-        line does the same (PART 9 §10 CARVE-P9-013): a reference or
-        abbreviation definition between two items, or between two entries of
-        a description list, leaves that list open (carve#4716).
+        A comment takes the `line_comment` / `fenced_comment` row of T in its
+        owner and does not fold. It ends the open paragraph and closes no list
+        item, description body or footnote body at any column: the next visible
+        line picks the owner, and the comment is read there (PART 9 §10
+        CARVE-P9-013). A matched span's extent is fixed where it is written,
+        and the whole span moves with its opener. A quote is reached only by its marker, so an unmarked
+        comment ends it (S2). Two lines keep the authored column: a region
+        marker below a list closes every item (CARVE-P11-073), and a line that
+        misses an open fence's owner has ended that fence above, so it is read
+        where it stands.
 
      S2 OWNER. Walk the open frames from the outside in. A quote frame
         consumes its marker; any other frame consumes indentation up to its
@@ -262,9 +264,9 @@
         CONTAINER -- NORMATIVE [CARVE-P0-010]. A link, footnote or abbreviation
         definition registers in the owner S2 selects and only there. `- a` / `  [r]: /u`
         / `tail` registers `r`, then ends the item and publishes `tail` at
-        document level. Below every open content column a definition
-        interrupts (S4), so `- a` / ` [r]: /u` / `tail` closes the item and
-        registers `r` in the document. An abbreviation definition reads the same
+        document level. Below every open content column it reads the same: `- a`
+        / ` [r]: /u` / `  tail` stays in the item, and `- a` / ` [r]: /u` / `tail`
+        closes it, because the next visible line picks the owner (CARVE-P9-013). An abbreviation definition reads the same
         way and its scope is the document (CARVE-P12-026). A definition either
         registers or remains visible text; it never disappears from both.
 

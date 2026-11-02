@@ -65,7 +65,8 @@ A sibling after the comment refuses the `+` too.
 
 :::
 
-A line at the content column is not at the marker column.
+A line at the content column is not at the marker column. The comment closes no
+item, so the line stays in it after the refused `+` (carve#4862).
 
 ::: compare
 
@@ -77,9 +78,10 @@ A line at the content column is not at the marker column.
 
 ```html
 <ul>
-  <li>+</li>
+  <li>+
+    text
+  </li>
 </ul>
-<p>text</p>
 ```
 
 :::

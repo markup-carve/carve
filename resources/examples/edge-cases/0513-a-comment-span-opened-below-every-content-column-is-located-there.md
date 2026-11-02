@@ -22,9 +22,9 @@ at the same column, which has always answered this way and is the spelling the
 fence form now agrees with.
 
 The last case is a BLOCK OPENER rather than a follower: an unterminated code fence
-at the item's content column. The span closed the item's paragraph, so the fence
-opens a code block, and `tail` supplies no prefix to the fence's host and leaves
-the list (`CARVE-P0-013`, ruled on markup-carve/carve#2973). The span written at
+at the item's content column. The span ends the item's paragraph and closes no
+item (carve#4862), so the fence opens a code block in the item, and `tail`
+supplies no prefix to the fence's host and leaves the list (`CARVE-P0-013`, ruled on markup-carve/carve#2973). The span written at
 the content column answers the same.
 
 ::: compare
@@ -176,10 +176,11 @@ tail
 
 `````html
 <ul>
-  <li>item</li>
+  <li>item
+    <pre><code></code></pre>
+  </li>
 </ul>
-<pre><code>tail
-</code></pre>
+<p>tail</p>
 `````
 
 :::

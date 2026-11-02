@@ -3,22 +3,22 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
-// A comment below a marker-line child's column ends the child, so a paragraph
-// after the following blank is the outer item's second paragraph (PART 9 SS17
-// L1, carve#3985).
+// A comment below a marker-line child's column closes no item (carve#4862, which
+// replaced carve#3985), so a paragraph after the following blank is the child's
+// second paragraph.
 const html = (src) => renderDoc(parse(src))
 
 test('the issue row', () => {
   assert.equal(html('- - p\n  %% c\n\n    F\n'),
-    '<ul>\n  <li>\n    <ul>\n      <li>p</li>\n    </ul>\n    <p>F</p>\n  </li>\n</ul>')
+    '<ul>\n  <li>\n    <ul>\n      <li><p>p</p>\n        <p>F</p>\n      </li>\n    </ul>\n  </li>\n</ul>')
 })
 
 test('without the comment the paragraph is the child\'s', () => {
   assert.match(html('- - p\n\n    F\n'), /<li><p>p<\/p>\n        <p>F<\/p>/)
 })
 
-test('a comment span opened below the child column ends it too', () => {
-  assert.match(html('- - p\n  %%%\n  x\n    %%%\n\n    F\n'), /<\/ul>\n    <p>F<\/p>/)
+test('a comment span opened below the child column closes no item either', () => {
+  assert.match(html('- - p\n  %%%\n  x\n    %%%\n\n    F\n'), /<li><p>p<\/p>\n        <p>F<\/p>/)
 })
 
 test('a comment at the child content column keeps the child', () => {
