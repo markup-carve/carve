@@ -35,3 +35,15 @@ test('the ticket shapes (carve#4956)', () => {
   assert.match(html('> ::: |\n> x\n> %%%\nb\n'), /<p>x<br>\nb<\/p>/)
   assert.match(html('> > ::: |\n> > %%%\ny\n'), /<\/blockquote>\n<p>y<\/p>$/)
 })
+
+test('a lazy line ends the verse span for every comment after it', () => {
+  const after = [['%%%', 't', '%%%', 'c'], ['%%', 'c'], ['%%%', 't'], ['c', '%%%', 't', '%%%', 'd']]
+  let checked = 0
+  for (const [first, body] of hosts) for (const rows of after) for (const span of [['%%%'], ['%%%', 's']]) {
+    const tail = 'b\n' + rows.join('\n') + '\n'
+    const doc = (lines) => first + '::: |\n' + lines.map((l) => body + l).join('\n') + '\n' + tail
+    assert.equal(html(doc(['x', ...span])), html(doc(['x'])), JSON.stringify(doc(['x', ...span])))
+    checked++
+  }
+  assert.equal(checked, 88)
+})

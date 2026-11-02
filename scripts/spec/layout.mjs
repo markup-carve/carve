@@ -2801,7 +2801,8 @@ function bodyOpenCommentRun(bodyLines) {
     const line = measured.rest
     // A nonblank line that misses a comment span's owner ends it (PART 0 S1);
     // comment lines are column-exempt and may still close it.
-    if (opaque?.kind === 'comment' && line !== '' && !line.startsWith('%%') && measured.col < opaque.owner) {
+    // A lazy line missed the owner where it was written (carve#4956).
+    if (opaque?.kind === 'comment' && line !== '' && !line.startsWith('%%') && (measured.col < opaque.owner || raw.startsWith(LAZY))) {
       opaque = null
       atBlockStart = true
     }
@@ -9678,9 +9679,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (!nm && verseSpan !== null && colonLineBlock.at(-1) === true) {
         if (!verseSpanPara) break
         verseSpan = null
+        if (nestedOpaque?.kind === 'comment') nestedOpaque = null
       } else if (!nm && missedLiveSpan()) {
         if (!descendantStanzaOpen()) break
         verseSpan = null
+        if (nestedOpaque?.kind === 'comment') nestedOpaque = null
       }
       // A DEFINITION AT COLUMN 0 IS A DEFINITION, NOT LAZY TEXT. §24 C3's BELOW
       // branch folds "every other line", but a line at column 0 is not below a
