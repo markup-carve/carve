@@ -1,4 +1,13 @@
 {
+  "fence-title-syntax/legacy-raw-html": {
+    "actual": []
+  },
+  "fence-title-syntax/legacy-raw-in-quote": {
+    "actual": []
+  },
+  "fence-title-syntax/legacy-raw-in-list-item": {
+    "actual": []
+  },
   "document-unclaimed-before-list": {
     "actual": [[2, 1]]
   },

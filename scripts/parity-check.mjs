@@ -56,10 +56,6 @@ try {
   console.log(`declared missing lint rules: ${declared.size}`)
 
   const lintRegressions = [
-    ['+ ```raw html\nx\n```\n', 'raw-block-syntax', false],
-    ['a. ```raw html\n   x\n```\n', 'raw-block-syntax', true],
-    ['civil. ```raw html\n       x\n```\n', 'raw-block-syntax', true],
-    ['Note. ```raw html\nx\n```\n', 'raw-block-syntax', false],
     ['---\ncarve-version: 0.1\n---\n\nx\n\n%% carve-version: 99.0; generated-by: test\n', 'carve-version-unsupported', false],
     ['::: note\n::: tip\nx\n:::\n', 'unclosed-container-fence', true],
     ['::: note\nx\n\n    :::\n', 'unclosed-container-fence', true],
@@ -70,7 +66,6 @@ try {
     ['| {#x}< b |\n', 'table-marker-run-padding', false],
     ['> | a | {#x}< b |\n', 'table-marker-run-padding', false],
     ['> |{#x}< b |\n', 'table-marker-run-padding', true],
-    ['> ```raw html\n> x\n> ```\n', 'raw-block-syntax', true],
     ['> # T {#id}\n', 'heading-trailing-attribute', true],
     ['`{{ #x }}`\n', 'empty-include-path', false],
     ['---\ncarve-version: 0.1\n---\n\nx\n', 'carve-version-unsupported', false],

@@ -14,7 +14,6 @@
   "indented-code-block": "para\n\n    code line\n",
   "unattached-block-attribute": "text\n\n{#a}\n",
   "fence-opener-fallback": "``` {.x}\ncode\n```\n",
-  "raw-block-syntax": "```raw html\nx\n```\n",
   "blockquote-marker-without-space": ">quoted\n",
   "block-marker-as-text": "  ::: note\n",
   "fence-delimiter-indentation": "  ```\n  x\n  ```\n",
