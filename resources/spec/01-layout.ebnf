@@ -46,25 +46,15 @@
            LEADING RUN (CARVE-P7-001).
    STATE.  open := stack of open containers, bottom-up (document ->
            innermost), plus the current leaf (none | paragraph | heading |
-           ...). Container kinds and the per-line prefix each demands:
-             block quote    marker `>` [end of line | one space]
-             list item      indentation to content_column (PART 9 §24 C3)
-             definition     indentation to the body column its separator
-               body         sets (CARVE-P2-016)
-             footnote def   marker-body content column two past its authored
-                            marker column; exactly two columns consumed
-                            (PART 9 §24 C3)
-             opaque body    (code / raw / comment span) -- no
-                            per-line prefix; verbatim up to its where-guarded
-                            closer
-             colon body     (admonition / div / figure group / fenced quote /
-                            hard-break block / line block) -- no per-line
-                            prefix; parsed as blocks (a line block as lines,
-                            PART 9 §23) up to its exact-length closer or the
-                            end of its host.
+           ...). The container kinds, the content column each one fixes and
+           the per-line prefix each one demands are the rows of FAMILIES,
+           the one container table after the procedure. The document is the
+           root frame: content column 0, no prefix, and under its open
+           paragraph a list marker is text, as in a quote (PART 9 §10 I2).
 
            A list item, a definition body and a footnote body are the
-           INDENTATION CONTAINERS.
+           INDENTATION CONTAINERS: their prefix is indentation up to their
+           content column.
 
            EVERY FRAME CARRIES OWNERSHIP AND PARAGRAPH STATE SEPARATELY --
            NORMATIVE [CARVE-P0-003]. A frame is the record
@@ -126,26 +116,35 @@
 
    No family, depth or marker adds a second way to belong, and nothing set
    after the opening line moves a content column. For each normalized line,
-   execute S1 to S5 once, in order and without backtracking, and apply T at
-   each boundary. Only a construct's declared closer guard may read ahead.
-   Content columns:
+   run the four steps below once, in order and without backtracking, and
+   apply T at each boundary. Only a construct's declared closer guard may
+   read ahead. Step 2 carries two ids, S2 for the owner and S3 for the form,
+   so a decision trace cites S1 to S5 (docs/decision-trace.md).
 
-     document          0
-     block quote       after `>` and one optional space; a quote is reached
-                       by its marker, never by indentation
-     list item         after the marker and its separator (PART 9 §24 C3)
-     definition body   after `:` and its separator (CARVE-P2-016)
-     footnote body     two past the column of `[` (CARVE-P9-083)
-     colon body        the content column of the owner its opener was read
-                       in; S3 moves its lines left
+   Where the outcome depends on the container, a step reads one field of
+   that container's row in FAMILIES below:
+
+     column      the content column the opening line fixes
+     prefix      what a later line supplies to reach the frame (S2)
+     blank       what a blank line does to the frame (S2, S5)
+     lazy        whether a line that misses the frame may fold into the
+                 deepest open paragraph inside it (S4)
+     markers     what a list marker or a `: ` line does in the frame and
+                 below its column (S3, S4)
+     invisible   what a comment, a one-line definition, a footnote
+                 definition or an attribute line does to the frame (S1, S3)
+     plus        whether the frame takes the continuation marker (S2)
+     cells       the family's start, keep and end conditions
+
+   STEP 1, PAYLOAD.
 
      S1 PAYLOAD. If a code, raw or comment fence is open, test the line
         against its closer first. A nonblank line that misses the fence's
         owner in S2 ends the fence; nothing else ends a code, raw or comment
         fence without its closer, so an unclosed one runs to the end of its
-        container and a host's colon closer inside it is payload. Any other payload
-        line opens nothing and changes no frame state. A colon body is not a
-        payload: its lines go on to S2.
+        container and a host's colon closer inside it is payload. Any other
+        payload line opens nothing and changes no frame state. A colon body
+        is not a payload: its lines go on to S2.
 
         COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP -- NORMATIVE [CARVE-P0-005].
         Honor an active payload first. Then recognize `%%` and a `%%%`
@@ -158,29 +157,29 @@
         `%%%` opener opens its span without looking for a closer; with none,
         the span ends under S1 or at the end of its container (carve#4907).
         Comment delimiters inside code, raw content or another payload are
-        literal bytes.
-        A body line that misses the comment span's owner ends that span
-        under S1; the line is classified in its selected owner.
+        literal bytes. A body line that misses the comment span's owner ends
+        that span under S1; the line is classified in its selected owner.
 
         A comment takes the `line_comment` / `fenced_comment` row of T in its
-        owner and does not fold. It ends the open paragraph and closes no list
-        item, description body or footnote body at any column: the next visible
-        line picks the owner, and the comment is read there (PART 9 §10
-        CARVE-P9-013). A span's extent is fixed where it is written,
-        and the whole span moves with its opener. A quote is reached only by its marker, so an unmarked
-        comment ends it (S2). Two lines keep the authored column: a region
-        marker below a list closes every item (CARVE-P11-073), and a line that
-        misses an open fence's owner has ended that fence above, so it is read
-        where it stands.
+        owner and does not fold. It ends the open paragraph and is read in the
+        owner the next visible line picks (PART 9 §10 CARVE-P9-013); what it
+        does to the containers around it is the `invisible` field of their
+        rows. A
+        span's extent is fixed where it is written, and the whole span moves
+        with its opener. A line that misses an open fence's owner has ended
+        that fence above, so it is read where it stands.
 
-     S2 OWNER. Walk the open frames from the outside in. A quote frame
-        consumes its marker; any other frame consumes indentation up to its
-        content column (PART 9 §24 C5). Stop at the first frame the line does
-        not reach. A lone `+` at the marker column of an open list item,
-        quote, definition body or footnote body reaches that frame when PART 9
-        §17 L3 attaches its next line; any other `+` is a letter. The owner is the deepest frame reached. A blank line reaches
-        every indentation frame and no unmarked quote: without its `>` it
-        ends a quote and the containers opened inside it.
+   STEP 2, OWNER AND FORM.
+
+     S2 OWNER. Walk the open frames from the outside in. Each frame consumes
+        its row's `prefix` up to its content column (PART 9 §24 C5). Stop at
+        the first frame the line does not reach. A lone `+` at the marker
+        column of a frame whose row takes `plus` reaches that frame when
+        PART 9 §17 L3 attaches its next line; any other `+` is a letter. The
+        owner is the deepest frame reached. A blank line reaches a frame as
+        its row's `blank` field says: it reaches every indentation frame and
+        no unmarked quote, so without its `>` it ends a quote and the
+        containers opened inside it.
 
         A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S COLUMN -- NORMATIVE [CARVE-P0-019].
         A blank ends a block quote and the containers opened inside it. A
@@ -207,7 +206,9 @@
 
      S3 FORM. Classify the rest of the line in the owner's coordinates:
         blank, comment, block attribute, reference or footnote definition,
-        closer, opener, caption, `+`, or ordinary text.
+        closer, opener, caption, `+`, or ordinary text. A list marker or a
+        `: ` line opens, folds or closes as the owner's row says in
+        `markers`; every other form is the same in every owner.
 
         Leading space before an opener does not stop it from opening, at
         every level, the document and quotes included: an opener past the
@@ -228,30 +229,9 @@
         The code is `code`, `less`, `  more`. `  # h` at document level is a
         heading, and a `> q` indented under a `:: t` term opens a quote in
         the enclosing container. A valid code or raw opener interrupts an open
-        paragraph (PART 9 §10 I4). Under an open paragraph of the document, a
-        quote or a colon body a list marker is text (PART 9 §10 I2). In a list item, a
-        description body or a footnote body a list marker opens a list and
-        ends the open paragraph, a deeper paragraph the line misses included
-        (the tight sublist of PART 9 §24 C3): `:: t` / `: d` / `  - x` gives
-        the description a list, `:: t` / `:  [^q]: note` / `   * child` closes
-        the note and gives the description the list, and `- > q` / `  - x`
-        closes the quote and gives the item the list. Siblings group
-        by the container they open in, not by the column they are written at:
-        a sibling marker at an item's marker column continues the enclosing
-        list.
-        A `: ` description is such a sibling too: where the owner S2 selects
-        holds an open term or description, a `+`-filled one included
-        (carve#4408), a `: ` line opens the next description of that list at
-        any column and is not a lazy line, so `:: t` / `: a` / ` : b` and
-        `:: t` / `: +` / `# H` / ` : b` each give two descriptions. A line at or past an
-        open description's body column is read inside that body (`:: t` /
-        `: a` / `  : b`), and one whose owner holds no open term or
-        description folds lazily (`- item` / `  :: t` / `  : a` / ` : b`).
-        At a surviving container's marker column the line ends the item
-        instead, as a list marker there does, and with no open term in the
-        surviving context it is paragraph text: `- item` / `  :: t` /
-        `  : a` / `: b` renders `: b` as a paragraph after the list (corpus
-        657). Under an open quote paragraph it folds at every column (S4).
+        paragraph (PART 9 §10 I4). Siblings group by the container they open
+        in, not by the column they are written at: a sibling marker at an
+        item's marker column continues the enclosing list.
 
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
         UNDER -- NORMATIVE [CARVE-P0-011]. A block read in a container, at or
@@ -262,13 +242,15 @@
 
         A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE
         CONTAINER -- NORMATIVE [CARVE-P0-010]. A link, footnote or abbreviation
-        definition registers in the owner S2 selects and only there. `- a` / `  [r]: /u`
-        / `tail` registers `r`, then ends the item and publishes `tail` at
-        document level. Below every open content column it reads the same: `- a`
-        / ` [r]: /u` / `  tail` stays in the item, and `- a` / ` [r]: /u` / `tail`
-        closes it, because the next visible line picks the owner (CARVE-P9-013). An abbreviation definition reads the same
-        way and its scope is the document (CARVE-P12-026). A definition either
-        registers or remains visible text; it never disappears from both.
+        definition registers in the owner S2 selects and only there. `- a` /
+        `  [r]: /u` / `tail` registers `r`, then ends the item and publishes
+        `tail` at document level. Below every open content column the row's
+        `invisible` field decides: `- a` / ` [r]: /u` / `  tail` stays in the
+        item, and `- a` / ` [r]: /u` / `tail` closes it, because the next
+        visible line picks the owner (CARVE-P9-013). An abbreviation
+        definition reads the same way and its scope is the document
+        (CARVE-P12-026). A definition either registers or remains visible
+        text; it never disappears from both.
 
         A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN --
         NORMATIVE [CARVE-P0-008]. Marker-attached attributes contribute zero
@@ -278,27 +260,27 @@
         heading misses the item: the item closes, its pending attribute is
         discarded (CARVE-P9-024), and the heading opens in the document.
 
+   STEP 3, LAZY.
+
      S4 LAZY. If the line missed a frame below its owner, it folds into the
         deepest open paragraph when that paragraph is open, the line is not
-        blank, and its form does not interrupt a paragraph. The deepest
-        paragraph is found by following the last child container to its leaf
-        at every depth. The test is the same at every depth and in every
-        family. A list marker that misses a list item, description body or
-        footnote body is no lazy line and closes that body, with every frame
-        it missed: `:: t` / `: d` / `- x` and `[^a]: n` / `- x` each end with a
-        list after the container, and `> [^a]: n` / `- x` closes the quote too.
-        Only a marker that misses nothing but quotes, read in the document, a
-        quote or a colon body, folds (`> q` / `- x`). Leading space stops no line form (S3),
-        so past a missed item the marker is a sibling
-        when it matches the list on every §11 N1 axis and otherwise a new list,
-        so `- a` / ` - b` is one list and `- a` / ` * b` and `1. a` / ` a. b`
-        are two (carve#4545). Every item measures its content against its own
-        content column. `- y` / `1. c` / blank / `   # h` puts the heading in the `1.`
-        item, the same as `1. c` / blank / `   # h` alone (carve#4369). Headings,
-        thematic breaks, quotes, terms, tables, valid colon openers, code and
-        raw openers, comments, attributes and definitions interrupt. An invalid opener is text. A fold closes
+        blank, the missed frames' rows allow it in `lazy`, and its form does
+        not interrupt a paragraph. The deepest paragraph is found by following
+        the last child container to its leaf at every depth. The test is the
+        same at every depth and in every family; only `lazy` and `markers`
+        differ by row. Headings, thematic breaks, quotes, terms, tables, valid
+        colon openers, code and raw openers, comments, attributes and
+        definitions interrupt. An invalid opener is text. A fold closes
         nothing and changes the leaf operation, never which container
         survives.
+
+        Leading space stops no line form (S3), so past a missed item a list
+        marker is a sibling when it matches the list on every §11 N1 axis and
+        otherwise a new list, so `- a` / ` - b` is one list and `- a` / ` * b`
+        and `1. a` / ` a. b` are two (carve#4545). Every item measures its
+        content against its own content column. `- y` / `1. c` / blank /
+        `   # h` puts the heading in the `1.` item, the same as `1. c` /
+        blank / `   # h` alone (carve#4369).
 
         NO STORED CONTINUATION CLAIM, NO LAZY LINE -- NORMATIVE [CARVE-P0-006].
         A lazy line needs an open paragraph at the deepest leaf; a surviving
@@ -332,6 +314,8 @@
         container closes it rather than folding. This is the lazy test of S4
         applied to a closed leaf, in a footnote body as in every other
         container; it is not a family exception.
+
+   STEP 4, APPLY.
 
      S5 APPLY. Otherwise close every missed frame and apply the form in the
         owner. A blank or invisible line ends the open paragraph. A container
@@ -378,66 +362,198 @@
         `tail` ends the quote, as does `> body` / `> :::` before `tail`. An
         empty or closed colon container leaves no open paragraph.
 
-   FAMILIES. Every family follows S1 to S5. Each entry gives only what the
-   family adds. The bracketed ids name its cells: `start` is what opens the
+   FAMILIES. The one container table: ten rows, each holding the fields the
+   steps read and nothing else. A field a row leaves out follows the steps
+   unchanged. The bracketed ids name the cells: `start` is what opens the
    block, `keep` what continues it, `end` what ends it. A cell with no text of
-   its own follows S2 and S4 (keep) or S5 and end of input (end). The step ids
-   S1 to S5 and T, and these cell ids, are stable: a decision trace
+   its own follows S2 and S4 (keep) or S5 and end of input (end). The step
+   ids S1 to S5 and T, and these cell ids, are stable: a decision trace
    (docs/decision-trace.md) cites them, so they are never renumbered.
 
-     list item        [B-item-start] Starts with a valid bullet, task,
-                      decimal, alphabetic, roman or bare-dot marker with
-                      content; a marker with no content is text. [B-list-keep]
-                      Items in one container group when marker kind,
-                      delimiter, dialect and plain-or-task agree; differing
-                      checkbox states share one list. A blank
-                      between items or before a second paragraph makes the
-                      list loose; a blank before a child block alone does
-                      not. [B-list-end] Three consecutive blanks before a
-                      sibling start a new list (PART 9 §11, §17).
-     term             [B-term-start] `:: ` with content; a one-line leaf with
-                      inline content, like a heading, and no ownership of its
-                      own. [B-term-end] It ends with its line, and the next
-                      line is read fresh: no line continues it and none folds
-                      into it. A `: ` line in the same owner, directly after
-                      the term or past the blank run and invisible lines
-                      `definition_entry` permits, opens its description.
-     definition body  [B-dd-start] `: ` with content, directly after a term
-                      or body in the same owner. [B-dd-end] It ends at the
-                      next term or body marker in that owner, a missed line
-                      that does not fold, the host's end or end of input.
-     footnote body    [B-footnote-start] `[^label]: `. [B-footnote-keep] Lazy
-                      lines follow S4 as in every other container. A
-                      referenced body renders as an endnote.
-     block quote      [B-quote-start] `>` then a space or line end; each `>`
-                      opens one level. [B-quote-end] An unmarked blank ends
-                      the quote; [B-quote-keep] a marked blank keeps it and
-                      ends its paragraph.
-     colon fence      [B-div-start] A valid run of three or more colons.
-                      [B-div-end] It ends at an exact-length colon run read in
-                      the same owner, the host's end or end of input.
-                      [B-div-keep] `|` mode keeps its lines as payload and,
-                      like the other modes, which read blocks, takes a lazy
-                      line while its stanza is open (PART 2 `line_block`).
-     code, raw and    [B-code-start] [B-comment-start] A valid code or raw
-       comment fence  opener; a comment opener, with no closer lookahead.
-                      [B-code-keep] [B-comment-keep] The payload is opaque and
-                      takes no lazy line. [B-code-end] [B-comment-end] It ends
-                      at its closer or by S1.
-     table            [B-table-start] A valid pipe row, or a selected CSV or
-                      TSV fence. [B-table-end] It ends at the first line that
-                      is not a row; [B-table-keep] a continuation row needs a
-                      row above it, including a header row.
-     caption          [B-caption-start] `^ ` with content after an eligible
-                      host. One blank between host and marker is allowed, two
-                      detach.
-     `+`              [B-plus-start] A lone `+` at the marker column of an
-                      open list item, quote, definition body or
-                      footnote body, or a `+` that is the whole content of
-                      such a marker line (`- +`, `> +`, `: +`, `[^a]: +`),
-                      offers the container its next block (PART 9 §17,
-                      CARVE-P9-067). A refused `+` is a plain letter
-                      (carve#4396).
+     1. list item
+        column     after the marker and its separator (PART 9 §24 C3); a
+                   marker-attached attribute and a task checkbox add zero
+                   (CARVE-P0-008)
+        prefix     indentation up to the content column
+        blank      reaches the item; a blank run stays in it when the next
+                   nonblank line reaches the content column (PART 9 §24 C3)
+        lazy       yes
+        markers    at or past the content column a list marker opens a list
+                   and ends the open paragraph, a deeper paragraph the line
+                   misses included (the tight sublist of PART 9 §24 C3):
+                   `- > q` / `  - x` closes the quote and gives the item the
+                   list. A list marker that misses the item is no lazy line
+                   and closes it, with every frame it missed. A `: ` line at
+                   the item's marker column ends the item, as a list marker
+                   there does
+        invisible  a `%%` line, a `%%%` span, a link reference definition
+                   and an abbreviation definition close no item at any
+                   column: they end the open paragraph and take effect, and
+                   the next visible line picks the owner as if they were
+                   absent. `- a` / `%% c` / `  b` stays in the item, `- a` /
+                   `%% c` / `b` closes it, and `- a` / `[r]: /u` / `- b` is
+                   one list (carve#4862). Below the content column a
+                   footnote definition or an attribute line interrupts,
+                   closes the item and is read in the surviving owner
+                   (CARVE-P9-052). A region marker below a list closes every
+                   item (CARVE-P11-073)
+        plus       yes (PART 9 §17 L4)
+        cells      [B-item-start] Starts with a valid bullet, task, decimal,
+                   alphabetic, roman or bare-dot marker with content; a
+                   marker with no content is text. [B-list-keep] Items in
+                   one container group when marker kind, delimiter, dialect
+                   and plain-or-task agree; differing checkbox states share
+                   one list. A blank between items or before a second
+                   paragraph makes the list loose; a blank before a child
+                   block alone does not. [B-list-end] Three consecutive
+                   blanks before a sibling start a new list (PART 9 §11,
+                   §17).
+
+     2. definition body
+        column     after `:` and its separator, every extra separator space
+                   included (CARVE-P2-016)
+        prefix     indentation up to the content column
+        blank      as a list item
+        lazy       yes
+        markers    a list marker as in a list item: `:: t` / `: d` /
+                   `  - x` gives the description a list, `:: t` /
+                   `:  [^q]: note` / `   * child` closes the note and gives
+                   the description the list, and `:: t` / `: d` / `- x` ends
+                   with a list after the definition list. A `: ` line is a
+                   sibling: where the owner S2 selects holds an open term or
+                   description, a `+`-filled one included (carve#4408), it
+                   opens the next description of that list at any column and
+                   is not a lazy line, so `:: t` / `: a` / ` : b` and `:: t` /
+                   `: +` / `# H` / ` : b` each give two descriptions. A `: `
+                   line at or past an open description's body column is read
+                   inside that body (`:: t` / `: a` / `  : b`). One whose
+                   owner holds no open term or description folds lazily
+                   (`- item` / `  :: t` / `  : a` / ` : b`); at a surviving
+                   container's marker column it ends that item, and with no
+                   open term in the surviving context it is paragraph text:
+                   `- item` / `  :: t` / `  : a` / `: b` renders `: b` as a
+                   paragraph after the list (corpus 657)
+        invisible  as a list item: `:: t` / `%% c` / `: d` is one
+                   description list (carve#4716)
+        plus       yes
+        cells      [B-term-start] `:: ` with content; a one-line leaf with
+                   inline content, like a heading, and no ownership of its
+                   own. [B-term-end] It ends with its line, and the next line
+                   is read fresh: no line continues it and none folds into
+                   it. A `: ` line in the same owner, directly after the term
+                   or past the blank run and invisible lines
+                   `definition_entry` permits, opens its description.
+                   [B-dd-start] `: ` with content, directly after a term or
+                   body in the same owner. [B-dd-end] It ends at the next
+                   term or body marker in that owner, a missed line that does
+                   not fold, the host's end or end of input.
+
+     3. footnote body
+        column     two past the column of `[` (CARVE-P9-083)
+        prefix     indentation; exactly two columns consumed (PART 9 §24 C3)
+        blank      as a list item
+        lazy       yes
+        markers    a list marker as in a list item: `[^a]: n` / `- x` ends
+                   with a list after the note
+        invisible  as a list item; a footnote definition opens a frame of
+                   its own
+        plus       yes
+        cells      [B-footnote-start] `[^label]: `. [B-footnote-keep] Lazy
+                   lines follow S4 as in every other container. A referenced
+                   body renders as an endnote.
+
+     4. block quote
+        column     after `>` and one optional space
+        prefix     the marker `>` then end of line or one space; a quote is
+                   reached by its marker, never by indentation
+        blank      [B-quote-end] An unmarked blank ends the quote and the
+                   containers opened inside it; [B-quote-keep] a marked
+                   blank keeps it and ends its paragraph (CARVE-P0-019)
+        lazy       yes, from the deepest open paragraph across missed
+                   prefixes at any depth
+        markers    under an open paragraph a list marker is text (PART 9
+                   §10 I2), and an unmarked one folds: a marker that misses
+                   nothing but quotes, read in the document, a quote or a
+                   colon body, folds (`> q` / `- x`). A list marker that also
+                   misses an indentation container closes it like that
+                   container's row says: `> [^a]: n` / `- x` closes the note
+                   and the quote. Under an open quote paragraph a `: ` line
+                   folds at every column
+        invisible  an unmarked comment or definition ends the quote, as an
+                   unmarked blank does
+        plus       yes
+        cells      [B-quote-start] `>` then a space or line end; each `>`
+                   opens one level.
+
+     5. colon body (admonition, div, figure group, fenced quote, hard-break
+        block)
+        column     the content column of the owner its opener was read in;
+                   S3 moves its lines left
+        prefix     none; every line inside the host reaches the body until
+                   its exact closer
+        blank      body content or block separation
+        lazy       blocks inside it follow the child paragraph test
+        markers    under an open paragraph a list marker is text (PART 9
+                   §10 I2)
+        invisible  read in the body like any other line
+        plus       no: a lone `+` inside is text (PART 9 §17 L5)
+        cells      [B-div-start] A valid run of three or more colons.
+                   [B-div-end] It ends at an exact-length colon run read in
+                   the same owner, the host's end or end of input.
+
+     6. line block (`::: |`, PART 9 §23)
+        column     as a colon body; it shares the colon frame
+        prefix     none
+        blank      a payload line of the stanza structure
+        lazy       [B-div-keep] `|` mode keeps its lines as payload and,
+                   like the other modes, which read blocks, takes a lazy
+                   line while its stanza is open (PART 2 `line_block`)
+        plus       no
+        cells      as a colon body.
+
+     7. code, raw and comment fence (opaque body)
+        column     none: the payload is verbatim up to its where-guarded
+                   closer
+        prefix     none; a nonblank line that misses the fence's owner ends
+                   it (S1)
+        blank      a payload line
+        lazy       [B-code-keep] [B-comment-keep] no: the payload is opaque
+                   and takes no lazy line
+        plus       no
+        cells      [B-code-start] [B-comment-start] A valid code or raw
+                   opener; a comment opener, with no closer lookahead.
+                   [B-code-end] [B-comment-end] It ends at its closer or by
+                   S1.
+
+     8. table
+        column     the owner's
+        blank      not a row, so it ends the table
+        lazy       no
+        plus       no: a `+` row is the continuation row (PART 9 §5 T6)
+        cells      [B-table-start] A valid pipe row, or a selected CSV or
+                   TSV fence. [B-table-end] It ends at the first line that
+                   is not a row; [B-table-keep] a continuation row needs a
+                   row above it, including a header row.
+
+     9. caption
+        column     the host's
+        blank      one blank between host and marker is allowed, two detach
+        lazy       by PART 2's multi-line caption rule; another `^ ` line
+                   ends it (PART 9 §10 I7)
+        plus       no
+        cells      [B-caption-start] `^ ` with content after an eligible
+                   host.
+
+     10. `+` continuation marker
+        column     none of its own; it changes the attached block's owner
+        lazy       none of its own; the attached block may leave a paragraph
+                   open
+        cells      [B-plus-start] A lone `+` at the marker column of an open
+                   list item, quote, definition body or footnote body, or a
+                   `+` that is the whole content of such a marker line
+                   (`- +`, `> +`, `: +`, `[^a]: +`), offers the container its
+                   next block (PART 9 §17, CARVE-P9-067). A refused `+` is a
+                   plain letter (carve#4396).
 
    OUTPUT. The layout-resolved line stream (equivalently: INDENT / DEDENT /
            CONT events plus line residues). PARTS 1-2 parse blocks over it;

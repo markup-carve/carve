@@ -4,8 +4,12 @@ description: Read Carve 0.1 container ownership as one procedure, with the claus
 
 # Container ownership procedure
 
-PART 0 of the grammar states container ownership as one procedure: five steps,
-S1 to S5, and a transition table. This page follows that order and names the
+PART 0 of the grammar states container ownership as one procedure of four
+steps, a transition table and one container table. The steps carry the ids S1
+to S5 (step 2 holds S2, the owner, and S3, the form). Where the outcome depends
+on the container, a step reads a field of that container's row in the FAMILIES
+table: its column, prefix, blank and lazy behavior, what a list marker does, what
+an invisible line does, and whether it takes `+`. This page follows that order and names the
 clauses each step decides. It adds no rule. The source clauses in
 `resources/spec/01-layout.ebnf` are authoritative, and the
 [machine-readable map](https://github.com/markup-carve/carve/blob/main/resources/spec/ownership-procedure.json)
