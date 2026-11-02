@@ -55,10 +55,8 @@ html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-car
 html/js/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
 html/php/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
 html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
-html/js/704-a-non-ascii-letter-does-not-block-a-bare-delimiter  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
 html/php/704-a-non-ascii-letter-does-not-block-a-bare-delimiter  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
 html/rust/704-a-non-ascii-letter-does-not-block-a-bare-delimiter  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
-html/js/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
 html/php/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
 html/rust/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
 carve/php/191-a-blank-after-a-comment-still-ends-the-item  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
@@ -167,11 +165,6 @@ carve/rust/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-32  markup-
 carve/php/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-32  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
 carve/rust/682-escaped-table-hyphens-stay-literal  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
 carve/php/682-escaped-table-hyphens-stay-literal  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
-carve/js/447-the-host-does-not-change-which-column-a-definition-reaches-10  markup-carve/carve#4850 (carve-js), CARVE-P11-079 collects the definition to the end of the document; pending the carve-js port
-carve/js/447-the-host-does-not-change-which-column-a-definition-reaches-11  markup-carve/carve#4850 (carve-js), CARVE-P11-079 collects the definition to the end of the document; pending the carve-js port
-carve/js/504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-20  markup-carve/carve#4850 (carve-js), CARVE-P11-079 collects the definition to the end of the document; pending the carve-js port
-carve/js/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-6  markup-carve/carve#4850 (carve-js), CARVE-P11-079 collects the definition to the end of the document; pending the carve-js port
-carve/js/620-generated-container-documents-23  markup-carve/carve#4850 (carve-js), CARVE-P11-079 collects the definition to the end of the document; pending the carve-js port
 carve/js/929-a-refused-plus-is-escaped-when-the-block-below-would-attach  markup-carve/carve#4868 (carve-js), CARVE-P11-042 spells a refused + as \+ when the block below would attach
 carve/js/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-2  markup-carve/carve#4868 (carve-js), CARVE-P11-042 spells a refused + as \+ when the block below would attach
 carve/js/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-4  markup-carve/carve#4868 (carve-js), CARVE-P11-042 spells a refused + as \+ when the block below would attach
@@ -186,3 +179,9 @@ carve/rust/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-2  ma
 carve/rust/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-3  markup-carve/carve#4868 (carve-rs), CARVE-P11-042 spells a refused + as \+ when the block below would attach
 carve/rust/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-4  markup-carve/carve#4868 (carve-rs), CARVE-P11-042 spells a refused + as \+ when the block below would attach
 carve/rust/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-5  markup-carve/carve#4868 (carve-rs), CARVE-P11-042 spells a refused + as \+ when the block below would attach
+carve/rust/01-emphasis-13  markup-carve/carve#4810 (carve-rs), the writer still unwraps {/a/b/} to the bare /a/b/, which the ruling reads as text
+carve/rust/425-an-ordered-item-s-separator-width-sets-its-content-column-12  markup-carve/carve#4811 (carve-rs), the writer still emits one space after a roman marker, which the ruling reads as text
+carve/rust/425-an-ordered-item-s-separator-width-sets-its-content-column-13  markup-carve/carve#4811 (carve-rs), the writer still emits one space after a roman marker, which the ruling reads as text
+carve/php/01-emphasis-13  markup-carve/carve#4810 (carve-php), the writer still unwraps {/a/b/} to the bare /a/b/, which the ruling reads as text
+carve/php/425-an-ordered-item-s-separator-width-sets-its-content-column-12  markup-carve/carve#4811 (carve-php), the writer still emits one space after a roman marker, which the ruling reads as text
+carve/php/425-an-ordered-item-s-separator-width-sets-its-content-column-13  markup-carve/carve#4811 (carve-php), the writer still emits one space after a roman marker, which the ruling reads as text

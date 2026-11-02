@@ -122,7 +122,6 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  * the page, or one the pinned build no longer carries, is a stale line.
  */
 const RETIRED_IN_THE_PIN = new Map([
-  ['raw-block-syntax', 'retired by the carve#4849 ruling; fence-title-syntax carries its hint'],
 ])
 
 /*
@@ -148,8 +147,6 @@ const RETIRED_IN_THE_PIN = new Map([
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  ['comment-shaped-emphasis', 'specified by the #4815 ruling; engine rollout follows'],
-  ['glob-shaped-strong', 'specified by the #4815 ruling; engine rollout follows'],
   ['setext-heading-underline', 'specified by the #4814 ruling; engine rollout follows'],
   ['heading-closing-hashes', 'specified by the #4814 ruling; engine rollout follows'],
   ['indented-code-block', 'specified by the #4814 ruling; engine rollout follows'],

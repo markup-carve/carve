@@ -1,13 +1,4 @@
 {
-  "fence-title-syntax/legacy-raw-html": {
-    "message": "```=html"
-  },
-  "fence-title-syntax/legacy-raw-in-quote": {
-    "message": "```=latex"
-  },
-  "fence-title-syntax/legacy-raw-in-list-item": {
-    "message": "```=html"
-  },
   "ordered-list-split-by-indent/right-aligned-pair": {
     "actual": []
   },
@@ -27,36 +18,6 @@
     "actual": []
   },
   "ordered-list-split-by-indent/shift-right": {
-    "actual": []
-  },
-  "list-marker-below-content-column/ordered-continuation": {
-    "actual": []
-  },
-  "list-marker-below-content-column/after-blank-same-kind": {
-    "message": "sibling item"
-  },
-  "list-marker-below-content-column/after-blank-continuing-number": {
-    "message": "sibling item"
-  },
-  "list-marker-below-content-column/same-kind-run": {
-    "actual": []
-  },
-  "list-marker-below-content-column/same-kind-rising": {
-    "actual": []
-  },
-  "list-marker-below-content-column/same-kind-after-blank-run": {
-    "actual": [[3, 2]]
-  },
-  "list-marker-below-content-column/same-kind-past-an-item-paragraph": {
-    "message": "sibling item"
-  },
-  "list-marker-below-content-column/same-kind-nested": {
-    "actual": []
-  },
-  "list-marker-below-content-column/same-kind-in-a-quote": {
-    "actual": []
-  },
-  "list-marker-below-content-column/same-kind-letter-marker": {
     "actual": []
   }
 }

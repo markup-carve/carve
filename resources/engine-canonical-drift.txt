@@ -2,11 +2,6 @@
 # Each row must differ from the pinned writer's bytes and preserve the input's rendering.
 # Remove a row when the JavaScript pin reaches the native header ruling.
 # Format: <slug><two spaces><reason>
-447-the-host-does-not-change-which-column-a-definition-reaches-10  CARVE-P11-079 collects a definition with no region marker below it to the end of the document (markup-carve/carve#4850); the pinned writer keeps it in its container.
-447-the-host-does-not-change-which-column-a-definition-reaches-11  CARVE-P11-079 collects a definition with no region marker below it to the end of the document (markup-carve/carve#4850); the pinned writer keeps it in its container.
-504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-20  CARVE-P11-079 collects a definition with no region marker below it to the end of the document (markup-carve/carve#4850); the pinned writer keeps it in its container.
-613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-6  CARVE-P11-079 collects a definition with no region marker below it to the end of the document (markup-carve/carve#4850); the pinned writer keeps it in its container.
-620-generated-container-documents-23  CARVE-P11-079 collects a definition with no region marker below it to the end of the document (markup-carve/carve#4850); the pinned writer keeps it in its container.
 929-a-refused-plus-is-escaped-when-the-block-below-would-attach  CARVE-P11-042 spells a refused + as \+ when the block below would attach (markup-carve/carve#4868); the pinned writer keeps the + and shifts the block one column.
 929-a-refused-plus-is-escaped-when-the-block-below-would-attach-2  CARVE-P11-042 spells a refused + as \+ when the block below would attach (markup-carve/carve#4868); the pinned writer keeps the + and shifts the block one column.
 929-a-refused-plus-is-escaped-when-the-block-below-would-attach-4  CARVE-P11-042 spells a refused + as \+ when the block below would attach (markup-carve/carve#4868); the pinned writer keeps the + and shifts the block one column.

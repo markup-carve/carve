@@ -10,22 +10,6 @@
   },
   "differences": [
     {
-      "file": "tests/corpus/246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-2.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            2,
-            3
-          ]
-        ],
-        "php": [],
-        "rust": []
-      }
-    },
-    {
       "file": "tests/corpus/246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -92,22 +76,6 @@
       }
     },
     {
-      "file": "tests/corpus/384-a-continuation-marker-attaches-a-block-only-at-its-owner-s-marker-column-2.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            5
-          ]
-        ],
-        "php": [],
-        "rust": []
-      }
-    },
-    {
       "file": "tests/corpus/384-a-continuation-marker-attaches-a-block-only-at-its-owner-s-marker-column-8.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -119,28 +87,6 @@
             "continuation-marker-refused",
             3,
             2
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/435-the-continuation-marker-s-column-gate-reaches-every-container-11.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "continuation-marker-refused",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            3,
-            1
           ]
         ]
       }
@@ -425,22 +371,6 @@
       }
     },
     {
-      "file": "tests/corpus/651-a-stacked-first-block-plus-takes-a-follower-only-at-its-innermost-opener-s-marker-column-2.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            5
-          ]
-        ],
-        "php": [],
-        "rust": []
-      }
-    },
-    {
       "file": "tests/corpus/652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column.crv",
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
@@ -504,72 +434,6 @@
           ]
         ],
         "rust": []
-      }
-    },
-    {
-      "file": "tests/corpus/726-a-second-plus-starts-its-own-paragraph-after-attachment-3.crv",
-      "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "continuation-marker-refused",
-            4,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            4,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/726-a-second-plus-starts-its-own-paragraph-after-attachment-4.crv",
-      "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "continuation-marker-refused",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/726-a-second-plus-starts-its-own-paragraph-after-attachment.crv",
-      "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "continuation-marker-refused",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            3,
-            1
-          ]
-        ]
       }
     },
     {

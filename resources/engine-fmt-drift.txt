@@ -20,27 +20,7 @@
 # resources/engine-pin-drift/.README says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-01-emphasis-13  The pinned writer unwraps {/a/b/} to the bare /a/b/, which the spec model reads as text (carve#4810); carve-js ports the ruling first.
-872-the-third-confirmation-round-s-model-findings-2  The pinned writer's output for a marker between an item's columns reads differently since the carve#4545 ruling.
-872-the-third-confirmation-round-s-model-findings  The pinned writer's output for a marker between an item's columns reads differently since the carve#4545 ruling.
-235-an-uppercase-roman-numeral-is-a-list-marker  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-837-an-ambiguous-first-marker-keeps-its-own-dialect-3  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-926-a-single-capital-with-a-dot-needs-two-spaces-4  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-926-a-single-capital-with-a-dot-needs-two-spaces-9  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-289-a-structural-attribute-leads-the-author-s-own  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-32-ordered-list-dialects-2  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-32-ordered-list-dialects  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-425-an-ordered-item-s-separator-width-sets-its-content-column-12  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-425-an-ordered-item-s-separator-width-sets-its-content-column-13  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-837-an-ambiguous-first-marker-keeps-its-own-dialect-2  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-837-an-ambiguous-first-marker-keeps-its-own-dialect  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-868-a-list-marker-between-an-item-s-columns-is-a-sibling-only-on-every-axis-5  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-90-list-item-attributes-3  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-926-a-single-capital-with-a-dot-needs-two-spaces-12  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
 132-thematic-break-requires-contiguous-markers-6  carve#4814: the pinned carve-js writer collapses `*  *  *` to `* * *`, which the ruling makes a thematic break
 854-an-indented-dash-line-neither-opens-nor-closes-frontmatter  The pinned writer respells both dash breaks as ***, where CARVE-P11-002 moves only the break at byte 0, so the re-parsed tree gains marker "*" (markup-carve/carve-js#4135).
 854-an-indented-dash-line-neither-opens-nor-closes-frontmatter-2  The pinned writer respells both dash breaks as ***, where CARVE-P11-002 moves only the break at byte 0, so the re-parsed tree gains marker "*" (markup-carve/carve-js#4135).
-821-a-quote-after-a-caption-starts-fresh-2  The pinned writer moves the quote's caption below a footnote definition it writes inside the quote, so the spec model reads the caption as footnote text (markup-carve/carve-js#4188).
-857-an-html-attribute-is-written-once-whatever-its-case  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
-780-a-braced-opener-forms-before-an-enclosing-closer-takes-its-block-5  The pinned writer spells the braced span bare, and since carve#4845 a bare span holding its own delimiter does not form, so the spec model reads the output differently; carve-js ports the ruling first.
 930-a-line-that-misses-a-nested-host-ends-it-when-a-comment-closer-lies-ahead  The pinned writer rewrites the nested opener as a %% line and attaches the missed line with a +, which reads differently (markup-carve/carve-js#4211).
