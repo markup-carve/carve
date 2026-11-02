@@ -189,6 +189,13 @@ text instead of recursing, so a deeply nested document parses in time linear in
 its size rather than the ~O(n^2) a naive nested-link rescan would cost. The cap
 is enforced by the JavaScript, PHP, and Rust implementations.
 
+**HTML import is bounded the same way.** The HTML importers refuse input nested
+past a fixed depth with a typed error instead of recursing; a text or comment
+node adds no level. The JavaScript and Rust importers use the parser's cap of
+200, so the HTML of a paragraph nested to the inline cap imports back (a block
+container spends two levels of it). The PHP importer counts element levels and
+refuses past 512.
+
 **Output amplification is bounded too.** Expansion features whose output can
 exceed their input (abbreviation expansion, `*[KEY]: …`, and the generated
 `::: index`) are charged against a per-render byte budget of
