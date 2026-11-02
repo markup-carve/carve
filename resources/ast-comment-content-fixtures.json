@@ -1,4 +1,7 @@
 {
+  "418-an-invisible-fenced-block-is-not-a-list-paragraph.crv": [
+    " hidden"
+  ],
   "508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2.crv": [
     "  a"
   ],
@@ -10,8 +13,8 @@
     "  b"
   ],
   "508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-5.crv": [
-    "%",
-    "%"
+    "",
+    "\n   tail"
   ],
   "508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter.crv": [
     "  a"

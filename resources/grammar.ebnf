@@ -10540,8 +10540,10 @@ EOF = (* end of file *) ;
           column 0 with a blank line before and after it, even where the
           source put it below an item or description at a column that does
           not reach it. A `%%%` fence inside a container is written with
-          both delimiters at that container's content column; rows 418,
-          508 and 508-4 pin where its payload lines go. So
+          both delimiters at that container's content column, and each
+          payload line at that column plus the indentation it keeps under
+          PART 9 §28, so the comment's value survives (§1); rows 418, 508
+          and 508-4 pin where its payload lines go (carve#4988). So
 
             - - a
              %% c

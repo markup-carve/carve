@@ -2,7 +2,7 @@
 : head
 
   %%%
-  a
+    a
   %%%
 
   tail

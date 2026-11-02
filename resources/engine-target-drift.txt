@@ -61,19 +61,14 @@ carve/php/191-a-blank-after-a-comment-still-ends-the-item  markup-carve/carve#48
 carve/rust/191-a-blank-after-a-comment-still-ends-the-item  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
 carve/php/410-a-footnote-continuation-survives-a-blank-run-4  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 carve/rust/410-a-footnote-continuation-survives-a-blank-run-4  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
-carve/php/418-an-invisible-fenced-block-is-not-a-list-paragraph  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
-carve/rust/418-an-invisible-fenced-block-is-not-a-list-paragraph  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/418-an-invisible-fenced-block-is-not-a-list-paragraph  markup-carve/carve-js#4308 (carve-js), the payload is written at the opener column, not host-relative (markup-carve/carve#4988)
 carve/php/430-below-a-definition-body-s-column-an-invisible-line-folds-as-text-5  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 carve/rust/430-below-a-definition-body-s-column-an-invisible-line-folds-as-text-5  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
 carve/php/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 carve/rust/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
-carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
-carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
-carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
-carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
-carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve-js#4276 (carve-js), the F1 port writes the second span's payload at the opener column
-carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
-carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  markup-carve/carve-js#4308 (carve-js), the payload is written at the opener column, not host-relative (markup-carve/carve#4988)
+carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve-js#4308 (carve-js), the payload is written at the opener column, not host-relative (markup-carve/carve#4988)
+carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve-js#4308 (carve-js), the payload is written at the opener column, not host-relative (markup-carve/carve#4988)
 carve/php/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-34  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 carve/rust/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-34  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
 carve/php/616-a-line-is-read-in-the-container-whose-column-it-reaches-6  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
