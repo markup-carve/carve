@@ -132,16 +132,7 @@ export function untilStable(rewrite, src) {
  *   - its `without` must leave `control` untouched, so an over-broad rewrite
  *     that quietly repairs unrelated documents cannot pass for an explanation.
  */
-export const DECLARED = [
-  {
-    id: 'term-trailing-hard-break',
-    ticket: 'markup-carve/carve-js#4258',
-    what: 'the pinned writer drops a hard break that ends a one-line definition term',
-    witness: ':: t\\\n: d\n',
-    control: ':: t\n: d\n',
-    without: (src) => src.replace(/^((?:[ \t]*(?:[-*+>]|\d+[.)])[ \t]+)*[ \t]*:: .*?)[ \t]*\\[ \t]*$/gm, '$1'),
-  },
-]
+export const DECLARED = []
 
 /**
  * Both PART 11 invariants over one document.

@@ -88,6 +88,7 @@ const TRIGGERS = {
   'emphasis-as-heading': { source: '*Title*\n', options: { enabledRules: ['emphasis-as-heading'] } },
   'block-opener-overindented': '  # h\n',
   'emphasis-marker-before-attributes': 'a*{.x} b*\n',
+  'unclosed-comment-fence': '%%% TODO\n# Heading\npara\n',
 }
 
 /*
@@ -150,7 +151,6 @@ const RETIRED_IN_THE_PIN = new Map([
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  ['unclosed-comment-fence', 'specified by the #4907 ruling; engine rollout follows'],
   [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',

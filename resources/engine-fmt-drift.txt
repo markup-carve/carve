@@ -22,4 +22,4 @@
 # Format: <slug><space><space><reason>
 854-an-indented-dash-line-neither-opens-nor-closes-frontmatter  The pinned writer respells both dash breaks as ***, where CARVE-P11-002 moves only the break at byte 0, so the re-parsed tree gains marker "*" (markup-carve/carve-js#4135).
 854-an-indented-dash-line-neither-opens-nor-closes-frontmatter-2  The pinned writer respells both dash breaks as ***, where CARVE-P11-002 moves only the break at byte 0, so the re-parsed tree gains marker "*" (markup-carve/carve-js#4135).
-616-a-line-is-read-in-the-container-whose-column-it-reaches-12  carve#4860: the pinned writer spells a marker in a description body as paragraph text, which the ruling reads as a list.
+930-a-line-that-misses-a-nested-host-ends-it-when-a-comment-closer-lies-ahead-5  markup-carve/carve-js#4276: the pinned writer puts the trailing unclosed span after a blank at column 0, and the second parse attaches it to the item.

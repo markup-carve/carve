@@ -73,6 +73,7 @@ carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter 
 carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
 carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve-js#4276 (carve-js), the F1 port writes the second span's payload at the opener column
 carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
 carve/php/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-34  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
@@ -181,3 +182,9 @@ carve/rust/425-an-ordered-item-s-separator-width-sets-its-content-column-13  mar
 carve/php/01-emphasis-13  markup-carve/carve#4810 (carve-php), the writer still unwraps {/a/b/} to the bare /a/b/, which the ruling reads as text
 carve/php/425-an-ordered-item-s-separator-width-sets-its-content-column-12  markup-carve/carve#4811 (carve-php), the writer still emits one space after a roman marker, which the ruling reads as text
 carve/php/425-an-ordered-item-s-separator-width-sets-its-content-column-13  markup-carve/carve#4811 (carve-php), the writer still emits one space after a roman marker, which the ruling reads as text
+markdown/php/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-php), a list marker in a footnote body opens a list; the pinned engine keeps it as text
+markdown/rust/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-rs), a list marker in a footnote body opens a list; the pinned engine keeps it as text
+plain/php/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-php), a list marker in a footnote body opens a list; the pinned engine keeps it as text
+plain/rust/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-rs), a list marker in a footnote body opens a list; the pinned engine keeps it as text
+ansi/php/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-php), a list marker in a footnote body opens a list; the pinned engine keeps it as text
+ansi/rust/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-rs), a list marker in a footnote body opens a list; the pinned engine keeps it as text
