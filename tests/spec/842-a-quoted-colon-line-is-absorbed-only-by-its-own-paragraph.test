@@ -6,10 +6,14 @@ A quoted colon line is absorbed only by its own paragraph
 > :::
 l
 .
-<blockquote><p>e
-:::e
-:::
-l</p></blockquote>
+<blockquote>
+  <p>e
+:::e</p>
+  <div>
+
+  </div>
+</blockquote>
+<p>l</p>
 ```
 
 ```
@@ -35,11 +39,15 @@ l
 l
 .
 <blockquote>
-  <blockquote><p>e
-:::e
-:::
-l</p></blockquote>
+  <blockquote>
+    <p>e
+:::e</p>
+    <div>
+
+    </div>
+  </blockquote>
 </blockquote>
+<p>l</p>
 ```
 
 ```
@@ -49,11 +57,15 @@ l</p></blockquote>
 l
 .
 <blockquote>
-  <blockquote><p>e
-:::e
-:::
-l</p></blockquote>
+  <blockquote>
+    <p>e
+:::e</p>
+    <div>
+
+    </div>
+  </blockquote>
 </blockquote>
+<p>l</p>
 ```
 
 ```

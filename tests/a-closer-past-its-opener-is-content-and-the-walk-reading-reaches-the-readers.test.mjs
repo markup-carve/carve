@@ -58,14 +58,13 @@ for (const run of [F, '~~~']) for (const marker of ['- ', '1. ', '- [ ] ']) {
   })
 }
 
-// carve#3909: an absorbed bare `:::` leaves the description body's paragraph open.
+// carve#4863: a bare run below an invalid opener ends the description body's paragraph.
 for (const bare of [':::', '::::']) {
-  test(`a description body folds the next lazy line after an absorbed ${bare}`, () => {
-    assert.equal(html(`:: t\n: a\n  :::x\n  ${bare}\nTAIL\n`),
-      `<dl>\n  <dt>t</dt>\n  <dd>a\n:::x\n${bare}\nTAIL</dd>\n</dl>`)
+  test(`a description body takes no lazy line after ${bare} below an invalid opener`, () => {
+    assert.match(html(`:: t\n: a\n  :::x\n  ${bare}\nTAIL\n`), /:::x<\/p>[^]*<p>TAIL<\/p>$/)
   })
 }
 
-test('a bare `:::` the paragraph did not absorb still ends the description body', () => {
+test('a bare `:::` ends the description body', () => {
   assert.match(html(':: t\n: a\n  :::\nTAIL\n'), /<p>TAIL<\/p>$/)
 })

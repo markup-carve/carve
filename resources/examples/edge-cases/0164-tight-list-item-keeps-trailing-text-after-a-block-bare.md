@@ -27,7 +27,7 @@ wraps its paragraphs.
 
 :::
 
-The same holds after a div body, and for an ordered item.
+The same holds after a div body, and for an ordered item. A malformed `:::note` is text, so the bare `:::` below it opens a div that takes `tail` (carve#4863).
 
 :::: compare
 
@@ -44,8 +44,10 @@ The same holds after a div body, and for an ordered item.
   <li>item
 :::note
 body
-:::
-tail</li>
+    <div>
+      <p>tail</p>
+    </div>
+  </li>
 </ul>
 ```
 

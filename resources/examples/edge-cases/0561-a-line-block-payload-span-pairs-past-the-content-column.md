@@ -4,7 +4,8 @@ Two fence-shaped runs written past the content column in a line-block payload.
 The payload is inline content, so the runs pair as one span and the colon run
 between them is payload, exactly as at the content column (ruled on
 markup-carve/carve-php#3137). The line block closes at the second `:::`, and
-the lines after it read as they do in the content-column spelling.
+the lines after it read as they do in the content-column spelling: `:::bad` is
+text and the bare `:::` opens a div (carve#4863).
 
 ::::: compare
 
@@ -29,11 +30,15 @@ the lines after it read as they do in the content-column spelling.
 &nbsp;&nbsp;</code></p>
       </div>
       :::bad
-:::
-- tail
+      <div>
+
+      </div>
     </li>
   </ul>
 </blockquote>
+<ul>
+  <li>tail</li>
+</ul>
 ```
 
 ````carve

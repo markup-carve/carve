@@ -5727,52 +5727,19 @@ EOF = (* end of file *) ;
       PART 2's `colon_fence_close` production (corpus
       271-the-flush-left-line-after-a-container-a-quoted-line-opened).
 
-      A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH
-      EXPECTING A CLOSER -- NORMATIVE [CARVE-P9-016]. A `:::` line that is not a valid opener
+      A COLON LINE IS READ ON ITS OWN. A `:::` line that is not a valid opener
       (an attribute block where the opener takes a type word, say) is ordinary
-      paragraph text, and from that point the paragraph absorbs the next
-      fence-shaped line as text too, INSTEAD of being interrupted by it:
+      paragraph text, reported by `block-marker-as-text`, and leaves no state. A
+      later bare run reads as it would without that line: it closes the open div
+      of its width, and otherwise it interrupts an open paragraph and opens a
+      div (§10 I4, PART 2):
 
           text                    ::: {.x}
           not a div               not a div
           :::                     :::
 
-      The left column is a paragraph followed by an empty div, because a bare
-      `:::` interrupts an open paragraph (§10). The right column is ONE
-      paragraph holding all three lines. The malformed line need not be the
-      paragraph's first.
-
-      THE ABSORPTION IS NOT WIDTH-TAGGED, unlike the closer rule it resembles:
-      after a malformed `::: {.x}`, a following `::::` is absorbed too, and
-      after a malformed `:::: {.x}` so is a following `:::`. A malformed opener
-      has no length to match against, so there is nothing for a width test to
-      compare; the paragraph simply continues.
-
-      An open div's own closer is not absorbed: `:::` / `:::e` / `:::` is a div
-      holding one paragraph, in any container (carve#4397). Only a bare run of
-      exactly the div's width closes it. A bare run of another width that such
-      a paragraph absorbs is its text, so it neither closes the div nor opens
-      one: `:::` / `:::e` / `::::` / `q` / `:::` is a div holding the one
-      paragraph `:::e`, `::::`, `q` (carve#4550).
-
-      ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY -- NORMATIVE [CARVE-P9-017].
-      The absorbed line has to be one the paragraph's container
-      supplied a prefix for. A FLUSH-LEFT fence-shaped line under a QUOTED
-      paragraph is not:
-
-          > quote
-          > :::note
-          > body
-          :::
-
-      `:::note` has no separator, so it opens nothing and is absorbed, and the
-      QUOTED `> :::` under it would be absorbed on the same terms. The `:::`
-      above supplies no `>` prefix: it is a PARTIAL match, and it could reach
-      that paragraph only through PART 0 S4's lazy fold. S4 decides it
-      instead -- a flush-left fence-shaped line interrupts, the
-      quote closes, and the line is re-classified at top level, where it opens
-      a div of its own. Change one line to `> :::` and the answer inverts,
-      because then it IS one of the paragraph's lines.
+      Both columns are a paragraph followed by an empty div. Code, raw and
+      `::: |` payloads are read first, so a bare run inside one stays payload.
 
       FENCE OPENER WITH A NESTED-LIST BODY: a `:::` opener inside a LIST
       ITEM opens its block even when the opener's body is a nested list

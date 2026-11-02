@@ -30,9 +30,12 @@ l
 <ul>
   <li>m
 :::e
-:::
-l</li>
+    <div>
+
+    </div>
+  </li>
 </ul>
+<p>l</p>
 ```
 
 ```
@@ -45,10 +48,15 @@ l</li>
   <ul>
     <li>x
 :::d
-:::
-- tail</li>
+      <div>
+
+      </div>
+    </li>
   </ul>
 </blockquote>
+<ul>
+  <li>tail</li>
+</ul>
 ```
 
 ```
@@ -63,9 +71,12 @@ l
     <ul>
       <li>m
 :::e
-:::
-l</li>
+        <div>
+
+        </div>
+      </li>
     </ul>
   </li>
 </ul>
+<p>l</p>
 ```

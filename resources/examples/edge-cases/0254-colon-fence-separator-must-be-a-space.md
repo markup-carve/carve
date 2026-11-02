@@ -4,8 +4,9 @@ The colon fence has ONE separator slot -- the whitespace immediately after the
 fence run -- and all four openers share it. It is a MARKER SEPARATOR (PART 7,
 MARKER SEPARATORS AND PADDING SLOTS): the token after it selects an admonition,
 a div, a line block or a local hard-break block, so it is spelled `space` and a
-tab does not satisfy it. A tabbed opener is an ordinary paragraph, exactly as a
-tab after a heading, list or definition marker already is.
+tab does not satisfy it. A tabbed opener is ordinary paragraph text, exactly as a
+tab after a heading, list or definition marker already is, and the bare `:::`
+below it opens a div of its own (carve#4863).
 
 The four openers are pinned separately because implementations decide them in
 four separate places. In carve-rs the same rule lived in four branches, and
@@ -24,8 +25,10 @@ x
 
 ```html
 <p>:::	note
-x
-:::</p>
+x</p>
+<div>
+
+</div>
 ```
 
 ::::
@@ -45,8 +48,10 @@ x
 
 ```html
 <p>::: 	note
-x
-:::</p>
+x</p>
+<div>
+
+</div>
 ```
 
 ::::
@@ -61,8 +66,10 @@ x
 
 ```html
 <p>:::	 note
-x
-:::</p>
+x</p>
+<div>
+
+</div>
 ```
 
 ::::
@@ -81,8 +88,10 @@ x
 
 ```html
 <p>:::	[First]
-x
-:::</p>
+x</p>
+<div>
+
+</div>
 ```
 
 ::::
@@ -97,8 +106,10 @@ x
 
 ```html
 <p>::: 	[First]
-x
-:::</p>
+x</p>
+<div>
+
+</div>
 ```
 
 ::::
@@ -115,8 +126,10 @@ x
 
 ```html
 <p>:::	|
-x
-:::</p>
+x</p>
+<div>
+
+</div>
 ```
 
 ::::
@@ -131,8 +144,10 @@ x
 
 ```html
 <p>::: 	|
-x
-:::</p>
+x</p>
+<div>
+
+</div>
 ```
 
 ::::
@@ -152,8 +167,10 @@ x
 
 ```html
 <p>:::	<br>
-x
-:::</p>
+x</p>
+<div>
+
+</div>
 ```
 
 ::::
@@ -168,8 +185,10 @@ x
 
 ```html
 <p>::: 	<br>
-x
-:::</p>
+x</p>
+<div>
+
+</div>
 ```
 
 ::::

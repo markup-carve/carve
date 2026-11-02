@@ -146,8 +146,8 @@
         },
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "  if (opener) {\n    let absorbed = false\n",
-          "replace": "  if (opener && (base > 0 || opener.mode === 'line-block')) {\n    let absorbed = false\n"
+          "find": "  if (opener) {\n    stack.push({ length: colon[1].length, column: inner.col, base, mode: opener.mode })",
+          "replace": "  if (opener && (base > 0 || opener.mode === 'line-block')) {\n    stack.push({ length: colon[1].length, column: inner.col, base, mode: opener.mode })"
         }
       ]
     },
@@ -863,26 +863,6 @@
           "file": "scripts/spec/html.mjs",
           "find": "const baseCls = TIER1.has(b.type) ? ['admonition', b.type] : [b.type]",
           "replace": "const baseCls = [b.type]"
-        }
-      ]
-    },
-    {
-      "rule": "CARVE-P9-016",
-      "edits": [
-        {
-          "file": "scripts/spec/layout.mjs",
-          "find": "return COLON_CLOSER.test(line) && !paraHasInvalidColonOpener(para)",
-          "replace": "return COLON_CLOSER.test(line)"
-        }
-      ]
-    },
-    {
-      "rule": "CARVE-P9-017",
-      "edits": [
-        {
-          "file": "scripts/spec/layout.mjs",
-          "find": "            (!peekInterrupts(i) || foldedColon || nestedMarkerFold) &&\n            (!COLON_CLOSER.test(lines[i]) || foldedColon) && !CAPTION.test(lines[i])) {",
-          "replace": "            (!peekInterrupts(i) || foldedColon || nestedMarkerFold || (COLON_CLOSER.test(lines[i]) && !colonFenceInterrupts(lines[i], qPara))) &&\n            !CAPTION.test(lines[i])) {"
         }
       ]
     },

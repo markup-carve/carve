@@ -3697,8 +3697,8 @@ A div with attributes.
 
 ::::
 
-An inline attribute block on the fence line is **not** a div: the opener is
-an ordinary paragraph (matching canonical djot).
+An inline attribute block on the fence line is **not** a div: the line is
+paragraph text, and the bare `:::` below it opens a div of its own (carve#4863).
 
 :::: compare
 
@@ -3710,8 +3710,10 @@ not a div
 
 ```html
 <p>::: {.sidebar}
-not a div
-:::</p>
+not a div</p>
+<div>
+
+</div>
 ```
 
 ::::

@@ -5,7 +5,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const flat = (source) => renderDoc(parse(source)).replace(/\s*\n\s*/g, ' ').replace(/> </g, '><').trim()
 
-// carve#4397: every host reads the run as the top level does (CARVE-P9-016).
+// carve#4397: every host reads the run as the top level does.
 test('a closed div leaves no paragraph for a line below, whatever hosts it', () => {
   const div = '<div><p>:::e</p></div>'
   const cases = [
@@ -19,8 +19,8 @@ test('a closed div leaves no paragraph for a line below, whatever hosts it', () 
   for (const [source, expected] of cases) assert.equal(flat(source), expected, source)
 })
 
-test('a run absorbed outside a div opens nothing, so a blank after it loosens', () => {
-  assert.equal(flat('- x\n  :::e\n  :::\n\n  l\n'), '<ul><li><p>x :::e :::</p><p>l</p></li></ul>')
+test('a run below an invalid opener outside a div opens one', () => {
+  assert.equal(flat('- x\n  :::e\n  :::\n\n  l\n'), '<ul><li>x :::e <div><p>l</p></div></li></ul>')
 })
 
 test('a second bare run after the closer opens a new div', () => {
@@ -28,8 +28,8 @@ test('a second bare run after the closer opens a new div', () => {
     '<dl><dt>t</dt><dd><div><p>:::e</p></div><div></div></dd></dl><p>l</p>')
 })
 
-test('an absorbed run still folds a lazy line', () => {
-  assert.equal(flat('- x\n  :::e\n  :::\nl\n'), '<ul><li>x :::e ::: l</li></ul>')
-  assert.equal(flat('- o\n  - :::e\n    :::\nl\n'), '<ul><li>o <ul><li>:::e ::: l</li></ul></li></ul>')
-  assert.equal(flat('- :::\n  :::e\n  ::::\n  ::::\nl\n'), '<ul><li><div><p>:::e :::: :::: l</p></div></li></ul>')
+test('a run below an invalid opener leaves no paragraph for a lazy line', () => {
+  assert.equal(flat('- x\n  :::e\n  :::\nl\n'), '<ul><li>x :::e <div></div></li></ul><p>l</p>')
+  assert.equal(flat('- o\n  - :::e\n    :::\nl\n'), '<ul><li>o <ul><li>:::e <div></div></li></ul></li></ul><p>l</p>')
+  assert.equal(flat('- :::\n  :::e\n  ::::\n  ::::\nl\n'), '<ul><li><div><p>:::e</p><div></div></div></li></ul><p>l</p>')
 })

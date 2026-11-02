@@ -1,8 +1,7 @@
 ## A bare colon run interrupts a paragraph whether or not a line follows it
 
 A `:::` opener is not guarded (§10 I4), so a bare run after a paragraph opens a
-div even as the last line of its container. This is CARVE-P9-016's own left-hand
-example, and it holds in a list item and a block quote as at the top level
+div even as the last line of its container. It holds in a list item and a block quote as at the top level
 (markup-carve/carve#2151).
 
 ::::: compare
@@ -127,8 +126,8 @@ text
 
 :::::
 
-CONTROL. After an invalid opener the paragraph absorbs the run instead, which is
-CARVE-P9-016's right-hand example and is unchanged.
+An invalid opener above changes nothing: it is text and leaves no state
+(carve#4863).
 
 ::::: compare
 
@@ -140,8 +139,10 @@ not a div
 
 ```html
 <p>::: {.x}
-not a div
-:::</p>
+not a div</p>
+<div>
+
+</div>
 ```
 
 :::::

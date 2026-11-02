@@ -641,18 +641,6 @@
       "scope": "resolution-rendering"
     },
     {
-      "id": "CARVE-P9-016",
-      "part": "9",
-      "title": "A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P9-017",
-      "part": "9",
-      "title": "ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY",
-      "scope": "parsing"
-    },
-    {
       "id": "CARVE-P9-018",
       "part": "9",
       "title": "AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME",

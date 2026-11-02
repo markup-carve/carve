@@ -55,7 +55,8 @@ Bob
 ::::
 
 The separator is a SPACE, as it is for every other colon-fence opener, so a
-glued marker opens nothing and the line is paragraph text.
+glued marker opens nothing and the line is paragraph text. The bare `:::` below
+it opens a div of its own (carve#4863).
 
 :::: compare
 
@@ -67,8 +68,10 @@ x
 
 ```html
 <p>:::&gt;
-x
-:::</p>
+x</p>
+<div>
+
+</div>
 ```
 
 ::::

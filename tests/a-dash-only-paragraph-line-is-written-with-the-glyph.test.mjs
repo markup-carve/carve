@@ -43,7 +43,7 @@ const containers = [
   ['footnote', lines => 'x[^1]\n\n' + lines.map((l, i) => (i ? '  ' : '[^1]: ') + l).join('\n') + '\n'],
   ['description', lines => ':: t\n' + lines.map((l, i) => (i ? '  ' : ': ') + l).join('\n') + '\n'],
   ['admonition', lines => '::: note\n' + lines.join('\n') + '\n:::\n'],
-  ['div', lines => '::: {.d}\n' + lines.join('\n') + '\n:::\n'],
+  ['div', lines => '::: d\n' + lines.join('\n') + '\n:::\n'],
 ]
 
 test('987 variants: a dash-only paragraph line keeps its glyphs, a hyphen spelling would break it', () => {

@@ -19,11 +19,15 @@ A line-block payload span pairs past the content column
 &nbsp;&nbsp;</code></p>
       </div>
       :::bad
-:::
-- tail
+      <div>
+
+      </div>
     </li>
   </ul>
 </blockquote>
+<ul>
+  <li>tail</li>
+</ul>
 ````
 
 ````

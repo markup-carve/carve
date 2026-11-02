@@ -4,7 +4,7 @@ page: edge-definitions
 
 ## A div closes only on a run of its own width
 
-A paragraph in an open div that holds an invalid opener absorbs a bare run of another width as text. Only a run of the div's own width closes the div, in any container (CARVE-P9-016, carve#4550).
+Only a run of an open div's own width closes it, in any container. A run of another width opens a nested div, even under a paragraph that holds an invalid opener (carve#4550, carve#4863).
 
 ::::: compare
 
@@ -19,11 +19,14 @@ after
 
 ```html
 <div>
-  <p>:::e
-::::
-q</p>
+  <p>:::e</p>
+  <div>
+    <p>q</p>
+    <div>
+      <p>after</p>
+    </div>
+  </div>
 </div>
-<p>after</p>
 ```
 
 :::::
@@ -42,8 +45,12 @@ l
 <ul>
   <li>
     <div>
-      <p>:::e
-::::</p>
+      <p>:::e</p>
+      <div>
+        <div>
+
+        </div>
+      </div>
     </div>
   </li>
 </ul>
@@ -67,9 +74,13 @@ after
 ```html
 <blockquote>
   <div>
-    <p>:::e
-::::
-q</p>
+    <p>:::e</p>
+    <div>
+      <p>q</p>
+      <div>
+
+      </div>
+    </div>
   </div>
 </blockquote>
 <p>after</p>

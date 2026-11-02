@@ -16,7 +16,7 @@ const bodies = {
   'a list after a blank': ['[^b]: text', '', '  - c2'],
   'a nested list': ['[^b]: text', '', '  - c2', '    - c3'],
   'an ordered list': ['[^b]: text', '', '  1. c2'],
-  'an absorbed colon opener': ['[^b]: :::bad', '  :::'],
+  'an invalid colon opener': ['[^b]: :::bad'],
   'a quote': ['[^b]: > q'],
 }
 const hosts = {

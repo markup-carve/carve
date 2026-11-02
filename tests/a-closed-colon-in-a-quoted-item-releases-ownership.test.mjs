@@ -14,8 +14,8 @@ for (const depth of [0, 1, 2]) for (const malformed of [false, true]) {
     for (let n = 0; n < depth; n++) owner = owner.children[0]
     assert.deepEqual(owner.items[0].blocks[0], {t: 'line-block', lines: [':::: box']})
     if (depth > 0 && malformed) {
-      assert.equal(document.blocks.length, 1)
-      assert.deepEqual(owner.items[0].blocks[1].lines, [':::bad', ':::', '- tail'])
+      assert.equal(document.blocks.length, 2)
+      assert.deepEqual(owner.items[0].blocks.slice(1), parse(':::bad\n:::\n').blocks)
     } else if (depth > 0) {
       assert.deepEqual(document.blocks[1], parse('- tail\n').blocks[0])
     } else {
@@ -44,12 +44,12 @@ for (const depth of [1, 2]) for (const payload of ['%%%', '```', '- marker']) {
     const source = `${quote}- ::: |\n${quote}  ${payload}\n${quote}  :::\n` +
       `${quote}  :::bad\n${quote}  :::\n- tail\n`
     const document = parse(source)
-    assert.equal(document.blocks.length, 1)
+    assert.equal(document.blocks.length, 2)
     let owner = document.blocks[0]
     for (let n = 0; n < depth; n++) owner = owner.children[0]
     assert.deepEqual(owner.items[0].blocks, [
       {t: 'line-block', lines: [payload]},
-      {t: 'para', lines: [':::bad', ':::', '- tail']},
+      ...parse(':::bad\n:::\n').blocks,
     ])
   })
 }
@@ -143,10 +143,10 @@ test('an unterminated comment fence remains a line comment before a hosted body'
   assert.deepEqual(parse(prefix + '- tail\n').blocks, [...parse(prefix).blocks, ...parse('- tail\n').blocks])
 })
 
-test('absorbed bare colon runs retain the paragraph owner', () => {
+test('bare colon runs under an invalid opener pair as fences', () => {
   const source = '> - :::bad\n' + '>   :::\n'.repeat(2000) + '- tail\n'
   const doc = parse(source)
-  assert.equal(doc.blocks.length, 1)
+  assert.equal(doc.blocks.length, 2)
   assert.equal(doc.blocks[0].t, 'quote')
 })
 
@@ -217,10 +217,10 @@ for (const depth of [1, 2]) for (const run of ['%%%', '```', '~~~']) {
   test(`a paired ${run} span hides colon closers at quote depth ${depth}`, () => {
     const source = `${quote}- ::: |\n${quote}  ${run}\n${quote}  :::\n${quote}  ${run}\n${quote}  :::\n${quote}  :::bad\n${quote}  :::\n- tail\n`
     const document = parse(source)
-    assert.equal(document.blocks.length, 1)
+    assert.equal(document.blocks.length, 2)
     let owner = document.blocks[0]
     for (let n = 0; n < depth; n++) owner = owner.children[0]
-    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: [run, ':::', run]}, {t: 'para', lines: [':::bad', ':::', '- tail']}])
+    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: [run, ':::', run]}, ...parse(':::bad\n:::\n').blocks])
   })
   test(`a paired ${run} payload span keeps its following lazy line at quote depth ${depth}`, () => {
     const source = `${quote}- ::: |\n${quote}  ${run}\n${quote}  :::\n${quote}  ${run}\n${quote}  x\ntail\n`
@@ -239,18 +239,18 @@ for (const depth of [1, 2]) for (const run of ['```', '~~~']) {
   test(`an indented ${run} payload pairs as at the content column at quote depth ${depth}`, () => {
     const source = `${quote}- ::: |\n${quote}    ${run}\n${quote}  :::\n${quote}    ${run}\n${quote}  :::\n${quote}  :::bad\n${quote}  :::\n- tail\n`
     const document = parse(source)
-    assert.equal(document.blocks.length, 1)
+    assert.equal(document.blocks.length, 2)
     let owner = document.blocks[0]
     for (let n = 0; n < depth; n++) owner = owner.children[0]
-    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: [`  ${run}`, ':::', `  ${run}`]}, {t: 'para', lines: [':::bad', ':::', '- tail']}])
+    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: [`  ${run}`, ':::', `  ${run}`]}, ...parse(':::bad\n:::\n').blocks])
   })
   test(`an authored line-block base locates a paired ${run} span at quote depth ${depth}`, () => {
     const source = `${quote}- a\n${quote}    ::: |\n${quote}    ${run}\n${quote}    :::\n${quote}    ${run}\n${quote}  :::\n${quote}  :::bad\n${quote}  :::\n- tail\n`
     const document = parse(source)
-    assert.equal(document.blocks.length, 1)
+    assert.equal(document.blocks.length, 2)
     let owner = document.blocks[0]
     for (let n = 0; n < depth; n++) owner = owner.children[0]
-    assert.deepEqual(owner.items[0].blocks, [{t: 'para', lines: ['a']}, {t: 'line-block', lines: [run, ':::', run]}, {t: 'para', lines: [':::bad', ':::', '- tail']}])
+    assert.deepEqual(owner.items[0].blocks, [{t: 'para', lines: ['a']}, {t: 'line-block', lines: [run, ':::', run]}, ...parse(':::bad\n:::\n').blocks])
   })
 }
 
@@ -302,10 +302,10 @@ for (const depth of [1, 2]) {
     test(`a descendant item still opens a paired ${run} line-block span inside a div at depth ${depth}`, () => {
       const source = `${quote}- ::: box\n${quote}  - ::: |\n${quote}    ${run}\n${quote}    :::\n${quote}    ${run}\n${quote}    :::\n${quote}    :::bad\n${quote}    :::\n- tail\n`
       const document = parse(source)
-      assert.equal(document.blocks.length, 1)
+      assert.equal(document.blocks.length, 2)
       let owner = document.blocks[0]
       for (let n = 0; n < depth; n++) owner = owner.children[0]
-      assert.deepEqual(owner.items[0].blocks[0].children[0].items[0].blocks, [{t: 'line-block', lines: [run, ':::', run]}, {t: 'para', lines: [':::bad', ':::', '- tail']}])
+      assert.deepEqual(owner.items[0].blocks[0].children[0].items[0].blocks, [{t: 'line-block', lines: [run, ':::', run]}, ...parse(':::bad\n:::\n').blocks])
     })
   }
   test(`a shifted line block needs no blank before its opener at depth ${depth}`, () => {

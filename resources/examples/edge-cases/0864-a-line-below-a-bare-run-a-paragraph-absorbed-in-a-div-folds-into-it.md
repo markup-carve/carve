@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A line below a bare run a paragraph absorbed in a div folds into it
 
-CARVE-P9-016 and PART 0 S4 (carve#4415). The paragraph absorbs the bare run of another width and stays open, so the line below folds into it.
+PART 0 S4. The invalid opener is text, and the bare run of another width opens a div inside the open one, so the line below leaves the list (carve#4415, carve#4863).
 
 :::::: compare
 
@@ -19,12 +19,14 @@ l
 <ul>
   <li>
     <div>
-      <p>:::e
-::::
-l</p>
+      <p>:::e</p>
+      <div>
+
+      </div>
     </div>
   </li>
 </ul>
+<p>l</p>
 ```
 
 ::::::
@@ -46,12 +48,14 @@ l
 <ul>
   <li>o
     <div>
-      <p>:::e
-::::
-l</p>
+      <p>:::e</p>
+      <div>
+
+      </div>
     </div>
   </li>
 </ul>
+<p>l</p>
 ```
 
 ::::::

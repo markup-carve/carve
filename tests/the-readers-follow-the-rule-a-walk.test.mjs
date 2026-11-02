@@ -32,14 +32,13 @@ for (const [marker, column] of [['-', 2], ['1.', 3], ['*', 2]]) {
 }
 
 // §10 I1 and I4: a bare `:::` interrupts a paragraph, closer or not, at any
-// indentation (rule A S3), unless the paragraph absorbed an invalid opener
-// (CARVE-P9-016).
+// indentation (rule A S3), an invalid opener above it or not (carve#4863).
 for (const indent of ['', ' ', '  ', '   ']) {
   test(`a bare ::: indented ${indent.length} under a paragraph opens a div`, () => {
     assert.equal(html(`p\n${indent}:::\n`), '<p>p</p><div></div>')
   })
-  test(`a bare ::: indented ${indent.length} after an absorbed opener stays text`, () => {
-    assert.equal(html(`p\n::: {.x}\n${indent}:::\n`), `<p>p ::: {.x} :::</p>`)
+  test(`a bare ::: indented ${indent.length} after an invalid opener opens a div`, () => {
+    assert.equal(html(`p\n::: {.x}\n${indent}:::\n`), '<p>p ::: {.x}</p><div></div>')
   })
 }
 
