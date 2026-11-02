@@ -178,6 +178,72 @@ export const signature = (pattern, reduced) =>
 
 export const SIGNATURE_MARKER = 'fuzz-signature:'
 
+/** The document's lines as shapes, indentation and blank lines dropped and a repeated line kept once. */
+export function skeleton(source) {
+  const lines = splitLines(shape(source)).map((l) => l.trim().replace(/\s+/g, ' ')).filter(Boolean)
+  return lines.filter((l, i) => l !== lines[i - 1]).join('\n')
+}
+
+/** A shape family: the pattern plus the skeleton, so column shifts and blank-line counts of one cause share it. */
+export const family = (pattern, reduced) =>
+  createHash('sha256').update(`${pattern}\n${skeleton(reduced)}`).digest('hex').slice(0, 16)
+
+/**
+ * Merge groups of one shape family, keeping the shortest reproduction, so a
+ * run files one issue per family. `variants` lists the merged signatures.
+ */
+export function coalesceFamilies(groups) {
+  const byFamily = new Map()
+  for (const g of groups) {
+    const key = family(g.pattern, g.reduced)
+    const kept = byFamily.get(key)
+    if (!kept) byFamily.set(key, { ...g })
+    else {
+      const variants = [...(kept.variants ?? []), g.signature, ...(g.variants ?? [])]
+      const hits = kept.hits + g.hits
+      if (g.reduced.length < kept.reduced.length) {
+        byFamily.set(key, { ...g, hits, variants: [kept.signature, ...variants.filter((v) => v !== g.signature)] })
+      } else Object.assign(kept, { hits, variants })
+    }
+  }
+  return [...byFamily.values()].sort((a, b) => b.hits - a.hits || a.signature.localeCompare(b.signature))
+}
+
+/** The pattern and reduced document a fuzz issue body was filed with, or null. */
+export function findingIn(body) {
+  const pattern = /Agreeing groups: `([^`]+)`/.exec(body ?? '')?.[1]
+  const reduced = /^(`{3,})carve\n([\s\S]*?)\n\1$/m.exec(body ?? '')?.[2]
+  return pattern && reduced !== undefined ? { pattern, reduced: `${reduced}\n` } : null
+}
+
+/** Family -> the lowest-numbered open fuzz issue of that family, from `gh issue list` rows. */
+export function familiesIn(issues) {
+  const found = new Map()
+  for (const issue of [...issues].sort((a, b) => a.number - b.number)) {
+    const finding = issue.state === 'OPEN' && findingIn(issue.body)
+    if (!finding) continue
+    const key = family(finding.pattern, finding.reduced)
+    if (!found.has(key)) found.set(key, issue.number)
+  }
+  return found
+}
+
+/**
+ * The engines whose disagreement is lag behind a spec move, or null. Each
+ * engine that differs from the model must render exactly what the model at
+ * that engine's own spec pin renders (`pinned[engine]`): the engine follows
+ * its pinned spec, and the model has moved past it under a ruling the engine
+ * has not ported yet. One unexplained engine leaves the whole finding to file.
+ */
+export function lagBehindPin(outputs, pinned) {
+  if (outputs.model === undefined) return null
+  const behind = ['js', 'php', 'rs'].filter((e) => outputs[e] !== outputs.model)
+  if (!behind.length) return null
+  return behind.every((e) => pinned[e]?.output !== undefined && pinned[e].output === outputs[e])
+    ? Object.fromEntries(behind.map((e) => [e, pinned[e].pin]))
+    : null
+}
+
 /** Group reduced findings by signature, keeping the shortest reproduction of each. */
 export function groupFindings(findings) {
   const groups = new Map()
@@ -221,6 +287,7 @@ export function issueBody(group, run) {
     `Reproduce: \`node scripts/fuzz-nightly.mjs --seed=${run.seed} --max-mutants=${run.mutants} --budget-minutes=600\` (${run.engines}).`,
     '',
     `${SIGNATURE_MARKER} \`${group.signature}\``,
+    ...(group.variants ?? []).map((v) => `${SIGNATURE_MARKER} \`${v}\``),
   ].join('\n')
 }
 
@@ -247,13 +314,16 @@ export function issueComment(group, run) {
 
 /**
  * Decide what to do per group given the issues already carrying its signature.
- * An open issue is commented on, a closed one is left alone (the cause was
- * filed and decided), anything else is new up to `cap`. One engine gap tends to
- * surface as many shapes sharing one agreement pattern, so at most `perPattern`
- * new issues per pattern go out in a night, taken round-robin across patterns
- * so a rare split is not crowded out by a common one; the rest wait.
+ * Lag behind an engine's spec pin is not filed. An open issue with the same
+ * signature, or else with the same shape family, is commented on; a closed one
+ * is left alone (the cause was filed and decided); anything else is new up to
+ * `cap`.
+ * One engine gap tends to surface as many shapes sharing one agreement pattern,
+ * so at most `perPattern` new issues per pattern go out in a night, taken
+ * round-robin across patterns so a rare split is not crowded out by a common
+ * one; the rest wait.
  */
-export function plan(groups, existing, cap = 10, perPattern = 3) {
+export function plan(groups, existing, cap = 5, perPattern = 3, families = new Map()) {
   const actions = []
   let created = 0
   const createdFor = new Map()
@@ -267,11 +337,15 @@ export function plan(groups, existing, cap = 10, perPattern = 3) {
     .sort((a, b) => a.n - b.n)
     .map(({ g }) => g)
   for (const g of ordered) {
-    const hits = existing.get(g.signature) ?? []
+    const hits = [g.signature, ...(g.variants ?? [])].flatMap((s) => existing.get(s) ?? [])
     const open = hits.find((i) => i.state === 'OPEN')
     const samePattern = createdFor.get(g.pattern) ?? 0
-    if (open) actions.push({ kind: 'comment', issue: open.number, group: g })
+    if (g.lag) actions.push({ kind: 'known-lag', group: g })
+    else if (open) actions.push({ kind: 'comment', issue: open.number, group: g })
     else if (hits.length) actions.push({ kind: 'known-closed', issue: hits[0].number, group: g })
+    else if (families.has(family(g.pattern, g.reduced))) {
+      actions.push({ kind: 'comment', issue: families.get(family(g.pattern, g.reduced)), group: g, family: true })
+    }
     else if (created < cap && samePattern < perPattern) {
       actions.push({ kind: 'create', group: g })
       created += 1

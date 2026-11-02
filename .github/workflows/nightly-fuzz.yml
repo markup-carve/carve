@@ -4,8 +4,12 @@ name: Nightly fuzz differential
 # carve-php and carve-rs on each mutant (scripts/fuzz-nightly.mjs). Every
 # disagreement is reduced, grouped by a cause signature, and filed by
 # scripts/fuzz-file-issues.mjs: one `bug` + `area:corpus` issue per new cause,
-# a comment on an open issue with the same signature, nothing for a closed one,
-# at most ten new issues a night and three per agreement pattern.
+# a comment on an open issue with the same signature or shape family, nothing
+# for a closed one or for an engine that renders what the model at its own spec
+# pin renders (lag behind a ruling), at most five new issues a night and three
+# per agreement pattern; the run summary lists the rest. The spec-pin models
+# load from the engines' spec submodules and resolve their packages through
+# this checkout's node_modules, which is why the engines are checked out inside it.
 #
 # The seed is the UTC date unless a dispatch names one, and the run prints it.
 # Engines are built at the reviewed pins, as in ast-conformance.yml.

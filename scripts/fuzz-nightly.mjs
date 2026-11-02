@@ -6,6 +6,9 @@
  * Only corpus documents all four already agree on seed the mutants, so every
  * disagreement is one the mutation introduced. Each is reduced while the
  * agreement pattern holds, then grouped by signature (lib/mutation-fuzz.mjs).
+ * A group whose dissenting engines each render what the model at that engine's
+ * own spec pin (its spec submodule) renders is marked `lag`: the engine is
+ * behind a ruling, not wrong, and the filer does not file it.
  * scripts/fuzz-file-issues.mjs turns the report into issues.
  *
  *   node scripts/fuzz-nightly.mjs                       # seed = today's UTC date
@@ -23,7 +26,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { phpDir, rustBinary } from './lib/engine-locations.mjs'
 import { phpRenderer } from './lib/php-render-client.mjs'
 import {
-  agreementPattern, agrees, dateSeed, groupFindings, mutate, reduce, restrictPattern, rng, signature,
+  agreementPattern, agrees, coalesceFamilies, dateSeed, groupFindings, lagBehindPin, mutate, reduce, restrictPattern, rng, signature,
 } from './lib/mutation-fuzz.mjs'
 import { parse } from './spec/layout.mjs'
 import { renderDoc } from './spec/html.mjs'
@@ -75,6 +78,32 @@ const engines = {
   spec: head(root), js: head(jsDir), php: head(php), rs: head(process.env.CARVE_RS_DIR ?? resolve(root, '../carve-rs')),
 }
 const enginesLine = `spec model ${engines.spec}, carve-js ${engines.js}, carve-php ${engines.php}, carve-rs ${engines.rs}`
+
+// The model each engine pins through its spec submodule. Missing or unloadable
+// means no lag check for that engine, never a broken run.
+const specSubmodules = {
+  js: join(jsDir, 'spec'),
+  php: join(php, 'tests/spec'),
+  rs: join(process.env.CARVE_RS_DIR ?? resolve(root, '../carve-rs'), 'tests/spec'),
+}
+const pinnedModels = {}
+for (const [engine, dir] of Object.entries(specSubmodules)) {
+  try {
+    const layout = await import(pathToFileURL(join(dir, 'scripts/spec/layout.mjs')).href)
+    const html = await import(pathToFileURL(join(dir, 'scripts/spec/html.mjs')).href)
+    pinnedModels[engine] = { pin: head(dir), render: (source) => html.renderDoc(layout.parse(source)).trim() }
+  } catch (e) {
+    console.log(`fuzz-nightly: no spec-pin model for ${engine} (${dir}): ${String(e?.message ?? e).split('\n')[0]}`)
+  }
+}
+const pinnedOutputs = (source) => Object.fromEntries(Object.entries(pinnedModels).map(([engine, m]) => {
+  try {
+    return [engine, { pin: m.pin, output: m.render(source) }]
+  } catch {
+    return [engine, { pin: m.pin, output: undefined }]
+  }
+}))
+console.log(`fuzz-nightly: spec-pin models ${Object.entries(pinnedModels).map(([e, m]) => `${e} ${m.pin}`).join(', ') || 'none'}`)
 console.log(`fuzz-nightly: seed=${seed} budget=${budgetMs / 60_000} min`)
 console.log(`fuzz-nightly: ${enginesLine}`)
 
@@ -196,7 +225,11 @@ while (Date.now() - started < budgetMs && mutants < maxMutants) {
 
 const tried = calibrated.size
 const agreeing = [...calibrated.values()].filter(Boolean).length
-const groups = groupFindings(findings)
+const groups = coalesceFamilies(groupFindings(findings))
+for (const g of groups) {
+  const lag = lagBehindPin(g.outputs, pinnedOutputs(g.reduced))
+  if (lag) g.lag = lag
+}
 const report = {
   schema: 1,
   seed,
@@ -213,7 +246,7 @@ const report = {
 if (reportPath) writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n')
 
 for (const g of groups) {
-  console.log(`\n=== ${g.signature}  ${g.pattern}  (${g.hits} hit(s), from ${g.origin})`)
+  console.log(`\n=== ${g.signature}  ${g.pattern}  (${g.hits} hit(s), from ${g.origin})${g.lag ? '  lag behind spec pin' : ''}`)
   console.log(g.reduced.replace(/\n$/, '').split('\n').map((l) => `    ${l}`).join('\n'))
 }
 console.log(
