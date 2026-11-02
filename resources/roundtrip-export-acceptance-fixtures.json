@@ -2203,7 +2203,7 @@
     },
     {
       "id": "list-style-marker-alpha",
-      "source": "a. one\na. two\n",
+      "source": "a.  one\na.  two\n",
       "carrierFragments": [
         "<!-- carve: a. -->\n1. one"
       ],
@@ -2220,7 +2220,7 @@
     },
     {
       "id": "list-style-marker-roman",
-      "source": "iv. one\nv. two\n",
+      "source": "iv.  one\nv.  two\n",
       "carrierFragments": [
         "<!-- carve: iv. -->\n4. one"
       ],
@@ -2238,7 +2238,7 @@
     },
     {
       "id": "list-style-marker-ambiguous-alpha",
-      "source": "i. one\nj. two\n",
+      "source": "i.  one\nj.  two\n",
       "carrierFragments": [
         "<!-- carve: i. j. -->\n9. one"
       ],
@@ -2256,7 +2256,7 @@
     },
     {
       "id": "list-style-marker-ambiguous-roman",
-      "source": "i. one\nii. two\n",
+      "source": "i.  one\nii.  two\n",
       "carrierFragments": [
         "<!-- carve: i. ii. -->\n1. one"
       ],
@@ -2273,7 +2273,7 @@
     },
     {
       "id": "list-style-marker-ambiguous-single-item",
-      "source": "i. one\n",
+      "source": "i.  one\n",
       "carrierFragments": [
         "<!-- carve: i. -->\n1. one"
       ],
@@ -2290,7 +2290,7 @@
     },
     {
       "id": "list-style-marker-under-attribute-line",
-      "source": "{.steps}\na. one\nb. two\n",
+      "source": "{.steps}\na.  one\nb.  two\n",
       "carrierFragments": [
         "<!-- carve: {.steps} -->\n<!-- carve: a. -->\n1. one"
       ],
@@ -2310,7 +2310,7 @@
     },
     {
       "id": "list-delimiter-changed-between-adjacent-lists",
-      "source": "a. one\n\n1. two\n",
+      "source": "a.  one\n\n1. two\n",
       "carrierFragments": [
         "<!-- carve: a. -->\n1. one",
         "1) two"

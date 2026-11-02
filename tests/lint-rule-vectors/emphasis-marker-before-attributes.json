@@ -138,7 +138,7 @@
     },
     {
       "name": "intraword-same-marker",
-      "description": "An intraword marker inside the span.",
+      "description": "A bare span cannot hold its own delimiter (#4810), so the last marker closes no span.",
       "source": "*a*b*{.x}\n",
       "expected": {
         "findings": [
@@ -146,7 +146,7 @@
             "line": 1,
             "column": 5,
             "includes": [
-              "attaches"
+              "closes no span"
             ]
           }
         ]
