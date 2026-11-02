@@ -7231,7 +7231,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
   // the item and the sibling marker at `at`, at whatever depth they sit (CARVE-P9-013).
   // The scan runs forward inside the item that starts at `from`, so a span with
   // no closer is read as it opens (§28), and it is linear.
-  const blankBehindInvisible = (at, from) => {
+  // Rows up to `codeRow` were read as a code body's opener, payload or closer:
+  // visible content, so a blank or a comment-shaped line there is no separator.
+  const blankBehindInvisible = (at, from, codeRow = -1) => {
+    from = Math.max(from, codeRow)
     let span = null
     let blank = -1
     let skipped = false
@@ -7878,6 +7881,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // length, and an opaque fence inside it suspends changes to the colon stack
     // until that innermost span closes.
     const fence = { opaque: null, colon: [] }
+    // The last row read inside a code body, the item's own or a descendant's.
+    let codeBodyRow = -1
     // An over-indented opener establishes #1705's temporary authored base for
     // its whole multi-line block. The canonical item column remains
     // `contentCol`; this is only the source collector's local zero.
@@ -7922,6 +7927,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const trackFence = (line, opens, index) => {
       if (fence.opaque) {
         if (fence.opaque.kind === 'code') {
+          codeBodyRow = index
           const c = PURE_FENCE.exec(fence.opaque.payload ? line.replace(/^[ \t]+/, '') : line)
           if (c && c[1][0] === fence.opaque.run[0] && c[1].length >= fence.opaque.run.length) {
             fence.opaque = null
@@ -7967,6 +7973,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // A paired payload run shields inline delimiters but owns no fence.
         if (payload && payloadCloser < 0) return
         fence.opaque = { kind: 'code', run: code[1], opens, payload }
+        codeBodyRow = index
         return
       }
       if (payload && !COLON_CLOSER.test(line)) return
@@ -8974,6 +8981,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const fenceInStanza = FENCE.test(lm.rest) && stanzaPayload()
         const mayOpenAuthoredBlock = !inNoteBody && !descendantOwned &&
           !foldedChildFence &&
+          // A descendant code body's payload line opens nothing.
+          !(nestedVerbatim() && lm.col - contentCol >= nestedOpaque.col) &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest) &&
           // A fence with no closer under an open paragraph is text (§10 I4), as the walk read it.
           (!isCodeBlockOpener(lm.rest) || bodyFenceOpens(i, lm.rest, col)) && !stanzaPayload()
@@ -9206,6 +9215,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           const nextOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody, true)
           if (nextOpaque?.kind === 'code' && nextOpaque !== nestedOpaque) nextOpaque.sourceBase = localBase
           nestedOpaque = nextOpaque
+          if ((wasNested?.kind === 'code' && !endedBelow) || nextOpaque?.kind === 'code') codeBodyRow = i
         }
         if ((absorbedFenceSeen && !fence.opaque) || foldedChildFence) (residueFence.foldedFences ??= new Set()).add(itemLines.length - 1)
         if (opens && !absorbedFenceSeen && !foldedChildFence) fenceOpensAt.add(itemLines.length - 1)
@@ -9560,7 +9570,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // this sibling marker - an invisible attachment in between does not
         // undo that, because the clause is about the blank, not about what
         // filled the gap.
-        if ((blankBeforeInvisible || blankBehindInvisible(i, itemHead)) && nm.indent === baseIndent && sameAxes(list, nm)) {
+        if ((blankBeforeInvisible || blankBehindInvisible(i, itemHead, codeBodyRow)) && nm.indent === baseIndent && sameAxes(list, nm)) {
           list.tight = false
         }
         break // sibling or outer list
