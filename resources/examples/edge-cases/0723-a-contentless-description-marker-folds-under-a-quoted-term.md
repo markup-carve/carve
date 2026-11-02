@@ -10,10 +10,10 @@
 ```html
 <blockquote>
   <dl>
-    <dt>t
-:</dt>
+    <dt>t</dt>
   </dl>
 </blockquote>
+<p>:</p>
 ```
 
 :::

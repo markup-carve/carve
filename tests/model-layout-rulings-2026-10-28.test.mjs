@@ -36,7 +36,7 @@ test('1,000 later terms open in the outer item after shifted separators', () => 
               ' '.repeat(column + child.length + shift) + ':: sibling',
               ' '.repeat(column + child.length + shift) + 'tail']
             const source = sourceOf(host(lines))
-            assert.match(renderDoc(parse(source)), /<dt>sibling\ntail<\/dt>/, source)
+            assert.match(renderDoc(parse(source)), /<dt>sibling<\/dt>/, source)
             checked++
           }
   assert.equal(checked, 1000)

@@ -42,11 +42,11 @@ test('the line is read as it would be without the quote (carve#4300)', () => {
   }
 })
 
-test('plain text still continues a quoted term', () => {
+test('plain text does not continue a quoted term (carve#4861)', () => {
   for (const chain of held) {
     for (const follower of ['plain', ' plain', '  plain']) {
       const source = `${lead(chain)}${chain.join('')}:: t\n${follower}\n`
-      assert.match(render(source), /<dt>t\nplain<\/dt>/, JSON.stringify(source))
+      assert.match(render(source), /<dt>t<\/dt>/, JSON.stringify(source))
     }
   }
 })
@@ -55,10 +55,10 @@ test('a term in a footnote body in an item leaves a marker to the item', () => {
   assert.match(render('r[^n]\n\n- [^n]: :: t\n  - x\n'), /<ul>\s*<li>\s*<ul>\s*<li>x<\/li>/)
 })
 
-test('a separator past a footnote body alone keeps the term fold (carve#3458)', () => {
-  assert.match(render('r[^n]\n\n[^n]: :: t\n: d\n'), /<dt>t\n: d<\/dt>/)
+test('a separator past a footnote body ends the note (carve#4861)', () => {
+  assert.match(render('r[^n]\n\n[^n]: :: t\n: d\n'), /<p>: d<\/p>/)
 })
 
-test('a marked line below an item column keeps the term fold', () => {
-  assert.match(render('> - item\n>   :: term\n>  :  def\n'), /<dt>term\n:  def<\/dt>/)
+test('a marked line below an item column ends the item (carve#4861)', () => {
+  assert.match(render('> - item\n>   :: term\n>  :  def\n'), /<\/ul>\n  <p>:  def<\/p>/)
 })

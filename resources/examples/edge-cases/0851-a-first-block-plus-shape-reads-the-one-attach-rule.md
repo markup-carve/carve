@@ -23,9 +23,9 @@ CARVE-P9-067 and CARVE-P9-085: a `+` attaches only at its innermost owner's mark
   </li>
 </ul>
 <dl>
-  <dt>l
-  x</dt>
+  <dt>l</dt>
 </dl>
+<p>x</p>
 ```
 
 ::::

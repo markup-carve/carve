@@ -1,8 +1,6 @@
 ## A quoted term takes a lazy line
 
-A term is an ordinary line wherever it is written, so an unmarked plain line
-after it folds into the term, under a quote, a quoted item or an item-hosted
-quote alike (`CARVE-P2-028`, markup-carve/carve-js#2860).
+A term is one line (carve#4861), so an unmarked plain line after it ends the quote, the quoted item or the item-hosted quote it misses and is a paragraph there.
 
 ::: compare
 
@@ -14,10 +12,10 @@ tail
 ```html
 <blockquote>
   <dl>
-    <dt>t
-tail</dt>
+    <dt>t</dt>
   </dl>
 </blockquote>
+<p>tail</p>
 ```
 
 :::
@@ -34,12 +32,12 @@ tail
   <ul>
     <li>
       <dl>
-        <dt>t
-tail</dt>
+        <dt>t</dt>
       </dl>
     </li>
   </ul>
 </blockquote>
+<p>tail</p>
 ```
 
 :::
@@ -56,12 +54,12 @@ tail
   <li>
     <blockquote>
       <dl>
-        <dt>term
-tail</dt>
+        <dt>term</dt>
       </dl>
     </blockquote>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::

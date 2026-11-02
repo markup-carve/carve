@@ -61,8 +61,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "(qOpenPara || qTermOpen || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)",
-          "replace": "(true || qOpenPara || qTermOpen || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)"
+          "find": "(qOpenPara || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)",
+          "replace": "(true || qOpenPara || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)"
         }
       ]
     },
@@ -111,8 +111,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "    if (HEADING.test(text) || HR.test(text)) return finish(false)\n",
-          "replace": "    if (HR.test(text)) return finish(false)\n"
+          "find": "    if (HEADING.test(text) || HR.test(text) || DEFLIST_TERM.test(text)) return finish(false)\n",
+          "replace": "    if (HR.test(text) || DEFLIST_TERM.test(text)) return finish(false)\n"
         }
       ]
     },
@@ -226,7 +226,7 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "(qOpenPara || qTermOpen || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)",
+          "find": "(qOpenPara || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)",
           "replace": "false &&\n            !bodyEndsWrappedAttr(inner)"
         }
       ]
@@ -271,8 +271,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "          let dt = trimWsEnd(dm[1].replace(/^ +/, ''))",
-          "replace": "          let dt = trimWs(dm[1])"
+          "find": "          const dt = trimWsEnd(dm[1].replace(/^ +/, ''))",
+          "replace": "          const dt = trimWs(dm[1])"
         }
       ]
     },
@@ -1211,8 +1211,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "if (!nm && (deepestParagraphOpen() || (lastListBlock === 'term'",
-          "replace": "if (!nm && (true || (lastListBlock === 'term'"
+          "find": "if (!nm && (deepestParagraphOpen() || (afterComment",
+          "replace": "if (!nm && (true || (afterComment"
         }
       ]
     },

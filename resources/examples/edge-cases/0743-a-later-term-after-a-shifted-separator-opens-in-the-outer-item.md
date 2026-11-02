@@ -21,9 +21,9 @@
     </ul>
     : a
     <dl>
-      <dt>sibling
-tail</dt>
+      <dt>sibling</dt>
     </dl>
+    tail
   </li>
 </ul>
 ```
@@ -52,9 +52,9 @@ tail</dt>
       </ul>
       : a
       <dl>
-        <dt>sibling
-tail</dt>
+        <dt>sibling</dt>
       </dl>
+      tail
     </li>
   </ul>
 </blockquote>
@@ -86,9 +86,9 @@ tail</dt>
       </ul>
       : a
       <dl>
-        <dt>sibling
-tail</dt>
+        <dt>sibling</dt>
       </dl>
+      tail
     </li>
   </ul>
 </div>

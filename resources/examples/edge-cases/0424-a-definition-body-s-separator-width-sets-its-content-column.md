@@ -128,10 +128,7 @@ flush block
 
 :::
 
-A colon line below a folding term is the body, not more term text. This is the
-case the engines answered three ways while the one-space spelling had no
-meaning: carve-js folded it into the `dt`, the executable spec left it a stray
-paragraph.
+A colon line directly after a term is the body. A line that is not one ends the term (carve#4861), so the body below it is a paragraph line.
 
 ::: compare
 
@@ -143,10 +140,10 @@ wrapped on
 
 ```html
 <dl>
-  <dt>term
-wrapped on</dt>
-  <dd>definition</dd>
+  <dt>term</dt>
 </dl>
+<p>wrapped on
+: definition</p>
 ```
 
 :::

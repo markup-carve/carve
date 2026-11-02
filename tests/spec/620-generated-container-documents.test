@@ -22,9 +22,9 @@ Generated container documents
 :: 
 .
 <dl>
-  <dt>t
-::</dt>
+  <dt>t</dt>
 </dl>
+<p>::</p>
 ```
 
 ```
@@ -284,11 +284,11 @@ tail
 <ul>
   <li>
     <dl>
-      <dt>t
-:</dt>
+      <dt>t</dt>
     </dl>
   </li>
 </ul>
+<p>:</p>
 ```
 
 ```

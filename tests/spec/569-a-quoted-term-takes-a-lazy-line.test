@@ -6,10 +6,10 @@ tail
 .
 <blockquote>
   <dl>
-    <dt>t
-tail</dt>
+    <dt>t</dt>
   </dl>
 </blockquote>
+<p>tail</p>
 ```
 
 ```
@@ -20,12 +20,12 @@ tail
   <ul>
     <li>
       <dl>
-        <dt>t
-tail</dt>
+        <dt>t</dt>
       </dl>
     </li>
   </ul>
 </blockquote>
+<p>tail</p>
 ```
 
 ```
@@ -36,10 +36,10 @@ tail
   <li>
     <blockquote>
       <dl>
-        <dt>term
-tail</dt>
+        <dt>term</dt>
       </dl>
     </blockquote>
   </li>
 </ul>
+<p>tail</p>
 ```

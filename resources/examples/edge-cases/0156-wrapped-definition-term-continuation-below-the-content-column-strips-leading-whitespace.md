@@ -1,8 +1,8 @@
 ## Wrapped definition term continuation below the content column strips leading whitespace
 
-A `:: term` line inside a list item may be continued by a wrapped line. When that continuation sits *below* the item content column it is a lazy continuation, so - like a lazy paragraph or blockquote continuation - its leading whitespace is stripped before it folds into the `<dt>`. (A continuation *above* the content column instead folds with its residual indent preserved; a continuation at or above the content column is dedented rather than stripped.)
+A term is one line (carve#4861). A line below the item content column that follows a `:: term` line misses the item, finds no open paragraph, and ends the item. Its leading whitespace is stripped as any paragraph's is.
 
-At column 1, one below the content column 2: the leading space is stripped before the fold.
+At column 1, one below the content column 2:
 
 ::: compare
 
@@ -16,16 +16,16 @@ At column 1, one below the content column 2: the leading space is stripped befor
 <ul>
   <li>one
     <dl>
-      <dt>term
-wrapped</dt>
+      <dt>term</dt>
     </dl>
   </li>
 </ul>
+<p>wrapped</p>
 ```
 
 :::
 
-At column 0, flush left: the continuation still folds into the term, byte-identically.
+At column 0, flush left, the same document:
 
 ::: compare
 
@@ -39,11 +39,11 @@ wrapped
 <ul>
   <li>one
     <dl>
-      <dt>term
-wrapped</dt>
+      <dt>term</dt>
     </dl>
   </li>
 </ul>
+<p>wrapped</p>
 ```
 
 :::

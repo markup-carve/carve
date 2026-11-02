@@ -390,16 +390,13 @@
                       list loose; a blank before a child block alone does
                       not. [B-list-end] Three consecutive blanks before a
                       sibling start a new list (PART 9 §11, §17).
-     term             [B-term-start] `:: ` with content; a leaf with inline
-                      content. [B-term-keep] It continues by the paragraph
-                      test and has no ownership of its own, but a lazy line
-                      continues it only as plain text: a list marker that
-                      misses the term's quote or footnote body ends that
-                      container and reads as it would without it, and so
-                      does a `: ` separator that misses the term's quote;
-                      [B-term-end] it
-                      ends at anything that ends a paragraph or at a `: ` body
-                      marker in the same owner.
+     term             [B-term-start] `:: ` with content; a one-line leaf with
+                      inline content, like a heading, and no ownership of its
+                      own. [B-term-end] It ends with its line, and the next
+                      line is read fresh: no line continues it and none folds
+                      into it. A `: ` line in the same owner, directly after
+                      the term or past the blank run and invisible lines
+                      `definition_entry` permits, opens its description.
      definition body  [B-dd-start] `: ` with content, directly after a term
                       or body in the same owner. [B-dd-end] It ends at the
                       next term or body marker in that owner, a missed line

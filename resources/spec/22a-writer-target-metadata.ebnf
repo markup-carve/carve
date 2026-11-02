@@ -60,8 +60,7 @@
       such a `>` is written `\\`. Nothing else is escaped: the payload is
       Carve source, so Carve's own escape is the one the reader already has.
       The import reverses exactly those two. A PAYLOAD MAY SPAN LINES: one
-      that holds a line break, such as a definition term the canonical writer
-      spells over two lines, is written across them, and the marker is the
+      that holds a line break is written across them, and the marker is the
       whole comment. The import reads it as one marker, with any host prefix
       on its later lines removed by the block structure as for the marker
       itself, and restores the line breaks it holds.

@@ -109,9 +109,7 @@
         line sits below it. A body line loses only its available prefix
         whitespace; its text is never removed. A tab crossing the host column
         retains its remaining columns as spaces (PART 9 §24 C5). At document
-        level there is no container prefix to remove. This also applies to a
-        comment folded into a definition term, whose marker establishes no
-        body column. The closer's column does not change the payload value.
+        level there is no container prefix to remove. The closer's column does not change the payload value.
       - TAIL DISPOSITION (serialization, PART 11): the OPENER's tail is kept as
         the comment body's FIRST LINE, so `carve fmt` round-trips the words
         rather than deleting them; the CLOSER's tail is DISCARDED, as a code

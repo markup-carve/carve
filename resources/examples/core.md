@@ -3914,11 +3914,10 @@ the list form `- +` provides. Write `: \+` for a literal `+`.
 
 :::
 
-The **term** side is inline-only, like a heading label: it holds inline content
-(no block content), but it *does* fold a following plain line into the term
-with a soft break - a wrapped term line joins the term instead of ending the
-list. A new marker (`::` / `: `), a blank line, or a block opener ends the
-term.
+The **term** side is inline-only and one line, like a heading: it holds inline
+content (no block content), and the next line is read on its own
+(markup-carve/carve#4861). A plain line after it is a paragraph, so a `: ` line
+below that paragraph is paragraph text, not a description.
 
 ::: compare
 
@@ -3930,10 +3929,10 @@ wraps onto the next line
 
 ```html
 <dl>
-  <dt>A term that
-wraps onto the next line</dt>
-  <dd>its definition</dd>
+  <dt>A term that</dt>
 </dl>
+<p>wraps onto the next line
+: its definition</p>
 ```
 
 :::

@@ -1,9 +1,6 @@
 ## A quoted term takes no lazy marker or separator
 
-A definition term continues lazily only with plain text. An unprefixed list
-marker ends the quote and reads as it would without it, and so does a `: `
-separator, at any quote depth and column, with or without an item between
-(`[B-term-keep]`, markup-carve/carve#4300).
+A definition term takes no lazy line (carve#4861). An unprefixed list marker, separator or plain line ends the quote and is read as it would be without it.
 
 ::: compare
 

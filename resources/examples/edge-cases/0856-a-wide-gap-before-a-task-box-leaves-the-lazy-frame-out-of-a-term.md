@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A wide gap before a task box leaves the lazy frame out of a term
 
-The lazy line folds into the term past the note (PART 0 S4, carve#4499).
+The line misses the note and the item, and a term holds no fold (carve#4861), so it is read outside them.
 
 ::: compare
 
@@ -19,7 +19,7 @@ The lazy line folds into the term past the note (PART 0 S4, carve#4499).
 <ul class="task-list">
   <li><input type="checkbox" disabled> 
     <ul>
-      <li></li>
+      <li>c</li>
     </ul>
   </li>
 </ul>
@@ -29,8 +29,7 @@ The lazy line folds into the term past the note (PART 0 S4, carve#4499).
   <ol>
     <li id="fn1">
       <dl>
-        <dt>t
-c</dt>
+        <dt>t</dt>
       </dl>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>

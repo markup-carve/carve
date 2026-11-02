@@ -20,12 +20,12 @@ PART 0 S4 and carve#4502.
     <ul class="task-list">
       <li><input type="checkbox" disabled> 
         <dl>
-          <dt>t
-^ ap
-^ cap</dt>
+          <dt>t</dt>
         </dl>
       </li>
     </ul>
+    ^ ap
+^ cap
   </li>
 </ul>
 ```

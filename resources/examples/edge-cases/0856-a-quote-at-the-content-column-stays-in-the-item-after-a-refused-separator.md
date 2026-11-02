@@ -22,10 +22,10 @@ The separator stays text in the item, and the next line reaches its column (CARV
         <dt>t</dt>
       </dl>
     </blockquote>
-    : a
-    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
+<p>: a</p>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::

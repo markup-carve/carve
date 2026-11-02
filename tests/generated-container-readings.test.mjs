@@ -27,7 +27,7 @@ const rows = [
   {
     "id": "gen-346",
     "source": "- :: t\n:  ",
-    "html": "<ul>\n  <li>\n    <dl>\n      <dt>t\n:</dt>\n    </dl>\n  </li>\n</ul>\n"
+    "html": "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n    </dl>\n  </li>\n</ul>\n<p>:</p>\n"
   },
   {
     "id": "gen-351",

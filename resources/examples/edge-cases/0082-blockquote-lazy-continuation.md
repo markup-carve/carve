@@ -89,10 +89,10 @@ text and the next line folds into the term (`CARVE-P2-028`).
 ```html
 <blockquote>
   <dl>
-    <dt>t
-~</dt>
+    <dt>t</dt>
   </dl>
 </blockquote>
+<p>~</p>
 ```
 
 :::

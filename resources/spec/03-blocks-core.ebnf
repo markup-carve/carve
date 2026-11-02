@@ -448,9 +448,8 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    `::` and the description marker `:`. The three clauses below apply it.
 
    THE DESCRIPTION MARKER -- NORMATIVE [CARVE-P2-026]. A `:` line carrying only
-   whitespace opens no description. It is a plain line under the open term,
-   which folds it as a soft break: `:`, `: `, `:   ` and `:` + TAB are one
-   document.
+   whitespace opens no description. It is a plain line, so after a term it
+   starts a paragraph: `:`, `: `, `:   ` and `:` + TAB are one document.
 
    A LEADING CONTENT TAB IS CONTENT -- NORMATIVE [CARVE-P2-010].
    With the separator space present and content after it, a tab that begins
@@ -467,7 +466,7 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
 
    WHICH CHARACTERS THE CONTENT TEST IGNORES -- NORMATIVE [CARVE-P2-027]. A tab
    PAST the separator run is judged by the content test: a body of nothing but
-   tabs opens nothing, so `: ` + TAB folds into the term, while `: ` + TAB +
+   tabs opens nothing, so `: ` + TAB is a plain line, while `: ` + TAB +
    `x` opens a description. Every character outside `' ' | '\t'` is content:
    `: ` + VT and `: ` + NBSP each open a description. *)
 
@@ -646,15 +645,13 @@ definition_entry = definition_term+, [{blank_line}, definition_body,
    A blank NOT followed by a `: ` definition ends the entry. The bodies are
    optional: `:: t` alone is a definition list holding one term and no
    description (PART 0 FAMILIES, [B-term-start]). *)
-definition_term = "::", definition_separator, inline_content, newline, {term_continuation_line} ;
-term_continuation_line = inline_content, newline ;
-(* A term folds a following plain line as a soft break; a blank line, a new
-   `::`/`: ` marker, or anything else that ends a paragraph ends it. A term
-   holds inline content only -- no block body. Unlike a heading, a term KEEPS
-   its fold. It has no ownership of its own (PART 0 FAMILIES, CARVE-P0-024):
-   an opener under an open term, at or past the owner's content column, ends
-   the term and opens in that owner, and a following unprefixed plain line
-   folds into the term as into an open paragraph (S4). *)
+definition_term = "::", definition_separator, inline_content, newline ;
+(* A term is one line, like a heading, and holds inline content only -- no
+   block body. It has no ownership of its own (PART 0 FAMILIES, CARVE-P0-024)
+   and no paragraph: the next line is read fresh in its own owner (S2, S3), at
+   any column. So `:: a` / `b` / `: c` is a list holding the term `a` followed
+   by the paragraph `b` / `: c`, and in `- x` / `  :: a` / `b` the line `b`
+   misses the item and is a paragraph after the list (S5). *)
 definition_body = (':', definition_separator, first_block_content)
                 | (':', definition_separator, inline_content, newline,
                    { definition_continuation

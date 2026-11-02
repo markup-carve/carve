@@ -360,11 +360,10 @@
          to the item. The block-opener set is UNIFORM and closed: block quote (`>` or
          `> `), heading (`#`), thematic break, fenced code, colon fence / admonition
          (`:::`), TABLE (a `|`-delimited row), and DEFINITION LIST (a `:: term`
-         opener; the two-line `:: `/`: ` marker is recognized by the same
-         look-ahead the top level uses, and only the `:: ` TERM line opens the
+         opener; only the `:: ` TERM line opens the
          block). None of these is special-cased: a def-list or table interrupts
          at column 0 and nests at content_column exactly as a quote or heading
-         does. A definition term is a leaf with no ownership of its own (PART 0
+         does. A definition term is a one-line leaf with no ownership of its own (PART 0
          FAMILIES). The content_column is
          the item body's CANONICAL COLUMN 0 and its minimum containment column.
          This one rule holds whether or not a blank line precedes the child;

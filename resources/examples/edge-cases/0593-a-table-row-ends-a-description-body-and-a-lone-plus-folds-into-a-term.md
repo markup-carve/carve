@@ -27,8 +27,7 @@ description it ends the body and the list; the table follows the list
 :::
 
 
-A term holds no blocks, so a lone `+` under it attaches nothing. It is a plain
-line, and a term folds a plain line (CARVE-P2-028):
+A term holds no blocks, so a lone `+` under it attaches nothing. It is a plain line, and a plain line ends the term (carve#4861):
 
 ::: compare
 
@@ -40,16 +39,16 @@ line, and a term folds a plain line (CARVE-P2-028):
 
 ```html
 <dl>
-  <dt>term
-+</dt>
-  <dd>d</dd>
+  <dt>term</dt>
 </dl>
+<p>+
+: d</p>
 ```
 
 :::
 
 
-The same after a wrapped term:
+The same after a line that ended the term:
 
 ::: compare
 
@@ -62,11 +61,11 @@ The same after a wrapped term:
 
 ```html
 <dl>
-  <dt>A term that
-   wraps
-+</dt>
-  <dd>d</dd>
+  <dt>A term that</dt>
 </dl>
+<p>wraps
++
+: d</p>
 ```
 
 :::

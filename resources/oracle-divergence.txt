@@ -37,3 +37,4 @@
 #     Delete the line in the same commit as the fix.
 #
 # Format: <document id><space><space><reason>
+docs/validation.md#5  points at the engine: a term is one line, so a separator that misses the item ends it (PART 0 B-term-end, markup-carve/carve#4861); the pinned build still folds it into the term

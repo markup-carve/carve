@@ -1,12 +1,6 @@
 ## A colon followed by only whitespace is not a description
 
-A description marker takes a separator space and non-empty content (PART 2,
-MARKER REQUIRES CONTENT), so a `:` line carrying nothing but whitespace opens no
-description. It is a plain line under the open term, and the term folds it as a
-soft break. The line's trailing whitespace run is dropped (PART 2, NO TRAILING
-WHITESPACE), which makes every such spelling the same document as the bare
-marker - the separator's width and the marker's own trailing space cannot carry
-meaning.
+A description marker takes a separator space and non-empty content (PART 2, MARKER REQUIRES CONTENT), so a `:` line carrying nothing but whitespace opens no description. It is a plain line, so it starts a paragraph after the term (carve#4861). The line's trailing whitespace run is dropped (PART 2, NO TRAILING WHITESPACE), which makes every such spelling the same document as the bare marker - the separator's width and the marker's own trailing space cannot carry meaning.
 
 The separator is `space`, and a tab never satisfies it (PART 1, MARKER
 SEPARATORS AND PADDING SLOTS). The tab spelling is therefore refused at the
@@ -25,9 +19,9 @@ flush
 
 ```html
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 
@@ -47,9 +41,9 @@ flush
 
 ```html
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 
@@ -66,9 +60,9 @@ flush
 
 ```html
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 
@@ -87,9 +81,9 @@ flush
 
 ```html
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 
@@ -117,8 +111,7 @@ flush
 
 :::
 
-The whitespace control. A bare marker has an empty trailing run, so the fold
-leaves nothing to drop.
+The whitespace control. A bare marker has an empty trailing run, so nothing is left to drop.
 
 ::: compare
 
@@ -131,9 +124,9 @@ flush
 
 ```html
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 
@@ -143,7 +136,7 @@ The cell between those two: a separator space, and then a tab. The separator IS
 satisfied here, so this spelling is refused at the content test rather than at
 the separator. After the greedy space run a lone tab is trailing whitespace and
 nothing else, and MARKER REQUIRES CONTENT ignores trailing whitespace, so the
-marker opens nothing and the line folds like the rows above. The greedy run is
+marker opens nothing and the line is plain like the rows above. The greedy run is
 spaces only, which is what leaves the tab to be judged as content
 (markup-carve/carve#1836).
 
@@ -158,9 +151,9 @@ flush
 
 ```html
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 

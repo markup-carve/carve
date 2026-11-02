@@ -9,9 +9,9 @@ A term continuation in a description keeps spaces past the body column
   <dt>t</dt>
   <dd>
     <dl>
-      <dt>t
-u</dt>
+      <dt>t</dt>
     </dl>
+    <p>u</p>
   </dd>
 </dl>
 ```
@@ -25,9 +25,9 @@ u</dt>
   <dt>t</dt>
   <dd>
     <dl>
-      <dt>t
-  u</dt>
+      <dt>t</dt>
     </dl>
+    <p>u</p>
   </dd>
 </dl>
 ```

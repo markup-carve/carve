@@ -25,11 +25,11 @@ for (const prefix of ['', '> ', '> > ']) {
     }
   }
   for (const info of [' bad,info', '  js', '\tjs']) {
-    test(`invalid CODE info remains term text: ${prefix}, ${JSON.stringify(info)}`, () => {
+    test(`invalid CODE info is paragraph text after the term: ${prefix}, ${JSON.stringify(info)}`, () => {
       const source = ['- :: term', '  ```' + info, '  a', '', '- next']
         .map(line => line ? prefix + line : '').join('\n') + '\n'
       const html = renderDoc(parse(source))
-      assert.match(html, /<dt>term\n<code>/)
+      assert.match(html, /<dt>term<\/dt>/)
       assert.doesNotMatch(html, /<pre>/)
     })
   }
@@ -52,11 +52,12 @@ for (const prefix of ['', '> ', '> > ']) {
 
 for (const run of ['```', '~~~']) {
   for (const info of [' bad,info', '  js', '\tjs']) {
-    test(`top-level invalid info folds into the term: ${run}, ${JSON.stringify(info)}`, () => {
+    test(`top-level invalid info is a paragraph after the term: ${run}, ${JSON.stringify(info)}`, () => {
       const document = parse(`:: term\n${run}${info}\na\n`)
-      assert.equal(document.blocks.length, 1)
+      assert.equal(document.blocks.length, 2)
       assert.equal(document.blocks[0].t, 'deflist')
-      assert.equal(document.blocks[0].items[0].dt, `term\n${run}${info}\na`)
+      assert.equal(document.blocks[0].items[0].dt, 'term')
+      assert.equal(document.blocks[1].t, 'para')
     })
   }
   test(`a CODE opener past the term column ends the term: ${run}`, () => {
@@ -75,10 +76,10 @@ test('a div at the top-level term column ends the term', () => {
 })
 
 for (const [marker, ends] of [['abc.', false], ['1.', true], ['a.', true], ['iv.', true]]) {
-  test(`an ordered marker ends a term only when a dialect claims it: ${marker}`, () => {
+  test(`a term ends before an ordered marker, a dialect claiming it or not: ${marker}`, () => {
     const gap = /^[a-z]/.test(marker) ? '  ' : ' '
     const html = renderDoc(parse(`:: term\n${marker}${gap}item\n`))
-    if (ends) assert.match(html, /<dt>term<\/dt>/)
-    else assert.match(html, new RegExp(`<dt>term\\n${marker.replace('.', '\\.')}${gap}item</dt>`))
+    assert.match(html, /<dt>term<\/dt>/)
+    if (!ends) assert.match(html, new RegExp(`<p>${marker.replace('.', '\\.')}${gap}item</p>`))
   })
 }

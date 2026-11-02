@@ -29,7 +29,8 @@ for (const { name, source, afterTerm } of cases) {
   })
 }
 
-test('one column past the marker stays inside the term', () => {
+test('one column past the marker stays out of the term', () => {
   const html = renderDoc(parse('1. 1. :: t\n    : a\n'))
-  assert.match(html, /<dt>t\n: a<\/dt>/)
+  assert.match(html, /<dt>t<\/dt>/)
+  assert.doesNotMatch(html, /<dd>/)
 })

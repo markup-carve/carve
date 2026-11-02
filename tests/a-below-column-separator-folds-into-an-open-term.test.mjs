@@ -6,7 +6,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const render = source => renderDoc(parse(source))
 
 for (const marker of ['- ', '1. ', '* [ ] ']) for (const depth of [1, 2, 3]) {
-  test(`${JSON.stringify(marker)} depth ${depth} folds a below-column separator`, () => {
+  test(`${JSON.stringify(marker)} depth ${depth} takes no below-column separator`, () => {
     let source = ''
     let column = 0
     for (let i = 0; i < depth; i++) {
@@ -14,7 +14,8 @@ for (const marker of ['- ', '1. ', '* [ ] ']) for (const depth of [1, 2, 3]) {
       column += marker.startsWith('* [') ? 2 : marker.length
     }
     source += `${' '.repeat(column)}:: term\n${' '.repeat(column - 1)}:  def\n`
-    assert.match(render(source), /<dt>term\n:  def<\/dt>/)
+    assert.match(render(source), /<dt>term<\/dt>/)
+    assert.doesNotMatch(render(source), /<dd>/)
   })
 }
 
@@ -27,6 +28,6 @@ test('a separator folds into an open description paragraph', () => {
   assert.match(render('- item\n  :: term\n  :  body\n :  tail\n'), /<dd>body\n:  tail<\/dd>/)
 })
 
-test('a quote keeps the term fold', () => {
-  assert.match(render('> - item\n>   :: term\n>  :  def\n'), /<dt>term\n:  def<\/dt>/)
+test('a quote reads the same way', () => {
+  assert.match(render('> - item\n>   :: term\n>  :  def\n'), /<\/ul>\n  <p>:  def<\/p>/)
 })
