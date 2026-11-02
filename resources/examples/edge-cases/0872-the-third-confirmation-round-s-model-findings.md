@@ -4,6 +4,12 @@ page: edge-definitions
 
 ## The third confirmation round's model findings
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 A marker between an item's columns reads as at the marker column, also below a note on the item's marker line (carve#4545, carve#4614). A lazy line closes no line block (PART 0 S4, carve#4615). A caption number stays out of the tag before it (CARVE-P2-022, carve#4616). A line that misses a comment fence's owner ends the fence in every host (PART 0 S1, carve#4617). A task item's content column keeps its authored separator (CARVE-P9-083, carve#4618). A paragraph after a literal directive loosens an item (PART 10 I2, carve#4619). An attached attribute run holds no substitution arrow (PART 9 SS22 R3, carve#4620). Comments do not hide a caption host (PART 9R, carve#4621). A base class takes the class slot's spelling (PART 10 §1, carve#4622).
 
 ::::: compare
@@ -166,7 +172,9 @@ y
 ````
 
 ````html
-<blockquote><p>x</p></blockquote>
+<blockquote>
+
+</blockquote>
 <p>y</p>
 <blockquote>
 
@@ -188,7 +196,7 @@ y
 ````html
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd></dd>
 </dl>
 <p>y</p>
 ````
@@ -208,15 +216,6 @@ r[^n]
 
 ````html
 <p>y</p>
-<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ````
 
 :::::

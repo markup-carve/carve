@@ -111,14 +111,15 @@ for (const depth of [0, 1, 2]) for (const opener of ['::: inner', ':::', ':::: w
 
 for (const depth of [0, 1, 2]) for (const head of ['::: box', 'a', '# h', '- n']) for (const at of [2, 1, 4]) {
   for (const second of ['%% j', '%%%', '%%%%%%', null]) for (const secondAt of [0, 1]) for (const tailAt of [2, 0, 1]) {
-    test(`an unmatched comment fence owns what a line comment owns: depth ${depth}, ${head}, column ${at}, ${second}@${secondAt}, tail ${tailAt}`, () => {
-      const read = (first) => html(quoted(depth, ['- ' + head, ' '.repeat(at) + first,
-        ...(second ? [' '.repeat(secondAt) + second] : []), ' '.repeat(tailAt) + 'TAIL']))
-      const line = read('%% k')
-      assert.equal(read('%%%%'), line)
-      assert.equal(read('%%%%%'), line)
-      // `%%% k` pairs with a following `%%%`, which makes it a span, not the line form.
-      if (second !== '%%%') assert.equal(read('%%% k'), line)
+    // An unmatched fence opens forward only (§28, carve#4907): a closer added at
+    // the end changes nothing before it. This replaced the line-form reading.
+    test(`an unmatched comment fence reads the same with a closer added at the end: depth ${depth}, ${head}, column ${at}, ${second}@${secondAt}, tail ${tailAt}`, () => {
+      const read = (first, closer = []) => html(quoted(depth, ['- ' + head, ' '.repeat(at) + first,
+        ...(second ? [' '.repeat(secondAt) + second] : []), ' '.repeat(tailAt) + 'TAIL', ...closer]))
+      for (const fence of ['%%%%', '%%%%%', '%%% k']) {
+        assert.equal(read(fence), read(fence, [fence.split(' ')[0]]), fence)
+        assert.doesNotMatch(read(fence), /%%/, fence)
+      }
     })
   }
 }

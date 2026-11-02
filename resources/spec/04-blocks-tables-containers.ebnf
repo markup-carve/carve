@@ -298,7 +298,7 @@ admonition = admonition_open, newline,
    (PART 0 S5, CARVE-P9-084).
 
    OPAQUE SPANS. `{block - admonition_close}` is a BLOCK sequence. In a
-   colon body, recognize a code, raw or matched comment opener before
+   colon body, recognize a code, raw or comment opener before
    testing its line as a closer. Consume the opaque span as one child block;
    bare code and `%%%` openers can themselves look like closers. A colon
    run inside that span is payload and cannot close the colon body. When
@@ -507,11 +507,12 @@ comment_line = [whitespace], "%%", [space], {character}, newline ;
    leading run of `%` is structural, so `%%% TODO` opens and `%%% end` closes.
    `%%%` carries NO info string -- a raw passthrough block is a CODE fence with
    an `=FORMAT` info string -- so `%%% html` is a comment, not a raw block.
-   A block opens only when a matching closer exists AHEAD; otherwise the line
-   degrades to a `comment_line`. Both rules are NORMATIVE in PART 9 §28. *)
+   The opener opens a block with no closer lookahead; the closer is optional
+   and an unclosed block runs to the end of its host or S1 (carve#4907). Both
+   rules are NORMATIVE in PART 9 §28. *)
 comment_block = comment_block_open, newline,
                 {character | newline},
-                comment_block_close, newline ;  (* PART 9 §28: else comment_line *)
+                [comment_block_close, newline] ;  (* PART 9 §28: unclosed runs to host end *)
 
 (* Both delimiters may be INDENTED, exactly as `comment_line` may: leading
    whitespace is not part of the delimiter, only the `%` run is, so the length

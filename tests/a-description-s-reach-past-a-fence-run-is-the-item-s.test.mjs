@@ -165,9 +165,10 @@ test('GUARD: a comment fence in the same geometry is decided by the comment rule
   )
 })
 
-test('GUARD: an unterminated comment fence in a dd opens no span', () => {
+test('GUARD: an unterminated comment fence in a dd hides the rest of the dd', () => {
+  // §28 (carve#4907): the opener opens with no closer ahead.
   const out = html(':: t\n:  head\n\n     %%%\n     a\n\n   tail\n')
-  assert.ok(out.includes('<p>a</p>'), out)
+  assert.ok(!out.includes('a</p>') && !out.includes('tail'), out)
 })
 
 test('GUARD: a colon container host opens a fence past the column under a paragraph too', () => {

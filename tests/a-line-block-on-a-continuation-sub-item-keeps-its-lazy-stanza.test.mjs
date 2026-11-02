@@ -20,7 +20,8 @@ const folded = [
   '</ul>',
 ].join('\n')
 
-for (const payload of ['%% c', '%%', '%%%']) {
+// A `%%%` opens a span since carve#4907, so it is no longer a line comment here.
+for (const payload of ['%% c', '%%']) {
   test(`a line block on a continuation-line sub-item folds the lazy line after \`${payload}\``, () => {
     assert.equal(html(`- a\n  - ::: |\n    ${payload}\nb\n`), folded)
   })

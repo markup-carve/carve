@@ -38,7 +38,7 @@ A comment span's closer column does not move the item's ownership
 <ul>
   <li>item</li>
 </ul>
-<p><a href="/url">use</a></p>
+<p>[use][r]</p>
 ```
 
 ```

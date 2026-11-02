@@ -54,7 +54,7 @@
              footnote def   marker-body content column two past its authored
                             marker column; exactly two columns consumed
                             (PART 9 §24 C3)
-             opaque body    (code / raw / matched comment span) -- no
+             opaque body    (code / raw / comment span) -- no
                             per-line prefix; verbatim up to its where-guarded
                             closer
              colon body     (admonition / div / figure group / fenced quote /
@@ -141,31 +141,32 @@
 
      S1 PAYLOAD. If a code, raw or comment fence is open, test the line
         against its closer first. A nonblank line that misses the fence's
-        owner in S2 ends the fence; nothing else ends a code or raw fence
-        without its closer, so an unclosed one runs to the end of its
+        owner in S2 ends the fence; nothing else ends a code, raw or comment
+        fence without its closer, so an unclosed one runs to the end of its
         container and a host's colon closer inside it is payload. Any other payload
         line opens nothing and changes no frame state. A colon body is not a
         payload: its lines go on to S2.
 
         COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP -- NORMATIVE [CARVE-P0-005].
-        Honor an active payload first. Then recognize `%%` and a matched
-        `%%%` span as comment tokens before S3 classifies the visible
+        Honor an active payload first. Then recognize `%%` and a `%%%`
+        span as comment tokens before S3 classifies the visible
         residue. Record the comment node, its authored spelling and its
         complete source extent, and remove it from visible classification
         and rendering: this is erasure from layout, never from the AST or the
-        source map. A matched `%%%` span carries its opener, opaque body and
-        exact-width closer as one extent across authored indentation. An
-        opener without an exact-width closer is one `%%` line comment.
+        source map. A `%%%` span carries its opener, opaque body and
+        exact-width closer as one extent across authored indentation. A
+        `%%%` opener opens its span without looking for a closer; with none,
+        the span ends under S1 or at the end of its container (carve#4907).
         Comment delimiters inside code, raw content or another payload are
         literal bytes.
-        A body line that misses the matched comment span's owner ends that
-        span under S1; the line is classified in its selected owner.
+        A body line that misses the comment span's owner ends that span
+        under S1; the line is classified in its selected owner.
 
         A comment takes the `line_comment` / `fenced_comment` row of T in its
         owner and does not fold. It ends the open paragraph and closes no list
         item, description body or footnote body at any column: the next visible
         line picks the owner, and the comment is read there (PART 9 §10
-        CARVE-P9-013). A matched span's extent is fixed where it is written,
+        CARVE-P9-013). A span's extent is fixed where it is written,
         and the whole span moves with its opener. A quote is reached only by its marker, so an unmarked
         comment ends it (S2). Two lines keep the authored column: a region
         marker below a list closes every item (CARVE-P11-073), and a line that
@@ -419,7 +420,7 @@
                       like the other modes, which read blocks, takes a lazy
                       line while its stanza is open (PART 2 `line_block`).
      code, raw and    [B-code-start] [B-comment-start] A valid code or raw
-       comment fence  opener; a comment opener with a matching closer.
+       comment fence  opener; a comment opener, with no closer lookahead.
                       [B-code-keep] [B-comment-keep] The payload is opaque and
                       takes no lazy line. [B-code-end] [B-comment-end] It ends
                       at its closer or by S1.

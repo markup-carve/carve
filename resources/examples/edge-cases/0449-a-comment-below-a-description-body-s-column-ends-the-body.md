@@ -1,5 +1,11 @@
 ## A comment below a description body's column ends the body
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 A matched `%%%` span opened at DOCUMENT column 0 below a description body ends
 the body. The opener is classified in the surviving context, where the matching
 run below it makes it a comment BLOCK, and the line between the two delimiters
@@ -107,8 +113,6 @@ z
   <dt>t</dt>
   <dd>x</dd>
 </dl>
-<p>y
-z</p>
 ```
 
 :::
@@ -156,7 +160,6 @@ z
   <dd>x</dd>
 </dl>
 <p>y</p>
-<p>z</p>
 ```
 
 :::
@@ -222,10 +225,7 @@ The DEGRADED fence, same answer: with no closer ahead it is a line comment.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x</dd>
 </dl>
 ```
 

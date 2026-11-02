@@ -31,7 +31,10 @@ for (const fence of ['```', '````', '~~~']) {
 test('a task chain folds at every depth too', () => {
   assert.match(render('- [ ] - [ ] - [ ] - [ ] ~~~\n                  x\ntail\n'), /x\ntail\n/)
   assert.match(render('- - [ ] - [ ] - ```\n          x\ntail\n'), /x\ntail\n/)
-  assert.match(render('- [ ] - [ ] - [ ] %%%\n            x\ntail\n'), /x\ntail\n/)
+  // An unclosed comment span opens on the marker line (§28, carve#4907) and
+  // the same line ends it under S1, so `x` is read in the item it reaches.
+  const comment = render('- [ ] - [ ] - [ ] %%%\n            x\ntail\n')
+  assert.ok(/<\/ul>\n\s*x\n/.test(comment) && /<p>tail<\/p>/.test(comment), comment)
 })
 
 // The innermost box is its item's content: a line at that column is fence body,

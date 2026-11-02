@@ -10,7 +10,7 @@ A line that misses a nested host ends it when a comment closer lies ahead
 <ol>
   <li>a
     <ol>
-      <li>n</li>
+      <li></li>
     </ol>
     zz
   </li>
@@ -26,9 +26,9 @@ A line that misses a nested host ends it when a comment closer lies ahead
 <ol>
   <li>a
     <ol>
-      <li>n
-zz</li>
+      <li></li>
     </ol>
+    zz
   </li>
 </ol>
 ```
@@ -42,7 +42,9 @@ zz</li>
 .
 <ul>
   <li>a
-    <blockquote><p>n</p></blockquote>
+    <blockquote>
+
+    </blockquote>
     zz
   </li>
 </ul>
@@ -58,8 +60,10 @@ zz</li>
 .
 <ul>
   <li>a
-    <blockquote><p>n
-zz</p></blockquote>
+    <blockquote>
+
+    </blockquote>
+    zz
   </li>
 </ul>
 ```
@@ -76,7 +80,7 @@ zz</p></blockquote>
   <li>a
     <dl>
       <dt>u</dt>
-      <dd>n</dd>
+      <dd></dd>
     </dl>
     zz
   </li>
@@ -98,13 +102,4 @@ x[^g]
     <p>zz</p>
   </li>
 </ul>
-<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```

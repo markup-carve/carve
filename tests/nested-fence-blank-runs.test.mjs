@@ -37,7 +37,7 @@ test('an attached block does not add a blank to an unfinished descendant fence',
 
 test('a comment closer outside the item cannot hide its unfinished code fence', () => {
   for (const closer of ['%%%', '  %%%']) {
-    const source = '- p\n  - head\n\n    %%%\n    ```\n    body\n\n\n\n  out\n\n' + closer + '\n'
+    const source = '- p\n  - head\n\n    %%\n    ```\n    body\n\n\n\n  out\n\n' + closer + '\n'
     assert.ok(renderDoc(parse(source)).includes('body\n\n\n\n</code></pre>'))
   }
 })
@@ -56,7 +56,7 @@ test('an overindented comment can close at its owning item column', () => {
 })
 
 test('a lazy paragraph line keeps the descendant comment scope', () => {
-  const source = '- p\n  - head\nlazy\n\n    %%%\n    ```\n    body\n\n\n  out\n\n  %%%\n'
+  const source = '- p\n  - head\nlazy\n\n    %%\n    ```\n    body\n\n\n  out\n\n  %%%\n'
   assert.ok(renderDoc(parse(source)).includes('body\n\n\n</code></pre>'))
 })
 

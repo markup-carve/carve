@@ -42,3 +42,6 @@ php/indented-code-block  The php engine does not carry the default authoring rul
 rust/setext-heading-underline  The rust engine does not carry the default authoring rule yet (carve#4814).
 rust/heading-closing-hashes  The rust engine does not carry the default authoring rule yet (carve#4814).
 rust/indented-code-block  The rust engine does not carry the default authoring rule yet (carve#4814).
+js/unclosed-comment-fence  The js engine does not carry the default authoring rule yet (carve#4907).
+php/unclosed-comment-fence  The php engine does not carry the default authoring rule yet (carve#4907).
+rust/unclosed-comment-fence  The rust engine does not carry the default authoring rule yet (carve#4907).

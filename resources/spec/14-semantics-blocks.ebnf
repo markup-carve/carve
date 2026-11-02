@@ -338,7 +338,7 @@
          ARITHMETIC is not, and stays where it is.
 
          A COMMENT OR ONE-LINE DEFINITION CLOSES NO INDENTATION CONTAINER. A `%%`
-         line, a matched `%%%` span, a link reference definition and an
+         line, a `%%%` span, a link reference definition and an
          abbreviation definition close no list item, description body or
          footnote body at any column. They end the open paragraph and take
          effect, and the next visible line picks the owner as if they were

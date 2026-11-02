@@ -4,6 +4,12 @@ page: edge-lists
 
 ## A line that misses the host ends it when a comment closer lies ahead
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 PART 0 S1 and the RECOVERY DECISION TABLE, PART 9 §28 (CARVE-P0-005, CARVE-P9-060, carve#4770). When a `%%%` opener's exact-width closer comes after a line that misses the host, that line still ends the host and is read in its own owner. The opener is then a `%%` line within the shortened host, so the lines between stay visible. With no closer ahead the same line folds into the paragraph, as it does after `%%`.
 
 ::::: compare
@@ -20,7 +26,7 @@ PART 0 S1 and the RECOVERY DECISION TABLE, PART 9 §28 (CARVE-P0-005, CARVE-P9-0
 <ol>
   <li>a
     <ol>
-      <li>n</li>
+      <li></li>
     </ol>
   </li>
 </ol>
@@ -42,11 +48,11 @@ PART 0 S1 and the RECOVERY DECISION TABLE, PART 9 §28 (CARVE-P0-005, CARVE-P9-0
 <ol>
   <li>a
     <ol>
-      <li>n
-&gt;&gt;</li>
+      <li></li>
     </ol>
   </li>
 </ol>
+<p>&gt;&gt;</p>
 ```
 
 :::::
@@ -63,9 +69,7 @@ zz
 
 ```html
 <ul>
-  <li>a
-    n
-  </li>
+  <li>a</li>
 </ul>
 <p>zz</p>
 ```
@@ -83,11 +87,9 @@ zz
 
 ```html
 <ul>
-  <li>a
-    n
-zz
-  </li>
+  <li>a</li>
 </ul>
+<p>zz</p>
 ```
 
 :::::

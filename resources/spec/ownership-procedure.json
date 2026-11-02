@@ -44,7 +44,6 @@
       "checkerHelpers": [
         "bodyHasOpenCodeFence",
         "classifyLayoutComment",
-        "commentFenceOpensSpan",
         "hasCloser"
       ],
       "constraint": "An open fence tests its closer first. Comments are classified before S3, and remain ordinary lines for ownership."

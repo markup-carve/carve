@@ -31,8 +31,10 @@ test('a marker line comment and a terminated span give the follower the same own
   assert.equal(html('- a\n  - %% line\ntail\n'), html('- a\n  - %%%\n    hidden\n%%%\ntail\n'))
 })
 
-test('an unmatched marker fence leaves ordinary payload visible', () => {
-  assert.ok(html('- a\n  - %%%\n    visible\ntail\n').includes('visible'))
+test('an unmatched marker fence hides its payload to the end of its item', () => {
+  // §28 (carve#4907): the opener opens with no closer ahead.
+  const out = html('- a\n  - %%%\n    hidden\ntail\n')
+  assert.ok(!out.includes('hidden') && out.includes('tail'), out)
 })
 
 test('payload below the inner item column ends that item', () => {

@@ -10,7 +10,7 @@ A line that misses the host ends it when a comment closer lies ahead
 <ol>
   <li>a
     <ol>
-      <li>n</li>
+      <li></li>
     </ol>
   </li>
 </ol>
@@ -26,11 +26,11 @@ A line that misses the host ends it when a comment closer lies ahead
 <ol>
   <li>a
     <ol>
-      <li>n
-&gt;&gt;</li>
+      <li></li>
     </ol>
   </li>
 </ol>
+<p>&gt;&gt;</p>
 ```
 
 ```
@@ -41,9 +41,7 @@ zz
 %%%
 .
 <ul>
-  <li>a
-    n
-  </li>
+  <li>a</li>
 </ul>
 <p>zz</p>
 ```
@@ -55,9 +53,7 @@ zz
 zz
 .
 <ul>
-  <li>a
-    n
-zz
-  </li>
+  <li>a</li>
 </ul>
+<p>zz</p>
 ```

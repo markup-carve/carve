@@ -1,0 +1,1 @@
+The pinned engines degrade a %%% comment fence whose closer lies past a line that misses its host to one %% line comment; the spec moved first under the ruling that every %%% opener opens a span that runs to its closer, S1 or the end of its container (PART 9 section 28, markup-carve/carve#4907).

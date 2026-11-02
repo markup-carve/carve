@@ -226,6 +226,7 @@ the command-line and editor behavior stay aligned.
 | `carve-version-unsupported` | a document declaring a Carve spec version the processor does not implement, so constructs added after that version render as something else without any error |
 | `unclosed-container-fence` | a `:::` opener with no matching closer; the container runs to end of input, which is legal (PART 9 §12) and rarely what was meant |
 | `unclosed-code-fence` | a backtick or tilde fence that opened a code block or a raw block and has no closing fence, so it runs to the end of the document, to the end of the container holding it, or to a `+` continuation marker that ends it (PART 9 §17 L3). Legal and rarely meant: every line up to that point is code. The message names the fence as written and where it ended; see [unclosed code fences](#unclosed-code-fences) |
+| `unclosed-comment-fence` | a `%%%` comment fence with no closing fence of the same width. The fence opens without one and hides every later line up to where PART 0 S1 ends it: a line that misses its owner, or the end of its container, which at top level is the rest of the document (PART 9 §28, markup-carve/carve#4907). The message names the fence as written and where it ended; see [unclosed comment fences](#unclosed-comment-fences) |
 | `colon-fence-length-mismatch` | a bare colon run plausibly intended to close the innermost container has a different width; reports both widths, the opener location, and whether the line actually opens a nested container or remains text |
 | `fence-title-syntax` | invalid fence metadata; a recognized fence/type prefix (a colon fence's type word, a code fence's language token) keeps the container or code block while dropping metadata, and an unrecognized prefix remains paragraph text. When a recovered code fence's language is `raw` and its metadata starts with a format word (a `format_name`, PART 9 §20), the message suggests the raw opener with that word: `` ```raw html `` suggests `` ```=html ``. This covers the legacy raw spelling the retired `raw-block-syntax` rule reported (markup-carve/carve#4849) |
 | `footnote-labels-differ-only-in-whitespace` | two footnote definitions whose labels normalize to the same ASCII-whitespace key; the first definition wins, the later definition is ignored, and the diagnostic identifies the collision |
@@ -331,10 +332,54 @@ Not reported:
 - a fence-shaped line that does not open a code block, such as an opener
   whose info string is invalid; `fence-opener-fallback` covers those;
 - a `:::` container, which `unclosed-container-fence` covers;
-- a `%%%` comment fence.
+- a `%%%` comment fence, which `unclosed-comment-fence` covers.
 
 The shared vectors are in
 [`tests/lint-rule-vectors/unclosed-code-fence.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/unclosed-code-fence.json).
+
+### Unclosed comment fences
+
+`unclosed-comment-fence` reports a `%%%` comment fence whose opener has no
+closer: a later line whose leading `%` run has exactly the opener's width.
+Like every other fence, the comment fence opens without looking for its
+closer (PART 9 §28, markup-carve/carve#4907), so without one it hides every
+line until something else ends it:
+
+- the end of the input;
+- the end of the container holding the fence: a list item, a definition
+  description, a block quote, a footnote body or a colon container. A `:::`
+  closer inside the span is hidden payload, so it does not end the container;
+- a nonblank line that misses the fence's owner, which ends the span and the
+  owner (PART 0 S1).
+
+At top level that is the rest of the document. Here nothing renders:
+
+````carve
+%%% TODO
+# Heading
+para
+````
+
+The finding is at the opener's first `%`. The message names the fence as
+written and how it ended, using one of two phrases: `end of the document`
+when the span reaches the last line of the input, otherwise `end of its
+container`. It also names the fix, a closing fence of the same width where
+the comment should stop. Nothing is rewritten.
+
+```txt
+doc.crv:1:1 unclosed-comment-fence — The %%% comment fence opened here has no closing fence and hides everything to the end of the document. Add a closing %%% where the comment should stop.
+```
+
+Not reported:
+
+- a `%%` line comment;
+- a `%%%` run inside code, raw content or another payload, or one that
+  does not start its line;
+- a `%%%` line indented past three spaces in a line block, which is verse
+  text.
+
+The shared vectors are in
+[`tests/lint-rule-vectors/unclosed-comment-fence.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/unclosed-comment-fence.json).
 
 ### Refused continuation markers
 
@@ -761,7 +806,9 @@ is in carve-js; carve-php and carve-rs port it next (markup-carve/carve#3340).
 specified ahead of the engines (markup-carve/carve#3439). Their default triggers
 are declared missing in `resources/lint-parity-drift.txt` until the pins carry
 them. `unclosed-code-fence` and `continuation-marker-refused` are in carve-js;
-carve-php and carve-rs still owe them (markup-carve/carve#3407). The broader Djot migration checks
+carve-php and carve-rs still owe them (markup-carve/carve#3407). `unclosed-comment-fence` is specified ahead of
+every engine (markup-carve/carve#4907); its default trigger is declared missing
+in `resources/lint-parity-drift.txt` until the pins carry it. The broader Djot migration checks
 remain specific to carve-js. Diagnostic message wording is engine-specific;
 compare the rule id and source location.
 

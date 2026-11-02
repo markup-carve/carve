@@ -25,10 +25,10 @@ for (const depth of [0, 1, 2]) for (const malformed of [false, true]) {
 }
 
 test('a nested line block ignores block-looking payload until its own closer', () => {
-  const source = '::: box\n:::: |\n::::: inner\n%%%\n```\n- marker\n::::\n:::\n'
+  const source = '::: box\n:::: |\n::::: inner\n%%\n```\n- marker\n::::\n:::\n'
   const block = parse(source).blocks[0]
   assert.equal(block.t, 'colon-div')
-  assert.deepEqual(block.children, [{t: 'line-block', lines: ['::::: inner', '%%%', '```', '- marker']}])
+  assert.deepEqual(block.children, [{t: 'line-block', lines: ['::::: inner', '%%', '```', '- marker']}])
 })
 
 test('a hardbreak container still parses nested colon blocks', () => {
@@ -38,7 +38,7 @@ test('a hardbreak container still parses nested colon blocks', () => {
   assert.deepEqual(block.children[0].children, parse('x\n').blocks)
 })
 
-for (const depth of [1, 2]) for (const payload of ['%%%', '```', '- marker']) {
+for (const depth of [1, 2]) for (const payload of ['%%', '```', '- marker']) {
   test(`literal ${payload} in a line block does not change the following paragraph claim at depth ${depth}`, () => {
     const quote = '> '.repeat(depth)
     const source = `${quote}- ::: |\n${quote}  ${payload}\n${quote}  :::\n` +
@@ -248,14 +248,15 @@ for (const depth of [1, 2]) for (const run of ['```', '~~~']) {
 
 for (const depth of [1, 2]) {
   const quote = '> '.repeat(depth)
+  // An unclosed span takes the line block's closer and ends with its item (§28, carve#4907).
   test(`a sibling comment fence cannot close a line-block payload span at depth ${depth}`, () => {
     const source = `${quote}- ::: |\n${quote}  %%%\n${quote}  :::\n${quote}- b\n${quote}  %%%\n${quote}  para\nlazy\n`
     const document = parse(source)
-    assert.equal(document.blocks.length, 1)
+    assert.deepEqual(document.blocks.slice(1), [{t: 'para', lines: ['lazy']}])
     let owner = document.blocks[0]
     for (let n = 0; n < depth; n++) owner = owner.children[0]
-    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: ['%%%']}])
-    assert.deepEqual(owner.items[1].blocks, [{t: 'para', lines: ['b']}, {t: 'para', lines: ['para', 'lazy']}])
+    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: ['%%%', ':::']}])
+    assert.deepEqual(owner.items[1].blocks, [{t: 'para', lines: ['b']}])
   })
   for (const run of ['```', '~~~']) {
     test(`an authored line-block code span closes at its host column at depth ${depth}, ${run}`, () => {

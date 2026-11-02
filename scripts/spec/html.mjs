@@ -446,19 +446,18 @@ const rendersNoElement = (b) => b.t === 'raw' && b.format !== 'html'
 // A closed `%%%` pair in verse leaves nothing: no verse line, and a blank line
 // in its body splits no stanza (CARVE-P9-047). Its opener is indented by at
 // most three spaces, as everywhere else (carve#4469); the closer takes SS28's indent.
+// An unclosed span runs to the end of the line block (PART 9 §28).
 function withoutCommentBlocks(lines) {
   const closerRun = (l) => /^[ \t]*(%{3,})/.exec(l)?.[1].length
-  const lastCloser = new Map()
-  lines.forEach((l, j) => lastCloser.set(closerRun(l), j))
   const kept = []
   for (let i = 0; i < lines.length; i++) {
     const run = /^ {0,3}(%{3,})/.exec(lines[i])?.[1].length
-    if (run === undefined || !(lastCloser.get(run) > i)) {
+    if (run === undefined) {
       kept.push(lines[i])
       continue
     }
     i++
-    while (closerRun(lines[i]) !== run) i++
+    while (i < lines.length && closerRun(lines[i]) !== run) i++
   }
   return kept
 }
@@ -770,8 +769,7 @@ function renderBlock(b, depth, ctx) {
         // Only a line whose FIRST character is `%` qualifies. In verse the
         // leading run is CONTENT, so `comment_line`'s optional `[whitespace]`
         // prefix has nothing to consume and an indented `%%` line is ordinary
-        // text. A `%%%` still here has no closer, and SS28 degrades it to a
-        // comment line.
+        // text.
         const body = st.map((l) => (l.startsWith('%%') ? '' : l))
         // ONE inline parse for the whole stanza, so a run with no closer
         // reaches the end of the block instead of stopping at a line break

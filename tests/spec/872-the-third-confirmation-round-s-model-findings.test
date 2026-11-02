@@ -120,7 +120,9 @@ lazy</p>
 y
 > %%%
 .
-<blockquote><p>x</p></blockquote>
+<blockquote>
+
+</blockquote>
 <p>y</p>
 <blockquote>
 
@@ -136,7 +138,7 @@ y
 .
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd></dd>
 </dl>
 <p>y</p>
 ```
@@ -150,15 +152,6 @@ y
 r[^n]
 .
 <p>y</p>
-<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 ```

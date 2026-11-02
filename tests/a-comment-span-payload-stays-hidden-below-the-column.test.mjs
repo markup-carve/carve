@@ -95,12 +95,10 @@ test('GUARD: the closer at the opener’s base is unchanged, and so is the whole
   assert.equal(html(banded(4, 2)), expected)
 })
 
-test('GUARD: an unterminated comment fence opens no span, so its payload IS the item’s text', () => {
-  // §28: an opener with no exact-width closer ahead opens NOTHING and is one
-  // `%%` line comment. The payload is ordinary item content there, and reading
-  // it as a hidden body would be the opposite over-correction.
+test('GUARD: an unterminated comment fence still hides its payload', () => {
+  // §28 (carve#4907): the opener opens with no closer ahead.
   const out = html(banded(4, null))
-  assert.ok(out.includes('HIDDEN'), `an unterminated fence swallowed its payload:\n${out}`)
+  assert.ok(!out.includes('HIDDEN'), `an unterminated fence published its payload:\n${out}`)
 })
 
 test('GUARD: a payload line below the column still ends the container', () => {

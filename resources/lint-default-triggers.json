@@ -28,6 +28,7 @@
   "carve-version-unsupported": "---\ncarve-version: 99.0\n---\n\nx\n",
   "unclosed-container-fence": "::: note\nbody\n",
   "unclosed-code-fence": "```js\nx\n",
+  "unclosed-comment-fence": "%%% TODO\nsecret\n",
   "colon-fence-length-mismatch": ":::: note\nbody\n:::\n",
   "figure-group-nested": ":::: figure\n::: figure\n![a](a.png)\n^ (a) A\n:::\n::::\n^ Figure #: G\n",
   "figure-group-opener-metadata": "::: figure \"Title\"\n![a](a.png)\n^ (a) A\n:::\n",

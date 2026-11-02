@@ -204,7 +204,9 @@ the active algorithm together and are retained here for traceability:
   rule at greater length (carve#926).
 - An unclosed comment fence degrades to a line comment instead of mirroring an
   unclosed div. The older comment clause quoted a stale description of the div
-  behavior and would have hidden the rest of the document (carve#1717).
+  behavior and would have hidden the rest of the document (carve#1717). The
+  2026-11-02 ruling reversed this, see
+  [comment fences without a closer](#comment-fences-without-a-closer).
 - A below-column definition or attribute line that folds as text folds into
   the open paragraph belonging to its container. The older text left that host
   implicit, allowing a document-level reading (carve#1800).
@@ -372,6 +374,18 @@ precedence list. Three readings changed with the ruling: a `_` or `/` guard
 counts as markup where it stands (X1), an unclosed code run takes the rest of
 the block inside a braced span too (X5), and an empty brace group such as
 `{*}` is read as ordinary characters (X6).
+
+## Comment fences without a closer
+
+Until 2026-11-02 a `%%%` comment fence opened only with an exact-width closer
+ahead, and otherwise read as one `%%` line comment, so the lines after it
+stayed visible (carve#1717, with the closer search past the host from
+carve#4770). The maintainer ruled in markup-carve/carve#4907 that a `%%%`
+opener always opens, like every other fence: it ends at its exact-width
+closer, under PART 0 S1, or at the end of its container, and at top level an
+unclosed one hides the rest of the document. `carve lint` reports it as
+`unclosed-comment-fence`. Frontmatter stays the one fence-shaped opener that
+needs its closer ahead.
 
 ## Fence openers without a closer
 

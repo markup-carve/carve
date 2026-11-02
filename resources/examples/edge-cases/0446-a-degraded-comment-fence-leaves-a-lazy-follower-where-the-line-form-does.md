@@ -1,5 +1,11 @@
 ## A degraded comment fence leaves a lazy follower where the line form does
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 §28 says an opener with no exact-width closer ahead opens NO block and becomes
 a line comment. At or past the content column, both forms close the item's
 paragraph and retain nothing (`CARVE-P0-009` X1, `CARVE-P9-053`). A following
@@ -65,11 +71,9 @@ y
 
 ```html
 <ul>
-  <li>x
-    body
-y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 :::
@@ -194,7 +198,6 @@ everywhere would break this row.
 
 ```html
 <blockquote><p>x</p></blockquote>
-<p>y</p>
 ```
 
 :::

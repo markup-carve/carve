@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "rule": "unclosed-comment-fence",
+  "vectors": [
+    {
+      "name": "eof-top-level",
+      "description": "A top-level opener with no closer hides the rest of the document.",
+      "source": "%%% TODO\n# Heading\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "%%%",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "eof-alone",
+      "description": "An opener on the last line is unclosed too.",
+      "source": "text\n\n%%%\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "%%%",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "opener-tail",
+      "description": "The opener's tail is not part of the delimiter.",
+      "source": "%%% html\nsecret\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "%%%",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "shorter-closer",
+      "description": "A closer shorter than the opener does not close it.",
+      "source": "%%%%\nx\n%%%\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "%%%%",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "longer-closer",
+      "description": "A closer longer than the opener does not close it either.",
+      "source": "%%%\nx\n%%%%\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "%%%",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "indented-opener",
+      "description": "An indented opener is reported at its first percent sign.",
+      "source": "  %%%\nx\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "%%%",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "list-item",
+      "description": "A line that misses the item ends the span and the item (PART 0 S1).",
+      "source": "- a\n  %%% c\n  x\n- b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "%%%",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "marker-line",
+      "description": "An opener on a list item's marker line opens a span in the item.",
+      "source": "- %%%\n  x\ntail\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "%%%",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote",
+      "description": "An unmarked blank line ends the quote and the span in it.",
+      "source": "> %%%\n> secret\n\nafter\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "%%%",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "footnote-body",
+      "description": "A line below the body column ends the footnote and the span.",
+      "source": "[^n]: %%%\n  x\ny\n\nr[^n]\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 7,
+            "includes": [
+              "%%%",
+              "end of its container"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "colon-closer-is-payload",
+      "description": "A colon closer inside an unclosed span is payload, so the container runs to the end.",
+      "source": "::: note\n%%%\nx\n:::\n\nafter\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "%%%",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "line-block",
+      "description": "An unclosed span in a line block hides the block's own closer.",
+      "source": "::: |\na\n%%%\nc\n:::\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "%%%",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "closer-after-a-missing-line",
+      "description": "A closer past a line that misses the span's owner does not close it (PART 0 S1).",
+      "source": "- a\n  %%%\n  n\nzz\n%%%\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "%%%",
+              "end of its container"
+            ]
+          },
+          {
+            "line": 5,
+            "column": 1,
+            "includes": [
+              "%%%",
+              "end of the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "closed",
+      "description": "An exact-width closer closes the span.",
+      "source": "%%%\nsecret\n%%%\n\nafter\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "closed-tails",
+      "description": "Tails on either delimiter line do not matter.",
+      "source": "%%% html\nsecret\n%%% end\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "closed-indented",
+      "description": "An indented closer closes an indented opener.",
+      "source": "- a\n  %%%\n  x\n  %%%\n- b\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "closer-below-column",
+      "description": "An exact closer below the host's column still closes the span.",
+      "source": "- head\n  %%%\n  a\n%%%\n  tail\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "nested-shorter",
+      "description": "A longer opener holds a shorter fence pair as payload.",
+      "source": "%%%%\n%%%\nx\n%%%\n%%%%\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "line-comment",
+      "description": "A two-percent line is a line comment, not a fence.",
+      "source": "%% note\ntext\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "in-code",
+      "description": "A percent run inside a code block is code.",
+      "source": "```\n%%%\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "inline-text",
+      "description": "A percent run inside a paragraph line is text.",
+      "source": "50%%% off\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

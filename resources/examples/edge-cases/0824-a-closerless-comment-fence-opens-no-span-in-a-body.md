@@ -4,6 +4,12 @@ page: edge-lists
 
 ## A closerless comment fence opens no span in a body
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 A `%%%` with no exact-width closer ahead is the line form of a comment and opens no span (CARVE-P9-053). A comment below the body column after it closes no body (carve#4862), in a description and a footnote body as in a list item, so a line after it at the body column stays in the body.
 
 ::::::: compare
@@ -21,10 +27,7 @@ A `%%%` with no exact-width closer ahead is the line form of a comment and opens
 ````html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>head</p>
-    <p>tail</p>
-  </dd>
+  <dd>head</dd>
 </dl>
 ````
 
@@ -49,8 +52,7 @@ r[^n]
   <hr>
   <ol>
     <li id="fn1">
-      <p>head</p>
-      <p>tail<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>head<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

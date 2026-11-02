@@ -21,8 +21,9 @@ test('the closer takes the exact delimiter length, an indent and a tail', () => 
   assert.equal(verse('%%% note', 'x', '  %%% end', 'c'), verse('c'))
 })
 
-test('a fence with no closer stays a comment line and an opener past 3 spaces stays verse', () => {
-  assert.equal(verse('%%%', 'x'), verse('%% c', 'x'))
+test('a fence with no closer hides the rest of the block and an opener past 3 spaces stays verse', () => {
+  // §28 (carve#4907): the unclosed span takes the block's own closer too.
+  assert.equal(verse('a', '%%%', 'x'), verse('a'))
   assert.match(verse('    %%%', 'x', '    %%%'), /&nbsp;&nbsp;&nbsp;&nbsp;%%%<br>\nx<br>/)
 })
 
@@ -40,5 +41,5 @@ test('an opener indented by 1 to 3 spaces hides its body too (carve#4469)', () =
     assert.equal(verse(`${indent}%%%`, 'secret', `${indent}%%%`), verse('%%%', 'secret', '%%%'), JSON.stringify(indent))
     assert.equal(verse('a', `${indent}%%%`, 'secret', '%%%', 'c'), verse('a', 'c'), JSON.stringify(indent))
   }
-  assert.match(verse('  %%%', 'x'), /&nbsp;&nbsp;%%%<br>\nx/)
+  assert.equal(verse('  %%%', 'x'), verse())
 })

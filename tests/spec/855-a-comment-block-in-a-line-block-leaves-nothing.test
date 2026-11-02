@@ -37,8 +37,6 @@ c
 :::
 .
 <div class="line-block">
-  <p>a<br>
-<br>
-c</p>
+  <p>a</p>
 </div>
 ```
