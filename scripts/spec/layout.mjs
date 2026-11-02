@@ -3833,8 +3833,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       const comment = COMMENT_FENCE_BODY.exec(rest)
       if (comment && (closerRuns().lastComment.get(comment[1].length) ?? -1) > k) {
         const opener = k++
-        while (k < lines.length && COMMENT_FENCE_BODY.exec(trimLineEnd(view(k)))?.[1].length !== comment[1].length) k++
-        k++
+        // A nonblank line that misses the host ends the span under S1 (CARVE-P0-005, carve#4870).
+        const closes = (j) => COMMENT_FENCE_BODY.exec(trimLineEnd(view(j)))?.[1].length === comment[1].length
+        const misses = (j) => throughQuotes(lines[j], hostIndex) === null || (trimLineEnd(view(j)) !== '' && docColumn(lines[j], view(j)) < column)
+        while (k < lines.length && !closes(k) && !misses(k)) k++
+        if (k < lines.length && closes(k)) k++
         for (let j = opener; fenced && j < Math.min(k, lines.length); j++) fenced.add(j)
       } else if (FOOTNOTE_DEF.test(rest)) {
         k++
@@ -8151,7 +8154,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     }
     // An opener in the body holds a span only while its closer is still to
     // come: without one it is the line form (CARVE-P9-053, carve#2950).
+    // The run of a descendant span a body line ended (S1, carve#4770): its closer
+    // stays in this item so the descendant's parse still sees a matched span.
+    let missedNestedRun = null
     const bodyHoldsLiveCommentSpan = () =>
+      COMMENT_FENCE.exec(lines[i])?.[1] === missedNestedRun ||
       bodyHoldsOpenCommentSpan(itemLines, (run) => lastCommentCloser(run) >= i)
     // A descendant span cannot carry payload across a shallower block. Its
     // closer still pairs by run length at any column.
@@ -8162,13 +8169,17 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // the function's `null` is load-bearing (carve#2746).
     let absorbedFenceSeen = null
     const trackNestedFence = (open, dmeas, sourceCol, idx, descendantOwned, markerOpens = true) => {
+      if (COMMENT_FENCE_BODY.exec(dmeas.rest)?.[1] === missedNestedRun) missedNestedRun = null
       if (open) {
         if (open.kind === 'comment') {
           // Indentation is part of neither delimiter (§28, carve#2471), so the
           // closer matches on run length at any column.
           const end = COMMENT_FENCE.exec(dmeas.rest)
           if (end && end[1].length === open.run.length) return null
-          if (!commentHoldsLine(open, dmeas)) return null
+          if (!commentHoldsLine(open, dmeas)) {
+            missedNestedRun = open.run
+            return null
+          }
           return open
         }
         // A line BELOW the fence's own column supplies none of its body's
@@ -9716,7 +9727,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             nestedOpaque?.kind !== 'comment' && !bodyHoldsLiveCommentSpan()) break
         if (!afterComment && !(deepestParagraphOpen() || paragraphOpenBeforeComments) && fence.opaque?.kind !== 'comment' &&
             nestedOpaque?.kind !== 'comment' && !bodyHoldsLiveCommentSpan()) break
-        markedQuoteCommentClaim = bodyQuote.at === i - 1 && bodyQuote.open
+        const closesMissedSpan = COMMENT_FENCE.exec(lm.rest)?.[1] === missedNestedRun
+        if (closesMissedSpan) missedNestedRun = null
+        markedQuoteCommentClaim = !closesMissedSpan && bodyQuote.at === i - 1 && bodyQuote.open
         // KEEP ONE COLUMN of the original indentation. Stripping it entirely
         // told the item's own parse that a line indented in the source had
         // been written flush left, and the rule above cannot then tell an
@@ -9738,7 +9751,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // every blank below it as fence content and the item comes out TIGHT.
         // Only the closing half is asked: an OPENER at this column opens no span
         // here, and the branch above owns that question.
-        const spanBefore = fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment'
+        const spanBefore = closesMissedSpan || fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment'
         if (fence.opaque) trackFence(lm.rest, false, i)
         // The DESCENDANT span's closer arrives here too, below this column, so
         // the tracker above never sees it.
