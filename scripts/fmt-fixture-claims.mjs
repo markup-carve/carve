@@ -55,6 +55,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { phpDir, rustBinary } from './lib/engine-locations.mjs'
+import { parseTargetDrift } from './lib/target-drift.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -111,6 +112,15 @@ if (engines.length < 3) {
 
 const lib = await import(join(jsDir, 'dist/index.js'))
 
+// A `carve/<engine>/<slug>` line in engine-target-drift.txt declares that one
+// engine has not reached a fixture yet; it excuses that engine and nothing else.
+// A declared engine that already writes the fixture is a stale line.
+const LEDGER_ENGINE = { js: 'js', rs: 'rust', php: 'php' }
+const targetDrift = parseTargetDrift(join(root, 'resources/engine-target-drift.txt'))
+const declared = (engine, slug) => targetDrift.has(`carve/${LEDGER_ENGINE[engine.name]}/${slug}`)
+let excused = 0
+const stale = []
+
 /**
  * The writer's output, UNTRIMMED. A canonical form is bytes, and the trailing
  * newline is one of them: trimming here would let a writer that drops it pass,
@@ -133,6 +143,11 @@ for (const fixture of fixtures) {
       broken.push([engine.name, `did not run: ${error.message.split('\n')[0]}`])
       continue
     }
+    if (declared(engine, fixture.slug)) {
+      if (actual === fixture.expected) stale.push(`carve/${LEDGER_ENGINE[engine.name]}/${fixture.slug}`)
+      else excused++
+      continue
+    }
     if (actual !== fixture.expected) {
       broken.push([engine.name, `wrote ${JSON.stringify(actual)}`])
     }
@@ -151,8 +166,12 @@ for (const fixture of fixtures) {
 console.log(
   `\n${fixtures.length - failures}/${fixtures.length} canonical forms hold in all ${engines.length} engines (${engines
     .map((e) => e.name)
-    .join(', ')}).`,
+    .join(', ')}), ${excused} engine result(s) excused by engine-target-drift.txt.`,
 )
+if (stale.length > 0) {
+  console.error(`engine-target-drift.txt excuses engines that already write the fixture:\n  ${stale.join('\n  ')}`)
+  process.exit(1)
+}
 if (failures > 0) {
   console.error(
     `${failures} document(s) where an engine's canonical writer disagrees with the pinned form (PART 11). ` +

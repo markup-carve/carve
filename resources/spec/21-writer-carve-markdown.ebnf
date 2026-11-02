@@ -795,6 +795,67 @@
       `tests/fixtures/verbatim-opener-line-fmt.json` pins the spelled rows
       and the refused shapes.
 
+   7i. A COLLECTED DEFINITION, A COMMENT AND A BLOCK BELOW A BODY HAVE ONE
+      LAYOUT -- NORMATIVE [CARVE-P11-079]. Several layouts of these shapes
+      meet §1, and the writer emits the one this clause names
+      (markup-carve/carve#4850). The `.fmt` fixtures of the rows cited below
+      are the canonical bytes.
+
+      (a) A DEFINITION IN A CONTAINER IS COLLECTED. A link reference or
+          footnote definition inside a list item, description, quote or
+          footnote body with no region marker below it is collected to the
+          end of the document, as CARVE-P11-073 (c) states. Its container
+          keeps no trace of it:
+
+            - x
+              [^g]: b
+               [r]: /url
+
+            See [r][] and [^g].
+
+          is written
+
+            - x
+
+            See [r][] and [^g].
+
+            [^g]: b
+
+            [r]: /url
+
+          Rows 447-10, 447-11, 504-20, 613-6 and 620-23 pin it.
+
+      (b) A COMMENT IS WRITTEN AT THE COLUMN OF THE BLOCK THAT OWNS IT. A
+          `%%` line or `%%%` fence that the document owns is written at
+          column 0 with a blank line before and after it, even where the
+          source put it below an item or description at a column that does
+          not reach it. A `%%%` fence inside a container is written with
+          both delimiters at that container's content column; rows 418,
+          508 and 508-4 pin where its payload lines go. So
+
+            - - a
+             %% c
+
+             b
+
+          is written
+
+            - - a
+
+            %% c
+
+            b
+
+          Rows 191, 418, 430, 506-5, 508, 508-2, 508-4, 535-34 and 620-18
+          pin it.
+
+      (c) A BLOCK BELOW A FOOTNOTE BODY OR A NESTED FENCE. A block that
+          follows a list opened on a footnote definition's line is written at
+          that list's column, a literal `+` after a nested fence is written
+          escaped at the outer item's content column, and a table separator cell
+          takes at least three hyphens beside its alignment colon. Rows
+          410-4, 616-6, 626-8 and 659-4 pin it.
+
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It answers to a Markdown
       reader, and THIS TABLE IS ITS ESCAPING RULE FOR TEXT. Every condition is

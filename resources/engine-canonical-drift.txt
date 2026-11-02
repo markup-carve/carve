@@ -6,3 +6,16 @@
 284-a-ragged-table-keeps-each-row-s-cell-count-3  PART 11 section 6h requires native headers; the pinned writer still emits a separator row.
 285-adjacent-block-openers-in-an-attached-run-stay-separate-2  PART 11 section 6h requires native headers; the pinned writer still emits separator rows.
 99-table-cell-attributes  PART 11 section 6h requires native headers; the pinned writer still emits a separator row.
+191-a-blank-after-a-comment-still-ends-the-item  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+410-a-footnote-continuation-survives-a-blank-run-4  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+418-an-invisible-fenced-block-is-not-a-list-paragraph  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+430-below-a-definition-body-s-column-an-invisible-line-folds-as-text-5  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+506-comment-columns-and-surviving-list-items-5  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-34  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+616-a-line-is-read-in-the-container-whose-column-it-reaches-6  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+620-generated-container-documents-18  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.
+659-table-spans-keep-alignment-defaults-in-physical-columns-4  CARVE-P11-079 names the carve-js comment and indentation layout (markup-carve/carve#4850); the pinned writer predates it.

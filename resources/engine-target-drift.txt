@@ -91,3 +91,42 @@ html/rust/704-a-non-ascii-letter-does-not-block-a-bare-delimiter  markup-carve/c
 html/js/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
 html/php/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
 html/rust/925-unicode-letters-block-bare-emphasis  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
+carve/js/191-a-blank-after-a-comment-still-ends-the-item  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/191-a-blank-after-a-comment-still-ends-the-item  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/191-a-blank-after-a-comment-still-ends-the-item  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/410-a-footnote-continuation-survives-a-blank-run-4  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/410-a-footnote-continuation-survives-a-blank-run-4  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/410-a-footnote-continuation-survives-a-blank-run-4  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/418-an-invisible-fenced-block-is-not-a-list-paragraph  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/418-an-invisible-fenced-block-is-not-a-list-paragraph  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/418-an-invisible-fenced-block-is-not-a-list-paragraph  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/430-below-a-definition-body-s-column-an-invisible-line-folds-as-text-5  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/430-below-a-definition-body-s-column-an-invisible-line-folds-as-text-5  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/430-below-a-definition-body-s-column-an-invisible-line-folds-as-text-5  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-34  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-34  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-34  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/616-a-line-is-read-in-the-container-whose-column-it-reaches-6  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/616-a-line-is-read-in-the-container-whose-column-it-reaches-6  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/616-a-line-is-read-in-the-container-whose-column-it-reaches-6  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/620-generated-container-documents-18  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/620-generated-container-documents-18  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/620-generated-container-documents-18  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/659-table-spans-keep-alignment-defaults-in-physical-columns-4  markup-carve/carve#4850 (carve-js), CARVE-P11-079 comment and indentation layout pending
+carve/php/659-table-spans-keep-alignment-defaults-in-physical-columns-4  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/rust/659-table-spans-keep-alignment-defaults-in-physical-columns-4  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
