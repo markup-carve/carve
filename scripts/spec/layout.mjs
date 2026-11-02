@@ -1177,6 +1177,8 @@ function opaqueSpanEnd(lines, idx) {
   const comment = COMMENT_FENCE.exec(line)
   if (comment) {
     for (let j = idx + 1; j < lines.length; j++) {
+      // A lazy line missed the span's owner and ended it (PART 0 S1).
+      if (lines[j].startsWith(LAZY)) return j - 1
       const c = COMMENT_FENCE.exec(lines[j])
       if (c && c[1].length === comment[1].length) return j
     }
@@ -1199,24 +1201,27 @@ function lineBlockEnd(bodyLines, k) {
   return bodyLines.length
 }
 // The same for the line block an item or description at the body's end holds.
-function hostEndsInLineBlockStanza(bodyLines, depth) {
+// With `verse`, the stanza must also hold a verse line: a `%%%` span leaves
+// nothing however it ends, so the line after it reads the stanza as it stood
+// before the span (CARVE-P9-047, carve#4956).
+function hostEndsInLineBlockStanza(bodyLines, depth, verse = false) {
   let last = bodyLines.length - 1
   while (last >= 0 && trimWs(bodyLines[last]) === '') last--
   // A lazy line folded into whatever was open before it and closes nothing (PART 0 S4).
   while (last >= 0 && bodyLines[last].startsWith(LAZY)) last--
   if (last < 0 || trimWs(bodyLines[last]) === '' || bodyLines[last].includes(LAZY)) return false
-  if (endsInLineBlockStanza(bodyLines, last)) return true
+  if (endsInLineBlockStanza(bodyLines, last, verse)) return true
   if (depth >= MAX_NESTING_DEPTH) return false
   if (QUOTE.test(bodyLines[last])) {
     let first = last
     while (first > 0 && QUOTE.test(bodyLines[first - 1])) first--
     const inner = bodyLines.slice(first, last + 1).map((l) => QUOTE.exec(l)[1] ?? '')
-    return trimWs(inner.at(-1)) !== '' && hostEndsInLineBlockStanza(inner, depth + 1)
+    return trimWs(inner.at(-1)) !== '' && hostEndsInLineBlockStanza(inner, depth + 1, verse)
   }
   const body = trailingHostBody(bodyLines, last, indentCols(bodyLines[last]), depth)
-  return !!body && hostEndsInLineBlockStanza(body, depth + 1)
+  return !!body && hostEndsInLineBlockStanza(body, depth + 1, verse)
 }
-function endsInLineBlockStanza(bodyLines, last) {
+function endsInLineBlockStanza(bodyLines, last, verse = false) {
   let opener = false
   for (let k = 0; k < last && !opener; k++) opener = opensLineBlock(bodyLines[k])
   if (!opener) return false
@@ -1226,7 +1231,50 @@ function endsInLineBlockStanza(bodyLines, last) {
   // A paired inline span may advance the scan past the final payload line.
   if (scan.at < last || !top?.lineBlock) return false
   const run = COLON_CLOSER.exec(stripLazy(bodyLines[last]))
-  return !(run && run[1].length === top.length)
+  if (run && run[1].length === top.length) return false
+  return !verse || stanzaHoldsVerse(bodyLines, top.at + 1, last)
+}
+function stanzaHoldsVerse(bodyLines, from, last) {
+  let verse = false
+  for (let k = from; k <= last; k++) {
+    const line = stripLazy(bodyLines[k])
+    if (line === bodyLines[k] && /^ {0,3}%{3,}/.test(line)) {
+      const span = verseCommentSpanEnd(bodyLines, k)
+      if (span >= last) return verse
+      k = span
+      continue
+    }
+    verse = trimWs(line) !== ''
+  }
+  return verse
+}
+function verseSpanEnds(body) {
+  const ends = []
+  for (let k = 0; k < body.length; k++) {
+    if (!/^ {0,3}%{3,}/.test(body[k])) continue
+    const end = verseCommentSpanEnd(body, k)
+    if (body[end + 1]?.startsWith(LAZY)) ends.push(end + 1)
+    k = end
+  }
+  return ends
+}
+// A host ladder's line block reads `inner` against its open `%%%` span; true
+// when the span hid the line, which leaves the stanza as it was (CARVE-P9-047).
+function hostVerseSpanStep(host, inner) {
+  const text = ' '.repeat(Math.max(0, inner.col - (host.colons.at(-1).column ?? 0))) + inner.rest
+  const run = (host.verseSpan == null ? /^ {0,3}(%{3,})/ : /^[ \t]*(%{3,})/).exec(text)?.[1].length
+  if (host.verseSpan == null && run === undefined) return false
+  host.verseSpan = host.verseSpan == null ? run : run === host.verseSpan ? null : host.verseSpan
+  return true
+}
+// A verse `%%%` span ends at its exact-width closer or at the lazy line that missed its owner (PART 0 S1).
+function verseCommentSpanEnd(bodyLines, k) {
+  const width = /^ {0,3}(%{3,})/.exec(bodyLines[k])[1].length
+  for (let j = k + 1; j < bodyLines.length; j++) {
+    if (bodyLines[j].startsWith(LAZY)) return j - 1
+    if (/^[ \t]*(%{3,})/.exec(bodyLines[j])?.[1].length === width) return j
+  }
+  return bodyLines.length - 1
 }
 
 // A line-block payload is inline content, so a span in it pairs wherever its
@@ -1338,7 +1386,7 @@ function scanColonFences(bodyLines, last, scan) {
     const opener = colon && parseColonOpener(colon[2])
     if (top && bare && colon[1].length === top.length) scan.stack.pop()
     else if (top?.lineBlock) continue
-    else if (bare || opener) scan.stack.push({ length: colon[1].length, lineBlock: opener?.mode === 'line-block' })
+    else if (bare || opener) scan.stack.push({ length: colon[1].length, lineBlock: opener?.mode === 'line-block', at: scan.at })
   }
 }
 
@@ -2034,7 +2082,7 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0, quoteBody
   // return, and `:: t` / `:  >` / `tail` must leave the definition.
   if (last < 0) return !quoted
   // A line-block payload line is inline content whatever its shape, so its stanza stays open (PART 2 line_block).
-  if (hostEndsInLineBlockStanza(bodyLines, depth)) return true
+  if (hostEndsInLineBlockStanza(bodyLines, depth, true)) return true
   // An attribute-shaped line without its nested quote marker, or short of an
   // item's content column, is a lazy continuation of that host's paragraph.
   // Its braces do not close the paragraph when the description asks whether
@@ -2753,7 +2801,8 @@ function bodyOpenCommentRun(bodyLines) {
     const line = measured.rest
     // A nonblank line that misses a comment span's owner ends it (PART 0 S1);
     // comment lines are column-exempt and may still close it.
-    if (opaque?.kind === 'comment' && line !== '' && !line.startsWith('%%') && measured.col < opaque.owner) {
+    // A lazy line missed the owner where it was written (carve#4956).
+    if (opaque?.kind === 'comment' && line !== '' && !line.startsWith('%%') && (measured.col < opaque.owner || raw.startsWith(LAZY))) {
       opaque = null
       atBlockStart = true
     }
@@ -3317,6 +3366,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       // Step 1: an open payload tests its closer first.
       const payloadPath = trace ? ownerPath() : null
       let payloadForm = 'payload'
+      const spanBefore = inner.span
       lead(Math.max(m.col - inner.cut, inner.canon))
       if (m.rest !== '' && inner.span) {
         const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
@@ -3333,6 +3383,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
         if (f && parseFenceInfo(f[2], f[1]) !== null && (closerRuns().widest[f[1][0]][at + 1] ?? 0) >= f[1].length) inner.span = f[1]
         else if (comment) inner.span = comment[1]
       }
+      // A verse span leaves the stanza as it found it (CARVE-P9-047, carve#4956).
+      if (inner.lineBlock && (spanBefore ?? inner.span)?.[0] !== '%') inner.verse = m.rest !== ''
       result.push(out + src)
       if (trace) emit(at, 'S1', payloadPath, 'CARVE-P0-005', payloadForm,
         { cell: `B-${inner.family}-${payloadForm === 'closer' ? 'end' : 'keep'}` })
@@ -3347,7 +3399,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     const form = classify(m.rest, owner, at, m.col)
     // A lazy line folds into a line block's open stanza and closes nothing,
     // so the block's closer still finds it (PART 0 S4).
-    if (inner.kind === 'fence' && inner.lineBlock && missed && form.kind === 'text' && !isBlank(lines[at - 1]) && at - 1 > inner.line) {
+    if (inner.kind === 'fence' && inner.lineBlock && missed && form.kind === 'text' && inner.verse) {
+      // The line misses the span's owner and ends it (PART 0 S1).
+      if (inner.span?.[0] === '%') inner.span = null
       frames.push(inner)
       // The payload was moved by this frame's shift. A lazy follower keeps the
       // same frame even though it stands short of the authored content column.
@@ -4182,6 +4236,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   while (src.includes(sentinel)) sentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
   const authored = src.split('\n')
   const walked = ownLines(authored, trace, sentinel)
+  if (process.env.DBG_WALK) console.error(JSON.stringify(walked))
   src = walked.join('\n')
   const refusedPlusLines = walked.refusedPlus
   const hasOrdinaryPlus = refusedPlusLines.length > 0
@@ -4742,7 +4797,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if ((inItem || descriptionOwnerColumn !== null) &&
             measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !attachPending) break
         // A line that misses the note ends a comment span the body holds, and the body (PART 0 S1).
-        if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN && !COMMENT_LINE.test(lines[i] ?? '') && !attachPending && missedLiveSpan()) break
+        if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN && !COMMENT_LINE.test(lines[i] ?? '') && !attachPending && missedLiveSpan() &&
+          !hostEndsInLineBlockStanza(bodyLines, 0, true)) break
         if (isBlank(lines[i])) afterComment = false
         if (measured.col >= FOOTNOTE_BODY_COLUMN || isBlank(lines[i])) {
           retainedParagraph = false
@@ -5249,7 +5305,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                   isDefinitionOrAttributeLine(indentCols(quotedLast).rest)))
               // A line-block payload line is inline content, so its stanza stays open (PART 2 line_block).
               if ((nestedDescriptionClosed || nestedItemClosed || nestedQuoteClosed || endsInClosedDescription(bodyLines)) &&
-                !hostEndsInLineBlockStanza(bodyLines, 0)) break
+                !hostEndsInLineBlockStanza(bodyLines, 0, true)) break
             }
             /*
              * AN INVISIBLE CONSTRUCT AT DOCUMENT COLUMN 0 IS NOT LAZY TEXT --
@@ -5278,7 +5334,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A list marker that misses a marker body closes it (PART 0 S3).
             if (!reachesBody(i) && matchMarkerAt(indentCols(dedented))) break
             // A line that misses the body ends a comment span it holds, and the body (PART 0 S1).
-            if (!COMMENT_LINE.test(dedented) && missedLiveSpan()) break
+            const verseSpanEnded = !COMMENT_LINE.test(dedented) && missedLiveSpan()
+            if (verseSpanEnded && !hostEndsInLineBlockStanza(bodyLines, 0, true)) break
             if (COMMENT_LINE.test(dedented) && !bodyHoldsLiveSpan()) {
               openFence = bodyHasFenceCandidate
                 ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt)
@@ -5377,7 +5434,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // A marker below the body's column is no sibling of a list in the body,
               // so it continues the open paragraph once the description dedents it (PART 0 S4).
               const foldedMarker = matchMarkerAt(indentCols(dedented))
-              pushBody(lazyFence || foldedMarker || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
+              pushBody(lazyFence || foldedMarker || verseSpanEnded || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
               foldedParagraphAt = bodyLines.length
               i++
               continue
@@ -5453,7 +5510,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i = close === -1 ? extent : close + 1
           inheritFinalBreak(lines, body, end, state)
           if (opener.mode === 'line-block') {
-            push({ t: 'line-block', lines: body.map(stripLazy) })
+            const node = { t: 'line-block', lines: body.map(stripLazy) }
+            // A lazy line ends the verse span it missed (PART 0 S1, carve#4956).
+            const spanEnds = verseSpanEnds(body)
+            if (spanEnds.length) node.spanEnds = spanEnds
+            push(node)
           } else if (opener.mode === 'hardbreaks') {
             push({ t: 'hardbreaks', children: parseBlocks(body, state, false) })
           } else if (opener.mode === 'quote') {
@@ -5664,6 +5725,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qItemPara = false // and is that paragraph an item's?
       let qStanzaCandidate = false
+      let qStanzaSpanSeen = false
       let qStanzaOpen = false
       let qStanzaColumn = 0
       let qDescriptionBodyCol = null
@@ -5876,7 +5938,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const inLineBlock = host.colons?.at(-1)?.mode === 'line-block'
           if (state.blockDepth + depth + 1 + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, true, blockStart, MAX_NESTING_DEPTH - state.blockDepth - depth - 1 - (host.columns.length - 1), (run, column, past) => closerFollows(idx, depth + 2, run, column, past))) {
             qNestedTable[depth] = false
-            return settle(inLineBlock && host.colons?.at(-1)?.mode === 'line-block' && !isBlank(text), depth + 1)
+            const lineBlockNow = inLineBlock && host.colons?.at(-1)?.mode === 'line-block'
+            if (lineBlockNow && hostVerseSpanStep(host, inner)) return settle(qNestedPara[depth] ?? false, depth + 1)
+            return settle(lineBlockNow && !isBlank(text), depth + 1)
           }
           const f = hostFenceOpener(host, inner)
           // SS25 FIRST: past the cap an opener DEGRADES to literal paragraph
@@ -5980,8 +6044,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const inLineBlock = qHost.colons?.at(-1)?.mode === 'line-block'
         if (state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(qHost, inner0, openComment === null, blockStart, MAX_NESTING_DEPTH - state.blockDepth - (qHost.columns.length - 1), (run, column, past) => closerFollows(idx, 1, run, column, past))) {
           // Inline payload keeps the stanza open whatever block shape it has
-          // (carve-php#3237). The opener itself contains no payload yet.
-          qOpenPara = inLineBlock && qHost.colons?.at(-1)?.mode === 'line-block' && !isBlank(l)
+          // (carve-php#3237). The opener itself contains no payload yet. A
+          // verse span leaves the stanza as it found it (CARVE-P9-047).
+          const lineBlockNow = inLineBlock && qHost.colons?.at(-1)?.mode === 'line-block'
+          if (!lineBlockNow || !hostVerseSpanStep(qHost, inner0)) qOpenPara = lineBlockNow && !isBlank(l)
           qTableOpen = false
           clearNested()
           qItemPara = false
@@ -6133,6 +6199,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (LINE_BLOCK_SHAPED.test(qm[1] ?? '')) {
             qStanzaCandidate = true
             qStanzaOpen = false
+            qStanzaSpanSeen = false
           }
           if (!qHost.fence && openComment === null) {
             const colon = COLON_FENCE.exec(qm[1] ?? '')
@@ -6155,13 +6222,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A same-column payload extends the known stanza in constant time.
             // A closer or a line that retreats toward the host needs the full
             // ownership walk, which also decides whether the stanza has ended.
-            const stillOpen = qStanzaOpen && trimWs(row) !== '' &&
+            // Past a `%%%` line the walk reads the stanza without its spans (carve#4956).
+            const spanSeen = qStanzaSpanSeen ||= row.includes('%%%')
+            const stillOpen = !spanSeen && qStanzaOpen && trimWs(row) !== '' &&
               col >= qStanzaColumn && !COLON_CLOSER.test(trimWsStart(row))
-            if (stillOpen || hostEndsInLineBlockStanza(inner, 0)) {
+            if (stillOpen || hostEndsInLineBlockStanza(inner, 0, spanSeen)) {
               qOpenPara = true
               qStanzaOpen = true
               qStanzaColumn = col
-            } else if (!LINE_BLOCK_SHAPED.test(row)) {
+            } else if (!LINE_BLOCK_SHAPED.test(row) && !(spanSeen && hostEndsInLineBlockStanza(inner, 0))) {
               qStanzaCandidate = false
               qStanzaOpen = false
             }
@@ -7238,9 +7307,19 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         stanzaOpenAt = itemLines.length
         return true
       }
-      if (!hostEndsInLineBlockStanza(itemLines, 0)) return false
+      const _h = hostEndsInLineBlockStanza(itemLines, 0, true); if (process.env.DBG) console.error("DSO", JSON.stringify(itemLines), _h); if (!_h) return false
       stanzaOpenAt = itemLines.length
       return true
+    }
+    let leafStanzaAt = -1
+    let leafStanza = false
+    const leafStanzaEmpty = () => {
+      if (!holdsLineBlock) return false
+      if (leafStanzaAt !== itemLines.length) {
+        leafStanzaAt = itemLines.length
+        leafStanza = hostEndsInLineBlockStanza(itemLines, 0) && !hostEndsInLineBlockStanza(itemLines, 0, true)
+      }
+      return leafStanza
     }
     let lineBlockFenceCol = holdsLineBlock ? contentCol + head.text.indexOf(':::') : -1
     const captionGaps = []
@@ -7592,7 +7671,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const _dpo = () => {
       // The innermost open line-block stanza owns its payload as inline content,
       // even when an enclosing item or quote has no ordinary paragraph open.
+      // A span open in this item's own line block: the stanza state before it is tracked per line.
+      if (verseSpan !== null && colonLineBlock.at(-1) === true && ind(i)?.col < contentCol) return verseSpanPara
       if (!isBlank(lines[i - 1] ?? '') && ind(i)?.col < contentCol && descendantStanzaOpen()) return true
+      // A stanza holding no verse supplies none, whatever its spans left (carve#4956).
+      if (ind(i)?.col < contentCol && leafStanzaEmpty()) return false
       if (!paragraphIsOpen()) return false
       if (bodyQuote.at === i - 1 && bodyQuote.open &&
           !COLON_CLOSER.test(QUOTE.exec(ind(i - 1)?.rest ?? '')?.[1] ?? '')) return true
@@ -7807,6 +7890,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // a span in it pairs wherever its lines start (ruled on carve-php#3137).
     const colonLineBlock = []
     const colonBases = []
+    // A `%%%` span in a line block's payload, and the last line it hid.
+    let verseSpan = null
+    let verseSpanLine = -1
+    let verseSpanPara = false
     const payloadCloserSearches = new Map()
     const trackFence = (line, opens, index) => {
       if (fence.opaque) {
@@ -7832,6 +7919,16 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       }
 
       const payload = fence.colon.length !== 0 && colonLineBlock.at(-1) === true
+      if (payload) {
+        // A verse span hides its lines, a colon run included, and leaves nothing (CARVE-P9-047).
+        const run = (verseSpan === null ? /^ {0,3}(%{3,})/ : /^[ \t]*(%{3,})/).exec(line)?.[1].length
+        if (verseSpan !== null || run !== undefined) {
+          if (verseSpan === null) verseSpanPara = openPara
+          verseSpan = verseSpan === null ? run : run === verseSpan ? null : verseSpan
+          verseSpanLine = index
+          return
+        }
+      }
       const unindented = payload ? line.replace(/^[ \t]+/, '') : line
       const code = FENCE.exec(unindented)
       if (code && parseFenceInfo(code[2], code[1]) !== null) {
@@ -9173,7 +9270,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (belowCloser) { /* the span's own state, untouched */ }
         else if (inCommentSpan) { /* opaque: the opener already closed the paragraph */ }
         else if (inPayload || fence.opaque?.payload) {
-          if (colonLineBlock.at(-1) === true) startPara()
+          if (colonLineBlock.at(-1) === true) { if (verseSpanLine !== i) startPara() }
           else closePara()
         }
         else if (i <= wrappedAttrEnd) closePara()
@@ -9577,8 +9674,17 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         i++
         continue
       }
-      // A line that misses the item ends a span open in it, and the item with it (PART 0 S1).
-      if (!nm && missedLiveSpan()) break
+      // A line that misses the item ends a span open in it, and the item with it (PART 0 S1),
+      // unless the span sits in a line-block stanza, which the line folds into (carve#4956).
+      if (!nm && verseSpan !== null && colonLineBlock.at(-1) === true) {
+        if (!verseSpanPara) break
+        verseSpan = null
+        if (nestedOpaque?.kind === 'comment') nestedOpaque = null
+      } else if (!nm && missedLiveSpan()) {
+        if (!descendantStanzaOpen()) break
+        verseSpan = null
+        if (nestedOpaque?.kind === 'comment') nestedOpaque = null
+      }
       // A DEFINITION AT COLUMN 0 IS A DEFINITION, NOT LAZY TEXT. §24 C3's BELOW
       // branch folds "every other line", but a line at column 0 is not below a
       // column - it is AT the enclosing context's own block position, which is

@@ -446,9 +446,11 @@ const rendersNoElement = (b) => b.t === 'raw' && b.format !== 'html'
 // A closed `%%%` pair in verse leaves nothing: no verse line, and a blank line
 // in its body splits no stanza (CARVE-P9-047). Its opener is indented by at
 // most three spaces, as everywhere else (carve#4469); the closer takes SS28's indent.
-// An unclosed span runs to the end of the line block (PART 9 §28).
-function withoutCommentBlocks(lines) {
+// An unclosed span runs to the end of the line block (PART 9 §28) or to the
+// lazy line that ends it under PART 0 S1 (`spanEnds`, carve#4956).
+function withoutCommentBlocks(lines, spanEndList = []) {
   const closerRun = (l) => /^[ \t]*(%{3,})/.exec(l)?.[1].length
+  const spanEnds = new Set(spanEndList)
   const kept = []
   for (let i = 0; i < lines.length; i++) {
     const run = /^ {0,3}(%{3,})/.exec(lines[i])?.[1].length
@@ -457,7 +459,8 @@ function withoutCommentBlocks(lines) {
       continue
     }
     i++
-    while (i < lines.length && closerRun(lines[i]) !== run) i++
+    while (i < lines.length && closerRun(lines[i]) !== run && !spanEnds.has(i)) i++
+    if (spanEnds.has(i)) i--
   }
   return kept
 }
@@ -747,7 +750,7 @@ function renderBlock(b, depth, ctx) {
       // serialize as NBSP entities (PART 9 SS23)
       const stanzas = []
       let cur = []
-      for (const l of withoutCommentBlocks(b.lines)) {
+      for (const l of withoutCommentBlocks(b.lines, b.spanEnds)) {
         if (/^[ \t]*$/.test(l)) {
           if (cur.length) stanzas.push(cur)
           cur = []
