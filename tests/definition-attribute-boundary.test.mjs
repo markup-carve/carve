@@ -13,7 +13,6 @@ const hosts = [
   {
     name: 'item follower',
     attrAttachesToTail: true,
-    abbreviationDefines: true,
     source: line => `- head\n${line}\ntail\n`,
     html: (line, prose) => prose
       ? `<ul>\n  <li>head\n${line}\ntail</li>\n</ul>`
@@ -22,7 +21,6 @@ const hosts = [
   {
     name: 'description follower',
     attrAttachesToTail: true,
-    abbreviationDefines: true,
     source: line => `:: term\n:  head\n${line}\ntail\n`,
     html: (line, prose) => prose
       ? `<dl>\n  <dt>term</dt>\n  <dd>head\n${line}\ntail</dd>\n</dl>`
@@ -41,8 +39,8 @@ for (const host of hosts) {
   for (const row of lines) {
     test(`${host.name}: ${row.name} preserves the boundary and registration`, () => {
       const doc = parse(host.source(row.line))
-      // A column-0 abbreviation definition ends the follower host (carve#4412).
-      const defines = row.name === 'abbreviation' && host.abbreviationDefines
+      // An abbreviation definition ends the paragraph in every host (carve#4865).
+      const defines = row.name === 'abbreviation'
       const prose = row.prose && !defines
       // A footnote body takes the lazy line in every host (carve#3885).
       const tail = prose || row.name === 'footnote' ? '' :

@@ -335,7 +335,6 @@ function matchLinkDef(line) {
   const title = m[3] !== undefined ? m[3].replaceAll('\\"', '"') : m[4]?.replaceAll("\\'", "'")
   return { label: m[1], url, title, attrs }
 }
-const isLinkDef = (line) => matchLinkDef(line) !== null
 // The marker line must carry inline content (PART 9 SS16 production:
 // `"]:", space, inline_content`); a bare `[^label]:` is an ordinary
 // paragraph line (corpus 132).
@@ -345,6 +344,8 @@ const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: +(?![ \t]*$)([^ ].*)$/s
 // `*[e.g.]:` and `*[ß]:` definitions, which made their LINE disappear, while
 // all three engines kept it as paragraph text (carve#791).
 const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/s
+// A one-line definition or a note's opening line; every container reads them alike (CARVE-P9-013).
+const isDefinitionLine = (line) => matchLinkDef(line) !== null || ABBR_DEF.test(line)
 // The caption text drops its trailing whitespace run, like every other content
 // line (PART 2, NO TRAILING WHITESPACE; carve#926). Done in the PATTERN rather
 // than at each use: five places read this capture, and the rule was missing
@@ -1640,42 +1641,13 @@ function tryAttrLine(lines, i) {
   return { lists, next: li + 1 }
 }
 
-// Single-line recognition only; callers supply the column and ownership guards.
-// Abbreviations are document-only and remain text in these container contexts.
-// Rule A moves a line that missed its frames onto column 0, so the document's
-// readers cannot see the column it was written at (carve#4412).
-const sourceColumnZero = new WeakMap()
-
-function abbreviationAtSourceColumnZero(lines, i) {
-  return sourceColumnZero.get(lines)?.[i] === true && ABBR_DEF.test(lines[i])
-}
-
-// A `+` skips an abbreviation definition, which defines in the document in source order (carve#4449).
-const skippedAbbreviationsOf = new WeakMap()
-
-function defineSkippedAbbreviations(lines, state, before) {
-  const record = skippedAbbreviationsOf.get(lines)
-  if (!record || record.state !== state) return
-  while (record.next < record.entries.length && record.entries[record.next][0] < before) {
-    const [term, value] = record.entries[record.next++][1]
-    state.abbrDefs.set(term, value)
-  }
-}
-
-// The walk knows which line reached no frame; a term has none, so a term keeps its own test.
-const abbreviationMissedFrames = new WeakMap()
-
-function abbreviationMissesEveryFrame(lines, i) {
-  return abbreviationMissedFrames.get(lines)?.[i] === true
-}
-
 function isDefinitionOrAttributeLine(line) {
-  return FOOTNOTE_DEF.test(line) || isLinkDef(line) || !!tryAttrLine([line], 0)
+  return FOOTNOTE_DEF.test(line) || isDefinitionLine(line) || !!tryAttrLine([line], 0)
 }
 
-// CARVE-P9-013: one class between siblings (carve#4716). An abbreviation definition is one only at document level.
-function invisibleSiblingLine(rest, top) {
-  return COMMENT_LINE.test(rest) || isLinkDef(rest) && !FOOTNOTE_DEF.test(rest) || top && ABBR_DEF.test(rest)
+// CARVE-P9-013: one class between siblings (carve#4716).
+function invisibleSiblingLine(rest) {
+  return COMMENT_LINE.test(rest) || isDefinitionLine(rest) && !FOOTNOTE_DEF.test(rest)
 }
 
 // A paragraph of only comments renders nothing, so a list reads it as it reads a `%%` line (carve#4799).
@@ -1703,7 +1675,7 @@ function registerSkippedDefinitions(lines, from, to, restOf, state, top) {
       if (fence) while (k + 1 < to && COMMENT_FENCE_BODY.exec(restOf(k + 1))?.[1] !== fence) k++
       continue
     }
-    if (rest !== '' && invisibleSiblingLine(rest, top)) parseBlocks([rest], state, top)
+    if (rest !== '' && invisibleSiblingLine(rest)) parseBlocks([rest], state, top)
   }
 }
 
@@ -1742,7 +1714,7 @@ function isCodeBlockOpener(line) {
 }
 
 function foldablePlainLine(cur) {
-  return !isBlank(cur) && !startsVisibleBlock(cur) && !isTableRow(cur) && !isLinkDef(cur) &&
+  return !isBlank(cur) && !startsVisibleBlock(cur) && !isTableRow(cur) && !isDefinitionLine(cur) &&
     !FOOTNOTE_DEF.test(cur) && !BULLET.test(trimLineEnd(cur)) && !isOrderedMarkerLine(cur) &&
     !isCodeBlockOpener(cur) && !isColonBlockOpener(cur) &&
     !CAPTION.test(cur) && !COMMENT_LINE.test(cur) &&
@@ -1758,7 +1730,7 @@ function startsVisibleBlock(line) {
 // body or paragraph context. List markers and captions have separate policy.
 function startsParagraphBlock(line, top) {
   return startsVisibleBlock(line) || isTableRow(line) ||
-    isLinkDef(line) || FOOTNOTE_DEF.test(line) || (top && ABBR_DEF.test(line))
+    isDefinitionLine(line) || FOOTNOTE_DEF.test(line)
 }
 
 // Descendants share a source line's suffix offsets. Distinct source lines and
@@ -2945,7 +2917,7 @@ function opensSubBlock(line) {
 }
 
 function opensHostedColonBlock(line) {
-  if (FOOTNOTE_DEF.test(line) || isLinkDef(line) || parseAttrList(trimLineEnd(line)) !== null) return true
+  if (FOOTNOTE_DEF.test(line) || isDefinitionLine(line) || parseAttrList(trimLineEnd(line)) !== null) return true
   if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) || isTableRow(line) || DEFLIST_TERM.test(line)) return true
   const fence = FENCE.exec(line)
   if (fence) return parseFenceInfo(fence[2], fence[1]) !== null
@@ -2954,7 +2926,7 @@ function opensHostedColonBlock(line) {
   return !!(opener && (opener.type || opener.mode === 'line-block'))
 }
 
-const opensAuthoredBase = (line) => opensSubBlock(line) || isLinkDef(line) ||
+const opensAuthoredBase = (line) => opensSubBlock(line) || isDefinitionLine(line) ||
   FOOTNOTE_DEF.test(line) || COMMENT_LINE.test(line) ||
   parseAttrList(trimLineEnd(line)) !== null || isCaptionableParagraph([line])
 
@@ -3139,10 +3111,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   let attrRest = null
   // Every lone `+` the one rule refused; each is written as a letter.
   const refusedPlus = []
-  // Abbreviation definitions that reached no frame, so they stand in the document (carve#4412).
-  const abbreviationsInDocument = new Set()
-  // Abbreviation definitions a `+` skipped: invisible in the host, defined in the document (carve#4449).
-  const skippedAbbreviations = new Map()
   // The trace path of a block the walk opens in a parent although an item's
   // first-block `+` took it, and the item path the trace records it under.
   let reown = null
@@ -3161,9 +3129,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   for (let at = start; at < lines.length; at++) {
     if (skipped) {
       const rest = trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)
-      const abbreviation = skipped.fenced.has(at) ? null : skippedAbbreviation(lines[at], skipped.hostIndex)
-      if (abbreviation) skippedAbbreviations.set(at, [abbreviation[1], abbreviation[2]])
-      result.push(skipped.lead + (skipped.fenced.has(at) || abbreviation ? '%%' : rest))
+      result.push(skipped.lead + (skipped.fenced.has(at) ? '%%' : rest))
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
       if (at + 1 === skipped.end) {
         if (skipped.host.plus === skipped.at) skipped.host.plus = at
@@ -3386,7 +3352,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       if (f.plusShift && m.col < f.plusShift.col) f.plusShift = undefined
       if (f.closedList && m.col < f.closedList.col) f.closedList = undefined
     }
-    if (reached === 0 && ABBR_DEF.test(m.rest)) abbreviationsInDocument.add(at)
     const form = classify(m.rest, owner, at, m.col)
     // A lazy line folds into a line block's open stanza and closes nothing,
     // so the block's closer still finds it (PART 0 S4).
@@ -3530,7 +3495,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       continue
     }
     // Any other block it attaches there meets the `+` where the walk moved it (§17 L3, carve#4367).
-    const invisibleLine = !COMMENT_FENCE_BODY.test(m.rest) && COMMENT_LINE.test(m.rest) || isLinkDef(m.rest) && !FOOTNOTE_DEF.test(m.rest)
+    const invisibleLine = !COMMENT_FENCE_BODY.test(m.rest) && COMMENT_LINE.test(m.rest) || isDefinitionLine(m.rest) && !FOOTNOTE_DEF.test(m.rest)
     const plusLanding = lonePlus?.kind === 'item' && reached === frames.length - 2 && m.col === lonePlus.markerCol &&
       m.rest !== '' && !CONT_MARKER.test(m.rest) && !invisibleLine && !['text', 'item', 'dd', 'term', 'colon-close'].includes(form.kind)
       ? lonePlus.markerCanon : null
@@ -3619,7 +3584,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       // An invisible leaf between a term and its first description does not
       // close the term. Keep its classification state for the next visible line.
       const invisibleAfterTerm = form.kind === 'leaf' && owner.last === 'term' &&
-        (COMMENT_LINE.test(m.rest) || isLinkDef(m.rest) || ABBR_DEF.test(m.rest))
+        (COMMENT_LINE.test(m.rest) || isDefinitionLine(m.rest))
       if (!invisibleAfterTerm) {
         owner.para = !!form.caption
         owner.last = form.kind
@@ -3704,8 +3669,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   }
   const walked = frameTextFences(result, textFences)
   walked.refusedPlus = refusedPlus
-  walked.abbreviationsInDocument = abbreviationsInDocument
-  walked.skippedAbbreviations = skippedAbbreviations
   return walked
 
   // `classify` as the line reads at frame `depth`.
@@ -3876,7 +3839,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       } else if (FOOTNOTE_DEF.test(rest)) {
         k++
         while (k < lines.length && foldablePlainLine(view(k))) k++
-      } else if (COMMENT_LINE.test(rest) || isLinkDef(rest) || skippedAbbreviation(lines[k], hostIndex)) k++
+      } else if (COMMENT_LINE.test(rest) || isDefinitionLine(rest)) k++
       else {
         const attr = rest[0] === '{' ? tryAttrLine(fromHere, k) : null
         // A paragraph of only comments is skipped as a `%%` line is (carve#4799).
@@ -3887,12 +3850,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       }
     }
     return lines.length
-  }
-
-  // A skipped line stands where its host's marker line does, so it defines only beside a host
-  // in the document; in a quote, an item or a div it stays text (CARVE-P12-026).
-  function skippedAbbreviation(line, hostIndex) {
-    return hostIndex === 1 ? ABBR_DEF.exec(trimLineEnd(trimWsStart(line))) : null
   }
 
   // The line behind the quotes around frame `hostIndex`. A `>` left of a frame
@@ -3994,8 +3951,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       return { kind: 'dd', width: 1 + dd[1].length, head: 1 + dd[1].length, interrupts: false }
     }
     if (isTableRow(rest)) return { kind: 'leaf', interrupts: true, table: true }
-    if (HEADING.test(rest) || HR.test(rest) || isLinkDef(rest) ||
-        FOOTNOTE_DEF.test(rest) || ABBR_DEF.test(rest) || (rest[0] === '{' && tryAttrLine([rest], 0))) {
+    if (HEADING.test(rest) || HR.test(rest) || isDefinitionLine(rest) ||
+        FOOTNOTE_DEF.test(rest) || (rest[0] === '{' && tryAttrLine([rest], 0))) {
       return { kind: 'leaf', interrupts: true }
     }
     // A wrapped attribute block is the same leaf at any column (carve#4089):
@@ -4202,8 +4159,6 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   const walked = ownLines(authored, trace, sentinel)
   src = walked.join('\n')
   const refusedPlusLines = walked.refusedPlus
-  const missedFrames = authored.map((_, k) => walked.abbreviationsInDocument.has(k))
-  let skippedAbbreviations = [...walked.skippedAbbreviations].sort((a, b) => a[0] - b[0])
   const hasOrdinaryPlus = refusedPlusLines.length > 0
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') { lines.pop(); authored.pop() }
@@ -4275,18 +4230,11 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
       if (/^---[ \t]*$/.test(authored[j])) {
         lines.splice(0, j + 1)
         authored.splice(0, j + 1)
-        missedFrames.splice(0, j + 1)
-        skippedAbbreviations = skippedAbbreviations.map(([k, def]) => [k - j - 1, def])
         break
       }
     }
   }
-  sourceColumnZero.set(lines, authored.map((line) => !/^[ \t]/.test(line)))
-  abbreviationMissedFrames.set(lines, missedFrames)
-  const skippedRecord = { state, entries: skippedAbbreviations, next: 0 }
-  skippedAbbreviationsOf.set(lines, skippedRecord)
   const blocks = parseBlocks(lines, state, true)
-  defineSkippedAbbreviations(lines, state, Infinity)
   if (hasOrdinaryPlus) {
     restoreOrdinaryPlus(blocks, sentinel)
     restoreOrdinaryPlus(state.linkDefs, sentinel)
@@ -4583,7 +4531,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       stop.next = i
       return blocks
     }
-    if (top) defineSkippedAbbreviations(lines, state, i)
     const line = trimLineEnd(lines[i])
     if (ind(i).rest === '') { // isBlank, without re-walking the indent
       i++
@@ -4870,8 +4817,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             !opensFence(lines, i) &&
             !(measured.col === 0 && commentFenceOpensSpan(lines, i)) &&
             !(measured.col === 0 && (isDefinitionOrAttributeLine(measured.rest) ||
-              tryAttrLine(lines, i))) &&
-            !abbreviationMissesEveryFrame(lines, i)) {
+              tryAttrLine(lines, i)))) {
           bodyLines.push(lazyFrame(measured.rest))
           lazyParagraphOpen = true
           i++
@@ -4900,11 +4846,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       }
       continue
     }
-    // PART 12 §7: recognized ONLY at document level. Inside a block quote, a
-    // list item or a div the line is ordinary paragraph text - an abbreviation
-    // rewrites every occurrence of its term with nothing at the use site
-    // pointing back, so it may not be written where quoted material lives.
-    if (top && (m = ABBR_DEF.exec(line))) {
+    // PART 12 §7: a definition in every container, with document scope.
+    if ((m = ABBR_DEF.exec(line))) {
       // No empty-term guard: `+` in ABBR_DEF cannot match zero characters, so
       // one here could never fire. `*[]: x` fails the pattern and is a
       // paragraph, which is what the production says it is.
@@ -5038,7 +4981,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const foldablePlain = (cur) =>
         !isBlank(cur) &&
         !startsVisibleBlock(cur) &&
-        !isLinkDef(cur) &&
+        !isDefinitionLine(cur) &&
         !FOOTNOTE_DEF.test(cur) &&
         !BULLET.test(trimLineEnd(cur)) &&
         !isOrderedMarkerLine(cur) &&
@@ -5093,10 +5036,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               dt += '\n' + TERM_COMMENT
               continue
             }
-            if (abbreviationAtSourceColumnZero(lines, i)) break
             const sourceColumn = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
             const pastColumnDefinition = sourceColumn > (descriptionOwnerColumn ?? sourceTermCol) &&
-              (isLinkDef(indentCols(cur).rest) || FOOTNOTE_DEF.test(indentCols(cur).rest))
+              (isDefinitionLine(indentCols(cur).rest) || FOOTNOTE_DEF.test(indentCols(cur).rest))
             if (!foldablePlain(cur) && !pastColumnDefinition && !/^: +[ \t]*$/.test(cur)) break
             if (isTableRow(cur) || colonFenceInterrupts(cur) || (cur[0] === '{' && tryAttrLine(lines, i))) break
             // A line folded into an item BELOW its content column arrives here
@@ -5373,15 +5315,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * item or a block quote attached to the following paragraph, and
              * adding one blank line above it made this host attach too. A blank
              * line is not what makes pending metadata exist (§15 A2).
-             *
-             * An abbreviation definition breaks here only where it misses every
-             * frame (carve#4412), exactly as at C3.
              */
             // The item owns an attribute below the description body column;
             // it ends the paragraph there and cannot fold into the description.
             if (inItem && authoredCol > 0 && tryAttrLine([dedented], 0)) break
             if (authoredCol === 0 && (isDefinitionOrAttributeLine(dedented) || !!tryAttrLine(lines, i))) break
-            if (abbreviationMissesEveryFrame(lines, i)) break
             // CARVE-P9-083: a surviving description can own a marker below this nested body.
             if ((inItem || descriptionOwnerColumn !== null &&
                 (sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) >= descriptionOwnerColumn) &&
@@ -5431,9 +5369,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * and was discarded. A frame is a paragraph continuation by
              * construction (PART 1 S4), so neither can happen.
              *
-             * The abbreviation spelling already folded, because nothing inside a
-             * `dd` recognizes it; it is framed here too so all four kinds reach
-             * the body by one path rather than by two that agree today.
+             * All four kinds reach the body by one path.
              */
             // Below the body's column an opener folds into the open paragraph
             // (PART 0 O3, CARVE-P0-021); in an item it opens there unless a quote holds the band (X2).
@@ -5450,8 +5386,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             openFence = bodyHasFenceCandidate ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt) : -1
             if (openFence !== -1) break
             if (authoredCol > 0 && !startsVisibleBlock(dedented) &&
-                (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented) ||
-                 ABBR_DEF.test(dedented) || dedented[0] === '{') &&
+                (isDefinitionLine(dedented) || FOOTNOTE_DEF.test(dedented) || dedented[0] === '{') &&
                 bodyLeavesParagraphOpen(bodyLines)) {
               pushBody(lazyFrame(dedented))
               i++
@@ -5511,7 +5446,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // it ends the list.
         const restAt = (k) => (lines[k] ?? '').startsWith(LAZY) ? null : indentCols(lines[k] ?? '').rest
         const commentParaEnd = (k) => restAt(k) === null ? -1 : commentOnlyParaEnd(lines, k, top)
-        const invisibleAt = (k) => restAt(k) !== null && (invisibleSiblingLine(restAt(k), top) || commentParaEnd(k) !== -1)
+        const invisibleAt = (k) => restAt(k) !== null && (invisibleSiblingLine(restAt(k)) || commentParaEnd(k) !== -1)
         if (isBlank(cur0) || invisibleAt(i)) {
           // PART 9 SS11 N1a: three blank lines end a description list too
           // (carve#4759); invisible lines do not split the run.
@@ -6324,7 +6259,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
              isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionPlus ||
-             (isLinkDef(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(l) || COMMENT_LINE.test(l) ||
+             (isDefinitionLine(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(l) || COMMENT_LINE.test(l) ||
              (FOOTNOTE_DEF.test(l) && (openerFenceRun(FOOTNOTE_DEF.exec(l)[2]) !== null ||
                !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true))))) {
           qOpenPara = false
@@ -6969,7 +6904,7 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
     // block, though it renders nothing (carve#4307).
     const comment = read.length > 0 ? classifyLayoutComment(read, 0) : null
     if (comment && !(comment.kind === 'line_comment' && commentFenceOpensSpan(lines, start))) return start + comment.end
-    if (read.length > 1 && isLinkDef(indentCols(read[0]).rest) && !FOOTNOTE_DEF.test(indentCols(read[0]).rest)) return start + 1
+    if (read.length > 1 && isDefinitionLine(indentCols(read[0]).rest) && !FOOTNOTE_DEF.test(indentCols(read[0]).rest)) return start + 1
     if (read.length <= 1) return start + read.length
     limit = start + read.length
     measuredLines = read
@@ -7064,7 +6999,7 @@ function invisibleAuthoredEnd(lines, start, limit) {
     }
     return end
   }
-  if (isLinkDef(opener.rest)) return start + 1
+  if (isDefinitionLine(opener.rest)) return start + 1
   return null
 }
 
@@ -7395,7 +7330,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
   }
   const baseIndent = matchMarkerAt(ind(i)).indent
   const commentParaEnd = (k) => commentOnlyParaEnd(lines, k, top)
-  const invisibleAt = (k) => invisibleSiblingLine(ind(k).rest, top) || commentParaEnd(k) !== -1
+  const invisibleAt = (k) => invisibleSiblingLine(ind(k).rest) || commentParaEnd(k) !== -1
   const commentsBeforeSibling = (at) => {
     if (at >= n || !invisibleAt(at)) return at
     // Invisible lines are erased from layout, so blank lines on either side
@@ -8809,7 +8744,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             COMMENT_LINE.test(dedented) ||
             COMMENT_FENCE.test(dedented) ||
             FOOTNOTE_DEF.test(dedented) ||
-            isLinkDef(dedented) ||
+            isDefinitionLine(dedented) ||
             parseAttrList(trimLineEnd(dedented)) !== null ||
             !!tryAttrLine(dedentedWindow(lines, j, contentCol), 0) ||
             (commentParaThrough = commentOnlyParaEnd(lines, j, false) - 1) >= j
@@ -9243,7 +9178,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           !matchMarkerAt(dmeas) &&
           !dmeas.rest.startsWith('%%') &&
           !FOOTNOTE_DEF.test(dedented) &&
-          !isLinkDef(dedented) &&
+          !isDefinitionLine(dedented) &&
           !(noteBodyBoundary !== null && col >= noteBodyBoundary) &&
           !noteClaimsBelow &&
           parseAttrList(trimLineEnd(dedented)) === null &&
@@ -9567,12 +9502,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // ends the item while DROPPING the definition gets `tail` right by
         // accident and breaks the moment the column moves. carve-php and
         // carve-rs register it (carve#1350).
-        //
-        // ABBR_DEF is deliberately absent: §10 I5's list is a link or footnote
-        // definition, and an abbreviation definition is recognized at document
-        // level only (line 1453), so inside an item the line is paragraph text
-        // and reopening the paragraph is the correct answer for it.
-        else if ((isLinkDef(dedented) || FOOTNOTE_DEF.test(lm.rest)) && !stanzaPayload()) {
+        else if ((isDefinitionLine(dedented) || FOOTNOTE_DEF.test(lm.rest)) && !stanzaPayload()) {
           const outerReach = { def: defBodyIndent, boundary: noteBodyBoundary }
           closePara()
           // ONLY A FOOTNOTE DEFINITION HAS A BODY. A link reference definition
@@ -9876,16 +9806,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // column fold: `- - a` / `  [^f]: x` dedents to column 0 for the inner
       // list's collector, so it arrives here (carve#635).
       //
-      // An abbreviation definition breaks only where it misses every frame
-      // (carve#4412): a nested collector's column 0 is a dedented line, and
-      // CARVE-P12-026 keeps that paragraph text.
-      //
       // A definition BELOW every open content column is untouched - it never
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
       // A wrapped attribute line is one attribute line (CARVE-P9-013 I5).
       if (!nm && atFrameColumn(lm.col) && (isDefinitionOrAttributeLine(line) || !!tryAttrLine(lines, i))) break
-      if (!nm && abbreviationMissesEveryFrame(lines, i)) break
       // A surviving frame after a comment can own a nonzero below-column line,
       // which begins a new paragraph rather than continuing the closed one.
       // Document column zero remains owned by the document.

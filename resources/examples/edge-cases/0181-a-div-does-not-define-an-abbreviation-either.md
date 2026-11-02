@@ -1,6 +1,6 @@
 ## A div does not define an abbreviation either
 
-The rule names three containers - a block quote, a list item and a div - and the first two were pinned while the third was not. A div is the one of the three that renders its children unchanged, so a definition inside it is the case where the line looks most like a document-level one, and the use below it still gets no `<abbr>`.
+A div reads the line as a block quote and a list item do: it defines, and the use below it gets an `<abbr>`. The section title names the reading carve#4865 replaced and stays as the corpus id.
 
 ::::: compare
 
@@ -14,8 +14,7 @@ The HTML spec.
 
 ```html
 <div>
-  <p>*[HTML]: Hyper Text</p>
-  <p>The HTML spec.</p>
+  <p>The <abbr title="Hyper Text">HTML</abbr> spec.</p>
 </div>
 ```
 

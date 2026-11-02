@@ -67,7 +67,7 @@ A
 
 ::::::
 
-Under a host in a quote or an item the line is text, not a definition (CARVE-P12-026), so it is the visible line the `+` attaches.
+Under a host in a quote or an item it reads the same way (carve#4865).
 
 :::::: compare
 
@@ -82,11 +82,10 @@ A
 ```html
 <blockquote>
   <ul>
-    <li>*[A]: b
-text</li>
+    <li>text</li>
   </ul>
 </blockquote>
-<p>A</p>
+<p><abbr title="b">A</abbr></p>
 ```
 
 ::::::
@@ -106,12 +105,11 @@ A
 <ul>
   <li>x
     <ul>
-      <li>*[A]: b
-text</li>
+      <li>text</li>
     </ul>
   </li>
 </ul>
-<p>A</p>
+<p><abbr title="b">A</abbr></p>
 ```
 
 ::::::

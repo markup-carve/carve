@@ -120,10 +120,9 @@ x
 <dl>
   <dt>t</dt>
   <dd>d
-- para
-*[A]: b
-x</dd>
+- para</dd>
 </dl>
+<p>x</p>
 ```
 
 ```

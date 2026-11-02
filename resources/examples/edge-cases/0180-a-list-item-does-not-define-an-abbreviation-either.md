@@ -1,6 +1,6 @@
 ## A list item does not define an abbreviation either
 
-The same rule holds for every container, not just the block quote: the definition line stays visible text and expands nothing.
+The same rule holds for every container: the line is invisible and defines. The section title names the reading carve#4865 replaced and stays as the corpus id.
 
 ::: compare
 
@@ -12,9 +12,9 @@ The HTML spec.
 
 ```html
 <ul>
-  <li>*[HTML]: Hyper Text</li>
+  <li></li>
 </ul>
-<p>The HTML spec.</p>
+<p>The <abbr title="Hyper Text">HTML</abbr> spec.</p>
 ```
 
 :::

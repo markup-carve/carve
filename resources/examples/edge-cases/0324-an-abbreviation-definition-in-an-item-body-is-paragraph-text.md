@@ -1,12 +1,6 @@
 ## An abbreviation definition in an item body is paragraph text
 
-PART 12 §7 says an `abbreviation_definition` is one only as a direct child of the
-document: written inside a block quote, a list item or a div, "the line is not a
-definition at all: it is ordinary paragraph text, it defines nothing, and it is
-preserved as the text the author typed". So the looseness question §17 L1 asks -
-does the item hold a blank-line-separated second paragraph - has an answer that
-follows from §7 rather than from a rule about abbreviations: the line renders, so
-it IS that paragraph, and the item is loose.
+An abbreviation definition in an item body is a definition (PART 12 §7, carve#4865), so it adds no paragraph and leaves the list tight. The section title names the reading carve#4865 replaced and stays as the corpus id.
 
 ::: compare
 
@@ -18,16 +12,13 @@ it IS that paragraph, and the item is loose.
 
 ```html
 <ul>
-  <li><p>a</p>
-    <p>*[A]: a</p>
-  </li>
+  <li>a</li>
 </ul>
 ```
 
 :::
 
-Nothing changes when a sublist follows it. The definition-shaped line is already
-the second paragraph, and §17 L2's attached sub-block cannot take that back:
+Nothing changes when a sublist follows it:
 
 ::: compare
 
@@ -40,8 +31,7 @@ the second paragraph, and §17 L2's attached sub-block cannot take that back:
 
 ```html
 <ul>
-  <li><p>a</p>
-    <p>*[A]: a</p>
+  <li>a
     <ul>
       <li>b</li>
     </ul>
@@ -51,7 +41,7 @@ the second paragraph, and §17 L2's attached sub-block cannot take that back:
 
 :::
 
-Looseness is a property of the LIST, so a sibling item is wrapped too:
+A sibling item reads the same way:
 
 ::: compare
 
@@ -65,22 +55,18 @@ Looseness is a property of the LIST, so a sibling item is wrapped too:
 
 ```html
 <ul>
-  <li><p>a</p>
-    <p>*[A]: a</p>
+  <li>a
     <ul>
       <li>b</li>
     </ul>
   </li>
-  <li><p>c</p></li>
+  <li>c</li>
 </ul>
 ```
 
 :::
 
-The control is the definition kind that IS collected at that column. A link
-reference definition inside the item renders nothing, resolves for the rest of
-the document, and leaves the item tight - which is what makes the abbreviation's
-answer a consequence of §7 rather than an inconsistency:
+A link reference definition inside the item reads the same way.
 
 ::: compare
 

@@ -347,19 +347,7 @@
 
          PROPERTY 3 DOES NOT SAY WHICH OWNER. PART 0 S2 selects it.
 
-         THE CLASSIFICATION HAS ONE EXCEPTION, and it is about MEMBERSHIP,
-         never about a member behaving differently: AN ABBREVIATION
-         DEFINITION IS DOCUMENT-LEVEL ONLY (CARVE-P12-026). Inside a container
-         it is paragraph text, it is VISIBLE, and it folds like any other plain
-         line. A definition line that misses every frame is not inside a container:
-         at every column below the outermost container's content column it stands
-         at document level, ends every container and defines, under an item, a
-         description, a note and a quote alike (carve#4412). `- n` / `*[A]: b` and
-         `- n` / ` *[A]: b` close the item and define `A`; `- n` / `  *[A]: b` reaches
-         the item and stays its text, and so does a line past an open term's
-         column, since a term is no frame. Any line past an open term's
-         content column folds into that term, including an abbreviation-like
-         line. Every other member keeps its
+         Every member keeps its
          class below a container's content column: it interrupts, closes the
          missed containers and is read in the surviving owner (PART 0 S4, S5).
 

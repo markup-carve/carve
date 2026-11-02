@@ -48,11 +48,10 @@ A
 .
 <blockquote>
   <ul>
-    <li>*[A]: b
-text</li>
+    <li>text</li>
   </ul>
 </blockquote>
-<p>A</p>
+<p><abbr title="b">A</abbr></p>
 ```
 
 ```
@@ -66,12 +65,11 @@ A
 <ul>
   <li>x
     <ul>
-      <li>*[A]: b
-text</li>
+      <li>text</li>
     </ul>
   </li>
 </ul>
-<p>A</p>
+<p><abbr title="b">A</abbr></p>
 ```
 
 ```

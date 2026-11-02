@@ -7,10 +7,9 @@ An abbreviation at a list item's content column is still not a definition
 The HTML spec.
 .
 <ul>
-  <li>a
-*[HTML]: Hyper Text</li>
+  <li>a</li>
 </ul>
-<p>The HTML spec.</p>
+<p>The <abbr title="Hyper Text">HTML</abbr> spec.</p>
 ```
 
 ```

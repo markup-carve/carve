@@ -289,11 +289,8 @@
          the marker and its block refuse it. Invisible lines between the
          marker and the next line are skipped: they are read in the host, and
          the gates apply to the first visible line after them (carve#4449).
-         Link, note and abbreviation definitions are one class here (CARVE-P9-013):
-         an abbreviation definition the `+` skips defines in the document when
-         the host stands in the document. Under a host in a quote, an item, a
-         definition body, a footnote body or a div the line is text
-         (CARVE-P12-026), so it is the next line. An invisible line off the marker column is itself that
+         Link, note and abbreviation definitions are one class here (CARVE-P9-013).
+         An invisible line off the marker column is itself that
          next line, and a note definition's body belongs to the note. A blank line, the end of
          input or a sibling after them refuses the `+`. Examples, with `/` for
          a line break:

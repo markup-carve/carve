@@ -36,16 +36,16 @@ test('a footnote body ends and the abbreviation defines', () => {
   assert.ok(!out.includes('*[A]: b'), out)
 })
 
-const STAYS_TEXT = [
-  ['the item content column', '- n\n  *[A]: b\n\nA\n', '<ul><li>n *[A]: b</li></ul><p>A</p>'],
-  ['an outer item content column', '- - n\n  *[A]: b\n\nA\n', '<ul><li><ul><li>n *[A]: b</li></ul></li></ul><p>A</p>'],
-  ['a quote marker', '> n\n> *[A]: b\n\nA\n', '<blockquote><p>n *[A]: b</p></blockquote><p>A</p>'],
-  ['a description body', ':: t\n: n\n  *[A]: b\n\nA\n', '<dl><dt>t</dt><dd>n *[A]: b</dd></dl><p>A</p>'],
-  ['past a term', ':: t\n  *[A]: b\n\nA\n', '<dl><dt>t *[A]: b</dt></dl><p>A</p>'],
+const REGISTERS = [
+  ['the item content column', '- n\n  *[A]: b\n\nA\n', '<ul><li>n</li></ul><p><abbr title="b">A</abbr></p>'],
+  ['an outer item content column', '- - n\n  *[A]: b\n\nA\n', '<ul><li><ul><li>n</li></ul></li></ul><p><abbr title="b">A</abbr></p>'],
+  ['a quote marker', '> n\n> *[A]: b\n\nA\n', '<blockquote><p>n</p></blockquote><p><abbr title="b">A</abbr></p>'],
+  ['a description body', ':: t\n: n\n  *[A]: b\n\nA\n', '<dl><dt>t</dt><dd>n</dd></dl><p><abbr title="b">A</abbr></p>'],
+  ['past a term', ':: t\n  *[A]: b\n\nA\n', '<dl><dt>t</dt></dl><p><abbr title="b">A</abbr></p>'],
 ]
 
-for (const [name, src, out] of STAYS_TEXT) {
-  test(`a line at ${name} stays text`, () => {
+for (const [name, src, out] of REGISTERS) {
+  test(`a line at ${name} defines`, () => {
     assert.equal(html(src), out)
   })
 }
@@ -54,6 +54,6 @@ test('a frontmatter block does not move the column-0 line', () => {
   assert.equal(html('---\nk: v\n---\n- n\n*[A]: b\n\nA\n'), '<ul><li>n</li></ul><p><abbr title="b">A</abbr></p>')
 })
 
-test('a div is not the document, so the line stays in its item', () => {
-  assert.ok(html('::: note\n- n\n*[A]: b\n:::\n\nA\n').includes('n *[A]: b'))
+test('a line in a div defines', () => {
+  assert.ok(html('::: note\n- n\n*[A]: b\n:::\n\nA\n').includes('<abbr title="b">A</abbr>'))
 })

@@ -329,8 +329,7 @@ item's next paragraph:
 
 ::::::
 
-An abbreviation definition inside a container is ordinary text
-(CARVE-P12-026), so it keeps the paragraph open and `tail` folds:
+An abbreviation definition inside a container reads the same way (CARVE-P12-026), so `tail` leaves it:
 :::::: compare
 
 ````carve
@@ -342,11 +341,10 @@ tail
 ```html
 <blockquote>
   <ul>
-    <li>para
-*[A]: b
-tail</li>
+    <li>para</li>
   </ul>
 </blockquote>
+<p>tail</p>
 ```
 
 ::::::

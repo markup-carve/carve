@@ -51,7 +51,7 @@ test('a definition past a quoted sub-item column registers', () => {
   assert.equal(oracle('- > - x\n  >    [r]: /u\ntail\n\n[r][]\n'),
     `<ul><li><blockquote><ul><li>x</li></ul></blockquote></li></ul><p>tail</p>${link}`)
 })
-test('an abbreviation after a folded bullet stays text', () => {
+test('an abbreviation after a folded bullet is a definition', () => {
   assert.equal(oracle(':: t\n: d\n  - para\n    *[A]: b\nx\n'),
-    '<dl><dt>t</dt><dd>d - para *[A]: b x</dd></dl>')
+    '<dl><dt>t</dt><dd>d - para</dd></dl><p>x</p>')
 })
