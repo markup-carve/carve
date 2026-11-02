@@ -1,0 +1,122 @@
+A comment closer ahead is read from the span's raw lines
+
+````
+- a
+  %%%
+  n
+zz
+```
+%%%
+```
+.
+<ul>
+  <li>a
+    n
+  </li>
+</ul>
+<p>zz</p>
+<pre><code>%%%
+</code></pre>
+````
+
+````
+- a
+  %%%
+  n
+zz
+```
+%%%%
+```
+.
+<ul>
+  <li>a
+    n
+zz
+  </li>
+</ul>
+<pre><code>%%%%
+</code></pre>
+````
+
+````
+:: t
+: %%%
+  n
+zz
+```
+%%%
+```
+.
+<dl>
+  <dt>t</dt>
+  <dd>n</dd>
+</dl>
+<p>zz</p>
+<pre><code>%%%
+</code></pre>
+````
+
+````
+. a
+  . %%%
+    n
+>>
+```
+%%%
+```
+.
+<ol>
+  <li>a
+    <ol>
+      <li>n</li>
+    </ol>
+  </li>
+</ol>
+<p>&gt;&gt;</p>
+<pre><code>%%%
+</code></pre>
+````
+
+````
+> %%%
+> n
+zz
+```
+%%%
+```
+.
+<blockquote><p>n</p></blockquote>
+<p>zz</p>
+<pre><code>%%%
+</code></pre>
+````
+
+````
+%%%
+n
+```
+%%%
+```
+z
+.
+<pre><code>z
+</code></pre>
+````
+
+```
+- a
+  - %%%
+    n
+  zz
+
+%%%
+.
+<ul>
+  <li>a
+    <ul>
+      <li>n</li>
+    </ul>
+    zz
+  </li>
+</ul>
+```

@@ -24,3 +24,6 @@
 854-an-indented-dash-line-neither-opens-nor-closes-frontmatter  The pinned writer respells both dash breaks as ***, where CARVE-P11-002 moves only the break at byte 0, so the re-parsed tree gains marker "*" (markup-carve/carve-js#4135).
 854-an-indented-dash-line-neither-opens-nor-closes-frontmatter-2  The pinned writer respells both dash breaks as ***, where CARVE-P11-002 moves only the break at byte 0, so the re-parsed tree gains marker "*" (markup-carve/carve-js#4135).
 930-a-line-that-misses-a-nested-host-ends-it-when-a-comment-closer-lies-ahead  The pinned writer rewrites the nested opener as a %% line and attaches the missed line with a +, which reads differently (markup-carve/carve-js#4211).
+933-a-comment-closer-ahead-is-read-from-the-span-s-raw-lines-4  The pinned writer rewrites the nested opener as a %% line and attaches the missed line with a +, which reads differently (markup-carve/carve-js#4211).
+933-a-comment-closer-ahead-is-read-from-the-span-s-raw-lines-5  The pinned writer folds the missed line into the quote it ended, which the pin also misreads on first render (markup-carve/carve#4888).
+933-a-comment-closer-ahead-is-read-from-the-span-s-raw-lines-7  The pinned writer rewrites the nested opener as a %% line and moves the missed line into the nested item (markup-carve/carve-js#4211, markup-carve/carve#4878).
