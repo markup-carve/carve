@@ -20,9 +20,12 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToHtml, lintCarve } from '@markup-carve/carve'
+import { parse } from '../scripts/spec/layout.mjs'
+import { renderDoc } from '../scripts/spec/html.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const page = readFileSync(resolve(root, 'docs/migrate-from-markdown.md'), 'utf8')
+const modelHtml = (src) => renderDoc(parse(src)).trim()
 
 const html = (source) => carveToHtml(source).replace(/\s+/g, ' ').trim()
 
@@ -39,9 +42,11 @@ test('a Markdown + bullet is not a Carve bullet', () => {
   assert.match(html('- item\n'), /<ul>/)
 })
 
-test('a spaced thematic break is not a thematic break', () => {
-  // The page: "Contiguous `---`, `***`, or `___` (no spaced forms)".
-  assert.doesNotMatch(html('- - -\n'), /<hr/)
+test('a spaced - or * run is a thematic break, a spaced _ run is not', () => {
+  // The page: "`- - -` and `* * *` also work, `_ _ _` does not" (carve#4814).
+  assert.equal(modelHtml('- - -\n'), '<hr>')
+  assert.equal(modelHtml('* * *\n'), '<hr>')
+  assert.doesNotMatch(modelHtml('_ _ _\n'), /<hr/)
   assert.equal(html('---\n'), '<hr>')
 })
 
@@ -94,7 +99,7 @@ test('the guide warns that the default Carve slug preserves case', () => {
 test('each pinned claim still appears on the page', () => {
   for (const phrase of [
     'a Markdown `+` bullet is not a Carve bullet',
-    'no spaced forms',
+    '`- - -` and `* * *` also work',
     'heading-trailing-attribute',
   ]) {
     assert.ok(page.includes(phrase), `docs/migrate-from-markdown.md no longer says "${phrase}"`)

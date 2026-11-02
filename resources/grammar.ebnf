@@ -719,9 +719,9 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        is a valid HTML id but an invalid CSS selector); an empty result becomes
        `s`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix. Only
-       an id the document renders takes part: an id dropped with an unresolved
-       reference's attributes (PART 9R) reserves nothing, so `x[^n]{#i}` above
-       `## {#i}` leaves the heading `id="i"` (carve#4288).
+       an id the document renders takes part: an `{#i}` an unresolved
+       reference keeps as text (PART 9R) reserves nothing, so `x[^n]{#i}` above
+       `## {#i}` leaves the heading `id="i"` (carve#4288, carve#4816).
    An explicit {#id} is used verbatim (case preserved), so two headings may
    carry the same id; a cross-reference resolves to the first (PART 9R R4,
    carve#4450). Implementations MAY offer OPT-IN, orthogonal lowercasing and
@@ -766,7 +766,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    items. The reference remains available for later definition resolution. *)
 
 (* --- Thematic Breaks --- *)
-thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
+thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})
+                  | ('-', ' ', '-', ' ', '-', {' ', '-'}) | ('*', ' ', '*', ' ', '*', {' ', '*'})), newline ;
+
+(* A `-` or `*` run may space its markers with single spaces: `* * *` and
+   `- - -` are breaks, and the thematic break is tested before a list marker.
+   A wider gap, a mixed run or a `_` run is not spaced this way: `*  *  *` is a
+   nested list and `_ _ _` is a paragraph (carve#4814). *)
 
 (* A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A
    MAPPING -- NORMATIVE [CARVE-P2-030]. A Markdown importer meeting a BARE
@@ -7353,9 +7359,7 @@ EOF = (* end of file *) ;
           an unresolved reference likewise renders its literal source.
         - REFUSE the whole operation with a typed failure, as the render
           ceiling below requires.
-        A returned document MUST NOT lack text the author typed. An unresolved
-        footnote reference's attribute run is consumed (PART 9R R2), which is
-        that construct's rule and not such a bound.
+        A returned document MUST NOT lack text the author typed.
 
         THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP -- NORMATIVE
         [CARVE-P9-078]. Over-cap flattening owes it no spellable tree: the
@@ -7912,7 +7916,8 @@ EOF = (* end of file *) ;
       footnote definition wins and every later collision receives the same
       raw-spellings-and-key diagnostic required by R1.
       Unresolved reference -> the literal `[^label]`, a trailing attribute
-      run consumed;
+      run kept as the characters the author typed, as an unresolved reference
+      link keeps its braces (PART 3 CARVE-P3-004);
       unreferenced definition -> dropped.
       A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE -- NORMATIVE [CARVE-P9R-004].
       R1 degrades an unresolved reference to its literal

@@ -107,7 +107,10 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Unordered lists | `- item` or `* item` | same | Carve bullets are `-`/`*`; a Markdown `+` bullet is not a Carve bullet |
 | Ordered lists | `1. item` | `1. item` or `. item` | Numbered markers work in both languages; `. ` asks Carve to number the list from 1. Right-aligned Markdown numbers (` 9.` above `10.`) are one list there; the importer writes them left-aligned so they stay one list |
 | Task lists | `- [ ] todo` / `- [x] done` | Same, plus `[_]` (open alias), `[/]` (progress), `[!]` (blocked), `[-]` (dropped), `[>]` (deferred), and `[?]` (uncertain) | |
-| Thematic break | `---` | same | Contiguous `---`, `***`, or `___` (no spaced forms) |
+| Thematic break | `---` | same | Contiguous `---`, `***`, or `___`; `- - -` and `* * *` also work, `_ _ _` does not |
+| Setext headings | `Title` over `---` or `===` | `# Title` | No underline form: `Title` over `---` is a paragraph and a break (lint: `setext-heading-underline`) |
+| Closing heading hashes | `## Title ##` | `## Title` | The `##` stays heading text (lint: `heading-closing-hashes`) |
+| Indented code | four-space indent | a code fence | An indented line after a blank line is a paragraph (lint: `indented-code-block`) |
 | **Italic** | `*italic*` or `_italic_` | `/italic/` | **Changed** - see below |
 | **Bold** | `**bold**` or `__bold__` | `*bold*` | **Changed** - see below |
 | **Bold + italic** | `***both***` | `/*both*/` | **Changed** |

@@ -1728,7 +1728,7 @@ function resolveFootnotes(html, ctx) {
       .filter(([tag]) => /^<\/?a\b/i.test(tag))
     let anchorIndex = 0
     let anchorDepth = 0
-    return s.replace(FOOTNOTE_FRAMES, (m, json, payload, attrs, offset) => {
+    return s.replace(FOOTNOTE_FRAMES, (m, json, payload, attrSource, attrs, offset) => {
       while (anchorIndex < anchors.length && anchors[anchorIndex].index < offset) {
         anchorDepth += anchors[anchorIndex][0].startsWith('</') ? -1 : 1
         anchorIndex++
@@ -1758,9 +1758,10 @@ function resolveFootnotes(html, ctx) {
         return carrier(`fnref${n}`, n, parsed.attrs)
       }
       const label = payload
-      if (/[\r\n]/.test(label)) return escapeHtml(`[^${label}]`)
+      const literal = () => escapeHtml(`[^${label}]${decodeURIComponent(attrSource)}`)
+      if (/[\r\n]/.test(label)) return literal()
       const key = labelKey(label)
-      if (!ctx.footnoteDefs.has(key)) return escapeHtml(`[^${label}]`) // unresolved -> literal
+      if (!ctx.footnoteDefs.has(key)) return literal() // unresolved -> literal
       let n = order.indexOf(key) + 1
       if (n === 0) {
         order.push(key)
