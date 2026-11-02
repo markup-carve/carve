@@ -6402,6 +6402,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
 
     // --- paragraph ---
     const para = []
+    const paraStart = i
     while (i < n && !isBlank(lines[i])) {
       // A frame kept the column of a deeper container this line never reached (carve#4222).
       const framed = stripLazyLead(lines[i])
@@ -6443,6 +6444,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // A paragraph of only comments emits nothing and leaves pending attributes floating (carve#4799).
     if (COMMENT_ONLY_PARA.test(para.join('\n'))) continue
     const pnode = { t: 'para', lines: para }
+    paraStarts.set(pnode, { lines, start: paraStart })
     // AN UNBOUND CAPTION SLOT, NOT A CAPTION (PART 9 SS4; one blank line
     // allowed). carve#1784: block-image status is a property of the RESOLVED
     // tree, so the slot cannot BIND here - a reference image is a block image
@@ -8641,7 +8643,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
               for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
               closePara()
               if (j > i + 1) list.tight = false
-              else captionGaps.push({ line: trimLineEnd(jm.rest), text: CAPTION.exec(jm.rest)[1] })
+              else captionGaps.push({ line: trimLineEnd(jm.rest), text: CAPTION.exec(jm.rest)[1], row: j })
             }
             i = j
             continue
@@ -9812,10 +9814,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     if (item.blocks.some((b, k) => k > 0 && b.t === 'para' && item.blocks[k - 1].literalDirective)) list.tight = false
     let beforeBlock = item.blocks.length
     for (let gap = captionGaps.length - 1; gap >= 0; gap--) {
-      const { line, text } = captionGaps[gap]
+      const { line, text, row } = captionGaps[gap]
       for (let block = beforeBlock - 1; block >= 0; block--) {
         const node = item.blocks[block]
-        if (node.t === 'para' && node.lines?.[0] === line && !node.captionSlot) {
+        // By source row: a later paragraph can repeat the caption line's text (carve#4965).
+        const start = paraStarts.get(node)
+        const startsAtGap = start?.lines === itemLines ? itemSourceRows[start.start] === row : node.lines?.[0] === line
+        if (node.t === 'para' && startsAtGap && !node.captionSlot) {
           list.tight = false
           beforeBlock = block
           break
@@ -9833,6 +9838,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
   }
   return i
 }
+
+// Where each paragraph node starts in the lines it was parsed from (carve#4965).
+const paraStarts = new WeakMap()
 
 const dedent = (line, cols) => dedentParts(line, cols).text
 

@@ -663,3 +663,37 @@ $$</li>
   <li><p>c</p></li>
 </ul>
 ```
+
+```
+- ![]()
+
+  ^ cap
+  ^ cap
+.
+<ul>
+  <li>
+    <figure>
+      <img src="" alt="">
+      <figcaption>cap</figcaption>
+    </figure>
+    ^ cap
+  </li>
+</ul>
+```
+
+```
+- ![]()
+  ^ cap
+
+  ^ cap
+.
+<ul>
+  <li>
+    <figure>
+      <img src="" alt="">
+      <figcaption>cap</figcaption>
+    </figure>
+    <p>^ cap</p>
+  </li>
+</ul>
+```

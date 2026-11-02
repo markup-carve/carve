@@ -929,3 +929,53 @@ An image paragraph after a nested list loosens the list without a caption gap
 ```
 
 :::
+
+A repeated caption line after an attached caption is a paragraph and leaves the item tight
+
+::: compare
+
+```carve
+- ![]()
+
+  ^ cap
+  ^ cap
+```
+
+```html
+<ul>
+  <li>
+    <figure>
+      <img src="" alt="">
+      <figcaption>cap</figcaption>
+    </figure>
+    ^ cap
+  </li>
+</ul>
+```
+
+:::
+
+A blank line before the repeated caption line loosens the item
+
+::: compare
+
+```carve
+- ![]()
+  ^ cap
+
+  ^ cap
+```
+
+```html
+<ul>
+  <li>
+    <figure>
+      <img src="" alt="">
+      <figcaption>cap</figcaption>
+    </figure>
+    <p>^ cap</p>
+  </li>
+</ul>
+```
+
+:::
