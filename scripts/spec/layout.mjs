@@ -3396,7 +3396,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
             (inner.span[0] === '%' ? c[1].length === inner.span.length : c[1].length >= inner.span.length)) inner.span = null
       } else if (m.rest !== '' && inner.closes(m.rest, m.col)) {
         frames.pop()
-        top().last = 'block'
+        top().last = inner.entryLast ?? 'block'
         payloadForm = 'closer'
       } else if (inner.lineBlock) {
         // A span in a line-block payload pairs past the column too (carve-php#3137).
@@ -3633,11 +3633,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // marker-line content starts at its body column.
     function apply(owner, col, form, canon = owner.canon, reader = owner.reader ?? owner.canon) {
       // A caption spills onto following lines like a paragraph (CARVE-P2-021).
-      // An invisible leaf between a term and its first description does not
-      // close the term. Keep its classification state for the next visible line.
-      const invisibleAfterTerm = form.kind === 'leaf' && owner.last === 'term' &&
-        (COMMENT_LINE.test(m.rest) || isDefinitionLine(m.rest))
-      if (!invisibleAfterTerm) {
+      // An invisible leaf after a term or a description closes neither: the
+      // next visible line is classified as if it were absent (CARVE-P9-013).
+      const invisibleInEntry = (owner.last === 'term' || owner.last === 'dd') &&
+        (form.kind === 'leaf' && (COMMENT_LINE.test(m.rest) || isDefinitionLine(m.rest)) || form.family === 'comment')
+      if (!invisibleInEntry) {
         owner.para = !!form.caption
         owner.last = form.kind
       }
@@ -3649,7 +3649,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       if (form.kind === 'dd') owner.ddShift = col - owner.canon
       if (form.kind === 'fence' || form.kind === 'colon') {
         frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon,
-          closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null })
+          closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null,
+          entryLast: invisibleInEntry ? owner.last : undefined })
         return
       }
       if (form.kind === 'quote') {

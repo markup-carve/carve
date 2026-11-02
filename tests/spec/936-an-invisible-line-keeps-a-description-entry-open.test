@@ -1,0 +1,86 @@
+An invisible line keeps a description entry open
+
+```
+:: t
+:  d
+*[A]: x
+:  > a
+   > b
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+  <dd>
+    <blockquote><p>a
+b</p></blockquote>
+  </dd>
+</dl>
+```
+
+```
+- :: term
+  : payload
+%% c
+   : d2
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>payload</dd>
+      <dd>d2</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+:: term
+: payload
+[r]: /u
+ : d2
+.
+<dl>
+  <dt>term</dt>
+  <dd>payload</dd>
+  <dd>d2</dd>
+</dl>
+```
+
+```
+:: t
+: d
+%%%
+c
+%%%
+ : d2
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+  <dd>d2</dd>
+</dl>
+```
+
+```
+- :: t
+  :: t2
+  %%%
+  c
+  %%%
+  :  > a
+     > b
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dt>t2</dt>
+      <dd>
+        <blockquote><p>a
+b</p></blockquote>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
