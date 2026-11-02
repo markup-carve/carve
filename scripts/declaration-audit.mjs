@@ -383,7 +383,7 @@ const MANIFEST = [
   // rows carry a target now, so the constant lost the prefix with them.
   { repo: 'carve-rs', path: 'tests/corpus_render_fixtures.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'the pin has caught up; delete its AHEAD_OF_PIN entry', owner: 'tests/corpus_render_fixtures.rs' },
   { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'DECLARED_UNIMPLEMENTED', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'fn declared_unimplemented_is_still_true()', owner: 'tests/optional_corpus.rs' },
-  { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'now matches the pinned corpus: delete its AHEAD_OF_PIN entry', owner: 'tests/optional_corpus.rs' },
+  { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'now matches the pinned corpus: delete its {list} entry', owner: 'tests/optional_corpus.rs' },
   { repo: 'carve-rs', path: 'tests/html_import.rs', name: 'AHEAD_OF_PIN',      kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'the source exit matches the fixture now - drop `carve` from its', owner: 'mirrors spec PIN_LAG' },
   // Not a waiver: the set of JSON Schema keywords this hand-written validator
   // implements. Meeting one that is NOT listed is the failure, which is the
