@@ -242,13 +242,9 @@ def</p>
 
 ::::
 
-### A definition term's continuation line
+### The line after a definition term
 
-A `dt` written across two physical lines is one logical line assembled from
-two, and the second line's trailing run is dropped exactly like the first
-line's would be (markup-carve/carve#1289). Nothing exempts a term: the run is
-whitespace at the end of a content line, and the verbatim run that spans the
-break carries a newline rather than the dropped space.
+A term is one line (carve#4861). The line after it is a paragraph line, and its trailing run is dropped like any content line's (markup-carve/carve#1289).
 
 ::: compare
 
@@ -260,10 +256,10 @@ b
 
 ```html
 <dl>
-  <dt><code>a
-b</code></dt>
-  <dd>d</dd>
+  <dt><code>a</code></dt>
 </dl>
+<p>b
+:  d</p>
 ```
 
 :::

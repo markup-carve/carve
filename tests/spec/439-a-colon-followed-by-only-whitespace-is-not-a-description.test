@@ -7,9 +7,9 @@ A colon followed by only whitespace is not a description
 flush
 .
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 
@@ -20,9 +20,9 @@ flush
 flush
 .
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 
@@ -33,9 +33,9 @@ flush
 flush
 .
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 
@@ -46,9 +46,9 @@ flush
 flush
 .
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 
@@ -72,9 +72,9 @@ flush
 flush
 .
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 
@@ -85,9 +85,9 @@ flush
 flush
 .
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 <p>flush</p>
 ```
 

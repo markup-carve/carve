@@ -1355,17 +1355,17 @@ column (PART 9 §17 L3): `:: term` / `: +` / `text` is a description whose body 
 **Nothing that is not an attribute block spells it.** A description marker takes
 a separator space and non-empty content (PART 2, MARKER REQUIRES CONTENT), so a
 `:` line carrying nothing but whitespace opens no description at all - one space,
-several, a tab and a bare colon alike. The line folds into the term above, so the
-re-render is
+several, a tab and a bare colon alike. The line starts a paragraph after the term
+(markup-carve/carve#4861), so the re-render is
 
 ```html
 <dl>
-  <dt>term
-:</dt>
+  <dt>term</dt>
 </dl>
+<p>:</p>
 ```
 
-with the `<dt>` damaged as well as the `<dd>` lost. `: {}` reaches a `<dd>`, but
+with a stray paragraph added as well as the `<dd>` lost. `: {}` reaches a `<dd>`, but
 it holds the literal text `{}`. That is the same rule that makes `[^f]: {empty}`
 spell an empty footnote body where `[^f]: {}` does not (PART 11 §7b).
 

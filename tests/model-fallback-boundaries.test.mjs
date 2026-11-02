@@ -11,9 +11,9 @@ test('unresolved footnote labels use HTML text escaping', () => {
   }
 })
 
-test('contentless description markers fold under a quoted term', () => {
+test('a contentless description marker leaves a quoted term', () => {
   for (const tail of ['', ' ', '   ', '\t']) {
-    assert.equal(html(`> :: t\n:${tail}\n`), '<blockquote>\n  <dl>\n    <dt>t\n:</dt>\n  </dl>\n</blockquote>')
+    assert.equal(html(`> :: t\n:${tail}\n`), '<blockquote>\n  <dl>\n    <dt>t</dt>\n  </dl>\n</blockquote>\n<p>:</p>')
   }
 })
 

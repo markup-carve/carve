@@ -1136,7 +1136,7 @@ function leavesParagraphOpen(lines, idx, wasOpen, inItem = false) {
   // Past an item's content column the authored block base is erased (C3).
   const block = inItem ? trimWsStart(line) : line
   if (/^[ \t]*$/.test(line) || COMMENT_LINE.test(line) || CONT_MARKER.test(block)) return false
-  if (HEADING.test(block) || HR.test(block) || LINK_DEF.test(block) || EMPTY_LINK_DEF.test(block) ||
+  if (HEADING.test(block) || HR.test(block) || DEFLIST_TERM.test(block) || LINK_DEF.test(block) || EMPTY_LINK_DEF.test(block) ||
     isTableRow(block) || (block[0] === '{' && (inItem ? tryAttrLine([block], 0) : tryAttrLine(lines, idx)))) return false
   const quote = QUOTE.exec(block)
   if (quote) {
@@ -1271,20 +1271,6 @@ function paragraphOpenSince(bodyLines, from) {
   let last = tail.length - 1
   while (last >= 0 && trimWs(tail[last]) === '') last--
   return last >= 0 && noteBodyParagraphOpen(tail)
-}
-
-// Whether the body's last line, past the lazy lines that continue it, is a term behind its openers.
-function bodyEndsInTerm(bodyLines) {
-  let k = bodyLines.length - 1
-  while (k >= 0 && bodyLines[k].startsWith(LAZY)) k--
-  if (k < 0) return false
-  let m = indentCols(bodyLines[k])
-  for (;;) {
-    const marker = matchMarkerAt(m)
-    const quote = marker ? null : QUOTE.exec(m.rest)
-    if (!marker && !quote) return DEFLIST_TERM.test(m.rest)
-    m = indentCols(marker ? marker.text : quote[1] ?? '')
-  }
 }
 
 // A fenced body is not a paragraph (CARVE-P0-013): does the body end inside a
@@ -1706,10 +1692,6 @@ const DEFLIST_SEPARATOR = /^: +[ \t]*(?=[^ \t\n\r])/
 // A nested marker on its parent's first line has no physical-column entry in
 // the continuation-marker cache. Keep that column for separator ownership.
 const separatorMarkerColumns = new WeakMap()
-// A line a term folds at its own column: not blank, not an opener, not a
-// definition, list marker, fence, caption, entry or comment.
-// Stands for a comment folded into a term; html.mjs splits the term on it.
-export const TERM_COMMENT = '\uE0FE'
 
 function isCodeBlockOpener(line) {
   const fence = FENCE.exec(line)
@@ -1913,7 +1895,7 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
     // along unchanged.
     if (budget-- <= 0) return true
     if (QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; openTable = false; inQuote = true; continue }
-    if (HEADING.test(text) || HR.test(text)) return finish(false)
+    if (HEADING.test(text) || HR.test(text) || DEFLIST_TERM.test(text)) return finish(false)
     if (inQuote && atBlockPosition && (fenceLineInfo(text) !== null ||
         isColonBlockOpener(text))) return finish(false)
     // A LIST MARKER is asked the SAME question about what it carries, for the
@@ -2264,16 +2246,13 @@ function bodyLeavesNoParagraphAt(bodyLines, last, quoted = false) {
   // Track its host column so an unfinished opener still leaves prose open.
   const host = hostLadder()
   let paragraphOpen = false
-  // A term is not a paragraph a marker continues (§10 I2).
-  let termOpen = false
   for (let index = 0; index <= last; index++) {
     const hadFence = host.fence !== null
     if (hostFenceStep(host, bodyLines[index])) {
       if (index === last && hadFence && host.fence === null) return true
       continue
     }
-    const { inner, blockStart } = hostAdvance(host, bodyLines[index], paragraphOpen && !termOpen)
-    termOpen = DEFLIST_TERM.test(inner.rest) || (termOpen && !blockStart && opensParagraph(inner.rest))
+    const { inner, blockStart } = hostAdvance(host, bodyLines[index], paragraphOpen)
     const opener = hostFenceOpener(host, inner)
     if (opener) {
       host.fence = { run: opener[1], host: host.columns.at(-1), column: inner.col, markerLine: blockStart }
@@ -2333,7 +2312,7 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
     let fenceAt = measured
     if (line !== '' && !lines[k].startsWith(LAZY)) {
       while (columns.length > 1 && columns.at(-1) > measured.col) columns.pop()
-      if (scan.termColumn !== undefined && measured.col <= scan.termColumn &&
+      if (scan.termColumn !== undefined && !COMMENT_LINE.test(line) &&
           !(measured.col === scan.termColumn && (DEFLIST_TERM.test(line) || DESCRIPTION_LEAD.test(line)))) scan.termColumn = undefined
       let marker = matchMarkerAt(measured)
       while (marker) {
@@ -2421,8 +2400,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     h.descriptionBlank = false
   } else if (meas.rest === '') {
     h.descriptionBlank = true
-  } else if (!description && !h.kinds.includes('description') &&
-      (h.descriptionBlank || !foldablePlainLine(line))) {
+  } else if (!description && !h.kinds.includes('description')) {
     h.descriptionTerm = false
   }
   if (meas.rest !== '') h.descriptionBlank = false
@@ -3451,17 +3429,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // lazy line (CARVE-P2-008, carve#4312); an indented one (§10 I7) or one past a note folds.
     const missedFrames = frames.slice(reached + 1)
     const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
-    // PART 0 [B-term-keep]: past a missed quote or note a marker leaves a term, and past a quote a separator too (carve#4300).
-    let termRefuses = top().last === 'term' && (matchMarkerAt(m) ? missedFrames.some((f) => f.kind === 'quote' || f.kind === 'note') :
-      DESCRIPTION_LEAD.test(m.rest) && missedFrames.some((f) => f.kind === 'quote'))
-    // That separator ends the quote; a container around it that the line also missed keeps it as lazy text (carve#4432).
-    if (termRefuses && !matchMarkerAt(m) && missedFrames[0].kind !== 'quote' && !missedFrames.some((f) => f.kind === 'note')) {
-      frames.length = frames.findLastIndex((f) => f.kind === 'quote')
-      top().para = true
-      top().last = 'para'
-      termRefuses = false
-    }
-    if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && !termRefuses && form.kind !== 'dd' &&
+    if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && form.kind !== 'dd' &&
         // A marker at the missed list's column or at or left of the owner's content column opens a
         // list of its own, so its items measure against their own columns (S4, §11 N1; carve#4369).
         !(form.kind === 'item' && missedFrames.some((f) => f.kind === 'item'))) {
@@ -3603,22 +3571,20 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     } else if (form.kind === 'text') {
       // A new paragraph starts at the owner's column, never inside a frame
       // that line did not reach.
-      // A term's continuation moves with the term, so a later `:` body still follows it.
-      const term = owner.para && owner.last === 'term'
       // A separator after a `+` moved onto the owner meets it where its term stood.
       const afterPlus = owner.para && owner.plusLine === at - 1 && owner.termShift !== undefined && DESCRIPTION_LEAD.test(m.rest)
       // So does the block a `+` attaches to a description.
       const attached = plusFollower && owner.termShift !== undefined && owner.last === 'dd'
-      const cut = term ? owner.termCut : afterPlus || attached ? owner.termShift : Math.max(owner.cut, carried(owner), owner.closedList?.shift ?? 0)
+      const cut = afterPlus || attached ? owner.termShift : Math.max(owner.cut, carried(owner), owner.closedList?.shift ?? 0)
       const moved = !(owner.para || !closedColumn || plusFollower)
-      lead(moved ? owner.canon : Math.max(m.col - cut, owner.canon), term)
+      lead(moved ? owner.canon : Math.max(m.col - cut, owner.canon))
       owner.plusLine = moved && CONT_MARKER.test(m.rest) ? at : undefined
       // A lone `+` the walk closed an indented list at is still that list's
       // marker to the readers (PART 0 S3): what it attaches keeps the list's shift.
       if (owner.plusLine === at) carryPlus(owner, sibling, m.col)
       if (owner.para && FENCE.test(m.rest)) textFences.push({ at: result.length, col: owner.canon })
       owner.para = true
-      if (!term) owner.last = 'para'
+      owner.last = 'para'
     } else if (plusLanding !== null) {
       lead(plusLanding)
       apply(owner, m.col, form, plusLanding)
@@ -3671,8 +3637,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       owner.tableLine = form.table ? at : undefined
       if (form.attrLines) attrRest = { left: form.attrLines, cut: col - canon }
       if (form.kind === 'term') {
-        owner.para = true
-        owner.termCut = col - canon
         owner.termShift = col - owner.canon
       }
       if (form.kind === 'dd') owner.ddShift = col - owner.canon
@@ -4066,8 +4030,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     }
     const marker = matchMarkerAt({ col: 0, rest })
     // §10 I2: under an open paragraph a marker opens only in a list item.
-    // A term is not a paragraph a marker continues.
-    if (marker && owner.para && owner.kind !== 'item' && owner.last !== 'term') return { kind: 'text', interrupts: false }
+    if (marker && owner.para && owner.kind !== 'item') return { kind: 'text', interrupts: false }
     if (marker) {
       const head = rest.length - marker.text.length
       return { kind: 'item', width: marker.markerWidth, head, interrupts: false,
@@ -4846,8 +4809,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // the note's paragraph.
         if ((inItem || descriptionOwnerColumn !== null) &&
             measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !attachPending) break
-        // PART 0 [B-term-keep]: a marker that misses the note's body leaves a term (carve#4300).
-        if (measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !attachPending && bodyEndsInTerm(bodyLines)) break
         // A line that misses the note ends a comment span the body holds, and the body (PART 0 S1).
         if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN && !COMMENT_LINE.test(lines[i] ?? '') && !attachPending && missedLiveSpan()) break
         if (isBlank(lines[i])) afterComment = false
@@ -5104,9 +5065,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     if (DEFLIST_TERM.test(line) && !/^:::/.test(line)) {
       const node = { t: 'deflist', items: [] }
       let sourceTermCol = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
-      // A plain line that folds (as a lazy continuation) into an open term or
-      // the open paragraph of a definition (SS17): not blank, not a visible
-      // block, not a definition/list/fence/caption opener.
+      // A plain line that folds (as a lazy continuation) into the open paragraph
+      // of a definition (SS17): not blank, not a visible block, not a
+      // definition/list/fence/caption opener.
       const foldablePlain = (cur) =>
         !isBlank(cur) &&
         !startsVisibleBlock(cur) &&
@@ -5127,68 +5088,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         let dm
         if ((dm = /^:: (?=[ \t]*[^ \t\n\r])(.*)$/s.exec(cur0))) {
           sourceTermCol = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
-          // term (dt): folds plain wrapped continuation lines so a wrapped term
-          // line does not strand its definition. (This used to say "like a
-          // heading". A heading ends at its newline and folds nothing; the term
-          // is the key half of a key-value entry, and keeps its fold.)
+          // A term is one line (carve#4861).
           // CARVE-P2-010: the separator is spaces; a tab after it is content.
-          let dt = trimWsEnd(dm[1].replace(/^ +/, ''))
+          const dt = trimWsEnd(dm[1].replace(/^ +/, ''))
           i++
-          while (i < n) {
-            const cur = lines[i] ?? ''
-            // A term has no content column, so no indentation ends it: a line
-            // past the column folds whatever it would open (carve#2411).
-            // A lone `+` is no marker here: a term holds no blocks for it to
-            // attach, so it is a plain line and folds (CARVE-P2-028, carve#3145).
-            if (isEntry(cur) && (!relativeTermColumns ||
-                (sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) >= sourceTermCol) || isBlank(cur) || cur.startsWith(LAZY) &&
-                /^: (?=[ \t]*[^ \t])/.test(unlazy(cur)) &&
-                // A lazy line past a missed note lies below the term it folds into.
-                (sourceColumns?.[i] ?? -1) >= sourceTermCol) break
-            // A comment at the container's column ends the term. Past it the
-            // comment stays a comment, fence body included, and the term goes
-            // on (carve#2411). Inline content never reaches across it, so it
-            // splits the term into runs rendered on their own.
-            if (/^%%/.test(cur)) break
-            if (/^[ \t]+%%/.test(cur)) {
-              const fence = COMMENT_FENCE.exec(cur)
-              if (fence && commentFenceCloserAhead(lines, i, fence[1])) {
-                i++
-                while (i < n) {
-                  const close = COMMENT_FENCE.exec(lines[i] ?? '')
-                  i++
-                  if (close && close[1].length === fence[1].length) break
-                }
-              } else {
-                i++
-              }
-              dt += '\n' + TERM_COMMENT
-              continue
-            }
-            const sourceColumn = sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col
-            const pastColumnDefinition = sourceColumn > (descriptionOwnerColumn ?? sourceTermCol) &&
-              (isDefinitionLine(indentCols(cur).rest) || FOOTNOTE_DEF.test(indentCols(cur).rest))
-            if (!foldablePlain(cur) && !pastColumnDefinition && !/^: +[ \t]*$/.test(cur)) break
-            if (isTableRow(cur) || colonFenceInterrupts(cur) || (cur[0] === '{' && tryAttrLine(lines, i))) break
-            // A line folded into an item BELOW its content column arrives here
-            // LAZY-prefixed (the item-fold pass at C3). Strip that framing marker
-            // AND its dedented residual indent before it joins the term text.
-            // A line at or above the content column is NOT framed: its over-indent
-            // is meaningful continuation whitespace (the engines preserve it), so
-            // leave it intact -- only the LAZY (below-column) branch strips.
-            const cc = cur.startsWith(LAZY)
-              ? stripIndent(cur.slice(LAZY.length))
-              : cur
-            // The folded line is a CONTENT LINE, so its trailing whitespace run
-            // is dropped before the soft break (PART 2, NO TRAILING WHITESPACE,
-            // which names a definition term). Leading over-indent is a separate
-            // question and is preserved by the branch above.
-            const sourceIndent = sourceColumns && descriptionOwnerColumn !== null &&
-              !cur.startsWith(LAZY) && sourceColumn > sourceTermCol
-              ? Math.max(0, sourceColumn - sourceTermCol - indentCols(cc).col) : 0
-            dt += '\n' + ' '.repeat(sourceIndent) + cc.replace(/[ \t]+$/, '')
-            i++
-          }
           node.items.push({ dt })
           continue
         }
@@ -5243,7 +5146,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             return quoteClaimOpen
           }
-          let openBodyTermColumn = null
           let noteBodyReach = null
           let noteBodyQuoted = false
           let lastBlockLine = ''
@@ -5263,8 +5165,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const quotedContent = indentCols(quoted)
             const sourceContentCol = source.col + quoteWidth + quotedContent.col
             const bodyLine = indentCols(raw)
-            const quoteIsTermText = openBodyTermColumn !== null &&
-              bodyLine.col > openBodyTermColumn
             if (!text.startsWith(LAZY) && FOOTNOTE_DEF.test(quotedContent.rest)) {
               noteBodyReach = (row === descriptionStart ? sourceBodyColumn : sourceContentCol) + FOOTNOTE_BODY_COLUMN
               noteBodyQuoted = quoteWidth > 0
@@ -5274,18 +5174,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               noteBodyReach = null
               noteBodyQuoted = false
             }
-            if (QUOTE.test(stripIndent(raw)) && noteBodyReach === null && !quoteIsTermText) quoteClaimAt = bodyLines.length
+            if (QUOTE.test(stripIndent(raw)) && noteBodyReach === null) quoteClaimAt = bodyLines.length
             else if (isBlank(raw) || !text.startsWith(LAZY) &&
                 (startsVisibleBlock(raw) || isDefinitionOrAttributeLine(raw))) quoteClaimAt = -1
-            // A quote folded into a term has no paragraph claim of its own.
-            if (DEFLIST_TERM.test(bodyLine.rest)) {
-              if (openBodyTermColumn === null || bodyLine.col <= openBodyTermColumn) openBodyTermColumn = bodyLine.col
-            } else if (isBlank(raw) || matchMarkerAt(bodyLine) ||
-                openBodyTermColumn !== null && bodyLine.col <= openBodyTermColumn &&
-                (startsVisibleBlock(bodyLine.rest) || DEFLIST_SEPARATOR.test(bodyLine.rest) ||
-                 isDefinitionOrAttributeLine(bodyLine.rest) || COMMENT_LINE.test(bodyLine.rest))) {
-              openBodyTermColumn = null
-            }
             // Rebasing can expose an indented fence. Keep the full scan for
             // any candidate, but skip it for bodies containing none.
             if (!bodyHasFenceCandidate && FENCE.test(stripIndent(text))) bodyHasFenceCandidate = true
@@ -5841,7 +5732,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let openComment = null // exact-width comment fence opened inside the quote
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qItemPara = false // and is that paragraph an item's?
-      let qTermOpen = false
       let qStanzaCandidate = false
       let qStanzaOpen = false
       let qStanzaColumn = 0
@@ -6231,7 +6121,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const c = COMMENT_FENCE_BODY.exec(l)
           if (c && c[1].length === openComment) openComment = null
           qOpenPara = false
-          qTermOpen = false
           qTableOpen = false
           clearNested()
           qItemPara = false
@@ -6244,7 +6133,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // ordinary line read as payload.
         if (hostFenceStep(qHost, l)) {
           qOpenPara = qHost.colons?.at(-1)?.mode === 'line-block'
-          qTermOpen = false
           qTableOpen = false
           clearNested()
           qItemPara = false
@@ -6274,7 +6162,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // Inline payload keeps the stanza open whatever block shape it has
           // (carve-php#3237). The opener itself contains no payload yet.
           qOpenPara = inLineBlock && qHost.colons?.at(-1)?.mode === 'line-block' && !isBlank(l)
-          qTermOpen = false
           qTableOpen = false
           clearNested()
           qItemPara = false
@@ -6389,30 +6276,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
              isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionPlus ||
-             (isDefinitionLine(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(l) || COMMENT_LINE.test(l) ||
+             (isDefinitionLine(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(trimWsStart(l)) || COMMENT_LINE.test(l) ||
              (FOOTNOTE_DEF.test(l) && (openerFenceRun(FOOTNOTE_DEF.exec(l)[2]) !== null ||
                !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true))))) {
           qOpenPara = false
           qItemPara = false
-          qTermOpen = false
         } else {
           if (!qOpenPara) qItemPara = itemContent !== undefined
           qOpenPara = true
         }
-        let leaf = l
-        for (let depth = 0; (qTermOpen || l.includes(':: ')) && depth < MAX_NESTING_DEPTH; depth++) {
-          const quote = QUOTE.exec(leaf)
-          const marker = matchMarkerAt(indentCols(leaf))
-          const note = FOOTNOTE_DEF.exec(leaf)
-          if (quote) leaf = quote[1] ?? ''
-          if (quote) leaf = quote[1] ?? ''
-          else if (marker) leaf = marker.text
-          else if (note) leaf = note[2]
-          else break
-        }
-        // PART 0 T leaves a term open for plain lazy text.
-        qTermOpen = !/^:( +)/.test(trimWsStart(leaf)) &&
-          (DEFLIST_TERM.test(trimWsStart(leaf)) || qTermOpen)
       }
       while (i < n) {
         // The MARKER is `>` plus a space, or `>` alone - the same rule the
@@ -6506,7 +6378,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (!attachedLeavesFenceOpen(attached.rawMarker)) inner.push('')
             qOpenPara = false
             qItemPara = false
-            qTermOpen = false
             i = attached.next
             continue
           }
@@ -6543,16 +6414,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           (inner.at(-1) ?? '').startsWith(' ') && trimWsStart(inner.at(-1) ?? '').startsWith(':::')
         const unmarked = stripLazy(lines[i] ?? '')
         // X2: every open quote depth keeps its claim on an unmarked marker.
-        const nestedMarkerFold = !qTermOpen && qNestedPara.some(Boolean) && !!matchMarkerAt(indentCols(unmarked))
-        if (lines[i] !== undefined && (qOpenPara || qTermOpen || foldedColon) &&
+        const nestedMarkerFold = qNestedPara.some(Boolean) && !!matchMarkerAt(indentCols(unmarked))
+        if (lines[i] !== undefined && (qOpenPara || foldedColon) &&
             !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
-            // A term takes no lazy separator past its quote (carve#4300).
-            !(qTermOpen && DEFLIST_SEPARATOR.test(stripIndent(unmarked))) &&
-            !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(unmarked) ||
-              // A term continues by the paragraph test, so a folded caret line is text (§10 I7).
-              (lines[i].startsWith(LAZY) && CAPTION.test(unmarked)) ||
-              QUOTE.test(stripIndent(unmarked)) ||
-              (FENCE.test(unmarked) && !opensFence(lines, i)) || nestedMarkerFold) &&
+            !COMMENT_LINE.test(lines[i]) &&
             (!peekInterrupts(i) || foldedColon || nestedMarkerFold) &&
             (!COLON_CLOSER.test(lines[i]) || foldedColon) && !CAPTION.test(lines[i])) {
           // lazy continuation folds into the open quoted paragraph (SS10 I6)
@@ -7178,15 +7043,9 @@ function invisibleAuthoredEnd(lines, start, limit) {
 function foldedDefinitionEnd(lines, start, end, seen) {
   const claimed = new Set()
   let opaque = null
-  // A definition past an open term's column is that term's text (carve#2411),
-  // so it cannot end the block.
-  let termCol = null
   for (let k = start; k < end; k++) {
     const line = lines[k]
-    if (line === undefined || isBlank(line)) {
-      if (!opaque) termCol = null
-      continue
-    }
+    if (line === undefined || isBlank(line)) continue
     if (seen.opaqueMeasurement.rows.has(k)) continue
     const { col, rest } = indentCols(line)
     if (opaque) {
@@ -7199,16 +7058,6 @@ function foldedDefinitionEnd(lines, start, end, seen) {
       }
       continue
     }
-    if (termCol !== null) {
-      if (col > termCol && !BULLET.test(trimLineEnd(rest)) && !isOrderedMarkerLine(rest)) {
-        // A folded comment fence keeps its body, blank lines included.
-        const folded = COMMENT_FENCE_BODY.exec(rest)
-        if (folded && commentFenceCloserAhead(lines, k, folded[1])) opaque = { kind: 'comment', run: folded[1] }
-        continue
-      }
-      if (!foldablePlainLine(rest)) termCol = null
-    }
-    if (DEFLIST_TERM.test(rest)) termCol = col
     const code = FENCE.exec(rest)
     if (code && parseFenceInfo(code[2], code[1]) !== null) {
       opaque = { kind: 'code', run: code[1] }
@@ -8102,9 +7951,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // otherwise reparses the remaining ladder at every level (carve#2542).
     let pendingAuthoredBlock = null
     let pendingHeadQuote = head.text[0] === '>' && (head.text.length === 1 || head.text[1] === ' ') && paragraphIsOpen() ? i : null
-    // A term on the marker line folds the lines past the content column that
-    // follow it (carve#2411), so none of them opens an authored base.
-    let leadTerm = DEFLIST_TERM.test(head.text.replace(/^[ \t]+/, ''))
     let pendingHeadTerm = DEFLIST_TERM.test(head.text) ? i : null
     const measureHeadTerm = () => {
       const candidate = [head.text]
@@ -8612,7 +8458,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         continue
       }
       if (lm.rest === '') {
-        if (!insideFence()) leadTerm = false
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
         if (insideFence()) {
@@ -9068,16 +8913,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // column past it is the item's next block, not definition residue.
         // Block attributes end term ownership before the next authored opener.
         const termAttributes = !insideFence() && col === contentCol && lm.rest.startsWith('{') &&
-          (leadTerm || pendingHeadTerm !== null || pendingAuthoredBlock !== null || authoredBlockBase !== null) &&
+          (pendingHeadTerm !== null || pendingAuthoredBlock !== null || authoredBlockBase !== null) &&
           tryAttrLine(dedentedWindow(lines, i, contentCol), 0)
         if (termAttributes) {
-          leadTerm = false
           pendingHeadTerm = null
           pendingAuthoredBlock = null
           authoredBlockBase = null
           authoredBlockLimit = null
         }
-        const foldsIntoLeadTerm = leadTerm && col > contentCol && !nm
         // A colon container is not opaque: an opener past the column inside one
         // takes its authored base and may interrupt a paragraph
         // (CARVE-P0-004, CARVE-P9-083).
@@ -9114,7 +8957,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // An opener at or past the note body column opens in the note
         // (CARVE-P9-083); no line below that column continues it.
         if (markerNoteEligible && i > noteFenceEnd && col >= markerNoteBodyColumn && !nm &&
-            !descendantOwned && !insideFence() && !foldsIntoLeadTerm &&
+            !descendantOwned && !insideFence() &&
             opensAuthoredBase(lm.rest) && !FENCE.test(lm.rest) &&
             !COMMENT_LINE.test(lm.rest)) {
           let end = authoredBlockEnd(lines, i, col, state)
@@ -9200,7 +9043,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
         // A fence run in a descendant's stanza is payload and opens no nested fence.
         const fenceInStanza = FENCE.test(lm.rest) && stanzaPayload()
-        const mayOpenAuthoredBlock = !inNoteBody && !foldsIntoLeadTerm && !descendantOwned &&
+        const mayOpenAuthoredBlock = !inNoteBody && !descendantOwned &&
           !foldedChildFence &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest) &&
           // A fence with no closer under an open paragraph is text (§10 I4), as the walk read it.
@@ -9251,7 +9094,6 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
         const insideAuthoredBlock = pendingAuthoredBlock !== null ||
           (authoredBlockLimit !== null && i < authoredBlockLimit)
-        if (leadTerm && !foldsIntoLeadTerm && !insideFence() && !foldablePlainLine(lm.rest)) leadTerm = false
         const outsideNoteBody = noteBodyBoundary !== null && col < noteBodyBoundary
         const openerBase = (!insideAuthoredBlock || inOpenColonOnly || outsideNoteBody) && mayOpenAuthoredBlock
           ? col
@@ -9573,7 +9415,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // `openParaWith` below classified the heading correctly in the nested
         // parse but simultaneously recorded a paragraph for the collector, so
         // a later flush-left line folded into an item that held none.
-        else if (HEADING.test(dedented)) closePara()
+        else if (HEADING.test(dedented) || DEFLIST_TERM.test(dedented)) closePara()
         else if (subCol >= 0 && dmeas.col >= subCol && HEADING.test(dmeas.rest)) {
           openPara = paraBeforeSublist === true
           defBodyIndent = null
@@ -9791,7 +9633,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
         break // sibling or outer list
       }
-      // CARVE-P2-028: the authored column keeps a folded separator inside its live term.
+      // A `: ` line that misses the item stays outside it after a term or its description (CARVE-P2-028).
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
           lastListBlock === 'term' && (lm.L?.col ?? col) < lastTermSourceCol) break
@@ -9962,7 +9804,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // Document column zero remains owned by the document.
       // Q1 (or a frame surviving a comment, which Q3 answers), Q3, then Q2 at
       // the frame's own column 0 - the anchor the raw line carries.
-      if (!nm && (deepestParagraphOpen() || (lastListBlock === 'term' && lm.col > baseIndent && lm.col < contentCol && DEFLIST_SEPARATOR.test(lm.rest)) || (DEFLIST_TERM.test(head.text.replace(/^> ?/, '')) && itemLines.slice(1).every((l) => l.startsWith(LAZY)) && isCodeBlockOpener(lm.rest) && !opensFence(lines, i)) || (afterComment && (!atFrameColumn(lm.col) || markedQuoteCommentClaim))) &&
+      if (!nm && (deepestParagraphOpen() || (afterComment && (!atFrameColumn(lm.col) || markedQuoteCommentClaim))) &&
           itemLines.length > 0 && !opensBlockAt(line, i)) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/

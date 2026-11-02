@@ -332,7 +332,8 @@ blank-separated paragraphs, nested blocks, and so on.
 Carve changes only the term and definition *markers*; djot's loose,
 indentation-scoped body carries over unchanged:
 
-- A **term** is a line starting with `:: ` (double colon).
+- A **term** is one line starting with `:: ` (double colon). The next line is read
+  on its own, so a term does not wrap.
 - A **definition** is a line starting with `: ` (single colon, then one or more
   spaces). One space is canonical; wider separators remain accepted input.
 

@@ -3,9 +3,9 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
-// Rule A (carve#3885, carve#3950): a separator that folds lazily into a
-// marker-line child's open term opens nothing, so a later line that reaches
-// the child's content column is still the child's.
+// carve#4861: a term takes no fold, so a separator below a marker-line child
+// ends the child and is a paragraph of the outer item; a later line past the
+// child's content column reads in the outer item.
 const html = (lines) => renderDoc(parse(lines.join('\n') + '\n'))
 const liDepth = (out) => {
   const before = out.slice(0, out.indexOf('FOLLOW'))
@@ -13,11 +13,11 @@ const liDepth = (out) => {
 }
 
 test('the issue rows', () => {
-  const inner = '<ul>\n  <li>\n    <ul>\n      <li>\n        <dl>\n          <dt>t\n: d</dt>\n        </dl>\n'
+  const inner = '<ul>\n  <li>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n        </dl>\n      </li>\n    </ul>\n    : d\n'
   assert.equal(html(['- * :: t', '   : d', '', '    > r']),
-    inner + '        <blockquote><p>r</p></blockquote>\n      </li>\n    </ul>\n  </li>\n</ul>')
+    inner + '    <blockquote><p>r</p></blockquote>\n  </li>\n</ul>')
   assert.equal(html(['- * :: t', '   : d', '      > r']),
-    inner + '        <blockquote><p>r</p></blockquote>\n      </li>\n    </ul>\n  </li>\n</ul>')
+    inner + '    <blockquote><p>r</p></blockquote>\n  </li>\n</ul>')
 })
 
 test('a separator at the child marker column still opens in the outer item', () => {
@@ -36,7 +36,7 @@ for (const [host, ...lead] of hosts) for (const outer of outers) for (const inne
     count++
     const body = [outer + inner + ':: t', ' '.repeat(col) + lazy, ...(blank ? [''] : []),
       ...follower.split('\n').map((l) => ' '.repeat(childCol + extra) + l)]
-    const want = lead.length / 2 + 2 + (follower.startsWith('- ') ? 1 : 0)
+    const want = lead.length / 2 + 1 + (follower.startsWith('- ') ? 1 : 0)
     test(`${JSON.stringify(body.join('\n'))} in host ${hosts.findIndex((h) => h[0] === host)}`, () => {
       assert.equal(liDepth(html([...lead, ...body.map(host)])), want)
     })

@@ -8,16 +8,19 @@ const hosts = [
     name: 'plain definition list',
     source: (body) => `:: t\n: ${body}\n`,
     html: (entry) => `<dl>\n${entry('  ')}\n</dl>`,
+    contentless: '<dl>\n  <dt>t</dt>\n</dl>\n<p>:</p>',
   },
   {
     name: 'list item',
     source: (body) => `- :: t\n  : ${body}\n`,
     html: (entry) => `<ul>\n  <li>\n    <dl>\n${entry('      ')}\n    </dl>\n  </li>\n</ul>`,
+    contentless: '<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n    </dl>\n    :\n  </li>\n</ul>',
   },
   {
     name: 'quote',
     source: (body) => `> :: t\n> : ${body}\n`,
     html: (entry) => `<blockquote>\n  <dl>\n${entry('    ')}\n  </dl>\n</blockquote>`,
+    contentless: '<blockquote>\n  <dl>\n    <dt>t</dt>\n  </dl>\n  <p>:</p>\n</blockquote>',
   },
 ]
 
@@ -38,8 +41,7 @@ for (const host of hosts) {
 
   for (const [name, body] of [['spaces', '   '], ['tab', '\t']]) {
     test(`${name} alone stays content-less in a ${host.name}`, () => {
-      const expected = host.html((indent) => `${indent}<dt>t\n:</dt>`)
-      assert.equal(renderDoc(parse(host.source(body))), expected)
+      assert.equal(renderDoc(parse(host.source(body))), host.contentless)
     })
   }
 }

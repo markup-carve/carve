@@ -5,24 +5,25 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const compact = html => html.replace(/>\s+</g, '><').trim()
 const render = source => compact(renderDoc(parse(source)))
+// carve#4861: a term takes no lazy line, so an unprefixed line ends every container it misses.
 const shapes = [
-  ['> :: t', '<blockquote><dl><dt>t\ntail</dt></dl></blockquote>'],
-  ['> - :: t', '<blockquote><ul><li><dl><dt>t\ntail</dt></dl></li></ul></blockquote>'],
-  ['- > :: term', '<ul><li><blockquote><dl><dt>term\ntail</dt></dl></blockquote></li></ul>'],
-  ['- :: t', '<ul><li><dl><dt>t\ntail</dt></dl></li></ul>'],
-  ['> > :: t', '<blockquote><blockquote><dl><dt>t\ntail</dt></dl></blockquote></blockquote>'],
-  ['> > - :: t', '<blockquote><blockquote><ul><li><dl><dt>t\ntail</dt></dl></li></ul></blockquote></blockquote>'],
+  ['> :: t', '<blockquote><dl><dt>t</dt></dl></blockquote><p>tail</p>'],
+  ['> - :: t', '<blockquote><ul><li><dl><dt>t</dt></dl></li></ul></blockquote><p>tail</p>'],
+  ['- > :: term', '<ul><li><blockquote><dl><dt>term</dt></dl></blockquote></li></ul><p>tail</p>'],
+  ['- :: t', '<ul><li><dl><dt>t</dt></dl></li></ul><p>tail</p>'],
+  ['> > :: t', '<blockquote><blockquote><dl><dt>t</dt></dl></blockquote></blockquote><p>tail</p>'],
+  ['> > - :: t', '<blockquote><blockquote><ul><li><dl><dt>t</dt></dl></li></ul></blockquote></blockquote><p>tail</p>'],
 ]
 for (const [head, expected] of shapes) {
-  for (const pad of ['', ' ']) test(`${head} takes a ${pad ? 'below-column' : 'flush-left'} plain line`, () => {
+  for (const pad of ['', ' ']) test(`${head} ends at a ${pad ? 'below-column' : 'flush-left'} plain line`, () => {
     assert.equal(render(head + '\n' + pad + 'tail\n'), expected)
   })
 }
-test('a prefixed plain line continues the quoted term', () => {
-  assert.equal(render('> :: t\n> tail\n'), shapes[0][1])
+test('a prefixed plain line is a paragraph in the quote', () => {
+  assert.equal(render('> :: t\n> tail\n'), '<blockquote><dl><dt>t</dt></dl><p>tail</p></blockquote>')
 })
-test('a description marker outside the quote stays in the list item', () => {
-  assert.equal(render('- > :: term\n: body\n'), '<ul><li><blockquote><dl><dt>term</dt></dl></blockquote>\n    : body\n  </li></ul>')
+test('a description marker outside the quote leaves the list item', () => {
+  assert.equal(render('- > :: term\n: body\n'), '<ul><li><blockquote><dl><dt>term</dt></dl></blockquote></li></ul><p>: body</p>')
 })
 for (const [head] of shapes.filter(([head]) => head.includes('>'))) {
   for (const block of ['# h\n', '---\n', '- x\n', '```\nx\n```\n']) {

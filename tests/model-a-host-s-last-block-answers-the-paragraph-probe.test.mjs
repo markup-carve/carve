@@ -35,13 +35,13 @@ test('a framed lazy line keeps the paragraph it folds into', () => {
 })
 
 for (const host of ['[^n]: - ', '- [^n]: - ', '[^n]: 1. ', '[^n]: - - ']) {
-  test(`a separator below the term of ${JSON.stringify(host)} stays term text`, () => {
-    assert.match(render(`${host}:: t\n: p\n\n[^n]\n`), /<dt>t\n: p<\/dt>/)
+  test(`a separator below the term of ${JSON.stringify(host)} is not term text`, () => {
+    assert.match(render(`${host}:: t\n: p\n\n[^n]\n`), /<dt>t<\/dt>/)
   })
 }
 
 test('a quoted note keeps the same reading', () => {
-  assert.match(render('> [^n]: - :: t\n> : p\n\n[^n]\n'), /<dt>t\n: p<\/dt>/)
+  assert.match(render('> [^n]: - :: t\n> : p\n\n[^n]\n'), /<dt>t<\/dt>/)
 })
 
 test('a marker folded into a paragraph is no host', () => {

@@ -213,7 +213,7 @@ caption_slot = [blank_line], caption ;
    A block code include carries this slot after its directive line (PART 6 I1c).
    Any other `^ ` line is ordinary inline/paragraph content and, when a
    paragraph is OPEN above it, folds into it (PART 9 §10 I7). A definition
-   term is no paragraph and no host: under an open term, `:: t` / `^ c`, the
+   term is no paragraph and no host: directly after a term, `:: t` / `^ c`, the
    `^ ` line ends the description list and is a paragraph of its own.
 
    The optional `blank_line` matches a TRULY blank line only. A

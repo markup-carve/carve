@@ -9,7 +9,7 @@ A wide gap before a task box leaves the lazy frame out of a term
 <ul class="task-list">
   <li><input type="checkbox" disabled> 
     <ul>
-      <li></li>
+      <li>c</li>
     </ul>
   </li>
 </ul>
@@ -19,8 +19,7 @@ A wide gap before a task box leaves the lazy frame out of a term
   <ol>
     <li id="fn1">
       <dl>
-        <dt>t
-c</dt>
+        <dt>t</dt>
       </dl>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>

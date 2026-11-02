@@ -123,10 +123,10 @@ b
 :  d
 .
 <dl>
-  <dt><code>a
-b</code></dt>
-  <dd>d</dd>
+  <dt><code>a</code></dt>
 </dl>
+<p>b
+:  d</p>
 ```
 
 ```

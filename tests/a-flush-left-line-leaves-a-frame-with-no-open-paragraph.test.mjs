@@ -35,7 +35,8 @@ for (const depth of [0, 1, 2]) {
   }
   test(`marker-line term matches direct quote at depth ${depth}`, () => {
     for (const prefix of [wrap('- > :: term'), wrap('> :: term')]) {
-      assert.match(renderDoc(parse(prefix + 'tail\n')), /<dt>term\ntail<\/dt>/)
+      assert.match(renderDoc(parse(prefix + 'tail\n')), /<dt>term<\/dt>/)
+      assert.match(renderDoc(parse(prefix + 'tail\n')), /<p>tail<\/p>$/)
     }
   })
   // The comment closes no item, so the heading stays at its own column (carve#4862).

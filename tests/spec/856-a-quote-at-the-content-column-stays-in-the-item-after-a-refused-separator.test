@@ -12,8 +12,8 @@ A quote at the content column stays in the item after a refused separator
         <dt>t</dt>
       </dl>
     </blockquote>
-    : a
-    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
+<p>: a</p>
+<blockquote><p>q</p></blockquote>
 ```

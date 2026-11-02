@@ -4,7 +4,7 @@ page: edge-definitions
 
 ## A term continuation in a description keeps spaces past the body column
 
-CARVE-P9-083 (carve#4737). A term continuation keeps its indentation relative to its frame. In a description body the marker-line content stands at the body column, so a continuation line at that column keeps no spaces, as `:: t` over `u` does at the top.
+CARVE-P9-083 (carve#4861). A term is one line, so a line after a term in a description body is a paragraph in the body, measured from the body column.
 
 ::: compare
 
@@ -19,9 +19,9 @@ CARVE-P9-083 (carve#4737). A term continuation keeps its indentation relative to
   <dt>t</dt>
   <dd>
     <dl>
-      <dt>t
-u</dt>
+      <dt>t</dt>
     </dl>
+    <p>u</p>
   </dd>
 </dl>
 ````
@@ -41,9 +41,9 @@ u</dt>
   <dt>t</dt>
   <dd>
     <dl>
-      <dt>t
-  u</dt>
+      <dt>t</dt>
     </dl>
+    <p>u</p>
   </dd>
 </dl>
 ````

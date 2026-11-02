@@ -337,7 +337,7 @@
   {
     "name": "quoted-term-list-host",
     "source": "- > :: term\n: body\n",
-    "html": "<ul>\n  <li>\n    <blockquote>\n      <dl>\n        <dt>term</dt>\n      </dl>\n    </blockquote>\n    : body\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <blockquote>\n      <dl>\n        <dt>term</dt>\n      </dl>\n    </blockquote>\n  </li>\n</ul>\n<p>: body</p>"
   },
   {
     "name": "code-plus-attached-paragraph",

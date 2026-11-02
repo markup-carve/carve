@@ -10,8 +10,8 @@ const itemHeads = ['> - :: t', '> > - :: t', '> 1. :: t', '> - [ ] :: t', '> - -
 
 for (const head of [...quoteHeads, ...itemHeads]) {
   const quoted = render(head + '\n')
-  for (const pad of ['', ' ', '  ', '   ', '    ']) test(`${head} still takes plain text at column ${pad.length}`, () => {
-    assert.match(render(`${head}\n${pad}tail\n`), /<dt>t\ntail<\/dt>/)
+  for (const pad of ['', ' ', '  ', '   ', '    ']) test(`${head} ends at plain text at column ${pad.length}`, () => {
+    assert.equal(render(`${head}\n${pad}tail\n`), `${quoted}<p>tail</p>`)
   })
   for (const pad of ['', ' ', '  ']) test(`${head} ends at a ${pad.length}-column list marker`, () => {
     assert.equal(render(`${head}\n${pad}- x\n`), `${quoted}<ul><li>x</li></ul>`)
@@ -33,6 +33,6 @@ test('a prefixed separator still opens the description', () => {
 test('a separator after an open description folds as that paragraph\'s lazy text', () => {
   assert.equal(render('> :: t\n> : a\n : d\n'), '<blockquote><dl><dt>t</dt><dd>a\n: d</dd></dl></blockquote>')
 })
-test('a separator after a lazy term line still ends the quote', () => {
-  assert.equal(render('> :: t\ntail\n : d\n'), '<blockquote><dl><dt>t\ntail</dt></dl></blockquote><p>: d</p>')
+test('a separator after a line that ended the quote folds into its paragraph', () => {
+  assert.equal(render('> :: t\ntail\n : d\n'), '<blockquote><dl><dt>t</dt></dl></blockquote><p>tail\n: d</p>')
 })

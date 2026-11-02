@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A lazy line continues a quoted term only as plain text
 
-A line that misses the term's quote or footnote body continues the term only as plain text. A list marker or a `: ` separator ends that container and is read as it would be without it (PART 0 `[B-term-keep]`, carve#4300).
+A term is one line (carve#4861). A line that misses the term's quote or footnote body ends that container and is read as it would be without it, whatever its form.
 
 :::: compare
 
@@ -333,10 +333,10 @@ r[^n]
 ```html
 <blockquote>
   <dl>
-    <dt>t
-plain</dt>
+    <dt>t</dt>
   </dl>
 </blockquote>
+<p>plain</p>
 ```
 
 ::::
@@ -352,11 +352,11 @@ plain</dt>
 <blockquote>
   <blockquote>
     <dl>
-      <dt>t
-plain</dt>
+      <dt>t</dt>
     </dl>
   </blockquote>
 </blockquote>
+<p>plain</p>
 ```
 
 ::::

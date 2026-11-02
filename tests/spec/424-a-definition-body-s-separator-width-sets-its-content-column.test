@@ -80,8 +80,8 @@ wrapped on
 : definition
 .
 <dl>
-  <dt>term
-wrapped on</dt>
-  <dd>definition</dd>
+  <dt>term</dt>
 </dl>
+<p>wrapped on
+: definition</p>
 ```

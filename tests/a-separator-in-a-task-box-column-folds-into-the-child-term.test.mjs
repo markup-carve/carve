@@ -4,12 +4,13 @@ import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 // CARVE-P0-008 (carve#3976): a task box is content, so a line in the box's
-// columns sits below a marker-line child and folds into its open term.
+// columns sits below a marker-line child. A term takes no fold (carve#4861), so
+// the line ends the child.
 const html = (src) => renderDoc(parse(src))
 
 test('the issue row', () => {
   assert.equal(html('* [ ] - :: t\n    : a\n'),
-    '<ul class="task-list">\n  <li><input type="checkbox" disabled> \n    <ul>\n      <li>\n        <dl>\n          <dt>t\n: a</dt>\n        </dl>\n      </li>\n    </ul>\n  </li>\n</ul>')
+    '<ul class="task-list">\n  <li><input type="checkbox" disabled> \n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n        </dl>\n      </li>\n    </ul>\n    : a\n  </li>\n</ul>')
 })
 
 test('without the box the same column is the child content column', () => {
@@ -26,7 +27,8 @@ for (const [h, host] of hosts.entries()) for (const outer of ['* ', '- ']) for (
     test(JSON.stringify(src), () => {
       const out = html(src)
       assert.doesNotMatch(out, /<dd>/)
-      assert.match(out, /<dt>t\n: a/)
+      assert.match(out, /<dt>t<\/dt>/)
+      assert.match(out, /: a/)
     })
   }
 }

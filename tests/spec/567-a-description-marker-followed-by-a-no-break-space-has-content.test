@@ -25,7 +25,7 @@ A description marker followed by a no-break space has content
 :   
 .
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 ```

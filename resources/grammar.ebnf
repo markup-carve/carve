@@ -518,16 +518,13 @@
                       list loose; a blank before a child block alone does
                       not. [B-list-end] Three consecutive blanks before a
                       sibling start a new list (PART 9 §11, §17).
-     term             [B-term-start] `:: ` with content; a leaf with inline
-                      content. [B-term-keep] It continues by the paragraph
-                      test and has no ownership of its own, but a lazy line
-                      continues it only as plain text: a list marker that
-                      misses the term's quote or footnote body ends that
-                      container and reads as it would without it, and so
-                      does a `: ` separator that misses the term's quote;
-                      [B-term-end] it
-                      ends at anything that ends a paragraph or at a `: ` body
-                      marker in the same owner.
+     term             [B-term-start] `:: ` with content; a one-line leaf with
+                      inline content, like a heading, and no ownership of its
+                      own. [B-term-end] It ends with its line, and the next
+                      line is read fresh: no line continues it and none folds
+                      into it. A `: ` line in the same owner, directly after
+                      the term or past the blank run and invisible lines
+                      `definition_entry` permits, opens its description.
      definition body  [B-dd-start] `: ` with content, directly after a term
                       or body in the same owner. [B-dd-end] It ends at the
                       next term or body marker in that owner, a missed line
@@ -1073,9 +1070,8 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    `::` and the description marker `:`. The three clauses below apply it.
 
    THE DESCRIPTION MARKER -- NORMATIVE [CARVE-P2-026]. A `:` line carrying only
-   whitespace opens no description. It is a plain line under the open term,
-   which folds it as a soft break: `:`, `: `, `:   ` and `:` + TAB are one
-   document.
+   whitespace opens no description. It is a plain line, so after a term it
+   starts a paragraph: `:`, `: `, `:   ` and `:` + TAB are one document.
 
    A LEADING CONTENT TAB IS CONTENT -- NORMATIVE [CARVE-P2-010].
    With the separator space present and content after it, a tab that begins
@@ -1092,7 +1088,7 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
 
    WHICH CHARACTERS THE CONTENT TEST IGNORES -- NORMATIVE [CARVE-P2-027]. A tab
    PAST the separator run is judged by the content test: a body of nothing but
-   tabs opens nothing, so `: ` + TAB folds into the term, while `: ` + TAB +
+   tabs opens nothing, so `: ` + TAB is a plain line, while `: ` + TAB +
    `x` opens a description. Every character outside `' ' | '\t'` is content:
    `: ` + VT and `: ` + NBSP each open a description. *)
 
@@ -1271,15 +1267,13 @@ definition_entry = definition_term+, [{blank_line}, definition_body,
    A blank NOT followed by a `: ` definition ends the entry. The bodies are
    optional: `:: t` alone is a definition list holding one term and no
    description (PART 0 FAMILIES, [B-term-start]). *)
-definition_term = "::", definition_separator, inline_content, newline, {term_continuation_line} ;
-term_continuation_line = inline_content, newline ;
-(* A term folds a following plain line as a soft break; a blank line, a new
-   `::`/`: ` marker, or anything else that ends a paragraph ends it. A term
-   holds inline content only -- no block body. Unlike a heading, a term KEEPS
-   its fold. It has no ownership of its own (PART 0 FAMILIES, CARVE-P0-024):
-   an opener under an open term, at or past the owner's content column, ends
-   the term and opens in that owner, and a following unprefixed plain line
-   folds into the term as into an open paragraph (S4). *)
+definition_term = "::", definition_separator, inline_content, newline ;
+(* A term is one line, like a heading, and holds inline content only -- no
+   block body. It has no ownership of its own (PART 0 FAMILIES, CARVE-P0-024)
+   and no paragraph: the next line is read fresh in its own owner (S2, S3), at
+   any column. So `:: a` / `b` / `: c` is a list holding the term `a` followed
+   by the paragraph `b` / `: c`, and in `- x` / `  :: a` / `b` the line `b`
+   misses the item and is a paragraph after the list (S5). *)
 definition_body = (':', definition_separator, first_block_content)
                 | (':', definition_separator, inline_content, newline,
                    { definition_continuation
@@ -1576,7 +1570,7 @@ caption_slot = [blank_line], caption ;
    A block code include carries this slot after its directive line (PART 6 I1c).
    Any other `^ ` line is ordinary inline/paragraph content and, when a
    paragraph is OPEN above it, folds into it (PART 9 §10 I7). A definition
-   term is no paragraph and no host: under an open term, `:: t` / `^ c`, the
+   term is no paragraph and no host: directly after a term, `:: t` / `^ c`, the
    `^ ` line ends the description list and is a paragraph of its own.
 
    The optional `blank_line` matches a TRULY blank line only. A
@@ -7071,11 +7065,10 @@ EOF = (* end of file *) ;
          to the item. The block-opener set is UNIFORM and closed: block quote (`>` or
          `> `), heading (`#`), thematic break, fenced code, colon fence / admonition
          (`:::`), TABLE (a `|`-delimited row), and DEFINITION LIST (a `:: term`
-         opener; the two-line `:: `/`: ` marker is recognized by the same
-         look-ahead the top level uses, and only the `:: ` TERM line opens the
+         opener; only the `:: ` TERM line opens the
          block). None of these is special-cased: a def-list or table interrupts
          at column 0 and nests at content_column exactly as a quote or heading
-         does. A definition term is a leaf with no ownership of its own (PART 0
+         does. A definition term is a one-line leaf with no ownership of its own (PART 0
          FAMILIES). The content_column is
          the item body's CANONICAL COLUMN 0 and its minimum containment column.
          This one rule holds whether or not a blank line precedes the child;
@@ -7485,9 +7478,7 @@ EOF = (* end of file *) ;
         line sits below it. A body line loses only its available prefix
         whitespace; its text is never removed. A tab crossing the host column
         retains its remaining columns as spaces (PART 9 §24 C5). At document
-        level there is no container prefix to remove. This also applies to a
-        comment folded into a definition term, whose marker establishes no
-        body column. The closer's column does not change the payload value.
+        level there is no container prefix to remove. The closer's column does not change the payload value.
       - TAIL DISPOSITION (serialization, PART 11): the OPENER's tail is kept as
         the comment body's FIRST LINE, so `carve fmt` round-trips the words
         rather than deleting them; the CLOSER's tail is DISCARDED, as a code
@@ -11571,8 +11562,7 @@ EOF = (* end of file *) ;
       such a `>` is written `\\`. Nothing else is escaped: the payload is
       Carve source, so Carve's own escape is the one the reader already has.
       The import reverses exactly those two. A PAYLOAD MAY SPAN LINES: one
-      that holds a line break, such as a definition term the canonical writer
-      spells over two lines, is written across them, and the marker is the
+      that holds a line break is written across them, and the marker is the
       whole comment. The import reads it as one marker, with any host prefix
       on its later lines removed by the block structure as for the marker
       itself, and restores the line breaks it holds.

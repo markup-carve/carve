@@ -11,15 +11,15 @@ A task item uses its authored term base one column past a child marker
     <ul>
       <li>
         <dl>
-          <dt>t
-: a</dt>
+          <dt>t</dt>
         </dl>
       </li>
     </ul>
+    : a
     <dl>
-      <dt>sibling
-tail</dt>
+      <dt>sibling</dt>
     </dl>
+    tail
   </li>
 </ul>
 ```

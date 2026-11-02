@@ -6,19 +6,19 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const render = source => renderDoc(parse(source))
 
 for (const host of ['- ', '1. ', '- [ ] ', '- - ']) for (const quote of ['> ', '> > ']) {
-  test(`${JSON.stringify(host + quote)} term takes a column-zero caret line`, () => {
+  test(`${JSON.stringify(host + quote)} term ends at a column-zero caret line`, () => {
     const html = render(`${host}${quote}:: t\n^ cap\n`)
-    assert.match(html, /<dt>t\n\^ cap<\/dt>/)
-    assert.doesNotMatch(html, /<figcaption>|<p>\^ cap/)
+    assert.match(html, /<dt>t<\/dt>/)
+    assert.match(html, /<p>\^ cap<\/p>/)
   })
 }
 
-test('an outer quote folds an indented caret line into a nested term', () => {
-  assert.match(render('> > :: t\n ^ cap\n'), /<dt>t\n\^ cap<\/dt>/)
+test('an indented caret line is read outside a nested term', () => {
+  assert.match(render('> > :: t\n ^ cap\n'), /<dt>t<\/dt>/)
 })
 
-test('a multi-line caret run folds the same way', () => {
-  assert.match(render('- > :: t\n^ cap\nmore\n'), /<dt>t\n\^ cap\nmore<\/dt>/)
+test('a multi-line caret run is one paragraph after the term', () => {
+  assert.match(render('- > :: t\n^ cap\nmore\n'), /<p>\^ cap\nmore<\/p>/)
 })
 
 test('a top-level quote still takes the caret line as its caption', () => {

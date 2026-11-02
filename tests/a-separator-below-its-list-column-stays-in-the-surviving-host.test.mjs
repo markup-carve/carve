@@ -13,9 +13,10 @@ for (const depth of [1, 2, 3]) {
   })
 }
 
-test('one column inside the item folds the separator into the open term', () => {
+test('one column inside the item ends the item', () => {
   const html = renderDoc(parse('- a\n  :: m\n : l\n'))
-  assert.match(html, /<dt>m\n: l<\/dt>/)
+  assert.match(html, /<dt>m<\/dt>/)
+  assert.match(html, /<\/ul>\n<p>: l<\/p>/)
   assert.doesNotMatch(html, /<dd>/)
 })
 
@@ -37,12 +38,12 @@ test('a term spelled inside code gives no separator claim', () => {
 test('a marker-line term uses the item content column for its separator', () => {
   assert.equal(renderDoc(parse('- :: t\n:  head\n\n     a\n')),
     '<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n    </dl>\n  </li>\n</ul>\n<p>:  head</p>\n<p>a</p>')
-  assert.match(renderDoc(parse('- :: t\n :  head\n')), /<dt>t\n:  head<\/dt>/)
+  assert.match(renderDoc(parse('- :: t\n :  head\n')), /<\/ul>\n<p>:  head<\/p>/)
   assert.match(renderDoc(parse('- :: t\n  :  head\n')), /<dd>head<\/dd>/)
   assert.match(renderDoc(parse('- intro\n  :: t\n:  head\n')), /<\/ul>\n<p>:  head<\/p>/)
   assert.match(renderDoc(parse('1. :: t\n:  head\n')), /<\/ol>\n<p>:  head<\/p>/)
   assert.match(renderDoc(parse('> - :: t\n> :  head\n')), /<\/ul>\n  <p>:  head<\/p>\n<\/blockquote>/)
-  assert.match(renderDoc(parse('> - :: t\n>  :  head\n')), /<dt>t\n:  head<\/dt>/)
+  assert.match(renderDoc(parse('> - :: t\n>  :  head\n')), /<\/ul>\n  <p>:  head<\/p>/)
   assert.match(renderDoc(parse('> - :: t\n>   :  head\n')), /<dd>head<\/dd>/)
 })
 

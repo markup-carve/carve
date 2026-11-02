@@ -6,8 +6,8 @@ A contentless description marker folds under a quoted term
 .
 <blockquote>
   <dl>
-    <dt>t
-:</dt>
+    <dt>t</dt>
   </dl>
 </blockquote>
+<p>:</p>
 ```

@@ -199,7 +199,7 @@ the command-line and editor behavior stay aligned.
 | `fence-delimiter-indentation` | a fenced-code delimiter indented past its owner's content column. Since markup-carve/carve#3885 that fence opens, measured from its own line, and `block-opener-overindented` or, inside a list item, `list-item-block-overindented` reports the line, so the rule has nothing left to report; it retires as each engine adopts the ruling (markup-carve/carve#4834). `fmt` still moves a structural fence back to the minimum column |
 | `list-item-body-detached` | a block-shaped line indented past the item's marker column but below its exact content column; after a blank it has left the item, so the diagnostic offers the two explicit intentions: indent to the content column to make it structural, or escape the opener to preserve literal text |
 | `list-marker-below-content-column` | a list marker past a list item's marker column but below its content column: a marker of another kind starts a separate list and one of the same kind is a sibling item, before and after a blank line. Indent it to the content column to nest it or move it to the marker column for a sibling |
-| `description-separator-below-content-column` | a `:` or `::` separator below the column of a definition list it appears to continue inside an indentation container, so it adds no entry: past the item's marker column it folds into the open term or description as text, and a `:` at the marker column ends the item as a paragraph. Indent it to the definition list's column |
+| `description-separator-below-content-column` | a `:` or `::` separator below the column of a definition list it appears to continue inside an indentation container, so it adds no entry: past the item's marker column it folds into an open description as text or, after a term, ends the item, and a `:` at the marker column ends the item as a paragraph. Indent it to the definition list's column |
 | `ordered-list-split-by-indent` | consecutive ordered lists continue the same numbering style and sequence, but their first markers start in different columns, so they render as two lists |
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column. Reported once per block, on its first line; continuing table rows and quote lines do not open another block. An aligned opener stays unreported when a continuation is overindented, including when the block opens on the item's marker line. The finding also covers the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
 | `continuation-marker-refused` | a refused lone `+`, on its own line or on a marker line (`- +`, `: +`, `[^a]: +`, `> +`, `- > +`): the next line is blank or missing, lacks the prefix of a quote around the host, stands at another column, is a sibling or closes an open div. PART 9 §17 L3 refuses attachment and the `+` stays a plain letter; see [refused continuation markers](#refused-continuation-markers) |
@@ -465,8 +465,8 @@ explicit number would widen the marker. The shared vectors are in
 below the column of a definition list that ends on the line above it, or above
 a blank line, inside an indentation container. The separator cannot continue
 that list (markup-carve/carve#3451): past the container's marker column it
-folds into the open term or description as text, or starts a separate
-paragraph after a blank line, and a `:` at the marker column ends the
+folds into an open description as text, ends the container after a term
+(markup-carve/carve#4861), or starts a separate paragraph after a blank line, and a `:` at the marker column ends the
 container and becomes a paragraph (markup-carve/carve#3455).
 
 ```carve

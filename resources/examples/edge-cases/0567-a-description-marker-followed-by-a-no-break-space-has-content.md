@@ -32,8 +32,7 @@ content, so the line opens a description that holds it, alone or before text.
 
 :::
 
-The control. A marker followed by spaces only has no content and folds into
-the term.
+The control. A marker followed by spaces only has no content and is a plain line after the term (carve#4861).
 
 ::: compare
 
@@ -44,9 +43,9 @@ the term.
 
 ```html
 <dl>
-  <dt>t
-:</dt>
+  <dt>t</dt>
 </dl>
+<p>:</p>
 ```
 
 :::

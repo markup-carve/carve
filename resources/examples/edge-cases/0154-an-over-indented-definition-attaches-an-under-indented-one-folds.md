@@ -1,12 +1,8 @@
 ## An over-indented definition attaches, an under-indented one folds
 
-The accepted wider-separator spelling `:  def` attaches to `:: term` at the
-definition list's column. Below that column, the surviving host classifies it.
-At the item's marker column the item ends. One column in, the open term keeps
-the line as term text. The canonical spelling is `: def`; these cases
-retain the wider separator to test its authored column (carve#3451).
+The accepted wider-separator spelling `:  def` attaches to `:: term` at the definition list's column. Below that column, the surviving host classifies it. At the item's marker column the item ends, and one column in it ends too, because a term holds no fold (carve#4861). The canonical spelling is `: def`; these cases retain the wider separator to test its authored column (carve#3451).
 
-One column in, the line folds into the open term.
+One column in, the line ends the item.
 
 ::: compare
 
@@ -20,11 +16,11 @@ One column in, the line folds into the open term.
 <ul>
   <li>one
     <dl>
-      <dt>term
-:  def</dt>
+      <dt>term</dt>
     </dl>
   </li>
 </ul>
+<p>:  def</p>
 ```
 
 :::

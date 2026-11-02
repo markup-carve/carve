@@ -70,16 +70,17 @@ test('a task item\'s marker-line note reads a descendant fence like the plain it
   assert.equal(outerNote(task + '<li id="fn2">'), outerNote(plain + '<li id="fn2">'))
 })
 
-// A separator below a note's term is lazy term text, as below an item's term (carve#3458).
+// A separator below a note's term ends the note, as below an item's term (carve#4861).
 const noteHosts = {
   'the document': ['[^1]: x', '  :: t'],
   'an item': ['- x', '  [^1]: x', '    :: t'],
   'a marker line': ['- [^1]: x', '    :: t'],
 }
 for (const [hostName, lines] of Object.entries(noteHosts)) for (const tail of [[], ['more'], [' more']]) {
-  test(`a below-column separator folds into a note's term in ${hostName} (tail ${JSON.stringify(tail)})`, () => {
+  test(`a below-column separator stays out of a note's term in ${hostName} (tail ${JSON.stringify(tail)})`, () => {
     const out = html([...lines, ' : zq', ...tail, '', 'r[^1]'])
-    assert.match(out, new RegExp(`<dt>t\\n: zq${tail.length ? '\\nmore' : ''}</dt>`), out)
+    assert.match(out, /<dt>t<\/dt>/, out)
+    assert.match(out, new RegExp(`: zq${tail.length ? '\\nmore' : ''}`), out)
     assert.doesNotMatch(out, /<dd>/)
   })
 }

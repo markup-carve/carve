@@ -9,6 +9,7 @@ A separator below a term in a note item stays term text
 <ul>
   <li></li>
 </ul>
+<p>: p</p>
 <p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
@@ -17,8 +18,7 @@ A separator below a term in a note item stays term text
       <ul>
         <li>
           <dl>
-            <dt>t
-: p</dt>
+            <dt>t</dt>
           </dl>
         </li>
       </ul>

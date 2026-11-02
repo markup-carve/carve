@@ -4,7 +4,7 @@ page: edge-model-followups
 
 ## A separator below a term in a note item stays term text
 
-PART 9 §24 C3 (carve#4592). Column 0 misses the term on the marker line, so the line is term text.
+PART 9 §24 C3 (carve#4861). Column 0 misses the item that holds the term, so the line is read outside it.
 
 :::::: compare
 
@@ -19,6 +19,7 @@ PART 9 §24 C3 (carve#4592). Column 0 misses the term on the marker line, so the
 <ul>
   <li></li>
 </ul>
+<p>: p</p>
 <p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
@@ -27,8 +28,7 @@ PART 9 §24 C3 (carve#4592). Column 0 misses the term on the marker line, so the
       <ul>
         <li>
           <dl>
-            <dt>t
-: p</dt>
+            <dt>t</dt>
           </dl>
         </li>
       </ul>

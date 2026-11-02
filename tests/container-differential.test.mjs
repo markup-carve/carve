@@ -40,11 +40,11 @@ test('a list term retains its separate continuation rule', () => {
   assert.equal(renderDoc(parse(source)).trim(), carveToHtml(source).trim())
 })
 
-for (const depth of [1, 2, 3, 8]) test(`a term at quote depth ${depth} owns a plain unmarked follower`, () => {
+for (const depth of [1, 2, 3, 8]) test(`a term at quote depth ${depth} leaves a plain unmarked follower outside`, () => {
   const source = '> '.repeat(depth) + ':: term\ntail\n'
   const actual = renderDoc(parse(source)).trim()
-  assert.match(actual, /<dt>term\ntail<\/dt>/)
-  assert.doesNotMatch(actual, /<p>tail<\/p>/)
+  assert.match(actual, /<dt>term<\/dt>/)
+  assert.match(actual, /<\/blockquote>\n<p>tail<\/p>$/)
 })
 
 test('the quote classifier stops at the parser nesting limit', () => {
