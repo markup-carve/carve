@@ -1,0 +1,77 @@
+A comment in a blank run keeps the run for a nested description list
+
+```
+- o
+  :: t
+  : x
+
+
+
+  %% c
+  : d
+.
+<ul>
+  <li><p>o</p>
+    <dl>
+      <dt>t</dt>
+      <dd>x</dd>
+    </dl>
+    <p>: d</p>
+  </li>
+</ul>
+```
+
+```
+- o
+  - p
+    :: t
+    : x
+
+
+
+    : d
+.
+<ul>
+  <li>o
+    <ul>
+      <li><p>p</p>
+        <dl>
+          <dt>t</dt>
+          <dd>x</dd>
+        </dl>
+        <p>: d</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- o
+  - p
+    :: t
+    : x
+
+
+    %% c
+
+    :: u
+    : v
+.
+<ul>
+  <li>o
+    <ul>
+      <li>p
+        <dl>
+          <dt>t</dt>
+          <dd>x</dd>
+        </dl>
+        <dl>
+          <dt>u</dt>
+          <dd>v</dd>
+        </dl>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
