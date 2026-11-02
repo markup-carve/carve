@@ -112,9 +112,7 @@ function withoutPositions(node) {
 
 // Expected bytes ahead of the pinned writer, each with the ruling that moved them.
 // A declaration fails once the pin writes the fixture, so it cannot outlive its cause.
-const AHEAD_OF_PIN = new Map([
-  ['12-thematic-break-spellings', 'carve#4973: the pinned writer still reproduces the break marker'],
-])
+const AHEAD_OF_PIN = new Map([])
 
 test('every ahead-of-pin declaration names a case', () => {
   const slugs = new Set(cases.map(({ slug }) => slug))

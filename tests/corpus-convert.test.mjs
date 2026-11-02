@@ -145,13 +145,7 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {
-  '103-markdown-an-html-comment-that-ends-a-list-keeps-the-next-list-apart': 'CARVE-P2-034, ruled 2026-11-02 (carve#4917): the pinned carve-js writes the comment into the first item, so the lists merge',
-  '105-markdown-an-html-comment-that-ends-a-nested-list-stays-in-the-outer-item': 'CARVE-P2-034, ruled 2026-11-02 (carve#4917): the pinned carve-js writes the comment into the first item, so the lists merge',
-  '106-markdown-an-html-comment-that-ends-a-list-in-a-quote': 'CARVE-P2-034, ruled 2026-11-02 (carve#4917): the pinned carve-js writes the comment into the first item, so the lists merge',
-  '107-markdown-an-html-comment-that-ends-an-ordered-list': 'CARVE-P2-034, ruled 2026-11-02 (carve#4917): the pinned carve-js writes the comment into the first item, so the lists merge',
-  '108-markdown-an-html-comment-that-interrupts-a-list-item': 'CARVE-P2-034, ruled 2026-11-02 (carve#4917): the pinned carve-js writes the comment into the first item, so the lists merge',
-}
+const PINNED_DRIFT = {}
 const PINNED_SOURCE_DRIFT = {}
 
 /**

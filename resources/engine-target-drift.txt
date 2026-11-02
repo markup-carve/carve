@@ -188,6 +188,31 @@ plain/php/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/ca
 plain/rust/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-rs), a list marker in a footnote body opens a list; the pinned engine keeps it as text
 ansi/php/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-php), a list marker in a footnote body opens a list; the pinned engine keeps it as text
 ansi/rust/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-rs), a list marker in a footnote body opens a list; the pinned engine keeps it as text
-carve/js/34-thematic-breaks  markup-carve/carve#4973 (carve-js), PART 11 §6 writes every thematic break as ***
 carve/rust/34-thematic-breaks  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
 carve/php/34-thematic-breaks  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/249-trailing-whitespace-after-a-block-marker  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/249-trailing-whitespace-after-a-block-marker  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/264-a-frontmatter-opener-takes-exactly-one-space  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/264-a-frontmatter-opener-takes-exactly-one-space  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-4  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-4  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/330-a-tab-after-a-fence-or-a-frontmatter-opener-depends-on-where-it-sits-3  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/330-a-tab-after-a-fence-or-a-frontmatter-opener-depends-on-where-it-sits-3  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-4  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-4  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/363-a-task-item-s-checkbox-is-not-decided-by-its-first-block  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/363-a-task-item-s-checkbox-is-not-decided-by-its-first-block  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-9  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-9  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run-3  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run-3  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run-4  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run-4  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-3  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-3  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/566-an-opener-past-a-hosted-container-s-column-opens-there-5  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/566-an-opener-past-a-hosted-container-s-column-opens-there-5  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
+carve/rust/81-paragraph-interruption-3  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/81-paragraph-interruption-3  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***
