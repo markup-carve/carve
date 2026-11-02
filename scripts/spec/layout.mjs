@@ -9663,8 +9663,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // every blank below it as fence content and the item comes out TIGHT.
         // Only the closing half is asked: an OPENER at this column opens no span
         // here, and the branch above owns that question.
-        const spanBefore = fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment'
-        if (fence.opaque) trackFence(lm.rest, false, i)
+        // A line-block span, this item's or a descendant's, holds its comment lines
+        // at any column too (PART 0 S1): they open no span below it (carve#4987).
+        const verseBefore = verseSpan !== null && colonLineBlock.at(-1) === true
+        const bodySpan = !verseBefore && fence.opaque?.kind !== 'comment' &&
+          nestedOpaque?.kind !== 'comment' && bodyHoldsLiveCommentSpan()
+        const spanBefore = fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment' || verseBefore || bodySpan
+        if (fence.opaque || verseBefore) trackFence(lm.rest, false, i)
         // The DESCENDANT span's closer arrives here too, below this column, so
         // the tracker above never sees it.
         if (nestedOpaque && nestedOpaque.kind === 'comment') {
@@ -9679,7 +9684,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // who owned the next line, because a payload line had reopened the
         // paragraph the opener closed. A bare `%%` LINE below the column closes
         // no span and keeps its retention rule (corpus 214).
-        if (spanBefore && !(fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment')) {
+        if (spanBefore && !verseBefore && !bodySpan && !(fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment')) {
           closePara()
           afterComment = afterCommentTransition(afterComment, {
             spanClosed: true,
