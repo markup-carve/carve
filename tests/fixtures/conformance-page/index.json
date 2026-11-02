@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "total": 4,
+  "families": {
+    "inline": { "mode": "render", "shards": ["inline-01.json"] },
+    "fences": { "mode": "render", "shards": ["fences-01.json"] }
+  }
+}
