@@ -2003,7 +2003,7 @@ function markerIsStanzaPayload(bodyLines, k, col, depth) {
   }
   return hostEndsInLineBlockStanza([...bodyLines.slice(0, opener + 1), ...bodyLines.slice(opener + 1, k).map(neutral), ' '.repeat(col) + 'x'], depth + 1)
 }
-function trailingHostBody(bodyLines, last, tail, depth) {
+function trailingHostBody(bodyLines, last, tail, depth, quoteBody = false) {
   let reach = tail.col
   for (let k = last; k >= 0; k--) {
     if (trimWs(bodyLines[k]) === '') continue
@@ -2026,8 +2026,8 @@ function trailingHostBody(bodyLines, last, tail, depth) {
       reach = measured.col
       continue
     }
-    // A marker under an open paragraph is that paragraph's text (PART 9 §10 I2).
-    if (marker && k > 0 && trimWs(bodyLines[k - 1]) !== '' && bodyLeavesParagraphOpen(bodyLines.slice(0, k), false, depth + 1)) return null
+    // A marker under a quote's open paragraph is that paragraph's text (PART 9 §10 I2).
+    if (marker && quoteBody && k > 0 && trimWs(bodyLines[k - 1]) !== '' && bodyLeavesParagraphOpen(bodyLines.slice(0, k), true, depth + 1)) return null
     const column = measured.col + lead
     return [
       marker ? marker.text : measured.rest.slice(lead),
@@ -2037,7 +2037,7 @@ function trailingHostBody(bodyLines, last, tail, depth) {
   return null
 }
 
-function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
+function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0, quoteBody = quoted) {
   let last = -1
   for (let k = bodyLines.length - 1; k >= 0; k--) {
     if (trimWs(bodyLines[k]) !== '') { last = k; break }
@@ -2131,8 +2131,8 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
 
   // An item's or a description's own last block answers, read at its content column (CARVE-P9-083).
   if (depth < MAX_NESTING_DEPTH && !bodyLines[last].includes(LAZY)) {
-    const body = trailingHostBody(bodyLines, last, tail, depth)
-    if (body && !bodyLeavesParagraphOpen(body, quoted, depth + 1)) return false
+    const body = trailingHostBody(bodyLines, last, tail, depth, quoteBody)
+    if (body && !bodyLeavesParagraphOpen(body, quoted, depth + 1, false)) return false
   }
 
   // A CLOSED FENCE IS NOT AN OPEN PARAGRAPH (carve#1930). `opensParagraph` is
@@ -2429,12 +2429,6 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     return { meas, inner: meas, blockStart: false, popped: false }
   }
   h.plusAttrWrap = false
-  // ONLY A LIST ITEM'S PARAGRAPH GIVES WAY. `- d` / `  - x` opens a sublist, so
-  // the marker interrupts; the same marker at a DESCRIPTION or FOOTNOTE body's
-  // column under its open paragraph is ordinary text, and both bodies take the
-  // list only after a blank. Reading the licence off the ladder's DEPTH instead
-  // of its innermost KIND moved a quoted line out of a `dd` that keeps it
-  // (raised by codex review).
   const siblingItem = h.markerCols.some((col, k) => col === meas.col && h.kinds[k] === 'item')
   // Plain text below a nested item's column can lazily continue its paragraph.
   // Keep that sublist for the next fence lookup; the lazy line did not close it.
@@ -2461,7 +2455,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
   }
   if (!h.kinds.includes('description')) h.descriptionParagraph = false
   if (h.kinds.at(-1) === 'description') paraOpen = h.descriptionParagraph ?? paraOpen
-  const insideItem = h.kinds.at(-1) === 'item'
+  const insideBody = h.kinds.at(-1) === 'item' || h.kinds.at(-1) === 'note' || h.kinds.at(-1) === 'description'
   let inner = meas
   let blockStart = false
   // The task box is content on the marker line (CARVE-P0-008): a marker after it stands past it.
@@ -2469,7 +2463,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
   for (;;) {
     const marker = matchMarkerAt(inner)
     if (marker) {
-      if (paraOpen && !insideItem && !siblingItem && !leftOfClosedItem) break
+      if (paraOpen && !insideBody && !siblingItem && !leftOfClosedItem) break
       const column = box + marker.indent + marker.markerWidth
       while (h.colons?.length && h.colons.at(-1).base >= column) h.colons.pop()
       h.markerCols.push(box + marker.indent)
@@ -3115,6 +3109,7 @@ function strippedColumn(line, origins) {
 // Decision trace vocabulary (resources/spec/decision-trace.schema.json).
 const TRACE_FRAME = { quote: 'quote', item: 'item', note: 'footnote', dd: 'dd', colon: 'div' }
 const TRACE_FORM = { 'colon-close': 'closer', colon: 'div', note: 'footnote' }
+const BODY_FRAME = new Set(['item', 'dd', 'note'])
 const TRACE_OPENS = new Set(['quote', 'item', 'note', 'dd', 'term', 'colon', 'fence'])
 const TRACE_RULE = { blank: 'CARVE-P0-003', leaf: 'CARVE-P0-011' }
 
@@ -3439,7 +3434,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && form.kind !== 'dd' &&
         // A marker at the missed list's column or at or left of the owner's content column opens a
         // list of its own, so its items measure against their own columns (S4, §11 N1; carve#4369).
-        !(form.kind === 'item' && missedFrames.some((f) => f.kind === 'item'))) {
+        !(form.kind === 'item' && (BODY_FRAME.has(owner.kind) || missedFrames.some((f) => BODY_FRAME.has(f.kind))))) {
       // Step 4: a lazy line, read as text where it stands, and still short of
       // the frame it missed. Past a missed note it is framed LAZY in the
       // deepest container, so every reader folds it there (carve#3885).
@@ -4038,7 +4033,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     }
     const marker = matchMarkerAt({ col: 0, rest })
     // §10 I2: under an open paragraph a marker opens only in a list item.
-    if (marker && owner.para && owner.kind !== 'item') return { kind: 'text', interrupts: false }
+    if (marker && owner.para && !BODY_FRAME.has(owner.kind)) return { kind: 'text', interrupts: false }
     if (marker) {
       const head = rest.length - marker.text.length
       return { kind: 'item', width: marker.markerWidth, head, interrupts: false,
@@ -4881,6 +4876,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lazyParagraphOpen = null
           attachPending = false
           i = end
+        } else if (measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom), (run) => commentCloserAhead(state, lines, run, i))) {
+          // A list marker that misses a marker body closes it (PART 0 S3).
+          break
         } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom), (run) => commentCloserAhead(state, lines, run, i))) {
           // carve#2488, the same arm the `dd` carries. This body ends at a
           // comment below column 2, and a comment INSIDE a span the body already
@@ -4937,10 +4935,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // one and spelled with an extra line. CARVE-P9-077 says the two ARE the
         // same body: neither reaches the reader, so nothing distinguishes them
         // downstream and the renderer needs no answer carried from the source.
-        state.footnoteDefs.set(key, parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false))
+        state.footnoteDefs.set(key, parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true))
       } else {
         // A losing note is invisible, so definitions in its body must still register.
-        parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false)
+        parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true)
       }
       continue
     }
@@ -5348,12 +5346,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // it ends the paragraph there and cannot fold into the description.
             if (inItem && authoredCol > 0 && tryAttrLine([dedented], 0)) break
             if (authoredCol === 0 && (isDefinitionOrAttributeLine(dedented) || !!tryAttrLine(lines, i))) break
-            // CARVE-P9-083: a surviving description can own a marker below this nested body.
-            if ((inItem || descriptionOwnerColumn !== null &&
-                (sourceColumns?.[i] ?? ind(i).L?.col ?? ind(i).col) >= descriptionOwnerColumn) &&
-                !reachesBody(i) &&
-                matchMarkerAt(indentCols(dedented)) &&
-                !quoteParagraphClaim()) break
+            // A list marker that misses a marker body closes it (PART 0 S3).
+            if (!reachesBody(i) && matchMarkerAt(indentCols(dedented))) break
             // A line that misses the body ends a comment span it holds, and the body (PART 0 S1).
             if (!COMMENT_LINE.test(dedented) && missedLiveSpan()) break
             if (COMMENT_LINE.test(dedented) && !bodyHoldsLiveSpan()) {
@@ -5466,7 +5460,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             (state.descriptionSourceColumns ??= new WeakMap()).set(bodyLines, bodySourceColumns)
           }
           if (openFence !== -1) (state.fenceOpensAt ??= new WeakMap()).set(bodyLines, new Set([openFence]))
-          node.items.push({ ddBlocks: bodyLines.length ? parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, undefined, undefined, undefined, descriptionOwnerColumn ?? sourceBodyColumn) : [] })
+          node.items.push({ ddBlocks: bodyLines.length ? parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true, undefined, undefined, descriptionOwnerColumn ?? sourceBodyColumn) : [] })
           continue
         }
         // A blank or invisible line between entries is skipped when the next
@@ -6423,7 +6417,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const unmarked = stripLazy(lines[i] ?? '')
         // X2: every open quote depth keeps its claim on an unmarked marker.
         const nestedMarkerFold = qNestedPara.some(Boolean) && !!matchMarkerAt(indentCols(unmarked))
-        if (lines[i] !== undefined && (qOpenPara || foldedColon) &&
+        // A marker a body reaches, or one that misses a body in this quote, opens a list (PART 0 S3).
+        const bodyTakesMarker = !lines[i]?.startsWith(LAZY) && !!matchMarkerAt(indentCols(unmarked)) &&
+          (inItem || [qHost, ...qNestedHost.slice(0, qNestedPara.length)].some((host) => host?.kinds.some((kind) => kind === 'item' || kind === 'note' || kind === 'description')))
+        if (lines[i] !== undefined && !bodyTakesMarker && (qOpenPara || foldedColon) &&
             !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
             !COMMENT_LINE.test(lines[i]) &&
             (!peekInterrupts(i) || foldedColon || nestedMarkerFold) &&

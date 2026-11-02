@@ -1,5 +1,8 @@
 ## A line is read in the container whose column it reaches
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 A marker at the item column opens a list (PART 0 O2).
 :::::: compare
 
@@ -115,11 +118,13 @@ A marker below every content column folds into the item (PART 9 §24 C3).
   <dt>t</dt>
   <dd>
     <ul>
-      <li>para
-- li</li>
+      <li>para</li>
     </ul>
   </dd>
 </dl>
+<ul>
+  <li>li</li>
+</ul>
 ```
 
 ::::::

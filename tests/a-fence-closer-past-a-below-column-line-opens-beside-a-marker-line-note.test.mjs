@@ -26,7 +26,7 @@ for (const q of ['', '> ', '> > ']) for (const [marker, column] of [['- ', 2], [
   test(`a fence under the note paragraph opens in the note, ${marker.trim()} item, quote depth ${q.length / 2}, ${run}`, () => {
     const body = ' '.repeat(column + 2)
     const doc = parse(at([`${marker}[^n]: text`, body + '- child', body + '  ' + run, body + '  code', 'outside', body + '  ' + run, 'after [^n]']))
-    assert.deepEqual(doc.footnoteDefs.get('n').map((block) => block.t), ['para', 'code'])
+    assert.deepEqual(doc.footnoteDefs.get('n').map((block) => block.t), ['para', 'list'])
     const blocks = owner(doc)
     const at2 = blocks.findIndex((block) => block.t === 'para' && block.lines[0] === 'outside')
     assert.deepEqual(blocks[at2].lines, ['outside'])

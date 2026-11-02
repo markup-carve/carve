@@ -1,5 +1,8 @@
 ## A block opener past a nested footnote definition opens in the item
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 A footnote definition is invisible at its authored location. Its body reaches two columns past the marker, while a below-column line may continue an open note paragraph under §24 C3. The fixture name preserves the former owner reading; the new output follows the shared marker-body rule.
 
 ::: compare
@@ -89,7 +92,11 @@ after
 
 ```html
 <ul>
-  <li>body</li>
+  <li>body
+    <ul>
+      <li>item</li>
+    </ul>
+  </li>
 </ul>
 <p>after</p>
 ```

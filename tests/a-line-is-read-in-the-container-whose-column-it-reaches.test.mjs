@@ -106,9 +106,9 @@ const cases = [
     "<dl>\n<dt>t</dt>\n<dd>\n<ul>\n<li>para</li>\n</ul>\n</dd>\n</dl>"
   ],
   [
-    "a marker below a dd-hosted list folds as item text",
+    "a marker below a dd-hosted list closes the description",
     ":: t\n: - para\n - li\n",
-    "<dl>\n<dt>t</dt>\n<dd>\n<ul>\n<li>para\n- li</li>\n</ul>\n</dd>\n</dl>"
+    "<dl>\n<dt>t</dt>\n<dd>\n<ul>\n<li>para</li>\n</ul>\n</dd>\n</dl>\n<ul>\n<li>li</li>\n</ul>"
   ],
   [
     "an opener past a note body column opens in the note",

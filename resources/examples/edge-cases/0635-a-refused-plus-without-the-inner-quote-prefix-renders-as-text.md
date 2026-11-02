@@ -1,5 +1,8 @@
 ## A refused plus without the inner quote prefix renders as text
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 A `+` without the inner quote prefix stays with its owning paragraph. A quoted descendant inside an ordered item does not erase the item’s sibling marker column (markup-carve/carve#3421).
 
 ::::::: compare
@@ -15,10 +18,12 @@ A `+` without the inner quote prefix stays with its owning paragraph. A quoted d
   <blockquote>
     <ul>
       <li>a
-+
-- b</li>
++</li>
     </ul>
   </blockquote>
+  <ul>
+    <li>b</li>
+  </ul>
 </blockquote>
 ```
 
@@ -37,10 +42,12 @@ A `+` without the inner quote prefix stays with its owning paragraph. A quoted d
   <blockquote>
     <ul>
       <li>a
-Q
-- b</li>
+Q</li>
     </ul>
   </blockquote>
+  <ul>
+    <li>b</li>
+  </ul>
 </blockquote>
 ```
 

@@ -68,5 +68,5 @@ test('a blank line or a heading below the note is never lazy', () => {
 test('a list in a note in a description in an item stays in the note', () => {
   const html = renderDoc(parse('r[^n]\n\n- :: t\n  : d\n    [^n]: note\n      - y\n'))
   assert.match(html, /<dd>d<\/dd>/)
-  assert.match(html, /<p>note\n- y<a href="#fnref1"/)
+  assert.match(html, /<p>note<\/p>\s*<ul>\s*<li>y<\/li>/)
 })

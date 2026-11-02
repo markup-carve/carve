@@ -1,5 +1,8 @@
 ## A definition or attribute line in a nested container leaves no paragraph for an unmarked line
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 A footnote definition is the exception in this section: its body holds the
 note's own paragraph, and a footnote body takes a lazy line like every container
 (markup-carve/carve#3885), so in the footnote rows the unmarked line folds into
@@ -213,6 +216,9 @@ A list marker leaves the quote too, and opens a list:
     <li>para</li>
   </ul>
 </blockquote>
+<ul>
+  <li>tail</li>
+</ul>
 ```
 
 ::::::

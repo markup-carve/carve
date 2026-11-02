@@ -9,11 +9,13 @@ A marker that misses a description folds into its item
   <dt>t</dt>
   <dd>
     <ul>
-      <li>a
-- b</li>
+      <li>a</li>
     </ul>
   </dd>
 </dl>
+<ul>
+  <li>b</li>
+</ul>
 ```
 
 ```
@@ -25,11 +27,13 @@ A marker that misses a description folds into its item
   <dt>t</dt>
   <dd>
     <ol>
-      <li>a
-2. b</li>
+      <li>a</li>
     </ol>
   </dd>
 </dl>
+<ol start="2">
+  <li>b</li>
+</ol>
 ```
 
 ```

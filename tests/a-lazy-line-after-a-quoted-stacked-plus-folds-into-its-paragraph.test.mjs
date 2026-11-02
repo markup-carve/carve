@@ -21,10 +21,10 @@ for (const quote of ['> ', '> > ']) {
 
 test('the conformance-pack case', () => {
   const out = html('_u_\n> 1. - +\n> para\n- - > q\ntail\n')
-  assert.match(out, /<li>\+\npara\n- - &gt; q\ntail<\/li>/, out)
+  assert.match(out, /<li>\+\npara<\/li>[^]*<p>q\ntail<\/p>/, out)
 })
 
 test('the conformance-pack case with the paragraph at the marker column', () => {
   const out = html('_u_\n> 1. - +\n>    para\n- - > q\ntail\n')
-  assert.match(out, /<li>para\n- - &gt; q\ntail<\/li>/, out)
+  assert.match(out, /<li>para<\/li>[^]*<p>q\ntail<\/p>/, out)
 })

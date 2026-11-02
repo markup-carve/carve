@@ -276,17 +276,17 @@
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
          is <p>intro</p> + <hr> + <p>more</p> (corpus
          81-paragraph-interruption).
-      I2 LIST MARKERS NEVER INTERRUPT (symmetric). NEITHER a bullet
-         (`- `/`* `, `- [x] ` task) NOR an ordered marker (decimal, letter,
-         roman, any value) interrupts: the line FOLDS into P as lazy
-         continuation; a list needs a blank line before it (matching Djot). The
-         one exception is the sibling of an open list (PART 0 S4): `- a` / `- b`
-         gives two items.
+      I2 LIST MARKERS DO NOT INTERRUPT OUTSIDE A MARKER BODY (symmetric).
+         NEITHER a bullet (`- `/`* `, `- [x] ` task) NOR an ordered marker
+         (decimal, letter, roman, any value) interrupts a paragraph owned by
+         the document, a quote or a colon body: the line FOLDS into P as lazy continuation;
+         a list needs a blank line before it (matching Djot).
          "Liste: \n - eins \n - zwei" is ONE paragraph, so is
          "x = 5 \n * 3 + 17"; a blank line starts the list.
-         TIGHT NESTED LISTS UNAFFECTED:
-         indented marker inside an open list ITEM opens a sublist with no
-         blank line -- that is §24 C3 (content column), not this relation.
+         IN A MARKER BODY A LIST MARKER ALWAYS OPENS: in a list item, description
+         body or footnote body a marker at or past the content column opens a
+         list with no blank line, and one that misses the body closes it
+         (§24 C3, PART 0 S3, S4).
       I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
          does not interrupt: an image is not a block of its own in Carve;
          it stays an inline image inside the paragraph.

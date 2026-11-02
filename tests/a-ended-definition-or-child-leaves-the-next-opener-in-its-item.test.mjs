@@ -46,8 +46,8 @@ for (const marker of ['- ', '* ', '- [ ] ']) {
         ' '.repeat(column + 2) + 'q', ' '.repeat(column + 8) + '- item']
       const source = quoted(lines.join('\n'), depth) + '\n'
       const item = itemAt(source, depth)
-      assert.deepEqual(item.blocks.map(block => block.t), ['list', 'deflist', 'quote'])
-      assert.deepEqual(item.blocks[2].children[0].lines, ['quote', 'q', '- item'])
+      assert.deepEqual(item.blocks.map(block => block.t), ['list', 'deflist', 'quote', 'list'])
+      assert.deepEqual(item.blocks[2].children[0].lines, ['quote', 'q'])
     })
   }
 }
@@ -61,8 +61,8 @@ for (const [name, source] of [
   ['note', '- a\n  [^n]: note\n   q\n    > quote\n'],
   ['marker-line child', '- 1. ordered\n    :: term\n    :  detail\n      > quote\n  \tq\n          - item\n'],
 ]) {
-  // The pinned writer still reads a note as taking no lazy line.
-  const todo = name === 'note' && 'markup-carve/carve-js#3890'
+  // The pinned writer still reads a note as taking no lazy line, and a marker under a body's paragraph as text (carve#4860).
+  const todo = name === 'note' ? 'markup-carve/carve-js#3890' : 'markup-carve/carve#4860'
   test(`${name} writer output keeps the model's block owners`, { todo }, () => {
     const written = renderCarve(parseEngine(source))
     assert.equal(renderDoc(parse(written)), renderDoc(parse(source)))

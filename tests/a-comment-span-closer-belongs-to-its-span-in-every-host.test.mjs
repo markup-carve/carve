@@ -250,7 +250,7 @@ test('GUARD: the same marker line MID-PARAGRAPH is text, and the opener below it
   // genuine opener - reading the fold as an opaque body instead hid that opener
   // and left the payload published.
   const fence = '```'
-  const out = html(`:: t\n:  head\n   - ${fence}\n   %%%\n   HIDDEN\n%%%\n`)
+  const out = html(`> head\n> - ${fence}\n> %%%\n> HIDDEN\n> %%%\n`)
   assert.ok(!out.includes('HIDDEN'), out)
   assert.ok(out.includes(`- <code></code>`), `the marker line stopped folding as text:\n${out}`)
 })

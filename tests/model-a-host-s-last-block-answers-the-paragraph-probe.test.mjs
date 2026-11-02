@@ -44,6 +44,6 @@ test('a quoted note keeps the same reading', () => {
   assert.match(render('> [^n]: - :: t\n> : p\n\n[^n]\n'), /<dt>t<\/dt>/)
 })
 
-test('a marker folded into a paragraph is no host', () => {
-  assert.match(render(':: t\n:  d\n-     {.k}\n- tail\n'), /<dd>d\n- {5}\{\.k\}\n- tail<\/dd>/)
+test('a marker below a description body closes it', () => {
+  assert.match(render(':: t\n:  d\n-     {.k}\n- tail\n'), /<dd>d<\/dd>\s*<\/dl>\s*<ul>\s*<li><\/li>\s*<li>tail<\/li>/)
 })

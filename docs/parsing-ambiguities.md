@@ -538,11 +538,26 @@ ordered marker (`1.`, `2.`, `1985.`, `a.`, `i.`) interrupts a paragraph; they
 behave identically. This avoids the CommonMark `1.`-only heuristic Djot removed,
 and removes the old false positive where a wrapped prose line became a list.
 
+**In a marker body a marker opens a list.** The fold is for paragraphs of the
+document and of quotes. In a list item, description body or footnote body a
+marker at or past the content column opens a list with no blank line, and a
+marker below that column closes the body:
+
+```carve
+:: term
+: first line
+  - a list in the description
+- a list after the definition list
+```
+
+A wrapped line that starts with `- 1` or `* 2` inside one of these bodies
+becomes a list too (markup-carve/carve#4860).
+
 **A heading and a blockquote are different:** a list marker **ends** an open
 heading (a bounded title) and starts a top-level **sibling list**. A blockquote
 is *not* ended: a quoted line ends in an open paragraph, so a list marker folds
 into it as lazy continuation: `> q` / `- a` is **one** quote whose paragraph is
-`q\n- a`, not a quote plus a sibling list. Nothing folds into a heading at all,
+`q\n- a`, not a quote plus a sibling list. That holds only while the line misses nothing but quotes: `- > q` / `  - a` closes the quote and gives the item a sublist. Nothing folds into a heading at all,
 plain text included - a heading ends at the newline (§18). The blockquote half
 of this matches Djot; the heading half deliberately does not.
 

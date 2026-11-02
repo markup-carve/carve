@@ -28,6 +28,6 @@ for (const [head, unit] of shapes) {
 }
 
 test('a marker below the body still asks the quote line above it', () => {
-  assert.match(renderDoc(parse('- :: t\n  : > a\n    > z\n  - m\n')), /<p>a\nz\n- m<\/p>/)
+  assert.match(renderDoc(parse('- :: t\n  : > a\n    > z\n  - m\n')), /<p>a\nz<\/p>[^]*<li>m<\/li>/)
   assert.match(renderDoc(parse('- :: t\n  : > # a\n    > # z\n  - m\n')), /<li>m<\/li>/)
 })

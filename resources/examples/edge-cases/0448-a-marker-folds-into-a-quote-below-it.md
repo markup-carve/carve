@@ -1,5 +1,8 @@
 ## A marker folds into a quote below it
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 An unmarked line at an ENCLOSING item's content column, with a quote below it
 holding the innermost open paragraph, is lazy paragraph text in that quote's
 paragraph. A list marker there folds like any other text and renders where it was
@@ -36,10 +39,12 @@ and renders as text.
   <li>a
     <blockquote>
       <ul>
-        <li>x
-- m</li>
+        <li>x</li>
       </ul>
     </blockquote>
+    <ul>
+      <li>m</li>
+    </ul>
   </li>
 </ul>
 ```
@@ -62,10 +67,12 @@ written on is not a parameter of this rule.
   <li>
     <blockquote>
       <ul>
-        <li>x
-- m</li>
+        <li>x</li>
       </ul>
     </blockquote>
+    <ul>
+      <li>m</li>
+    </ul>
   </li>
 </ul>
 ```
@@ -91,10 +98,12 @@ it, and the marker folds too.
     <blockquote>
       <ul>
         <li>x
-p
-- m</li>
+p</li>
       </ul>
     </blockquote>
+    <ul>
+      <li>m</li>
+    </ul>
   </li>
 </ul>
 ```
@@ -116,8 +125,10 @@ the marker out of the fold would have had to move this document as well.
 ```html
 <ul>
   <li>a
-    <blockquote><p>q
-- m</p></blockquote>
+    <blockquote><p>q</p></blockquote>
+    <ul>
+      <li>m</li>
+    </ul>
   </li>
 </ul>
 ```

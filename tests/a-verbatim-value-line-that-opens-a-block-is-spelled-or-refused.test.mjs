@@ -14,6 +14,7 @@ const HOSTS = {
   paragraph: ['', '', '', ''],
   quote: ['> ', '> ', '', ''],
   bullet: ['- ', '  ', '', ''],
+  quotedItem: ['> - ', '>   ', '', ''],
   ordered: ['1. ', '   ', '', ''],
   description: [': ', '  ', ':: t\n', ''],
   footnote: ['[^n]: ', '  ', 'y[^n]\n\n', ''],
@@ -40,8 +41,8 @@ function candidates(host, value) {
 test('verbatim opener line fixture names its clause', () => {
   assert.equal(fixture.version, 1)
   assert.equal(fixture.clause, 'CARVE-P11-078')
-  assert.equal(fixture.rows.filter(row => row.source).length, 14)
-  assert.equal(fixture.rows.filter(row => !row.source).length, 35)
+  assert.equal(fixture.rows.filter(row => row.source).length, 13)
+  assert.equal(fixture.rows.filter(row => !row.source).length, 36)
 })
 
 for (const row of fixture.rows) {

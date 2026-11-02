@@ -66,11 +66,11 @@ for (const depth of [1, 2]) {
   })
   test(`an overindented bare run and following lazy line stay line-block payload at depth ${depth}`, () => {
     const quote = '> '.repeat(depth)
-    const document = parse(`${quote}- ::: |\n${quote}  a\n${quote}    :::\n${quote}  b\n- tail\n`)
+    const document = parse(`${quote}- ::: |\n${quote}  a\n${quote}    :::\n${quote}  b\ntail\n`)
     assert.equal(document.blocks.length, 1)
     let owner = document.blocks[0]
     for (let n = 0; n < depth; n++) owner = owner.children[0]
-    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: ['a', '  :::', 'b', '- tail']}])
+    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: ['a', '  :::', 'b', 'tail']}])
   })
   for (const closer of [2, 4]) {
     test(`an authored overindented opener closes at column ${closer}, depth ${depth}`, () => {
@@ -164,15 +164,7 @@ for (const depth of [1, 2]) for (const count of [196, 197, 198, 199, 200, 201]) 
   test(`colon nesting cap at quote depth ${depth}, ${count} containers`, () => {
     const quote = '> '.repeat(depth)
     const prefix = `${quote}- ::: box\n` + `${quote}  ::: box\n`.repeat(count - 1)
-    let last = parse(prefix).blocks.at(-1)
-    while (last) {
-      if (last.t === 'list') last = last.items.at(-1).blocks.at(-1)
-      else if (last.children?.length) last = last.children.at(-1)
-      else break
-    }
-    const actual = parse(prefix + '- tail\n').blocks
-    if (last.t === 'para') assert.equal(actual.length, 1)
-    else assert.deepEqual(actual, [...parse(prefix).blocks, ...parse('- tail\n').blocks])
+    assert.deepEqual(parse(prefix + '- tail\n').blocks, [...parse(prefix).blocks, ...parse('- tail\n').blocks])
   })
 }
 

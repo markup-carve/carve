@@ -15,17 +15,17 @@ for (const marker of ['- ', '1. ', '* [ ] ']) for (const depth of [1, 2, 3]) {
   })
 }
 
-test('a nested description keeps the at-body-column marker in its paragraph', () => {
-  assert.match(render(':: outer\n:  detail\n   :: inner\n   :  body\n       - child\n'), /<dd>body\n- child<\/dd>/)
+test('a nested description opens a list at its body column', () => {
+  assert.match(render(':: outer\n:  detail\n   :: inner\n   :  body\n       - child\n'), /<p>body<\/p>\s*<ul>\s*<li>child<\/li>/)
 })
 
 test('a marker exactly at the outer description body column opens there', () => {
   assert.match(render(':: outer\n:  detail\n   :: inner\n   :  body\n   - child\n'), /<dd>body<\/dd>[\s\S]*<\/dl>[\s\S]*<ul>/)
 })
 
-test('document and direct quote controls keep below-column markers as text', () => {
-  assert.match(render(':: term\n:  body\n  - child\n'), /<dd>body\n- child<\/dd>/)
-  assert.match(render('> :: term\n> :  body\n>   - child\n'), /<dd>body\n- child<\/dd>/)
+test('below-column markers close the description in the document and in a quote', () => {
+  assert.match(render(':: term\n:  body\n  - child\n'), /<dd>body<\/dd>\s*<\/dl>\s*<ul>/)
+  assert.match(render('> :: term\n> :  body\n>   - child\n'), /<dd>body<\/dd>\s*<\/dl>\s*<ul>/)
 })
 
 test('a nested quote releases the marker to its surviving description', () => {

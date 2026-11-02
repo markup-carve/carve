@@ -4,6 +4,9 @@ page: edge-footnotes
 
 ## A footnote body refuses a first block at its body column
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 Reversed by carve#4409: like a list item, a footnote body's first-block `+` takes a follower only at its marker column, which is column zero for a top-level note (CARVE-P9-067). A line at the body column refuses the `+` and folds into it.
 
 ::: compare
@@ -46,9 +49,12 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-- x
-- y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>+</p>
+      <ul>
+        <li>x</li>
+        <li>y</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

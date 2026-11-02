@@ -10,9 +10,11 @@ A marker under a quoted description paragraph in an item is text
     <blockquote>
       <dl>
         <dt>t</dt>
-        <dd>d
-- z</dd>
+        <dd>d</dd>
       </dl>
+      <ul>
+        <li>z</li>
+      </ul>
     </blockquote>
   </li>
 </ul>
@@ -26,8 +28,10 @@ A marker under a quoted description paragraph in an item is text
 <blockquote>
   <dl>
     <dt>t</dt>
-    <dd>d
-- z</dd>
+    <dd>d</dd>
   </dl>
+  <ul>
+    <li>z</li>
+  </ul>
 </blockquote>
 ```

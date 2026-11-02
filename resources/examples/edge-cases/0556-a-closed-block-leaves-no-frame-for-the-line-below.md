@@ -1,5 +1,8 @@
 ## A closed block leaves no frame for the line below
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 `CARVE-P0-009` asks one question of a line below an item's content column: is a
 paragraph open at the deepest frame? Where the last block there is closed, the
 line closes the list and begins a new block, and no surviving frame adopts it.
@@ -354,8 +357,11 @@ below
   <hr>
   <ol>
     <li id="fn1">
-      <p>text
-- child<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>text</p>
+      <ul>
+        <li>child</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
     <li id="fn2">
       <p>inner</p>

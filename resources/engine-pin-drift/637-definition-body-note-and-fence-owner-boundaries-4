@@ -1,0 +1,1 @@
+A list marker opens a list in every marker body and closes a body it misses (markup-carve/carve#4860); pending in the pinned engine.

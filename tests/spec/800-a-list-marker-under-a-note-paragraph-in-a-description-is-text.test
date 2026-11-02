@@ -9,15 +9,18 @@ r[^q]
 .
 <dl>
   <dt>t</dt>
-  <dd></dd>
+  <dd>
+    <ul>
+      <li>child</li>
+    </ul>
+  </dd>
 </dl>
 <p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>note
-* child<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -32,15 +35,18 @@ r[^q]
 .
 <dl>
   <dt>t</dt>
-  <dd></dd>
+  <dd>
+    <ol>
+      <li>child</li>
+    </ol>
+  </dd>
 </dl>
 <p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>note
-1. child<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -60,6 +66,9 @@ r[^q]
     <ul>
       <li>a</li>
     </ul>
+    <ul class="task-list">
+      <li><input type="checkbox" disabled aria-label="child"> child</li>
+    </ul>
   </dd>
 </dl>
 <p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
@@ -67,8 +76,7 @@ r[^q]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note
-- [ ] child<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -108,15 +116,18 @@ r[^q]
 r[^q]
 .
 <ul>
-  <li></li>
+  <li>
+    <ul>
+      <li>child</li>
+    </ul>
+  </li>
 </ul>
 <p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>note
-* child<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

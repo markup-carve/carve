@@ -7,12 +7,12 @@ const html = (source) => renderDoc(parse(source))
 const notes = (source) => (html(source).match(/<section role="doc-endnotes"[\s\S]*<\/section>/) ?? ['none'])[0]
 
 // carve#4031 shape 3, carve#4409: a note stacked on an item marker in a quote takes a
-// list at its own column behind the prefixes; an unprefixed one folds into its paragraph.
+// list at its own column behind the prefixes; an unprefixed one closes it (carve#4860).
 for (const host of ['> - ', '> * ', '> 1. ', '> - [ ] ', '> - - ', '> > - ', '> - > - ']) {
   for (const marker of ['- after', '* after', '1. after', '- [ ] after']) {
     test(`${JSON.stringify(host)}[^b]: + then ${JSON.stringify(marker)}`, () => {
       const source = `${host}[^b]: +\n${marker}\n\nr[^b]\n`
-      assert.ok(notes(source).includes(`<p>+\n${marker}<a href`), html(source))
+      assert.ok(notes(source).includes(`<p>+<a href`), html(source))
     })
     test(`${JSON.stringify(host)}[^b]: + takes ${JSON.stringify(marker)} at its column`, () => {
       const source = `${host}[^b]: +\n${host.replace(/[^> ]/g, ' ')}${marker}\n\nr[^b]\n`
@@ -23,7 +23,7 @@ for (const host of ['> - ', '> * ', '> 1. ', '> - [ ] ', '> - - ', '> > - ', '> 
 
 test('carve#4031 shape 3', () => {
   const out = html('> - [^b]: +\n- after\n\nr[^b]\n')
-  assert.ok(out.startsWith('<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>\n<p>r'), out)
+  assert.ok(out.startsWith('<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>\n<ul>\n  <li>after</li>\n</ul>\n<p>r'), out)
 })
 
 // carve#4031 shape 4, CARVE-P9-067: a colon fence a note's `+` pulls moves

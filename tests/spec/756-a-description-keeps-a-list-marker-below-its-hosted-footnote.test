@@ -8,6 +8,11 @@ tail
 .
 <dl>
   <dt>t</dt>
-  <dd></dd>
+  <dd>
+    <ul>
+      <li>child
+tail</li>
+    </ul>
+  </dd>
 </dl>
 ```

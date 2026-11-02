@@ -2,7 +2,7 @@
   {
     "name": "container-82",
     "source": ":: term\n: body\n- tail\n",
-    "html": "<dl>\n  <dt>term</dt>\n  <dd>body\n- tail</dd>\n</dl>"
+    "html": "<dl>\n  <dt>term</dt>\n  <dd>body</dd>\n</dl>\n<ul>\n  <li>tail</li>\n</ul>"
   },
   {
     "name": "container-125",
@@ -262,7 +262,7 @@
   {
     "name": "container-568",
     "source": "> - [^n]: note\n- tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
   },
   {
     "name": "container-569",
@@ -312,7 +312,7 @@
   {
     "name": "description-ordered-marker",
     "source": ":: term\n: body\n1. tail\n",
-    "html": "<dl>\n  <dt>term</dt>\n  <dd>body\n1. tail</dd>\n</dl>"
+    "html": "<dl>\n  <dt>term</dt>\n  <dd>body</dd>\n</dl>\n<ol>\n  <li>tail</li>\n</ol>"
   },
   {
     "name": "description-marker-after-blank",
@@ -322,7 +322,7 @@
   {
     "name": "description-indented-marker",
     "source": ":: term\n: body\n  - tail\n",
-    "html": "<dl>\n  <dt>term</dt>\n  <dd>body\n- tail</dd>\n</dl>"
+    "html": "<dl>\n  <dt>term</dt>\n  <dd>\n    <p>body</p>\n    <ul>\n      <li>tail</li>\n    </ul>\n  </dd>\n</dl>"
   },
   {
     "name": "nested-code-plain-follower",

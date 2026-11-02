@@ -4,6 +4,9 @@ page: edge-definitions
 
 ## A description's first-block plus leaves its paragraph open for the next entry
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 A `: +` description takes one block at column 0, and the lines after it read as they would after `: a` (PART 2 `: +` note, CARVE-P2-016, CARVE-P9-067). A `: ` line at the list's marker column is the next description (carve#4179), and a list marker below the body column is paragraph text, because a description body is not a list item (PART 0 S3). Inside a list item the same two descriptions open in the item.
 
 ::: compare
@@ -37,9 +40,11 @@ after
 ```html
 <dl>
   <dt>t</dt>
-  <dd>after
-- y</dd>
+  <dd>after</dd>
 </dl>
+<ul>
+  <li>y</li>
+</ul>
 ```
 
 :::
@@ -57,9 +62,11 @@ after
 <blockquote>
   <dl>
     <dt>t</dt>
-    <dd>after
-- y</dd>
+    <dd>after</dd>
   </dl>
+  <ul>
+    <li>y</li>
+  </ul>
 </blockquote>
 ```
 

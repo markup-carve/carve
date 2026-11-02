@@ -9,10 +9,12 @@ A refused plus without the inner quote prefix renders as text
   <blockquote>
     <ul>
       <li>a
-+
-- b</li>
++</li>
     </ul>
   </blockquote>
+  <ul>
+    <li>b</li>
+  </ul>
 </blockquote>
 ```
 
@@ -25,10 +27,12 @@ A refused plus without the inner quote prefix renders as text
   <blockquote>
     <ul>
       <li>a
-Q
-- b</li>
+Q</li>
     </ul>
   </blockquote>
+  <ul>
+    <li>b</li>
+  </ul>
 </blockquote>
 ```
 

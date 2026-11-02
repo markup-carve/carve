@@ -11,8 +11,12 @@ x
 .
 <dl>
   <dt>t</dt>
-  <dd>d
-- para</dd>
+  <dd>
+    <p>d</p>
+    <ul>
+      <li>para</li>
+    </ul>
+  </dd>
 </dl>
 <p>x</p>
 <p><a href="/u">r</a></p>
@@ -29,8 +33,12 @@ x
 .
 <dl>
   <dt>t</dt>
-  <dd>d
-1. para</dd>
+  <dd>
+    <p>d</p>
+    <ol>
+      <li>para</li>
+    </ol>
+  </dd>
 </dl>
 <p>x</p>
 <p><a href="/u">r</a></p>
@@ -50,8 +58,11 @@ x
   <hr>
   <ol>
     <li id="fn1">
-      <p>d
-- para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>d</p>
+      <ul>
+        <li>para</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -69,8 +80,10 @@ x
 <dl>
   <dt>t</dt>
   <dd>
-    <p>d
-- para</p>
+    <p>d</p>
+    <ul>
+      <li>para</li>
+    </ul>
     <p>more</p>
   </dd>
 </dl>
@@ -87,9 +100,12 @@ x
 <dl>
   <dt>t</dt>
   <dd>
-    <p>d
-- para</p>
-    <h1 id="H">H</h1>
+    <p>d</p>
+    <ul>
+      <li>para
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
   </dd>
 </dl>
 <p>x</p>
@@ -104,8 +120,12 @@ x
 .
 <dl>
   <dt>t</dt>
-  <dd>d
-- para</dd>
+  <dd>
+    <p>d</p>
+    <ul>
+      <li>para</li>
+    </ul>
+  </dd>
 </dl>
 <p>x</p>
 ```
@@ -119,8 +139,12 @@ x
 .
 <dl>
   <dt>t</dt>
-  <dd>d
-- para</dd>
+  <dd>
+    <p>d</p>
+    <ul>
+      <li>para</li>
+    </ul>
+  </dd>
 </dl>
 <p>x</p>
 ```

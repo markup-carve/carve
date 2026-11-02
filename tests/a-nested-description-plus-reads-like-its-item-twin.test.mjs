@@ -16,7 +16,7 @@ test('a nested description first-block + spent on a sublist leaves a column-0 he
 
 test('a list refuses the + off its marker column, and always under an item', () => {
   assert.equal(flat('- a\n  :: T\n  : +\n    - y\n# h2\n'),
-    '<ul><li>a<dl><dt>T</dt><dd>+\n- y</dd></dl></li></ul><section id="h2"><h1>h2</h1></section>')
+    '<ul><li>a<dl><dt>T</dt><dd><p>+</p><ul><li>y</li></ul></dd></dl></li></ul><section id="h2"><h1>h2</h1></section>')
   assert.equal(flat('- a\n  * +\n  - y\n'), '<ul><li>a<ul><li>+</li></ul><ul><li>y</li></ul></li></ul>')
 })
 

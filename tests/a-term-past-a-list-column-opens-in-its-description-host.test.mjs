@@ -12,9 +12,7 @@ for (const marker of markers) for (const note of [true, false]) {
     if (note) lines.push('  [^n]: note')
     lines.push('  ' + marker + 'a', '   :: u', '   :  e')
     const out = html(lines.join('\n'))
-    // Under the note's open paragraph the marker is text of the note (carve#4160).
-    if (note) assert.equal(out, '<dl><dt>t</dt><dd><p>d</p><dl><dt>u</dt><dd>e</dd></dl></dd></dl>')
-    else assert.match(out, /<p>d\n(?:-|1\.|- \[ \]) a<\/p><dl><dt>u<\/dt><dd>e<\/dd><\/dl><\/dd><\/dl>$/)
+    assert.match(out, /<p>d<\/p><(?:ul|ol)[^>]*><li>(?:<input[^>]*> )?a<\/li><\/(?:ul|ol)><dl><dt>u<\/dt><dd>e<\/dd><\/dl><\/dd><\/dl>$/)
   })
 }
 
