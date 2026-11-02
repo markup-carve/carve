@@ -3901,12 +3901,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Off the
   // marker column an invisible line is that next line, and a note definition's body is its own.
   function firstVisibleLine(from, hostIndex, column, fenced = null) {
-    const view = (k) => trimWsStart(throughQuotes(lines[k], hostIndex)?.rest ?? '\uE000')
+    // A line without the host's quote prefixes ends the quote, so no skipped construct reads it as text.
+    const view = (k) => trimWsStart(throughQuotes(lines[k], hostIndex)?.rest ?? '')
     const fromHere = new Proxy([], {
       get: (_, key) => key === 'length' ? lines.length : /^\d+$/.test(String(key)) && +key < lines.length ? view(+key) : undefined,
     })
     let k = from
     while (k < lines.length) {
+      if (throughQuotes(lines[k], hostIndex) === null) return k
       const rest = trimLineEnd(view(k))
       if (docColumn(lines[k], view(k)) !== column) return k
       const comment = COMMENT_FENCE_BODY.exec(rest)
