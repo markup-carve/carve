@@ -1395,7 +1395,7 @@ const sem = g.createSemantics().addOperation('h', {
       const pi = quotePrevIdx(src, at, true)
       const prev = src[pi - 1] ?? ''
       const prevIsSpace = prev === '' || isTypographyFlank(prev) ||
-        (FLAG_OPENERS.has(prev) && (pi === 1 || isTypographyFlank(src[quotePrevIdx(src, pi - 1, true) - 1])))
+        flagOpenerStands(src, pi)
       const nextIsSpace = flankAfter(src, quoteNextIdx(src, end, true))
       if (prevIsSpace && !nextIsSpace) return escapeHtml(this.sourceString)
     }
@@ -2262,6 +2262,12 @@ function applyQuotes(toks, openMap, src, contentAt, spanContent, contentEnd) {
 // CARVE-P3-021: an opening one of these after whitespace or the start of content
 // counts as whitespace for the flag test (carve#4813).
 const FLAG_OPENERS = new Set(['(', '"', "'"])
+// A braced comment before the opener counts as nothing (carve#4719).
+function flagOpenerStands(src, pi) {
+  if (!FLAG_OPENERS.has(src[pi - 1])) return false
+  const before = quotePrevIdx(src, pi - 1, true)
+  return before === 0 || isTypographyFlank(src[before - 1])
+}
 
 function dashGlyphs(n) {
   if (n % 3 === 0) return '\u2014'.repeat(n / 3)
@@ -2293,7 +2299,7 @@ function applyDashFlanks(toks, openMap, src, contentAt, spanContent, contentEnd)
     if (!atStart && !atEnd) continue
     const prev = src[pi - 1] ?? ''
     const prevIsSpace = atStart || prev === '' || isTypographyFlank(prev) ||
-      (FLAG_OPENERS.has(prev) && (pi === 1 || isTypographyFlank(src[quotePrevIdx(src, pi - 1, true) - 1])))
+      flagOpenerStands(src, pi)
     const nextIsSpace = atEnd || flankAfter(src, ni)
     t.h = prevIsSpace && !nextIsSpace ? escapeHtml(raw) : dashGlyphs(raw.length)
   }
