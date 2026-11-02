@@ -323,12 +323,11 @@ HTML here.
   <dt>t</dt>
   <dd>
     <ul>
-      <li>a
-*[HTML]: HyperText</li>
+      <li>a</li>
     </ul>
   </dd>
 </dl>
-<p>HTML here.</p>
+<p><abbr title="HyperText">HTML</abbr> here.</p>
 ```
 
 ```

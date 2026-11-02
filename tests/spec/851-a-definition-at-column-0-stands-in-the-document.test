@@ -81,8 +81,7 @@ A
 A
 .
 <ul>
-  <li>n
-*[A]: b</li>
+  <li>n</li>
 </ul>
-<p>A</p>
+<p><abbr title="b">A</abbr></p>
 ```

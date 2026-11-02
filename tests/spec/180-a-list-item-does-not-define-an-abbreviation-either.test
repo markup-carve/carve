@@ -6,7 +6,7 @@ A list item does not define an abbreviation either
 The HTML spec.
 .
 <ul>
-  <li>*[HTML]: Hyper Text</li>
+  <li></li>
 </ul>
-<p>The HTML spec.</p>
+<p>The <abbr title="Hyper Text">HTML</abbr> spec.</p>
 ```

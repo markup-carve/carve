@@ -41,21 +41,21 @@ test('frontmatter does not move which line missed its frames', () => {
   assert.equal(html('---\nk: v\n---\n- n\n *[A]: b\n\nA\n'), `<ul><li>n</li></ul>${DEFINED}`)
 })
 
-const STAYS_TEXT = [
-  ['at an item content column', '- n\n  *[A]: b\n\nA\n', '<ul><li>n *[A]: b</li></ul><p>A</p>'],
-  ['at a wide content column', '10. n\n    *[A]: b\n\nA\n', '<ol start="10"><li>n *[A]: b</li></ol><p>A</p>'],
-  ['reaching an outer item', '- - n\n  *[A]: b\n\nA\n', '<ul><li><ul><li>n *[A]: b</li></ul></li></ul><p>A</p>'],
-  ['between an outer and an inner item', '- - n\n   *[A]: b\n\nA\n', '<ul><li><ul><li>n *[A]: b</li></ul></li></ul><p>A</p>'],
-  ['reaching the item around a quote', '- > n\n  *[A]: b\n\nA\n', '<ul><li><blockquote><p>n *[A]: b</p></blockquote></li></ul><p>A</p>'],
-  ['past an open term', ':: t\n *[A]: b\n\nA\n', '<dl><dt>t *[A]: b</dt></dl><p>A</p>'],
+const REGISTERS = [
+  ['at an item content column', '- n\n  *[A]: b\n\nA\n', '<ul><li>n</li></ul><p><abbr title="b">A</abbr></p>'],
+  ['at a wide content column', '10. n\n    *[A]: b\n\nA\n', '<ol start="10"><li>n</li></ol><p><abbr title="b">A</abbr></p>'],
+  ['reaching an outer item', '- - n\n  *[A]: b\n\nA\n', '<ul><li><ul><li>n</li></ul></li></ul><p><abbr title="b">A</abbr></p>'],
+  ['between an outer and an inner item', '- - n\n   *[A]: b\n\nA\n', '<ul><li><ul><li>n</li></ul></li></ul><p><abbr title="b">A</abbr></p>'],
+  ['reaching the item around a quote', '- > n\n  *[A]: b\n\nA\n', '<ul><li><blockquote><p>n</p></blockquote></li></ul><p><abbr title="b">A</abbr></p>'],
+  ['past an open term', ':: t\n *[A]: b\n\nA\n', '<dl><dt>t</dt></dl><p><abbr title="b">A</abbr></p>'],
 ]
 
-for (const [name, src, out] of STAYS_TEXT) {
-  test(`a line ${name} stays text`, () => {
+for (const [name, src, out] of REGISTERS) {
+  test(`a line ${name} defines`, () => {
     assert.equal(html(src), out)
   })
 }
 
-test('a div is not the document, so the indented line stays in its item', () => {
-  assert.ok(html('::: note\n- n\n *[A]: b\n:::\n\nA\n').includes('n *[A]: b'))
+test('an indented line in a div defines', () => {
+  assert.ok(html('::: note\n- n\n *[A]: b\n:::\n\nA\n').includes('<abbr title="b">A</abbr>'))
 })

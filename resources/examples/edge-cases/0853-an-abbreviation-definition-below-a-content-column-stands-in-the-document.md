@@ -4,8 +4,7 @@ page: edge-definitions
 
 ## An abbreviation definition below a content column stands in the document
 
-A definition line that misses every frame defines at every column below the
-content column, not only at column 0 (carve#4412).
+A definition line defines with document scope at every column, under an item, a description, a note and a quote alike (carve#4412, carve#4865). A line at the content column registers in the item.
 
 One column in, below an item.
 
@@ -153,10 +152,9 @@ A
 
 ````html
 <ol start="10">
-  <li>n
-*[A]: b</li>
+  <li>n</li>
 </ol>
-<p>A</p>
+<p><abbr title="b">A</abbr></p>
 ````
 
 :::::::
@@ -176,12 +174,11 @@ A
 <ul>
   <li>
     <ul>
-      <li>n
-*[A]: b</li>
+      <li>n</li>
     </ul>
   </li>
 </ul>
-<p>A</p>
+<p><abbr title="b">A</abbr></p>
 ````
 
 :::::::
@@ -198,13 +195,12 @@ A[^f]
 ````
 
 ````html
-<p>A<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p><abbr title="b">A</abbr><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>n
-*[A]: b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

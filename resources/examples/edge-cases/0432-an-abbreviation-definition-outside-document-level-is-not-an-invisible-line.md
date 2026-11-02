@@ -1,13 +1,6 @@
 ## An abbreviation definition outside document level is not an invisible line
 
-The second of the two exceptions to the invisible-line classification (§10 I5)
-is a question of MEMBERSHIP, not of a member behaving differently: an
-abbreviation definition is recognized at document level only (§16), so anywhere
-else the line is not invisible at all. It is paragraph text, it is VISIBLE, and
-it folds like any other plain line - and because it registered nothing, a use of
-the abbreviation elsewhere in the document stays literal. Both halves have to be
-pinned together: rendering the line AND defining from it is the half-fold the
-classification does not offer.
+An abbreviation definition is an invisible line in every container (§10 I5, carve#4865): it renders nothing, and a use elsewhere in the document expands. The section title names the reading carve#4865 replaced and stays as the corpus id.
 
 At a definition description's content column, where a link or footnote
 definition would be collected and would leave no trace:
@@ -26,11 +19,12 @@ A
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-*[A]: a
-tail</dd>
+  <dd>
+    <p>d</p>
+    <p>tail</p>
+  </dd>
 </dl>
-<p>A</p>
+<p><abbr title="a">A</abbr></p>
 ```
 
 :::
@@ -49,14 +43,13 @@ see[^a] A
 ```
 
 ```html
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> A</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> <abbr title="a">A</abbr></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro
-*[A]: a
-more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro</p>
+      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -64,8 +57,4 @@ more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a>
 
 :::
 
-Document level is the contrast that makes this an exception rather than a rule
-about abbreviations - the identical line one host out both disappears from the
-page and registers - and it needs no document of its own here: `177-two-abbreviation-definitions`
-and `305-an-abbreviation-expands-inside-an-inline-container` already pin it, and
-a third copy could not fail.
+Document level reads the same way:

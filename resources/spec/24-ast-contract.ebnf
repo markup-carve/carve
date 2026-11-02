@@ -53,7 +53,7 @@
       `label`, not `id`: PART 9 §16 calls it a label throughout, and `id`
       collides with the attribute of that name.
 
-      FOOTNOTE AND LINK REFERENCE DEFINITIONS HOIST TO THE DOCUMENT -- NORMATIVE
+      FOOTNOTE, LINK REFERENCE AND ABBREVIATION DEFINITIONS HOIST TO THE DOCUMENT -- NORMATIVE
       [CARVE-P12-070]. A definition authored inside a block quote or list item
       is a child of the document. Its `pos` records where it was written.
       The former container retains its remaining content.
@@ -65,37 +65,17 @@
       It renders nothing itself; it is what the inline `abbreviation` resolves
       against.
 
-      THE HOISTING CLAUSE ABOVE IS ABOUT FOOTNOTES AND LINK REFERENCE DEFINITIONS. An `abbreviation_def` is
-      never hoisted, because there is never one to hoist: the construct is
-      recognized only at document level.
-
-      AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL --
-      NORMATIVE [CARVE-P12-026]. `*[TERM]: expansion` is an `abbreviation_definition` only as a
-      direct child of the document. Written inside a block quote, a list item,
-      a definition body, a footnote body or a div, the line is not a
-      definition at all: it is ordinary paragraph
-      text, it defines nothing, and it is preserved as the text the author
-      typed. A line that misses every frame below one is not written inside it: it
-      is a direct child of the document (PART 9 §10). Neither is a definition
-      line a `+` skips on its way to its block when the `+`'s host stands in
-      the document: `- +` / `*[A]: b` / `text` gives the item `text` and
-      defines `A` (CARVE-P9-067, carve#4449).
+      AN ABBREVIATION DEFINITION IS A DEFINITION IN EVERY CONTAINER --
+      NORMATIVE [CARVE-P12-026]. `*[TERM]: expansion` defines its term wherever
+      a link reference definition would be recognized, and its scope is the
+      whole document. It hoists by CARVE-P12-070.
 
           > *[HTML]: Hyper Text
 
           The HTML spec.
 
-      renders a block quote holding the literal text `*[HTML]: Hyper Text`,
-      and `The HTML spec.` with no `<abbr>`.
-
-      This is the same fallback an unrecognized definition marker already
-      takes: `*[HTML]:<TAB>x` is a paragraph because the separator must be a
-      literal space (see the note at `abbreviation_definition`), and the marker
-      line "is preserved as text" there too. The rule is reused, not invented.
-
-      Unlike footnotes, abbreviations have no use-site marker and rewrite every
-      occurrence of the term. They are therefore recognized only at document
-      level, leaving quoted or foreign container content inert.
+      renders an empty block quote and `The <abbr title="Hyper Text">HTML</abbr>
+      spec.`. To show the line as text, escape it: `\*[HTML]: Hyper Text`.
 
       THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
       PART 11's writer emits the definition after the container the author
@@ -193,8 +173,6 @@
         attrs   a trailing attribute block on the definition line (CARVE-P3-007)
 
       Hoisting and source position follow CARVE-P12-070.
-
-      Abbreviation definitions do not hoist (CARVE-P12-026).
 
       A node carries the definition's required `pos`, attributes and document
       order, so document order rather than merge order decides which definition

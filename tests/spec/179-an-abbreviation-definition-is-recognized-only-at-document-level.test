@@ -5,6 +5,17 @@ An abbreviation definition is recognized only at document level
 
 The HTML spec.
 .
+<blockquote>
+
+</blockquote>
+<p>The <abbr title="Hyper Text">HTML</abbr> spec.</p>
+```
+
+```
+> \*[HTML]: Hyper Text
+
+The HTML spec.
+.
 <blockquote><p>*[HTML]: Hyper Text</p></blockquote>
 <p>The HTML spec.</p>
 ```

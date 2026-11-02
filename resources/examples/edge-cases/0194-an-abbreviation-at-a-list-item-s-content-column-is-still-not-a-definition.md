@@ -1,6 +1,6 @@
 ## An abbreviation at a list item's content column is still not a definition
 
-`*[TERM]: expansion` is recognized only at document level - NORMATIVE, and already pinned inside a block quote and on a list item's MARKER line. The position that was missing is the one where the other definition kinds do the opposite: an item's CONTENT COLUMN, on a continuation line. There the line is item text and defines nothing, so the reference below it renders without an `<abbr>`.
+At an item's content column, on a continuation line, the line is a definition like the other definition kinds (carve#4865). The section title names the reading carve#4865 replaced and stays as the corpus id.
 
 ::: compare
 
@@ -13,15 +13,14 @@ The HTML spec.
 
 ```html
 <ul>
-  <li>a
-*[HTML]: Hyper Text</li>
+  <li>a</li>
 </ul>
-<p>The HTML spec.</p>
+<p>The <abbr title="Hyper Text">HTML</abbr> spec.</p>
 ```
 
 :::
 
-The contrast is the point: a REFERENCE definition written at that same column IS the item's block, so it renders nothing and resolves. Three definition kinds, one column, two answers - and until now nothing measured the difference at this position.
+A reference definition at that same column reads the same way.
 
 ::: compare
 

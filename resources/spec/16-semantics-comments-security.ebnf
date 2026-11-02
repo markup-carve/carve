@@ -386,11 +386,10 @@
 
              AN INVISIBLE LINE BELOW THE COLUMN INTERRUPTS -- NORMATIVE [CARVE-P9-052].
              Below the column an invisible line keeps its class (§10 I5): a
-             comment, link or footnote definition or block-attribute line
+             comment, link, footnote or abbreviation definition or block-attribute line
              interrupts, closes the item and is read in the surviving owner,
              where a definition registers (CARVE-P0-010) and an attribute line
-             is pending (§15 A2). An abbreviation definition below document
-             level is text (CARVE-P12-026).
+             is pending (§15 A2).
            - AT OR PAST content_column: a block opener nests and a list marker
              opens a sublist. A non-list opener past the column opens in the
              item, measured from its own line (PART 0 S3); a sublist marker

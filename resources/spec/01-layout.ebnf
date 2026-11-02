@@ -259,16 +259,14 @@
         transition covers the block's entire extent (CARVE-P0-012).
 
         A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE
-        CONTAINER -- NORMATIVE [CARVE-P0-010]. A link or footnote definition
-        registers in the owner S2 selects and only there. `- a` / `  [r]: /u`
+        CONTAINER -- NORMATIVE [CARVE-P0-010]. A link, footnote or abbreviation
+        definition registers in the owner S2 selects and only there. `- a` / `  [r]: /u`
         / `tail` registers `r`, then ends the item and publishes `tail` at
         document level. Below every open content column a definition
         interrupts (S4), so `- a` / ` [r]: /u` / `tail` closes the item and
-        registers `r` in the document. Abbreviation definitions are recognized
-        only at document level (CARVE-P12-026), which is where a line that misses
-        every frame stands: `- a` / `*[A]: b` and `- a` / ` *[A]: b` close the item
-        and define `A`, while `- a` / `  *[A]: b` stays item text. A definition either registers
-        or remains visible text; it never disappears from both.
+        registers `r` in the document. An abbreviation definition reads the same
+        way and its scope is the document (CARVE-P12-026). A definition either
+        registers or remains visible text; it never disappears from both.
 
         A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN --
         NORMATIVE [CARVE-P0-008]. Marker-attached attributes contribute zero

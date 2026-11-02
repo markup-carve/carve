@@ -159,8 +159,7 @@ x
 
 ::::::
 
-An abbreviation definition is recognized only at document level
-(CARVE-P12-026), so it stays paragraph text and `x` folds:
+An abbreviation definition reads as any definition does (CARVE-P12-026), so `x` leaves the description:
 :::::: compare
 
 ````carve
@@ -175,10 +174,9 @@ x
 <dl>
   <dt>t</dt>
   <dd>d
-- para
-*[A]: b
-x</dd>
+- para</dd>
 </dl>
+<p>x</p>
 ```
 
 ::::::

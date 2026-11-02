@@ -671,7 +671,7 @@
           is written at the item's content column: at its marker column it
           would close the item (PART 0 S2, S5).
 
-      (c) A HOISTED DEFINITION DOES NOT CROSS A MARKER. A link reference or
+      (c) A HOISTED DEFINITION DOES NOT CROSS A MARKER. A link reference, abbreviation or
           footnote definition with a region marker anywhere below its source
           line is not collected to the end of the document (PART 12 §7, CARVE-P12-070). It is written
           where the author wrote it, among its siblings in source order, and
@@ -785,8 +785,7 @@
           attribute line, a pipe-table row and a thematic break;
         - in a list item, a marker of the item's own list (`- b` in a `-`
           list, `1. b` and `. b` in an ordered list);
-        - in a paragraph directly in the document, an abbreviation
-          definition.
+        - in any paragraph, an abbreviation definition.
 
       A TEXT LINE THAT STARTS WITH A FENCE RUN is escaped, since a fence
       opener interrupts its paragraph whether or not a closer follows. The

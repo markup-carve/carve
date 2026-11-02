@@ -62,8 +62,7 @@
 
       WHERE A DEFINITION IS RECOGNIZED IS NOT DECIDED HERE: this clause rules
       the node's shape, not recognition or hoisting from containers
-      (CARVE-P12-029's link-reference hoisting and CARVE-P12-026's
-      container-local abbreviation refusal). An emitted
+      (CARVE-P12-070). An emitted
       node satisfying this shape conforms whichever recognition policy applies.
 
    18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE [CARVE-P12-038].

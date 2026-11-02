@@ -1693,7 +1693,7 @@
     {
       "id": "CARVE-P12-026",
       "part": "12",
-      "title": "AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL",
+      "title": "AN ABBREVIATION DEFINITION IS A DEFINITION IN EVERY CONTAINER",
       "scope": "ast-interchange"
     },
     {
@@ -1957,7 +1957,7 @@
     {
       "id": "CARVE-P12-070",
       "part": "12",
-      "title": "FOOTNOTE AND LINK REFERENCE DEFINITIONS HOIST TO THE DOCUMENT",
+      "title": "FOOTNOTE, LINK REFERENCE AND ABBREVIATION DEFINITIONS HOIST TO THE DOCUMENT",
       "scope": "ast-interchange"
     },
     {

@@ -6,9 +6,7 @@ An abbreviation definition in an item body is paragraph text
   *[A]: a
 .
 <ul>
-  <li><p>a</p>
-    <p>*[A]: a</p>
-  </li>
+  <li>a</li>
 </ul>
 ```
 
@@ -19,8 +17,7 @@ An abbreviation definition in an item body is paragraph text
   - b
 .
 <ul>
-  <li><p>a</p>
-    <p>*[A]: a</p>
+  <li>a
     <ul>
       <li>b</li>
     </ul>
@@ -36,13 +33,12 @@ An abbreviation definition in an item body is paragraph text
 - c
 .
 <ul>
-  <li><p>a</p>
-    <p>*[A]: a</p>
+  <li>a
     <ul>
       <li>b</li>
     </ul>
   </li>
-  <li><p>c</p></li>
+  <li>c</li>
 </ul>
 ```
 

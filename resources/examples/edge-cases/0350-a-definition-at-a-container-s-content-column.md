@@ -85,9 +85,7 @@ tail
 
 :::
 
-An ABBREVIATION definition is not on I5's list and is recognized at document
-level only, so at the same content column it is ordinary paragraph text and the
-flush-left line folds:
+An abbreviation definition reads the same way at that column (carve#4865), so the flush-left line ends the item:
 
 ::: compare
 
@@ -99,10 +97,9 @@ tail
 
 ```html
 <ul>
-  <li>a
-*[A]: x
-tail</li>
+  <li>a</li>
 </ul>
+<p>tail</p>
 ```
 
 :::

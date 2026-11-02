@@ -20,9 +20,9 @@ for (const host of hosts) {
   })
 }
 
-test('under a host in a quote or an item the line is text and the + attaches it', () => {
-  assert.equal(html('> - +\n> *[A]: b\n> text\n\nA\n'), '<blockquote><ul><li>*[A]: btext</li></ul></blockquote><p>A</p>')
-  assert.equal(html('- x\n  - +\n  *[A]: b\n  text\n\nA\n'), '<ul><li>x<ul><li>*[A]: btext</li></ul></li></ul><p>A</p>')
+test('under a host in a quote or an item the + skips it too', () => {
+  assert.equal(html('> - +\n> *[A]: b\n> text\n\nA\n'), '<blockquote><ul><li>text</li></ul></blockquote><p><abbr title="b">A</abbr></p>')
+  assert.equal(html('- x\n  - +\n  *[A]: b\n  text\n\nA\n'), '<ul><li>x<ul><li>text</li></ul></li></ul><p><abbr title="b">A</abbr></p>')
 })
 
 test('a later definition of the same term still wins', () => {

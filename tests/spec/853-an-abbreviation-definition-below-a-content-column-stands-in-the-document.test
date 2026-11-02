@@ -92,10 +92,9 @@ A[^f]
 A
 .
 <ol start="10">
-  <li>n
-*[A]: b</li>
+  <li>n</li>
 </ol>
-<p>A</p>
+<p><abbr title="b">A</abbr></p>
 ```
 
 ```
@@ -107,12 +106,11 @@ A
 <ul>
   <li>
     <ul>
-      <li>n
-*[A]: b</li>
+      <li>n</li>
     </ul>
   </li>
 </ul>
-<p>A</p>
+<p><abbr title="b">A</abbr></p>
 ```
 
 ```
@@ -121,13 +119,12 @@ A
 
 A[^f]
 .
-<p>A<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p><abbr title="b">A</abbr><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>n
-*[A]: b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

@@ -454,9 +454,7 @@ See [r][].
 
 :::
 
-And the controls. An ABBREVIATION definition is recognized only as a direct
-child of the document (PART 12 §7), so the same slot leaves it as text - a fix
-that registered every definition-shaped line would move this row.
+And the abbreviation control. An abbreviation definition registers in the same slot (PART 12 §7, carve#4865):
 
 ::: compare
 
@@ -473,12 +471,11 @@ HTML here.
   <dt>t</dt>
   <dd>
     <ul>
-      <li>a
-*[HTML]: HyperText</li>
+      <li>a</li>
     </ul>
   </dd>
 </dl>
-<p>HTML here.</p>
+<p><abbr title="HyperText">HTML</abbr> here.</p>
 ```
 
 :::

@@ -56,10 +56,9 @@ tail
 tail
 .
 <ul>
-  <li>a
-*[A]: x
-tail</li>
+  <li>a</li>
 </ul>
+<p>tail</p>
 ```
 
 ```

@@ -126,7 +126,7 @@ A reference definition below an item resolves.
 
 :::::::
 
-A line that reaches the item stays its text.
+A line that reaches the item registers there, with document scope (carve#4865).
 
 ::::::: compare
 
@@ -139,10 +139,9 @@ A
 
 ````html
 <ul>
-  <li>n
-*[A]: b</li>
+  <li>n</li>
 </ul>
-<p>A</p>
+<p><abbr title="b">A</abbr></p>
 ````
 
 :::::::

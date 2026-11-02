@@ -227,11 +227,9 @@ length before the closing run.
 an optional `astVersion` on a bare tree
 ([`CARVE-P12-024`](./rules/ast-interchange)). Frontmatter and definitions are **block nodes in the tree**, not
 root fields, because a root field cannot carry a position and both are source an
-editor navigates to. A footnote or link reference definition is a child of the
+editor navigates to. A footnote, link reference or abbreviation definition is a child of the
 **document** even when it was authored inside a container, because its scope is
-the document wherever it was written. Its `pos` still says where that was. An
-abbreviation definition is never hoisted: inside a container the line is
-paragraph text (`CARVE-P12-026`).
+the document wherever it was written. Its `pos` still says where that was.
 
 **Field names are spec surface** (§3). `href`, `src`, `value`, `level`,
 `children`. An implementation whose internals differ maps on the way out; it does
@@ -843,11 +841,11 @@ Generated from [the checked summary table](https://github.com/markup-carve/carve
 
 | Shape | Rule | Carve | HTML | Markdown | Plain | ANSI | Diagnostic |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `figure.shortCaption,table.shortCaption` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L343) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
+| `figure.shortCaption,table.shortCaption` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L321) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
 | `figure.target[table]` | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | `table_caption` | `figure` | `unspecified` | `unspecified` | `unspecified` | `clause` |
-| `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L367) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
-| `table.rowGroups[attrs]` | [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L378) | `omit_field` | `unspecified` | `omit_field` | `omit_field` | `omit_field` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
-| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L414) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
+| `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L366) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
+| `table.rowGroups[attrs]` | [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L356) | `omit_field` | `unspecified` | `omit_field` | `omit_field` | `omit_field` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
+| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L413) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
 | `section` | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L2) | `unwrap` | `section` | `unwrap` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
 | `ruby` | [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L54) | `parenthesized_pairs` | `ruby` | `ruby` | `parenthesized_pairs` | `parenthesized_pairs` | `ruby-flattened (Carve,Plain,ANSI)` |
 | `block_extension[unknown name]` | [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L91) | `fallback` | `fallback` | `fallback` | `fallback` | `fallback` | `clause` |
