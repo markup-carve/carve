@@ -1,0 +1,13 @@
+A name ending in a hyphen leaves the next marker free
+
+```
+x #a-#b and @a-@b
+.
+<p>x <span class="tag"><strong>#a-</strong></span><span class="tag"><strong>#b</strong></span> and <span class="mention"><strong>@a-</strong></span><span class="mention"><strong>@b</strong></span></p>
+```
+
+```
+See #a--#b-#c, #a-@b and #a#b
+.
+<p>See <span class="tag"><strong>#a--</strong></span><span class="tag"><strong>#b-</strong></span><span class="tag"><strong>#c</strong></span>, <span class="tag"><strong>#a-</strong></span><span class="mention"><strong>@b</strong></span> and <span class="tag"><strong>#a</strong></span>#b</p>
+```
