@@ -43,3 +43,4 @@
 821-a-quote-after-a-caption-starts-fresh-2  The pinned writer moves the quote's caption below a footnote definition it writes inside the quote, so the spec model reads the caption as footnote text (markup-carve/carve-js#4188).
 857-an-html-attribute-is-written-once-whatever-its-case  The pinned writer emits one space after a letter or roman marker, which the carve#4811 ruling reads as text.
 780-a-braced-opener-forms-before-an-enclosing-closer-takes-its-block-5  The pinned writer spells the braced span bare, and since carve#4845 a bare span holding its own delimiter does not form, so the spec model reads the output differently; carve-js ports the ruling first.
+930-a-line-that-misses-a-nested-host-ends-it-when-a-comment-closer-lies-ahead  The pinned writer rewrites the nested opener as a %% line and attaches the missed line with a +, which reads differently (markup-carve/carve-js#4211).

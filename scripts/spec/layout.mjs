@@ -2755,6 +2755,62 @@ function lastCommentCloserIn(state, lines, run) {
   return closers.get(run.length) ?? -1
 }
 
+// A child body's enclosing source array and the row its host ends at.
+const hostLinks = new WeakMap()
+const closerIndexes = new WeakMap()
+
+// PART 0 S1 asks for a closer ahead in the DOCUMENT, so a child body also sees
+// the closers its enclosing hosts hold past it (carve#4770).
+function commentCloserAhead(state, lines, run, at) {
+  return lastCommentCloserIn(state, lines, run) >= at || commentCloserPastHost(state, lines, run.length)
+}
+
+// With `stopAtBlank`, a blank line past the host ends the search, as a quote's own search does.
+function commentCloserPastHost(state, lines, width, stopAtBlank = false) {
+  for (let link = hostLinks.get(lines); link; link = hostLinks.get(link.parent)) {
+    const { parent, end } = link
+    if (!stopAtBlank) {
+      if (lastCommentCloserIn(state, parent, '%'.repeat(width)) >= end) return true
+      continue
+    }
+    const index = closerIndex(parent)
+    // A host may end past a blank run it did not keep.
+    const from = end > 0 && isBlank(stripLazy(parent[end - 1] ?? '')) ? end - 1 : end
+    const rows = index.closers.get(width) ?? []
+    let lo = 0
+    for (let hi = rows.length; lo < hi;) {
+      const mid = (lo + hi) >> 1
+      if (rows[mid] < from) lo = mid + 1
+      else hi = mid
+    }
+    if (lo < rows.length && rows[lo] < index.nextBlank[from]) return true
+    if (index.nextBlank[from] < parent.length) return false
+  }
+  return false
+}
+
+// Per source array: each width's closer rows and the next blank row from every row.
+function closerIndex(lines) {
+  let index = closerIndexes.get(lines)
+  if (!index) {
+    const closers = new Map()
+    const nextBlank = new Int32Array(lines.length + 1).fill(lines.length)
+    for (let k = lines.length - 1; k >= 0; k--) {
+      const line = stripLazy(lines[k] ?? '')
+      nextBlank[k] = isBlank(line) ? k : nextBlank[k + 1]
+    }
+    lines.forEach((raw, k) => {
+      const c = COMMENT_FENCE.exec(stripLazy(raw ?? ''))
+      if (!c) return
+      if (!closers.has(c[1].length)) closers.set(c[1].length, [])
+      closers.get(c[1].length).push(k)
+    })
+    index = { closers, nextBlank }
+    closerIndexes.set(lines, index)
+  }
+  return index
+}
+
 function bodyHoldsOpenCommentSpan(bodyLines, closerAhead = null) {
   return bodyOpenCommentRun(bodyLines, closerAhead) !== null
 }
@@ -4296,6 +4352,7 @@ function inheritFinalBreak(parent, child, end, state) {
   if (end === parent.length && state.unterminatedLines?.has(parent)) {
     state.unterminatedLines.add(child)
   }
+  hostLinks.set(child, { parent, end })
   return child
 }
 
@@ -4688,7 +4745,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let retainedParagraph = false
       let lazyParagraphOpen = null
       let openFence = -1
-      const missedLiveSpan = liveSpanTest(bodyLines, () => bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom), (run) => lastCommentCloserIn(state, lines, run) >= i))
+      const missedLiveSpan = liveSpanTest(bodyLines, () => bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom), (run) => commentCloserAhead(state, lines, run, i)))
       const endsNoteAt = (at) => (ind(at)?.col === 0 && FOOTNOTE_DEF.test(ind(at).rest)) ||
         (isBlank(lines[at]) && footnoteBlankRunEnd(lines, at, n) === -1)
       // Lazy lines open no fence and only shorten the closer search, so a
@@ -4786,7 +4843,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lazyParagraphOpen = null
           attachPending = false
           i = end
-        } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom), (run) => lastCommentCloserIn(state, lines, run) >= i)) {
+        } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom), (run) => commentCloserAhead(state, lines, run, i))) {
           // carve#2488, the same arm the `dd` carries. This body ends at a
           // comment below column 2, and a comment INSIDE a span the body already
           // holds is not one - see `bodyHoldsOpenCommentSpan`. carve#2488 reads
@@ -5189,7 +5246,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           let ddScanFrom = 0
           let retainedParagraph = false
           const sinceComment = () => commentTailSince(bodyLines, ddScanFrom)
-          const bodyHoldsLiveSpan = () => bodyHoldsOpenCommentSpan(sinceComment(), (run) => lastCommentCloserIn(state, lines, run) >= i)
+          const bodyHoldsLiveSpan = () => bodyHoldsOpenCommentSpan(sinceComment(), (run) => commentCloserAhead(state, lines, run, i))
           const missedLiveSpan = liveSpanTest(bodyLines, bodyHoldsLiveSpan)
           let openFence = -1
           let nestedLeadFenceColumn = descriptionLeadHasUnterminatedNestedFence(
@@ -6136,6 +6193,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               openComment = comment[1].length
               break
             }
+            if (j === n - 1 && commentCloserPastHost(state, lines, comment[1].length, true)) openComment = comment[1].length
           }
         }
         const belowRun = FENCE.exec(indentCols(l).rest)
@@ -7661,7 +7719,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           return false
         }
       }
-      return (body.length === 0 || trimWs(body.at(-1)) !== '') && !bodyEndsInOpenFence(body) && noteBodyParagraphOpen(body)
+      return (body.length === 0 || trimWs(body.at(-1)) !== '') && !bodyEndsInOpenFence(body) && noteBodyParagraphOpen(body) &&
+        // The line ends a span whose closer lies ahead, and the note with it (PART 0 S1, carve#4770).
+        !bodyHoldsOpenCommentSpan(body, (run) => commentCloserAhead(state, lines, run, at))
     }
     // §11 N1's hard boundary fired: this item is the list's last. Set where the
     // run is measured, acted on after the item is pushed.
@@ -8159,7 +8219,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let missedNestedRun = null
     const bodyHoldsLiveCommentSpan = () =>
       COMMENT_FENCE.exec(lines[i])?.[1] === missedNestedRun ||
-      bodyHoldsOpenCommentSpan(itemLines, (run) => lastCommentCloser(run) >= i)
+      bodyHoldsOpenCommentSpan(itemLines, (run) => commentCloserAhead(state, lines, run, i))
+    const missedLiveSpan = liveSpanTest(itemLines, bodyHoldsLiveCommentSpan)
     // A descendant span cannot carry payload across a shallower block. Its
     // closer still pairs by run length at any column.
     const commentHoldsLine = (span, measured) => span?.kind === 'comment' &&
@@ -9800,6 +9861,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         i++
         continue
       }
+      // A line that misses the item ends a span whose closer lies ahead, and the
+      // item with it, even when that closer is past the enclosing host (PART 0 S1, carve#4770).
+      if (!nm && missedLiveSpan()) break
       // A DEFINITION AT COLUMN 0 IS A DEFINITION, NOT LAZY TEXT. §24 C3's BELOW
       // branch folds "every other line", but a line at column 0 is not below a
       // column - it is AT the enclosing context's own block position, which is
