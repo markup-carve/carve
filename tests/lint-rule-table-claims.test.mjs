@@ -63,6 +63,9 @@ const TRIGGERS = {
   'delimited-table-malformed': '{table}\n```csv\n"bad\n```\n',
   'delimited-table-wide-row': '{table}\n```csv\na,b\n1\n2,3,4\n```\n',
   'region-marker-renders-as-text': '// #region demo\nBody.\n// #endregion demo\n',
+  'setext-heading-underline': 'Title\n---\n',
+  'heading-closing-hashes': '## h ##\n',
+  'indented-code-block': 'para\n\n    code line\n    more\n',
   'consumed-key-near-miss': '{tabel}\n```csv\na,b\n```\n',
   'description-separator-below-content-column': '- a\n  :: term\n : detail\n',
   'caption-looking-paragraph': { source: '|= A |\n| x |\n\nTable 1: caption\n', options: { captionLookingParagraph: true } },
@@ -147,9 +150,6 @@ const RETIRED_IN_THE_PIN = new Map([
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  ['setext-heading-underline', 'specified by the #4814 ruling; engine rollout follows'],
-  ['heading-closing-hashes', 'specified by the #4814 ruling; engine rollout follows'],
-  ['indented-code-block', 'specified by the #4814 ruling; engine rollout follows'],
   [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',

@@ -1,1 +1,0 @@
-carve#4863: a malformed colon line leaves no state and a bare run below it interrupts (ruling 2026-11-02); the pinned engines still absorb the run.

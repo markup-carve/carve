@@ -1,1 +1,0 @@
-The pinned engines close the container at a comment or definition below its column; the spec moved first under the ruling that these close no indentation container (markup-carve/carve#4862).

@@ -1,1 +1,0 @@
-The pinned engines read a paragraph of only braced comments as visible; the spec moved first under the ruling that it reads as a comment line (markup-carve/carve#4799).
