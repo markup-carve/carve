@@ -1,0 +1,1 @@
+The pinned engines predate the %%% forward-only port, so they do not read a line after a line-block comment span as the stanza without it; the spec moved first under the ruling that a span in verse leaves nothing however it ends (PART 9 section 23, markup-carve/carve#4956).

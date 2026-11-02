@@ -1,0 +1,107 @@
+A line after a comment block in a line block reads the stanza without it
+
+```
+- a
+  - ::: |
+    %%%
+b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <div class="line-block">
+
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>b</p>
+```
+
+```
+- a
+  - ::: |
+    %%%
+    x
+    %%%
+b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <div class="line-block">
+
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>b</p>
+```
+
+```
+- ::: |
+  x
+  %%%
+b
+.
+<ul>
+  <li>
+    <div class="line-block">
+      <p>x<br>
+b</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+> ::: |
+> x
+> %%%
+b
+.
+<blockquote>
+  <div class="line-block">
+    <p>x<br>
+b</p>
+  </div>
+</blockquote>
+```
+
+```
+> > ::: |
+> > %%%
+y
+.
+<blockquote>
+  <blockquote>
+    <div class="line-block">
+
+    </div>
+  </blockquote>
+</blockquote>
+<p>y</p>
+```
+
+```
+:: t
+: ::: |
+  x
+  %%%
+b
+  :::
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <div class="line-block">
+      <p>x<br>
+b</p>
+    </div>
+  </dd>
+</dl>
+```

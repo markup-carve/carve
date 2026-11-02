@@ -11,7 +11,8 @@ test('a matched comment payload that misses nested quotes leaves no lazy paragra
 
 test('a comment-shaped line in a nested line block remains line-block payload', () => {
   const source = '> > ::: |\n> > %%%\n> > x\n> > %%%\ny\n> > :::\n'
-  assert.equal(renderDoc(parse(source)), '<blockquote>\n  <blockquote>\n    <div class="line-block">\n      <p>y</p>\n    </div>\n  </blockquote>\n</blockquote>')
+  // The span leaves an empty stanza, which takes no lazy line (carve#4956).
+  assert.equal(renderDoc(parse(source)), renderDoc(parse('> > ::: |\ny\n> > :::\n')))
 })
 
 test('nested comment ownership is independent of depth, width, payload and closer indentation', () => {

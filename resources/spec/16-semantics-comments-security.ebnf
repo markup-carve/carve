@@ -226,7 +226,10 @@
         renders an empty line block with the blank line required between its
         opening and closing tags by CARVE-P10-001. A fence with no closer runs
         to the end of the line block's host (§28): it hides the rest of the
-        verse and the line block's own `:::` closer, which is payload. A
+        verse and the line block's own `:::` closer, which is payload. However
+        the span ends, at its closer or at a line that misses its owner (PART 0
+        S1), the next line reads the stanza as it stood before the span: a lazy
+        line folds only into a stanza that already held verse (carve#4956). A
         `%%%` line indented past 3 spaces is verse text, as an indented `%%`
         line is below.
         The span is a `comment` node in the tree, so the canonical writer emits
