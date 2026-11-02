@@ -9,11 +9,14 @@ q
 after
 .
 <div>
-  <p>:::e
-::::
-q</p>
+  <p>:::e</p>
+  <div>
+    <p>q</p>
+    <div>
+      <p>after</p>
+    </div>
+  </div>
 </div>
-<p>after</p>
 ```
 
 ```
@@ -26,8 +29,12 @@ l
 <ul>
   <li>
     <div>
-      <p>:::e
-::::</p>
+      <p>:::e</p>
+      <div>
+        <div>
+
+        </div>
+      </div>
     </div>
   </li>
 </ul>
@@ -45,9 +52,13 @@ after
 .
 <blockquote>
   <div>
-    <p>:::e
-::::
-q</p>
+    <p>:::e</p>
+    <div>
+      <p>q</p>
+      <div>
+
+      </div>
+    </div>
   </div>
 </blockquote>
 <p>after</p>

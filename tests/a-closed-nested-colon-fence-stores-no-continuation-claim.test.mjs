@@ -12,13 +12,13 @@ for (const depth of [1, 2, 3, 8]) {
     assert.deepEqual(doc.blocks[1], { t: 'para', lines: ['y'] })
     assert.match(renderDoc(doc), /<\/blockquote>\n<p>y<\/p>$/)
   })
-  test(`invalid colon opener retains its paragraph at quote depth ${depth}`, () => {
+  test(`a bare run below an invalid colon opener leaves no paragraph at quote depth ${depth}`, () => {
     const source = [':::note', 'body', ':::'].map(line => prefix + line + '\n').join('') + 'y\n'
     const doc = parse(source)
-    assert.equal(doc.blocks.length, 1)
-    assert.match(renderDoc(doc), /:::note\nbody\n:::\ny<\/p>/)
+    assert.deepEqual(doc.blocks.at(-1), { t: 'para', lines: ['y'] })
+    assert.match(renderDoc(doc), /:::note\nbody<\/p>/)
   })
-  for (const boundary of ['# H', '---', '', '%% comment']) test(`absorption ends at ${JSON.stringify(boundary)} at depth ${depth}`, () => {
+  for (const boundary of ['# H', '---', '', '%% comment']) test(`an invalid opener leaves no state across ${JSON.stringify(boundary)} at depth ${depth}`, () => {
     const source = [':::note', boundary, ':::'].map(line => prefix + line + '\n').join('') + 'y\n'
     assert.deepEqual(parse(source).blocks.at(-1), { t: 'para', lines: ['y'] })
   })
@@ -29,15 +29,15 @@ test('a shallower quote boundary clears a deeper paragraph', () => {
   assert.deepEqual(parse(source).blocks.at(-1), { t: 'para', lines: ['y'] })
 })
 
-test('a deeper invalid opener cannot absorb a shallower colon fence', () => {
+test('a deeper invalid opener leaves a shallower colon fence alone', () => {
   const source = '> > > :::note\n> > :::\ny\n'
   assert.deepEqual(parse(source).blocks.at(-1), { t: 'para', lines: ['y'] })
 })
 
-for (const lazy of ['> body', '> > body', 'body']) test(`lazy ${JSON.stringify(lazy)} preserves nested absorption`, () => {
+for (const lazy of ['> body', '> > body', 'body']) test(`lazy ${JSON.stringify(lazy)} keeps the paragraph, and the bare run ends it`, () => {
   const source = '> > > :::note\n' + lazy + '\n> > > :::\ny\n'
-  assert.equal(parse(source).blocks.length, 1)
-  assert.match(renderDoc(parse(source)), /:::note\nbody\n:::\ny<\/p>/)
+  assert.deepEqual(parse(source).blocks.at(-1), { t: 'para', lines: ['y'] })
+  assert.match(renderDoc(parse(source)), /:::note\nbody<\/p>/)
 })
 
 test('a real div closer wins over malformed text in its body', () => {

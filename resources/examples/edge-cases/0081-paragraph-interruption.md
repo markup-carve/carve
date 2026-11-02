@@ -163,7 +163,7 @@ text
 
 :::
 
-An admonition (or generic div) with a closer interrupts.
+A glued `:::note` is text, and the bare `:::` below it interrupts (carve#4863).
 
 :::: compare
 
@@ -177,8 +177,10 @@ body
 ```html
 <p>text
 :::note
-body
-:::</p>
+body</p>
+<div>
+
+</div>
 ```
 
 ::::

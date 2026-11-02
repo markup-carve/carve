@@ -1,6 +1,6 @@
 ## A line below a list item folds into the open paragraph of a div or an absorbed colon run
 
-PART 0 S4 asks the same lazy question at every depth: a line that misses a nested item folds into the open paragraph inside its div, a line block's included (CARVE-P0-015). An invalid opener keeps the bare colon run after it as paragraph text, written past the content column or not (PART 0 S3, CARVE-P9-016), so the paragraph stays open for the line below.
+PART 0 S4 asks the same lazy question at every depth: a line that misses a nested item folds into the open paragraph inside its div, a line block's included (CARVE-P0-015). A bare colon run after an invalid opener opens a div, so no paragraph is left for the line below (carve#4863).
 
 ::::: compare
 
@@ -42,9 +42,12 @@ l
 <ul>
   <li>m
 :::e
-:::
-l</li>
+    <div>
+
+    </div>
+  </li>
 </ul>
+<p>l</p>
 ```
 
 :::::
@@ -63,10 +66,15 @@ l</li>
   <ul>
     <li>x
 :::d
-:::
-- tail</li>
+      <div>
+
+      </div>
+    </li>
   </ul>
 </blockquote>
+<ul>
+  <li>tail</li>
+</ul>
 ```
 
 :::::
@@ -87,11 +95,14 @@ l
     <ul>
       <li>m
 :::e
-:::
-l</li>
+        <div>
+
+        </div>
+      </li>
     </ul>
   </li>
 </ul>
+<p>l</p>
 ```
 
 :::::

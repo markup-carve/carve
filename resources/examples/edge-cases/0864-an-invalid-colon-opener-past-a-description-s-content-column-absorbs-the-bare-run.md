@@ -4,7 +4,7 @@ page: edge-definitions
 
 ## An invalid colon opener past a description's content column absorbs the bare run
 
-CARVE-P9-016 and PART 0 S4 (carve#4112). The paragraph absorbs the invalid opener and the bare run, stays open, and takes the line below.
+PART 0 S4. The invalid opener is text. The bare run interrupts the paragraph and opens a div, so the line below has nothing to fold into (carve#4112, carve#4863).
 
 :::::: compare
 
@@ -19,11 +19,15 @@ l
 ```html
 <dl>
   <dt>t</dt>
-  <dd>m
-:::e
-:::
-l</dd>
+  <dd>
+    <p>m
+:::e</p>
+    <div>
+
+    </div>
+  </dd>
 </dl>
+<p>l</p>
 ```
 
 ::::::

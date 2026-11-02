@@ -27,8 +27,10 @@ Tight list item keeps trailing text after a block bare
   <li>item
 :::note
 body
-:::
-tail</li>
+    <div>
+      <p>tail</p>
+    </div>
+  </li>
 </ul>
 ```
 

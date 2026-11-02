@@ -7,11 +7,15 @@ An absorbed colon fence leaves a block quote's paragraph open
 > :::
 tail
 .
-<blockquote><p>quote
+<blockquote>
+  <p>quote
 :::note
-body
-:::
-tail</p></blockquote>
+body</p>
+  <div>
+
+  </div>
+</blockquote>
+<p>tail</p>
 ```
 
 ```
@@ -21,11 +25,15 @@ tail</p></blockquote>
 > ::::
 tail
 .
-<blockquote><p>quote
+<blockquote>
+  <p>quote
 :::note
-body
-::::
-tail</p></blockquote>
+body</p>
+  <div>
+
+  </div>
+</blockquote>
+<p>tail</p>
 ```
 
 ```
@@ -33,9 +41,13 @@ tail</p></blockquote>
 > :::
 tail
 .
-<blockquote><p>:::note
-:::
-tail</p></blockquote>
+<blockquote>
+  <p>:::note</p>
+  <div>
+
+  </div>
+</blockquote>
+<p>tail</p>
 ```
 
 ```
@@ -46,10 +58,14 @@ tail</p></blockquote>
 tail
 .
 <blockquote>
-  <blockquote><p>quote
+  <blockquote>
+    <p>quote
 :::note
-body
-:::
-tail</p></blockquote>
+body</p>
+    <div>
+
+    </div>
+  </blockquote>
 </blockquote>
+<p>tail</p>
 ```
