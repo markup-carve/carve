@@ -2382,12 +2382,7 @@
         {
           "type": "definition_list"
         }
-      ],
-      "aheadOfPin": {
-        "fails": [
-          "<!-- carve: :: A term that -->"
-        ]
-      }
+      ]
     },
     {
       "id": "reference-link-full",
