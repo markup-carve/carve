@@ -244,3 +244,19 @@ rust/html-import--adjacent-definition-lists  The pinned carve-rs predates the th
 php/html-import--adjacent-definition-lists  The pinned carve-php predates the three-blank boundary between two description lists (markup-carve/carve#4759); fixed on carve-php main, pending the pin.
 rust/html-import--list-table-for-block-cells  The pinned carve-rs writes an empty item as - +, which the one attach rule refuses (markup-carve/carve#4409, #4442); pending the pin.
 php/html-import--list-table-for-block-cells  The pinned carve-php writes an empty item as - +, which the one attach rule refuses (markup-carve/carve#4409, #4442); pending the pin.
+
+# CARVE-P2-034, ruled 2026-11-02 (carve#4917): an HTML comment that ends a list
+# imports as `%%` at its own column plus the three-blank list boundary. Measured
+# by converting cases 103 to 108 with carve-js `e0a3d9e3` and carve-php
+# `0afc8b3a`: both write the comment into the first item, so the lists merge.
+# carve-rs `6a1e54a0` already writes the ruled spelling.
+js/103-markdown-an-html-comment-that-ends-a-list-keeps-the-next-list-apart  CARVE-P2-034: writes the comment into the first item
+js/105-markdown-an-html-comment-that-ends-a-nested-list-stays-in-the-outer-item  CARVE-P2-034: writes the comment into the first item
+js/106-markdown-an-html-comment-that-ends-a-list-in-a-quote  CARVE-P2-034: writes the comment into the first item
+js/107-markdown-an-html-comment-that-ends-an-ordered-list  CARVE-P2-034: writes the comment into the first item
+js/108-markdown-an-html-comment-that-interrupts-a-list-item  CARVE-P2-034: writes the comment into the first item
+php/103-markdown-an-html-comment-that-ends-a-list-keeps-the-next-list-apart  CARVE-P2-034: writes the comment into the first item
+php/105-markdown-an-html-comment-that-ends-a-nested-list-stays-in-the-outer-item  CARVE-P2-034: writes the comment into the first item
+php/106-markdown-an-html-comment-that-ends-a-list-in-a-quote  CARVE-P2-034: writes the comment into the first item
+php/107-markdown-an-html-comment-that-ends-an-ordered-list  CARVE-P2-034: writes the comment into the first item
+php/108-markdown-an-html-comment-that-interrupts-a-list-item  CARVE-P2-034: writes the comment into the first item
