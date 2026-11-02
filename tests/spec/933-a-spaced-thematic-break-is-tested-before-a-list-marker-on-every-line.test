@@ -1,0 +1,87 @@
+A spaced thematic break is tested before a list marker on every line
+
+```
+- x
+- - -
+.
+<ul>
+  <li>x</li>
+</ul>
+<hr>
+```
+
+```
+- x
+* * *
+.
+<ul>
+  <li>x</li>
+</ul>
+<hr>
+```
+
+```
+- x
+* * * *
+.
+<ul>
+  <li>x</li>
+</ul>
+<hr>
+```
+
+```
+- x
+
+- - -
+.
+<ul>
+  <li>x</li>
+</ul>
+<hr>
+```
+
+```
+- - x
+  - - -
+.
+<ul>
+  <li>
+    <ul>
+      <li>x</li>
+    </ul>
+    <hr>
+  </li>
+</ul>
+```
+
+```
+:: t
+: ::: note
+  para
+* * *
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <aside class="admonition note" aria-label="Note">
+      <p>para</p>
+    </aside>
+  </dd>
+</dl>
+<hr>
+```
+
+```
+- x
+- - y
+.
+<ul>
+  <li>x</li>
+  <li>
+    <ul>
+      <li>y</li>
+    </ul>
+  </li>
+</ul>
+```

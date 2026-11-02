@@ -810,6 +810,8 @@ function alphaToInt(s) {
   return s.toLowerCase().charCodeAt(0) - 96
 }
 
+const isBulletLine = (line) => !HR.test(line) && BULLET.test(trimLineEnd(line))
+
 // Does this line OPEN an ordered item? `ORDERED` alone answers on shape, and
 // its optional attribute block is not validated there - so `.{+a+} text`, whose
 // payload yields no attributes, matched as a marker at the boundary checks below
@@ -1704,7 +1706,7 @@ function isCodeBlockOpener(line) {
 
 function foldablePlainLine(cur) {
   return !isBlank(cur) && !startsVisibleBlock(cur) && !isTableRow(cur) && !isDefinitionLine(cur) &&
-    !FOOTNOTE_DEF.test(cur) && !BULLET.test(trimLineEnd(cur)) && !isOrderedMarkerLine(cur) &&
+    !FOOTNOTE_DEF.test(cur) && !isBulletLine(cur) && !isOrderedMarkerLine(cur) &&
     !isCodeBlockOpener(cur) && !isColonBlockOpener(cur) &&
     !CAPTION.test(cur) && !COMMENT_LINE.test(cur) &&
     !/^::? (?=[ \t]*[^ \t\n\r])/.test(cur)
@@ -4896,7 +4898,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !opensFence(lines, i)) {
           // A retained marker is paragraph text and opens no list (PART 0 X1).
-          bodyLines.push(BULLET.test(trimLineEnd(measured.rest)) || isOrderedMarkerLine(measured.rest) ? lazyFrame(measured.rest) : measured.rest)
+          bodyLines.push(isBulletLine(measured.rest) || isOrderedMarkerLine(measured.rest) ? lazyFrame(measured.rest) : measured.rest)
           afterComment = afterCommentTransition(afterComment, {})
           lazyParagraphOpen = true
           retainedParagraph = true
@@ -5078,7 +5080,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         !startsVisibleBlock(cur) &&
         !isDefinitionLine(cur) &&
         !FOOTNOTE_DEF.test(cur) &&
-        !BULLET.test(trimLineEnd(cur)) &&
+        !isBulletLine(cur) &&
         !isOrderedMarkerLine(cur) &&
         !isCodeBlockOpener(cur) &&
         !CAPTION.test(cur)
@@ -5371,7 +5373,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (afterComment && !startsVisibleBlock(cur) &&
                 !isTableRow(cur) && !isColonBlockOpener(cur) &&
                 !opensFence(lines, i)) {
-              pushBody(BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented) ? lazyFrame(dedented) : dedented)
+              pushBody(isBulletLine(dedented) || isOrderedMarkerLine(dedented) ? lazyFrame(dedented) : dedented)
               afterComment = afterCommentTransition(afterComment, {})
               retainedParagraph = true
               i++
@@ -5446,7 +5448,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // the body's column it ends the body rather than folding (carve#3145).
             if (isTableRow(dedented)) break
             // A line folded into the open paragraph leaves it open, whatever its shape, so the scan is not repeated per line.
-            if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) &&
+            if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || isBulletLine(dedented) || isOrderedMarkerLine(dedented)) &&
                 (foldedParagraphAt === bodyLines.length || bodyLeavesParagraphOpen(bodyLines))) {
               // A marker below the body's column is no sibling of a list in the body,
               // so it continues the open paragraph once the description dedents it (PART 0 S4).
@@ -7204,6 +7206,8 @@ function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem
 // already carries.
 function matchMarkerAt(meas, tabOrigin = 0) {
   if (meas === undefined) return null
+  // The thematic break is tested before a list marker, wherever the line stands (PART 2).
+  if (HR.test(meas.rest)) return null
   const { col, rest } = meas
   const line = trimLineEnd(rest)
   // The saving is entirely in what this is handed. Given a line with its
