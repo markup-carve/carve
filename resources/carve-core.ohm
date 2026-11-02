@@ -284,8 +284,16 @@ CarveCore {
   // that case, because the run starts with the marker and never enters `word`
   // at all, so the tail is absorbed here and rendered as literal text
   // (carve#1156).
-  mention    = "@" markName gluedMarker*
-  tag        = "#" markName gluedMarker*
+  // A name ending in `-` stands before no word character, so the next marker
+  // opens fresh (PART 9 §7): `#a-#b` holds two tags.
+  mention    = "@" glueName gluedMarker*
+             | "@" markName ""
+  tag        = "#" glueName gluedMarker*
+             | "#" markName ""
+  glueName   = &wordEnded markName
+  wordEnded  = (~(nameWordChar ~nameCont) nameCont)* nameWordChar ~nameCont
+  nameWordChar = asciiLetter | digit | "_" ~("{" | "}")
+  nameCont   = tagChar | tagDot
   // A name holds at least one ASCII letter (carve#4809): `#123` and `@5` are text.
   markName   = &nameLetter tagName
   nameLetter = (~asciiLetter (tagChar | tagDot))* asciiLetter
