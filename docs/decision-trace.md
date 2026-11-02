@@ -29,7 +29,7 @@ cites one stays valid.
 | `S5` | Apply | Everything else: blank, text, a leaf, an opener, a closer |
 | `T` | Transition | The boundary table of CARVE-P0-003 that S5 applies |
 
-The FAMILIES entries of PART 0 carry cell ids of the form `B-<family>-start`,
+The rows of PART 0's FAMILIES table carry cell ids of the form `B-<family>-start`,
 `B-<family>-keep` and `B-<family>-end`: what opens a block of that family, what
 continues it and what ends it. The families are `item`, `list`, `term`, `dd`,
 `footnote`, `quote`, `div`, `code`, `comment`, `table`, `caption` and `plus`.

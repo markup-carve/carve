@@ -348,15 +348,11 @@
          any length remains in the body when the next nonblank line reaches
          that column. A blank run without such a follower ends the body before
          the next line. The three-blank sibling boundary in §11 N1a decides
-         list and description-list grouping, not body ownership. A line below the column
-         follows PART 0 S4 and S5 (CARVE-P0-024): it may continue the deepest
-         open paragraph lazily when §10 permits, and otherwise closes the body
-         and is read in the nearest surviving owner. This applies to footnotes
-         as it does to list items, including flush-left ordinary text without
-         a blank. A lone `+` at the live marker column, including the opener's
-         sole first-block content, uses §17 L3 to attach one
-         block; refusal keeps the marker as a letter. These decisions are
-         independent of the marker spelling and the rendered element.
+         list and description-list grouping, not body ownership. Every other
+         line, the `+` included, is PART 0's procedure (CARVE-P0-024) with the
+         body's FAMILIES row, the same for footnotes as for list items. These
+         decisions are independent of the marker spelling and the rendered
+         element.
 
          A child -- a LIST MARKER (bullet `-`/`*`,
          task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
@@ -374,25 +370,23 @@
          the blank only decides tight vs loose (§17), and there is no relaxed
          `base_column + 2` channel.
            - BELOW content_column: the line is outside the item body and
-             never nests. It folds into the deepest open paragraph when its
-             form does not interrupt (PART 0 S4), and otherwise ends the item
-             and is read in the nearest surviving owner (S5). A list marker
-             does not fold: it closes the body. That owner is the
-             document only when no enclosing container's content column is
-             reached.
+             never nests. PART 0 S4 and S5 decide it: it folds (S4) or ends
+             the item and is read in the nearest surviving owner (S5), which
+             is the document only when no enclosing container's content
+             column is reached.
 
              THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE [CARVE-P9-051].
-             A fold continues an open paragraph. Where none is open the line
-             is classified in the owner that SURVIVES: after a blank line the
-             item has ended (PART 0 S5). It holds for
+             This is CARVE-P0-006 for marker bodies: where no paragraph is
+             open the line is classified in the owner that SURVIVES, so after
+             a blank line the item has ended (PART 0 S5). It holds for
              bullet, ordered, task and attributed markers alike.
 
              A NOTE DEFINITION OR ATTRIBUTE LINE BELOW THE COLUMN INTERRUPTS -- NORMATIVE [CARVE-P9-052].
-             Below the column a footnote definition or block-attribute line
-             keeps its class (§10 I5): it interrupts, closes the item and is read
-             in the surviving owner, where a definition registers (CARVE-P0-010)
-             and an attribute line is pending (§15 A2). A comment, link reference
-             definition or abbreviation definition closes no item (CARVE-P9-013).
+             This is the `invisible` field of the list item row of PART 0
+             FAMILIES: below the column a footnote definition or
+             block-attribute line interrupts, closes the item and is read in
+             the surviving owner, where a definition registers (CARVE-P0-010)
+             and an attribute line is pending (§15 A2).
            - AT OR PAST content_column: a block opener nests and a list marker
              opens a sublist. A non-list opener past the column opens in the
              item, measured from its own line (PART 0 S3); a sublist marker
