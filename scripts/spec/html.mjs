@@ -1168,8 +1168,9 @@ function numberCaption(text, ctx, rawId, rawPanelIds) {
       register(pid, `${shown === '' ? '' : `${shown} `}${n}${panelLetter(k)}`)
     })
   }
-  // The joiner ends a tag or mention name before the number can join it (CARVE-P2-022).
-  return text.slice(0, at) + (at > 0 ? NUMBER_JOINER : '') + n + text.slice(at + 1)
+  // The joiners keep the number out of what the source around the `#` reads: a name
+  // before it cannot grow, a delimiter after it still opens (CARVE-P2-022).
+  return text.slice(0, at) + (at > 0 ? NUMBER_JOINER : '') + n + (at + 1 < text.length ? NUMBER_JOINER : '') + text.slice(at + 1)
 }
 
 function tableBodyGroups(keys, rows) {
