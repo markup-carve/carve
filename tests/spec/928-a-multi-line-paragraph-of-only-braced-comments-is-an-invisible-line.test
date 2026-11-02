@@ -1,0 +1,41 @@
+A multi-line paragraph of only braced comments is an invisible line
+
+```
+- +
+{% c %}
+
+# H
+.
+<ul>
+  <li>+
+</li>
+</ul>
+<section id="H">
+  <h1>H</h1>
+</section>
+```
+
+```
+- {% c
+  d %}
+
+  Body.
+.
+<ul>
+  <li>Body.</li>
+</ul>
+```
+
+```
+- a
+
+{% c
+d %}
+
+- b
+.
+<ul>
+  <li><p>a</p></li>
+  <li><p>b</p></li>
+</ul>
+```
