@@ -1,0 +1,110 @@
+A line that misses a nested host ends it when a comment closer lies ahead
+
+```
+. a
+  . %%%
+    n
+  zz
+%%%
+.
+<ol>
+  <li>a
+    <ol>
+      <li>n</li>
+    </ol>
+    zz
+  </li>
+</ol>
+```
+
+```
+. a
+  . %%%
+    n
+  zz
+.
+<ol>
+  <li>a
+    <ol>
+      <li>n
+zz</li>
+    </ol>
+  </li>
+</ol>
+```
+
+```
+- a
+  > %%%
+  > n
+  zz
+%%%
+.
+<ul>
+  <li>a
+    <blockquote><p>n</p></blockquote>
+    zz
+  </li>
+</ul>
+```
+
+```
+- a
+  > %%%
+  > n
+  zz
+
+%%%
+.
+<ul>
+  <li>a
+    <blockquote><p>n
+zz</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
+  :: u
+  : %%%
+    n
+  zz
+%%%
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>u</dt>
+      <dd>n</dd>
+    </dl>
+    zz
+  </li>
+</ul>
+```
+
+```
+- a
+
+  [^g]: %%%
+    n
+  zz
+%%%
+
+x[^g]
+.
+<ul>
+  <li><p>a</p>
+    <p>zz</p>
+  </li>
+</ul>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
