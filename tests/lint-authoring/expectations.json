@@ -433,9 +433,18 @@
         [
           "block-marker-as-text",
           3
+        ],
+        [
+          "unclosed-container-fence",
+          5
         ]
       ],
-      "aheadOfPin": [],
+      "aheadOfPin": [
+        [
+          "unclosed-container-fence",
+          5
+        ]
+      ],
       "pinned": [
         [
           "block-marker-as-text",
