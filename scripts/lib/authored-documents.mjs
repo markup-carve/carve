@@ -146,6 +146,9 @@ export function authoredDocuments() {
  * lint rules, placed after the declared `#5` so no index moves: 122 -> 124,
  * both answered.
  *
+ * docs/validation.md adds a "Thematic break spelling" sample for the carve#4973
+ * lint hint, after the "Fragile spellings" samples: 126 -> 127, answered.
+ *
  * Pinned EXACTLY and in both directions, which is the whole point of writing
  * them down. A floor would let the population shrink - a docs rewrite that
  * dropped twenty samples would read as a pass - and a ceiling alone would let a
@@ -158,5 +161,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 126
-export const AUTHORED_ANSWERED = 126
+export const AUTHORED_POPULATION = 127
+export const AUTHORED_ANSWERED = 127

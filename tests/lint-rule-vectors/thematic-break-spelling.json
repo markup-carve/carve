@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "rule": "thematic-break-spelling",
+  "vectors": [
+    {
+      "name": "dash-run",
+      "description": "A `---` break is reported at its first marker.",
+      "source": "a\n\n---\n\nb\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "***"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "underscore-run",
+      "description": "A `___` break is reported.",
+      "source": "a\n\n___\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "***"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "spaced-dash-run",
+      "description": "A spaced `- - -` break is reported.",
+      "source": "a\n\n- - -\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "***"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "spaced-star-run",
+      "description": "A spaced `* * *` break is reported.",
+      "source": "a\n\n* * *\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "***"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "long-star-run",
+      "description": "A star run longer than three is reported.",
+      "source": "a\n\n*****\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "***"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "long-dash-run",
+      "description": "A dash run longer than three is reported.",
+      "source": "a\n\n-----\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "***"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "long-spaced-run",
+      "description": "A spaced run of four markers is reported.",
+      "source": "a\n\n- - - -\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "***"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "lone-dash-run-at-byte-0",
+      "description": "A `---` at byte 0 with no closer is a break and is reported.",
+      "source": "---\n\na\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "***"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "in-a-quote",
+      "description": "The column is the marker's, after the quote prefix.",
+      "source": "> a\n>\n> ---\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "***"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "in-a-list-item",
+      "description": "The column is the marker's, at the item's content column.",
+      "source": "- a\n\n  ___\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "***"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "canonical",
+      "description": "`***` is the canonical spelling.",
+      "source": "a\n\n***\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "canonical-in-a-quote",
+      "description": "`***` in a quote is canonical.",
+      "source": "> ***\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "canonical-trailing-space",
+      "description": "Trailing whitespace is not part of the spelling.",
+      "source": "a\n\n***  \n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "frontmatter",
+      "description": "A frontmatter fence is not a break.",
+      "source": "---\ntitle: x\n---\n\nb\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "code-block",
+      "description": "A dash line inside code is payload.",
+      "source": "```\n---\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "spaced-underscores",
+      "description": "`_ _ _` is paragraph text, not a break.",
+      "source": "_ _ _\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "wide-spaced-stars",
+      "description": "`*  *  *` is a nested list, not a break.",
+      "source": "*  *  *\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "line-block",
+      "description": "A `---` line in a line block is text.",
+      "source": "::: |\n---\n:::\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}

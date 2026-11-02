@@ -24,7 +24,7 @@ A block owns a rectangle of the document: it starts on its own line and is separ
 - Code block (fenced) - ` ``` `
 - Generic div / admonition / line-block / local hard-break block - `::: …`
 - Table
-- Thematic break - `---`
+- Thematic break - `***`
 - Frontmatter - leading `---` block
 - Fenced comment - `%%%`
 

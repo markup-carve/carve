@@ -248,6 +248,8 @@ const canonicalAst = (value, inAttrs = false) => {
       if (!inAttrs && (key === 'pos' || key === 'srcByteLength')) continue
       // fmt writes `|=` headers whatever the author spelled (PART 11 §6h, CARVE-P11-066).
       if (!inAttrs && key === 'separatorWidths' && value.type === 'table') continue
+      // fmt writes every break `***` whatever the author spelled (PART 11 §6, carve#4973).
+      if (!inAttrs && key === 'marker' && value.type === 'thematic_break') continue
       out[key] = canonicalAst(value[key], inAttrs || key === 'attrs')
     }
     if (!inAttrs && out.type === 'escaped_text') out.type = 'text'

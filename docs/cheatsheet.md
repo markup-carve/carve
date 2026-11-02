@@ -67,7 +67,7 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 # H1   ## H2   ### H3        (ATX headings 1-6; put attributes on the
                               line above: {#id .class})
 
----                          (thematic break: --- *** ___)
+***                          (thematic break; --- and ___ also read)
 
 - unordered
 . auto-numbered              (preferred native Carve form; counts from 1 and

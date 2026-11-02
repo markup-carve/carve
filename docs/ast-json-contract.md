@@ -249,7 +249,9 @@ absent, and a PARSE records nothing where the author wrote the default
 AST JSON across engines or across versions is comparing like with like.
 The marker records the CHARACTER only: `***` and `*****` are one spelling, and
 no run length is recorded, on the same reasoning that took fence length off this
-list in carve#1000.
+list in carve#1000. Like `separatorWidths`, `thematic_break.marker` is not read
+by the canonical writer: `carve fmt` writes every break as `***`
+(markup-carve/carve#4973).
 
 `taskState` keeps the authored character; `checked` records the box. Earlier
 formatters reduced `[-]`, `[_]`, `[>]`, and `[?]` to `[ ]` because the tree
