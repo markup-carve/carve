@@ -10211,11 +10211,16 @@ EOF = (* end of file *) ;
       tightness or block ownership. If no spelling
       round-trips, it reports a writer loss.
 
-      In a nested item, a block that a first-block `+` on the opener line
-      does not attach is written at the nearest column to the enclosing
-      item's content column that keeps it in that item. No blank line is
-      added. For `- foo` followed by `  1. +`, an outer quote starts at
-      column 3 (`   > b`): column 2 attaches it to `1.`.
+      A refused first-block `+` on a nested opener line is a letter
+      (CARVE-P9-085). Where the block below it would otherwise attach to it,
+      the writer spells the letter `\+` and writes that block at the enclosing
+      item's content column with no blank line: `- - \+`, then `  > q`. A block
+      that does not interrupt the paragraph the letter opens keeps its blank
+      line, which already refuses the `+`.
+
+      For a `+` the writer keeps unescaped for another reason, a block that it
+      does not attach is written at the nearest column to the enclosing item's
+      content column that keeps it in that item. No blank line is added.
 
    PROPOSED FORMATTER AID (NON-NORMATIVE). Keep each separate-line marker
       at its owner's marker column, including the selected quote prefix level.
