@@ -7670,6 +7670,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const _dpo = () => {
       // The innermost open line-block stanza owns its payload as inline content,
       // even when an enclosing item or quote has no ordinary paragraph open.
+      // A span open in this item's own line block: the stanza state before it is tracked per line.
+      if (verseSpan !== null && colonLineBlock.at(-1) === true && ind(i)?.col < contentCol) return verseSpanPara
       if (!isBlank(lines[i - 1] ?? '') && ind(i)?.col < contentCol && descendantStanzaOpen()) return true
       // A stanza holding no verse supplies none, whatever its spans left (carve#4956).
       if (ind(i)?.col < contentCol && leafStanzaEmpty()) return false
@@ -7890,6 +7892,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // A `%%%` span in a line block's payload, and the last line it hid.
     let verseSpan = null
     let verseSpanLine = -1
+    let verseSpanPara = false
     const payloadCloserSearches = new Map()
     const trackFence = (line, opens, index) => {
       if (fence.opaque) {
@@ -7919,6 +7922,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // A verse span hides its lines, a colon run included, and leaves nothing (CARVE-P9-047).
         const run = (verseSpan === null ? /^ {0,3}(%{3,})/ : /^[ \t]*(%{3,})/).exec(line)?.[1].length
         if (verseSpan !== null || run !== undefined) {
+          if (verseSpan === null) verseSpanPara = openPara
           verseSpan = verseSpan === null ? run : run === verseSpan ? null : verseSpan
           verseSpanLine = index
           return
@@ -9671,7 +9675,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       }
       // A line that misses the item ends a span open in it, and the item with it (PART 0 S1),
       // unless the span sits in a line-block stanza, which the line folds into (carve#4956).
-      if (!nm && missedLiveSpan()) {
+      if (!nm && verseSpan !== null && colonLineBlock.at(-1) === true) {
+        if (!verseSpanPara) break
+        verseSpan = null
+      } else if (!nm && missedLiveSpan()) {
         if (!descendantStanzaOpen()) break
         verseSpan = null
       }
