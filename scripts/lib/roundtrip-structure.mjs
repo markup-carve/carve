@@ -86,6 +86,8 @@ export function normalize(value, strict = false) {
   const out = {}
   for (const [key, item] of Object.entries(value)) {
     if (dropped.has(key)) continue
+    // carve#4973: the canonical writer writes every break as ***, so the marker is not round-trippable.
+    if (key === 'marker' && value.type === 'thematic_break') continue
     // carve#3100: a span placeholder renders nothing, so its `header` is not structural.
     if (key === 'header' && value.span !== undefined) continue
     if (key === 'attrs' && item && typeof item === 'object' && Object.keys(item).every(k => k === 'order')) continue

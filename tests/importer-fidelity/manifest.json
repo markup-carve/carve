@@ -159,7 +159,7 @@
       "repository": "markup-carve/carve",
       "input": "---",
       "expected": {
-        "output": "---",
+        "output": "***",
         "diagnostics": [
           {
             "code": "markdown-thematic-break",
@@ -172,7 +172,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "---\n"
+            "output": "***\n"
           }
         }
       },

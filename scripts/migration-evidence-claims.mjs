@@ -61,7 +61,10 @@ const classes = new Map([
 // Rows whose ruled report the pinned engines do not write yet. `pinned` is what they
 // write instead, compared exactly; once an engine writes the ruled report the row fails
 // until that engine is removed here, in the commit that moves its pin.
-const AHEAD_OF_PIN = {}
+const AHEAD_OF_PIN = {
+  // carve#4973: the canonical writer writes every thematic break as ***.
+  'markdown-thematic-break': { engines: ['rust', 'php'], rust: { output: '---\n' }, php: { output: '---' } },
+}
 // Link-fragment fixup messages name the authored spelling (CARVE-P2-031).
 const FIXUP_MESSAGES = {
   'link-fragment-case-rewritten': 'Rewrote link fragment #install-steps to #Install-Steps, the one heading id it matches without regard to case.',
