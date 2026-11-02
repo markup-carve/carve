@@ -115,6 +115,8 @@ const SOURCE_LAYOUT_FIELDS = new Set([
   'definitionLines',
   'definitionSpans',
   'termSpans',
+  // `thematic_break.marker`: canonical source writes `***` (markup-carve/carve#4973).
+  'marker',
 ])
 
 /*
