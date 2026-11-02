@@ -101,12 +101,25 @@ function withoutPositions(node) {
     const out = {}
     for (const [k, v] of Object.entries(node)) {
       if (k === 'pos' || k === 'srcByteLength') continue
+      // fmt writes every break `***` whatever the author spelled (PART 11 §6, carve#4973).
+      if (k === 'marker' && node.type === 'thematic_break') continue
       out[k] = withoutPositions(v)
     }
     return out
   }
   return node
 }
+
+// Expected bytes ahead of the pinned writer, each with the ruling that moved them.
+// A declaration fails once the pin writes the fixture, so it cannot outlive its cause.
+const AHEAD_OF_PIN = new Map([
+  ['12-thematic-break-spellings', 'carve#4973: the pinned writer still reproduces the break marker'],
+])
+
+test('every ahead-of-pin declaration names a case', () => {
+  const slugs = new Set(cases.map(({ slug }) => slug))
+  assert.deepEqual([...AHEAD_OF_PIN.keys()].filter((slug) => !slugs.has(slug)), [])
+})
 
 for (const { slug, source, expected } of cases) {
   const comparable = (src) => mergeTextRuns(withoutPositions(toAstJson(parse(src))))
@@ -135,6 +148,10 @@ for (const { slug, source, expected } of cases) {
   })
 
   test(`${slug}: fmt(x) == expected bytes (PART 11 §2)`, () => {
+    if (AHEAD_OF_PIN.has(slug)) {
+      assert.notEqual(carveToCarve(source), expected, `${slug}: the pinned writer emits the expected bytes now - delete its AHEAD_OF_PIN entry`)
+      return
+    }
     assert.equal(carveToCarve(source), expected)
   })
 }

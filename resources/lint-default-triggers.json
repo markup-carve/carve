@@ -11,6 +11,7 @@
   "heading-trailing-attribute": "# Title {#id}\n",
   "setext-heading-underline": "Title\n---\n",
   "heading-closing-hashes": "## h ##\n",
+  "thematic-break-spelling": "a\n\n---\n",
   "indented-code-block": "para\n\n    code line\n",
   "unattached-block-attribute": "text\n\n{#a}\n",
   "fence-opener-fallback": "``` {.x}\ncode\n```\n",

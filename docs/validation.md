@@ -191,6 +191,7 @@ the command-line and editor behavior stay aligned.
 | `duplicate-footnote-definition` | a repeated `[^label]: ...` definition; the first definition wins and later ones are ignored |
 | `unused-footnote-definition` | a footnote definition that is never referenced and is omitted from rendered output |
 | `setext-heading-underline` | a `---` or `===` run (three or more markers) directly under a paragraph line; Carve has no underline heading, so `---` renders a break and `===` stays paragraph text. Use `#` |
+| `thematic-break-spelling` | a thematic break written other than `***`: `---`, `___`, a longer run, or the spaced `- - -` and `* * *`. All of them render the same `<hr>`, and `carve fmt` writes `***` (PART 11 §6, markup-carve/carve#4973). Default-on hint; see [thematic break spelling](#thematic-break-spelling) |
 | `heading-closing-hashes` | a heading line ending in a space and a `#` run; the run stays heading text, so delete it |
 | `indented-code-block` | a top-level paragraph after a blank line whose first line is indented four or more spaces; it renders as a paragraph, not code. Use a fence. Silent inside a list item, quote or other container, and directly after a list, where the indent reads as a continuation |
 | `heading-trailing-attribute` | a trailing `{#id}` or `{.class}` on a heading line; attributes must go on the line above the heading |
@@ -584,6 +585,30 @@ The shared vectors are in
 and
 [`tests/lint-rule-vectors/emphasis-marker-before-attributes.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/emphasis-marker-before-attributes.json).
 
+### Thematic break spelling
+
+`thematic-break-spelling` reports a thematic break whose marker run is not
+exactly `***`. Carve reads `---`, `___`, longer runs and the spaced `- - -` and
+`* * *` as the same break, but the canonical spelling is `***`, which is what
+`carve fmt` writes (PART 11 §6, markup-carve/carve#4973). It is a hint, on by
+default, and changes no output. The finding is at the run's first marker and
+names `***`:
+
+```carve
+a
+
+---
+
+b
+```
+
+Not reported: `***` itself, with or without trailing whitespace; a frontmatter
+fence; a dash line inside code or a line block; and `_ _ _` or `*  *  *`, which
+are not breaks.
+
+The shared vectors are in
+[`tests/lint-rule-vectors/thematic-break-spelling.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/thematic-break-spelling.json).
+
 ### Declaring a target version
 
 `carve-version-unsupported` is the one rule that reads a declaration rather than
@@ -808,7 +833,8 @@ are declared missing in `resources/lint-parity-drift.txt` until the pins carry
 them. `unclosed-code-fence` and `continuation-marker-refused` are in carve-js;
 carve-php and carve-rs still owe them (markup-carve/carve#3407). `unclosed-comment-fence` is specified ahead of
 every engine (markup-carve/carve#4907); its default trigger is declared missing
-in `resources/lint-parity-drift.txt` until the pins carry it. The broader Djot migration checks
+in `resources/lint-parity-drift.txt` until the pins carry it, and so is
+`thematic-break-spelling` (markup-carve/carve#4973). The broader Djot migration checks
 remain specific to carve-js. Diagnostic message wording is engine-specific;
 compare the rule id and source location.
 

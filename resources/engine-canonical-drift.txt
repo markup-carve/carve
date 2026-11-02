@@ -3,3 +3,4 @@
 # Remove a row when the JavaScript pin reaches the native header ruling.
 # Format: <slug><two spaces><reason>
 508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  CARVE-P11-079 (b) pins the second span's payload at its host-relative indent (markup-carve/carve#4850); the pinned writer drops it to the opener column since the F1 port (markup-carve/carve-js#4276).
+34-thematic-breaks  carve#4973: the pinned writer reproduces the authored break marker instead of writing ***.

@@ -375,6 +375,16 @@ counts as markup where it stands (X1), an unclosed code run takes the rest of
 the block inside a braced span too (X5), and an empty brace group such as
 `{*}` is read as ordinary characters (X6).
 
+## Thematic break spelling
+
+Until 2026-11-02 the canonical writer reproduced a thematic break's marker
+character, so `---`, `***` and `___` were three canonical spellings, and a `---`
+at byte 0 was respelled `***` where it would have opened frontmatter
+(carve#976, CARVE-P11-002). The maintainer ruled in markup-carve/carve#4973
+that `carve fmt` writes every break as `***`. The reader still accepts every
+spelling, the AST keeps `thematic_break.marker` for interchange, and
+`carve lint` hints the canonical spelling as `thematic-break-spelling`.
+
 ## Comment fences without a closer
 
 Until 2026-11-02 a `%%%` comment fence opened only with an exact-width closer

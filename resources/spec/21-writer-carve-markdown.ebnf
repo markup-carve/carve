@@ -1,7 +1,7 @@
 (* ============================================================================
    6. WHAT IS NOT THE WRITER'S JOB. `fmt` does not re-wrap prose or reorder
       attributes. A spelling the AST records is the author's and is reproduced
-      (`*` vs `-` bullets, ordered-list dialect, thematic-break marker).
+      (`*` vs `-` bullets, ordered-list dialect).
       A spelling it does not record is chosen by the writer canonically.
 
       THE SPACE AFTER A LIST MARKER is one space, except after a letter or
@@ -29,34 +29,21 @@
       `{/usr/local/}`, not `/usr\/local/`; an `escaped_text` slash the tree
       records is still written escaped.
 
-      THE THEMATIC BREAK JOINS IT ON THE SAME TERMS. `---`, `***` and `___` are
-      three spellings of one construct, and the AST RECORDS the character --
-      `marker` (PART 12 §3) -- so the writer reproduces it. THE MARKER IS THE
-      CHARACTER, NOT THE RUN LENGTH: `***` and `*****` are ONE spelling here
-      and both come back as `***`. The break's run length is not recorded.
+      A THEMATIC BREAK IS WRITTEN `***`, whatever the author wrote
+      (carve#4973). `---`, `***`, `___`, a longer run and the spaced `- - -`
+      and `* * *` are spellings of one construct, and the canonical writer
+      writes every one of them, in every container, as exactly `***`. The AST
+      still records the character -- `marker` (PART 12 §3) -- as an
+      author-choice field for interchange, on the terms §6h gives
+      `table.separatorWidths`: a source-preserving writer may reproduce it, and
+      the canonical `fmt` writer ignores it. The run length is recorded
+      nowhere.
 
-      EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A break with marker `-`, or
-      no marker, would be written `---`. At byte 0 of an emitted document,
-      with a later `---` line that would close frontmatter, the writer spells
-      that first break `***` instead (CARVE-P11-002). Two marker-less breaks
-      are an example: writing both as `---` would create frontmatter.
-
-      THE CONDITION IS THE WHOLE EMITTED DOCUMENT, NOT ITS FIRST LINE. An
-      opener needs a closer, so three hyphens at byte 0 open nothing unless a
-      later line closes them. A lone `---` is written `---`. What an implementation owes
-      is CARVE-P11-002's test: read the emitted bytes with its own parser.
-
-      WHICH break moves is not pinned, because more than one departure
-      restores §1 and CARVE-P11-002 already says to take the smallest. Usually it is the
-      break at byte 0; where the writer itself PROMOTED something else there,
-      the departure available is to respell the CLOSER instead. What IS pinned
-      is the spelling a moved break takes: `***`.
-
-      AN ABSENT MARKER IS `---`, which is what a tree assembled by hand or by a
-      converter carries.
-      CARVE-P11-002 still outranks this: a `---` the writer emits at byte 0 can gain a
-      frontmatter closer from a later break, and respelling every break in the
-      document is then the smallest departure that restores the invariant.
+      `***` reads as nothing but a break, where `---` at byte 0 can open
+      frontmatter, so the canonical break needs no respelling under
+      CARVE-P11-002. A reader
+      keeps accepting every spelling PART 2 `thematic_break` admits; lint
+      names the canonical one (`thematic-break-spelling`).
 
    6b. A FRONTMATTER OPENER IS WRITTEN `---yaml` -- NORMATIVE [CARVE-P11-011]. The canonical
       writer spells the format token on the opening delimiter for EVERY

@@ -188,3 +188,6 @@ plain/php/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/ca
 plain/rust/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-rs), a list marker in a footnote body opens a list; the pinned engine keeps it as text
 ansi/php/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-php), a list marker in a footnote body opens a list; the pinned engine keeps it as text
 ansi/rust/637-definition-body-note-and-fence-owner-boundaries-3  markup-carve/carve#4860 (carve-rs), a list marker in a footnote body opens a list; the pinned engine keeps it as text
+carve/js/34-thematic-breaks  markup-carve/carve#4973 (carve-js), PART 11 §6 writes every thematic break as ***
+carve/rust/34-thematic-breaks  markup-carve/carve#4973 (carve-rs), PART 11 §6 writes every thematic break as ***
+carve/php/34-thematic-breaks  markup-carve/carve#4973 (carve-php), PART 11 §6 writes every thematic break as ***

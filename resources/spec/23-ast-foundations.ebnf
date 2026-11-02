@@ -92,7 +92,8 @@
                    combined `/*…*/` form rather than nesting `*` around `/`
         thematic_break
                    `marker` when the author wrote `*` or `_` rather than the
-                   default `-` (PART 11 §6). It carries the CHARACTER only:
+                   default `-`. The canonical writer ignores it and writes
+                   `***` (PART 11 §6). It carries the CHARACTER only:
                    `***` and `*****` are one spelling, and the run's LENGTH is
                    recorded nowhere. Absent means `---`, so every
                    tree written before this field, and every tree a converter

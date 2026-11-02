@@ -101,24 +101,17 @@ it`), where `compare:impls` checks the three engines against each other on the
 
 ## 12-thematic-break-spellings
 
-Not an escaping case either. PART 11 §6 leaves a construct's spelling alone
-because the AST records it, and `thematic_break` recorded no marker until
-carve#976 gave it one - so all three writers normalized `***` and `___` to
-`---`, which §6a pinned as the interim answer while the field was missing.
+Not an escaping case either. The document writes all three break spellings,
+two of them where a writer is most likely to treat a break differently: inside
+a block quote and inside a list item, both of which re-emit their children
+through a prefix. It opens with a break, where a `---` would collide with
+frontmatter.
 
-The document writes all three spellings, and writes two of them where a writer
-is most likely to lose the mark: inside a block quote and inside a list item,
-both of which re-emit their children through a prefix. Expected output is the
-input, byte for byte.
-
-It also pins the interaction with §1a, which is why the document OPENS with a
-break. Frontmatter is a `---` at byte 0 plus a bare `---` closer below it, so a
-writer that normalizes the leading `___` manufactures frontmatter out of a
-document that had none, and §1a licenses a respelling to escape it. Measured
-before the field landed, the three engines took three different routes through
-that: carve-js and carve-php respelled EVERY break to `***`, carve-rs respelled
-only the leading one. Reproducing the author's `___` removes the collision
-instead of paying for it, and the three converge on the identity.
+Expected output writes every break as `***`. PART 11 §6 had the writer
+reproduce `thematic_break.marker` (carve#976); the 2026-11-02 ruling in
+markup-carve/carve#4973 makes `***` the one canonical spelling, so the marker
+stays in the tree and `fmt` ignores it. That also removes the frontmatter
+collision the leading break used to pin: `***` never opens frontmatter.
 
 ## 13-definition-list-after-a-list and 14-footnote-definition-inside-a-container
 
