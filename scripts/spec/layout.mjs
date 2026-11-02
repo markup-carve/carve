@@ -2726,6 +2726,7 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) 
  *
  * A code fence's payload is opaque, so a `%%%` written inside one is content.
  */
+// Raw lines on purpose: a fence line is span body to this search, opening nothing (PART 0).
 function lastCommentCloserIn(state, lines, run) {
   const arrays = state.markerCommentClosers ??= new WeakMap()
   let closers = arrays.get(lines)
