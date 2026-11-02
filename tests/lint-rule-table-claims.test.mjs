@@ -92,6 +92,17 @@ const TRIGGERS = {
 const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
 
 /*
+ * A rule id the page RETIRED that the pinned build still carries.
+ *
+ * Retiring a rule is a spec change like adding one, so the page moves first and
+ * the engines follow. Fails in both directions: an id listed here and still on
+ * the page, or one the pinned build no longer carries, is a stale line.
+ */
+const RETIRED_IN_THE_PIN = new Map([
+  ['raw-block-syntax', 'retired by the carve#4849 ruling; fence-title-syntax carries its hint'],
+])
+
+/*
  * A rule the PAGE specifies and the pinned build does not carry yet.
  *
  * A lint rule id is spec surface, so it is specified here first and implemented
@@ -333,7 +344,7 @@ test('the build was actually scanned', () => {
 test('every rule id in the pinned build is on the page', () => {
   const documented = documentedRules()
   const missing = ruleIdsInBuild().filter(
-    (rule) => !documented.includes(rule) && !UNPRODUCIBLE_IN_BUILD.has(rule),
+    (rule) => !documented.includes(rule) && !UNPRODUCIBLE_IN_BUILD.has(rule) && !RETIRED_IN_THE_PIN.has(rule),
   )
   assert.deepEqual(
     missing,
@@ -341,6 +352,14 @@ test('every rule id in the pinned build is on the page', () => {
     `the pinned carve-js build carries rule id(s) docs/validation.md does not list: ${missing.join(', ')}. ` +
       'A warning a user can read in their terminal and nowhere else is the contract this page exists to keep.',
   )
+})
+
+test('a rule declared as retired is off the page and still in the pinned build', () => {
+  const documented = documentedRules()
+  const listed = [...RETIRED_IN_THE_PIN.keys()].filter((rule) => documented.includes(rule))
+  assert.deepEqual(listed, [], `RETIRED_IN_THE_PIN names rule id(s) docs/validation.md still lists: ${listed.join(', ')}.`)
+  const gone = [...RETIRED_IN_THE_PIN.keys()].filter((rule) => !ruleIdsInBuild().includes(rule))
+  assert.deepEqual(gone, [], `the pinned build no longer carries ${gone.join(', ')}. Delete the RETIRED_IN_THE_PIN line.`)
 })
 
 test('every rule the page lists can actually be emitted', () => {

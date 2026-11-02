@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "rule": "fence-title-syntax",
+  "vectors": [
+    {
+      "name": "legacy-raw-html",
+      "description": "A legacy raw opener recovers as a code block with language raw; the message suggests the raw opener with the format word (carve#4849).",
+      "source": "```raw html\nx\n```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 1,
+            "includes": [
+              "```=html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-raw-in-quote",
+      "description": "The suggestion names the actual format word, here inside a quote.",
+      "source": "> ```raw latex\n> x\n> ```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "```=latex"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-raw-in-list-item",
+      "description": "The same opener in a list item recovers and reports at its own column.",
+      "source": "- ```raw html\n  x\n  ```\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "```=html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "raw-language-alone",
+      "description": "A bare raw language token is valid metadata: a code block with language raw and no finding.",
+      "source": "```raw\nx\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "raw-language-with-title",
+      "description": "A quoted title after raw is valid metadata.",
+      "source": "```raw \"t\"\nx\n```\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "raw-block",
+      "description": "The Carve raw opener reports nothing.",
+      "source": "```=html\nx\n```\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}
