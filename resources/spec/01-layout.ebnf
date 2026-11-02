@@ -206,9 +206,11 @@
 
      S3 FORM. Classify the rest of the line in the owner's coordinates:
         blank, comment, block attribute, reference or footnote definition,
-        closer, opener, caption, `+`, or ordinary text. A list marker or a
-        `: ` line opens, folds or closes as the owner's row says in
-        `markers`; every other form is the same in every owner.
+        closer, opener, caption, `+`, or ordinary text. A list marker opens,
+        folds or closes as the owner's row says in `markers`, and the
+        document's is stated under STATE. A `: ` line follows the definition
+        body row's `markers` field in every owner. A line block recognizes
+        none of these forms but a comment (its row).
 
         Leading space before an opener does not stop it from opening, at
         every level, the document and quotes included: an opener past the
@@ -508,6 +510,12 @@
         lazy       [B-div-keep] `|` mode keeps its lines as payload and,
                    like the other modes, which read blocks, takes a lazy
                    line while its stanza is open (PART 2 `line_block`)
+        markers    a body line is verse: no list marker or `: ` line opens
+                   anything (CARVE-P9-047)
+        invisible  a definition, a block-attribute line and a fence opener
+                   are ordinary text and nothing registers; a comment is
+                   still a comment and leaves an empty verse line
+                   (CARVE-P9-047)
         plus       no
         cells      as a colon body.
 
