@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Nightly: the Node versions pull requests skip.
+  schedule:
+    - cron: '25 3 * * *'
   workflow_dispatch:
 
 # Every job here only reads the repo; nothing publishes or comments.
@@ -12,7 +15,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -245,33 +248,27 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
   conformance:
-    name: spec-corpus conformance
+    name: spec-corpus conformance (${{ matrix.node-version }}, shard ${{ matrix.shard }}/3)
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     strategy:
       fail-fast: false
       matrix:
-        # Match this repository's Node minimum and test the current release too.
+        # Node 24 (this repository's minimum, and the docs build's) gates pull
+        # requests; main pushes and the nightly run add the current release.
         # Published engine runtime support belongs in each engine repository.
-        # Node 26 gates normally; demote it only for recorded toolchain breakage.
-        # On main both versions run `npm test`, and Node 24 runs the audits once:
-        # they read committed files and give the same answer on any Node. On a
-        # pull request only Node 26 works (suite and audits); the Node 24 entry
-        # just reports, because the required check name includes the version.
-        node-version: [24, 26]
+        node-version: ${{ fromJSON(github.event_name == 'pull_request' && '[24]' || '[24, 26]') }}
+        # `node --test-shard` deals the sorted file list round-robin.
+        shard: [1, 2, 3]
 
     env:
-      AUDIT_NODE: ${{ github.event_name == 'pull_request' && '26' || '24' }}
-      PR_SKIP: ${{ github.event_name == 'pull_request' && matrix.node-version == 24 }}
+      # The audits read committed files and give the same answer on any Node,
+      # so they run once, on the shard that draws the least of the suite.
+      AUDIT: ${{ matrix.node-version == 24 && matrix.shard == 3 }}
 
     steps:
-      - name: Node 24 runs on main only
-        if: env.PR_SKIP == 'true'
-        run: echo "Pull requests run the suite and the audits on Node 26; main runs both versions."
-
       - uses: actions/checkout@v6
-        if: env.PR_SKIP != 'true'
         with:
           fetch-depth: 0
 
@@ -279,7 +276,6 @@ jobs:
       # `@markup-carve/carve` reference build the conformance steps render
       # through. The pin is an exact carve-js commit in package.json.
       - name: Install on Node ${{ matrix.node-version }}
-        if: env.PR_SKIP != 'true'
         uses: ./.github/actions/npm-ci
         with:
           node-version: ${{ matrix.node-version }}
@@ -290,7 +286,7 @@ jobs:
       # `git diff` compares tracked files, so a generated file a pull request
       # never added is untracked and produces no diff (carve#2037).
       - name: Corpus is in sync with examples
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: |
           npm run corpus:build
           git diff --exit-code -- tests/corpus tests/spec
@@ -306,12 +302,11 @@ jobs:
       # carve-js build still backs the Tier-2, round-trip, prose-example and
       # render-option suites in the same run.
       - name: Conformance
-        if: env.PR_SKIP != 'true'
-        run: npm test
+        run: npm test -- --test-shard=${{ matrix.shard }}/3
 
       # Audit normative pages on each PR; inputs come from this repository.
       - name: Normative pages state nothing the spec source does not
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run normative:check
 
       # Three committed artifacts are assembled from sources: grammar.ebnf from
@@ -320,40 +315,40 @@ jobs:
       # ARTIFACT, so a source-only edit is invisible to all of them - it does not
       # fail, it silently does not apply.
       - name: Grammar aggregate matches its spec sources
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run spec:check
 
       - name: Rule ids and the rule index match the grammar
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run spec:rules:check
 
       - name: node-roles.json matches the AST contract
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run roles:check
 
       # A production off the `document` root derives nothing, so an edit to it
       # changes no document and no test notices. quote_block sat that way from
       # the modularization refactor until carve#2670.
       - name: Every production is reachable or declared unreachable
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run grammar:productions
 
       # A rule COPIED instead of referenced drifts: widening one copy leaves the
       # others behind. Seven productions spelled one alternation before carve#2671.
       - name: No production copies another's right-hand side undeclared
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run grammar:duplicates
 
       - name: Escaper corpus
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run escape:check
 
       - name: Executable-spec gate (formal Core grammar vs corpus)
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run core:check
 
       - name: Grammar reachability (corpus vs formal Core grammar)
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run grammar:reach
 
       # Check writer invariants on 2,000 generated documents with a fixed seed.
@@ -362,7 +357,7 @@ jobs:
       # which is currently unwired. The 2,000-case set detects the
       # table-alignment regression verified by reverting carve-js#903.
       - name: PART 11 canonical-writer invariants (generated documents)
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run property:check -- --count=2000
 
       # Fail on undeclared drift and on declarations the pin has caught up on.
@@ -370,7 +365,7 @@ jobs:
       # the reason its content) and remove them once the pinned engine
       # reproduces them.
       - name: Pinned reference build matches its declared drift
-        if: format('{0}', matrix.node-version) == env.AUDIT_NODE
+        if: env.AUDIT == 'true'
         run: npm run engine:report -- --check
 
   # The generated conformance pack every engine runs at its spec pin
