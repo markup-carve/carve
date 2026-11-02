@@ -310,10 +310,10 @@
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.
          - `- +` / `- b` is refused: `<li>+</li>` and a sibling item.
          - `- +` / `%% c` / `text` gives the item the paragraph, and a
-           `%%%` comment fence reads the same. A `{% c %}` line is not one of
-           these: it is a paragraph holding an inline comment (CARVE-P9-042),
-           so the `+` attaches that paragraph, and `- +` / `{% c %}` / `# H`
-           gives an empty `<li>` and a heading after the list.
+           `%%%` comment fence reads the same. So does a paragraph holding
+           only braced comments, which renders nothing (CARVE-P9-042,
+           carve#4799): `- +` / `{% c %}` / `# H` gives the item the heading,
+           and `- +` / `{% c %}` / blank / `text` is refused.
            `- a` / `+` / `{x}` / `text`
            gives the item `<p x="">`. `- +` / `*[A]: b` / `text` gives the
            item `text` and defines `A`.
