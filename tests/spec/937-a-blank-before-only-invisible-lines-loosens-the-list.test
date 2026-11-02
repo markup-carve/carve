@@ -1,0 +1,95 @@
+A blank before only invisible lines loosens the list
+
+```
+- :: term
+  : payload
+
+    %% c
+- sub
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>payload</dd>
+    </dl>
+  </li>
+  <li><p>sub</p></li>
+</ul>
+```
+
+```
+- a
+  - b
+
+    %% c
+- sub
+.
+<ul>
+  <li><p>a</p>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+  <li><p>sub</p></li>
+</ul>
+```
+
+```
+- :: term
+  : payload
+
+    [r]: /u
+- sub
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>payload</dd>
+    </dl>
+  </li>
+  <li><p>sub</p></li>
+</ul>
+```
+
+```
+- a
+  - b
+
+    %%%
+    c
+    %%%
+- sub
+.
+<ul>
+  <li><p>a</p>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+  <li><p>sub</p></li>
+</ul>
+```
+
+```
+- :: term
+  : payload
+
+    %% c
+    more
+- sub
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>payload</p>
+        <p>more</p>
+      </dd>
+    </dl>
+  </li>
+  <li>sub</li>
+</ul>
+```

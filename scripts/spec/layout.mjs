@@ -7317,6 +7317,25 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
   const baseIndent = matchMarkerAt(ind(i)).indent
   const commentParaEnd = (k) => commentOnlyParaEnd(lines, k, inItem)
   const invisibleAt = (k) => invisibleSiblingLine(ind(k).rest) || commentParaEnd(k) !== -1
+  // §17 L1c: a blank with only invisible lines after it still stands between
+  // the item and the sibling marker at `at`, at whatever depth they sit (CARVE-P9-013).
+  // The scan stays inside the item that starts at `from`, so it is linear.
+  const blankBehindInvisible = (at, from) => {
+    let k = at - 1
+    let skipped = false
+    while (k > from && ind(k).rest !== '') {
+      const fence = COMMENT_FENCE_BODY.exec(ind(k).rest)?.[1]
+      if (fence) {
+        let open = k - 1
+        while (open > from && COMMENT_FENCE_BODY.exec(ind(open).rest)?.[1] !== fence) open--
+        if (open <= from) return false
+        k = open - 1
+      } else if (invisibleSiblingLine(ind(k).rest)) k--
+      else return false
+      skipped = true
+    }
+    return skipped && k > from
+  }
   const commentsBeforeSibling = (at) => {
     if (at >= n || !invisibleAt(at)) return at
     // Invisible lines are erased from layout, so blank lines on either side
@@ -7379,6 +7398,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       ? contentCol + dedentMeasured(m, line, contentCol).meas.col
       : m.col
     const itemLines = []
+    const itemHead = i
     // The column a line-block payload line was last found at; lines at or past it stay payload.
     let stanzaPayloadCol = null
     let holdsLineBlock = LINE_BLOCK_SHAPED.test(head.text)
@@ -9635,7 +9655,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // this sibling marker - an invisible attachment in between does not
         // undo that, because the clause is about the blank, not about what
         // filled the gap.
-        if (blankBeforeInvisible && nm.indent === baseIndent && sameAxes(list, nm)) {
+        if ((blankBeforeInvisible || blankBehindInvisible(i, itemHead)) && nm.indent === baseIndent && sameAxes(list, nm)) {
           list.tight = false
         }
         break // sibling or outer list

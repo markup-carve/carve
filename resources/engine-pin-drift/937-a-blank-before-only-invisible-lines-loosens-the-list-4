@@ -1,0 +1,1 @@
+The pinned carve-js keeps the list tight when a blank is followed only by invisible lines inside a nested list or a description body; the spec moved first, reading those lines as absent so the blank separates the items (PART 9 section 17 L1b and L1c, CARVE-P9-013).
