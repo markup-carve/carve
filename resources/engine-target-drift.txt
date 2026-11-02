@@ -49,10 +49,8 @@ html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-2  markup-c
 plain/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-2  markup-carve/carve#4798, the pinned Rust parser keeps a term inside an attached frame
 carve/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-2  markup-carve/carve#4798, the pinned Rust parser keeps a term inside an attached frame
 ansi/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-2  markup-carve/carve#4798, the pinned Rust parser keeps a term inside an attached frame
-html/js/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-carve/carve#4798, the pinned parser retains a description sibling inside an attached frame
 html/php/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-carve/carve#4798, the pinned parser retains a description sibling inside an attached frame
 html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling  markup-carve/carve#4798, the pinned parser retains a description sibling inside an attached frame
-html/js/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
 html/php/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
 html/rust/927-an-attached-colon-frame-stops-at-a-description-sibling-3  markup-carve/carve#4798, the pinned parser retains a description sibling inside an own-line plus frame
 html/php/704-a-non-ascii-letter-does-not-block-a-bare-delimiter  markup-carve/carve#4806, the pinned engine uses ASCII bare-emphasis flanks rather than the Unicode letter guard
