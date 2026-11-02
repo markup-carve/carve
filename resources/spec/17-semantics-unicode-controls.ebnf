@@ -92,6 +92,11 @@
         does (§24 C3). Reading it as a visibility rule alone would
         make one line two constructs at once. The RECOVERY DECISION TABLE
         in PART 0 compares this with an unclosed visible colon container.
+        A body line that misses the host does not make a later closer
+        absent: with an exact-width closer ahead, that line ends the span and
+        the host (PART 0 S1, CARVE-P0-005, carve#4770), and the opener is
+        then degraded within the shortened host. Only with no closer ahead
+        is the line read as it is after a `%%` line.
         An implementation that
         surfaces diagnostics SHOULD report an unterminated comment fence;
         emitting one is OPTIONAL, since not every implementation has a

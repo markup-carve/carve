@@ -1,0 +1,63 @@
+A line that misses the host ends it when a comment closer lies ahead
+
+```
+. a
+  . %%%
+    n
+>>
+%%%
+.
+<ol>
+  <li>a
+    <ol>
+      <li>n</li>
+    </ol>
+  </li>
+</ol>
+<p>&gt;&gt;</p>
+```
+
+```
+. a
+  . %%%
+    n
+>>
+.
+<ol>
+  <li>a
+    <ol>
+      <li>n
+&gt;&gt;</li>
+    </ol>
+  </li>
+</ol>
+```
+
+```
+- a
+  %%%
+  n
+zz
+%%%
+.
+<ul>
+  <li>a
+    n
+  </li>
+</ul>
+<p>zz</p>
+```
+
+```
+- a
+  %%%
+  n
+zz
+.
+<ul>
+  <li>a
+    n
+zz
+  </li>
+</ul>
+```

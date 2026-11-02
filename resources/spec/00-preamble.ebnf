@@ -106,7 +106,8 @@
    failures. The diagnostic does not change what the canonical writer emits.
 
    RECOVERY DECISION TABLE (PARTS 0-9; construct guards still govern).
-   Decide within the current host after testing the complete opener:
+   Decide within the current host after testing the complete opener (the
+   `%%%` closer search is qualified below the table):
    | Case | Recovery |
    | Visible colon opener, optional closer | Open; close at host end, innermost first. |
    | Code/raw opener, optional closer | Open, also under a paragraph; retain payload to host end. |
@@ -116,5 +117,12 @@
    Exact width, bracket extent, attribute atomicity and frontmatter shape
    retain their construct-specific tests. A failed closer search stays within
    the host; consuming an unclosed invisible comment would hide later blocks.
+   The `%%%` closer search is not cut short by a body line that misses the
+   host. With an exact-width closer ahead, such a line ends the span and the
+   host under S1 even when the closer lies past it, and the line is
+   classified in its selected owner (CARVE-P0-005, carve#4770). The opener is
+   then decided within the shortened host, where no closer remains, and takes
+   the `%%` row. With no exact-width closer ahead the opener takes that row
+   from the start, and the same line is read as it is after `%%` (PART 9 §28).
 
    ============================================================================ *)
