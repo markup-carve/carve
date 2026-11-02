@@ -119,23 +119,95 @@ function renderFramedDoc(doc) {
   return renderDocPass(doc, false)
 }
 
+// PART 9R frames in rendered inline text, an inline note's content included.
+function eachFootnoteFrame(html, onNote, onRef) {
+  for (const [, json, label, , attrs] of html.matchAll(FOOTNOTE_FRAMES)) {
+    if (json === undefined) {
+      if (!/[\r\n]/.test(label)) onRef(labelKey(label), attrs)
+      continue
+    }
+    let note
+    try {
+      note = JSON.parse(json)
+    } catch {
+      continue
+    }
+    onNote(note)
+    eachFootnoteFrame(note.content ?? '', onNote, onRef)
+  }
+}
+
+// Code text, dropped raw text and attribute values never render as inline markup, so neither reserves nor references.
+function inlineChildren(value) {
+  if (value instanceof Map) return [...value.values()]
+  return Object.entries(value)
+    .filter(([key]) => key !== 'battrs' && !(key === 'text' && (value.t === 'code' || value.inline === false || rendersNoElement(value))))
+    .map(([, child]) => child)
+}
+
+// Inline text with its resolved reference links opened, as the document renders it.
+const inlineForIds = (text, linkDefs) => resolveRefs(renderInline(text), { linkDefs: linkDefs ?? new Map(), headingRefs: new Map() })
+
+// Labels whose definition renders: reached from the document, or from a body that renders.
+function referencedFootnotes(doc) {
+  const used = new Set()
+  const pending = []
+  const visited = new WeakSet()
+  const visit = (value) => {
+    if (typeof value === 'string') {
+      if (value.includes('[^') || value.includes('^[')) {
+        eachFootnoteFrame(inlineForIds(value, doc.linkDefs), () => {}, (key) => {
+          if (doc.footnoteDefs.has(key) && !used.has(key)) {
+            used.add(key)
+            pending.push(doc.footnoteDefs.get(key))
+          }
+        })
+      }
+      return
+    }
+    if (!value || typeof value !== 'object' || visited.has(value)) return
+    visited.add(value)
+    for (const child of inlineChildren(value)) visit(child)
+  }
+  visit(doc.blocks)
+  while (pending.length) visit(pending.pop())
+  return used
+}
+
 function reserveHeadingIds(blocks) {
+  const footnoteDefs = blocks.footnoteDefs
+  const usedNotes = footnoteDefs ? referencedFootnotes(blocks) : null
   const headings = []
   const authoredIds = []
   const visited = new WeakSet()
   const visit = (value) => {
     if (typeof value === 'string') {
       if (value.includes('{#') || value.includes('id=')) {
-        const inline = renderInline(value)
-        for (const match of inline.matchAll(/<[a-z][^>]*\bid="([^"]*)"/g)) {
-          authoredIds.push(match[1].replace(/&(?:lt|gt|quot|apos|amp);/g, (entity) =>
-            ({ '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'", '&amp;': '&' })[entity]))
+        const inline = inlineForIds(value, blocks.linkDefs)
+        const collect = (html) => {
+          for (const match of html.matchAll(/<[a-z][^>]*\bid="([^"]*)"/g)) {
+            authoredIds.push(match[1].replace(/&(?:lt|gt|quot|apos|amp);/g, (entity) =>
+              ({ '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'", '&amp;': '&' })[entity]))
+          }
         }
+        collect(inline)
+        // A note or a resolved reference is still a frame here; its id renders (CARVE-P2-004).
+        eachFootnoteFrame(inline, (note) => {
+          collect(`<a${note.attrs}>`)
+          collect(note.content ?? '')
+        }, (key, attrs) => {
+          if (footnoteDefs?.has(key)) collect(`<a${attrs}>`)
+        })
       }
       return
     }
     if (!value || typeof value !== 'object' || visited.has(value)) return
     visited.add(value)
+    if (value === footnoteDefs) {
+      // An unreferenced definition is dropped, so nothing in it reserves an id.
+      for (const [key, body] of value) if (usedNotes.has(key)) visit(body)
+      return
+    }
     if (value instanceof Map) {
       for (const child of value.values()) visit(child)
       return
@@ -148,9 +220,10 @@ function reserveHeadingIds(blocks) {
       }
       if (effectiveId !== null) authoredIds.push(effectiveId)
     }
-    for (const child of Object.values(value)) visit(child)
+    for (const child of inlineChildren(value)) visit(child)
   }
-  visit(blocks)
+  visit(blocks.blocks)
+  if (footnoteDefs) visit(footnoteDefs)
 
   const authoredId = (heading) => {
     let id = null
