@@ -10,7 +10,7 @@ Markdown rows sample container-kind recovery (§10s) and the attribute-line, def
 
 Markdown rows include nested definition lists whose markers carry list depth (CARVE-P11-067). `markdownImportNegative` rows are hand-written Markdown imports; one with `expectedDiagnostic` must report that diagnostic.
 
-Reference-link rows pin the native reference form roundtrip Markdown export writes (CARVE-P11-028). A row marked `defaultExportOnly` checks the default export alone: `ordinaryFragments` must appear in it and `forbiddenOrdinaryFragments` must not. The `bare-div` row compares a bare div's marker bytes, and the wrapped-term row holds a marker whose payload spans two lines (CARVE-P11-063).
+Reference-link rows pin the native reference form roundtrip Markdown export writes (CARVE-P11-028). A row marked `defaultExportOnly` checks the default export alone: `ordinaryFragments` must appear in it and `forbiddenOrdinaryFragments` must not. The `bare-div` row compares a bare div's marker bytes, and the caption-continuation row holds a marker whose payload spans two lines (CARVE-P11-063). The wrapped-term row pins a one-line term marker: a definition term is one line, so its second source line is not part of the payload.
 
 The adjacent ordered-list row expects `list-delimiter-changed`; the separated-list row forbids it.
 
