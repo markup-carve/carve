@@ -1,0 +1,31 @@
+A trailing comment in a comment-only paragraph ends at its line
+
+```
+{% c %} %% t
+b
+.
+<p>
+b</p>
+```
+
+```
+- a
+
+{% c %} %% t
+- b
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>
+- b</p>
+```
+
+```
+{% c %} %% t
+{% d %} %% u
+
+z
+.
+<p>z</p>
+```
