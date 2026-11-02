@@ -106,25 +106,20 @@
    failures. The diagnostic does not change what the canonical writer emits.
 
    RECOVERY DECISION TABLE (PARTS 0-9; construct guards still govern).
-   Decide within the current host after testing the complete opener (the
-   `%%%` closer search is qualified below the table):
+   Decide within the current host after testing the complete opener:
    | Case | Recovery |
    | Visible colon opener, optional closer | Open; close at host end, innermost first. |
    | Code/raw opener, optional closer | Open, also under a paragraph; retain payload to host end. |
-   | `%%%` without exact closer ahead | Classify opener as `%%` for layout and ownership. |
+   | `%%%` opener, optional closer | Open; hide payload to the exact-width closer, S1 or host end. |
    | Paired inline form without required closer | Keep declining extent literal; an unclosed backtick run consumes to block end. |
    | Invalid or incomplete opener | Use its own literal/paragraph fallback; a recognized typed prefix may retain its container and drop bad metadata. |
    Exact width, bracket extent, attribute atomicity and frontmatter shape
-   retain their construct-specific tests. A failed closer search stays within
-   the host; consuming an unclosed invisible comment would hide later blocks.
-   The `%%%` closer search is not cut short by a body line that misses the
-   host. With an exact-width closer ahead, such a line ends the span and the
-   host under S1 even when the closer lies past it, and the line is
-   classified in its selected owner (CARVE-P0-005, carve#4770). The opener is
-   then decided within the shortened host, where no closer remains, and takes
-   the `%%` row. With no exact-width closer ahead the opener takes that row
-   from the start, and the same line is read as it is after `%%` (PART 9 §28).
-   The search reads the candidate span's body, where a fence line opens
-   nothing, so an exact-width line that later reads as code is a closer ahead.
+   retain their construct-specific tests. A fence opener never looks for its
+   closer before it opens: every fence, the `%%%` comment fence included,
+   opens on its own line and ends at its closer, under S1, or at the end of
+   its host (carve#4907). An unclosed `%%%` therefore hides every later line
+   of its host, at top level the rest of the document; `carve lint` reports
+   it (`unclosed-comment-fence`). Of the fence-shaped openers only
+   frontmatter is decided by a later line (PART 1).
 
    ============================================================================ *)

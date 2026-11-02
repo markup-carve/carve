@@ -9,6 +9,4 @@ secret
 after
 .
 <p>before</p>
-<p>secret</p>
-<p>after</p>
 ```

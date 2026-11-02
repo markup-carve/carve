@@ -106,26 +106,21 @@
    failures. The diagnostic does not change what the canonical writer emits.
 
    RECOVERY DECISION TABLE (PARTS 0-9; construct guards still govern).
-   Decide within the current host after testing the complete opener (the
-   `%%%` closer search is qualified below the table):
+   Decide within the current host after testing the complete opener:
    | Case | Recovery |
    | Visible colon opener, optional closer | Open; close at host end, innermost first. |
    | Code/raw opener, optional closer | Open, also under a paragraph; retain payload to host end. |
-   | `%%%` without exact closer ahead | Classify opener as `%%` for layout and ownership. |
+   | `%%%` opener, optional closer | Open; hide payload to the exact-width closer, S1 or host end. |
    | Paired inline form without required closer | Keep declining extent literal; an unclosed backtick run consumes to block end. |
    | Invalid or incomplete opener | Use its own literal/paragraph fallback; a recognized typed prefix may retain its container and drop bad metadata. |
    Exact width, bracket extent, attribute atomicity and frontmatter shape
-   retain their construct-specific tests. A failed closer search stays within
-   the host; consuming an unclosed invisible comment would hide later blocks.
-   The `%%%` closer search is not cut short by a body line that misses the
-   host. With an exact-width closer ahead, such a line ends the span and the
-   host under S1 even when the closer lies past it, and the line is
-   classified in its selected owner (CARVE-P0-005, carve#4770). The opener is
-   then decided within the shortened host, where no closer remains, and takes
-   the `%%` row. With no exact-width closer ahead the opener takes that row
-   from the start, and the same line is read as it is after `%%` (PART 9 §28).
-   The search reads the candidate span's body, where a fence line opens
-   nothing, so an exact-width line that later reads as code is a closer ahead.
+   retain their construct-specific tests. A fence opener never looks for its
+   closer before it opens: every fence, the `%%%` comment fence included,
+   opens on its own line and ends at its closer, under S1, or at the end of
+   its host (carve#4907). An unclosed `%%%` therefore hides every later line
+   of its host, at top level the rest of the document; `carve lint` reports
+   it (`unclosed-comment-fence`). Of the fence-shaped openers only
+   frontmatter is decided by a later line (PART 1).
 
    ============================================================================ *)
 (* ============================================================================
@@ -184,7 +179,7 @@
              footnote def   marker-body content column two past its authored
                             marker column; exactly two columns consumed
                             (PART 9 §24 C3)
-             opaque body    (code / raw / matched comment span) -- no
+             opaque body    (code / raw / comment span) -- no
                             per-line prefix; verbatim up to its where-guarded
                             closer
              colon body     (admonition / div / figure group / fenced quote /
@@ -271,31 +266,32 @@
 
      S1 PAYLOAD. If a code, raw or comment fence is open, test the line
         against its closer first. A nonblank line that misses the fence's
-        owner in S2 ends the fence; nothing else ends a code or raw fence
-        without its closer, so an unclosed one runs to the end of its
+        owner in S2 ends the fence; nothing else ends a code, raw or comment
+        fence without its closer, so an unclosed one runs to the end of its
         container and a host's colon closer inside it is payload. Any other payload
         line opens nothing and changes no frame state. A colon body is not a
         payload: its lines go on to S2.
 
         COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP -- NORMATIVE [CARVE-P0-005].
-        Honor an active payload first. Then recognize `%%` and a matched
-        `%%%` span as comment tokens before S3 classifies the visible
+        Honor an active payload first. Then recognize `%%` and a `%%%`
+        span as comment tokens before S3 classifies the visible
         residue. Record the comment node, its authored spelling and its
         complete source extent, and remove it from visible classification
         and rendering: this is erasure from layout, never from the AST or the
-        source map. A matched `%%%` span carries its opener, opaque body and
-        exact-width closer as one extent across authored indentation. An
-        opener without an exact-width closer is one `%%` line comment.
+        source map. A `%%%` span carries its opener, opaque body and
+        exact-width closer as one extent across authored indentation. A
+        `%%%` opener opens its span without looking for a closer; with none,
+        the span ends under S1 or at the end of its container (carve#4907).
         Comment delimiters inside code, raw content or another payload are
         literal bytes.
-        A body line that misses the matched comment span's owner ends that
-        span under S1; the line is classified in its selected owner.
+        A body line that misses the comment span's owner ends that span
+        under S1; the line is classified in its selected owner.
 
         A comment takes the `line_comment` / `fenced_comment` row of T in its
         owner and does not fold. It ends the open paragraph and closes no list
         item, description body or footnote body at any column: the next visible
         line picks the owner, and the comment is read there (PART 9 §10
-        CARVE-P9-013). A matched span's extent is fixed where it is written,
+        CARVE-P9-013). A span's extent is fixed where it is written,
         and the whole span moves with its opener. A quote is reached only by its marker, so an unmarked
         comment ends it (S2). Two lines keep the authored column: a region
         marker below a list closes every item (CARVE-P11-073), and a line that
@@ -549,7 +545,7 @@
                       like the other modes, which read blocks, takes a lazy
                       line while its stanza is open (PART 2 `line_block`).
      code, raw and    [B-code-start] [B-comment-start] A valid code or raw
-       comment fence  opener; a comment opener with a matching closer.
+       comment fence  opener; a comment opener, with no closer lookahead.
                       [B-code-keep] [B-comment-keep] The payload is opaque and
                       takes no lazy line. [B-code-end] [B-comment-end] It ends
                       at its closer or by S1.
@@ -1664,7 +1660,7 @@ admonition = admonition_open, newline,
    (PART 0 S5, CARVE-P9-084).
 
    OPAQUE SPANS. `{block - admonition_close}` is a BLOCK sequence. In a
-   colon body, recognize a code, raw or matched comment opener before
+   colon body, recognize a code, raw or comment opener before
    testing its line as a closer. Consume the opaque span as one child block;
    bare code and `%%%` openers can themselves look like closers. A colon
    run inside that span is payload and cannot close the colon body. When
@@ -1873,11 +1869,12 @@ comment_line = [whitespace], "%%", [space], {character}, newline ;
    leading run of `%` is structural, so `%%% TODO` opens and `%%% end` closes.
    `%%%` carries NO info string -- a raw passthrough block is a CODE fence with
    an `=FORMAT` info string -- so `%%% html` is a comment, not a raw block.
-   A block opens only when a matching closer exists AHEAD; otherwise the line
-   degrades to a `comment_line`. Both rules are NORMATIVE in PART 9 §28. *)
+   The opener opens a block with no closer lookahead; the closer is optional
+   and an unclosed block runs to the end of its host or S1 (carve#4907). Both
+   rules are NORMATIVE in PART 9 §28. *)
 comment_block = comment_block_open, newline,
                 {character | newline},
-                comment_block_close, newline ;  (* PART 9 §28: else comment_line *)
+                [comment_block_close, newline] ;  (* PART 9 §28: unclosed runs to host end *)
 
 (* Both delimiters may be INDENTED, exactly as `comment_line` may: leading
    whitespace is not part of the delimiter, only the `%` run is, so the length
@@ -4427,8 +4424,9 @@ EOF = (* end of file *) ;
         INNERMOST open colon fence; the closer is optional and an unclosed
         container ends at its host boundary (CARVE-P9-084);
       - comment_block_close: len(close) = len(open). Only the LEADING RUN of
-        `%` is compared -- trailing text on either fence line is insignificant,
-        and an opener with no matching closer ahead opens nothing (§28).
+        `%` is compared -- trailing text on either fence line is insignificant.
+        The closer is optional and an unclosed comment block ends under
+        PART 0 S1 or at the end of its host (§28, carve#4907).
 
    3. NO BARE SAME-TYPE NESTING -- §9 R4 and SAME-DELIMITER ADJACENCY;
       a braced child may repeat its parent's kind (§9 R1).
@@ -5546,7 +5544,7 @@ EOF = (* end of file *) ;
          ARITHMETIC is not, and stays where it is.
 
          A COMMENT OR ONE-LINE DEFINITION CLOSES NO INDENTATION CONTAINER. A `%%`
-         line, a matched `%%%` span, a link reference definition and an
+         line, a `%%%` span, a link reference definition and an
          abbreviation definition close no list item, description body or
          footnote body at any column. They end the open paragraph and take
          effect, and the next visible line picks the owner as if they were
@@ -6938,10 +6936,11 @@ EOF = (* end of file *) ;
         body ends no stanza. A verse block holding only such a span renders
         with no stanza, so `::: |` / `  %%%` / `  secret` / `  %%%` / `:::`
         renders an empty line block with the blank line required between its
-        opening and closing tags by CARVE-P10-001. A fence with no closer in
-        the body degrades to a `comment_line` (§28) and leaves an empty verse
-        line like any other; an indented one is verse text, as an indented
-        `%%` line is below.
+        opening and closing tags by CARVE-P10-001. A fence with no closer runs
+        to the end of the line block's host (§28): it hides the rest of the
+        verse and the line block's own `:::` closer, which is payload. A
+        `%%%` line indented past 3 spaces is verse text, as an indented `%%`
+        line is below.
         The span is a `comment` node in the tree, so the canonical writer emits
         it back unchanged.
 
@@ -7462,24 +7461,18 @@ EOF = (* end of file *) ;
         percent fence, so `%%% html` is a COMMENT and its body stays hidden.
       - The CLOSER matches on EXACT delimiter length (§2), so a longer opener
         nests shorter fences and a too-short line is content, not a closer.
-      - A `%%%` opener with NO MATCHING CLOSER AHEAD does NOT open a block.
-        The line degrades to a `comment_line` (its first two `%` are the line
-        marker), so every FOLLOWING BLOCK STILL RENDERS. The degradation is a
-        CLASSIFICATION, and it is TOTAL: the line is a `comment_line` for every
-        question the layout asks about it, container OWNERSHIP included, so at a
-        container's own column 0 it leaves the frame open exactly as a `%%` line
-        does (§24 C3). Reading it as a visibility rule alone would
-        make one line two constructs at once. The RECOVERY DECISION TABLE
-        in PART 0 compares this with an unclosed visible colon container.
-        A body line that misses the host does not make a later closer
-        absent: with an exact-width closer ahead, that line ends the span and
-        the host (PART 0 S1, CARVE-P0-005, carve#4770), and the opener is
-        then degraded within the shortened host. Only with no closer ahead
-        is the line read as it is after a `%%` line.
+      - A `%%%` opener OPENS A BLOCK WITHOUT LOOKING FOR ITS CLOSER, as every
+        other fence does (carve#4907). The CLOSER IS OPTIONAL: an unclosed
+        block ends where PART 0 S1 ends it, at a nonblank line that misses its
+        owner, or at the end of its container or the document. It therefore
+        HIDES EVERY LATER LINE of its host, at top level the rest of the
+        document. Whether a closer exists later never changes how the opener
+        line or any line before the closer is read. The RECOVERY DECISION
+        TABLE in PART 0 compares this with an unclosed code fence.
         An implementation that
-        surfaces diagnostics SHOULD report an unterminated comment fence;
-        emitting one is OPTIONAL, since not every implementation has a
-        warning channel.
+        surfaces diagnostics SHOULD report an unterminated comment fence
+        (`unclosed-comment-fence`, docs/validation.md); emitting one is
+        OPTIONAL, since not every implementation has a warning channel.
       - PAYLOAD INDENTATION: after the enclosing container prefixes are removed,
         every body line MUST retain its remaining leading whitespace. The
         opener's indentation establishes no additional payload base. A closer
@@ -7496,7 +7489,7 @@ EOF = (* end of file *) ;
       Examples (corpus-pinned):
         "%%% html\nsecret\n%%%\n\nafter"  -> <p>after</p>
         "%%%\nsecret\n%%% end\n\nafter"   -> <p>after</p>
-        "%%% TODO\nsecret\n\nafter"       -> <p>secret</p><p>after</p>
+        "before\n\n%%%\nsecret\n\nafter"  -> <p>before</p>
 
    29. C0 CONTROLS ON THE RENDER TARGETS -- NORMATIVE [CARVE-P9-061] (governs what each
       target may emit; the companion to PART 7's ONE WHITESPACE DEFINITION,

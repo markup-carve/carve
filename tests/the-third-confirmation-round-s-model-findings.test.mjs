@@ -40,16 +40,17 @@ test('a caption number stays out of the tag or mention before it (carve#4616)', 
   assert.match(html('| b |\n^ #: x\n'), /<caption>1: x<\/caption>/)
 })
 
+// The opener opens with no closer ahead, so `x` stays hidden (§28, carve#4907).
 test('a line that misses a comment fence\'s owner ends the fence in every host (carve#4617)', () => {
-  assert.match(html('> %%%\n> x\ny\n> %%%\n'), /^<blockquote><p>x<\/p><\/blockquote><p>y<\/p>/)
-  assert.equal(html(':: t\n: %%%\n  x\ny\n  %%%\n'), '<dl><dt>t</dt><dd>x</dd></dl><p>y</p>')
+  assert.match(html('> %%%\n> x\ny\n> %%%\n'), /^<blockquote>\n<\/blockquote><p>y<\/p>/)
+  assert.equal(html(':: t\n: %%%\n  x\ny\n  %%%\n'), '<dl><dt>t</dt><dd></dd></dl><p>y</p>')
   assert.match(html('[^n]: %%%\n  x\ny\n  %%%\n\nr[^n]\n'), /^<p>y<\/p>/)
-  assert.equal(html('- %%%\n  x\ny\n  %%%\n'), '<ul><li>x</li></ul><p>y</p>')
+  assert.equal(html('- %%%\n  x\ny\n  %%%\n'), '<ul><li></li></ul><p>y</p>')
 })
 
-test('a span that closes in its host stays hidden, and an unclosed one still folds (carve#4617)', () => {
+test('a span that closes in its host stays hidden, and so does an unclosed one (carve#4617, carve#4907)', () => {
   assert.equal(html('> %%%\n> x\n> %%%\ny\n'), '<blockquote>\n</blockquote><p>y</p>')
-  assert.equal(html('> %%%\n> x\ny\n'), '<blockquote><p>x\ny</p></blockquote>')
+  assert.equal(html('> %%%\n> x\ny\n'), '<blockquote>\n</blockquote><p>y</p>')
 })
 
 test('a task item reads the same column as its plain twin at every gap (carve#4618)', () => {

@@ -15,9 +15,6 @@ A comment between a heading and a colon fence leaves the fence an opener
       <li>b</li>
     </ul>
     <h1 id="h">h</h1>
-    <div>
-
-    </div>
   </li>
 </ul>
 ```
@@ -31,9 +28,6 @@ A comment between a heading and a colon fence leaves the fence an opener
 <ul>
   <li>a
     <h1 id="h">h</h1>
-    <div>
-
-    </div>
   </li>
 </ul>
 ```

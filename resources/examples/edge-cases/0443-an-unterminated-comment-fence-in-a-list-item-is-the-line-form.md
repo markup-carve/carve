@@ -1,5 +1,11 @@
 ## An unterminated comment fence in a list item is the line form
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 PART 0's layout automaton classifies comments before block ownership
 (markup-carve/carve#1731): "An opener without an exact-width closer is one `%%`
 line comment; later lines are classified normally." PART 9 §28 states the same
@@ -88,9 +94,7 @@ follower at the content column is still the item's own text.
 
 ```html
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
 ```
 
@@ -175,7 +179,6 @@ z
   <li>x</li>
 </ul>
 <p>y</p>
-<p>z</p>
 ```
 
 :::

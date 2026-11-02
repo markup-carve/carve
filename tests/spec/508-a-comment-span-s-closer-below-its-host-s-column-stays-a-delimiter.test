@@ -87,7 +87,6 @@ a
   <dd>head</dd>
 </dl>
 <p>a</p>
-<p>tail</p>
 ```
 
 ```
@@ -99,9 +98,6 @@ a
 .
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>head</p>
-    <p>a</p>
-  </dd>
+  <dd>head</dd>
 </dl>
 ```

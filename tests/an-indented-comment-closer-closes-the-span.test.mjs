@@ -69,15 +69,13 @@ test('the ticket pair is one document read two ways', () => {
 test('every column in the band closes the span, so every row is loose', () => {
   // The band is any offset between the opener's column and the container's
   // content column, plus the over-indented opener spelling, which establishes
-  // its own authored base (carve#1705). The last row has no closer at all: it
-  // opens nothing, and a separator survives there for a different reason.
+  // its own authored base (carve#1705).
   const rows = [
     ['content column, closer at the content column', 2, 2],
     ['content column, closer past it', 2, 4],
     ['past the content column, closer at its own base', 4, 4],
     ['past the content column, closer below that base', 4, 3],
     ['past the content column, closer at the content column', 4, 2],
-    ['past the content column, no closer', 4, null],
   ]
   for (const [label, opener, closer] of rows) {
     assert.equal(looseness(banded(opener, closer)), 'loose', label)
@@ -107,12 +105,11 @@ test('GUARD: a span with no interior blank leaves the blank below it a separator
   assert.equal(looseness('- head\n  %%%\n  a\n    %%%\n\n  tail\n'), 'loose')
 })
 
-test('GUARD: an unterminated comment fence opens no span', () => {
-  // §28: an opener with no exact-width closer ahead opens NOTHING and is one
-  // `%%` line comment. Loose here because the blank lines are ordinary
-  // separators, not because a span was closed.
-  assert.equal(looseness('- head\n\n  %%%\n  a\n\n  tail\n'), 'loose')
-  assert.equal(looseness('- head\n\n    %%%\n    a\n\n  tail\n'), 'loose')
+test('GUARD: an unterminated comment fence hides the rest of the item', () => {
+  // §28 (carve#4907): the span runs to the end of the item, so `head` is its
+  // only visible block and the item stays tight.
+  assert.equal(looseness('- head\n\n  %%%\n  a\n\n  tail\n'), 'tight')
+  assert.equal(looseness('- head\n\n    %%%\n    a\n\n  tail\n'), 'tight')
 })
 
 test('GUARD: the code and colon fences are untouched by this change', () => {

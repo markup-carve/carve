@@ -224,10 +224,11 @@
         body ends no stanza. A verse block holding only such a span renders
         with no stanza, so `::: |` / `  %%%` / `  secret` / `  %%%` / `:::`
         renders an empty line block with the blank line required between its
-        opening and closing tags by CARVE-P10-001. A fence with no closer in
-        the body degrades to a `comment_line` (§28) and leaves an empty verse
-        line like any other; an indented one is verse text, as an indented
-        `%%` line is below.
+        opening and closing tags by CARVE-P10-001. A fence with no closer runs
+        to the end of the line block's host (§28): it hides the rest of the
+        verse and the line block's own `:::` closer, which is payload. A
+        `%%%` line indented past 3 spaces is verse text, as an indented `%%`
+        line is below.
         The span is a `comment` node in the tree, so the canonical writer emits
         it back unchanged.
 

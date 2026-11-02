@@ -7,8 +7,8 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (source) => renderDoc(parse(source)).replace(/>\s+</g, '><').trim()
 
 test('a footnote body skipped after a + ends at the blank that ends its quote', () => {
-  assert.equal(html('> - +\n> [^f]: x\n\n> %%%\n> text\n'), '<blockquote><ul><li>+</li></ul></blockquote><blockquote><p>text</p></blockquote>')
-  assert.equal(html('> . +\n> [^f]: x\n\n> %%%\n> text\n'), '<blockquote><ol><li>+</li></ol></blockquote><blockquote><p>text</p></blockquote>')
+  assert.equal(html('> - +\n> [^f]: x\n\n> %%\n> text\n'), '<blockquote><ul><li>+</li></ul></blockquote><blockquote><p>text</p></blockquote>')
+  assert.equal(html('> . +\n> [^f]: x\n\n> %%\n> text\n'), '<blockquote><ol><li>+</li></ol></blockquote><blockquote><p>text</p></blockquote>')
 })
 
 test('a line that leaves the quote after a skipped footnote does not throw', () => {

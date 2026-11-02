@@ -1,5 +1,11 @@
 ## A degraded comment fence at a container's column 0 keeps the follower in the item
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 PART 9 §28 says an opener with no matching closer ahead does not open a block:
 the line degrades to a `comment_line`. That is a CLASSIFICATION, and §24 C3's
 comment exception names both spellings in one breath - a comment "does not close
@@ -27,7 +33,6 @@ y
 <ul>
   <li>x</li>
 </ul>
-<p>y</p>
 ```
 
 :::
@@ -90,7 +95,6 @@ y
 <ol>
   <li>x</li>
 </ol>
-<p>y</p>
 ```
 
 :::
@@ -110,7 +114,6 @@ y
 <ul>
   <li>x</li>
 </ul>
-<p>y</p>
 ```
 
 :::
@@ -133,7 +136,6 @@ inner item's degraded comment.
     <ul>
       <li>x</li>
     </ul>
-    y
   </li>
 </ul>
 ```
@@ -155,7 +157,6 @@ y
 <ul>
   <li>x</li>
 </ul>
-<p>y</p>
 ```
 
 :::
@@ -176,7 +177,6 @@ y
 <ul>
   <li>x</li>
 </ul>
-<p>y</p>
 ```
 
 :::
@@ -220,7 +220,6 @@ new list.
 ```html
 <ul>
   <li>x</li>
-  <li>y</li>
 </ul>
 ```
 
@@ -241,7 +240,6 @@ y
 
 ```html
 <blockquote><p>x</p></blockquote>
-<p>y</p>
 ```
 
 :::

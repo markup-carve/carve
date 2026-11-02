@@ -4,6 +4,12 @@ page: edge-lists
 
 ## A line that misses a nested host ends it when a comment closer lies ahead
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 PART 0 S1 and the RECOVERY DECISION TABLE (CARVE-P0-005, carve#4770). The closer search reaches past every enclosing host, so a line that misses only a nested item, quote, description or note ends that host when an exact-width closer comes later in the document, and the line lands in the enclosing container. The opener is then a `%%` line within the shortened host. Without a closer the line folds into the paragraph, and a quote's search still stops at a blank line.
 
 ::::: compare
@@ -20,7 +26,7 @@ PART 0 S1 and the RECOVERY DECISION TABLE (CARVE-P0-005, carve#4770). The closer
 <ol>
   <li>a
     <ol>
-      <li>n</li>
+      <li></li>
     </ol>
     zz
   </li>
@@ -42,9 +48,9 @@ PART 0 S1 and the RECOVERY DECISION TABLE (CARVE-P0-005, carve#4770). The closer
 <ol>
   <li>a
     <ol>
-      <li>n
-zz</li>
+      <li></li>
     </ol>
+    zz
   </li>
 </ol>
 ```
@@ -64,7 +70,9 @@ zz</li>
 ```html
 <ul>
   <li>a
-    <blockquote><p>n</p></blockquote>
+    <blockquote>
+
+    </blockquote>
     zz
   </li>
 </ul>
@@ -86,8 +94,10 @@ zz</li>
 ```html
 <ul>
   <li>a
-    <blockquote><p>n
-zz</p></blockquote>
+    <blockquote>
+
+    </blockquote>
+    zz
   </li>
 </ul>
 ```
@@ -110,7 +120,7 @@ zz</p></blockquote>
   <li>a
     <dl>
       <dt>u</dt>
-      <dd>n</dd>
+      <dd></dd>
     </dl>
     zz
   </li>
@@ -138,15 +148,6 @@ x[^g]
     <p>zz</p>
   </li>
 </ul>
-<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 :::::

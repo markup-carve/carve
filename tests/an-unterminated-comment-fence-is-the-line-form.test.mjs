@@ -1,4 +1,8 @@
 /*
+ * SUPERSEDED BY carve#4907: an unterminated `%%%` no longer degrades to the
+ * `%%` line form. It opens a span that runs to S1 or the end of its container,
+ * so the rows below now pin where that span ends. The history follows.
+ *
  * A DEGRADED `%%%` IS THE `%%` LINE FORM -- PART 0, PART 9 §28, carve#1901.
  *
  * PART 0's layout automaton states the substitution under COMMENTS ARE
@@ -47,6 +51,8 @@ const LINE = '%% z'
 const item = (payload, column) => `- x\n${' '.repeat(column)}${payload}\ny\n`
 
 const OUTSIDE = '<ul> <li>x</li> </ul> <p>y</p>'
+// Below the item's column the span opens at document level and hides `y`.
+const HIDDEN = '<ul> <li>x</li> </ul>'
 
 /*
  * `- x` has content column 2. Column 1 is below it, where the comment closes
@@ -67,9 +73,8 @@ for (const [column, expected] of BAND) {
   })
 
   for (const fence of FENCES) {
-    test(`an unterminated ${JSON.stringify(fence)} at column ${column} answers as the line form does`, () => {
-      assert.equal(oracle(item(fence, column)), oracle(item(LINE, column)))
-      assert.equal(oracle(item(fence, column)), expected)
+    test(`an unterminated ${JSON.stringify(fence)} at column ${column} ends at the line that misses its owner`, () => {
+      assert.equal(oracle(item(fence, column)), column >= 2 ? expected : HIDDEN)
     })
   }
 }
@@ -96,9 +101,9 @@ for (const [column, expected] of BAND) {
  * degradation rule being unimplemented anywhere.
  */
 for (let column = 0; column <= 3; column += 1) {
-  test(`at the top level both spellings close the paragraph at column ${column}`, () => {
+  test(`at the top level both spellings close the paragraph at column ${column}, and the fence hides the rest`, () => {
     const pad = ' '.repeat(column)
-    assert.equal(oracle(`x\n${pad}%%%\ny\n`), '<p>x</p> <p>y</p>')
+    assert.equal(oracle(`x\n${pad}%%%\ny\n`), '<p>x</p>')
     assert.equal(oracle(`x\n${pad}${LINE}\ny\n`), '<p>x</p> <p>y</p>')
   })
 }
@@ -131,9 +136,8 @@ test('at column 0 the line form closes the item', () => {
 })
 
 for (const fence of FENCES) {
-  test(`at column 0 an unterminated ${JSON.stringify(fence)} answers as the line form does -- carve#1903`, () => {
-    assert.equal(oracle(item(fence, 0)), oracle(item(LINE, 0)))
-    assert.equal(oracle(item(fence, 0)), OUTSIDE)
+  test(`at column 0 an unterminated ${JSON.stringify(fence)} hides the rest of the document -- carve#4907`, () => {
+    assert.equal(oracle(item(fence, 0)), HIDDEN)
   })
 }
 

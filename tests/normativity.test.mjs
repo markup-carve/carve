@@ -633,8 +633,8 @@ test('comments are classified as source-bearing tokens before visible ownership'
     { kind: 'fenced_comment', start: 0, end: 4 },
   )
   assert.deepEqual(
-    classifyLayoutComment(['  %%% unterminated', 'visible'], 0),
-    { kind: 'line_comment', start: 0, end: 1 },
+    classifyLayoutComment(['  %%% unterminated', 'hidden'], 0),
+    { kind: 'fenced_comment', start: 0, end: 2 },
   )
   assert.equal(classifyLayoutComment(['ordinary'], 0), null)
 })

@@ -1,5 +1,11 @@
 ## A closed block leaves no frame for the line below
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 
 Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
 
@@ -419,7 +425,7 @@ follower at the item's column stays where it was.
 <ul>
   <li>
     <div class="box">
-      <p>x</p>
+
     </div>
   </li>
 </ul>
@@ -434,9 +440,7 @@ follower at the item's column stays where it was.
 
 ```html
 <ul>
-  <li>a
-    x
-  </li>
+  <li>a</li>
 </ul>
 ```
 

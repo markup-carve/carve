@@ -83,24 +83,18 @@
         percent fence, so `%%% html` is a COMMENT and its body stays hidden.
       - The CLOSER matches on EXACT delimiter length (§2), so a longer opener
         nests shorter fences and a too-short line is content, not a closer.
-      - A `%%%` opener with NO MATCHING CLOSER AHEAD does NOT open a block.
-        The line degrades to a `comment_line` (its first two `%` are the line
-        marker), so every FOLLOWING BLOCK STILL RENDERS. The degradation is a
-        CLASSIFICATION, and it is TOTAL: the line is a `comment_line` for every
-        question the layout asks about it, container OWNERSHIP included, so at a
-        container's own column 0 it leaves the frame open exactly as a `%%` line
-        does (§24 C3). Reading it as a visibility rule alone would
-        make one line two constructs at once. The RECOVERY DECISION TABLE
-        in PART 0 compares this with an unclosed visible colon container.
-        A body line that misses the host does not make a later closer
-        absent: with an exact-width closer ahead, that line ends the span and
-        the host (PART 0 S1, CARVE-P0-005, carve#4770), and the opener is
-        then degraded within the shortened host. Only with no closer ahead
-        is the line read as it is after a `%%` line.
+      - A `%%%` opener OPENS A BLOCK WITHOUT LOOKING FOR ITS CLOSER, as every
+        other fence does (carve#4907). The CLOSER IS OPTIONAL: an unclosed
+        block ends where PART 0 S1 ends it, at a nonblank line that misses its
+        owner, or at the end of its container or the document. It therefore
+        HIDES EVERY LATER LINE of its host, at top level the rest of the
+        document. Whether a closer exists later never changes how the opener
+        line or any line before the closer is read. The RECOVERY DECISION
+        TABLE in PART 0 compares this with an unclosed code fence.
         An implementation that
-        surfaces diagnostics SHOULD report an unterminated comment fence;
-        emitting one is OPTIONAL, since not every implementation has a
-        warning channel.
+        surfaces diagnostics SHOULD report an unterminated comment fence
+        (`unclosed-comment-fence`, docs/validation.md); emitting one is
+        OPTIONAL, since not every implementation has a warning channel.
       - PAYLOAD INDENTATION: after the enclosing container prefixes are removed,
         every body line MUST retain its remaining leading whitespace. The
         opener's indentation establishes no additional payload base. A closer
@@ -117,7 +111,7 @@
       Examples (corpus-pinned):
         "%%% html\nsecret\n%%%\n\nafter"  -> <p>after</p>
         "%%%\nsecret\n%%% end\n\nafter"   -> <p>after</p>
-        "%%% TODO\nsecret\n\nafter"       -> <p>secret</p><p>after</p>
+        "before\n\n%%%\nsecret\n\nafter"  -> <p>before</p>
 
    29. C0 CONTROLS ON THE RENDER TARGETS -- NORMATIVE [CARVE-P9-061] (governs what each
       target may emit; the companion to PART 7's ONE WHITESPACE DEFINITION,

@@ -38,7 +38,6 @@ for (const depth of [0, 1]) {
         `${' '.repeat(host.column + 1)}%% c`, 'follower'], false],
       ['an interrupting opener leaves the body', host => [`${pad(host)}%% c`, '# follower'], false],
       ['a sibling marker is recognized first', host => [`${pad(host)}%% c`, host.sibling], false],
-      ['an unmatched run is a line comment', host => [`${pad(host)}%%%`, ' follower'], false],
       ['a matched span hides its payload', host => [
         `${pad(host)}%%%`, 'SECRET_PAYLOAD', `${pad(host)}%%%`, ' follower'], false],
     ]

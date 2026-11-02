@@ -5,7 +5,8 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 test('a matched comment payload that misses nested quotes leaves no lazy paragraph (carve#4658)', () => {
   const source = '> > %%%\n> > x\ny\n> > %%%\n'
-  assert.equal(renderDoc(parse(source)), '<blockquote>\n  <blockquote><p>x</p></blockquote>\n</blockquote>\n<p>y</p>\n<blockquote>\n  <blockquote>\n\n  </blockquote>\n</blockquote>')
+  // The opener opens with no closer ahead, so `x` stays hidden (§28, carve#4907).
+  assert.equal(renderDoc(parse(source)), '<blockquote>\n  <blockquote>\n\n  </blockquote>\n</blockquote>\n<p>y</p>\n<blockquote>\n  <blockquote>\n\n  </blockquote>\n</blockquote>')
 })
 
 test('a comment-shaped line in a nested line block remains line-block payload', () => {

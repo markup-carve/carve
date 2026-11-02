@@ -16,8 +16,9 @@
         INNERMOST open colon fence; the closer is optional and an unclosed
         container ends at its host boundary (CARVE-P9-084);
       - comment_block_close: len(close) = len(open). Only the LEADING RUN of
-        `%` is compared -- trailing text on either fence line is insignificant,
-        and an opener with no matching closer ahead opens nothing (§28).
+        `%` is compared -- trailing text on either fence line is insignificant.
+        The closer is optional and an unclosed comment block ends under
+        PART 0 S1 or at the end of its host (§28, carve#4907).
 
    3. NO BARE SAME-TYPE NESTING -- §9 R4 and SAME-DELIMITER ADJACENCY;
       a braced child may repeat its parent's kind (§9 R1).

@@ -1,5 +1,11 @@
 ## A column-0 line after a container's last block, when that block left no paragraph open
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 PART 1 S4's *NO OPEN PARAGRAPH, NO LAZY LINE* is pinned above for an empty
 quote, which reads as though EMPTINESS were the property doing the work. It is
 not. The parameter S4 names is whether any container in the open stack holds an
@@ -129,7 +135,6 @@ tail
   <li></li>
 </ul>
 <p>c</p>
-<p>tail</p>
 ```
 
 :::

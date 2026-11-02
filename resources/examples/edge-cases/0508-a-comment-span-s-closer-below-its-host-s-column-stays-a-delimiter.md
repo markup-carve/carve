@@ -1,5 +1,11 @@
 ## A comment span's closer below its host's column stays a delimiter
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 A container ends at a comment written below its content column, and a comment
 inside a span the container already holds is not one. Both delimiters pair
 whatever columns they sit at, so a description body, a note body and a list item
@@ -123,7 +129,6 @@ a
   <dd>head</dd>
 </dl>
 <p>a</p>
-<p>tail</p>
 ```
 
 :::
@@ -141,10 +146,7 @@ a
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>head</p>
-    <p>a</p>
-  </dd>
+  <dd>head</dd>
 </dl>
 ```
 

@@ -160,14 +160,11 @@ test('a span the innermost container holds is closed even where its collector ca
   assert.ok(!/(^|\W)[AB](\W|$)/.test(out.replace(/<[^>]*>/g, ' ')), out)
 })
 
-test('GUARD: an unterminated opener still publishes its payload as ordinary text', () => {
-  // §28: an opener with no exact-width closer ahead opens NOTHING and is one
-  // `%%` line comment, so the payload is the host's own content. Reading it as a
-  // hidden body is the opposite over-correction, and it would pass every row
-  // above.
+test('GUARD: an unterminated opener hides its payload to the end of its host', () => {
+  // §28 (carve#4907): an opener with no exact-width closer still opens its span.
   for (const host of Object.keys(hosts)) {
     const out = html(doc(host, { opener: columns[host] + 2, closer: null, tail: false }))
-    assert.ok(out.includes('PAYLOAD'), `${host} swallowed an unterminated fence's payload:\n${out}`)
+    assert.ok(!out.includes('PAYLOAD'), `${host} published an unterminated fence's payload:\n${out}`)
   }
 })
 

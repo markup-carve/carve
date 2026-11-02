@@ -567,7 +567,8 @@ of this matches Djot; the heading half deliberately does not.
    interrupts a paragraph whether or not a closer follows, as in CommonMark.
    An unclosed fence runs to the end of its container. A `:::` opener behaves
    the same way: it opens without a closer and closes at its container
-   boundary or end of input (§12).
+   boundary or end of input (§12). So does a `%%%` comment fence, which hides
+   everything up to that point (§28, markup-carve/carve#4907).
 2. **Image excluded** — a bare image `![alt](url)` is inline content, not a
    block, so it renders inside the paragraph.
 

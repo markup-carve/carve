@@ -8,7 +8,6 @@ y
 <ul>
   <li>x</li>
 </ul>
-<p>y</p>
 ```
 
 ```
@@ -42,7 +41,6 @@ y
 <ol>
   <li>x</li>
 </ol>
-<p>y</p>
 ```
 
 ```
@@ -53,7 +51,6 @@ y
 <ul>
   <li>x</li>
 </ul>
-<p>y</p>
 ```
 
 ```
@@ -66,7 +63,6 @@ y
     <ul>
       <li>x</li>
     </ul>
-    y
   </li>
 </ul>
 ```
@@ -79,7 +75,6 @@ y
 <ul>
   <li>x</li>
 </ul>
-<p>y</p>
 ```
 
 ```
@@ -91,7 +86,6 @@ y
 <ul>
   <li>x</li>
 </ul>
-<p>y</p>
 ```
 
 ```
@@ -114,7 +108,6 @@ z
 .
 <ul>
   <li>x</li>
-  <li>y</li>
 </ul>
 ```
 
@@ -124,5 +117,4 @@ z
 y
 .
 <blockquote><p>x</p></blockquote>
-<p>y</p>
 ```

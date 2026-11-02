@@ -1,5 +1,11 @@
 ## A comment span's closer column does not move the item's ownership
 
+Since markup-carve/carve#4907 a `%%%` opener opens its span with no closer
+lookahead: without a closer it hides everything up to a line that misses its
+owner or the end of its container (PART 9 §28). The rows below follow that
+reading; where the prose describes a closerless opener as a `%%` line or a
+closer ahead as deciding the span, it records the reading the ruling replaced.
+
 `CARVE-P9-053` recognizes a comment at every column and names both spellings: the
 `%%` line form, and the `%%%` fence form "whose body and closer travel with its
 opener". `CARVE-P0-013` adds that a `%%%` run closes the span at any column and
@@ -83,7 +89,7 @@ follower either, at every closer column. The `%%` control closes the group.
 <ul>
   <li>item</li>
 </ul>
-<p><a href="/url">use</a></p>
+<p>[use][r]</p>
 `````
 
 :::

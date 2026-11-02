@@ -907,9 +907,10 @@ so normalization never silently creates two competing definitions.
 
 ## What Carve adds on top (not breaks)
 
-An unterminated `%%%` degrades to a line comment rather than opening an opaque
-block, so `%%%` then `x` renders `<p>x</p>` where Djot - which has no comment
-syntax - renders both lines as text. That is part of the comment addition
+An unterminated `%%%` opens a comment block that runs to the end of its
+container, as an unclosed Djot code block or div does, so `%%%` then `x`
+renders nothing where Djot - which has no comment syntax - renders both lines
+as text (markup-carve/carve#4907). That is part of the comment addition
 (section 6) rather than a separate design decision.
 
 These aren't divergences - Djot has no equivalent - but they're why Carve exists

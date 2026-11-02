@@ -10,9 +10,7 @@ zz
 ```
 .
 <ul>
-  <li>a
-    n
-  </li>
+  <li>a</li>
 </ul>
 <p>zz</p>
 <pre><code>%%%
@@ -29,11 +27,9 @@ zz
 ```
 .
 <ul>
-  <li>a
-    n
-zz
-  </li>
+  <li>a</li>
 </ul>
+<p>zz</p>
 <pre><code>%%%%
 </code></pre>
 ````
@@ -49,7 +45,7 @@ zz
 .
 <dl>
   <dt>t</dt>
-  <dd>n</dd>
+  <dd></dd>
 </dl>
 <p>zz</p>
 <pre><code>%%%
@@ -68,7 +64,7 @@ zz
 <ol>
   <li>a
     <ol>
-      <li>n</li>
+      <li></li>
     </ol>
   </li>
 </ol>
@@ -85,7 +81,9 @@ zz
 %%%
 ```
 .
-<blockquote><p>n</p></blockquote>
+<blockquote>
+
+</blockquote>
 <p>zz</p>
 <pre><code>%%%
 </code></pre>
@@ -114,7 +112,7 @@ z
 <ul>
   <li>a
     <ul>
-      <li>n</li>
+      <li></li>
     </ul>
     zz
   </li>
