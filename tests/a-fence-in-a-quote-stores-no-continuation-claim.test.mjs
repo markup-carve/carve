@@ -299,7 +299,7 @@ test('a closed fence past a description body\'s column opens a code block at eve
     const q = '> '.repeat(depth)
     const source = `${q}:: t\n${q}:  d\n${q}   - a\n${q}    ${F}\n${q}    x\n${q}    ${F}\nflush\n`
     assert.equal(host(source), 'quote['.repeat(depth) + 'deflist' + ']'.repeat(depth) + ', p(flush)', source)
-    assert.match(renderDoc(parse(source)).replace(/\s+/g, ' '), /<dd> <p>d - a<\/p> <pre><code>x <\/code><\/pre> <\/dd>/, source)
+    assert.match(renderDoc(parse(source)).replace(/\s+/g, ' '), /<dd> <p>d<\/p> <ul> <li>a<\/li> <\/ul> <pre><code>x <\/code><\/pre> <\/dd>/, source)
   }
 })
 
@@ -308,7 +308,7 @@ test('an unclosed fence past a description body opens like a closed one at every
     const q = '> '.repeat(depth)
     const source = `${q}:: t\n${q}:  d\n${q}   - a\n${q}    ${F}\n${q}    x\nflush\n`
     assert.equal(host(source), 'quote['.repeat(depth) + 'deflist' + ']'.repeat(depth) + ', p(flush)', source)
-    assert.match(renderDoc(parse(source)).replace(/\s+/g, ' '), /<dd> <p>d - a<\/p> <pre><code>x <\/code><\/pre> <\/dd>/, source)
+    assert.match(renderDoc(parse(source)).replace(/\s+/g, ' '), /<dd> <p>d<\/p> <ul> <li>a<\/li> <\/ul> <pre><code>x <\/code><\/pre> <\/dd>/, source)
   }
 })
 
@@ -333,18 +333,12 @@ test('the rule answers the same at every quote depth', () => {
   }
 })
 
-test('only a list item\'s paragraph gives way to a marker', () => {
-  // Measured on the block reader: at a DESCRIPTION or FOOTNOTE body's column,
-  // under that body's own open paragraph, `- ``` ` is ordinary text and the run
-  // under it opens nothing - both bodies take the list only after a blank, while
-  // an ITEM's paragraph yields to a marker at its content column. Reading the
-  // licence off the ladder's depth rather than its innermost kind moved a quoted
-  // line out of a `dd` that keeps it (raised by codex review).
+test('every marker body\'s paragraph gives way to a marker', () => {
+  // A list opens in a description or footnote body as in an item (carve#4860), so the run opens a fence in it.
   assert.equal(host(`> :: t\n> :  d\n>    - ${F}\n>      x\nflush\n`),
-    `quote[deflist]`)
-  // The note's paragraph takes `flush` as a lazy line (carve#3885).
+    `quote[deflist], p(flush)`)
   assert.equal(host(`> [^f]: d\n>   - ${F}\n>     x\nflush\n`),
-    'quote[]')
+    'quote[], p(flush)')
   // An ITEM's paragraph does give way, which is the other direction and what
   // keeps the clause above two-sided.
   assert.equal(host(`> - d\n>   - ${F}\n>     x\nflush\n`),

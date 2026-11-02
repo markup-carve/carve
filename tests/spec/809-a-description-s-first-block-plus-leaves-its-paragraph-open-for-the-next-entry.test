@@ -21,9 +21,11 @@ after
 .
 <dl>
   <dt>t</dt>
-  <dd>after
-- y</dd>
+  <dd>after</dd>
 </dl>
+<ul>
+  <li>y</li>
+</ul>
 ```
 
 ```
@@ -35,9 +37,11 @@ after
 <blockquote>
   <dl>
     <dt>t</dt>
-    <dd>after
-- y</dd>
+    <dd>after</dd>
   </dl>
+  <ul>
+    <li>y</li>
+  </ul>
 </blockquote>
 ```
 

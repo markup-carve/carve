@@ -1,5 +1,8 @@
 ## A column-0 line after a description-hosted note is a document sibling
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 A footnote definition written as a description body's content absorbs its opener
 the way it does anywhere: the note's floor is its marker column plus two (PART 9
 §16), and a block opener there is the note's body. `:  ` sets the body's content
@@ -91,7 +94,12 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd></dd>
+  <dd>
+    <ul>
+      <li>nested
+tail</li>
+    </ul>
+  </dd>
 </dl>
 ```
 

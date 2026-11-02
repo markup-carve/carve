@@ -28,11 +28,13 @@ A quote's first-block plus takes a list that carries its quote prefixes at its m
 <blockquote>
   <ul>
     <li>
-      <blockquote><p>+
-- s</p></blockquote>
+      <blockquote><p>+</p></blockquote>
     </li>
   </ul>
 </blockquote>
+<ul>
+  <li>s</li>
+</ul>
 ```
 
 ```
@@ -42,9 +44,11 @@ A quote's first-block plus takes a list that carries its quote prefixes at its m
 <ul>
   <li>
     <blockquote>
-      <blockquote><p>+
-- s</p></blockquote>
+      <blockquote><p>+</p></blockquote>
     </blockquote>
+    <ul>
+      <li>s</li>
+    </ul>
   </li>
 </ul>
 ```

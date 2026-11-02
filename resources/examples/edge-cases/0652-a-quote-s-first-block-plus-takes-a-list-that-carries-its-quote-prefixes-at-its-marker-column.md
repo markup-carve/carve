@@ -1,5 +1,8 @@
 ## A quote's first-block plus takes a list that carries its quote prefixes at its marker column
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 Reversed by carve#4409: a list attaches in every host except a list item (CARVE-P9-067), so a quote's `+` takes a list at its marker column that carries the prefixes of the quotes around it. A list line without them refuses the `+`, which reads like a letter, and folds into its paragraph.
 
 Inside a host quote's list item, a list with every prefix at the nested quote's marker column attaches
@@ -44,11 +47,13 @@ A quote opened on an item's marker line inside a host quote refuses a column-0 l
 <blockquote>
   <ul>
     <li>
-      <blockquote><p>+
-- s</p></blockquote>
+      <blockquote><p>+</p></blockquote>
     </li>
   </ul>
 </blockquote>
+<ul>
+  <li>s</li>
+</ul>
 `````
 
 :::::::
@@ -66,9 +71,11 @@ A stacked quote opener in an item refuses a list at the item's column
 <ul>
   <li>
     <blockquote>
-      <blockquote><p>+
-- s</p></blockquote>
+      <blockquote><p>+</p></blockquote>
     </blockquote>
+    <ul>
+      <li>s</li>
+    </ul>
   </li>
 </ul>
 `````

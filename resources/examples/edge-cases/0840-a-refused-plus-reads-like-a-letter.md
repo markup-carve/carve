@@ -4,6 +4,9 @@ page: edge-lists
 
 ## A refused plus reads like a letter
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 A refused `+` has no structural effect a letter would not have (PART 9 §17 L4, CARVE-P9-067, carve#4396), so a list marker below a footnote body folds into the paragraph it forms, as it does under a letter.
 
 :::: compare
@@ -45,13 +48,15 @@ r[^a]
 <blockquote>
 
 </blockquote>
+<ul>
+  <li>b</li>
+</ul>
 <p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-- b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -70,8 +75,10 @@ r[^a]
 ```html
 <ul>
   <li>
-    <blockquote><p>a
-- +</p></blockquote>
+    <blockquote><p>a</p></blockquote>
+    <ul>
+      <li>+</li>
+    </ul>
   </li>
 </ul>
 <section id="H">

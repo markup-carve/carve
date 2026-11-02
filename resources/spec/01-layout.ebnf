@@ -226,19 +226,18 @@
 
         The code is `code`, `less`, `  more`. `  # h` at document level is a
         heading, and a `> q` indented under a `:: t` term opens a quote in
-        the enclosing container. Under an open paragraph a list marker is text
-        unless the owner is a list item, and a valid code or raw opener
-        interrupts it (PART 9 §10 I4). The list item is the only exception
-        (the tight sublist of PART 9 §24 C3), and it covers only the item's
-        own open paragraph. A description body, a quote and a footnote body
-        take none, and an open paragraph of a note inside an item is not the
-        item's own: in `:: t` / `:  [^q]: note` / `   * child` the line
-        reaches the description, misses the note, and `* child` is text of
-        the note's open paragraph, and `- [^q]: note` / `  * child` folds the
-        same way. A list marker at a
-        list item's content column opens a child list; a sibling marker at the
-        item's marker column continues the enclosing list, and siblings group
-        by the container they open in, not by the column they are written at.
+        the enclosing container. A valid code or raw opener interrupts an open
+        paragraph (PART 9 §10 I4). Under an open paragraph of the document, a
+        quote or a colon body a list marker is text (PART 9 §10 I2). In a list item, a
+        description body or a footnote body a list marker opens a list and
+        ends the open paragraph, a deeper paragraph the line misses included
+        (the tight sublist of PART 9 §24 C3): `:: t` / `: d` / `  - x` gives
+        the description a list, `:: t` / `:  [^q]: note` / `   * child` closes
+        the note and gives the description the list, and `- > q` / `  - x`
+        closes the quote and gives the item the list. Siblings group
+        by the container they open in, not by the column they are written at:
+        a sibling marker at an item's marker column continues the enclosing
+        list.
         A `: ` description is such a sibling too: where the owner S2 selects
         holds an open term or description, a `+`-filled one included
         (carve#4408), a `: ` line opens the next description of that list at
@@ -283,8 +282,13 @@
         blank, and its form does not interrupt a paragraph. The deepest
         paragraph is found by following the last child container to its leaf
         at every depth. The test is the same at every depth and in every
-        family. A list marker that misses an item's content column is no lazy
-        line: leading space stops no line form (S3), so it is a sibling
+        family. A list marker that misses a list item, description body or
+        footnote body is no lazy line and closes that body, with every frame
+        it missed: `:: t` / `: d` / `- x` and `[^a]: n` / `- x` each end with a
+        list after the container, and `> [^a]: n` / `- x` closes the quote too.
+        Only a marker that misses nothing but quotes, read in the document, a
+        quote or a colon body, folds (`> q` / `- x`). Leading space stops no line form (S3),
+        so past a missed item the marker is a sibling
         when it matches the list on every §11 N1 axis and otherwise a new list,
         so `- a` / ` - b` is one list and `- a` / ` * b` and `1. a` / ` a. b`
         are two (carve#4545). Every item measures its content against its own

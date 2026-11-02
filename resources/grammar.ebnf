@@ -356,19 +356,18 @@
 
         The code is `code`, `less`, `  more`. `  # h` at document level is a
         heading, and a `> q` indented under a `:: t` term opens a quote in
-        the enclosing container. Under an open paragraph a list marker is text
-        unless the owner is a list item, and a valid code or raw opener
-        interrupts it (PART 9 §10 I4). The list item is the only exception
-        (the tight sublist of PART 9 §24 C3), and it covers only the item's
-        own open paragraph. A description body, a quote and a footnote body
-        take none, and an open paragraph of a note inside an item is not the
-        item's own: in `:: t` / `:  [^q]: note` / `   * child` the line
-        reaches the description, misses the note, and `* child` is text of
-        the note's open paragraph, and `- [^q]: note` / `  * child` folds the
-        same way. A list marker at a
-        list item's content column opens a child list; a sibling marker at the
-        item's marker column continues the enclosing list, and siblings group
-        by the container they open in, not by the column they are written at.
+        the enclosing container. A valid code or raw opener interrupts an open
+        paragraph (PART 9 §10 I4). Under an open paragraph of the document, a
+        quote or a colon body a list marker is text (PART 9 §10 I2). In a list item, a
+        description body or a footnote body a list marker opens a list and
+        ends the open paragraph, a deeper paragraph the line misses included
+        (the tight sublist of PART 9 §24 C3): `:: t` / `: d` / `  - x` gives
+        the description a list, `:: t` / `:  [^q]: note` / `   * child` closes
+        the note and gives the description the list, and `- > q` / `  - x`
+        closes the quote and gives the item the list. Siblings group
+        by the container they open in, not by the column they are written at:
+        a sibling marker at an item's marker column continues the enclosing
+        list.
         A `: ` description is such a sibling too: where the owner S2 selects
         holds an open term or description, a `+`-filled one included
         (carve#4408), a `: ` line opens the next description of that list at
@@ -413,8 +412,13 @@
         blank, and its form does not interrupt a paragraph. The deepest
         paragraph is found by following the last child container to its leaf
         at every depth. The test is the same at every depth and in every
-        family. A list marker that misses an item's content column is no lazy
-        line: leading space stops no line form (S3), so it is a sibling
+        family. A list marker that misses a list item, description body or
+        footnote body is no lazy line and closes that body, with every frame
+        it missed: `:: t` / `: d` / `- x` and `[^a]: n` / `- x` each end with a
+        list after the container, and `> [^a]: n` / `- x` closes the quote too.
+        Only a marker that misses nothing but quotes, read in the document, a
+        quote or a colon body, folds (`> q` / `- x`). Leading space stops no line form (S3),
+        so past a missed item the marker is a sibling
         when it matches the list on every §11 N1 axis and otherwise a new list,
         so `- a` / ` - b` is one list and `- a` / ` * b` and `1. a` / ` a. b`
         are two (carve#4545). Every item measures its content against its own
@@ -972,10 +976,13 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
        definition or comment recognized there ends the quote and starts
        outside it, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
-   A LIST MARKER (bullet or ordered) is NOT an exclusion: it folds into the
+   A LIST MARKER (bullet or ordered) is NOT an exclusion when it misses only
+   quotes and is read in the document, a quote or a colon body: it folds into the
    open paragraph (PART 9 §10 I2, I6), so "> quoted \n - item" is ONE quote whose
-   paragraph is "quoted\n- item". To put a real list inside a quote,
-   `>`-prefix it or use the `+` continuation marker (PART 9 §17).
+   paragraph is "quoted\n- item". Read in a marker body, or past a missed marker
+   body, it opens a list and ends the quote (PART 0 S3, S4). To put a real list
+   inside a quote, use a blank `>` line first or the `+` continuation marker
+   (PART 9 §17).
    Only PLAIN text and a folded list marker continue the open paragraph. The lazy line's text
    is appended to the blockquote's inner content before that content is
    block-parsed, so a hard-wrapped quoted paragraph need not repeat '>' on every
@@ -5477,17 +5484,17 @@ EOF = (* end of file *) ;
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
          is <p>intro</p> + <hr> + <p>more</p> (corpus
          81-paragraph-interruption).
-      I2 LIST MARKERS NEVER INTERRUPT (symmetric). NEITHER a bullet
-         (`- `/`* `, `- [x] ` task) NOR an ordered marker (decimal, letter,
-         roman, any value) interrupts: the line FOLDS into P as lazy
-         continuation; a list needs a blank line before it (matching Djot). The
-         one exception is the sibling of an open list (PART 0 S4): `- a` / `- b`
-         gives two items.
+      I2 LIST MARKERS DO NOT INTERRUPT OUTSIDE A MARKER BODY (symmetric).
+         NEITHER a bullet (`- `/`* `, `- [x] ` task) NOR an ordered marker
+         (decimal, letter, roman, any value) interrupts a paragraph owned by
+         the document, a quote or a colon body: the line FOLDS into P as lazy continuation;
+         a list needs a blank line before it (matching Djot).
          "Liste: \n - eins \n - zwei" is ONE paragraph, so is
          "x = 5 \n * 3 + 17"; a blank line starts the list.
-         TIGHT NESTED LISTS UNAFFECTED:
-         indented marker inside an open list ITEM opens a sublist with no
-         blank line -- that is §24 C3 (content column), not this relation.
+         IN A MARKER BODY A LIST MARKER ALWAYS OPENS: in a list item, description
+         body or footnote body a marker at or past the content column opens a
+         list with no blank line, and one that misses the body closes it
+         (§24 C3, PART 0 S3, S4).
       I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
          does not interrupt: an image is not a block of its own in Carve;
          it stays an inline image inside the paragraph.
@@ -7079,7 +7086,8 @@ EOF = (* end of file *) ;
            - BELOW content_column: the line is outside the item body and
              never nests. It folds into the deepest open paragraph when its
              form does not interrupt (PART 0 S4), and otherwise ends the item
-             and is read in the nearest surviving owner (S5). That owner is the
+             and is read in the nearest surviving owner (S5). A list marker
+             does not fold: it closes the body. That owner is the
              document only when no enclosing container's content column is
              reached.
 
@@ -10372,17 +10380,16 @@ EOF = (* end of file *) ;
           language token already ends at whitespace or metadata (`~~~js x`)
           recovers whatever follows, so it has no spelling and is refused.
 
-      A LIST MARKER IN AN ITEM is written one column below the item's content
-      column, where the line is a lazy continuation of the item's paragraph,
-      unless that column still reads a sibling marker of the item's list.
+      A LIST MARKER IN A MARKER BODY has no spelling. Under PART 0 S3 and S4 it
+      opens a list at or past the body's content column and closes the body
+      below it, so no column keeps it in the span. A paragraph in a list item,
+      a description body or a footnote body, a quote inside one included,
+      refuses a value holding such a line. A paragraph owned by the document,
+      by quotes alone or by a colon body keeps it as paragraph text (PART 9
+      §10 I2).
 
       A LINE NO PREFIXED SPELLING KEEPS is written as a lazy continuation with
-      no container prefix, where that reads back. A paragraph in a quoted item
-      holding a code span whose value is `a`, a line break and `- b` is
-      written
-
-        > - `a
-        - b`
+      no container prefix, where that reads back.
 
       NO SPELLING. These value lines open a block at every column in every
       host, so the writer refuses the value:
@@ -10393,8 +10400,7 @@ EOF = (* end of file *) ;
         - on a line that is not the last: a bare `>`, a link definition, a
           colon fence or colon run, a code or raw fence opener, a block
           attribute line, a pipe-table row and a thematic break;
-        - in a list item, a marker of the item's own list (`- b` in a `-`
-          list, `1. b` and `. b` in an ordered list);
+        - in a marker body, any list marker;
         - in any paragraph, an abbreviation definition.
 
       A TEXT LINE THAT STARTS WITH A FENCE RUN is escaped, since a fence

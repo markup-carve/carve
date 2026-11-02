@@ -16,14 +16,14 @@ const oracle = (src) => renderDoc(parse(src)).replace(/\s+/g, ' ').replace(/> </
 const link = '<p><a href="/u">r</a></p>'
 
 const CASES = [
-  ['a definition after a folded bullet', ':: t\n: d\n  - para\n    [r]: /u\nx\n\n[r][]\n',
-    `<dl><dt>t</dt><dd>d - para</dd></dl><p>x</p>${link}`],
-  ['a definition after a folded ordered marker', ':: t\n: d\n  1. para\n     [r]: /u\nx\n\n[r][]\n',
-    `<dl><dt>t</dt><dd>d 1. para</dd></dl><p>x</p>${link}`],
-  ['a heading after a folded bullet', ':: t\n: d\n  - para\n    # H\nx\n',
-    '<dl><dt>t</dt><dd><p>d - para</p><h1 id="H">H</h1></dd></dl><p>x</p>'],
-  ['an attribute line after a folded bullet', ':: t\n: d\n  - para\n    {#k}\nx\n',
-    '<dl><dt>t</dt><dd>d - para</dd></dl><p>x</p>'],
+  ['a definition after a sublist', ':: t\n: d\n  - para\n    [r]: /u\nx\n\n[r][]\n',
+    `<dl><dt>t</dt><dd><p>d</p><ul><li>para</li></ul></dd></dl><p>x</p>${link}`],
+  ['a definition after an ordered sublist', ':: t\n: d\n  1. para\n     [r]: /u\nx\n\n[r][]\n',
+    `<dl><dt>t</dt><dd><p>d</p><ol><li>para</li></ol></dd></dl><p>x</p>${link}`],
+  ['a heading after a sublist', ':: t\n: d\n  - para\n    # H\nx\n',
+    '<dl><dt>t</dt><dd><p>d</p><ul><li>para <h1 id="H">H</h1></li></ul></dd></dl><p>x</p>'],
+  ['an attribute line after a sublist', ':: t\n: d\n  - para\n    {#k}\nx\n',
+    '<dl><dt>t</dt><dd><p>d</p><ul><li>para</li></ul></dd></dl><p>x</p>'],
   ['an over-indented definition in a quoted item', '- > para\n  >  [r]: /u\ntail\n\n[r][]\n',
     `<ul><li><blockquote><p>para</p></blockquote></li></ul><p>tail</p>${link}`],
   // The note takes `tail` as a lazy line (carve#3885).
@@ -39,7 +39,7 @@ for (const [what, src, expected] of CASES) {
   })
 }
 
-test('a footnote body reads a definition past its column after a folded bullet', () => {
+test('a footnote body reads a definition past its column after a sublist', () => {
   const ast = parse('[^n]: d\n  - para\n    [r]: /u\nx\n\n[^n]\n')
   assert.equal(ast.linkDefs.get('r')?.url, '/u')
   assert.match(oracle('[^n]: d\n  - para\n    [r]: /u\nx\n\n[^n]\n'), /^<p>x<\/p><p>/)
@@ -51,7 +51,7 @@ test('a definition past a quoted sub-item column registers', () => {
   assert.equal(oracle('- > - x\n  >    [r]: /u\ntail\n\n[r][]\n'),
     `<ul><li><blockquote><ul><li>x</li></ul></blockquote></li></ul><p>tail</p>${link}`)
 })
-test('an abbreviation after a folded bullet is a definition', () => {
+test('an abbreviation after a sublist is a definition', () => {
   assert.equal(oracle(':: t\n: d\n  - para\n    *[A]: b\nx\n'),
-    '<dl><dt>t</dt><dd>d - para</dd></dl><p>x</p>')
+    '<dl><dt>t</dt><dd><p>d</p><ul><li>para</li></ul></dd></dl><p>x</p>')
 })

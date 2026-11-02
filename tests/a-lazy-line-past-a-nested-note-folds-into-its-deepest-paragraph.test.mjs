@@ -45,10 +45,10 @@ test('a past-column line keeps the following lazy line in a marker-line note (ca
   assert.match(out, /<p>a\nb\nx\nc<a href="#fnref1"/)
 })
 
-test('a marker below a hosted note is text of the note, not a sublist (carve#4160)', () => {
+test('a marker below a hosted note closes the note and opens a sublist (carve#4860)', () => {
   const out = html(['- body', '', '  [^g]: n', '   - item', '', 'r[^g]'])
-  assert.match(out, /<li>body<\/li>/)
-  assert.match(out, /<p>n\n- item<a href="#fnref1"/)
+  assert.match(out, /<li>\s*<p>body<\/p>\s*<ul>\s*<li>item<\/li>|<li>body\s*<ul>\s*<li>item<\/li>/)
+  assert.match(out, /<p>n<a href="#fnref1"/)
 })
 
 test('a lone plus on a note marker line attaches a list at its marker column', () => {

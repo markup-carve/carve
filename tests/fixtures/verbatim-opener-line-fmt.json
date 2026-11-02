@@ -65,8 +65,7 @@
     {
       "id": "marker-in-a-quoted-item",
       "host": "quotedItem",
-      "value": "a\n- b",
-      "source": "> - `a\n- b`\n"
+      "value": "a\n- b"
     },
     {
       "host": "paragraph",

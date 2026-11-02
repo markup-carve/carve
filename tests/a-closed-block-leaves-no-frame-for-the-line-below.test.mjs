@@ -22,11 +22,10 @@ for (const depth of [0, 1, 2]) for (const lead of ['    ```js,title="x"', '  ```
     test(`no paragraph resumes after a closed block under a failed opener: depth ${depth}, ${JSON.stringify(lead)}, blank ${blank}, ${name}, ${tail}`, () => {
       assert.ok(outside(html(quoted(depth, body) + tail + '\n'), depth))
     })
-    // A marker at document column 0 opens a list beside an unquoted one, so
-    // only the quoted spellings fold it.
-    if (tail === 'TAIL' || depth > 0) test(`an open paragraph after that block still takes the line: depth ${depth}, ${JSON.stringify(lead)}, blank ${blank}, ${name}, ${tail}`, () => {
+    // A marker that misses the item closes it (PART 0 S4, carve#4860), so only plain text folds.
+    if (tail === 'TAIL') test(`an open paragraph after that block still takes the line: depth ${depth}, ${JSON.stringify(lead)}, blank ${blank}, ${name}, ${tail}`, () => {
       const out = html(quoted(depth, [...body, '  more']) + tail + '\n')
-      assert.match(out, /more\n?(1\. )?TAIL<\/li><\/ul>/)
+      assert.match(out, /more\n?TAIL<\/li><\/ul>/)
     })
   }
 }

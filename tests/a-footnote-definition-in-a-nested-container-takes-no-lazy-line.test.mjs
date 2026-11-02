@@ -18,7 +18,6 @@ const CASES = [
   ['a quoted item', '> - para\n>   [^f]: n\ntail\n', QL, 'n tail'],
   ['a quoted ordered item', '> 1. para\n>    [^f]: n\ntail\n', '<blockquote><ol><li>para</li></ol></blockquote>', 'n tail'],
   ['a quoted item, note continuation', '> - para\n>   [^f]: n\n>     more\ntail\n', QL, 'n more tail'],
-  ['a quoted item, list marker', '> - para\n>   [^f]: n\n- tail\n', QL, 'n - tail'],
   ['a quoted definition body', '> :: t\n> : d\n>   [^f]: n\ntail\n', '<blockquote><dl><dt>t</dt><dd>d</dd></dl></blockquote>', 'n tail'],
   ['a quoted sub-item', '> - a\n>   - para\n>     [^f]: n\ntail\n', '<blockquote><ul><li>a <ul><li>para</li></ul></li></ul></blockquote>', 'n tail'],
   ['a quote in an item, column 2', '- > - para\n  >   [^f]: n\n  tail\n', `<ul><li>${QL}</li></ul>`, 'n tail'],

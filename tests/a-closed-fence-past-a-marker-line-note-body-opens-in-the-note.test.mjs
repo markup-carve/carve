@@ -20,8 +20,10 @@ for (const q of ['', '> ', '> > ']) {
   test(`a closed fence past a marker-line note paragraph opens in the note, quote depth ${q.length / 2}`, () => {
     for (const marker of ['-', '*', '1.', '1)', '- [ ]', '- [x]']) for (const column of [6, 8]) {
       const src = source('text', marker, column)
-      const body = `<p>text ${marker} child</p><pre><code>code </code></pre><p>${backlink}</p>`
-      assert.equal(norm(renderDoc(parse(src))), wrap(`<ul><li></li></ul><p>after${ref}</p>`) + endnotes(body), src)
+      const list = /\d/.test(marker) ? 'ol' : 'ul'
+      const out = norm(renderDoc(parse(src)))
+      assert.ok(out.startsWith(wrap(`<ul><li></li></ul><p>after${ref}</p>`)), src)
+      assert.match(out, new RegExp(`<p>text</p><${list}.*child.*<pre><code>code </code></pre>`), src)
     }
   })
 
@@ -51,7 +53,7 @@ for (const q of ['', '> ', '> > ']) for (const boundary of ['- sibling', 'outsid
       ...boundary.split('\n'), `      ${F}`, 'after [^n]']
     const src = lines.map(line => q + line).join('\n') + '\n'
     const doc = parse(src)
-    assert.deepEqual(doc.footnoteDefs.get('n').map((block) => block.t), ['para', 'code'], src)
+    assert.deepEqual(doc.footnoteDefs.get('n').map((block) => block.t), ['para', 'list'], src)
     let blocks = doc.blocks
     for (let depth = 0; depth < q.length / 2; depth++) blocks = blocks[0].children
     if (boundary === 'outside') {

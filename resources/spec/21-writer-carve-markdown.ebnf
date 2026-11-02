@@ -768,17 +768,16 @@
           language token already ends at whitespace or metadata (`~~~js x`)
           recovers whatever follows, so it has no spelling and is refused.
 
-      A LIST MARKER IN AN ITEM is written one column below the item's content
-      column, where the line is a lazy continuation of the item's paragraph,
-      unless that column still reads a sibling marker of the item's list.
+      A LIST MARKER IN A MARKER BODY has no spelling. Under PART 0 S3 and S4 it
+      opens a list at or past the body's content column and closes the body
+      below it, so no column keeps it in the span. A paragraph in a list item,
+      a description body or a footnote body, a quote inside one included,
+      refuses a value holding such a line. A paragraph owned by the document,
+      by quotes alone or by a colon body keeps it as paragraph text (PART 9
+      §10 I2).
 
       A LINE NO PREFIXED SPELLING KEEPS is written as a lazy continuation with
-      no container prefix, where that reads back. A paragraph in a quoted item
-      holding a code span whose value is `a`, a line break and `- b` is
-      written
-
-        > - `a
-        - b`
+      no container prefix, where that reads back.
 
       NO SPELLING. These value lines open a block at every column in every
       host, so the writer refuses the value:
@@ -789,8 +788,7 @@
         - on a line that is not the last: a bare `>`, a link definition, a
           colon fence or colon run, a code or raw fence opener, a block
           attribute line, a pipe-table row and a thematic break;
-        - in a list item, a marker of the item's own list (`- b` in a `-`
-          list, `1. b` and `. b` in an ordered list);
+        - in a marker body, any list marker;
         - in any paragraph, an abbreviation definition.
 
       A TEXT LINE THAT STARTS WITH A FENCE RUN is escaped, since a fence

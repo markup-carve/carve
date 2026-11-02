@@ -372,7 +372,8 @@
            - BELOW content_column: the line is outside the item body and
              never nests. It folds into the deepest open paragraph when its
              form does not interrupt (PART 0 S4), and otherwise ends the item
-             and is read in the nearest surviving owner (S5). That owner is the
+             and is read in the nearest surviving owner (S5). A list marker
+             does not fold: it closes the body. That owner is the
              document only when no enclosing container's content column is
              reached.
 

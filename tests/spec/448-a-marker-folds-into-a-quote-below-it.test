@@ -9,10 +9,12 @@ A marker folds into a quote below it
   <li>a
     <blockquote>
       <ul>
-        <li>x
-- m</li>
+        <li>x</li>
       </ul>
     </blockquote>
+    <ul>
+      <li>m</li>
+    </ul>
   </li>
 </ul>
 ```
@@ -25,10 +27,12 @@ A marker folds into a quote below it
   <li>
     <blockquote>
       <ul>
-        <li>x
-- m</li>
+        <li>x</li>
       </ul>
     </blockquote>
+    <ul>
+      <li>m</li>
+    </ul>
   </li>
 </ul>
 ```
@@ -44,10 +48,12 @@ A marker folds into a quote below it
     <blockquote>
       <ul>
         <li>x
-p
-- m</li>
+p</li>
       </ul>
     </blockquote>
+    <ul>
+      <li>m</li>
+    </ul>
   </li>
 </ul>
 ```
@@ -59,8 +65,10 @@ p
 .
 <ul>
   <li>a
-    <blockquote><p>q
-- m</p></blockquote>
+    <blockquote><p>q</p></blockquote>
+    <ul>
+      <li>m</li>
+    </ul>
   </li>
 </ul>
 ```

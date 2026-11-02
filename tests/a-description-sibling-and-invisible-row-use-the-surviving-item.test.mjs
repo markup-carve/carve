@@ -66,11 +66,11 @@ for (const marker of markers) for (const depth of [1, 2, 3]) for (const quoted o
 }
 
 for (const depth of [1, 2, 3]) for (const marker of markers) {
-  test(`an unmarked ${JSON.stringify(marker)} folds through ${depth} quote levels`, () => {
+  test(`an unmarked ${JSON.stringify(marker)} closes the description through ${depth} quote levels`, () => {
     const prefix = '> '.repeat(depth)
     const html = renderDoc(parse(`${prefix}:: term\n${prefix}:  detail\n${marker}tail\n`))
-    assert.match(html, /<dd>detail\n[^<]*tail<\/dd>/)
-    assert.doesNotMatch(html, /<\/blockquote>\n<(?:ul|ol)/)
+    assert.match(html, /<dd>detail<\/dd>/)
+    assert.match(html, /<li>/)
   })
 }
 

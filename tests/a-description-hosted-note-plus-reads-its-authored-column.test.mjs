@@ -19,13 +19,13 @@ test('the note marker column takes the block (carve#4227)', () => {
 
 for (const src of [':: t\n: [^q]: +\n- y\n\nr[^q]\n', ':: t\n: [^q]: +\n - y\n\nr[^q]\n']) {
   test(`a list off the note marker column folds into the refused +: ${JSON.stringify(src)} (carve#4228)`, () => {
-    assert.match(html(src), /^<dl>\n {2}<dt>t<\/dt>\n {2}<dd><\/dd>\n<\/dl>\n<p>r/)
-    assert.deepEqual(note(src), [{ t: 'para', lines: ['+', '- y'] }])
+    assert.match(html(src), /^<dl>\n {2}<dt>t<\/dt>\n {2}<dd><\/dd>\n<\/dl>\n<ul>\n {2}<li>y<\/li>\n<\/ul>\n<p>r/)
+    assert.deepEqual(note(src), [{ t: 'para', lines: ['+'] }])
   })
 }
 
 test('inside a quote the note marker column is measured through the prefix (carve#4228)', () => {
-  assert.deepEqual(note('> :: t\n> : [^q]: +\n> - y\n\nr[^q]\n'), [{ t: 'para', lines: ['+', '- y'] }])
+  assert.deepEqual(note('> :: t\n> : [^q]: +\n> - y\n\nr[^q]\n'), [{ t: 'para', lines: ['+'] }])
   assert.match(html('> :: t\n> : [^q]: +\n>   - y\n\nr[^q]\n'), /<li id="fn1">\s*<ul>\s*<li>y<\/li>/)
 })
 

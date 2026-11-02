@@ -1422,7 +1422,7 @@
   {
     "id": "list-quote/ordinary/2/sibling",
     "source": "- > intro\n  - tail\n",
-    "html": "<ul>\n  <li>\n    <blockquote><p>intro\n- tail</p></blockquote>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <blockquote><p>intro</p></blockquote>\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list-quote/ordinary/2/quote",
@@ -1447,7 +1447,7 @@
   {
     "id": "list-quote/ordinary/4/sibling",
     "source": "- > intro\n    - tail\n",
-    "html": "<ul>\n  <li>\n    <blockquote><p>intro\n- tail</p></blockquote>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <blockquote><p>intro</p></blockquote>\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list-quote/ordinary/4/quote",

@@ -1,5 +1,8 @@
 ## A line past a body's column is read in the body, and a quote does not rebase
 
+
+Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
+
 A list-shaped line under a description body's open paragraph folds into it
 (PART 9 §10 I2) and opens no item, so a definition past the body's content
 column is read in the body: it registers and ends the paragraph
@@ -20,8 +23,12 @@ x
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-- para</dd>
+  <dd>
+    <p>d</p>
+    <ul>
+      <li>para</li>
+    </ul>
+  </dd>
 </dl>
 <p>x</p>
 <p><a href="/u">r</a></p>
@@ -45,8 +52,12 @@ x
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-1. para</dd>
+  <dd>
+    <p>d</p>
+    <ol>
+      <li>para</li>
+    </ol>
+  </dd>
 </dl>
 <p>x</p>
 <p><a href="/u">r</a></p>
@@ -73,8 +84,11 @@ x
   <hr>
   <ol>
     <li id="fn1">
-      <p>d
-- para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>d</p>
+      <ul>
+        <li>para</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -100,8 +114,10 @@ paragraph:
 <dl>
   <dt>t</dt>
   <dd>
-    <p>d
-- para</p>
+    <p>d</p>
+    <ul>
+      <li>para</li>
+    </ul>
     <p>more</p>
   </dd>
 </dl>
@@ -126,9 +142,12 @@ x
 <dl>
   <dt>t</dt>
   <dd>
-    <p>d
-- para</p>
-    <h1 id="H">H</h1>
+    <p>d</p>
+    <ul>
+      <li>para
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
   </dd>
 </dl>
 <p>x</p>
@@ -151,8 +170,12 @@ x
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-- para</dd>
+  <dd>
+    <p>d</p>
+    <ul>
+      <li>para</li>
+    </ul>
+  </dd>
 </dl>
 <p>x</p>
 ```
@@ -173,8 +196,12 @@ x
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d
-- para</dd>
+  <dd>
+    <p>d</p>
+    <ul>
+      <li>para</li>
+    </ul>
+  </dd>
 </dl>
 <p>x</p>
 ```

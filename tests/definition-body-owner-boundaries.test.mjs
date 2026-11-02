@@ -20,13 +20,13 @@ const cases = [
     name: 'nested marker at the invisible note body column',
     source: '. d\n   [^n]: e\n     - a\n',
     owner: ['list', 'item', 'para'],
-    noteLines: ['e', '- a'],
+    noteLines: ['e'],
   },
   {
-    name: 'nested marker below the note body column is text of the note (carve#4160)',
+    name: 'nested marker below the note body column closes the note (carve#4860)',
     source: '. d\n   [^n]: e\n    - a\n',
-    owner: ['list', 'item', 'para'],
-    noteLines: ['e', '- a'],
+    owner: ['list', 'item', 'list'],
+    noteLines: ['e'],
   },
   {
     name: 'definition fence with payload and a closer at its authored base',

@@ -9,7 +9,7 @@ const flat = (src) => html(src).replace(/\n *(?=<)/g, '')
 test('a line without the quote prefixes refuses a description first-block + and folds as text (carve#4409)', () => {
   assert.equal(flat('> :: t\n> : +\npara\n'), '<blockquote><dl><dt>t</dt><dd>+\npara</dd></dl></blockquote>')
   assert.equal(flat('> :: t\n> :   +\npara\n'), '<blockquote><dl><dt>t</dt><dd>+\npara</dd></dl></blockquote>')
-  assert.equal(flat('> :: t\n> : +\n- y\n'), '<blockquote><dl><dt>t</dt><dd>+\n- y</dd></dl></blockquote>')
+  assert.equal(flat('> :: t\n> : +\n- y\n'), '<blockquote><dl><dt>t</dt><dd>+</dd></dl></blockquote><ul><li>y</li></ul>')
   assert.equal(flat('> > :: t\n> > : +\npara\n'), '<blockquote><blockquote><dl><dt>t</dt><dd>+\npara</dd></dl></blockquote></blockquote>')
   assert.equal(flat('> > :: t\n> > : +\n> q\n'), '<blockquote><blockquote><dl><dt>t</dt><dd>+\nq</dd></dl></blockquote></blockquote>')
 })
@@ -25,8 +25,8 @@ test('a quoted line still attaches to the description (CARVE-P9-067)', () => {
 
 test('a note on a quoted description marker line folds its follower behind a refused + (carve#4409)', () => {
   const out = html('> :: t\n> : [^b]: +\n- y\n\nr[^b]\n')
-  assert.match(out.replace(/\n */g, ''), /^<blockquote><dl><dt>t<\/dt><dd><\/dd><\/dl><\/blockquote><p>r/)
-  assert.deepEqual(parse('> :: t\n> : [^b]: +\n- y\n\nr[^b]\n').footnoteDefs.get('b'), [{ t: 'para', lines: ['+', '- y'] }])
+  assert.match(out.replace(/\n */g, ''), /^<blockquote><dl><dt>t<\/dt><dd><\/dd><\/dl><\/blockquote><ul><li>y<\/li><\/ul><p>r/)
+  assert.deepEqual(parse('> :: t\n> : [^b]: +\n- y\n\nr[^b]\n').footnoteDefs.get('b'), [{ t: 'para', lines: ['+'] }])
 })
 
 test('the block a description first-block + takes continues lazily, as an item does', () => {

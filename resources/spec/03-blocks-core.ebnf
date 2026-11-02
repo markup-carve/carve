@@ -348,10 +348,13 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
        definition or comment recognized there ends the quote and starts
        outside it, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
-   A LIST MARKER (bullet or ordered) is NOT an exclusion: it folds into the
+   A LIST MARKER (bullet or ordered) is NOT an exclusion when it misses only
+   quotes and is read in the document, a quote or a colon body: it folds into the
    open paragraph (PART 9 §10 I2, I6), so "> quoted \n - item" is ONE quote whose
-   paragraph is "quoted\n- item". To put a real list inside a quote,
-   `>`-prefix it or use the `+` continuation marker (PART 9 §17).
+   paragraph is "quoted\n- item". Read in a marker body, or past a missed marker
+   body, it opens a list and ends the quote (PART 0 S3, S4). To put a real list
+   inside a quote, use a blank `>` line first or the `+` continuation marker
+   (PART 9 §17).
    Only PLAIN text and a folded list marker continue the open paragraph. The lazy line's text
    is appended to the blockquote's inner content before that content is
    block-parsed, so a hard-wrapped quoted paragraph need not repeat '>' on every

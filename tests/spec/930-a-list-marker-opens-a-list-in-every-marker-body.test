@@ -1,0 +1,203 @@
+A list marker opens a list in every marker body
+
+```
+:: t
+: d
+  - x
+  - y
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <ul>
+      <li>x</li>
+      <li>y</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+[^a]: n
+  - x
+
+q[^a]
+.
+<p>q<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n</p>
+      <ul>
+        <li>x</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- [^q]: note
+  * child
+
+r[^q]
+.
+<ul>
+  <li>
+    <ul>
+      <li>child</li>
+    </ul>
+  </li>
+</ul>
+<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^a]: n
+- x
+
+q[^a]
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>q<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: t
+: d
+- x
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<ul>
+  <li>x</li>
+</ul>
+```
+
+```
+> p
+> - x
+.
+<blockquote><p>p
+- x</p></blockquote>
+```
+
+```
+- > p
+  - x
+.
+<ul>
+  <li>
+    <blockquote><p>p</p></blockquote>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+> [^a]: n
+- x
+
+q[^a]
+.
+<blockquote>
+
+</blockquote>
+<ul>
+  <li>x</li>
+</ul>
+<p>q<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> > :: t
+> > : d
+- x
+.
+<blockquote>
+  <blockquote>
+    <dl>
+      <dt>t</dt>
+      <dd>d</dd>
+    </dl>
+  </blockquote>
+</blockquote>
+<ul>
+  <li>x</li>
+</ul>
+```
+
+```
+:: t
+: d
+  1. x
+  2. y
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <ol>
+      <li>x</li>
+      <li>y</li>
+    </ol>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: > p
+  - x
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>p</p></blockquote>
+    <ul>
+      <li>x</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+> p
+- x
+.
+<blockquote><p>p
+- x</p></blockquote>
+```

@@ -18,17 +18,17 @@ test('a quoted definition closes the note claim after an interior blank', () => 
 
 // The note's open paragraph is not the item's own, so no sublist (carve#4160).
 for (const marker of ['-', '*', '1.']) {
-  test(`a ${marker} marker at the item column is text of the note paragraph`, () => {
+  test(`a ${marker} marker at the item column closes the note and opens a sublist`, () => {
     const source = `- outer\n  - see[^n]\n    [^n]: a\n    ${marker} li\nx\n`
     const html = renderDoc(parse(source))
-    assert.ok(html.includes(`<p>a\n${marker} li\nx<a href`))
-    assert.doesNotMatch(html, /<li>li/)
+    assert.ok(html.includes(`<p>a<a href`))
+    assert.match(html, /<li>li\nx<\/li>/)
   })
 }
 
-test('a marker one column past the item column is text of the note paragraph', () => {
+test('a marker one column past the item column closes the note and opens a sublist', () => {
   const source = '- outer\n  - see[^n]\n    [^n]: a\n     - li\nx\n'
   const html = renderDoc(parse(source))
-  assert.match(html, /<p>a\n- li\nx<a href/)
-  assert.doesNotMatch(html, /<li>li/)
+  assert.match(html, /<p>a<a href/)
+  assert.match(html, /<li>li\nx<\/li>/)
 })
