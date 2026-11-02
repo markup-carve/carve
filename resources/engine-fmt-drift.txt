@@ -20,12 +20,6 @@
 # resources/engine-pin-drift/.README says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-132-thematic-break-requires-contiguous-markers-6  carve#4814: the pinned carve-js writer collapses `*  *  *` to `* * *`, which the ruling makes a thematic break
 854-an-indented-dash-line-neither-opens-nor-closes-frontmatter  The pinned writer respells both dash breaks as ***, where CARVE-P11-002 moves only the break at byte 0, so the re-parsed tree gains marker "*" (markup-carve/carve-js#4135).
 854-an-indented-dash-line-neither-opens-nor-closes-frontmatter-2  The pinned writer respells both dash breaks as ***, where CARVE-P11-002 moves only the break at byte 0, so the re-parsed tree gains marker "*" (markup-carve/carve-js#4135).
-930-a-line-that-misses-a-nested-host-ends-it-when-a-comment-closer-lies-ahead  The pinned writer rewrites the nested opener as a %% line and attaches the missed line with a +, which reads differently (markup-carve/carve-js#4211).
-933-a-comment-closer-ahead-is-read-from-the-span-s-raw-lines-4  The pinned writer rewrites the nested opener as a %% line and attaches the missed line with a +, which reads differently (markup-carve/carve-js#4211).
-933-a-comment-closer-ahead-is-read-from-the-span-s-raw-lines-5  The pinned writer folds the missed line into the quote it ended, which the pin also misreads on first render (markup-carve/carve#4888).
-933-a-comment-closer-ahead-is-read-from-the-span-s-raw-lines-7  The pinned writer rewrites the nested opener as a %% line and moves the missed line into the nested item (markup-carve/carve-js#4211, markup-carve/carve#4878).
-933-a-spaced-thematic-break-is-tested-before-a-list-marker-on-every-line-6  The pinned writer indents the spaced break into the note, where it reads as the note's own break; carve#4880 ends the description there.
 616-a-line-is-read-in-the-container-whose-column-it-reaches-12  carve#4860: the pinned writer spells a marker in a description body as paragraph text, which the ruling reads as a list.

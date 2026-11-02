@@ -1,1 +1,0 @@
-The pinned carve-js reads the line that misses the nested item as lazy text of that item; the spec model ends the nested item under the closer-ahead rule (markup-carve/carve#4770, markup-carve/carve-js#4205).

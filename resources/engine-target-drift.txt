@@ -165,10 +165,6 @@ carve/rust/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-32  markup-
 carve/php/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-32  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
 carve/rust/682-escaped-table-hyphens-stay-literal  markup-carve/carve#3784, the pinned carve-rs writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-rs pin
 carve/php/682-escaped-table-hyphens-stay-literal  markup-carve/carve#3784, the pinned carve-php writer emits a GFM separator row where CARVE-P11-066 makes native |= headers canonical; pending the carve-php pin
-carve/js/929-a-refused-plus-is-escaped-when-the-block-below-would-attach  markup-carve/carve#4868 (carve-js), CARVE-P11-042 spells a refused + as \+ when the block below would attach
-carve/js/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-2  markup-carve/carve#4868 (carve-js), CARVE-P11-042 spells a refused + as \+ when the block below would attach
-carve/js/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-4  markup-carve/carve#4868 (carve-js), CARVE-P11-042 spells a refused + as \+ when the block below would attach
-carve/js/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-5  markup-carve/carve#4868 (carve-js), CARVE-P11-042 spells a refused + as \+ when the block below would attach
 carve/php/929-a-refused-plus-is-escaped-when-the-block-below-would-attach  markup-carve/carve#4868 (carve-php), the pinned writer predates it; carve-php main writes the fixture
 carve/php/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-2  markup-carve/carve#4868 (carve-php), the pinned writer predates it; carve-php main writes the fixture
 carve/php/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-3  markup-carve/carve#4868 (carve-php), the pinned writer predates it; carve-php main writes the fixture

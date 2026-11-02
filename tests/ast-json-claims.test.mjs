@@ -170,18 +170,20 @@ test('an unresolved reference is a link node, not flattened text', () => {
 })
 
 /*
- * §7 and PART 9: an abbreviation definition is recognized ONLY at document
- * level. The rows used to say carve-js leaves an `abbreviation_def` inside its
- * container, which is not a thing any engine emits - there is no node to place
- * either way.
+ * carve#4865: an abbreviation definition is a definition in every container, and
+ * like every definition it is a child of the document, wherever it was written.
  */
 for (const [container, source] of [
   ['a block quote', '> *[HTML]: Hyper Text\n>\n> The HTML spec.\n'],
   ['a list item', '- *[HTML]: Hyper Text\n\n  The HTML spec.\n'],
   ['a div', ':::\n*[HTML]: Hyper Text\n\nThe HTML spec.\n:::\n'],
 ]) {
-  test(`no abbreviation_def is emitted inside ${container}`, () => {
-    assert.deepEqual(nodesOfType(treeOf(source), 'abbreviation_def'), [])
+  test(`an abbreviation_def written inside ${container} is a child of the document`, () => {
+    const tree = treeOf(source)
+    const defs = nodesOfType(tree, 'abbreviation_def')
+    assert.equal(defs.length, 1)
+    assert.equal(defs[0].abbr, 'HTML')
+    assert.ok(tree.children.includes(defs[0]), 'the definition is not a direct child of the document')
   })
 }
 

@@ -439,16 +439,15 @@
           5
         ]
       ],
-      "aheadOfPin": [
-        [
-          "unclosed-container-fence",
-          5
-        ]
-      ],
+      "aheadOfPin": [],
       "pinned": [
         [
           "block-marker-as-text",
           3
+        ],
+        [
+          "unclosed-container-fence",
+          5
         ]
       ],
       "optIn": []

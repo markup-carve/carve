@@ -2,7 +2,3 @@
 # Each row must differ from the pinned writer's bytes and preserve the input's rendering.
 # Remove a row when the JavaScript pin reaches the native header ruling.
 # Format: <slug><two spaces><reason>
-929-a-refused-plus-is-escaped-when-the-block-below-would-attach  CARVE-P11-042 spells a refused + as \+ when the block below would attach (markup-carve/carve#4868); the pinned writer keeps the + and shifts the block one column.
-929-a-refused-plus-is-escaped-when-the-block-below-would-attach-2  CARVE-P11-042 spells a refused + as \+ when the block below would attach (markup-carve/carve#4868); the pinned writer keeps the + and shifts the block one column.
-929-a-refused-plus-is-escaped-when-the-block-below-would-attach-4  CARVE-P11-042 spells a refused + as \+ when the block below would attach (markup-carve/carve#4868); the pinned writer keeps the + and shifts the block one column.
-929-a-refused-plus-is-escaped-when-the-block-below-would-attach-5  CARVE-P11-042 spells a refused + as \+ when the block below would attach (markup-carve/carve#4868); the pinned writer keeps the + and shifts the block one column.

@@ -37,5 +37,4 @@
 #     Delete the line in the same commit as the fix.
 #
 # Format: <document id><space><space><reason>
-docs/validation.md#5  points at the engine: a term is one line, so a separator that misses the item ends it (PART 0 B-term-end, markup-carve/carve#4861); the pinned build still folds it into the term
 docs/parsing-ambiguities.md#17  points at the engine: a list marker opens a list in a description body and closes one it misses (markup-carve/carve#4860), so the pinned build still folds it until carve-js ports the ruling
