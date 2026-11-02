@@ -37,4 +37,3 @@
 #     Delete the line in the same commit as the fix.
 #
 # Format: <document id><space><space><reason>
-docs/parsing-ambiguities.md#17  points at the engine: a list marker opens a list in a description body and closes one it misses (markup-carve/carve#4860), so the pinned build still folds it until carve-js ports the ruling

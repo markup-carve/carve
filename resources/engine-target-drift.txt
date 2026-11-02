@@ -73,6 +73,7 @@ carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter 
 carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
 carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
+carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve-js#4276 (carve-js), the F1 port writes the second span's payload at the opener column
 carve/php/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 carve/rust/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
 carve/php/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-34  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending

@@ -627,11 +627,10 @@ test('no corpus document has a sibling overlap, in either engine shape', () => {
  * there and one had to give; §4 states the exception, §7 and carve#1522 stand.
  *
  * THE ENGINE SHAPES BOTH GO THROUGH IT. The tests below build carve-php's and
- * carve-rs's reading BY HAND, because the carve-js this repository pins has not
- * implemented carve#1522 for this arrangement and publishes the quote covering
- * the whole line - under which the definition is contained and the pair never
- * exercises the ruling. A rule verified only against the shape that does not
- * need it is a rule verified against nothing.
+ * carve-rs's reading BY HAND, because the carve-js this repository pins starts
+ * the definition at its `[` (carve#4952), so its emptied quote ends before the
+ * definition and the pair never exercises the ruling. A rule verified only
+ * against the shape that does not need it is a rule verified against nothing.
  */
 
 const overlaps = (doc, source) => {
@@ -654,10 +653,12 @@ test('the corpus document for it is a definition written inside a quote', () => 
   const [quote, , definition] = wire.children
   assert.equal(quote.type, 'block_quote')
   assert.equal(definition.type, 'link_reference_definition')
-  // The definition was authored inside the quote and hoisted out by §7, so its
-  // span still points at the quote's source. That is the pair, in every engine.
-  assert.ok(quote.pos.startOffset <= definition.pos.startOffset)
-  assert.ok(definition.pos.startOffset < quote.pos.endOffset)
+  // The definition was authored inside the quote and hoisted out by §7. Under
+  // carve#4952 it starts at its own `[` and the emptied quote keeps only its
+  // `> ` prefix, so the two spans meet without overlapping.
+  assert.equal(definition.pos.startOffset, source.indexOf('['))
+  assert.ok(quote.pos.startOffset < definition.pos.startOffset)
+  assert.ok(quote.pos.endOffset <= definition.pos.startOffset)
   assert.deepEqual(overlaps(wire, source), [])
 })
 
@@ -978,136 +979,8 @@ test('a nested list starting part way into the indent run is accepted', () => {
  * starts violating is not on the list and fails, and one that stops is on the
  * list with a count that no longer matches. Deleting lines here is the closing
  * step of each engine's fix.
- *
- * The rows below are `link_reference_definition` spans the pinned carve-js
- * starts at the line, before the container prefix or indentation, where
- * markup-carve/carve#4952 starts them at the `[`.
  */
-const DECLARED_LEAF_INDENT_START = [
-  '16-reference-link-3.crv 1  markup-carve/carve-js#4273',
-  '16-reference-link-4.crv 1  markup-carve/carve-js#4273',
-  '194-an-abbreviation-at-a-list-item-s-content-column-is-still-not-a-definition-2.crv 1  markup-carve/carve-js#4273',
-  '195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column-2.crv 1  markup-carve/carve-js#4273',
-  '195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column-3.crv 1  markup-carve/carve-js#4273',
-  '195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column.crv 1  markup-carve/carve-js#4273',
-  '202-a-definition-on-a-footnote-body-s-continuation-line-is-collected.crv 1  markup-carve/carve-js#4273',
-  '220-a-definition-past-a-footnote-body-s-column-registers-from-its-authored-base.crv 1  markup-carve/carve-js#4273',
-  '227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace.crv 1  markup-carve/carve-js#4273',
-  '246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it.crv 1  markup-carve/carve-js#4273',
-  '266-a-reference-definition-is-anchored-at-end-of-line-11.crv 1  markup-carve/carve-js#4273',
-  '266-a-reference-definition-is-anchored-at-end-of-line-14.crv 1  markup-carve/carve-js#4273',
-  '266-a-reference-definition-is-anchored-at-end-of-line-15.crv 1  markup-carve/carve-js#4273',
-  '287-a-column-zero-definition-ends-an-open-list-item-4.crv 1  markup-carve/carve-js#4273',
-  '323-a-block-attached-after-an-invisible-line-leaves-the-item-tight-3.crv 1  markup-carve/carve-js#4273',
-  '324-an-abbreviation-definition-in-an-item-body-is-paragraph-text-4.crv 1  markup-carve/carve-js#4273',
-  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-7.crv 1  markup-carve/carve-js#4273',
-  '347-a-comment-fence-reached-through-a-quote-registers-nothing-either-3.crv 1  markup-carve/carve-js#4273',
-  '350-a-definition-at-a-container-s-content-column-5.crv 1  markup-carve/carve-js#4273',
-  '350-a-definition-at-a-container-s-content-column.crv 1  markup-carve/carve-js#4273',
-  '356-a-quote-inside-a-quote-is-asked-what-it-ends-on-5.crv 1  markup-carve/carve-js#4273',
-  '357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-6.crv 1  markup-carve/carve-js#4273',
-  '359-a-footnote-definition-s-block-runs-to-the-end-of-its-body-2.crv 1  markup-carve/carve-js#4273',
-  '360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column-4.crv 1  markup-carve/carve-js#4273',
-  '360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column.crv 1  markup-carve/carve-js#4273',
-  '369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one-2.crv 1  markup-carve/carve-js#4273',
-  '369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one-4.crv 1  markup-carve/carve-js#4273',
-  '374-a-collected-definition-closes-the-item-paragraph-2.crv 1  markup-carve/carve-js#4273',
-  '374-a-collected-definition-closes-the-item-paragraph.crv 1  markup-carve/carve-js#4273',
-  '379-a-reference-definition-cannot-take-its-destination-from-the-next-line-2.crv 1  markup-carve/carve-js#4273',
-  '379-a-reference-definition-cannot-take-its-destination-from-the-next-line-3.crv 1  markup-carve/carve-js#4273',
-  '379-a-reference-definition-cannot-take-its-destination-from-the-next-line.crv 1  markup-carve/carve-js#4273',
-  '381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-5.crv 1  markup-carve/carve-js#4273',
-  '381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-6.crv 1  markup-carve/carve-js#4273',
-  '381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-7.crv 1  markup-carve/carve-js#4273',
-  '381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-8.crv 1  markup-carve/carve-js#4273',
-  '382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open.crv 1  markup-carve/carve-js#4273',
-  '383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-4.crv 1  markup-carve/carve-js#4273',
-  '383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-5.crv 1  markup-carve/carve-js#4273',
-  '398-a-container-s-span-ends-at-its-last-placed-child.crv 1  markup-carve/carve-js#4273',
-  '399-a-definition-list-ends-at-its-last-placed-child-too-2.crv 1  markup-carve/carve-js#4273',
-  '429-an-invisible-line-before-the-blank-does-not-cancel-the-separation-2.crv 1  markup-carve/carve-js#4273',
-  '441-a-definition-between-two-open-content-columns-reaches-the-outer-one-2.crv 1  markup-carve/carve-js#4273',
-  '441-a-definition-between-two-open-content-columns-reaches-the-outer-one-3.crv 1  markup-carve/carve-js#4273',
-  '441-a-definition-between-two-open-content-columns-reaches-the-outer-one-4.crv 1  markup-carve/carve-js#4273',
-  '441-a-definition-between-two-open-content-columns-reaches-the-outer-one.crv 1  markup-carve/carve-js#4273',
-  '442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-2.crv 1  markup-carve/carve-js#4273',
-  '442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-3.crv 1  markup-carve/carve-js#4273',
-  '442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-4.crv 1  markup-carve/carve-js#4273',
-  '442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-5.crv 1  markup-carve/carve-js#4273',
-  '442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-6.crv 1  markup-carve/carve-js#4273',
-  '442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-7.crv 1  markup-carve/carve-js#4273',
-  '442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-8.crv 1  markup-carve/carve-js#4273',
-  '442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-9.crv 1  markup-carve/carve-js#4273',
-  '442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column.crv 1  markup-carve/carve-js#4273',
-  '444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph-2.crv 1  markup-carve/carve-js#4273',
-  '444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-10.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-13.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-15.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-2.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-20.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-3.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-4.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-5.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-6.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-7.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-8.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches-9.crv 1  markup-carve/carve-js#4273',
-  '447-the-host-does-not-change-which-column-a-definition-reaches.crv 1  markup-carve/carve-js#4273',
-  '451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column-2.crv 1  markup-carve/carve-js#4273',
-  '451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column-3.crv 1  markup-carve/carve-js#4273',
-  '451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column-4.crv 1  markup-carve/carve-js#4273',
-  '451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column-5.crv 1  markup-carve/carve-js#4273',
-  '451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column-6.crv 1  markup-carve/carve-js#4273',
-  '451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column.crv 1  markup-carve/carve-js#4273',
-  '456-a-definition-nested-past-a-footnote-body-is-a-note-and-a-reference-below-it-resolves-2.crv 1  markup-carve/carve-js#4273',
-  '456-a-definition-nested-past-a-footnote-body-is-a-note-and-a-reference-below-it-resolves.crv 1  markup-carve/carve-js#4273',
-  '457-a-container-closer-closes-its-container-in-a-footnote-body-too-2.crv 1  markup-carve/carve-js#4273',
-  '457-a-container-closer-closes-its-container-in-a-footnote-body-too.crv 1  markup-carve/carve-js#4273',
-  '459-a-trailing-line-after-a-consumed-definition-is-placed-by-column-reach-2.crv 1  markup-carve/carve-js#4273',
-  '459-a-trailing-line-after-a-consumed-definition-is-placed-by-column-reach.crv 1  markup-carve/carve-js#4273',
-  '460-a-nested-note-s-floor-is-two-columns-past-its-own-marker-2.crv 1  markup-carve/carve-js#4273',
-  '460-a-nested-note-s-floor-is-two-columns-past-its-own-marker-3.crv 1  markup-carve/carve-js#4273',
-  '460-a-nested-note-s-floor-is-two-columns-past-its-own-marker.crv 1  markup-carve/carve-js#4273',
-  '504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-10.crv 1  markup-carve/carve-js#4273',
-  '504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-11.crv 1  markup-carve/carve-js#4273',
-  '504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-12.crv 1  markup-carve/carve-js#4273',
-  '504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-19.crv 1  markup-carve/carve-js#4273',
-  '504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-21.crv 1  markup-carve/carve-js#4273',
-  '504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-22.crv 1  markup-carve/carve-js#4273',
-  '504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-25.crv 1  markup-carve/carve-js#4273',
-  '512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-3.crv 1  markup-carve/carve-js#4273',
-  '587-a-link-definition-or-an-attribute-line-past-a-box-s-column-opens-on-its-authored-base-3.crv 1  markup-carve/carve-js#4273',
-  '587-a-link-definition-or-an-attribute-line-past-a-box-s-column-opens-on-its-authored-base.crv 1  markup-carve/carve-js#4273',
-  '611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence-3.crv 1  markup-carve/carve-js#4273',
-  '612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-3.crv 1  markup-carve/carve-js#4273',
-  '612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence.crv 1  markup-carve/carve-js#4273',
-  '613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-11.crv 1  markup-carve/carve-js#4273',
-  '613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line.crv 1  markup-carve/carve-js#4273',
-  '615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-11.crv 1  markup-carve/carve-js#4273',
-  '615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-12.crv 1  markup-carve/carve-js#4273',
-  '615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-2.crv 1  markup-carve/carve-js#4273',
-  '615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-3.crv 1  markup-carve/carve-js#4273',
-  '615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-4.crv 1  markup-carve/carve-js#4273',
-  '615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-8.crv 1  markup-carve/carve-js#4273',
-  '615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase.crv 1  markup-carve/carve-js#4273',
-  '620-generated-container-documents-23.crv 1  markup-carve/carve-js#4273',
-  '699-a-quoted-link-definition-in-a-footnote-body-registers-globally.crv 1  markup-carve/carve-js#4273',
-  '709-a-blank-ends-the-old-quote-s-child-column.crv 1  markup-carve/carve-js#4273',
-  '82-blockquote-lazy-continuation-6.crv 1  markup-carve/carve-js#4273',
-  '820-a-lazy-line-into-a-descendant-s-paragraph-keeps-the-descendant-the-deepest-frame-3.crv 1  markup-carve/carve-js#4273',
-  '826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-3.crv 1  markup-carve/carve-js#4273',
-  '826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-5.crv 1  markup-carve/carve-js#4273',
-  '852-a-definition-at-a-plus-attached-description-s-body-column-registers-3.crv 1  markup-carve/carve-js#4273',
-  '852-a-definition-at-a-plus-attached-description-s-body-column-registers.crv 1  markup-carve/carve-js#4273',
-  '87-compact-list-blocks-5.crv 1  markup-carve/carve-js#4273',
-  '872-every-list-item-measures-its-content-against-its-own-content-column-3.crv 1  markup-carve/carve-js#4273',
-  '873-an-invisible-item-lead-and-a-caption-line-after-an-accepted-plus-3.crv 1  markup-carve/carve-js#4273',
-  '881-an-indented-quote-prefix-keeps-an-invisible-plus-follower-in-its-host-3.crv 1  markup-carve/carve-js#4273',
-  '913-an-invisible-line-between-list-or-description-siblings-is-skipped-4.crv 1  markup-carve/carve-js#4273',
-  '924-a-note-frame-ends-before-a-second-item-paragraph.crv 1  markup-carve/carve-js#4273',
-  '937-a-blank-before-only-invisible-lines-loosens-the-list-3.crv 1  markup-carve/carve-js#4273',
-]
+const DECLARED_LEAF_INDENT_START = []
 
 test('no corpus document begins a span away from its opening markup', () => {
   // The synthetic documents above prove the rule fires; this proves it does not
