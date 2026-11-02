@@ -1,1 +1,0 @@
-The pinned carve-js reads the separator below the term as a document paragraph (carve#4592); the spec model is correct and carve-js main already folds it.

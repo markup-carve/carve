@@ -1,1 +1,0 @@
-Pinned JavaScript leaves a column-zero block after an item's description first-block + outside the description (markup-carve/carve#4166); pending in carve-js.

@@ -1,1 +1,0 @@
-markup-carve/carve#4307, the pinned carve-js folds a column-0 line into an item whose first-block + took a comment at its content column; fix pending in carve-js

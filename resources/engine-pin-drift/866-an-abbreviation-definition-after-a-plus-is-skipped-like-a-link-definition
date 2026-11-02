@@ -1,1 +1,0 @@
-The pinned carve-js reads the abbreviation definition after the `+` as item text (markup-carve/carve#4449); the spec model is correct.

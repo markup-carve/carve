@@ -1,1 +1,0 @@
-The pinned carve-js refuses the plus before a paragraph at the quote's marker column (markup-carve/carve#4384); the spec model is correct.

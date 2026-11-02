@@ -1,1 +1,0 @@
-The pinned carve-js drops the refused `+` and leaves the item empty (markup-carve/carve#4332); carve-js main shows the `+` as the item's text, as the spec model does.

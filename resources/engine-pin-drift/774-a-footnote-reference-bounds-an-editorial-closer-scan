@@ -1,1 +1,0 @@
-Pinned JavaScript skips a footnote reference whose label holds `[` as a bracket run in an editorial closer scan; markup-carve/carve-js#3903.

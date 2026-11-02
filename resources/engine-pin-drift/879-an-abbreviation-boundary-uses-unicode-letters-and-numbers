@@ -1,1 +1,0 @@
-The pinned carve-js abbreviation pass uses an ASCII boundary and expands HTML beside Unicode letters and numbers. PART 9R R3 now states the Unicode L/N boundary; the spec model and corpus row are correct (markup-carve/carve#4660).

@@ -1,1 +1,0 @@
-markup-carve/carve#4323, the pinned carve-js refuses a row attribute block whose quoted value holds a pipe; fix pending in carve-js

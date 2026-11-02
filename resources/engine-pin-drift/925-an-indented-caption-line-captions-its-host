@@ -1,1 +1,0 @@
-The pinned carve-js build predates the ruling that an indented caret line captions its host at any column reaching the owner (markup-carve/carve#4796); the spec moved first.

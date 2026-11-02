@@ -1,3 +1,3 @@
-Note\[^fn\].
+Note[^fn].
 
-\[^fn\]: body.
+[^fn]: body.
