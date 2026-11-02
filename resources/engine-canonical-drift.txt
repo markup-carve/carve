@@ -2,4 +2,7 @@
 # Each row must differ from the pinned writer's bytes and preserve the input's rendering.
 # Remove a row when the JavaScript pin reaches the native header ruling.
 # Format: <slug><two spaces><reason>
-508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  CARVE-P11-079 (b) pins the second span's payload at its host-relative indent (markup-carve/carve#4850); the pinned writer drops it to the opener column since the F1 port (markup-carve/carve-js#4276).
+418-an-invisible-fenced-block-is-not-a-list-paragraph  CARVE-P11-079 (b) writes the payload at its host-relative indent (markup-carve/carve#4988); the pinned writer drops it to the opener column (markup-carve/carve-js#4308).
+508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  CARVE-P11-079 (b) writes the payload at its host-relative indent (markup-carve/carve#4988); the pinned writer drops it to the opener column (markup-carve/carve-js#4308).
+508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  CARVE-P11-079 (b) writes the payload at its host-relative indent (markup-carve/carve#4988); the pinned writer drops it to the opener column (markup-carve/carve-js#4308).
+508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  CARVE-P11-079 (b) writes the payload at its host-relative indent (markup-carve/carve#4988); the pinned writer drops it to the opener column (markup-carve/carve-js#4308).
