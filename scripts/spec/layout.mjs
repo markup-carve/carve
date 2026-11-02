@@ -2034,6 +2034,23 @@ function markerIsStanzaPayload(bodyLines, k, col, depth) {
   }
   return hostEndsInLineBlockStanza([...bodyLines.slice(0, opener + 1), ...bodyLines.slice(opener + 1, k).map(neutral), ' '.repeat(col) + 'x'], depth + 1)
 }
+// A plain line under an open paragraph folds into it (PART 0 S4). Returns the
+// first line of such a run, so the walk goes on to the item it continues, or -1.
+// The run is skipped whole, so one probe answers for all of it.
+function lazyRunStart(bodyLines, k, reach, depth) {
+  const plain = (line) => {
+    if (trimWs(line) === '' || line.includes(LAZY)) return trimWs(line) !== ''
+    const measured = indentCols(line)
+    return measured.col < reach && !matchMarkerAt(measured) && !startsVisibleBlock(line) && !isTableRow(line) &&
+      !isColonBlockOpener(line) && !COLON_CLOSER.test(line) && !FENCE.test(measured.rest) &&
+      !COMMENT_LINE.test(line) && !isDefinitionOrAttributeLine(measured.rest) && !DESCRIPTION_LEAD.test(measured.rest)
+  }
+  if (depth >= MAX_NESTING_DEPTH || !plain(bodyLines[k])) return -1
+  let j = k
+  while (j > 0 && plain(bodyLines[j - 1])) j--
+  if (j === 0 || trimWs(bodyLines[j - 1]) === '') return -1
+  return bodyLeavesParagraphOpen(bodyLines.slice(0, j), false, depth + 1) ? j : -1
+}
 function trailingHostBody(bodyLines, last, tail, depth, quoteBody = false) {
   let reach = tail.col
   for (let k = last; k >= 0; k--) {
@@ -2046,6 +2063,11 @@ function trailingHostBody(bodyLines, last, tail, depth, quoteBody = false) {
       : DESCRIPTION_LEAD.test(measured.rest) && opensDescriptionAt(bodyLines, measured.col, k) ? DESCRIPTION_LEAD.exec(measured.rest)[0].length
       : 0
     if (lead === 0 || measured.col + lead > reach && k < last) {
+      const run = lead === 0 && k < last ? lazyRunStart(bodyLines, k, reach, depth) : -1
+      if (run !== -1) {
+        k = run
+        continue
+      }
       if (measured.col === 0) return null
       reach = measured.col
       continue
