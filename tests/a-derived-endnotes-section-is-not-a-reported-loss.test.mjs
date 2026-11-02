@@ -46,7 +46,8 @@ test('the fixture states an empty report, and its source keeps every visible byt
   // markup-carve/carve#1607, markup-carve/carve#1612).
   // Reported nothing AND lost nothing - the two claims have to hold together,
   // because silence over a document that lost its text is the worse defect.
-  assert.equal(crv, '---\n\n{loose}\n1. Note text.\n')
+  // The `<hr>` is written `***`, the canonical break (PART 11 §6, markup-carve/carve#4973).
+  assert.equal(crv, '***\n\n{loose}\n1. Note text.\n')
 })
 
 test('the source and the AST carry neither derived attribute', async () => {
