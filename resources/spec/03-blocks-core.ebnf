@@ -425,6 +425,11 @@ lazy_continuation_line = inline_content, newline ;
 
        %% TODO secret
 
+   The comment is written at the column of its Markdown line within its
+   container. When it ends a list, so stands left of the list item's content
+   column, and the next block in the same container is a list, the importer
+   writes the three-blank list boundary (PART 9 §11 N1a) after the comment,
+   so the two lists stay apart (carve#4917, CommonMark example 308).
    An HTML block holding anything else, and an HTML comment inside a
    paragraph, import as before. The migration report records each conversion
    as `markdown-html-comment` with `normalized` fidelity at the comment's
