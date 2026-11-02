@@ -1,0 +1,31 @@
+A caption number stops no delimiter glued after its placeholder
+
+```
+![i](a.png)
+^ Figure a#*b*
+.
+<figure>
+  <img src="a.png" alt="i">
+  <figcaption>Figure a1<strong>b</strong></figcaption>
+</figure>
+```
+
+```
+![i](a.png)
+^ Figure #=b=
+.
+<figure>
+  <img src="a.png" alt="i">
+  <figcaption>Figure 1<mark>b</mark></figcaption>
+</figure>
+```
+
+```
+![i](a.png)
+^ *a*#/b/
+.
+<figure>
+  <img src="a.png" alt="i">
+  <figcaption><strong>a</strong>1<em>b</em></figcaption>
+</figure>
+```
