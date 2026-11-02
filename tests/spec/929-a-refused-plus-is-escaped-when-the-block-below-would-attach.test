@@ -1,0 +1,80 @@
+A refused plus is escaped when the block below would attach
+
+```
+- - +
+
+  > q
+.
+<ul>
+  <li>
+    <ul>
+      <li>+</li>
+    </ul>
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+````
+- - +
+
+  ```
+  x
+  ```
+.
+<ul>
+  <li>
+    <ul>
+      <li>+</li>
+    </ul>
+    <pre><code>x
+</code></pre>
+  </li>
+</ul>
+````
+
+```
+- - +
+
+  # H
+.
+<ul>
+  <li>
+    <ul>
+      <li>+</li>
+    </ul>
+    <h1 id="H">H</h1>
+  </li>
+</ul>
+```
+
+```
+- - +
+
+  {.c}
+  > q
+.
+<ul>
+  <li>
+    <ul>
+      <li>+</li>
+    </ul>
+    <blockquote class="c"><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- foo
+  1. +
+   > b
+.
+<ul>
+  <li>foo
+    <ol>
+      <li>+</li>
+    </ol>
+    <blockquote><p>b</p></blockquote>
+  </li>
+</ul>
+```
