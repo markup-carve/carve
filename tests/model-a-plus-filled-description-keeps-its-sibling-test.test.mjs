@@ -40,7 +40,8 @@ test('a lone + leaves the description open too', () => {
 })
 
 test('a comment after the + hands the test to the line below it, carve#4449', () => {
-  assert.equal(html(':: t\n: +\n%% c\n : b\n'), '<dl><dt>t</dt><dd>+</dd></dl><p>: b</p>')
+  // carve#4862: the comment closes no description, so ` : b` is the next description.
+  assert.equal(html(':: t\n: +\n%% c\n : b\n'), '<dl><dt>t</dt><dd>+</dd><dd>b</dd></dl>')
 })
 
 test('hosts in a quote and an item read the same', () => {
