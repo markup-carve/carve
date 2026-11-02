@@ -365,6 +365,12 @@ description body's content column begins at the `%`, not at the first space of
 the indentation before it. Both readings used to satisfy this sentence, which is
 what markup-carve/carve#1928 settled.
 
+A container's prefix on a line (`> `, an item's continuation indent) belongs to
+the container, so a link reference definition, a leaf, begins at its own `[`
+wherever it is written: `>   [A]: b` under a list item in a quote starts at the
+`[`, and a top-level `  [A]: b` spans offsets 2 to 8
+([carve#4952](https://github.com/markup-carve/carve/issues/4952)).
+
 A span **ends immediately after the last source codepoint the construct owns**.
 Closing delimiters and attached attributes are included; a following newline,
 blank line, or unattached attribute block is not. Containers end at their
@@ -404,15 +410,15 @@ written inside. Emptying that container does not withdraw the exception:
 
 ```
 > [f]: ~
-/
+> more
 ```
 
-spans the emptied `block_quote` as `> ` and the hoisted
-`link_reference_definition` over the whole line, so offsets 0 to 2 sit in two
-document-level siblings at once and the definition reaches past its host rather
-than sitting inside it. Ruled at
-[carve#1571](https://github.com/markup-carve/carve/issues/1571), which leaves §7
-and carve#1522 unchanged.
+spans the `block_quote` over both lines and the hoisted
+`link_reference_definition` from its own `[` to the end of the first line,
+offsets 2 to 8, so that source sits in two document-level siblings at once.
+Ruled at [carve#1571](https://github.com/markup-carve/carve/issues/1571); the
+definition's start at its `[` rather than at the `>` is
+[carve#4952](https://github.com/markup-carve/carve/issues/4952).
 
 The exception is about the **pair**, not about a definition: it does not say a
 hoisted definition overlaps nothing. Two definitions claiming the same source

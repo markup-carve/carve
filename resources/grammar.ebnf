@@ -12493,10 +12493,11 @@ EOF = (* end of file *) ;
       extent:
 
           > [f]: ~
-          /
+          > more
 
-      spans the emptied `block_quote` as `> ` and the definition over the whole
-      line. The exception covers that pair only: two definitions claiming the
+      spans the `block_quote` over both lines and the definition from its own
+      `[` to the end of the first line, offsets 2 to 8, inside it (CARVE-P12-013).
+      The exception covers that pair only: two definitions claiming the
       same source, or a definition overlapping a sibling it was not authored
       in, are findings. The host is the sibling whose span begins at or before
       the definition's and which holds a child list; a
@@ -12517,9 +12518,14 @@ EOF = (* end of file *) ;
       selects the markup that opened the node: the `>` of a block quote, the
       `#` of a heading, a list marker, the `:` of a colon fence, the `[` of a
       link, the backtick run of a code block. Leading indentation on the
-      opening line is inside the span. Two exceptions: the inner node of the
-      combined `/*x*/` form spans its content, and a table cell spans the text
-      between its pipes, since the `|` opens the row.
+      opening line is inside a CONTAINER's span, which may begin part way into
+      it at its parent's content column; a LEAF's span begins at its own
+      markup. A container's prefix on the line (`> `, an item's continuation
+      indent) belongs to the container. So a `link_reference_definition` starts
+      at its own `[` inside a container and at top level alike: in `> [A]: b`
+      it spans 2..8, and `  [A]: b` spans 2..8 too. Two exceptions: the inner
+      node of the combined `/*x*/` form spans its content, and a table cell
+      spans the text between its pipes, since the `|` opens the row.
 
       A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS
       UNPLACED -- NORMATIVE [CARVE-P12-019]. A container whose first child

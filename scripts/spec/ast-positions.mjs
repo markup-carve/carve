@@ -448,11 +448,6 @@ export function checkStopsAtChildren(doc, codepoints, findings) {
  *   and an asterisk around a word materialise the pair from ONE run of
  *   delimiters, and the inner node's span is the outer trimmed by two
  *   characters, so it legitimately starts at the content.
- *   `link_reference_definition` hoists to the root from wherever it was
- *   written, and the engines do not yet agree whether the container prefix on
- *   its line is inside its span. That is a live row in the span panel, not a
- *   settled marker.
- *
  * An absent type is a type this rule does not reach, never a type the rule
  * permits anything of: the containment, overlap, terminator and slice rules
  * all still apply to it.
@@ -485,6 +480,9 @@ export const OPENING_MARKUP = new Map(
     insert: /^\{/,
     line_block: /^:/,
     link: /^\[/,
+    // A leaf: the container prefix on its line belongs to the container, and
+    // top-level indentation is outside the span (markup-carve/carve#4952).
+    link_reference_definition: /^\[/,
     list: /^(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)/,
     list_item: /^(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)/,
     literal_inline: /^!/,
