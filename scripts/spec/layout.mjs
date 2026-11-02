@@ -1655,14 +1655,18 @@ function invisibleSiblingLine(rest) {
 
 // A paragraph of only comments renders nothing, so a list reads it as it reads a `%%` line (carve#4799).
 // Returns the index past its last line, or -1. A block opener, `%%` line or attribute line ends
-// it (SS10 I1/I5); a list marker interrupts only in an item, so it keeps the paragraph visible.
-function commentOnlyParaEnd(rests, k, top) {
+// it (SS10 I1/I5), and so does a list marker in an item (SS24 C3). Elsewhere the marker joins
+// the paragraph, which keeps it visible.
+function commentOnlyParaEnd(rests, k, inItem) {
   if (!indentCols(rests[k] ?? '').rest.startsWith('{%')) return -1
   let end = k + 1
   for (; end < rests.length && !isBlank(rests[end] ?? ''); end++) {
     const rest = indentCols(rests[end]).rest
-    if (startsParagraphBlock(rest, top) || rest.startsWith('%%') || (rest[0] === '{' && tryAttrLine([rest], 0))) break
-    if (matchMarkerAt(indentCols(rest))) return -1
+    if (startsParagraphBlock(rest) || rest.startsWith('%%') || (rest[0] === '{' && tryAttrLine([rest], 0))) break
+    if (matchMarkerAt(indentCols(rest))) {
+      if (inItem) break
+      return -1
+    }
   }
   const para = []
   for (let j = k; j < end; j++) para.push(rests[j])
@@ -3927,7 +3931,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       else {
         const attr = rest[0] === '{' ? tryAttrLine(fromHere, k) : null
         // A paragraph of only comments is skipped as a `%%` line is (carve#4799).
-        const para = attr || rest[1] !== '%' ? -1 : commentOnlyParaEnd(fromHere, k, hostIndex === 1)
+        const para = attr || rest[1] !== '%' ? -1 : commentOnlyParaEnd(fromHere, k, frames[hostIndex].kind === 'item')
         if (para !== -1) k = para
         else if (!attr) return k
         else k = attr.next
@@ -5574,7 +5578,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // entry follows it (djot parity; CARVE-P9-013, carve#4716); otherwise
         // it ends the list.
         const restAt = (k) => (lines[k] ?? '').startsWith(LAZY) ? null : indentCols(lines[k] ?? '').rest
-        const commentParaEnd = (k) => restAt(k) === null ? -1 : commentOnlyParaEnd(lines, k, top)
+        const commentParaEnd = (k) => restAt(k) === null ? -1 : commentOnlyParaEnd(lines, k, inItem)
         const invisibleAt = (k) => restAt(k) !== null && (invisibleSiblingLine(restAt(k)) || commentParaEnd(k) !== -1)
         if (isBlank(cur0) || invisibleAt(i)) {
           // PART 9 SS11 N1a: three blank lines end a description list too
@@ -7459,7 +7463,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     return count
   }
   const baseIndent = matchMarkerAt(ind(i)).indent
-  const commentParaEnd = (k) => commentOnlyParaEnd(lines, k, top)
+  const commentParaEnd = (k) => commentOnlyParaEnd(lines, k, inItem)
   const invisibleAt = (k) => invisibleSiblingLine(ind(k).rest) || commentParaEnd(k) !== -1
   const commentsBeforeSibling = (at) => {
     if (at >= n || !invisibleAt(at)) return at
@@ -7759,7 +7763,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (close > k) k = close
         else if (rests[k] !== '' && !COMMENT_LINE.test(rests[k]) &&
             !isDefinitionOrAttributeLine(rests[k])) {
-          const para = commentOnlyParaEnd(rests, k, false)
+          const para = commentOnlyParaEnd(rests, k, true)
           if (para === -1) return true
           k = para - 1
         }
@@ -8888,7 +8892,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             isDefinitionLine(dedented) ||
             parseAttrList(trimLineEnd(dedented)) !== null ||
             !!tryAttrLine(dedentedWindow(lines, j, contentCol), 0) ||
-            (commentParaThrough = commentOnlyParaEnd(lines, j, false) - 1) >= j
+            (commentParaThrough = commentOnlyParaEnd(lines, j, true) - 1) >= j
           ) {
             // An INVISIBLE construct is not a second paragraph, and SS17 L1
             // asks for one: "some item holds a blank-line-separated second
@@ -9306,7 +9310,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
         }
         if (pendingSeparation && i > commentParaThrough && dmeas.rest.startsWith('{%')) {
-          const para = commentOnlyParaEnd(lines, i, false)
+          const para = commentOnlyParaEnd(lines, i, true)
           if (para !== -1) commentParaThrough = para - 1
         }
         if (

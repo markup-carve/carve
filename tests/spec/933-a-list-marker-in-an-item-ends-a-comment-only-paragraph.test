@@ -1,0 +1,81 @@
+A list marker in an item ends a comment-only paragraph
+
+```
+- p
+
+  - a
+
+  {% c %}
+  - b
+.
+<ul>
+  <li>p
+    <ul>
+      <li><p>a</p></li>
+      <li><p>b</p></li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- p
+
+  - a
+
+  {% c %}
+  * b
+.
+<ul>
+  <li>p
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- p
+
+  {% c %}
+  - b
+.
+<ul>
+  <li>p
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- +
+{% c %}
+- b
+.
+<ul>
+  <li>+
+</li>
+  <li>b</li>
+</ul>
+```
+
+```
+> - a
+>
+> {% c %}
+> - b
+.
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+  <p>
+- b</p>
+</blockquote>
+```
