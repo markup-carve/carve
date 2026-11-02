@@ -56,3 +56,6 @@
 # <engine>  <rule>  <type>  <count>  <owner/repo#N>
 carve-rs  starts-past-opening-markup  list  1  markup-carve/carve-rs#3375
 carve-rs  starts-past-opening-markup  list_item  1  markup-carve/carve-rs#3375
+carve-js  starts-past-opening-markup  link_reference_definition  123  markup-carve/carve#4952
+carve-php  starts-past-opening-markup  link_reference_definition  107  markup-carve/carve#4952
+carve-rs  starts-past-opening-markup  link_reference_definition  107  markup-carve/carve#4952
