@@ -38,18 +38,13 @@
 # commits it was taken at, and what moved since are the PR's job, where they are
 # immutable and nobody has to scroll past them to reach the rows.
 #
-# BOTH ROWS, and why no engine owes either of them. Both are the same
-# document, 503-...-at-every-depth-9, whose fourth line is a bullet indented
-# under a nested definition term. carve-js and carve-rs open the `list` at the
-# `-` marker; carve-php opens it at column 3, its parent description's content
-# column, and the two columns differ only inside the line's leading
-# indentation. `list` and `list_item` are both containers and both in
-# `INDENT_LATITUDE`, so markup-carve/carve#1928 makes both readings conformant
-# and neither engine has a row to answer for. The document arrived with
-# markup-carve/carve#2426.
+# LIST STARTS are owed under markup-carve/carve#5063. The prior exemption
+# admitted marker starts within indentation, but the maintainer chose the
+# parent's content column. The pin still carries these extent differences;
+# each engine's own opening-markup findings name the side that must move.
 
-list (extent)  5  corpus 503-9, 636, 697, 744, and 753: the first three differ within leading indentation under markup-carve/carve#1928; the later task ownership differences are tracked by markup-carve/carve#3845.
-list_item (extent)  6  the list rows above, plus corpus 245: the prior rows differ within leading indentation under markup-carve/carve#1928; task ownership is tracked by markup-carve/carve#3845.
+list (extent)  5  corpus 503-9, 636, 697, 744, and 753: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845.
+list_item (extent)  6  the list rows above, plus corpus 245: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845.
 definition_list (extent)  2  Corpus 744 and 753 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
 definition_term (extent)  2  Corpus 744 and 753 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
 text (extent)  2  Corpus 744 and 753 task separator text differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.

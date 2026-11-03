@@ -3,13 +3,11 @@
  *
  * `resources/ast-span-divergence.txt` is `owed`: release mode requires it empty,
  * because a span disagreement is normally one engine placing a node wrongly and
- * the row leaves when that engine is fixed. PART 12 §4's `INDENT_LATITUDE` makes
- * one kind of row different: where two readings differ only inside a line's
- * leading indentation and the node is a container, BOTH are conformant
- * (carve#1928). No engine owes such a row, nothing will ever close it, and an
- * owed-must-be-empty gate therefore cannot be satisfied while one is measured.
+ * the row leaves when that engine is fixed. The hatch remains available for a
+ * future ruling that makes both readings conformant. The former list rows are
+ * owed under carve#5063 and no longer appear in the shipped exemption file.
  *
- * `.ast-span-exempt` declares those rows, in the shape `.fleet-pin-exempt` uses.
+ * `.ast-span-exempt` declares such rows, in the shape `.fleet-pin-exempt` uses.
  * The hazard is not that the hatch exists but that it becomes a blanket skip, so
  * every assertion below is paired with its opposite: a declared row stops being
  * owed, and a row that declares nothing, names nothing, or no longer reproduces

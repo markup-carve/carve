@@ -429,7 +429,7 @@ test('every finding leaves through exactly one door, and the doors add up', () =
   assert.equal(result.ungatedProblems.length, 1)
 })
 
-test('the shipped extent declaration parses, and every line names an ENGINE issue', () => {
+test('the shipped extent declaration parses, and every line names a cause issue', () => {
   const text = readFileSync(resolve(root, 'resources/ast-extent-findings.txt'), 'utf8')
   const { declared, errors } = parseExtentDeclarations(text)
   assert.deepEqual(errors, [], errors.join('; '))
@@ -438,7 +438,7 @@ test('the shipped extent declaration parses, and every line names an ENGINE issu
     // bare number resolves against THIS repo and links the wrong ticket.
     assert.match(
       line.status,
-      /^markup-carve\/carve-(js|rs|php)#\d+$/,
+      /^markup-carve\/carve(?:-(?:js|rs|php))?#\d+$/,
       `${line.engine} ${line.rule} ${line.type} names "${line.status}"`,
     )
     // And never a DERIVED engine, whose findings are another engine's arriving

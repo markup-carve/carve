@@ -288,10 +288,9 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // bullet indented under a nested definition term, and carve-php opens the
 // `list` and its `list_item` at column 3, its parent description's content
 // column, where carve-js and carve-rs open them at the `-`. The two columns
-// differ only inside the line's leading indentation and both types are
-// containers, so INDENT_LATITUDE makes both readings conformant (carve#1928)
-// and no engine has a row to answer for - which is why the reference on each
-// row names the ruling rather than an engine issue.
+// differ only inside the line's leading indentation. The later carve#5063
+// ruling requires the parent content column, so marker starts are now owed
+// engine drift. The ledger names the ruling that closes the old exemption.
 //
 // Measured over 1924 corpus documents at carve-js 1f5a72246, carve-rs 8a52398dd
 // and carve-php 9bf8f10f, each a worktree of that engine's main taken for this
