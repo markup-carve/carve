@@ -1,0 +1,1 @@
+The pinned carve-js still renders the first-line --- and later indented dash as breaks; PART 1 now consumes the unclosed frontmatter through EOF (markup-carve/carve#5016).

@@ -34,7 +34,10 @@ for (const [head] of shapes.filter(([head]) => head.includes('>'))) {
       }
       const prefix = head + '\n'
       const doc = parse(prefix)
-      assert.equal(render(prefix + block), compact(renderDoc({ ...doc, blocks: [...doc.blocks, ...parse(block).blocks] })))
+      // A standalone `---` is frontmatter under carve#5016. Here it occurs
+      // after the quoted term, so use the non-colliding break for the expected block.
+      const expectedBlock = block === '---\n' ? '***\n' : block
+      assert.equal(render(prefix + block), compact(renderDoc({ ...doc, blocks: [...doc.blocks, ...parse(expectedBlock).blocks] })))
     })
   }
 }

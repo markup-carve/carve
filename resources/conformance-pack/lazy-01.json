@@ -157,7 +157,7 @@
 {"id":"lazy-21ed5a2aad1f","source":"> - para\n>   [^f]:*  n\nta~s~il\n","html":"<blockquote>\n  <ul>\n    <li>para\n[^f]:*  n\nta~s~il</li>\n  </ul>\n</blockquote>"},
 {"id":"lazy-220338b46eb4","source":"> %% hidden\ntail\n\n","html":"<blockquote>\n\n</blockquote>\n<p>tail</p>"},
 {"id":"lazy-224b3879682d","source":"- - > q\n","html":"<ul>\n  <li>\n    <ul>\n      <li>\n        <blockquote><p>q</p></blockquote>\n      </li>\n    </ul>\n  </li>\n</ul>"},
-{"id":"lazy-224f598d4ee9","source":"---\n> > | a |\n> # H\n> > + b |\ntail\n","html":"<hr>\n<blockquote>\n  <blockquote>\n    <table>\n      <tbody>\n        <tr><td>a</td></tr>\n      </tbody>\n    </table>\n  </blockquote>\n  <h1 id=\"H\">H</h1>\n  <blockquote><p>+ b |\ntail</p></blockquote>\n</blockquote>"},
+{"id":"lazy-224f598d4ee9","source":"---\n> > | a |\n> # H\n> > + b |\ntail\n","html":""},
 {"id":"lazy-225d80aa0dc0","source":"\n~~~\n","html":"<pre><code></code></pre>"},
 {"id":"lazy-22a9e94b108a","source":"| a | b |tail\n- .a}\n","html":"<p>| a | b |tail\n- .a}</p>"},
 {"id":"lazy-232b1c5283d6","source":"> - a\n>     ```\n>     ~~~\n>     code\n >      ~~~\ntail\n","html":"<blockquote>\n  <ul>\n    <li>a\n      <pre><code>~~~\ncode\n ~~~\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>tail</p>"},

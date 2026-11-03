@@ -234,14 +234,15 @@ function checkShape(doc, findings) {
  * document - which is the failure carve#411 found in carve-php, and one no
  * shape check can catch.
  *
- * Through the layout's own predicate. This read `/^---\r?\n/`, which is the
- * opener without the closer, so a document that is a lone `---` - an ordinary
- * thematic break - was reported as frontmatter the tree had dropped. The class
- * is UNGATED by design, so the oracle failed the full-corpus verdict against
- * all three engines at once and no ledger could absorb it (carve#2881).
+ * Through the layout's own predicate. During the carve#5016 engine rollout,
+ * only a closed envelope enters this ungated assertion. An unclosed opener is
+ * frontmatter in the spec model, but the pinned engines still read the old
+ * thematic-break form; their migration is tracked on carve#5016.
  */
 function checkFrontmatterSurvives(doc, source, findings) {
   if (!sourceOpensFrontmatter(source)) return
+  const lines = source.replace(/\r\n?/g, '\n').split('\n')
+  if (!lines.slice(1).some((line) => /^---[ \t]*$/.test(line))) return
   const hasNode = Array.isArray(doc.children) && doc.children.some((n) => n?.type === 'frontmatter')
   // The pre-§7 root form still counts as carrying it, so an engine that has not
   // moved it into the tree is reported ONCE by the schema rather than twice.

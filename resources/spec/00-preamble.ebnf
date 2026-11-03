@@ -119,7 +119,6 @@
    opens on its own line and ends at its closer, under S1, or at the end of
    its host (carve#4907). An unclosed `%%%` therefore hides every later line
    of its host, at top level the rest of the document; `carve lint` reports
-   it (`unclosed-comment-fence`). Of the fence-shaped openers only
-   frontmatter is decided by a later line (PART 1).
+   it (`unclosed-comment-fence`).
 
    ============================================================================ *)

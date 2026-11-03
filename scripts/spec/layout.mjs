@@ -3312,11 +3312,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   let start = 0
   if (allowFrontmatter && lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
     const close = lines.findIndex((line, k) => k > 0 && /^---[ \t]*$/.test(line))
-    if (close > 0) {
-      result.push(...lines.slice(0, close + 1))
-      start = close + 1
-      if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
-    }
+    start = close > 0 ? close + 1 : lines.length
+    result.push(...lines.slice(0, start))
+    if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
   }
   for (let at = start; at < lines.length; at++) {
     if (skipped) {
@@ -4387,20 +4385,12 @@ export const replaceNulls = (src) => src.replace(/\u0000/g, '\uFFFD')
 export const FRONTMATTER_OPENER = /^---(?:[ \t]*$| ?[A-Za-z0-9]+[ \t]*$)/
 
 /**
- * Whether a SOURCE opens frontmatter at all: an opener line AND a closing dash
- * run below it.
- *
- * The closer is half the rule, and the conformance oracle's own copy of this
- * test had only `/^---\r?\n/` - so a document that is a lone `---`, an ordinary
- * thematic break, was reported as frontmatter the tree failed to carry. That
- * finding class is UNGATED by design, with no ledger to declare it in, so the
- * oracle alone failed `AST full-corpus verdict` against all three engines at
- * once - and all three were right (carve#2881).
+ * Whether a SOURCE opens frontmatter at all. A first-line opener claims its
+ * content through a closer or the end of the document (carve#5016).
  */
 export function sourceOpensFrontmatter(source) {
-  const lines = String(source).split('\n').map((line) => line.replace(/\r$/, ''))
-  if (lines[0] === undefined || !FRONTMATTER_OPENER.test(lines[0])) return false
-  return lines.slice(1).some((line) => /^---[ \t]*$/.test(line))
+  const firstLine = normalizeSource(String(source)).split('\n', 1)[0]
+  return firstLine !== undefined && FRONTMATTER_OPENER.test(firstLine)
 }
 
 function normalizeSource(src) {
@@ -4483,8 +4473,8 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   if (stateSink) state.descendantQ1Log = (stateSink.descendantQ1 = [])
   if (stateSink) stateSink.refusedPlusLines = refusedPlusLines
   if (stateSink) state.markerFenceProbeSteps = 0
-  // frontmatter (PART 1): consumed; renders nothing. The closer-lookahead
-  // guard: with no closing --- the line is an ordinary thematic break.
+  // frontmatter (PART 1): consumed through its closer or document end;
+  // renders nothing.
   // The slot before the format token is PADDING and takes `space` (PART 7;
   // carve#901): it sits after the `---`, and a tab is syntax only in a leading
   // indentation run. `---<TAB>yaml` is therefore not a typed opener.
@@ -4533,13 +4523,15 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   // AUTHORED LINES, because the walk above has already dropped a leading run:
   // `frontmatter_open` and `frontmatter_close` admit no indent.
   if (allowFrontmatter && authored[0] !== undefined && FRONTMATTER_OPENER.test(authored[0])) {
+    let end = lines.length
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(authored[j])) {
-        lines.splice(0, j + 1)
-        authored.splice(0, j + 1)
+        end = j + 1
         break
       }
     }
+    lines.splice(0, end)
+    authored.splice(0, end)
   }
   const blocks = parseBlocks(lines, state, true)
   if (hasOrdinaryPlus) {

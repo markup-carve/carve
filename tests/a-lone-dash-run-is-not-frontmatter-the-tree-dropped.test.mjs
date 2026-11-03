@@ -1,47 +1,34 @@
-/*
- * A DASH RUN WITH NO CLOSER IS A THEMATIC BREAK, and the conformance oracle has
- * to agree.
- *
- * `checkFrontmatterSurvives` asked `/^---\r?\n/`, which is the frontmatter
- * OPENER without the closer the layout requires. So
- * `550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run.crv`,
- * a document that is a lone `---`, was reported as "source has frontmatter but
- * the tree does not carry it" against carve-js, carve-rs, carve-php AND
- * carve-rb at once. All four were right.
- *
- * That finding class is UNGATED by design - "no ledger covers this finding
- * class, and none should: fix it rather than declaring it" - so there was no
- * declaration that could absorb it, and `AST full-corpus verdict` failed on
- * main with the oracle as the only artifact in the org making the claim
- * (carve#2881). The same shape as carve#907: four engines agreeing and the
- * oracle alone reading an opener where the language has none.
- *
- * The rule now has ONE spelling, `sourceOpensFrontmatter` in the layout, which
- * is where the closer lookahead already lived.
- */
+// carve#5016: a first-line opener claims frontmatter through its closer or EOF.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { sourceOpensFrontmatter } from '../scripts/spec/layout.mjs'
+import { parse, sourceOpensFrontmatter } from '../scripts/spec/layout.mjs'
+import { renderDoc } from '../scripts/spec/html.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpus = resolve(here, 'corpus')
 
-test('a lone dash run does not open frontmatter', () => {
+test('a lone dash run opens frontmatter', () => {
   // The real corpus document, not a fixture written to match the reader.
   const name = '550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run.crv'
   const source = readFileSync(join(corpus, name), 'utf8')
   assert.match(source, /^---\s*$/, 'the document is no longer a lone dash run; re-read the case')
-  assert.equal(sourceOpensFrontmatter(source), false)
+  assert.equal(sourceOpensFrontmatter(source), true)
 })
 
-test('an opener needs a closer, in either line ending', () => {
+test('an opener may end at a closer or EOF, in either line ending', () => {
   assert.equal(sourceOpensFrontmatter('---\ntitle: x\n---\n'), true)
   assert.equal(sourceOpensFrontmatter('---\r\ntitle: x\r\n---\r\n'), true)
-  assert.equal(sourceOpensFrontmatter('---\ntitle: x\n'), false, 'an unclosed run is a thematic break')
+  assert.equal(sourceOpensFrontmatter('---\ntitle: x\n'), true)
+  assert.equal(sourceOpensFrontmatter('---\ntitle: x'), true)
+  assert.equal(renderDoc(parse('---\ntitle: x')), '')
+  assert.equal(sourceOpensFrontmatter('---\rtitle: x\r'), true)
+  assert.equal(sourceOpensFrontmatter('\ufeff---\rtitle: x\r'), true)
+  assert.equal(renderDoc(parse('---\rtitle: x\r')), '')
+  assert.equal(renderDoc(parse('\ufeff---\rtitle: x\r')), '')
 })
 
 test('the typed opener keeps the slot rules the layout already settled', () => {
@@ -61,15 +48,13 @@ test('frontmatter opens only at the start', () => {
   assert.equal(sourceOpensFrontmatter('text\n---\na: 1\n---\n'), false)
 })
 
-test('no corpus document is claimed as frontmatter without a closer', () => {
-  // The guard that would have caught this: the oracle may not claim frontmatter
-  // for a document the language reads as a thematic break.
-  const wrong = []
+test('every valid first-line corpus opener is claimed without a closer', () => {
+  const missed = []
   for (const name of readdirSync(corpus).filter((file) => file.endsWith('.crv'))) {
     const source = readFileSync(join(corpus, name), 'utf8')
-    if (!/^---/.test(source)) continue
+    if (!/^---(?:[ \t]*$| ?[A-Za-z0-9]+[ \t]*$)/.test(source.split('\n', 1)[0])) continue
     const closed = source.split('\n').slice(1).some((line) => /^---[ \t]*$/.test(line.replace(/\r$/, '')))
-    if (!closed && sourceOpensFrontmatter(source)) wrong.push(name)
+    if (!closed && !sourceOpensFrontmatter(source)) missed.push(name)
   }
-  assert.deepEqual(wrong, [], `claimed as frontmatter with no closer:\n  ${wrong.join('\n  ')}`)
+  assert.deepEqual(missed, [], `missed unclosed frontmatter:\n  ${missed.join('\n  ')}`)
 })

@@ -3,7 +3,7 @@ A dash run opens frontmatter only at the start, and only a dash run
 ```
 ---
 .
-<hr>
+
 ```
 
 ```

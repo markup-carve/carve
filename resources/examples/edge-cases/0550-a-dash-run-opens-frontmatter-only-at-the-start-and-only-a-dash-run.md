@@ -1,10 +1,9 @@
 ## A dash run opens frontmatter only at the start, and only a dash run
 
-A frontmatter block is a `---` opener and a `---` closer, and both parts carry
-weight. A lone marker has no closer, so it stays a thematic break. A pair that
-does not begin the document is two breaks. And the other two break markers
-never spell frontmatter at all, so a pair of those is two breaks wherever it
-sits.
+A first-line `---` opens frontmatter through its closer or the end of the
+document. A lone marker therefore renders nothing. A pair that does not begin
+the document is two breaks. The other two break markers never spell
+frontmatter, so a pair of those is two breaks wherever it sits.
 
 <!--
 DELIBERATE MULTI-PAIR COMPARE BLOCK. Do not split it into one block per pair,
@@ -34,7 +33,6 @@ names what reads it.
 ```
 
 ```html
-<hr>
 ```
 
 ```carve

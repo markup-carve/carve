@@ -55,7 +55,8 @@ test('a typed opener is front matter with no shape test at all', () => {
 test('the envelope is a leading block with a closer, and nothing else', () => {
   assert.equal(frontmatterEnd('---\ntitle: Hi\n---\nBody\n'), '---\ntitle: Hi\n---\n'.length)
   assert.equal(frontmatterEnd('---yaml\ntitle: Hi\n---\nBody\n'), '---yaml\ntitle: Hi\n---\n'.length)
-  // No closer, so PART 1's lookahead claims no opener in the first place.
+  // The importer envelope test requires a bounded source block; the Carve
+  // grammar separately accepts an opener through EOF under carve#5016.
   assert.equal(frontmatterEnd('---\ntitle: Hi\nBody\n'), -1)
   // Not at byte 0.
   assert.equal(frontmatterEnd('x\n---\ntitle: Hi\n---\n'), -1)
