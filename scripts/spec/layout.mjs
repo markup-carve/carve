@@ -3318,7 +3318,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   }
   for (let at = start; at < lines.length; at++) {
     if (skipped) {
-      const rest = trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)
+      let rest = trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)
+      // Off the marker column a skipped note's `+` is a letter of its body, as the gate read it (carve#5034).
+      if (CONT_MARKER.test(rest) && docColumn(lines[at], rest) !== skipped.column) {
+        rest = rest.replace('+', plusLetter)
+        refusedPlus.push(at)
+      }
       result.push(skipped.lead + (skipped.fenced.has(at) ? '%%' : rest))
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
       if (at + 1 === skipped.end) {
@@ -4036,7 +4041,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     const end = firstVisibleLine(at + 1, hostIndex, column, fenced)
     if (end === at + 1) return
     const rest = throughQuotes(lines[end], hostIndex).rest
-    skipped = { host, at, end, hostIndex, fenced, lead: markerLead ?? lines[end].slice(0, lines[end].length - rest.length) + ' '.repeat(host.markerCanon) }
+    skipped = { host, at, end, hostIndex, column, fenced, lead: markerLead ?? lines[end].slice(0, lines[end].length - rest.length) + ' '.repeat(host.markerCanon) }
   }
 
   // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Off the
@@ -7513,7 +7518,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
   // no closer is read as it opens (§28), and it is linear.
   // Rows up to `codeRow` were read as a code body's opener, payload or closer:
   // visible content, so a blank or a comment-shaped line there is no separator.
+  // A span opened on the marker line is read from its opener, so the item's
+  // content after its closer stays visible (carve#5029). A blank inside that
+  // span still counts as the model read it before; carve#5030 owns that question.
   const blankBehindInvisible = (at, from, codeRow = -1) => {
+    let lead = codeRow < from ? COMMENT_FENCE_BODY.exec(matchMarkerAt(ind(from))?.text ?? '')?.[1] ?? null : null
     from = Math.max(from, codeRow)
     let span = null
     let blank = -1
@@ -7522,7 +7531,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     for (let k = from + 1; k < at; k++) {
       const rest = ind(k).rest
       const fence = COMMENT_FENCE_BODY.exec(rest)?.[1]
-      if (span !== null) {
+      if (lead !== null && rest !== '') {
+        if (fence === lead) lead = null
+        skipped = true
+      } else if (span !== null) {
         if (fence === span) span = null
         skipped = true
       } else if (fence) {
@@ -7537,6 +7549,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     }
     return blank > from && skipped && !visible && (span !== null || ind(at - 1).rest !== '')
   }
+  let lastItemEnd = null
   const commentsBeforeSibling = (at) => {
     if (at >= n || !invisibleAt(at)) return at
     // Invisible lines are erased from layout, so blank lines on either side
@@ -7569,7 +7582,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     if (k >= n || longest >= 3) return at
     const next = matchMarkerAt(ind(k))
     if (!next || next.indent !== baseIndent || !sameAxes(list, next)) return at
-    if (blanks > 0) list.tight = false
+    // An invisible line that ended the item above is erased too, so the item's
+    // own §17 L1c question is asked as if the item had met the sibling (CARVE-P9-013).
+    const item = lastItemEnd
+    if (blanks > 0 || (item && (item.blankBeforeInvisible || blankBehindInvisible(at, item.head, item.codeRow)))) list.tight = false
     registerSkippedDefinitions(lines, at, k, (j) => ind(j).rest, state, top)
     return k
   }
@@ -10119,6 +10135,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       }
     }
     list.items.push(item)
+    lastItemEnd = { head: itemHead, codeRow: codeBodyRow, blankBeforeInvisible }
     // Returning rather than breaking leaves `i` on the marker line, so the
     // caller parses it as the first item of the next list.
     if (hardListBoundary) return i
