@@ -9,10 +9,7 @@
 ```
 
 ```html
-<blockquote>
-  <p>q</p>
-  <p>+</p>
-</blockquote>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::
@@ -29,9 +26,7 @@
 
 ```html
 <ul>
-  <li><p>q</p>
-    <p>+</p>
-  </li>
+  <li><p>q</p></li>
   <li><p>r</p></li>
 </ul>
 ```
@@ -50,10 +45,7 @@
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>q</p>
-    <p>+</p>
-  </dd>
+  <dd>q</dd>
 </dl>
 ```
 
@@ -75,8 +67,7 @@ ref [^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>q</p>
-      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>q<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

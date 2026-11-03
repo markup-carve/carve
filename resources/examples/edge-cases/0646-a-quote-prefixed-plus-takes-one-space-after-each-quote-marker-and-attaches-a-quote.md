@@ -24,9 +24,11 @@ q
 
 ```html
 <blockquote>
-  <blockquote><p>+
-q</p></blockquote>
+  <blockquote>
+
+  </blockquote>
 </blockquote>
+<p>q</p>
 ```
 
 :::::::

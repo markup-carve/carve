@@ -63,7 +63,7 @@ test('a bare fence after a blank opens a div', () => {
 const exactHtml = (src) => renderDoc(parse(src)).trim()
 
 for (const [source, expected] of [
-    ['- one\n::: \tnote\n+\n', '<ul>\n  <li>one\n::: \tnote\n+</li>\n</ul>'],
+    ['- one\n::: \tnote\n+\n', '<ul>\n  <li>one\n::: \tnote</li>\n</ul>'],
     ['    - c\n::::>\n', '<ul>\n  <li>c\n::::&gt;</li>\n</ul>'],
     ['    - second\n   tail\n::: \t[First]\n', '<ul>\n  <li>second\ntail\n::: \t[First]</li>\n</ul>'],
     // The fence below it opens without a closer (carve#4018).

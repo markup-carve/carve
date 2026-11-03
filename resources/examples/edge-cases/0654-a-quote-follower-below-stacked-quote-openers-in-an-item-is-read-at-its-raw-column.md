@@ -15,7 +15,9 @@ A quote at column 0 is refused and stands outside the list
 <ul>
   <li>
     <blockquote>
-      <blockquote><p>+</p></blockquote>
+      <blockquote>
+
+      </blockquote>
     </blockquote>
   </li>
 </ul>

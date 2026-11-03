@@ -7,14 +7,14 @@ test('a sibling marker refuses a description-hosted first block without loosenin
   const source = ':: t\n: - +\n  - z\n'
   const list = parse(source).blocks[0].items[1].ddBlocks[0]
   assert.equal(list.tight, true)
-  assert.deepEqual(list.items[0].blocks, [{ t: 'para', lines: ['+'] }])
+  assert.deepEqual(list.items[0].blocks, [])
   assert.deepEqual(list.items[1].blocks, [{ t: 'para', lines: ['z'] }])
 })
 
 test('a document-column follower folds into the refused + of the hosted item (carve#4356)', () => {
   const doc = parse(':: t\n: - +\nx\n')
-  assert.deepEqual(doc.blocks[0].items[1].ddBlocks[0].items[0].blocks, [{ t: 'para', lines: ['+', 'x'] }])
-  assert.equal(doc.blocks.length, 1)
+  assert.deepEqual(doc.blocks[0].items[1].ddBlocks[0].items[0].blocks, [])
+  assert.equal(doc.blocks.length, 2)
 })
 
 test('a follower at the marker column is the hosted item\'s block', () => {

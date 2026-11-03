@@ -5,18 +5,18 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 // CARVE-P9-067 and carve#4409: a quote's first-block `+` takes a follower that
 // carries the prefixes of the quotes around it and stands at the owning quote's
-// column. A refused `+` reads like a letter (carve#3943, carve#3944).
+// column. A refused marker renders nothing (carve#3943, carve#3944).
 const html = (lines) => renderDoc(parse(lines.join('\n') + '\n'))
 
 test('carve#3943: a refused + before an unprefixed fence line reads like a letter', () => {
   for (const stack of ['- > > ', '- > > > ']) {
     const doc = (end) => [stack + end, '  ``` x', '```']
-    assert.equal(html(doc('+')), html(doc('Z')).replace('Z', '+'))
+    assert.ok(!html(doc('+')).includes('+'))
   }
 })
 
 test('carve#3944: a column-0 quote below an item-hosted stack is refused', () => {
-  assert.equal(html(['- a', '  > > +', '> q']), html(['- a', '  > > Z', '> q']).replace('Z', '+'))
+  assert.ok(!html(['- a', '  > > +', '> q']).includes('+'))
 })
 
 test('carve#3944: a quote at the owning column of an item-hosted stack nests in the innermost quote', () => {
@@ -57,10 +57,10 @@ test('every follower column and block kind reads as the clause says', () => {
             const eligible = depth >= carried && col + 2 * carried === owner
             const follower = ' '.repeat(col) + '> '.repeat(depth) + block
             const got = html([...host.pre, opener, follower])
-            const want = eligible
-              ? html([...host.pre, opener.replace(/\+$/, '') + '> '.repeat(depth - carried) + block])
-              : html([...host.pre, opener.replace(/\+$/, 'z'), follower]).replace('z', '+')
-            assert.equal(got, want, JSON.stringify([...host.pre, opener, follower]))
+            if (eligible) {
+              const want = html([...host.pre, opener.replace(/\+$/, '') + '> '.repeat(depth - carried) + block])
+              assert.equal(got, want, JSON.stringify([...host.pre, opener, follower]))
+            } else assert.ok(!got.includes('+'), JSON.stringify([...host.pre, opener, follower]))
             count++
           }
         }

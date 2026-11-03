@@ -56,7 +56,7 @@ r[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -77,7 +77,7 @@ r[^a]
   <li>
     <blockquote><p>a</p></blockquote>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>

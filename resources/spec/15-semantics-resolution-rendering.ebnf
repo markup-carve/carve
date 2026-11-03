@@ -266,9 +266,9 @@
          sub-block without the blank line: a sub-list needs none (§24 C3), and
          neither does any block opener that interrupts a paragraph (§10).
       L3 CONTINUATION MARKER `+` -- Carve addition. PART 0 S2 and its `+`
-         family entry define it (CARVE-P0-024). A lone `+`, on its own line or
-         as the whole content of a marker line, offers one container its next
-         block, parsed like any other. `- + text` keeps `+ text` as text. Quote
+         family entry define it (CARVE-P0-024). A lone `+` at the marker column of a host that takes it, or
+         as the whole content of a marker line, is always a continuation
+         marker. It offers one container its next block, parsed like any other. `- + text` keeps `+ text` as text. Quote
          prefixes select their quote level (`> +`, not `>+`). An accepted
          marker interrupts an open paragraph and its grant ends at the attached
          block's boundary.
@@ -294,7 +294,8 @@
          So a list attaches in every host except a list item, and a quote
          follower nests. No other column reaches: not the content column, not
          column 0 of a quote level, unless that is the marker column. The
-         column of the `+` itself decides nothing else. Blank lines between
+         column of the `+` decides whether it is a marker; the following line
+         decides only whether it attaches. Blank lines between
          the marker and its block refuse it. Invisible lines between the
          marker and the next line are skipped: they are read in the host, and
          the gates apply to the first visible line after them (carve#4449).
@@ -310,11 +311,12 @@
            holding `x`.
          - `- - +` / `  para` gives the inner item the paragraph, and
            `> [^b]: +` / `> # H` gives the note the heading.
-         - `- +` / `  para` is refused and reads `<li>+` / `para</li>`. Write the
+         - `- +` / `  para` is refused and reads `<li>para</li>`; the
+           marker renders nothing and lint reports it. Write the
            block at the marker column, or drop the `+`.
          - `- a` / `  - +` / `para` is refused: the inner marker column is 2.
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.
-         - `- +` / `- b` is refused: `<li>+</li>` and a sibling item.
+         - `- +` / `- b` is refused: an empty first item and a sibling item.
          - `- +` / `%% c` / `text` gives the item the paragraph, and a
            `%%%` comment fence reads the same. So does a paragraph holding
            only braced comments, which renders nothing (CARVE-P9-042,
@@ -323,31 +325,24 @@
            `- a` / `+` / `{x}` / `text`
            gives the item `<p x="">`. `- +` / `*[A]: b` / `text` gives the
            item `text` and defines `A`.
-         - `- +` / `%% c` / blank / `text` is refused: `<li>+</li>` and a
-           paragraph. So is `- +` / `%% c` / `- b`: `<li>+</li>` and a sibling
+         - `- +` / `%% c` / blank / `text` is refused: an empty item and a
+           paragraph. So is `- +` / `%% c` / `- b`: an empty item and a sibling
            item.
          - `- +` / `%% c` / `  text` is refused: the visible line stands at the
            content column. `- a` / `+` / `{x}` / `  - c` is refused the same
            way, and `{x}` labels the list outside the item (carve#4278).
 
-         A `+` on the next line at the marker column is a marker for the same
-         host. If it attaches, its block is the one the earlier marker offered
-         and both markers are consumed: `- +` / `+` / `x` gives the item `x`.
-         If it is refused it is a letter and is itself the attached block:
-         `- +` / `+` / a blank line / `x` gives `<li>+</li>` and a paragraph
-         after the list.
+         Two markers may offer one block. The earliest marker whose gates pass
+         claims it. A later marker at that host's marker column is refused,
+         renders nothing and is linted: `- +` / `+` / `x` gives the item `x`
+         and reports the second marker. If neither attaches, both render
+         nothing: `- +` / `+` / a blank line / `x` gives an empty item and a
+         paragraph after the list.
 
-         A REFUSED `+` IS A PLAIN LETTER -- NORMATIVE [CARVE-P9-085].
-         Rulings carve#3421 and carve#4396. It has no effect of its own: it
-         closes only what that letter would close, it does not spend or block
-         another marker, and a later line has the owner it would have after
-         that letter. Replacing a refused `+` with a letter changes the output
-         only in that character. So it folds into an open paragraph when that
-         paragraph can continue, a following list marker reads as it does after
-         that letter (it folds under an open paragraph unless it is a sibling,
-         PART 0 S4), and otherwise the `+` starts a paragraph where a letter
-         would. The `continuation-marker-refused`
-         lint reports a recognized refusal.
+         A refused marker renders nothing and
+         `continuation-marker-refused` reports it. It does not become a
+         letter, open a paragraph or change the next visible line's owner.
+         A `+` off every eligible marker column remains ordinary text.
 
          A `+` at a container's marker column is outside that container's code,
          raw or colon fence, and an accepted one ends that fence before the

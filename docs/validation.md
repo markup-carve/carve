@@ -203,7 +203,7 @@ the command-line and editor behavior stay aligned.
 | `description-separator-below-content-column` | a `:` or `::` separator below the column of a definition list it appears to continue inside an indentation container, so it adds no entry: past the item's marker column it folds into an open description as text or, after a term, ends the item, and a `:` at the marker column ends the item as a paragraph. Indent it to the definition list's column |
 | `ordered-list-split-by-indent` | consecutive ordered lists continue the same numbering style and sequence, but their first markers start in different columns, so they render as two lists |
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column. Reported once per block, on its first line; continuing table rows and quote lines do not open another block. An aligned opener stays unreported when a continuation is overindented, including when the block opens on the item's marker line. The finding also covers the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
-| `continuation-marker-refused` | a refused lone `+`, on its own line or on a marker line (`- +`, `: +`, `[^a]: +`, `> +`, `- > +`): the next line is blank or missing, lacks the prefix of a quote around the host, stands at another column, is a sibling or closes an open div. PART 9 §17 L3 refuses attachment and the `+` stays a plain letter; see [refused continuation markers](#refused-continuation-markers) |
+| `continuation-marker-refused` | a refused lone `+`, on its own line or on a marker line (`- +`, `: +`, `[^a]: +`, `> +`, `- > +`): the next line is blank or missing, lacks the prefix of a quote around the host, stands at another column, is a sibling or closes an open div. PART 9 §17 L3 consumes the marker without attaching a block; see [refused continuation markers](#refused-continuation-markers) |
 | `block-opener-overindented` | a block opener indented past the content column of the document, a quote, a definition body, a footnote body or a colon body; it still opens there, measured from its own line (`  # h` is a heading). A list marker is not reported, and a table reports once. Inside a list item the finding is `list-item-block-overindented` instead. Remove the indentation, or escape the opener to keep it as text; see [fragile spellings](#fragile-spellings) |
 | `emphasis-marker-before-attributes` | a bare `*`, `/`, `_`, `~` or `=` directly before an attribute block where the reading is not the visible one: the marker closes no span and both stay text, or the span it closes holds another same marker and the block attaches to all of it. Plain `*a*{.x}` is quiet. Brace the span or escape the marker; see [fragile spellings](#fragile-spellings) |
 | `empty-include-path` | a <code v-pre>{{ ... }}</code> run shaped like an include directive but containing no path, including empty braces and spaced directive forms containing only a `#section` or `@option`; it remains literal text, so add a path or remove the braces |
@@ -391,10 +391,10 @@ after a block opener in the first-block form (`- +`, `1. +`, `: +`, `[^a]: +`,
 prefix of a quote around the host, stands at another column, is the host's
 sibling (a list marker under a list item, a `: ` or `:: ` line under a
 description), or closes an open div (CARVE-P9-067, markup-carve/carve#3421,
-markup-carve/carve#4409). A `+` that PART 0 S2 reads as a letter, including one
-past a quote's marker column or at document level, is quiet. PART 9 §17 L3
-refuses the recognized marker. The `+` remains a
-plain letter, or fence payload when the fence content column claims it:
+markup-carve/carve#4409, markup-carve/carve#5013). A `+` that PART 0 S2 reads
+as a letter, including one past a quote's marker column or at document level,
+is quiet. PART 9 §17 L3 consumes a refused marker without text; a `+` at a
+fence's content column remains payload:
 
 ```carve
 - item
@@ -403,11 +403,11 @@ plain letter, or fence payload when the fence content column claims it:
 Meant for the item.
 ```
 
-renders a one-item list whose text ends in `+`, then a separate paragraph. The finding is at the `+`.
+renders a one-item list with no added text, then a separate paragraph. The finding is at the `+`.
 The message says what follows it, a `blank line` or the `end of the
 document`, and names the fix: delete the blank line to attach the next
-block, or delete the `+`. A refused first-block `+` is the same letter: `- +` over a
-blank line renders `<li>+</li>`. An empty item is written `- {empty}`, an empty
+block, or delete the `+`. A refused first-block `+` is also consumed: `- +` over a
+blank line renders `<li></li>`. An empty item is written `- {empty}`, an empty
 description `: {empty}`.
 
 ```txt
@@ -423,8 +423,9 @@ Not reported:
   it as a letter.
 - a `+` past an open quote's marker column; S2 reads it as a letter.
 
-A refused `+` inside an open fence is payload at its content column and text
-at another column (markup-carve/carve#3400, markup-carve/carve#3421).
+A `+` inside an open fence is payload at its content column. At an eligible
+enclosing host's marker column it is a continuation marker; off every marker
+column it is text (markup-carve/carve#3400, markup-carve/carve#5013).
 
 The shared vectors are in
 [`tests/lint-rule-vectors/continuation-marker-refused.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/continuation-marker-refused.json).

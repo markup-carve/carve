@@ -17,7 +17,6 @@ PART 9 §17 L3, CARVE-P9-067 and CARVE-P9-085 (carve#4396). A line of nothing bu
 
 ```html
 <blockquote><p>a</p></blockquote>
-<p>+</p>
 <blockquote>
 
 </blockquote>
@@ -33,7 +32,9 @@ PART 9 §17 L3, CARVE-P9-067 and CARVE-P9-085 (carve#4396). A line of nothing bu
 ````
 
 ```html
-<blockquote><p>+</p></blockquote>
+<blockquote>
+
+</blockquote>
 ```
 
 ::::
@@ -52,7 +53,7 @@ PART 9 §17 L3, CARVE-P9-067 and CARVE-P9-085 (carve#4396). A line of nothing bu
   <dd>
     <blockquote>
       <ol>
-        <li>+</li>
+        <li></li>
       </ol>
     </blockquote>
   </dd>

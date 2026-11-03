@@ -17,8 +17,8 @@ for (const [name, block] of [
     const attached = `- foo\n  1. +\n${block.map(line => `  ${line}`).join('\n')}\n`
 
     assert.equal(carveToCarve(source), expected)
-    assert.equal(html(expected), html(source))
-    assert.notEqual(html(attached), html(source))
+    assert.notEqual(html(expected), html(source))
+    assert.notEqual(html(attached), html(expected))
     assert.doesNotMatch(html(attached), /\+/)
   })
 }

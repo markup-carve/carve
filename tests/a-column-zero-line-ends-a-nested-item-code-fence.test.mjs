@@ -47,6 +47,6 @@ test('a first-block fence keeps its content and its closer', () => {
 })
 
 test('a fence at the content column is below a refused +', () => {
-  assert.equal(html('- +\n  ~~~\nx\n'), '<ul>\n  <li>+\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>x</p>')
-  assert.equal(html('- +\n  ```\n  y\n  ```\nx\n'), '<ul>\n  <li>+\n    <pre><code>y\n</code></pre>\n  </li>\n</ul>\n<p>x</p>')
+  assert.equal(html('- +\n  ~~~\nx\n'), '<ul>\n  <li>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>x</p>')
+  assert.equal(html('- +\n  ```\n  y\n  ```\nx\n'), '<ul>\n  <li>\n    <pre><code>y\n</code></pre>\n  </li>\n</ul>\n<p>x</p>')
 })

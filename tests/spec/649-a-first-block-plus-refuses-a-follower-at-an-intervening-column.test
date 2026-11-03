@@ -6,10 +6,12 @@ A first-block plus refuses a follower at an intervening column
 .
 <ul>
   <li>
-    <blockquote><p>+
-b</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
+<p>b</p>
 ```
 
 ```
@@ -21,12 +23,14 @@ b</p></blockquote>
   <li>a
     <ul>
       <li>
-        <blockquote><p>+
-b</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
   </li>
 </ul>
+<p>b</p>
 ```
 
 ```
@@ -38,10 +42,12 @@ b</p></blockquote>
   <li>a
     <ul>
       <li>
-        <blockquote><p>+
-b</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
+    b
   </li>
 </ul>
 ```
@@ -51,8 +57,10 @@ b</p></blockquote>
   > q
 .
 <blockquote>
-  <blockquote><p>+
-q</p></blockquote>
+  <blockquote>
+
+  </blockquote>
+  <p>q</p>
 </blockquote>
 ```
 
@@ -64,8 +72,10 @@ q</p></blockquote>
 <ul>
   <li>a
     <blockquote>
-      <blockquote><p>+
-q</p></blockquote>
+      <blockquote>
+
+      </blockquote>
+      <p>q</p>
     </blockquote>
   </li>
 </ul>

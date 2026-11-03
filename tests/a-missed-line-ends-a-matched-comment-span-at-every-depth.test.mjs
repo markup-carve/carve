@@ -41,7 +41,7 @@ for (const [marker, list] of [['.', 'ol'], ['-', 'ul']]) {
   })
 }
 
-const refused = '<blockquote><ul><li>+</li></ul></blockquote>'
+const refused = '<blockquote><ul><li></li></ul></blockquote>'
 
 // The late run opens a new span in its own host, which hides what follows it there.
 test('a + skip stops at a blank line that left the quote', () => {

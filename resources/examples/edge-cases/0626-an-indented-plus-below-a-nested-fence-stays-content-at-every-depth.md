@@ -20,12 +20,11 @@ tail
 </code></pre>
           </li>
         </ul>
-        +
-tail
       </li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -48,12 +47,11 @@ tail
             <pre><code></code></pre>
           </li>
         </ul>
-        +
-tail
       </li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -78,7 +76,6 @@ tail
 </code></pre>
           </li>
         </ul>
-        +
       </li>
     </ul>
   </li>
@@ -107,12 +104,11 @@ tail
             x
           </li>
         </ul>
-        +
-tail
       </li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -137,10 +133,9 @@ tail
 </code></pre>
       </li>
     </ul>
-    <p>+
-tail</p>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -169,12 +164,11 @@ tail
 </code></pre>
           </li>
         </ul>
-        <p>+
-tail</p>
       </li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -199,10 +193,9 @@ tail
 </code></pre>
       </li>
     </ol>
-    <p>+
-tail</p>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -227,10 +220,9 @@ tail
 </code></pre>
       </li>
     </ul>
-    <p>+
-tail</p>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::

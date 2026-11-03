@@ -174,8 +174,9 @@
      S2 OWNER. Walk the open frames from the outside in. Each frame consumes
         its row's `prefix` up to its content column (PART 9 §24 C5). Stop at
         the first frame the line does not reach. A lone `+` at the marker
-        column of a frame whose row takes `plus` reaches that frame when
-        PART 9 §17 L3 attaches its next line; any other `+` is a letter. The
+        column of a frame whose row takes `plus` reaches that frame regardless of whether PART 9 §17 L3 attaches
+        its next line; a refused marker renders nothing and any off-column
+        `+` is a letter. The
         owner is the deepest frame reached. A blank line reaches a frame as
         its row's `blank` field says: it reaches every indentation frame and
         no unmarked quote, so without its `>` it ends a quote and the
@@ -560,8 +561,7 @@
                    list item, quote, definition body or footnote body, or a
                    `+` that is the whole content of such a marker line
                    (`- +`, `> +`, `: +`, `[^a]: +`), offers the container its
-                   next block (PART 9 §17, CARVE-P9-067). A refused `+` is a
-                   plain letter (carve#4396).
+                   next block (PART 9 §17, CARVE-P9-067). A refused marker renders nothing and is linted (carve#5013).
 
    OUTPUT. The layout-resolved line stream (equivalently: INDENT / DEDENT /
            CONT events plus line residues). PARTS 1-2 parse blocks over it;

@@ -16,8 +16,7 @@ A refused `+` is text unless an open fence claims it as payload at its content c
     <pre><code></code></pre>
   </li>
 </ul>
-<p>+
-x</p>
+<p>x</p>
 ```
 
 :::::::
@@ -37,7 +36,6 @@ x</p>
     <pre><code></code></pre>
   </li>
 </ul>
-<p>+</p>
 <p>x</p>
 ```
 
@@ -59,8 +57,7 @@ x</p>
 </code></pre>
   </li>
 </ul>
-<p>+
-x</p>
+<p>x</p>
 ```
 
 :::::::
@@ -82,7 +79,6 @@ tail
 </code></pre>
   </li>
 </ul>
-<p>+</p>
 <p>tail</p>
 ```
 
@@ -105,7 +101,6 @@ tail
         <pre><code></code></pre>
       </li>
     </ul>
-    +
   </li>
 </ul>
 <p>tail</p>
@@ -128,7 +123,6 @@ tail
     <pre><code></code></pre>
   </li>
 </ul>
-<p>+</p>
 <p>tail</p>
 ```
 
@@ -150,7 +144,6 @@ tail
     x
   </li>
 </ul>
-<p>+</p>
 <p>tail</p>
 ```
 

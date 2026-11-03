@@ -13,8 +13,7 @@ next root block begins after the item.
 
 ```html
 <ul>
-  <li>+
-x</li>
+  <li>x</li>
 </ul>
 <blockquote>
 
@@ -33,8 +32,7 @@ x</li>
 
 ```html
 <ul>
-  <li>+
-x</li>
+  <li>x</li>
 </ul>
 <section id="h">
   <h1>h</h1>
@@ -53,8 +51,7 @@ x</li>
 
 ```html
 <ul>
-  <li>+
-x</li>
+  <li>x</li>
 </ul>
 <hr>
 ```
@@ -71,8 +68,7 @@ x</li>
 
 ```html
 <ul>
-  <li>+
-x</li>
+  <li>x</li>
 </ul>
 <blockquote>
 

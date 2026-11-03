@@ -25,3 +25,6 @@
 448-a-marker-folds-into-a-quote-below-it  markup-carve/carve#5015: the pinned writer separates the quote from the next sub-list with a blank line, which now loosens the item (PART 11 CARVE-P11-030).
 448-a-marker-folds-into-a-quote-below-it-3  markup-carve/carve#5015: the pinned writer separates the quote from the next sub-list with a blank line, which now loosens the item (PART 11 CARVE-P11-030).
 448-a-marker-folds-into-a-quote-below-it-4  markup-carve/carve#5015: the pinned writer separates the quote from the next sub-list with a blank line, which now loosens the item (PART 11 CARVE-P11-030).
+782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-7  The pinned writer rewrites a marker-column + under the older PART 9 §17 reading, so the spec model reads its output differently (markup-carve/carve#5013).
+847-a-padded-plus-after-a-quote-marker-is-the-quote-s-text  The pinned writer rewrites a marker-column + under the older PART 9 §17 reading, so the spec model reads its output differently (markup-carve/carve#5013).
+847-a-padded-plus-after-a-quote-marker-is-the-quote-s-text-2  The pinned writer rewrites a marker-column + under the older PART 9 §17 reading, so the spec model reads its output differently (markup-carve/carve#5013).

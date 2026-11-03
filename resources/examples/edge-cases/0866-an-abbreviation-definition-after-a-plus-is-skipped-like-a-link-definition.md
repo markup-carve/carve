@@ -128,7 +128,7 @@ A
 
 ```html
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <p>text</p>
 <p><abbr title="b">A</abbr></p>

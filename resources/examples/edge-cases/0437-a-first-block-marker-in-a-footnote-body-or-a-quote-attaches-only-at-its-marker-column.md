@@ -52,8 +52,7 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -79,8 +78,7 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -115,8 +113,10 @@ reaches that paragraph by §10 I6's lazy fold.
 ```
 
 ```html
-<blockquote><p>+
-flush</p></blockquote>
+<blockquote>
+
+</blockquote>
+<p>flush</p>
 ```
 
 :::
@@ -132,8 +132,10 @@ reading one here. It is not, and the row is the control that says so.
 ```
 
 ```html
-<blockquote><p>+
-flush</p></blockquote>
+<blockquote>
+
+</blockquote>
+<p>flush</p>
 ```
 
 :::

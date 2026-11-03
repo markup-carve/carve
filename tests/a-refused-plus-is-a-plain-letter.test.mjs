@@ -1,4 +1,4 @@
-// carve#4396, carve#4409: a refused `+` reads as any letter would, so spelling it `x` changes only that character.
+// carve#5013: an eligible `+` remains a marker when its attachment is refused.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
@@ -62,7 +62,7 @@ function* documents(count, seed) {
 
 const COUNT = 3000
 
-test(`a refused + reads as a letter across ${COUNT} generated documents`, () => {
+test(`a refused marker renders nothing across ${COUNT} generated documents`, () => {
   let refused = 0
   const broken = []
   for (const { source, plusLine } of documents(COUNT, 4396)) {
@@ -70,22 +70,20 @@ test(`a refused + reads as a letter across ${COUNT} generated documents`, () => 
     const html = renderDoc(parse(source, { stateSink: sink }))
     if (!sink.refusedPlusLines.includes(plusLine)) continue
     refused++
-    const lines = source.split('\n')
-    lines[plusLine] = lines[plusLine].replace(/\+[ \t]*$/, 'x')
-    if (html.replaceAll('+', 'x') !== renderDoc(parse(lines.join('\n')))) broken.push(source)
+    if (html.includes('+')) broken.push(source)
   }
   assert.deepEqual(broken, [])
-  assert.ok(refused > COUNT / 2, `only ${refused} documents refused their +`)
+  assert.ok(refused > COUNT / 4, `only ${refused} documents refused their +`)
 })
 
-test('the property can fail: an accepted + does not read as a letter', () => {
+test('an accepted marker still attaches its block', () => {
   assert.notEqual(renderDoc(parse('- +\npara\n')).replaceAll('+', 'x'), renderDoc(parse('- x\npara\n')))
 })
 
 test('the ruled reproduction reads as a note holding one paragraph', () => {
   const read = (letter) => renderDoc(parse(`> [^b]: ${letter}\npara\n\n[^b]\n`))
-  assert.match(read('+'), /<p>\+\npara/)
-  assert.equal(read('+').replaceAll('+', 'x'), read('x'))
+  assert.doesNotMatch(read('+'), /<p>\+/)
+  assert.notEqual(read('+'), read('x'))
 })
 
 for (const [name, source, expected] of [
@@ -98,12 +96,12 @@ for (const [name, source, expected] of [
 }
 
 for (const [name, source, expected] of [
-  ['a refused marker-line + and its lazy line (corpus 838)', ':: t\n: - +\np\n', /<li>\+\np<\/li>/],
-  ['a follower at the content column', '- +\n  para\n', /<li>\+\npara<\/li>/],
-  ['a list marker under an item', '- +\n- b\n', /<li>\+<\/li>\s*<li>b<\/li>/],
-  ['an off-column follower under a nested item', '- a\n  - +\npara\n', /<li>\+\npara<\/li>/],
-  ['an unprefixed follower of an inner quote', '> > +\n# H\n', /<p>\+<\/p>\s*<\/blockquote>\s*<\/blockquote>\s*<section/],
-  ['a blank before the follower', '- +\n\npara\n', /<li>\+<\/li>/],
+  ['a refused marker-line + and its lazy line (corpus 838)', ':: t\n: - +\np\n', /<li><\/li>/],
+  ['a follower at the content column', '- +\n  para\n', /<li>para<\/li>/],
+  ['a list marker under an item', '- +\n- b\n', /<li><\/li>\s*<li>b<\/li>/],
+  ['an off-column follower under a nested item', '- a\n  - +\npara\n', /<li><\/li>[\s\S]*<p>para<\/p>/],
+  ['an unprefixed follower of an inner quote', '> > +\n# H\n', /<\/blockquote>\s*<\/blockquote>\s*<section/],
+  ['a blank before the follower', '- +\n\npara\n', /<li><\/li>/],
 ]) {
   test(`one rule refuses ${name}`, () => assert.match(renderDoc(parse(source)), expected))
 }

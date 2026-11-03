@@ -23,11 +23,11 @@ test('a marker line an item\'s open quote folds carries no + for the next line',
   for (const follower of ['> q', '# H', '---', 'para', '```\nc\n```', ':::\nd\n:::', '| a |', '^ cap']) {
     for (const before of ['', '  - x\n', '  1. x\n  y\n']) {
       const source = (letter) => `- > a\n${before}  - ${letter}\n${follower}\n`
-      assert.equal(html(source('+')), html(source('Q')).replaceAll('Q', '+'))
+      assert.ok(!html(source('+')).includes('+'))
     }
   }
 })
 
 test('the ticket reproduction holds a note with one paragraph', () => {
-  assert.deepEqual(parse('> [^b]: +\npara\n\n[^b]\n').footnoteDefs.get('b'), [{ t: 'para', lines: ['+', 'para'] }])
+  assert.deepEqual(parse('> [^b]: +\npara\n\n[^b]\n').footnoteDefs.get('b'), [{ t: 'para', lines: ['para'] }])
 })

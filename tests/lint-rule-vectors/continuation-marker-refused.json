@@ -77,7 +77,7 @@
             "column": 3,
             "includes": [
               "blank line",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -94,7 +94,7 @@
             "column": 3,
             "includes": [
               "end of the document",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -166,7 +166,7 @@
     },
     {
       "name": "footnote-body",
-      "description": "In a footnote body the plus is ordinary text.",
+      "description": "The note body marker column recognizes a refused plus.",
       "source": "x[^a]\n\n[^a]: note\n+\n\npara\n",
       "expected": {
         "findings": [
@@ -326,8 +326,7 @@
             "line": 1,
             "column": 3,
             "includes": [
-              "+",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -343,8 +342,7 @@
             "line": 1,
             "column": 4,
             "includes": [
-              "+",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -360,8 +358,7 @@
             "line": 1,
             "column": 7,
             "includes": [
-              "+",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -418,7 +415,7 @@
             "column": 7,
             "includes": [
               "end of the document",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -435,7 +432,7 @@
             "column": 7,
             "includes": [
               "blank line",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -451,8 +448,7 @@
             "line": 1,
             "column": 7,
             "includes": [
-              "+",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -469,7 +465,7 @@
             "column": 3,
             "includes": [
               "end of the document",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -485,8 +481,7 @@
             "line": 2,
             "column": 3,
             "includes": [
-              "+",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -519,7 +514,7 @@
             "column": 3,
             "includes": [
               "blank line",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -535,8 +530,7 @@
             "line": 1,
             "column": 3,
             "includes": [
-              "+",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -544,7 +538,7 @@
     },
     {
       "name": "quote-first-block-end-of-input",
-      "description": "A refused first-block plus stays text in the quote (CARVE-P9-067).",
+      "description": "A refused first-block plus is consumed in the quote (CARVE-P9-067).",
       "source": "> +\n",
       "expected": {
         "findings": [
@@ -553,7 +547,7 @@
             "column": 3,
             "includes": [
               "end of the document",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -561,7 +555,7 @@
     },
     {
       "name": "quote-first-block-blank",
-      "description": "A refused first-block plus stays text in the quote (CARVE-P9-067).",
+      "description": "A refused first-block plus is consumed in the quote (CARVE-P9-067).",
       "source": "> +\n\npara\n",
       "expected": {
         "findings": [
@@ -570,7 +564,7 @@
             "column": 3,
             "includes": [
               "blank line",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -587,7 +581,7 @@
             "column": 3,
             "includes": [
               "blank line",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -595,7 +589,7 @@
     },
     {
       "name": "quote-first-block-indented",
-      "description": "A refused first-block plus stays text in the quote (CARVE-P9-067).",
+      "description": "A refused first-block plus is consumed in the quote (CARVE-P9-067).",
       "source": "> +\n  x\n",
       "expected": {
         "findings": [
@@ -604,7 +598,7 @@
             "column": 3,
             "includes": [
               "right",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -629,7 +623,7 @@
             "column": 5,
             "includes": [
               "end of the document",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -661,8 +655,7 @@
             "line": 2,
             "column": 7,
             "includes": [
-              "+",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -678,8 +671,7 @@
             "line": 2,
             "column": 7,
             "includes": [
-              "+",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -687,7 +679,7 @@
     },
     {
       "name": "nested-quote-unclaimed-before-list",
-      "description": "A plus no open container claims is reported; it stays text in the inner quote (corpus 630-4, carve#3421).",
+      "description": "The inner quote claims the marker column and reports a refused sibling follower (carve#5013).",
       "source": "> > q\n> > +\n> > - s\n",
       "expected": {
         "findings": [
@@ -817,7 +809,7 @@
             "column": 5,
             "includes": [
               "end of the document",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -866,7 +858,7 @@
             "column": 5,
             "includes": [
               "end of the document",
-              "remains text"
+              "+"
             ]
           }
         ]
@@ -886,6 +878,38 @@
       "source": ":: t\n: d\n  +\n\np\n",
       "expected": {
         "findings": []
+      }
+    },
+    {
+      "name": "second-marker-after-skipped-note",
+      "description": "The second plus cannot claim the quote already taken by the list item (carve#5013 and #5034).",
+      "source": "- +\n[^n]: a\n+\n> q\n\nsee[^n]\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "second-marker-after-note-first-block",
+      "description": "The second plus cannot claim the quote already taken by the note body marker (carve#5013).",
+      "source": "[^n]: +\n+\n> q\n\nsee[^n]\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
       }
     }
   ]

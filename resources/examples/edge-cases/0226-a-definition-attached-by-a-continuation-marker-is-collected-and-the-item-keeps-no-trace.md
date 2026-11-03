@@ -14,8 +14,7 @@ see [t][r]
 
 ```html
 <ul>
-  <li>a
-+</li>
+  <li>a</li>
 </ul>
 <p>see <a href="/u">t</a></p>
 ```

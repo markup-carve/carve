@@ -9,12 +9,11 @@ tail
 <ul>
   <li>a
     <ul>
-      <li>b
-+
-tail</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -25,8 +24,7 @@ tail</li>
 <ul>
   <li>a
     <ul>
-      <li>b
-+</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
@@ -39,10 +37,9 @@ tail</li>
 - s
 .
 <ul>
-  <li>a</li>
+  <li><p>a</p></li>
+  <li><p>s</p></li>
 </ul>
-<p>+
-- s</p>
 ```
 
 ````
@@ -54,9 +51,8 @@ tail</li>
   <li>
     <pre><code></code></pre>
   </li>
+  <li>s</li>
 </ul>
-<p>+
-- s</p>
 ````
 
 ````
@@ -88,7 +84,6 @@ tail</li>
         <pre><code></code></pre>
       </li>
     </ul>
-    +
   </li>
 </ul>
 ````
@@ -184,8 +179,7 @@ tail</li>
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="task +"> task
-+</li>
+      <li><input type="checkbox" disabled aria-label="task"> task</li>
     </ul>
     <ul>
       <li>x</li>
@@ -200,8 +194,7 @@ tail</li>
 .
 <blockquote>
   <ul>
-    <li>a
-+</li>
+    <li>a</li>
   </ul>
 </blockquote>
 ```
@@ -215,8 +208,7 @@ tail</li>
 <ul>
   <li>a
     <ul>
-      <li>b
-+</li>
+      <li>b</li>
       <li>c</li>
     </ul>
   </li>
@@ -290,7 +282,6 @@ q</li>
         
       </li>
     </ul>
-    +
   </li>
 </ul>
 ````
@@ -304,12 +295,11 @@ left
 <ul>
   <li>a
     <ul>
-      <li>b
-+
-left</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
+<p>left</p>
 ```
 
 ```
@@ -320,8 +310,7 @@ left</li>
 <ul>
   <li>a
     <ul>
-      <li>b
-+</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
@@ -366,7 +355,7 @@ left</li>
 - +
 .
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 ```
 
@@ -376,7 +365,7 @@ left</li>
 para
 .
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <p>para</p>
 ```
@@ -386,7 +375,7 @@ para
 - b
 .
 <ul>
-  <li>+</li>
+  <li></li>
   <li>b</li>
 </ul>
 ```
@@ -395,7 +384,7 @@ para
 1. +
 .
 <ol>
-  <li>+</li>
+  <li></li>
 </ol>
 ```
 
@@ -403,7 +392,7 @@ para
 - [ ] +
 .
 <ul class="task-list">
-  <li><input type="checkbox" disabled aria-label="+"> +</li>
+  <li><input type="checkbox" disabled> </li>
 </ul>
 ```
 
@@ -415,7 +404,7 @@ para
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
       <li>b</li>
     </ul>
   </li>
@@ -434,9 +423,11 @@ flush
 flush
 .
 <blockquote>
-  <blockquote><p>+
-flush</p></blockquote>
+  <blockquote>
+
+  </blockquote>
 </blockquote>
+<p>flush</p>
 ```
 
 ```
@@ -449,7 +440,7 @@ flush</p></blockquote>
     <ul>
       <li>
         <ul>
-          <li>+</li>
+          <li></li>
         </ul>
       </li>
     </ul>
@@ -468,7 +459,7 @@ flush</p></blockquote>
     <ul>
       <li>
         <ul>
-          <li>+</li>
+          <li></li>
         </ul>
       </li>
     </ul>
@@ -486,10 +477,12 @@ flush</p></blockquote>
   <li>a
     <ul>
       <li>
-        <blockquote><p>+
-b</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
+    b
   </li>
 </ul>
 ```
@@ -509,7 +502,9 @@ b</p></blockquote>
 .
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <section id="h">
@@ -525,7 +520,9 @@ x
 .
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <pre><code>x
@@ -538,7 +535,9 @@ x
 .
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <table>
@@ -554,7 +553,9 @@ x
 .
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <blockquote><p>q</p></blockquote>
@@ -569,7 +570,9 @@ x
   <li>a
     <ul>
       <li>
-        <blockquote><p>+</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
   </li>
@@ -588,7 +591,9 @@ x
   <li>a
     <ul>
       <li>
-        <blockquote><p>+</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
     <h1 id="h">h</h1>

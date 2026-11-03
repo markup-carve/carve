@@ -400,9 +400,9 @@
       It also violates §2's THE UNIT IS THE OPENER: an opener run
       such as `%%%` must not be split into a partial opener and stray text.
       Writing `* %%` as `* +` changes the output as well as the tree: a lone
-      `+` with nothing to attach is refused and reads as the letter `+`
-      (CARVE-P9-085), so `* +` renders `<li>+</li>` where `* %%` renders an
-      empty `<li></li>`.
+      `+` with nothing to attach is a refused structural marker and
+      renders nothing (PART 9 §17 L3), so `* +` and `* %%` both render an
+      empty `<li></li>` while retaining different parse forms.
 
       The escaping half remains §2's test: omit an escape unless doing so
       changes the re-parsed AST.

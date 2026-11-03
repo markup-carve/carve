@@ -9,7 +9,7 @@ after
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -22,7 +22,7 @@ after
 after
 .
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <p>after</p>
 ```
@@ -36,7 +36,7 @@ after
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -52,7 +52,7 @@ z
 ```
 .
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <pre><code>z
 </code></pre>
@@ -67,7 +67,7 @@ z
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     after
   </li>
@@ -83,7 +83,7 @@ z
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     after
   </li>

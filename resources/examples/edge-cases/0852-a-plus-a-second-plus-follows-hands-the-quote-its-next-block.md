@@ -53,10 +53,7 @@ tail
 ````
 
 ```html
-<blockquote>
-  <p>q</p>
-  <p>+</p>
-</blockquote>
+<blockquote><p>q</p></blockquote>
 ```
 
 ::::

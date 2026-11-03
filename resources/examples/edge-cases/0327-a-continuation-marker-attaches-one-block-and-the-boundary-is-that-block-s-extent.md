@@ -117,8 +117,7 @@ paragraph. The following item is a sibling:
 
 ```html
 <ul>
-  <li>a
-+</li>
+  <li>a</li>
   <li>x</li>
   <li>y</li>
 </ul>

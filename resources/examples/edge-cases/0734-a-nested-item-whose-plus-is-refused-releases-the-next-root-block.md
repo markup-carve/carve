@@ -14,8 +14,7 @@ A line at the inner item's content column refuses the `+` and folds into it (car
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li>x</li>
     </ul>
   </li>
 </ul>
@@ -36,8 +35,7 @@ x</li>
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li>x</li>
     </ul>
   </li>
 </ul>
@@ -60,8 +58,7 @@ x</li>
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li>x</li>
     </ul>
   </li>
 </ul>
@@ -84,8 +81,7 @@ tail
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li>x</li>
     </ul>
   </li>
 </ul>
@@ -109,8 +105,7 @@ x</li>
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li>x</li>
     </ul>
   </li>
 </ul>

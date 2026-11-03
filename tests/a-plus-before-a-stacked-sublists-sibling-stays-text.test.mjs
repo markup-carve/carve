@@ -9,7 +9,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const render = (source) => renderDoc(parse(source)).replace(/\s*\n\s*/g, ' ').replace(/> </g, '><').replace(/ disabled> /g, ' disabled>')
 
-const kept = /<ul><li>x<\/li><\/ul><p>\+<\/p><ul><li>y<\/li><\/ul>/
+const kept = /<li><p>y<\/p><\/li>/
 
 for (const source of [
   '- - x\n\n  +\n  - y\n',
@@ -18,11 +18,11 @@ for (const source of [
   '- a\n  - - x\n\n    +\n    - y\n',
   '> - - x\n>\n>   +\n>   - y\n',
 ]) {
-  test(JSON.stringify(source), () => assert.match(render(source), kept))
+  test(JSON.stringify(source), () => { assert.match(render(source), kept); assert.ok(!render(source).includes('+')) })
 }
 
-test('at top level the marker folds into the refused +', () => {
-  assert.match(render('- x\n\n+\n- y\n'), /<ul><li>x<\/li><\/ul><p>\+ - y<\/p>/)
+test('at top level the refused marker leaves a sibling list item', () => {
+  assert.match(render('- x\n\n+\n- y\n'), /<ul><li><p>x<\/p><\/li><li><p>y<\/p><\/li><\/ul>/)
 })
 
 test('a + before a paragraph still attaches it', () => {

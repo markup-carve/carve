@@ -10,12 +10,12 @@ const steps = (source) => modelTrace(source).map((r) => `${r.line} ${r.step} ${r
 test('a list marker off the marker column of a refused + opens a new list', () => {
   const source = '1. +\n - s\n - t\n'
   assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item', '3 S5 doc/item:3 item'])
-  assert.equal(renderDoc(parse(source)), '<ol>\n  <li>+</li>\n</ol>\n<ul>\n  <li>s</li>\n  <li>t</li>\n</ul>')
+  assert.equal(renderDoc(parse(source)), '<ol>\n  <li></li>\n</ol>\n<ul>\n  <li>s</li>\n  <li>t</li>\n</ul>')
 })
 
 test('a list marker at the marker column of a refused + is traced as a new list', () => {
   assert.deepEqual(steps('1. +\n- s\n'), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item'])
-  assert.equal(renderDoc(parse('1. +\n- s\n')), '<ol>\n  <li>+</li>\n</ol>\n<ul>\n  <li>s</li>\n</ul>')
+  assert.equal(renderDoc(parse('1. +\n- s\n')), '<ol>\n  <li></li>\n</ol>\n<ul>\n  <li>s</li>\n</ul>')
 })
 
 test('a marker off the column keeps its continuation, lazy and nested lines', () => {

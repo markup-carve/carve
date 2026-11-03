@@ -18,7 +18,7 @@ CARVE-P11-042 and CARVE-P9-085 (carve#4868). The blank refuses the `+` in each s
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     <blockquote><p>q</p></blockquote>
   </li>
@@ -41,7 +41,7 @@ CARVE-P11-042 and CARVE-P9-085 (carve#4868). The blank refuses the `+` in each s
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     <pre><code>x
 </code></pre>
@@ -63,7 +63,7 @@ CARVE-P11-042 and CARVE-P9-085 (carve#4868). The blank refuses the `+` in each s
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     <h1 id="H">H</h1>
   </li>
@@ -85,7 +85,7 @@ CARVE-P11-042 and CARVE-P9-085 (carve#4868). The blank refuses the `+` in each s
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     <blockquote class="c"><p>q</p></blockquote>
   </li>
@@ -106,7 +106,7 @@ CARVE-P11-042 and CARVE-P9-085 (carve#4868). The blank refuses the `+` in each s
 <ul>
   <li>foo
     <ol>
-      <li>+</li>
+      <li></li>
     </ol>
     <blockquote><p>b</p></blockquote>
   </li>

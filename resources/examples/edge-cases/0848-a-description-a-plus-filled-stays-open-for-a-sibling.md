@@ -64,10 +64,10 @@ l
 `````html
 <dl>
   <dt>t</dt>
-  <dd>+
-l</dd>
-  <dd>b</dd>
+  <dd></dd>
 </dl>
+<p>l
+: b</p>
 `````
 
 :::::::

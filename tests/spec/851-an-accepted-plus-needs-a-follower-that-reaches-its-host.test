@@ -7,7 +7,6 @@ An accepted plus needs a follower that reaches its host
 >
 .
 <blockquote><p>a</p></blockquote>
-<p>+</p>
 <blockquote>
 
 </blockquote>
@@ -17,7 +16,9 @@ An accepted plus needs a follower that reaches its host
 > +
 >
 .
-<blockquote><p>+</p></blockquote>
+<blockquote>
+
+</blockquote>
 ```
 
 ```
@@ -30,7 +31,7 @@ An accepted plus needs a follower that reaches its host
   <dd>
     <blockquote>
       <ol>
-        <li>+</li>
+        <li></li>
       </ol>
     </blockquote>
   </dd>

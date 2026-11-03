@@ -13,12 +13,12 @@ const note = (html) => html.slice(html.indexOf('<li id="fn1">'))
 
 test('a lazy line after a refused + folds into the item paragraph without its frame', () => {
   const html = render('[^n]: - +\n  +\nafter\n\nr[^n]\n')
-  assert.match(note(html), /<ul>\s*<li>\+\n\+\nafter<\/li>\s*<\/ul>/)
+  assert.match(note(html), /<ul>\s*<li><\/li>\s*<\/ul>[\s\S]*<p>\+\nafter/)
 })
 
 test('a line under a second refused + stays in the item paragraph without its frame', () => {
   const html = render('[^n]: - +\n +\n p\n\nr[^n]\n')
-  assert.match(note(html), /<ul>\s*<li>\+\n\+\np<\/li>\s*<\/ul>/)
+  assert.match(note(html), /<ul>\s*<li>\+\np<\/li>\s*<\/ul>/)
 })
 
 test('no frame reaches the output in any host, leaf, column or quote depth', () => {

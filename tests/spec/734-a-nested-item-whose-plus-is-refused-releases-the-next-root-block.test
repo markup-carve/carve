@@ -8,8 +8,7 @@ A nested item whose plus is refused releases the next root block
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li>x</li>
     </ul>
   </li>
 </ul>
@@ -24,8 +23,7 @@ x</li>
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li>x</li>
     </ul>
   </li>
 </ul>
@@ -42,8 +40,7 @@ x</li>
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li>x</li>
     </ul>
   </li>
 </ul>
@@ -60,8 +57,7 @@ tail
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li>x</li>
     </ul>
   </li>
 </ul>
@@ -79,8 +75,7 @@ x</li>
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li>x</li>
     </ul>
   </li>
 </ul>

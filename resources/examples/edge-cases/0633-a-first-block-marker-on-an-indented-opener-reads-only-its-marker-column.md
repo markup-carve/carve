@@ -16,7 +16,7 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
   <li>x</li>
@@ -35,8 +35,7 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 ```html
 <ul>
-  <li>a
-+</li>
+  <li>a</li>
   <li>b</li>
 </ul>
 ```
@@ -56,8 +55,7 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="task +"> task
-+</li>
+      <li><input type="checkbox" disabled aria-label="task"> task</li>
     </ul>
     <ol>
       <li>x</li>
@@ -81,12 +79,10 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 <ul>
   <li>foo
     <ul>
-      <li>b
-+
-        <ul>
-          <li>x</li>
-        </ul>
-      </li>
+      <li>b</li>
+    </ul>
+    <ul>
+      <li>x</li>
     </ul>
   </li>
 </ul>
@@ -106,7 +102,7 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -127,11 +123,11 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 <ul>
   <li>foo
     <ul>
-      <li>+
-x</li>
+      <li></li>
     </ul>
   </li>
 </ul>
+<p>x</p>
 ```
 
 :::
@@ -148,7 +144,7 @@ x</li>
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -169,7 +165,7 @@ x</li>
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -212,7 +208,7 @@ x</li>
 <ul>
   <li>foo
     <ul>
-      <li>+
+      <li>
         <blockquote><p>b</p></blockquote>
       </li>
     </ul>
@@ -234,7 +230,7 @@ x</li>
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="+"> +</li>
+      <li><input type="checkbox" disabled> </li>
     </ul>
   </li>
 </ul>
@@ -255,7 +251,7 @@ x</li>
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="+"> +</li>
+      <li><input type="checkbox" disabled> </li>
     </ul>
   </li>
 </ul>
@@ -298,7 +294,7 @@ x</li>
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="+"> +
+      <li><input type="checkbox" disabled> 
         <blockquote><p>b</p></blockquote>
       </li>
     </ul>
@@ -320,7 +316,7 @@ x</li>
 <ul>
   <li>foo
     <ol>
-      <li>+</li>
+      <li></li>
     </ol>
   </li>
 </ul>
@@ -341,7 +337,7 @@ x</li>
 <ul>
   <li>foo
     <ol>
-      <li>+</li>
+      <li></li>
     </ol>
   </li>
 </ul>
@@ -384,7 +380,7 @@ x</li>
 <ul>
   <li>foo
     <ol>
-      <li>+</li>
+      <li></li>
     </ol>
     <blockquote><p>b</p></blockquote>
   </li>
@@ -407,7 +403,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -431,7 +427,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -480,7 +476,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>+
+      <li>
         <pre><code>x
 </code></pre>
       </li>
@@ -505,7 +501,7 @@ x
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="+"> +</li>
+      <li><input type="checkbox" disabled> </li>
     </ul>
   </li>
 </ul>
@@ -529,7 +525,7 @@ x
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="+"> +</li>
+      <li><input type="checkbox" disabled> </li>
     </ul>
   </li>
 </ul>
@@ -578,7 +574,7 @@ x
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="+"> +
+      <li><input type="checkbox" disabled> 
         <pre><code>x
 </code></pre>
       </li>
@@ -603,7 +599,7 @@ x
 <ul>
   <li>foo
     <ol>
-      <li>+</li>
+      <li></li>
     </ol>
   </li>
 </ul>
@@ -627,7 +623,7 @@ x
 <ul>
   <li>foo
     <ol>
-      <li>+</li>
+      <li></li>
     </ol>
   </li>
 </ul>
@@ -676,7 +672,7 @@ x
 <ul>
   <li>foo
     <ol>
-      <li>+</li>
+      <li></li>
     </ol>
     <pre><code>x
 </code></pre>
@@ -698,7 +694,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
       <li>x</li>
     </ul>
   </li>
@@ -739,7 +735,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     <ul>
       <li>x</li>
@@ -762,7 +758,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     <ol>
       <li>x</li>
@@ -785,7 +781,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     <ul class="task-list">
       <li><input type="checkbox" disabled aria-label="x"> x</li>
@@ -808,7 +804,7 @@ x
 <ul>
   <li>foo
     <ul>
-      <li>+
+      <li>
         <ul>
           <li>x</li>
         </ul>
@@ -832,10 +828,9 @@ x
 
 ```html
 <ul>
-  <li>a</li>
+  <li><p>a</p></li>
+  <li><p>s</p></li>
 </ul>
-<p>+
-- s</p>
 ```
 
 :::
@@ -853,9 +848,8 @@ x
   <li>
     <pre><code></code></pre>
   </li>
+  <li>s</li>
 </ul>
-<p>+
-- s</p>
 ```
 
 :::
@@ -874,9 +868,8 @@ x
     <li>
       <pre><code></code></pre>
     </li>
+    <li>s</li>
   </ul>
-  <p>+
-- s</p>
 </blockquote>
 ```
 

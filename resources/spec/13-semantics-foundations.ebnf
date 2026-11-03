@@ -146,8 +146,9 @@
    4d. A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE -- NORMATIVE [CARVE-P9-080]
       (constrains `caption_slot` in PART 2). A STRUCTURAL-ONLY LINE is a
       non-blank line that is empty once its block structural prefix is
-      removed: a bare `>`, an accepted continuation marker, a bare container
-      fence. A list marker with no content and a refused `+` are text. It carries layout and no content. It is NOT a
+      removed: a bare `>`, a continuation marker (including one refused by its
+      attachment gates), a bare container fence. A list marker with no content
+      is text. A refused marker carries layout and no content. It is NOT a
       blank line outside that quote. Inside a quote, a bare `>` is that quote's
       blank line and counts toward a contained host's one-blank caption allowance.
 

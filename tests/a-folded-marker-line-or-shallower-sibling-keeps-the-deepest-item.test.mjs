@@ -9,7 +9,7 @@ const flat = (source) => renderDoc(parse(source)).replace(/\s*\n\s*/g, ' ').repl
 test('a nested first-block + paragraph takes a lazy line at any depth', () => {
   const cases = [
     ['- a\n  * b\n    - +\n    q\nafter\n', '<ul><li>a <ul><li>b <ul><li>q after</li></ul></li></ul></li></ul>'],
-    ['- a\n  * b\n    - +\n      q\nafter\n', '<ul><li>a <ul><li>b <ul><li>+ q after</li></ul></li></ul></li></ul>'],
+    ['- a\n  * b\n    - +\n      q\nafter\n', '<ul><li>a <ul><li>b <ul><li>q after</li></ul></li></ul></li></ul>'],
     ['- a\n  * b\n    * c\n      - +\n      q\nafter\n', '<ul><li>a <ul><li>b <ul><li>c <ul><li>q after</li></ul></li></ul></li></ul></li></ul>'],
     ['- a\n  * b\n    - +\n    q\n    r\nafter\n', '<ul><li>a <ul><li>b <ul><li>q r after</li></ul></li></ul></li></ul>'],
   ]

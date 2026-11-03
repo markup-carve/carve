@@ -12,7 +12,7 @@ for (const [name, invisible] of [
 ]) {
   test(`${name} leaves a term open for a description with a refused first-block plus`, () => {
     assert.equal(html(`:: t\n${invisible}\n:  +\n flush\n`),
-      '<dl>\n  <dt>t</dt>\n  <dd>+\nflush</dd>\n</dl>')
+      '<dl>\n  <dt>t</dt>\n  <dd></dd>\n</dl>\n<p>flush</p>')
     assert.equal(html(`:: t\n${invisible}\n:  +\nflush\n`),
       '<dl>\n  <dt>t</dt>\n  <dd>flush</dd>\n</dl>')
   })

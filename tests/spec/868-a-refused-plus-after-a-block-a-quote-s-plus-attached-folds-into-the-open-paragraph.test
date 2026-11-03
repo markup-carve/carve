@@ -8,8 +8,7 @@ A refused plus after a block a quote's plus attached folds into the open paragra
 .
 <blockquote>
   <ol>
-    <li>e
-+</li>
+    <li>e</li>
   </ol>
 </blockquote>
 ```

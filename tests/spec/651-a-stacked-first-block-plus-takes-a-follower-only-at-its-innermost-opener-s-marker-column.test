@@ -8,10 +8,12 @@ A stacked first-block plus takes a follower only at its innermost opener's marke
   <li>
     <ul>
       <li>
-        <blockquote><p>+
-b</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
+    b
   </li>
 </ul>
 ```
@@ -40,12 +42,14 @@ b</p></blockquote>
       <li>
         <ul>
           <li>
-            <blockquote><p>+
-b</p></blockquote>
+            <blockquote>
+
+            </blockquote>
           </li>
         </ul>
       </li>
     </ul>
+    b
   </li>
 </ul>
 ```

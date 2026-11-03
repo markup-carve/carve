@@ -21,7 +21,7 @@ CARVE-P9-067 and CARVE-P9-085: a `+` attaches only at its innermost owner's mark
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -47,7 +47,7 @@ x
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -72,7 +72,7 @@ q
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -98,7 +98,7 @@ z
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -139,9 +139,9 @@ para
 <blockquote>
   <dl>
     <dt>t</dt>
-    <dd>+
-para</dd>
+    <dd></dd>
   </dl>
+  <p>para</p>
 </blockquote>
 ```
 
@@ -165,8 +165,7 @@ r[^b]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -197,7 +196,7 @@ r[^q]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -223,7 +222,7 @@ r[^b]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

@@ -12,7 +12,7 @@ test('a paragraph below a refused + is traced in the item', () => {
   const source = '- +\n para\n'
   assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S4 doc/item:1 lazy'])
   assert.equal(modelTrace(source)[1].closed, undefined)
-  assert.equal(renderDoc(parse(source)), '<ul>\n  <li>+\npara</li>\n</ul>')
+  assert.equal(renderDoc(parse(source)), '<ul>\n  <li></li>\n</ul>\n<p>para</p>')
 })
 
 test('the lines after that paragraph stay in the item until the blank line', () => {

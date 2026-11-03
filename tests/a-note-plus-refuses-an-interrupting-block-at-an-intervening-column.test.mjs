@@ -1,6 +1,6 @@
 /*
  * CARVE-P9-067: an intervening column refuses a first-block `+` in every host
- * group, so a footnote's `+` stays text and an interrupting block below its body
+ * group, so a footnote's `+` renders nothing and an interrupting block below its body
  * column leaves the note (carve#4212).
  */
 
@@ -18,7 +18,7 @@ for (const [host, pad] of [['', ' '], ['> ', '>  '], ['> > ', '> >  '], ['- x\n 
     test(`${JSON.stringify(host)}[^b]: + refuses ${JSON.stringify(block)} at an intervening column`, () => {
       const lines = block.split('\n').map((l) => (l === '' ? '' : pad + l))
       const out = html(`${host}[^b]: +\n${lines.join('\n')}\n\nr[^b]\n`)
-      assert.match(note(out), /<p>\+<a href/, out)
+      assert.doesNotMatch(note(out), /<p>\+<a href/, out)
       assert.match(body(out), /H/, out)
     })
   }

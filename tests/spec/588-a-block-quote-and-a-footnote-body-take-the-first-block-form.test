@@ -23,7 +23,9 @@ flush
 ```
 > +
 .
-<blockquote><p>+</p></blockquote>
+<blockquote>
+
+</blockquote>
 ```
 
 ```
@@ -31,7 +33,9 @@ flush
 
 after
 .
-<blockquote><p>+</p></blockquote>
+<blockquote>
+
+</blockquote>
 <p>after</p>
 ```
 
@@ -42,7 +46,9 @@ x
 ```
 .
 <blockquote>
-  <blockquote><p>+</p></blockquote>
+  <blockquote>
+
+  </blockquote>
 </blockquote>
 <pre><code>x
 </code></pre>
@@ -79,7 +85,7 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -95,7 +101,7 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

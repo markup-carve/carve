@@ -7,7 +7,9 @@ A hosted quote's first-block plus refuses a block without the host quote's prefi
 <blockquote>
   <ul>
     <li>
-      <blockquote><p>+</p></blockquote>
+      <blockquote>
+
+      </blockquote>
     </li>
   </ul>
 </blockquote>
@@ -23,7 +25,9 @@ A hosted quote's first-block plus refuses a block without the host quote's prefi
 <blockquote>
   <ul>
     <li>
-      <blockquote><p>+</p></blockquote>
+      <blockquote>
+
+      </blockquote>
     </li>
   </ul>
 </blockquote>
@@ -43,7 +47,9 @@ A hosted quote's first-block plus refuses a block without the host quote's prefi
   <ul>
     <li>a</li>
     <li>
-      <blockquote><p>+</p></blockquote>
+      <blockquote>
+
+      </blockquote>
     </li>
   </ul>
 </blockquote>

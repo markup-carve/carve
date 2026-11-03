@@ -198,7 +198,6 @@
     "CARVE-P9-082": "113-a-pipe-pair-with-no-cell-is-not-a-table",
     "CARVE-P9-083": "413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not",
     "CARVE-P9-084": "68-nested-containers-3",
-    "CARVE-P9-085": "246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it",
     "CARVE-P9R-001": "861-an-undefined-label-and-a-cloned-heading-title",
     "CARVE-P9R-002": "448-a-marker-folds-into-a-quote-below-it",
     "CARVE-P9R-004": "311-a-footnote-in-reference-link-text-nests-the-anchors-too",

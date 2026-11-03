@@ -12,7 +12,7 @@ for (const host of ['> - ', '> * ', '> 1. ', '> - [ ] ', '> - - ', '> > - ', '> 
   for (const marker of ['- after', '* after', '1. after', '- [ ] after']) {
     test(`${JSON.stringify(host)}[^b]: + then ${JSON.stringify(marker)}`, () => {
       const source = `${host}[^b]: +\n${marker}\n\nr[^b]\n`
-      assert.ok(notes(source).includes(`<p>+<a href`), html(source))
+      assert.ok(!notes(source).includes('+'), html(source))
     })
     test(`${JSON.stringify(host)}[^b]: + takes ${JSON.stringify(marker)} at its column`, () => {
       const source = `${host}[^b]: +\n${host.replace(/[^> ]/g, ' ')}${marker}\n\nr[^b]\n`
@@ -36,7 +36,7 @@ for (const host of ['', '> ', '> > ', '- > ', '> - x\n>   ']) {
       const reference = `[^b]: +\n${['::: d', ...body, ...tail].join('\n')}\n\nr[^b]\n`
       if (host === '') return assert.equal(notes(source), notes(reference), html(source))
       const out = html(source)
-      assert.match(notes(source), /<p>\+<a href/, out)
+      assert.doesNotMatch(notes(source), /<p>\+<a href/, out)
       assert.match(out.slice(0, out.indexOf('<section')), /<\/blockquote>\n(?:[\s\S]*\n)?<div class="d">/, out)
     })
   }
@@ -44,5 +44,5 @@ for (const host of ['', '> ', '> > ', '- > ', '> - x\n>   ']) {
 
 test('carve#4031 shape 4', () => {
   assert.match(notes('[^b]: +\n::: d\ny\n\nr[^b]\n'), /<div class="d">\n\s*<p>y<\/p>\n\s*<\/div>/)
-  assert.match(notes('> [^b]: +\n::: d\ny\n\nr[^b]\n'), /<p>\+<a href/)
+  assert.doesNotMatch(notes('> [^b]: +\n::: d\ny\n\nr[^b]\n'), /<p>\+<a href/)
 })

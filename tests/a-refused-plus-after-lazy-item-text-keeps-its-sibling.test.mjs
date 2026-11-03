@@ -10,12 +10,12 @@ for (const [follower, ending] of [
   ['* b', '</ul><ul><li>b</li></ul>'],
 ]) {
   test(`a lazy item paragraph keeps a refused plus before ${follower}`, () => {
-    assert.equal(html(`- q\nr\n+\n${follower}\n`), `<ul><li>q\nr\n+</li>${ending}`)
+    assert.equal(html(`- q\nr\n+\n${follower}\n`), `<ul><li>q\nr</li>${ending}`)
   })
 }
 
 test('the same rule holds across several lazy lines', () => {
-  assert.equal(html('- q\nr\ns\n+\n- b\n'), '<ul><li>q\nr\ns\n+</li><li>b</li></ul>')
+  assert.equal(html('- q\nr\ns\n+\n- b\n'), '<ul><li>q\nr\ns</li><li>b</li></ul>')
 })
 
 test('a blank before plain text does not revive the old item', () => {

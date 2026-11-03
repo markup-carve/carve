@@ -46,14 +46,13 @@ see[^a]
 ```
 
 ```html
+<p>more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro
-+
-more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -105,14 +104,13 @@ see[^a]
 ```
 
 ```html
+<p>more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro
-+
-more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -185,10 +183,9 @@ outside the `dd`.
 ```html
 <dl>
   <dt>term</dt>
-  <dd>intro
-+
-more</dd>
+  <dd>intro</dd>
 </dl>
+<p>more</p>
 ```
 
 :::
@@ -264,8 +261,7 @@ else; the blank-line control and the comment control agree with each other.
 
 ```html
 <blockquote><p>intro</p></blockquote>
-<p>+
-more</p>
+<p>more</p>
 ```
 
 :::
@@ -305,10 +301,9 @@ its own column, exactly as the comment spelling leaves it.
 
 ```html
 <ul>
-  <li>intro
-+
-more</li>
+  <li>intro</li>
 </ul>
+<p>more</p>
 ```
 
 :::
@@ -370,8 +365,7 @@ marker adds nothing (markup-carve/carve#3421).
 ```html
 <ul>
   <li>x
-    <blockquote><p>q
-+</p></blockquote>
+    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
 ```
@@ -392,8 +386,7 @@ no flush-left block follows it.
 ```html
 <ul>
   <li>x
-    <blockquote><p>q
-+</p></blockquote>
+    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
 ```

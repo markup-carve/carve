@@ -63,7 +63,7 @@ code
 <ul>
   <li>
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="+"> +</li>
+      <li><input type="checkbox" disabled> </li>
     </ul>
   </li>
 </ul>

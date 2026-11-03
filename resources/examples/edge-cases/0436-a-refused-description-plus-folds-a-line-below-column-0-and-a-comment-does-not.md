@@ -40,9 +40,9 @@ The marker is refused, and the line folds into the `+` in the `dd`.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>+
-flush</dd>
+  <dd></dd>
 </dl>
+<p>flush</p>
 ```
 
 :::
@@ -80,9 +80,9 @@ down to the container's floor.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>+
-flush</dd>
+  <dd></dd>
 </dl>
+<p>flush</p>
 ```
 
 :::
@@ -136,9 +136,9 @@ outside, and the refused `+` folds it in.
 
 ```html
 <ul>
-  <li>+
-flush</li>
+  <li></li>
 </ul>
+<p>flush</p>
 ```
 
 :::

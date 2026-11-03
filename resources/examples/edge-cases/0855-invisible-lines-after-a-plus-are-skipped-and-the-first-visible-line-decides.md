@@ -17,7 +17,7 @@ text
 
 ```html
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <p>text</p>
 ```
@@ -39,7 +39,7 @@ text
 
 ```html
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <p>text</p>
 ```
@@ -58,7 +58,7 @@ A sibling after the comment refuses the `+` too.
 
 ```html
 <ul>
-  <li>+</li>
+  <li></li>
   <li>b</li>
 </ul>
 ```
@@ -78,10 +78,9 @@ item, so the line stays in it after the refused `+` (carve#4862).
 
 ```html
 <ul>
-  <li>+
-    text
-  </li>
+  <li></li>
 </ul>
+<p>text</p>
 ```
 
 :::

@@ -15,12 +15,11 @@ para
 <ul>
   <li>a
     <ul>
-      <li>b
-+
-para</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
+<p>para</p>
 ```
 
 :::::::
@@ -138,8 +137,7 @@ para</p></blockquote>
 <ul>
   <li>a
     <ul>
-      <li>b
-+</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
@@ -189,12 +187,11 @@ tail
 </code></pre>
           </li>
         </ul>
-        +
-tail
       </li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -206,8 +203,10 @@ q
 `````
 
 ```html
-<blockquote><p>+
-q</p></blockquote>
+<blockquote>
+
+</blockquote>
+<p>q</p>
 ```
 
 :::::::
@@ -252,11 +251,11 @@ para
 <ul>
   <li>
     <ul>
-      <li>+
-para</li>
+      <li></li>
     </ul>
   </li>
 </ul>
+<p>para</p>
 ```
 
 :::::::
@@ -273,10 +272,12 @@ para
 ```html
 <ul>
   <li>
-    <blockquote><p>+
-para</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
+<p>para</p>
 ```
 
 :::::::
@@ -313,11 +314,11 @@ para
 <ol>
   <li>
     <ul>
-      <li>+
-para</li>
+      <li></li>
     </ul>
   </li>
 </ol>
+<p>para</p>
 ```
 
 :::::::
@@ -360,11 +361,11 @@ para
 <ul>
   <li>a
     <ul>
-      <li>+
-para</li>
+      <li></li>
     </ul>
   </li>
 </ul>
+<p>para</p>
 ```
 
 :::::::

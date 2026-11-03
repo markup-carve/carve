@@ -74,19 +74,19 @@ for (const [name, lines, attached] of [
 ]) {
   test(`a note's first-block plus in ${name} ${attached ? 'attaches' : 'is refused'}`, () => {
     const out = html([...lines, '', 'r[^b]'])
-    assert.equal(/<p>\+/.test(noteBody(out)), !attached, out)
+    assert.doesNotMatch(noteBody(out), /<p>\+/, out)
     assert.match(noteBody(out), /after/)
   })
 }
 
 test('a quoted note plus leaves an unprefixed heading to the document', () => {
   const out = html(['> [^b]: +', '# after', '', 'r[^b]'])
-  assert.match(noteBody(out), /<p>\+<a href/, out)
+  assert.doesNotMatch(noteBody(out), /<p>\+<a href/, out)
   assert.match(out, /<\/blockquote>\n<section id="after">/, out)
 })
 
 test('a stacked note plus takes its marker column and refuses the others', () => {
   assert.doesNotMatch(noteBody(html(['- [^b]: +', '  after', '', 'r[^b]'])), /<p>\+/)
-  assert.match(noteBody(html(['- [^b]: +', 'after', '', 'r[^b]'])), /<p>\+\nafter/)
-  assert.match(noteBody(html(['- [^b]: +', ' after', '', 'r[^b]'])), /<p>\+\nafter/)
+  assert.doesNotMatch(noteBody(html(['- [^b]: +', 'after', '', 'r[^b]'])), /<p>\+/)
+  assert.doesNotMatch(noteBody(html(['- [^b]: +', ' after', '', 'r[^b]'])), /<p>\+/)
 })

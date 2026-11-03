@@ -7,11 +7,11 @@ x
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li></li>
     </ul>
   </li>
 </ul>
+<p>x</p>
 ```
 
 ```
@@ -34,11 +34,11 @@ x</li>
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li></li>
     </ul>
   </li>
 </ul>
+<p>x</p>
 ```
 
 ```
@@ -55,8 +55,7 @@ x
   x
 .
 <ul>
-  <li>+
-x</li>
+  <li>x</li>
 </ul>
 ```
 
@@ -86,12 +85,11 @@ x</li>
 <ul>
   <li>x
     <ul>
-      <li>L
-+
-p</li>
+      <li>L</li>
     </ul>
   </li>
 </ul>
+<p>p</p>
 ```
 
 ```

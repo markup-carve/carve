@@ -19,7 +19,7 @@ after
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -38,7 +38,7 @@ after
 
 ```html
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <p>after</p>
 ```
@@ -58,7 +58,7 @@ after
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -80,7 +80,7 @@ z
 
 ```html
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <pre><code>z
 </code></pre>
@@ -101,7 +101,7 @@ z
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     after
   </li>
@@ -123,7 +123,7 @@ z
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
     after
   </li>

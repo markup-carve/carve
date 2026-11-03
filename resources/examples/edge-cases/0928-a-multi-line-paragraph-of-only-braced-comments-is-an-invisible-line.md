@@ -17,8 +17,7 @@ CARVE-P9-042, PART 9 §17 L1b and L3 (carve#4799). A paragraph holding only brac
 
 ```html
 <ul>
-  <li>+
-</li>
+  <li></li>
 </ul>
 <section id="H">
   <h1>H</h1>

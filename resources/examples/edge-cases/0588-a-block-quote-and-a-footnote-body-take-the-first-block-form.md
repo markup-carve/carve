@@ -49,7 +49,9 @@ At the end of the input the `+` is the quote's text.
 ```
 
 ```html
-<blockquote><p>+</p></blockquote>
+<blockquote>
+
+</blockquote>
 ```
 
 :::
@@ -66,7 +68,9 @@ after
 ```
 
 ```html
-<blockquote><p>+</p></blockquote>
+<blockquote>
+
+</blockquote>
 <p>after</p>
 ```
 
@@ -86,7 +90,9 @@ x
 
 ```html
 <blockquote>
-  <blockquote><p>+</p></blockquote>
+  <blockquote>
+
+  </blockquote>
 </blockquote>
 <pre><code>x
 </code></pre>
@@ -139,7 +145,7 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -163,7 +169,7 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

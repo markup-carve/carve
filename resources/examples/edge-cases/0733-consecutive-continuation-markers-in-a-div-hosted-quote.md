@@ -12,10 +12,7 @@
 
 ```html
 <aside class="admonition note" aria-label="Note">
-  <blockquote>
-    <p>q</p>
-    <p>+</p>
-  </blockquote>
+  <blockquote><p>q</p></blockquote>
 </aside>
 ```
 

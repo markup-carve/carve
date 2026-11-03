@@ -24,9 +24,9 @@ for (const head of heads) {
 }
 
 test('a column-0 link definition refuses a nested + and ends the item', () => {
-  assert.equal(html('- a\n  * +\n[r]: /u\n  after\n'), html('- a\n  * x\n[r]: /u\n  after\n').replace('<li>x', '<li>+'))
+  assert.equal(html('- a\n  * +\n[r]: /u\n  after\n'), html('- a\n  * %% c\n[r]: /u\n  after\n'))
 })
 
 test('a column-0 line comment refuses a nested + and ends the item', () => {
-  assert.equal(html('- a\n  * +\n%% c\n  after\n'), html('- a\n  * x\n%% c\n  after\n').replace('<li>x', '<li>+'))
+  assert.equal(html('- a\n  * +\n%% c\n  after\n'), html('- a\n  * %% c\n%% c\n  after\n'))
 })

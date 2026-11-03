@@ -3301,6 +3301,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   let attrRest = null
   // Every lone `+` the one rule refused; each is written as a letter.
   const refusedPlus = []
+  // Later markers offering the block already claimed by an earlier marker.
+  const claimedMarkers = new Set()
   // The trace path of a block the walk opens in a parent although an item's
   // first-block `+` took it, and the item path the trace records it under.
   let reown = null
@@ -3319,10 +3321,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   for (let at = start; at < lines.length; at++) {
     if (skipped) {
       let rest = trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)
-      // Off the marker column a skipped note's `+` is a letter of its body, as the gate read it (carve#5034).
-      if (CONT_MARKER.test(rest) && docColumn(lines[at], rest) !== skipped.column) {
-        rest = rest.replace('+', plusLetter)
-        refusedPlus.push(at)
+      // A second marker in a skipped definition cannot claim the block the
+      // earlier marker already took. It is consumed and linted (carve#5013).
+      if (!skipped.fenced.has(at) && CONT_MARKER.test(rest)) {
+        if (docColumn(lines[at], rest) === skipped.column) {
+          rest = '%%'
+          refusedPlus.push(at)
+        } else rest = rest.replace('+', plusLetter)
       }
       result.push(skipped.lead + (skipped.fenced.has(at) ? '%%' : rest))
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
@@ -3406,6 +3411,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     }
     let reached = 0
     let plus = null
+    let plusAccepted = false
     // The C5 column of the current quote segment, measured on demand.
     let stripped = null
     let segment = 1
@@ -3430,8 +3436,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       // marker column even though its reader frame starts at column zero.
       if (f.markerCol !== undefined && CONT_MARKER.test(m.rest) &&
           (f.kind === 'quote' ? docColumn(lines[at], m.rest) - viewDoc === f.viewMarker : m.col === f.markerCol) &&
-          (f.kind === 'quote' || m.col < f.col) && plusAttaches(f, at, docColumn(lines[at], m.rest))) {
+          (f.kind === 'quote' || m.col < f.col)) {
         plus = f
+        plusAccepted = !claimedMarkers.has(at) && plusAttaches(f, at, docColumn(lines[at], m.rest))
         break
       }
       if (f.kind === 'quote') {
@@ -3439,8 +3446,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
         // reach that quote without repeating the intervening quote markers.
         // The marker and its follower are measured at the same source column.
         if (CONT_MARKER.test(m.rest) && frames.slice(k + 1).some((child) =>
-          child.kind === 'quote' && child.docMarker === docColumn(lines[at], m.rest) &&
-          plusAttaches(child, at, child.docMarker))) {
+          child.kind === 'quote' && child.docMarker === docColumn(lines[at], m.rest))) {
           out += ' '.repeat(f.markerCanon) + '> '
           viewDoc = f.viewEnd
           continue
@@ -3483,11 +3489,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
         movedSpan = end === -1 ? null : { end }
       }
     }
-    // A lone `+` nothing took is a plain letter and ends nothing (carve#4396). Payload stays as written.
+    // An off-column `+` is ordinary text. Shield it from the block readers,
+    // which see the owner's normalized columns rather than its authored ones.
     if (!plus && CONT_MARKER.test(m.rest) && !(top().kind === 'fence' && reached === frames.length - 1)) {
       src = src.replace('+', plusLetter)
       m = walkIndent(src)
-      refusedPlus.push(at)
     }
     if (attrRest && !(reached < frames.length - 1 && frames.slice(reached + 1).some((f) => f.kind === 'quote'))) {
       // A continuation stays in the block's owner at any column; padding
@@ -3516,6 +3522,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       frames.length = frames.indexOf(plus) + 1
       plus.para = false
       lead(plus.markerCanon)
+      if (!plusAccepted || claimedMarkers.has(at)) {
+        skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
+        result.push(out + '%%')
+        refusedPlus.push(at)
+        if (trace) emit(at, 'S2', ownerPath(), 'CARVE-P9-067', 'plus', { cell: 'B-plus-start' })
+        continue
+      }
       skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
       attachedTo = attachedBlock(plus, skipped?.end ?? at + 1)
       result.push(out + src)
@@ -3643,7 +3656,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
             continue
           }
           if (!attachesAt('item', at, column, reached + 1)) {
-            src = src.slice(0, src.length - inner.rest.length) + inner.rest.replace('+', plusLetter)
+            src = src.slice(0, src.length - inner.rest.length) + '%%'
             m = walkIndent(src)
             refusedPlus.push(at)
           }
@@ -3873,10 +3886,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
             frame.plus = at
             skipInvisible(frame, at, frame.docMarker)
             attachedTo = attachedBlock(frame, skipped?.end ?? at + 1)
-          } else {
+          } else if (frame.kind === 'quote' && m.col > 0) {
             src = src.replace('+', plusLetter)
             m = walkIndent(src)
+          } else {
+            src = src.replace('+', '%%')
+            m = walkIndent(src)
             refusedPlus.push(at)
+            skipInvisible(frame, at, frame.docMarker)
           }
         }
         lead(m.col)
@@ -4020,7 +4037,18 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   }
 
   function attachesAt(kind, at, column, hostIndex) {
-    const next = firstVisibleLine(at + 1, hostIndex, column)
+    if (claimedMarkers.has(at)) return false
+    let next = firstVisibleLine(at + 1, hostIndex, column)
+    const chained = []
+    while (next < lines.length) {
+      const level = throughQuotes(lines[next], hostIndex)
+      if (level === null) break
+      const rest = trimWs(level.rest)
+      if (!CONT_MARKER.test(rest) || docColumn(lines[next], trimWsStart(level.rest)) !== column) break
+      chained.push(next)
+      next = firstVisibleLine(next + 1, hostIndex, column)
+    }
+    for (const marker of chained) claimedMarkers.add(marker)
     if (next >= lines.length) return false
     const level = throughQuotes(lines[next], hostIndex)
     if (level === null) return false
@@ -4028,8 +4056,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     // A line of nothing but quote markers is blank at its own level: it holds no block.
     if (/^(?:>[ \t]*)*$/.test(rest) || docColumn(lines[next], trimWsStart(level.rest)) !== column) return false
     if (COLON_CLOSER.test(rest) && frames.some((f) => f.kind === 'colon' && f.run === COLON_FENCE.exec(rest)[1].length)) return false
-    if (kind === 'item') return !matchMarkerAt({ col: 0, rest })
-    if (kind === 'dd') return !DEFLIST_TERM.test(rest) && !/^:( +)(?=[ \t]*[^ \t])/.test(rest)
+    if (kind === 'item' && matchMarkerAt({ col: 0, rest })) return false
+    if (kind === 'dd' && (DEFLIST_TERM.test(rest) || /^:( +)(?=[ \t]*[^ \t])/.test(rest))) return false
     return true
   }
 
@@ -4042,8 +4070,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     const fenced = new Set()
     const end = firstVisibleLine(at + 1, hostIndex, column, fenced)
     if (end === at + 1) return
-    const rest = throughQuotes(lines[end], hostIndex).rest
-    skipped = { host, at, end, hostIndex, column, fenced, lead: markerLead ?? lines[end].slice(0, lines[end].length - rest.length) + ' '.repeat(host.markerCanon) }
+    const level = end < lines.length ? throughQuotes(lines[end], hostIndex) : null
+    const basis = level ? lines[end] : lines[at]
+    const rest = level?.rest ?? throughQuotes(lines[at], hostIndex)?.rest ?? lines[at]
+    skipped = { host, at, end, hostIndex, column, fenced, lead: markerLead ?? basis.slice(0, basis.length - rest.length) + ' '.repeat(host.markerCanon) }
   }
 
   // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Off the
@@ -4432,7 +4462,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   const walked = ownLines(authored, trace, sentinel)
   src = walked.join('\n')
   const refusedPlusLines = walked.refusedPlus
-  const hasOrdinaryPlus = refusedPlusLines.length > 0
+  const hasOrdinaryPlus = src.includes(sentinel)
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') { lines.pop(); authored.pop() }
   const state = {

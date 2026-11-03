@@ -15,10 +15,9 @@ test('an attribute line below a first-block item closes it (carve#4080)', () => 
 
 test('plain lazy text still folds after a first-block item', () => {
   assert.equal(html('- +\nx\ny\n'), '<ul>\n  <li>x\ny</li>\n</ul>')
-  assert.equal(html('- +\n  x\ny\n'), '<ul>\n  <li>+\nx\ny</li>\n</ul>')
+  assert.equal(html('- +\n  x\ny\n'), '<ul>\n  <li>x\ny</li>\n</ul>')
 })
 
 test('a description marker folds into the paragraph of a sublist below a refused + (carve#4080)', () => {
-  assert.equal(html('- a\n  - +\n    - y\n: y\n'),
-    '<ul>\n  <li>a\n    <ul>\n      <li>+\n        <ul>\n          <li>y\n: y</li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>')
+  assert.equal(html('- a\n  - +\n    - y\n: y\n'), '<ul>\n  <li>a\n    <ul>\n      <li>\n        <ul>\n          <li>y\n: y</li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>')
 })

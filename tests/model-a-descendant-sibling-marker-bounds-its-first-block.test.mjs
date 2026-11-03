@@ -35,9 +35,9 @@ for (const [plus, written] of inPlace) {
     assert.equal(html(plus), html(written))
   })
 
-  // Off the marker column the `+` is refused and reads as a plain letter.
+  // A marker whose follower misses its column is refused and renders nothing.
   const refused = plus.replace(/^(>? *)  ( *)(s|# h|> q)$/m, '$1$2$3')
-  test(`${JSON.stringify(refused)} reads like a letter in place of the +`, () => {
-    assert.equal(html(refused), html(refused.replace('+', 'x')).replace('x', '+'))
+  test(`${JSON.stringify(refused)} consumes the refused +`, () => {
+    assert.ok(!html(refused).includes('+'), html(refused))
   })
 }

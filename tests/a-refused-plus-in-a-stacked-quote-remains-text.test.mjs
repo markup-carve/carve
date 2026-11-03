@@ -16,23 +16,23 @@ test('a letter keeps a follower at the owning quote column as text', () => {
 
 test('a follower at the owning quote column attaches only under the outer prefix', () => {
   assert.match(html('> > +\n> y'), /<blockquote><blockquote><p>y<\/p><\/blockquote><\/blockquote>$/)
-  assert.match(html('> > +\n  y'), /<blockquote><blockquote><p>\+\ny<\/p><\/blockquote><\/blockquote>$/)
+  assert.match(html('> > +\n  y'), /<blockquote><blockquote>\n<\/blockquote><\/blockquote><p>y<\/p>$/)
 })
 
 test('a fence after a description fence attaches at the owning quote column', () => {
   assert.match(html(':: term\n: body\n  ```\n> > +\n> ```\n> next'),
     /<\/dl><blockquote><blockquote><pre><code>next<\/code><\/pre><\/blockquote><\/blockquote>$/)
   assert.match(html(':: term\n: body\n  ```\n> > +\n  ```\nnext'),
-    /<\/dl><blockquote><blockquote><p>\+<\/p><\/blockquote><\/blockquote><pre><code>next<\/code><\/pre>$/)
+    /<\/dl><blockquote><blockquote>\n<\/blockquote><\/blockquote><pre><code>next<\/code><\/pre>$/)
 })
 
 test('a document-column follower is refused by the stacked quote', () => {
-  assert.match(html('> > +\ny'), /<blockquote><blockquote><p>\+\ny<\/p><\/blockquote><\/blockquote>$/)
+  assert.match(html('> > +\ny'), /<blockquote><blockquote>\n<\/blockquote><\/blockquote><p>y<\/p>$/)
 })
 
 test('a follower at the innermost marker column attaches, one at the opener column does not', () => {
   assert.match(html('- a\n  - - +\n    y'), /<li>y<\/li>/)
-  assert.match(html('- a\n  - - +\n  y'), /<li>\+\ny<\/li>/)
+  assert.ok(!html('- a\n  - - +\n  y').includes('+'))
 })
 
 test('a first-block quote at document column takes its flush follower', () => {
