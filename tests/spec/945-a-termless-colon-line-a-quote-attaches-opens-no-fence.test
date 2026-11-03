@@ -1,0 +1,34 @@
+A termless colon line a quote attaches opens no fence
+
+````
+> +
+: ``` js
+> q
+.
+<blockquote>
+  <p>: <code> js</code></p>
+  <p>q</p>
+</blockquote>
+````
+
+````
+> +
+: ```
+> q
+.
+<blockquote>
+  <p>: <code></code></p>
+  <p>q</p>
+</blockquote>
+````
+
+`````
+> +
+: ````
+> q```
+.
+<blockquote>
+  <p>: <code></code></p>
+  <p>q<code></code></p>
+</blockquote>
+`````

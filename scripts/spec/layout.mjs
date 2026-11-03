@@ -6424,8 +6424,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // `+` on the line that opens this quote is its first-block marker: the walk accepted it.
           if (markerLinePlus && !qHost.fence && openComment === null && CONT_MARKER.test(trimWs(qm[1] ?? '')) && qLastMarked < 0 && i + 1 < n && !isBlank(lines[i + 1])) {
             const attached = takeOneBlock(lines, i + 1, state, ind(i + 1).L?.col ?? ind(i + 1).col, true)
+            const fenceOpen = attachedLeavesFenceOpen(attached.rawMarker, inner)
             inner.push('', ...attached.rawMarker)
-            if (!attachedLeavesFenceOpen(attached.rawMarker)) inner.push('')
+            if (!fenceOpen) inner.push('')
             qLastMarked = i
             i = attached.next
             continue
@@ -6514,9 +6515,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (qHost.fence) {
               qHost.fence = null
             }
+            const fenceOpen = attachedLeavesFenceOpen(attached.rawMarker, inner)
             if (!insideColon || qOpenPara) inner.push('')
             inner.push(...attached.rawMarker)
-            if (!attachedLeavesFenceOpen(attached.rawMarker)) inner.push('')
+            if (!fenceOpen) inner.push('')
             qOpenPara = false
             qItemPara = false
             i = attached.next
@@ -6729,13 +6731,33 @@ const leavesFenceOpen = (block) => {
 }
 // The same for a quote's attached block: a list's fence may stand behind its
 // markers or on a later line, and a separator would become that fence's payload.
-const attachedLeavesFenceOpen = (block) => {
+const attachedLeavesFenceOpen = (block, above = []) => {
   // A closer is measured like its opener, so only the opener's own indentation comes off.
   const openerIndent = /^[ \t]*/.exec(block.find((line) => FENCE.test(trimWsStart(line))) ?? '')[0].length
   if (leavesFenceOpen(block.map((line) => line.slice(Math.min(openerIndent, /^[ \t]*/.exec(line)[0].length))))) return true
-  const read = block.map((line) => {
-    for (let marker; (marker = matchMarkerAt(indentCols(line))); ) line = marker.text
-    return trimWsStart(line).replace(DESCRIPTION_TEXT, '')
+  const behindMarkers = (line) => {
+    let measured = indentCols(line)
+    for (let marker; (marker = matchMarkerAt(measured)); ) {
+      const next = indentCols(marker.text)
+      measured = { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
+    }
+    return measured
+  }
+  const context = (j) => j < above.length ? above[j] : block[j - above.length]
+  // A `: ` line is a description only under an entry (`opensDescriptionAt`), whose term may stand above the `+`.
+  const isDescription = (k, col) => {
+    for (let j = k - 1; j >= 0; j--) {
+      const measured = behindMarkers(context(j))
+      if (measured.rest === '' || measured.col > col) continue
+      return measured.col === col && DESCRIPTION_RUN.test(measured.rest)
+    }
+    return false
+  }
+  const read = block.map((line, k) => {
+    const measured = behindMarkers(line)
+    return DESCRIPTION_TEXT.test(measured.rest) && isDescription(above.length + k, measured.col)
+      ? measured.rest.replace(DESCRIPTION_TEXT, '')
+      : measured.rest
   })
   for (let at = 0; at < read.length; at++) {
     const m = FENCE.exec(read[at])
