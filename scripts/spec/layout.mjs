@@ -5786,6 +5786,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let qItemPara = false // and is that paragraph an item's?
       let qStanzaCandidate = false
       let qStanzaSpanSeen = false
+      // The run of a `%%%` span open in the candidate stanza: a blank inside it is payload.
+      let qStanzaSpanRun = null
       let qStanzaOpen = false
       let qStanzaColumn = 0
       let qDescriptionBodyCol = null
@@ -6260,7 +6262,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             qStanzaCandidate = true
             qStanzaOpen = false
             qStanzaSpanSeen = false
+            qStanzaSpanRun = null
           }
+          // Nested quote markers are stripped, so a deeper quote's span counts too.
+          const stanzaRow = (qm[1] ?? '').replace(/^(?:[ \t]*>(?: |(?=\t)|$))+/, '')
+          const stanzaRun = qStanzaCandidate ? COMMENT_FENCE.exec(stanzaRow)?.[1] ?? null : null
+          if (stanzaRun !== null) qStanzaSpanRun = qStanzaSpanRun === null ? stanzaRun : qStanzaSpanRun.length === stanzaRun.length ? null : qStanzaSpanRun
           if (!qHost.fence && openComment === null) {
             const colon = COLON_FENCE.exec(qm[1] ?? '')
             if (colon && COLON_CLOSER.test(qm[1] ?? '') && colon[1].length === qColonRuns.at(-1)?.length) qColonRuns.pop()
@@ -6273,6 +6280,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (i + 1 < n) trackFence(qm[1] ?? '', i)
           // A nested host's line-block payload is still an open stanza even
           // when its spelling made the quote's ordinary paragraph tracker close.
+          if (qStanzaSpanRun !== null && trimWs(stanzaRow) === '') {
+            i++
+            continue
+          }
           if (trimWs(qm[1] ?? '') === '') {
             qStanzaCandidate = false
             qStanzaOpen = false
