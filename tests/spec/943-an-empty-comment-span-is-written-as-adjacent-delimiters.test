@@ -1,0 +1,42 @@
+An empty comment span is written as adjacent delimiters
+
+```
+- a
+  :: u
+  : %%%
+  %%%
+- c
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>u</dt>
+      <dd></dd>
+    </dl>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- %%%
+  %%%
+- c
+.
+<ul>
+  <li></li>
+  <li>c</li>
+</ul>
+```
+
+```
+- a
+  %%%
+  %%%
+- c
+.
+<ul>
+  <li>a</li>
+  <li>c</li>
+</ul>
+```
