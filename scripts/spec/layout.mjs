@@ -8230,6 +8230,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let authoredBlockLimit = null
     let heldContainerEnd = -1
     const descriptionBodyColumns = []
+    // Body columns of descriptions a `+` attached below the content column, in source columns (carve#5056).
+    const attachedDescriptionBodies = []
     // Whether that block is a container (a quote or a definition list), whose
     // own last block answers for the line below once the block has ended.
     let authoredContainer = false
@@ -8585,6 +8587,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
       }
       const paraBlock = foldablePlainLine(ind(i + opener).rest)
+      const deflistBlock = DEFLIST_TERM.test(ind(i + opener).rest)
       const taken = []
       for (; i < end; i++) {
         // Measure the attached block from the marker column. `blockColumn` is a
@@ -8594,6 +8597,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const body = dedentMeasured(measured, lines[i], Math.max(0, blockColumn - shift))
         pushLine(body.text, body.meas)
         taken.push(body.text)
+        if (!deflistBlock || measured.rest === '') continue
+        while (attachedDescriptionBodies.length && measured.col < attachedDescriptionBodies.at(-1)) attachedDescriptionBodies.pop()
+        const description = /^:( +)(?=[ \t]*[^ \t])/.exec(measured.rest)
+        if (description) attachedDescriptionBodies.push(measured.col + 1 + description[1].length)
       }
       // An attached paragraph stays open for a marker below the content column
       // that is no sibling: S4 folds it (PART 0, carve#4080), after a lone `+`
@@ -8669,6 +8676,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // A line below a descendant's fence ends that fence before it is read (trackNestedFence).
       if (lm.rest !== '' && !insideFence() && (!nestedVerbatim() || lm.col - contentCol < nestedOpaque.col)) {
         while (descriptionBodyColumns.length && lm.col < descriptionBodyColumns.at(-1)) descriptionBodyColumns.pop()
+        while (attachedDescriptionBodies.length && lm.col < attachedDescriptionBodies.at(-1)) attachedDescriptionBodies.pop()
         const description = /^:( +)(?=[ \t]*[^ \t])/.exec(lm.rest)
         if (description && lm.col >= contentCol) descriptionBodyColumns.push(lm.col + 1 + description[1].length)
       }
@@ -8920,7 +8928,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           }
           // A paragraph inside a held container is not the item's own
           // second paragraph (PART 9 section 17 L1, carve#2988).
-          if (authoredContainer && (descriptionBodyColumns.some(body => col >= body) ||
+          if (attachedDescriptionBodies.some(body => col >= body) ||
+              authoredContainer && (descriptionBodyColumns.some(body => col >= body) ||
               j < heldContainerEnd ||
               authoredBlockLimit !== null && j < authoredBlockLimit)) {
             if (!descendantFence && !closedMarkerFence) pushGap()
