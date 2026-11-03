@@ -19,5 +19,14 @@
   },
   "ordered-list-split-by-indent/shift-right": {
     "actual": []
+  },
+  "block-opener-overindented/document-spaced-dash-break": {
+    "actual": []
+  },
+  "block-opener-overindented/document-spaced-star-break": {
+    "actual": []
+  },
+  "block-opener-overindented/quote-spaced-break": {
+    "actual": []
   }
 }
