@@ -382,7 +382,7 @@
   {
     "name": "quote-list-code-attachment",
     "source": "> - ```\n+\ntail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>\n      <pre><code>\n</code></pre>\n    </li>\n  </ul>\n  <p>tail</p>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li>\n      <pre><code></code></pre>\n    </li>\n  </ul>\n  <p>tail</p>\n</blockquote>"
   },
   {
     "name": "description-heading-list",
