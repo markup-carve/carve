@@ -104,13 +104,13 @@ see[^a]
 ```
 
 ```html
-<p>more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro</p>
+      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -301,9 +301,10 @@ its own column, exactly as the comment spelling leaves it.
 
 ```html
 <ul>
-  <li>intro</li>
+  <li>intro
+    more
+  </li>
 </ul>
-<p>more</p>
 ```
 
 :::

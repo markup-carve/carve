@@ -10,7 +10,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const render = (source) => renderDoc(parse(source)).replace(/\s*\n\s*/g, ' ').replace(/> </g, '><').replace(/ disabled> /g, ' disabled>')
 
 const attached = /<ul><li>x tail ?<\/li><\/ul>/
-const refused = /<ul><li>x<\/li><\/ul><p>tail<\/p>/
+const refused = /<ul><li>x<\/li><\/ul> tail ?<\/li>/
 const offColumn = /<ul><li>x<\/li><\/ul><p>\+ tail<\/p>/
 
 for (const [source, shape] of [

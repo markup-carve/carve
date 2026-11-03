@@ -232,9 +232,10 @@ x[^a]
 <ul>
   <li>a
     <ul>
-      <li>b</li>
+      <li>b
+        <blockquote><p>q</p></blockquote>
+      </li>
     </ul>
-    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
 ```

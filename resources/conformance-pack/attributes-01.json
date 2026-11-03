@@ -728,7 +728,7 @@
 {"id":"attributes-a070c5b822e9","source":"1. para {.c} more\n1. para {.c} more\n","html":"<ol>\n  <li>para {.c} more</li>\n  <li>para {.c} more</li>\n</ol>"},
 {"id":"attributes-a0835a07ae9b","source":"\n[x]{title=\"a b{#i}\"}\n[x]{title=\"a b\"}\n","html":"<p><span title=\"a b{#i}\">x</span>\n<span title=\"a b\">x</span></p>"},
 {"id":"attributes-a0bcdf70c7b5","source":">  [a]{title=\"`\"} and [n](u)\n> \n> {% a ` %%}[n](u)\n\n[m](u`) and [m](`v) and [n](w)\n","html":"<blockquote>\n  <p><span title=\"`\">a</span> and <a href=\"u\">n</a></p>\n  <p><a href=\"u\">n</a></p>\n</blockquote>\n<p><a href=\"u`\">m</a> and <a href=\"`v\">m</a> and <a href=\"w\">n</a></p>"},
-{"id":"attributes-a0de6e61a840","source":"- a\n- a\n\n  {.c}\n+ \n    b\n","html":"<ul>\n  <li>a</li>\n  <li>a</li>\n</ul>\n<p>b</p>"},
+{"id":"attributes-a0de6e61a840","source":"- a\n- a\n\n  {.c}\n+ \n    b\n","html":"<ul>\n  <li><p>a</p></li>\n  <li><p>a</p>\n    <p class=\"c\">b</p>\n  </li>\n</ul>"},
 {"id":"attributes-a14e983c6636","source":"  [*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" oonclick=\"alert(1)\"}\n[x]{kbd onclick=\"alert(1)\"}\n","html":"<p><kbd id=\"copy\" class=\"shortcut\" data-key=\"copy\" oonclick=\"alert(1)\"><strong>Ctrl</strong>+C</kbd>\n<kbd>x</kbd></p>"},
 {"id":"attributes-a16e658133a4","source":"[x]{samp} [y]{dfn=\"a term\"}\n[x]{samp} [y]{dfn=\"a term\"}\n","html":"<p><span samp=\"\">x</span> <span dfn=\"a term\">y</span>\n<span samp=\"\">x</span> <span dfn=\"a term\">y</span></p>"},
 {"id":"attributes-a18f49b8bbaa","source":":widget[x]{#i  k=v}\n","html":"<p><span class=\"ext-widget\" id=\"i\" k=\"v\">x</span></p>"},
