@@ -537,7 +537,30 @@ binds as its caption only where the paragraph is promoted, so
 ```
 
 is a `figure` where `[r]` is defined and one paragraph holding both lines where
-it is not. `fmt` writes the source spelling, so promotion never shows in its
+it is not.
+
+Promotion moves no attributes. A block attribute line above the image stays in
+the paragraph's `attrs`, and the image's `attrs` hold only the reference
+definition's and the use site's attributes:
+
+```carve
+{.c}
+![a][ex]
+
+[ex]: /i.png {.wide}
+```
+
+```json
+{ "type": "paragraph",
+  "blockImage": true,
+  "attrs": { "classes": ["c"] },
+  "children": [ { "type": "image", "src": "/i.png", "alt": "a", "ref": "ex", "rawRef": "![a][ex]",
+                  "attrs": { "classes": ["wide"] } } ] }
+```
+
+A renderer applies the paragraph's `attrs` to the `<img>` as it would apply the
+attribute line, so the tree renders `<img src="/i.png" alt="a" class="c wide">`
+like the source, and a writer can write the line back. `fmt` writes the source spelling, so promotion never shows in its
 output. See
 [`CARVE-P12-043`](./rules/ast-interchange), [`CARVE-P12-044`](./rules/ast-interchange) and [`CARVE-P12-045`](./rules/canonical-writing).
 
@@ -851,9 +874,9 @@ Generated from [the checked summary table](https://github.com/markup-carve/carve
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `figure.shortCaption,table.shortCaption` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L321) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
 | `figure.target[table]` | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | `table_caption` | `figure` | `unspecified` | `unspecified` | `unspecified` | `clause` |
-| `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L366) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
+| `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L389) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
 | `table.rowGroups[attrs]` | [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L356) | `omit_field` | `unspecified` | `omit_field` | `omit_field` | `omit_field` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
-| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L413) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
+| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L436) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
 | `section` | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L2) | `unwrap` | `section` | `unwrap` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
 | `ruby` | [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L54) | `parenthesized_pairs` | `ruby` | `ruby` | `parenthesized_pairs` | `parenthesized_pairs` | `ruby-flattened (Carve,Plain,ANSI)` |
 | `block_extension[unknown name]` | [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L91) | `fallback` | `fallback` | `fallback` | `fallback` | `fallback` | `clause` |

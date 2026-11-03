@@ -247,6 +247,29 @@
       `true`; a paragraph that is not a block image omits it rather than
       carrying `false`, which is CARVE-P12-042's absent-value rule applied here.
 
+      PROMOTION MOVES NO ATTRIBUTES. A block attribute line above a promoted
+      paragraph stays in `paragraph.attrs`; the image's `attrs` hold only what
+      the image itself carries, the reference definition's attributes and the
+      ones written at the use site (carve#5039):
+
+        {.c}
+        ![a][ex]
+
+        [ex]: /i.png {.wide}
+
+        {"type":"paragraph","blockImage":true,"attrs":{"classes":["c"]},
+         "children":[{"type":"image","src":"/i.png","alt":"a",
+                      "ref":"ex","rawRef":"![a][ex]",
+                      "attrs":{"classes":["wide"]}}]}
+
+      Merged onto the image, the three sources cannot be told apart again: a
+      writer that gets the tree back either drops the line or repeats the
+      definition's attributes at the use site, and the HTML changes on the next
+      pass (CARVE-P12-005 publishes what the author wrote). A renderer applies
+      the paragraph's `attrs` to the `<img>` exactly as it applies the block
+      attribute line it parsed (PART 10), so the tree renders the HTML the
+      source does.
+
       IT IS NOT A NON-ANCHOR FLAG. CARVE-P12-007 refuses a flag on a nested link because
       that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back
       into a format that describes the source. This field carries a RESOLUTION
