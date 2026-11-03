@@ -4258,7 +4258,6 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   while (src.includes(sentinel)) sentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
   const authored = src.split('\n')
   const walked = ownLines(authored, trace, sentinel)
-  if (process.env.DBG_WALK) console.error(JSON.stringify(walked))
   src = walked.join('\n')
   const refusedPlusLines = walked.refusedPlus
   const hasOrdinaryPlus = refusedPlusLines.length > 0
@@ -4461,7 +4460,6 @@ function consumeLooseKey(node) {
 }
 
 function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, stop = undefined, descriptionOwnerColumn = null) {
-  if (process.env.DBG) console.error('PB', JSON.stringify(lines))
   const blocks = []
   let i = 0
   const n = lines.length
@@ -7334,7 +7332,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         stanzaOpenAt = itemLines.length
         return true
       }
-      const _h = hostEndsInLineBlockStanza(itemLines, 0, true); if (process.env.DBG) console.error("DSO", JSON.stringify(itemLines), _h); if (!_h) return false
+      if (!hostEndsInLineBlockStanza(itemLines, 0, true)) return false
       stanzaOpenAt = itemLines.length
       return true
     }
@@ -7694,8 +7692,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
      * frame; otherwise it closes the list and begins a new block. This item's
      * own `openPara` answers only while this item IS the deepest frame.
      */
-    const deepestParagraphOpen = () => { const _r = _dpo(); if (process.env.DBG) console.error('DPO', i, JSON.stringify(lines[i]), JSON.stringify(itemLines), contentCol, holdsLineBlock, _r); return _r }
-    const _dpo = () => {
+    const deepestParagraphOpen = () => {
       // The innermost open line-block stanza owns its payload as inline content,
       // even when an enclosing item or quote has no ordinary paragraph open.
       // A span open in this item's own line block: the stanza state before it is tracked per line.
