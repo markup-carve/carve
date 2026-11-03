@@ -1,1 +1,0 @@
-The pinned engines read a paragraph of only braced comments as visible; the spec moved first under the ruling that it reads as a comment line, and a list marker in an item ends it (markup-carve/carve#4799, markup-carve/carve#4890; carve-js: markup-carve/carve-js#4295).
