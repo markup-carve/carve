@@ -2498,9 +2498,11 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
       h.kinds.pop()
     }
   }
-  // A line that misses the span's host ends it (PART 0 S1); a comment line stays payload (carve#4994).
-  if (h.colonComment && h.colonCommentHost !== undefined && meas.rest !== '' &&
-      meas.col < h.colonCommentHost && !COMMENT_LINE.test(meas.rest)) {
+  // A line that misses the span's host, or its line block's base, ends it (PART 0 S1);
+  // a comment line stays payload (carve#4994, carve#5010).
+  const spanHost = h.colonCommentHost ?? h.colonCommentFloor
+  if (h.colonComment && spanHost !== undefined && meas.rest !== '' &&
+      meas.col < spanHost && !COMMENT_LINE.test(meas.rest)) {
     h.colonComment = null
     h.colonCommentHost = undefined
   }
@@ -9135,12 +9137,16 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           col < noteBodyBoundary && noteClaimsLazyLine(i)
         holdsLineBlock ||= LINE_BLOCK_SHAPED.test(lm.rest)
         if (LINE_BLOCK_SHAPED.test(lm.rest)) lineBlockFenceCol = col + lm.rest.indexOf(':::')
+        // A comment line in a descendant's span, a line block's included, is that span's (carve#4996, carve#5011).
+        const inDescendantSpan = lm.rest.startsWith('%%') && !descendantOwned && !insideFence() &&
+          (nestedOpaque?.kind === 'comment' || bodyHoldsLiveCommentSpan())
         // A bare colon run past the block's fence column is no closer: a line block closes only at its own column.
-        if (lm.rest !== '' && (col <= contentCol || col < stanzaPayloadCol || COLON_CLOSER.test(lm.rest) && col <= lineBlockFenceCol)) stanzaPayloadCol = null
+        if (lm.rest !== '' && !inDescendantSpan && (col <= contentCol || col < stanzaPayloadCol || COLON_CLOSER.test(lm.rest) && col <= lineBlockFenceCol)) stanzaPayloadCol = null
         // A line-block payload line is inline content whatever its shape (PART 2 line_block).
         const stanzaPayload = () => {
           if (!holdsLineBlock || col <= contentCol || lm.rest === '') return false
-          if (stanzaPayloadCol !== null) return true
+          // A span line below the payload column keeps the stanza but is not its payload (carve#5011).
+          if (stanzaPayloadCol !== null && (col >= stanzaPayloadCol || inDescendantSpan)) return col >= stanzaPayloadCol
           // A neutral line stands in, so a marker-shaped payload line is not read as a host; a closer keeps its width.
           const probe = COLON_CLOSER.test(lm.rest) ? lm.rest : 'x'
           if (!hostEndsInLineBlockStanza([...itemLines, ' '.repeat(col - contentCol) + probe], 0)) return false
@@ -9153,8 +9159,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           !foldedChildFence &&
           // A descendant code body's payload line opens nothing.
           !(nestedVerbatim() && lm.col - contentCol >= nestedOpaque.col) &&
-          // Nor does a comment line in a descendant's span (carve#4996).
-          !(nestedOpaque?.kind === 'comment' && lm.rest.startsWith('%%')) &&
+          !inDescendantSpan &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest) &&
           // A fence with no closer under an open paragraph is text (§10 I4), as the walk read it.
           (!isCodeBlockOpener(lm.rest) || bodyFenceOpens(i, lm.rest, col)) && !stanzaPayload()
@@ -9386,7 +9391,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if ((absorbedFenceSeen && !fence.opaque) || foldedChildFence) (residueFence.foldedFences ??= new Set()).add(itemLines.length - 1)
         if (opens && !absorbedFenceSeen && !foldedChildFence) fenceOpensAt.add(itemLines.length - 1)
         // A line the note paragraph claims is note text; it opens no fence here.
-        if (!inNestedComment && (!absorbedFenceSeen || fence.opaque) && !foldedChildFence &&
+        if (!inNestedComment && !inDescendantSpan && (!absorbedFenceSeen || fence.opaque) && !foldedChildFence &&
             (fence.opaque || !noteClaimsBelow)) trackFence(dedented, opens, i)
         // ADVANCE. One line the descendant takes, in the descendant's own
         // coordinates, which is what makes the state readable at its column.
