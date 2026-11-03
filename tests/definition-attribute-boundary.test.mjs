@@ -37,7 +37,7 @@ const hosts = [
 
 for (const host of hosts) {
   for (const row of lines) {
-    test(`${host.name}: ${row.name} preserves the boundary and registration`, () => {
+    test(`${host.name}: ${row.name} follows its boundary and registration rule`, () => {
       const doc = parse(host.source(row.line))
       // An abbreviation definition ends the paragraph in every host (carve#4865).
       const defines = row.name === 'abbreviation'
@@ -46,7 +46,13 @@ for (const host of hosts) {
       const tail = prose || row.name === 'footnote' ? '' :
         host.attrAttachesToTail && row.name === 'attribute'
           ? '\n<p class="marked">tail</p>' : '\n<p>tail</p>'
-      assert.equal(renderDoc(doc), host.html(row.line, prose) + tail)
+      const erased = host.attrAttachesToTail && (row.name === 'reference' || row.name === 'abbreviation')
+      const expected = erased
+        ? host.name === 'item follower'
+          ? '<ul>\n  <li>head\ntail</li>\n</ul>'
+          : '<dl>\n  <dt>term</dt>\n  <dd>head\ntail</dd>\n</dl>'
+        : host.html(row.line, prose) + tail
+      assert.equal(renderDoc(doc), expected)
       assert.deepEqual([...doc.linkDefs.keys()], row.links ?? [])
       assert.deepEqual([...doc.footnoteDefs.keys()], row.notes ?? [])
       assert.deepEqual([...doc.abbrDefs.keys()], defines ? ['A'] : [])

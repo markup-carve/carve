@@ -20,7 +20,7 @@ const contents = [
   ['a table', '| a |', [], false],
   ['a closed fence', 'note', [F, 'x', F], false],
   ['an open fence', 'note', ['', '~~~', 'x'], false],
-  ['a comment', 'note', ['%% c'], false],
+  ['an erased line comment', 'note', ['%% c'], true],
   ['a closed fence in a child item', ':: term', ['- y', '  ~~~', '  x', '  ~~~'], false],
 ]
 const hosts = {
@@ -47,12 +47,13 @@ const where = (html) => {
 
 for (const [content, first, extra, open] of contents) {
   for (const [host, wrap] of Object.entries(hosts)) {
-    test(`a lazy line after ${content} in a note in ${host} ${open ? 'joins the note' : 'leaves'}`, () => {
+    const ruledOpen = open && !(content === 'an erased line comment' && host.includes('quote'))
+    test(`a lazy line after ${content} in a note in ${host} ${ruledOpen ? 'joins the note' : 'leaves'}`, () => {
       for (const tail of ['tail', ' tail']) {
         const note = ['[^n]: ' + first, ...extra.map((l) => (l === '' ? '' : '  ' + l))]
         const lines = wrap(note).map((l) => l.replace(/ +$/, ''))
         const source = `r[^n] r[^m]\n\n${lines.join('\n')}\n${tail}\n`
-        assert.equal(where(renderDoc(parse(source))), open ? 'note' : 'body', source)
+        assert.equal(where(renderDoc(parse(source))), ruledOpen ? 'note' : 'body', source)
       }
     })
   }

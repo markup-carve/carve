@@ -4,7 +4,7 @@ page: edge-lists
 
 ## Invisible lines after a plus are skipped and the first visible line decides
 
-Comments of either spelling, link and note definitions and attribute lines between a `+` and the next line are read in the host, and the CARVE-P9-067 gates apply to the first visible line after them (carve#4449). A blank line, the end of input or a sibling refuses the `+`, which is then a plain letter.
+A `%%` line and one-line link or abbreviation definition are erased before the CARVE-P9-067 test (carve#5012). A `%%%` span, note definition or attribute line remains block-level; the gates apply after it (carve#4449). A blank line, the end of input or a sibling refuses the `+`, which is then a plain letter.
 
 ::: compare
 
@@ -65,8 +65,7 @@ A sibling after the comment refuses the `+` too.
 
 :::
 
-A line at the content column is not at the marker column. The comment closes no
-item, so the line stays in it after the refused `+` (carve#4862).
+The erased comment supplies no boundary. The content-column line becomes the next candidate and attaches under CARVE-P9-067.
 
 ::: compare
 
@@ -78,9 +77,8 @@ item, so the line stays in it after the refused `+` (carve#4862).
 
 ```html
 <ul>
-  <li></li>
+  <li>text</li>
 </ul>
-<p>text</p>
 ```
 
 :::

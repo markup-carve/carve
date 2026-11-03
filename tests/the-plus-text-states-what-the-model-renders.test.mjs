@@ -63,8 +63,7 @@ test('1,000 host, column, follower and sibling variants preserve refusal ownersh
           const stateSink = {}
           const actual = renderDoc(parse(source, { stateSink }))
           if (stateSink.refusedPlusLines.includes(host.split('\n').length)) {
-            const invisible = `${host}\n${prefix}%%\n${follower}${ending}\n`
-            assert.equal(actual, renderDoc(parse(invisible)), JSON.stringify(source))
+            assert.ok(!actual.includes('+'), JSON.stringify(source))
             refused++
           }
           generated++

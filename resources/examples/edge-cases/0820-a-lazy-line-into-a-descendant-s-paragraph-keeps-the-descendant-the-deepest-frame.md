@@ -78,11 +78,11 @@ y
   <li>a
     <ul>
       <li>b
-c</li>
+c
+y</li>
     </ul>
   </li>
 </ol>
-<p>y</p>
 ````
 
 :::::::

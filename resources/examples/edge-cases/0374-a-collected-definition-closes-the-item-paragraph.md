@@ -16,10 +16,10 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+more
+tail</li>
 </ul>
-<p>more
-tail</p>
 ```
 
 :::
@@ -38,10 +38,10 @@ tail
 
 ```html
 <ol>
-  <li>a</li>
+  <li>a
+more
+tail</li>
 </ol>
-<p>more
-tail</p>
 ```
 
 :::

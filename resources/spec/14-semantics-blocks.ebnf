@@ -303,17 +303,19 @@
          81-paragraph-interruption-20: `Text` / `:::` /
          `stuff` as a paragraph followed by a div holding `stuff`.
 
-      I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
-         definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
-         `*[A]: …`), a comment (`%%` line, `%%%` block), and a
-         block-attribute line (`{…}` alone on a line, §15). "See[^m].\n
-         [^m]: note" resolves the footnote; "para\n%% x" drops the comment;
+      I5 BLOCK-LEVEL INVISIBLE CONSTRUCTS interrupt AND are consumed: a
+         footnote definition `[^r]: …`, a `%%%` comment span, and a
+         block-attribute line (`{…}` alone on a line, §15). A `%%` line
+         comment and a one-line link `[r]: url` or abbreviation `*[A]: …`
+         definition are erased before layout under PART 0 S1: they do not
+         interrupt a paragraph. "See[^m].\n
+         [^m]: note" resolves the footnote; "para\n%% x\nmore" is one paragraph;
          "Para\n{.x}" ends the paragraph with the attribute line floating
          forward (§15; corpus 89-block-attribute-lines-7). (A small
          deviation from djot, which keeps such a line as paragraph text.)
-         AN INVISIBLE LINE IS ONE CLASSIFICATION -- NORMATIVE [CARVE-P9-013]. The five kinds
-         above are one class, and it is MEMBERSHIP in that class the rest of
-         the grammar cites. An invisible line, in the container that owns it:
+         A BLOCK-LEVEL INVISIBLE LINE IS ONE CLASSIFICATION -- NORMATIVE [CARVE-P9-013].
+         The span, footnote definition and attribute line above are one
+         class. An invisible line in that class, in the container that owns it:
 
            1. CLOSES an open paragraph, with no blank line needed -- this
               clause, and I6 for the containers;
@@ -327,7 +329,7 @@
               after it (L1b).
 
          ONLY THE SEMANTIC ACTION DIFFERS BY KIND, and that action is the only
-         thing a per-kind clause has left to state: a comment DISCARDS its
+         thing a per-kind clause has left to state: a span DISCARDS its
          visible content (§21, §28), an attribute line RETAINS pending
          metadata in the current container (§15 A2), and a definition
          REGISTERS metadata in its permitted scope (L6, PART 9R). A clause that
@@ -336,21 +338,17 @@
          ARITHMETIC is not, and stays where it is.
 
          WHAT AN INVISIBLE LINE DOES TO THE CONTAINER AROUND IT is the
-         `invisible` field of that container's PART 0 FAMILIES row: a comment
-         or one-line definition closes no indentation container (ruled on
-         carve#4862), an unmarked one ends a quote, and below a content column
-         a block-attribute line and a footnote definition close the missed
-         containers.
+         `invisible` field of that container's PART 0 FAMILIES row: a `%%%`
+         span closes no indentation container (carve#4862), an unmarked one
+         ends a quote, and below a content column a block-attribute line and
+         a footnote definition close the missed containers. Erased lines
+         reach none of these fields.
 
          PROPERTY 3 DOES NOT SAY WHICH OWNER. PART 0 S2 selects it.
 
-         Comments in this list are classified in PART 0 S1, before S3
-         classifies the visible residue; their AST/source extent is retained
-         (CARVE-P0-005).
-
-         A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
-         PARAGRAPH (CARVE-P0-010). A footnote definition's own extent is
-         CARVE-P0-012. The bare decimal-dot marker `. `
+         Comments are classified in PART 0 S1, before S3 classifies the
+         visible residue; their AST/source extent is retained (CARVE-P0-005).
+         A footnote definition's own extent is CARVE-P0-012. The bare decimal-dot marker `. `
          claims one marker column and one separator column, so its
          content_column is the same as `- `. Pinned by corpus 374.
       I6 SCOPE. The relation applies to EVERY open

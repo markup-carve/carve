@@ -18,13 +18,13 @@ see[^a]
 ```
 
 ```html
-<p>more</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -84,8 +84,8 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro</p>
-      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -161,9 +161,9 @@ comment spelling retains the line in the `dd`:
 ```html
 <dl>
   <dt>term</dt>
-  <dd>intro</dd>
+  <dd>intro
+more</dd>
 </dl>
-<p>more</p>
 ```
 
 :::

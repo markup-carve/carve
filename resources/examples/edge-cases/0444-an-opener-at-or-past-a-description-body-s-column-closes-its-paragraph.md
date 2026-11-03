@@ -27,9 +27,9 @@ tail
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 :::
@@ -50,9 +50,9 @@ tail
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 :::
@@ -222,9 +222,9 @@ tail
 ```html
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 :::

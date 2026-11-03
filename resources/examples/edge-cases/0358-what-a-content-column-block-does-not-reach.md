@@ -14,9 +14,9 @@ opens a document paragraph:
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+b</li>
 </ul>
-<p>b</p>
 ```
 
 :::

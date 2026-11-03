@@ -70,10 +70,10 @@ tail
 <ul>
   <li>a
     <ul>
-      <li>inner</li>
+      <li>inner
+code
+tail</li>
     </ul>
-    code
-tail
   </li>
 </ul>
 ```
@@ -85,10 +85,10 @@ tail
 - tail
 .
 <ul>
-  <li>inner</li>
+  <li>inner
+code</li>
+  <li>tail</li>
 </ul>
-<p>code
-- tail</p>
 ```
 
 ```
@@ -98,8 +98,8 @@ code
 tail
 .
 <ul>
-  <li>inner</li>
+  <li>inner
+code
+tail</li>
 </ul>
-<p>code
-tail</p>
 ```

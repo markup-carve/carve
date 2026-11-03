@@ -37,7 +37,7 @@ const rows = [
   {
     "id": "gen-362",
     "source": "- a\n  [^f]: t\n[^f]: a\n     [r]: /url\n[r][]",
-    "html": "<ul>\n  <li>a</li>\n</ul>\n<p><a href=\"/url\">r</a></p>\n"
+    "html": "<ul>\n  <li>a</li>\n</ul>\n"
   },
   {
     "id": "gen-249-column-zero",
@@ -60,7 +60,8 @@ test('a nested marker-line fence keeps the blank at every depth and for every fo
     for (const follower of ['tail', '[^1]: a', '[r]: /u', '{.x}', '']) {
       for (const end of ['', '\n']) {
         const source = `${lead}${FENCE}\n${pad}x\n\n${follower}${end}`
-        const expected = follower === '' && end === '\n' ? 'x\n\n\n' : 'x\n\n'
+        const expected = follower === '' && end === '\n' ? 'x\n\n\n'
+          : follower === '[r]: /u' && end === '' ? 'x\n' : 'x\n\n'
         assert.equal(payload(source), expected, JSON.stringify(source))
       }
     }

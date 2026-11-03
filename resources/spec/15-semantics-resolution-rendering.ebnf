@@ -203,14 +203,16 @@
 
       L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION -- NORMATIVE [CARVE-P9-030]. L1
          asks whether the item holds a block after an earlier visible block,
-         separated by a blank. An INVISIBLE LINE (§10 I5, AN INVISIBLE LINE IS
-         ONE CLASSIFICATION) emits no visible block, so it can be neither the
-         earlier block nor the following paragraph (L1a's argument). By the
+         separated by a blank. A block-level invisible line (§10 I5) emits
+         no visible block, so it can be neither the earlier block nor the
+         following block (L1a's argument). By the
          same clause's property 3 it
          does not choose the next line's owner either: it is not a separator,
          so the separation it appears to interrupt is intact and the item is
          LOOSE. This clause is that property's consequence for list
-         TIGHTNESS.
+         TIGHTNESS. A `%%` line or one-line link or abbreviation definition
+         is erased before this test (PART 0 S1); its absence cannot cancel
+         a real blank's separation or create one.
 
              - a
 
@@ -299,8 +301,9 @@
          the marker and its block refuse it. Invisible lines between the
          marker and the next line are skipped: they are read in the host, and
          the gates apply to the first visible line after them (carve#4449).
-         Link, note and abbreviation definitions are one class here (CARVE-P9-013).
-         An invisible line off the marker column is itself that
+         S1 erases `%%` lines and one-line link and abbreviation definitions
+         before the next-line test. A `%%%` span and block-level invisible
+         lines follow CARVE-P9-013. An invisible line off the marker column is itself that
          next line, and a note definition's body belongs to the note. A blank line, the end of
          input or a sibling after them refuses the `+`. Examples, with `/` for
          a line break:
@@ -369,21 +372,20 @@
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.
       L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE [CARVE-P9-034]
-         (PART 9R R1/R2 collection). Apply §10 I5 property 2 to collected link
-         and footnote definitions: pass 1 registers them in the shared symbol
-         table and pass 2 resolves uses document-wide. Their block-level host
-         renders no placeholder paragraph, blank line or residual whitespace.
+         (PART 9R R1/R2 collection). Pass 1 registers link and footnote
+         definitions in the shared symbol table and pass 2 resolves uses
+         document-wide. A one-line link definition is erased before layout
+         (PART 0 S1); a footnote definition remains a block (§10 I5).
+         Neither renders a placeholder paragraph, blank line or residual whitespace.
          This applies to list items, quotes, footnote bodies, definition
          descriptions, continuation-attached blocks and any future container
          admitting block content.
 
-         "No trace" describes output, not block structure. I5 still interrupts
-         the open paragraph without a blank, so following plain text starts a
-         new block, unless the definition is a footnote whose own paragraph is
-         open: that paragraph takes the line as a fold (PART 0 S4). L1 governs its rendering: without a loosening blank the
-         item stays tight and every paragraph, including the new one, renders
-         bare. A definition between two item paragraphs therefore leaves two
-         bare paragraph blocks; it neither merges them nor loosens the item.
+         "No trace" describes output and, for a link definition, layout.
+         Only a footnote definition interrupts the open paragraph without a
+         blank. Its own open paragraph may take a following line as a fold
+         (PART 0 S4). A one-line link definition between two paragraph lines
+         leaves one paragraph unless another boundary separates them.
 
       L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN --
          NORMATIVE [CARVE-P9-035]. A container's preceding BLOCK-ATTRIBUTE LINE

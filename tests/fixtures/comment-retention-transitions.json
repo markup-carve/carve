@@ -15,17 +15,12 @@
                 {
                   "t": "para",
                   "lines": [
-                    "head"
+                    "head",
+                    "tail"
                   ]
                 }
               ]
             }
-          ]
-        },
-        {
-          "t": "para",
-          "lines": [
-            "tail"
           ]
         }
       ],
@@ -103,17 +98,12 @@
                 {
                   "t": "para",
                   "lines": [
-                    "head"
+                    "head",
+                    "tail"
                   ]
                 }
               ]
             }
-          ]
-        },
-        {
-          "t": "para",
-          "lines": [
-            "tail"
           ]
         }
       ],
@@ -393,18 +383,13 @@
                 {
                   "t": "para",
                   "lines": [
-                    "head"
+                    "head",
+                    "visible",
+                    "tail"
                   ]
                 }
               ]
             }
-          ]
-        },
-        {
-          "t": "para",
-          "lines": [
-            "visible",
-            "tail"
           ]
         }
       ],
@@ -436,17 +421,12 @@
                 {
                   "t": "para",
                   "lines": [
-                    "head"
+                    "head",
+                    "tail"
                   ]
                 }
               ]
             }
-          ]
-        },
-        {
-          "t": "para",
-          "lines": [
-            "tail"
           ]
         }
       ],
@@ -805,17 +785,12 @@
                 {
                   "t": "para",
                   "lines": [
-                    "head"
+                    "head",
+                    "tail"
                   ]
                 }
               ]
             }
-          ]
-        },
-        {
-          "t": "para",
-          "lines": [
-            "tail"
           ]
         }
       ],

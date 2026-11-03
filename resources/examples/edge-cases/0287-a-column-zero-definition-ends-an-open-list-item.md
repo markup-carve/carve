@@ -23,10 +23,10 @@ _u_
 <ol>
   <li>x
 <a href="u">t</a>
-<u>u</u></li>
+<u>u</u>
+<a href="/u">t</a>
+#</li>
 </ol>
-<p><a href="/u">t</a>
-#</p>
 ```
 
 :::
@@ -73,8 +73,7 @@ after[^f]
 ```html
 <ol>
   <li>x
-    <a href="/u">t</a>
-  </li>
+<a href="/u">t</a></li>
 </ol>
 ```
 

@@ -106,10 +106,10 @@ test('a document quote ends a description and its fence before a later fence run
   assert.match(html, /<\/blockquote>\n<pre><code>after\n<\/code><\/pre>$/)
 })
 
-test('a document definition ends a description before a later fence closer', () => {
+test('a document definition leaves a description fence open for its closer', () => {
   const html = renderDoc(parse(':: term\n: detail\n  ```\n  code\n[r]: /url\n  ```\nafter\n'))
-  assert.match(html, /<\/dl>\n<pre><code>after\n<\/code><\/pre>$/)
-  assert.match(html, /<\/dl>/)
+  assert.equal(html, renderDoc(parse(':: term\n: detail\n  ```\n  code\n  ```\nafter\n')))
+  assert.match(html, /<pre><code>code\n<\/code><\/pre>/)
 })
 
 for (const quoteDepth of [0, 1, 2]) {

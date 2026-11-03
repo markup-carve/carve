@@ -83,12 +83,6 @@
       "scope": "parsing"
     },
     {
-      "id": "CARVE-P0-010",
-      "part": "0",
-      "title": "A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE CONTAINER",
-      "scope": "parsing"
-    },
-    {
       "id": "CARVE-P0-011",
       "part": "0",
       "title": "AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS UNDER",
@@ -625,7 +619,7 @@
     {
       "id": "CARVE-P9-013",
       "part": "9",
-      "title": "AN INVISIBLE LINE IS ONE CLASSIFICATION",
+      "title": "A BLOCK-LEVEL INVISIBLE LINE IS ONE CLASSIFICATION",
       "scope": "parsing"
     },
     {
@@ -2207,6 +2201,12 @@
       "part": "9",
       "title": "A COMMENT IS THE ONE EXCEPTION",
       "replacement": "CARVE-P0-024"
+    },
+    {
+      "id": "CARVE-P0-010",
+      "part": "0",
+      "title": "A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE CONTAINER",
+      "replacement": "CARVE-P0-005"
     }
   ]
 }

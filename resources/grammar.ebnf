@@ -212,9 +212,8 @@
              preceding boundary       container_open   paragraph_open
              ordinary line             C                yes
              blank line                C                no
-             line comment              C                no
              fenced comment            C                no
-             invisible definition      C                no, for full extent
+             footnote definition        C                no, for full extent
              attribute line            C                no
              heading                   C                no
              thematic break            C                no
@@ -241,7 +240,8 @@
 
    No family, depth or marker adds a second way to belong, and nothing set
    after the opening line moves a content column. For each normalized line,
-   run the four steps below once, in order and without backtracking, and
+   erase an eligible one-line comment or definition as S1 directs, or run
+   the four steps below once, in order and without backtracking, and
    apply T at each boundary. Only a construct's declared closer guard may
    read ahead. Step 2 carries two ids, S2 for the owner and S3 for the form,
    so a decision trace cites S1 to S5 (docs/decision-trace.md).
@@ -256,8 +256,8 @@
                  deepest open paragraph inside it (S4)
      markers     what a list marker or a `: ` line does in the frame and
                  below its column (S3, S4)
-     invisible   what a comment, a one-line definition, a footnote
-                 definition or an attribute line does to the frame (S1, S3)
+     invisible   what a fenced comment, footnote definition or attribute
+                 line does to the frame (S1, S3)
      plus        whether the frame takes the continuation marker (S2)
      cells       the family's start, keep and end conditions
 
@@ -272,12 +272,15 @@
         is not a payload: its lines go on to S2.
 
         COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP -- NORMATIVE [CARVE-P0-005].
-        Honor an active payload first. Then recognize `%%` and a `%%%`
-        span as comment tokens before S3 classifies the visible
-        residue. Record the comment node, its authored spelling and its
-        complete source extent, and remove it from visible classification
-        and rendering: this is erasure from layout, never from the AST or the
-        source map. A `%%%` span carries its opener, opaque body and
+        Honor an active payload first. In ordinary block content, erase a
+        `%%` line comment and a one-line link or abbreviation definition
+        before S2: neither supplies a boundary, changes paragraph state or
+        selects an owner for the next visible line. A definition still
+        registers document-wide. Retain a comment node with its authored
+        spelling and complete source extent in the AST and source map.
+        Marker-line structural prefixes remain; only their comment or
+        definition content is erased. A `%%%` span is instead block-level:
+        it carries its opener, opaque body and
         exact-width closer as one extent across authored indentation. A
         `%%%` opener opens its span without looking for a closer; with none,
         the span ends under S1 or at the end of its container (carve#4907).
@@ -285,12 +288,10 @@
         literal bytes. A body line that misses the comment span's owner ends
         that span under S1; the line is classified in its selected owner.
 
-        A comment takes the `line_comment` / `fenced_comment` row of T in its
-        owner and does not fold. It ends the open paragraph and is read in the
-        owner the next visible line picks (PART 9 §10 CARVE-P9-013); what it
-        does to the containers around it is the `invisible` field of their
-        rows. A
-        span's extent is fixed where it is written, and the whole span moves
+        A `%%%` span takes the `fenced_comment` row of T in its owner and
+        does not fold. It ends the open paragraph; its effect on surrounding
+        containers is their `invisible` field. The span's extent is fixed
+        where it is written, and the whole span moves
         with its opener. A line that misses an open fence's owner has ended
         that fence above, so it is read where it stands.
 
@@ -331,7 +332,7 @@
         owner but never takes the line out of every owner.
 
      S3 FORM. Classify the rest of the line in the owner's coordinates:
-        blank, comment, block attribute, reference or footnote definition,
+        blank, fenced comment, block attribute, footnote definition,
         closer, opener, caption, `+`, or ordinary text. A list marker opens,
         folds or closes as the owner's row says in `markers`, and the
         document's is stated under STATE. A `: ` line follows the definition
@@ -364,21 +365,17 @@
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
         UNDER -- NORMATIVE [CARVE-P0-011]. A block read in a container, at or
         past its content column, ends the preceding paragraph and leaves the
-        container open, whether the block is visible or invisible. Comments,
-        link and footnote definitions and attribute blocks all apply. The
+        container open, whether the block is visible or invisible. Fenced
+        comments, footnote definitions and attribute blocks all apply. An
+        erased `%%` line or one-line link or abbreviation definition supplies
+        no block at this column (S1). The
         transition covers the block's entire extent (CARVE-P0-012).
 
-        A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE
-        CONTAINER -- NORMATIVE [CARVE-P0-010]. A link, footnote or abbreviation
-        definition registers in the owner S2 selects and only there. `- a` /
-        `  [r]: /u` / `tail` registers `r`, then ends the item and publishes
-        `tail` at document level. Below every open content column the row's
-        `invisible` field decides: `- a` / ` [r]: /u` / `  tail` stays in the
-        item, and `- a` / ` [r]: /u` / `tail` closes it, because the next
-        visible line picks the owner (CARVE-P9-013). An abbreviation
-        definition reads the same way and its scope is the document
-        (CARVE-P12-026). A definition either registers or remains visible
-        text; it never disappears from both.
+        A one-line link or abbreviation definition registers document-wide
+        even though S1 erases its layout boundary (CARVE-P12-026). A footnote
+        definition remains a block and opens its own body (CARVE-P0-012).
+        A definition either registers or remains visible text; it never
+        disappears from both.
 
         A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN --
         NORMATIVE [CARVE-P0-008]. Marker-attached attributes contribute zero
@@ -397,8 +394,8 @@
         the last child container to its leaf at every depth. The test is the
         same at every depth and in every family; only `lazy` and `markers`
         differ by row. Headings, thematic breaks, quotes, terms, tables, valid
-        colon openers, code and raw openers, comments, attributes and
-        definitions interrupt. An invalid opener is text. A fold closes
+        colon openers, code and raw openers, fenced comments, attributes and
+        footnote definitions interrupt. An invalid opener is text. A fold closes
         nothing and changes the leaf operation, never which container
         survives.
 
@@ -446,7 +443,7 @@
    STEP 4, APPLY.
 
      S5 APPLY. Otherwise close every missed frame and apply the form in the
-        owner. A blank or invisible line ends the open paragraph. A container
+        owner. A blank or block-level invisible line ends the open paragraph. A container
         opener pushes a frame and classifies the rest of its marker line in
         that frame. A leaf opener ends the open leaf and starts a new one.
         Ordinary text starts or extends a paragraph. A closed block leaves no
@@ -454,8 +451,8 @@
 
         THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK -- NORMATIVE [CARVE-P0-007].
         Marker-line content is the container's first block and answers S4
-        like any other block. Headings, tables, thematic breaks, comments,
-        definitions and floating attributes leave no paragraph open, so a
+        like any other block. Headings, tables, thematic breaks, fenced
+        comments, footnote definitions and floating attributes leave no paragraph open, so a
         following line below the content column closes the container.
         Ordinary prose, or a container ending in an open paragraph, permits a
         lazy fold. Definitions are collected where written (CARVE-P9-034).
@@ -514,13 +511,13 @@
                    and closes it, with every frame it missed. A `: ` line at
                    the item's marker column ends the item, as a list marker
                    there does
-        invisible  a `%%` line, a `%%%` span, a link reference definition
-                   and an abbreviation definition close no item at any
-                   column: they end the open paragraph and take effect, and
-                   the next visible line picks the owner as if they were
-                   absent. `- a` / `%% c` / `  b` stays in the item, `- a` /
-                   `%% c` / `b` closes it, and `- a` / `[r]: /u` / `- b` is
-                   one list (carve#4862). Below the content column a
+        invisible  a `%%%` span closes no item at any column: it ends the
+                   open paragraph and takes effect, and the next visible
+                   line picks the owner (carve#4862). S1 erases `%%` lines
+                   and one-line link and abbreviation definitions before
+                   this field is read: `- a` / `%% c` / `b` folds `b` into
+                   the item, and `- a` / `[r]: /u` / `- b` is one list.
+                   Below the content column a
                    footnote definition or an attribute line interrupts,
                    closes the item and is read in the surviving owner
                    (CARVE-P9-052). A region marker below a list closes every
@@ -607,8 +604,10 @@
                    container's row says: `> [^a]: n` / `- x` closes the note
                    and the quote. Under an open quote paragraph a `: ` line
                    folds at every column
-        invisible  an unmarked comment or definition ends the quote, as an
-                   unmarked blank does
+        invisible  an unmarked `%%%` span, footnote definition or attribute
+                   line ends the quote as an unmarked blank does; S1 erases
+                   an unmarked `%%` line or one-line definition before the
+                   quote's boundary is chosen
         plus       yes
         cells      [B-quote-start] `>` then a space or line end; each `>`
                    opens one level.
@@ -623,7 +622,9 @@
         lazy       blocks inside it follow the child paragraph test
         markers    under an open paragraph a list marker is text (PART 9
                    §10 I2)
-        invisible  read in the body like any other line
+        invisible  `%%%` spans, footnote definitions and attribute lines are
+                   read in the body; S1 erases eligible one-line constructs
+                   before the body's layout is chosen
         plus       no: a lone `+` inside is text (PART 9 §17 L5)
         cells      [B-div-start] A valid run of three or more colons.
                    [B-div-end] It ends at an exact-length colon run read in
@@ -5639,17 +5640,19 @@ EOF = (* end of file *) ;
          81-paragraph-interruption-20: `Text` / `:::` /
          `stuff` as a paragraph followed by a div holding `stuff`.
 
-      I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
-         definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
-         `*[A]: …`), a comment (`%%` line, `%%%` block), and a
-         block-attribute line (`{…}` alone on a line, §15). "See[^m].\n
-         [^m]: note" resolves the footnote; "para\n%% x" drops the comment;
+      I5 BLOCK-LEVEL INVISIBLE CONSTRUCTS interrupt AND are consumed: a
+         footnote definition `[^r]: …`, a `%%%` comment span, and a
+         block-attribute line (`{…}` alone on a line, §15). A `%%` line
+         comment and a one-line link `[r]: url` or abbreviation `*[A]: …`
+         definition are erased before layout under PART 0 S1: they do not
+         interrupt a paragraph. "See[^m].\n
+         [^m]: note" resolves the footnote; "para\n%% x\nmore" is one paragraph;
          "Para\n{.x}" ends the paragraph with the attribute line floating
          forward (§15; corpus 89-block-attribute-lines-7). (A small
          deviation from djot, which keeps such a line as paragraph text.)
-         AN INVISIBLE LINE IS ONE CLASSIFICATION -- NORMATIVE [CARVE-P9-013]. The five kinds
-         above are one class, and it is MEMBERSHIP in that class the rest of
-         the grammar cites. An invisible line, in the container that owns it:
+         A BLOCK-LEVEL INVISIBLE LINE IS ONE CLASSIFICATION -- NORMATIVE [CARVE-P9-013].
+         The span, footnote definition and attribute line above are one
+         class. An invisible line in that class, in the container that owns it:
 
            1. CLOSES an open paragraph, with no blank line needed -- this
               clause, and I6 for the containers;
@@ -5663,7 +5666,7 @@ EOF = (* end of file *) ;
               after it (L1b).
 
          ONLY THE SEMANTIC ACTION DIFFERS BY KIND, and that action is the only
-         thing a per-kind clause has left to state: a comment DISCARDS its
+         thing a per-kind clause has left to state: a span DISCARDS its
          visible content (§21, §28), an attribute line RETAINS pending
          metadata in the current container (§15 A2), and a definition
          REGISTERS metadata in its permitted scope (L6, PART 9R). A clause that
@@ -5672,21 +5675,17 @@ EOF = (* end of file *) ;
          ARITHMETIC is not, and stays where it is.
 
          WHAT AN INVISIBLE LINE DOES TO THE CONTAINER AROUND IT is the
-         `invisible` field of that container's PART 0 FAMILIES row: a comment
-         or one-line definition closes no indentation container (ruled on
-         carve#4862), an unmarked one ends a quote, and below a content column
-         a block-attribute line and a footnote definition close the missed
-         containers.
+         `invisible` field of that container's PART 0 FAMILIES row: a `%%%`
+         span closes no indentation container (carve#4862), an unmarked one
+         ends a quote, and below a content column a block-attribute line and
+         a footnote definition close the missed containers. Erased lines
+         reach none of these fields.
 
          PROPERTY 3 DOES NOT SAY WHICH OWNER. PART 0 S2 selects it.
 
-         Comments in this list are classified in PART 0 S1, before S3
-         classifies the visible residue; their AST/source extent is retained
-         (CARVE-P0-005).
-
-         A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
-         PARAGRAPH (CARVE-P0-010). A footnote definition's own extent is
-         CARVE-P0-012. The bare decimal-dot marker `. `
+         Comments are classified in PART 0 S1, before S3 classifies the
+         visible residue; their AST/source extent is retained (CARVE-P0-005).
+         A footnote definition's own extent is CARVE-P0-012. The bare decimal-dot marker `. `
          claims one marker column and one separator column, so its
          content_column is the same as `- `. Pinned by corpus 374.
       I6 SCOPE. The relation applies to EVERY open
@@ -6483,14 +6482,16 @@ EOF = (* end of file *) ;
 
       L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION -- NORMATIVE [CARVE-P9-030]. L1
          asks whether the item holds a block after an earlier visible block,
-         separated by a blank. An INVISIBLE LINE (§10 I5, AN INVISIBLE LINE IS
-         ONE CLASSIFICATION) emits no visible block, so it can be neither the
-         earlier block nor the following paragraph (L1a's argument). By the
+         separated by a blank. A block-level invisible line (§10 I5) emits
+         no visible block, so it can be neither the earlier block nor the
+         following block (L1a's argument). By the
          same clause's property 3 it
          does not choose the next line's owner either: it is not a separator,
          so the separation it appears to interrupt is intact and the item is
          LOOSE. This clause is that property's consequence for list
-         TIGHTNESS.
+         TIGHTNESS. A `%%` line or one-line link or abbreviation definition
+         is erased before this test (PART 0 S1); its absence cannot cancel
+         a real blank's separation or create one.
 
              - a
 
@@ -6579,8 +6580,9 @@ EOF = (* end of file *) ;
          the marker and its block refuse it. Invisible lines between the
          marker and the next line are skipped: they are read in the host, and
          the gates apply to the first visible line after them (carve#4449).
-         Link, note and abbreviation definitions are one class here (CARVE-P9-013).
-         An invisible line off the marker column is itself that
+         S1 erases `%%` lines and one-line link and abbreviation definitions
+         before the next-line test. A `%%%` span and block-level invisible
+         lines follow CARVE-P9-013. An invisible line off the marker column is itself that
          next line, and a note definition's body belongs to the note. A blank line, the end of
          input or a sibling after them refuses the `+`. Examples, with `/` for
          a line break:
@@ -6649,21 +6651,20 @@ EOF = (* end of file *) ;
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.
       L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE [CARVE-P9-034]
-         (PART 9R R1/R2 collection). Apply §10 I5 property 2 to collected link
-         and footnote definitions: pass 1 registers them in the shared symbol
-         table and pass 2 resolves uses document-wide. Their block-level host
-         renders no placeholder paragraph, blank line or residual whitespace.
+         (PART 9R R1/R2 collection). Pass 1 registers link and footnote
+         definitions in the shared symbol table and pass 2 resolves uses
+         document-wide. A one-line link definition is erased before layout
+         (PART 0 S1); a footnote definition remains a block (§10 I5).
+         Neither renders a placeholder paragraph, blank line or residual whitespace.
          This applies to list items, quotes, footnote bodies, definition
          descriptions, continuation-attached blocks and any future container
          admitting block content.
 
-         "No trace" describes output, not block structure. I5 still interrupts
-         the open paragraph without a blank, so following plain text starts a
-         new block, unless the definition is a footnote whose own paragraph is
-         open: that paragraph takes the line as a fold (PART 0 S4). L1 governs its rendering: without a loosening blank the
-         item stays tight and every paragraph, including the new one, renders
-         bare. A definition between two item paragraphs therefore leaves two
-         bare paragraph blocks; it neither merges them nor loosens the item.
+         "No trace" describes output and, for a link definition, layout.
+         Only a footnote definition interrupts the open paragraph without a
+         blank. Its own open paragraph may take a following line as a fold
+         (PART 0 S4). A one-line link definition between two paragraph lines
+         leaves one paragraph unless another boundary separates them.
 
       L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN --
          NORMATIVE [CARVE-P9-035]. A container's preceding BLOCK-ATTRIBUTE LINE
@@ -7214,7 +7215,7 @@ EOF = (* end of file *) ;
              This is the `invisible` field of the list item row of PART 0
              FAMILIES: below the column a footnote definition or
              block-attribute line interrupts, closes the item and is read in
-             the surviving owner, where a definition registers (CARVE-P0-010)
+             the surviving owner, where a footnote definition registers (PART 9 §10 I5)
              and an attribute line is pending (§15 A2).
            - AT OR PAST content_column: a block opener nests and a list marker
              opens a sublist. A non-list opener past the column opens in the

@@ -139,6 +139,7 @@ test('interruption and target tables use closed vocabularies', () => {
   const all = [
     ...Object.keys(interruption.visibleOpeners),
     ...interruption.invisibleOpeners,
+    ...interruption.erasedBeforeLayout,
     ...interruption.nonInterrupting,
   ]
   assert.equal(new Set(all).size, all.length, 'one construct has two interruption answers')

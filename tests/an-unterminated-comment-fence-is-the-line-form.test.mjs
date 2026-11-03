@@ -51,6 +51,7 @@ const LINE = '%% z'
 const item = (payload, column) => `- x\n${' '.repeat(column)}${payload}\ny\n`
 
 const OUTSIDE = '<ul> <li>x</li> </ul> <p>y</p>'
+const JOINED = '<ul> <li>x y</li> </ul>'
 // Below the item's column the span opens at document level and hides `y`.
 const HIDDEN = '<ul> <li>x</li> </ul>'
 
@@ -69,7 +70,7 @@ const BAND = [
 
 for (const [column, expected] of BAND) {
   test(`the line form at column ${column} of a list item answers as the clause reads`, () => {
-    assert.equal(oracle(item(LINE, column)), expected)
+    assert.equal(oracle(item(LINE, column)), JOINED)
   })
 
   for (const fence of FENCES) {
@@ -104,7 +105,7 @@ for (let column = 0; column <= 3; column += 1) {
   test(`at the top level both spellings close the paragraph at column ${column}, and the fence hides the rest`, () => {
     const pad = ' '.repeat(column)
     assert.equal(oracle(`x\n${pad}%%%\ny\n`), '<p>x</p>')
-    assert.equal(oracle(`x\n${pad}${LINE}\ny\n`), '<p>x</p> <p>y</p>')
+    assert.equal(oracle(`x\n${pad}${LINE}\ny\n`), '<p>x y</p>')
   })
 }
 
@@ -131,8 +132,8 @@ test('an ordinary indented line still folds into the item', () => {
  * is a comment BLOCK at the document's own opener column and the other is not a
  * block at all.
  */
-test('at column 0 the line form closes the item', () => {
-  assert.equal(oracle(item(LINE, 0)), OUTSIDE)
+test('at column 0 the line form is erased before the item tests its follower', () => {
+  assert.equal(oracle(item(LINE, 0)), JOINED)
 })
 
 for (const fence of FENCES) {

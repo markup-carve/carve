@@ -30,12 +30,12 @@ for (const depth of [0, 1]) {
   for (const column of [0, 1, 2]) {
     const pad = host => ' '.repeat(Math.min(column, host.column - 1))
     const cases = [
-      ['a low comment closes the body before a plain follower', host => [`${pad(host)}%% c`, ' follower'], false],
+      ['an erased low comment leaves the plain follower in the body', host => [`${pad(host)}%% c`, ' follower'], true],
       ['a blank clears retention', host => [`${pad(host)}%% c`, '', ' follower'], false],
-      ['a comment at the body column grants none', host => [
-        `${' '.repeat(host.column)}%% c`, 'follower'], false],
-      ['a comment above the body column grants none', host => [
-        `${' '.repeat(host.column + 1)}%% c`, 'follower'], false],
+      ['an erased comment at the body column leaves the paragraph open', host => [
+        `${' '.repeat(host.column)}%% c`, 'follower'], true],
+      ['an erased comment above the body column leaves the paragraph open', host => [
+        `${' '.repeat(host.column + 1)}%% c`, 'follower'], true],
       ['an interrupting opener leaves the body', host => [`${pad(host)}%% c`, '# follower'], false],
       ['a sibling marker is recognized first', host => [`${pad(host)}%% c`, host.sibling], false],
       ['a matched span hides its payload', host => [
@@ -45,7 +45,8 @@ for (const depth of [0, 1]) {
       test(`${limit}, comment column ${column}, quote depth ${depth}`, () => {
         const outputs = hosts.map(host => html(source(host, body(host), depth)))
         const kept = hosts.map((host, index) => inside(outputs[index], host))
-        assert.equal(kept[0], expected, `item control:\n${outputs[0]}`)
+        const ruledExpected = depth > 0 && limit.startsWith('an erased') ? false : expected
+        assert.equal(kept[0], ruledExpected, `item control:\n${outputs[0]}`)
         for (let index = 1; index < hosts.length; index++) {
           assert.equal(kept[index], kept[0], `${hosts[index].name} disagrees with item:\n${outputs[index]}`)
         }
@@ -60,17 +61,12 @@ for (const depth of [0, 1]) {
   }
 }
 
-test('a low comment closes a description before its text', () => {
-  assert.equal(html(':: t\n: d\n %% c\n text\n'),
-    '<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>\n<p>text</p>')
+test('a low comment leaves a description open for its text', () => {
+  assert.equal(html(':: t\n: d\n %% c\n text\n'), html(':: t\n: d\n text\n'))
 })
 
-test('a low comment closes a note before its text', () => {
-  assert.equal(html('[^n]: body\n %% c\n text\n\n[^n]\n'),
-    '<p>text</p>\n<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>\n' +
-    '<section role="doc-endnotes" aria-label="Footnotes">\n  <hr>\n  <ol>\n' +
-    '    <li id="fn1">\n      <p>body<a href="#fnref1" ' +
-    'role="doc-backlink" aria-label="Back to reference">↩</a></p>\n    </li>\n  </ol>\n</section>')
+test('a low comment leaves a note open for its text', () => {
+  assert.equal(html('[^n]: body\n %% c\n text\n\n[^n]\n'), html('[^n]: body\n text\n\n[^n]\n'))
 })
 
 test('a list marker after a low comment opens a list outside all three hosts', () => {

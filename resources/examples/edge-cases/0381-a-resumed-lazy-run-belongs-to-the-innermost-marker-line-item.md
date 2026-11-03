@@ -85,11 +85,11 @@ paragraph.
 <ul>
   <li>
     <ul>
-      <li>u</li>
+      <li>u
+:</li>
     </ul>
   </li>
 </ul>
-<p>:</p>
 ```
 
 ::::

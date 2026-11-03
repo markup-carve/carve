@@ -17,9 +17,9 @@ const link = '<p><a href="/u">r</a></p>'
 
 const CASES = [
   ['a definition after a sublist', ':: t\n: d\n  - para\n    [r]: /u\nx\n\n[r][]\n',
-    `<dl><dt>t</dt><dd><p>d</p><ul><li>para</li></ul></dd></dl><p>x</p>${link}`],
+    `<dl><dt>t</dt><dd><p>d</p><ul><li>para x</li></ul></dd></dl>${link}`],
   ['a definition after an ordered sublist', ':: t\n: d\n  1. para\n     [r]: /u\nx\n\n[r][]\n',
-    `<dl><dt>t</dt><dd><p>d</p><ol><li>para</li></ol></dd></dl><p>x</p>${link}`],
+    `<dl><dt>t</dt><dd><p>d</p><ol><li>para x</li></ol></dd></dl>${link}`],
   ['a heading after a sublist', ':: t\n: d\n  - para\n    # H\nx\n',
     '<dl><dt>t</dt><dd><p>d</p><ul><li>para <h1 id="H">H</h1></li></ul></dd></dl><p>x</p>'],
   ['an attribute line after a sublist', ':: t\n: d\n  - para\n    {#k}\nx\n',
@@ -42,7 +42,7 @@ for (const [what, src, expected] of CASES) {
 test('a footnote body reads a definition past its column after a sublist', () => {
   const ast = parse('[^n]: d\n  - para\n    [r]: /u\nx\n\n[^n]\n')
   assert.equal(ast.linkDefs.get('r')?.url, '/u')
-  assert.match(oracle('[^n]: d\n  - para\n    [r]: /u\nx\n\n[^n]\n'), /^<p>x<\/p><p>/)
+  assert.match(oracle('[^n]: d\n  - para\n    [r]: /u\nx\n\n[^n]\n'), /<ul><li>para x<\/li><\/ul>/)
 })
 
 // Controls: a definition past a quoted item's column still registers there
@@ -53,5 +53,5 @@ test('a definition past a quoted sub-item column registers', () => {
 })
 test('an abbreviation after a sublist is a definition', () => {
   assert.equal(oracle(':: t\n: d\n  - para\n    *[A]: b\nx\n'),
-    '<dl><dt>t</dt><dd><p>d</p><ul><li>para</li></ul></dd></dl><p>x</p>')
+    '<dl><dt>t</dt><dd><p>d</p><ul><li>para x</li></ul></dd></dl>')
 })

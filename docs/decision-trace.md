@@ -22,7 +22,7 @@ cites one stays valid.
 | Id | Step | Decides |
 |---|---|---|
 | `INPUT` | Normalize source | Frontmatter lines, before ownership |
-| `S1` | Payload | A line inside an open code, raw or comment fence, or the fence's closer |
+| `S1` | Payload or erasure | A line inside an open code, raw or comment fence, the fence's closer, or an eligible one-line comment or definition erased before layout |
 | `S2` | Owner | A lone `+` taken at a marker column |
 | `S3` | Form | Not a trace step: its result is the record's `form` |
 | `S4` | Lazy | A line that missed a frame and folds into the deepest open paragraph |

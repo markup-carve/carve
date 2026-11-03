@@ -19,9 +19,9 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+tail</li>
 </ul>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -77,9 +77,9 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+tail</li>
 </ul>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -97,9 +97,9 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -121,9 +121,9 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a</dd>
+  <dd>a
+tail</dd>
 </dl>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -144,9 +144,9 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a</dd>
+  <dd>a
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 :::

@@ -6,9 +6,9 @@ What a content-column block does not reach
  b
 .
 <ul>
-  <li>a</li>
+  <li>a
+b</li>
 </ul>
-<p>b</p>
 ```
 
 ```

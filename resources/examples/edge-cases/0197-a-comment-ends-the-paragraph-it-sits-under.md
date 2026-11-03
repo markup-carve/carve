@@ -16,11 +16,9 @@ document paragraph, and the next list starts after it.
 
 ```html
 <ul>
-  <li>a</li>
-</ul>
-<p>b</p>
-<ul>
-  <li>c</li>
+  <li><p>a
+b</p></li>
+  <li><p>c</p></li>
 </ul>
 ```
 

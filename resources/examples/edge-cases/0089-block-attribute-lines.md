@@ -128,3 +128,21 @@ Next
 ```
 
 :::
+
+A footnote definition is invisible to block-attribute placement, so a pending
+class floats past it to the next visible paragraph (PART 9 §15 A2a).
+
+::: compare
+
+```carve
+{.a}
+[^f]: note
+
+Visible
+```
+
+```html
+<p class="a">Visible</p>
+```
+
+:::

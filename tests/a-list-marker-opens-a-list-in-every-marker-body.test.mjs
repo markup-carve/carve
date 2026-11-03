@@ -20,14 +20,16 @@ const HOSTS = {
 const PREFIXES = ['', '> ', '> > ']
 const MARKERS = ['- m', '* m', '1. m', 'a) m', '- [ ] m']
 
-// A comment with the marker's own prefix ends the paragraph and closes what the marker misses, which is the ruled reading (carve#4860).
+// A one-line comment has no layout boundary under the later carve#5012 ruling.
+// Its quote markers remain structural, even when its content disappears.
 for (const [name, [host, column]] of Object.entries(HOSTS)) for (const prefix of PREFIXES) for (const marker of MARKERS) {
-  test(`${marker} after ${name} under ${JSON.stringify(prefix)} reads as if a comment closed the paragraph`, () => {
+  test(`${marker} after ${name} under ${JSON.stringify(prefix)} reads after an erased comment`, () => {
     const body = host.split('\n').map((line) => prefix + line).join('\n')
     for (const pad of [0, 1, column - 1, column, column + 1, column + 2]) {
       const line = prefix + ' '.repeat(pad)
       const tail = `\ntail\n\nr[^n]\n`
-      assert.equal(html(`${body}\n${line}${marker}${tail}`), html(`${body}\n${line}%%\n${line}${marker}${tail}`), `${pad} ${body}`)
+      const retained = prefix ? `${prefix.trimEnd()}\n` : ''
+      assert.equal(html(`${body}\n${retained}${line}${marker}${tail}`), html(`${body}\n${line}%%\n${line}${marker}${tail}`), `${pad} ${body}`)
     }
   })
 }

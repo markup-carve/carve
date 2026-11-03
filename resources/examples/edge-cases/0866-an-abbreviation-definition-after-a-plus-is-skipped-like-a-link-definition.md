@@ -82,8 +82,9 @@ A
 ```html
 <blockquote>
   <ul>
-    <li>text</li>
+    <li></li>
   </ul>
+  <p>text</p>
 </blockquote>
 <p><abbr title="b">A</abbr></p>
 ```
@@ -114,7 +115,7 @@ A
 
 ::::::
 
-Off the marker column the definition is itself the next line and refuses the `+`; it misses every frame and defines `A`.
+The off-column definition is erased before the `+` tests its follower (PART 0 S1, carve#5012). It still defines `A` document-wide.
 
 :::::: compare
 
@@ -128,9 +129,8 @@ A
 
 ```html
 <ul>
-  <li></li>
+  <li>text</li>
 </ul>
-<p>text</p>
 <p><abbr title="b">A</abbr></p>
 ```
 

@@ -50,9 +50,9 @@ substitution requires the row above to have.
 
 ```html
 <ul>
-  <li>x</li>
+  <li>x
+y</li>
 </ul>
-<p>y</p>
 ```
 
 :::
@@ -92,9 +92,8 @@ y
 ```html
 <ul>
   <li>x
-    body
-y
-  </li>
+body
+y</li>
 </ul>
 ```
 

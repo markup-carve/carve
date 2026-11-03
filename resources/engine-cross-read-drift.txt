@@ -132,3 +132,6 @@ php/425-an-ordered-item-s-separator-width-sets-its-content-column-12  markup-car
 php/425-an-ordered-item-s-separator-width-sets-its-content-column-13  markup-carve/carve#4811, the pinned writer emits one space after a letter or roman marker, which the ruling reads as text
 rust/425-an-ordered-item-s-separator-width-sets-its-content-column-12  markup-carve/carve#4811, the pinned writer emits one space after a letter or roman marker, which the ruling reads as text
 rust/425-an-ordered-item-s-separator-width-sets-its-content-column-13  markup-carve/carve#4811, the pinned writer emits one space after a letter or roman marker, which the ruling reads as text
+js/447-the-host-does-not-change-which-column-a-definition-reaches-24  markup-carve/carve#5012, the pinned writer spells a quoted one-line definition with a layout boundary that the model now erases
+php/447-the-host-does-not-change-which-column-a-definition-reaches-24  markup-carve/carve#5012, the pinned writer spells a quoted one-line definition with a layout boundary that the model now erases
+rust/447-the-host-does-not-change-which-column-a-definition-reaches-24  markup-carve/carve#5012, the pinned writer spells a quoted one-line definition with a layout boundary that the model now erases

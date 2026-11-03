@@ -76,8 +76,10 @@ PART 9 §17 L1c with CARVE-P9-013 property 3. A blank inside an item, followed o
 ```html
 <blockquote>
   <ul>
-    <li><p>a</p></li>
-    <li><p>c</p></li>
+    <li>a</li>
+  </ul>
+  <ul>
+    <li>c</li>
   </ul>
 </blockquote>
 ```

@@ -8,11 +8,11 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (src) => renderDoc(parse(src)).trim()
 
 for (const [name, src, expected] of [
-  ['item', '- a\n%% c\n  b\n', '<ul>\n  <li>a\n    b\n  </li>\n</ul>'],
-  ['description', ':: t\n:  x\n%% c\n   more\n', '<dl>\n  <dt>t</dt>\n  <dd>\n    <p>x</p>\n    <p>more</p>\n  </dd>\n</dl>'],
-  ['link definition', '- a\n[r]: /u\n  b [r][]\n', '<ul>\n  <li>a\n    b <a href="/u">r</a>\n  </li>\n</ul>'],
-  ['quote control', '> a\n%% c\n> b\n', '<blockquote><p>a</p></blockquote>\n<blockquote><p>b</p></blockquote>'],
-  ['column-0 follower control', '- a\n%% c\nb\n', '<ul>\n  <li>a</li>\n</ul>\n<p>b</p>'],
+  ['item', '- a\n%% c\n  b\n', '<ul>\n  <li>a\nb</li>\n</ul>'],
+  ['description', ':: t\n:  x\n%% c\n   more\n', '<dl>\n  <dt>t</dt>\n  <dd>x\nmore</dd>\n</dl>'],
+  ['link definition', '- a\n[r]: /u\n  b [r][]\n', '<ul>\n  <li>a\nb <a href="/u">r</a></li>\n</ul>'],
+  ['quote control', '> a\n%% c\n> b\n', '<blockquote><p>a\nb</p></blockquote>'],
+  ['column-0 follower control', '- a\n%% c\nb\n', '<ul>\n  <li>a\nb</li>\n</ul>'],
 ]) {
   test(`the ticket's ${name} row`, () => assert.equal(html(src), expected))
 }
@@ -25,8 +25,8 @@ test('a region marker below a list still closes every item', () => {
   assert.equal(html('- a\n%% #endregion\n  b\n'), '<ul>\n  <li>a</li>\n</ul>\n<p>b</p>')
 })
 
-test('a comment that misses an open fence\'s owner ends the fence where it stands', () => {
-  assert.match(html('- a\n  ```\n  code\n%% c\n  ```\nafter\n'), /<\/ul>\n<pre><code>after\n<\/code><\/pre>$/)
+test('an erased comment leaves the fence to close at its own delimiter', () => {
+  assert.equal(html('- a\n  ```\n  code\n%% c\n  ```\nafter\n'), html('- a\n  ```\n  code\n  ```\nafter\n'))
 })
 
 test('a comment span below the column leaves the next line to decide', () => {

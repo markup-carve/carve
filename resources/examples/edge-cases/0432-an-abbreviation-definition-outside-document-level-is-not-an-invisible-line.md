@@ -19,10 +19,8 @@ A
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>d</p>
-    <p>tail</p>
-  </dd>
+  <dd>d
+tail</dd>
 </dl>
 <p><abbr title="a">A</abbr></p>
 ```
@@ -48,8 +46,8 @@ see[^a] A
   <hr>
   <ol>
     <li id="fn1">
-      <p>intro</p>
-      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>intro
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

@@ -303,6 +303,10 @@ const MANIFEST = [
   { repo: 'spec', path: 'tests/an-element-less-container-is-carried-in-a-comment.test.mjs', name: 'CAPTION_LAG', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', optional: true, staleness: 'delete CAPTION_LAG', owner: 'markup-carve/carve#2851' },
 
   // -- carve-js --------------------------------------------------------------
+  // The #5015 ruling tables live in a helper and are spread into the guarded
+  // corpus and canonical maps below. The helper remains ahead of the spec pin.
+  { repo: 'carve-js', path: 'test/ruled-ahead-of-pin-5015.ts', name: 'RULED_HTML_AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', stalenessFile: 'test/corpus.test.ts', staleness: 'now matches: delete its AHEAD_OF_PIN entry', owner: 'test/corpus.test.ts' },
+  { repo: 'carve-js', path: 'test/ruled-ahead-of-pin-5015.ts', name: 'RULED_FMT_AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', stalenessFile: 'test/corpus-canonical-form.test.ts', staleness: 'now matches: delete its AHEAD_OF_PIN entry', owner: 'test/corpus-canonical-form.test.ts' },
   { repo: 'carve-js', path: 'test/corpus.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'now matches: delete its AHEAD_OF_PIN entry', owner: 'test/corpus.test.ts' },
   { repo: 'carve-js', path: 'test/include-conformance.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'golden already regenerated - delete its entry', owner: 'test/include-conformance.test.ts' },
   { repo: 'carve-js', path: 'test/canonical-ahead-of-pin.ts', name: 'CANONICAL_AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', stalenessFile: 'test/corpus-canonical-form.test.ts', staleness: 'now matches: delete its AHEAD_OF_PIN entry', owner: 'test/corpus-canonical-form.test.ts and test/corpus-render-fixtures.test.ts' },

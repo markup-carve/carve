@@ -46,7 +46,7 @@
         "classifyLayoutComment",
         "hasCloser"
       ],
-      "constraint": "An open fence tests its closer first. Comments are classified before S3, and remain ordinary lines for ownership."
+      "constraint": "An open fence tests its closer first. Eligible one-line comments and definitions are erased before S2; spans remain block-level."
     },
     {
       "id": "owner",
@@ -72,7 +72,6 @@
       "title": "S3 Form",
       "rules": [
         "CARVE-P0-008",
-        "CARVE-P0-010",
         "CARVE-P0-011"
       ],
       "checkerHelpers": [

@@ -903,7 +903,7 @@
 {"id":"combined-c51b24b06cb4","source":"a/**/b\n","html":"<p>a/**/b</p>"},
 {"id":"combined-c57b645b9a78","source":"/*\fx*/ y\n{/a *b {/c/}*/}\n","html":"<p><strong><em>\fx</em></strong> y\n<em>a <strong>b <em>c</em></strong></em></p>"},
 {"id":"combined-c5948ebe1a80","source":"2/*a*/ and /*b*/3\n\n\n","html":"<p>2/<strong>a</strong>/ and /<strong>b</strong>/3</p>"},
-{"id":"combined-c5abb9c78058","source":"/**/\n%%\n- \n","html":"<p><em>**</em></p>\n<p>-</p>"},
+{"id":"combined-c5abb9c78058","source":"/**/\n%%\n- \n","html":"<p><em>**</em>\n-</p>"},
 {"id":"combined-c5c35d6b5905","source":"{/a/b/} and {/italic *bold*/}\n+ \n{/*\n","html":"<p><em>a/b</em> and <em>italic <strong>bold</strong></em>\n+\n{/*</p>"},
 {"id":"combined-c5d3fbef8efa","source":"_x /*a*/{.q} b/{c_} c_\n| a | b |\nb *//*{c_}*/\n","html":"<p><u>x <strong class=\"q\"><em>a</em></strong> b/{c</u>} c_</p>\n<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<p>b <strong c_=\"\">//</strong>*/</p>"},
 {"id":"combined-c5fb873ce058","source":"/*x**//\n","html":"<p><strong><em>x*</em></strong>/</p>"},

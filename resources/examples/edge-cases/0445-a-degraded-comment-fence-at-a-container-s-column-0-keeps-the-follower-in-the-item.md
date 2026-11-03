@@ -50,9 +50,9 @@ y
 
 ```html
 <ul>
-  <li>x</li>
+  <li>x
+y</li>
 </ul>
-<p>y</p>
 ```
 
 :::
