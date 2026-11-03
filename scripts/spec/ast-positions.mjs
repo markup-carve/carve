@@ -517,20 +517,14 @@ export const OPENING_MARKUP = new Map(
  * The types whose span may begin PART WAY into the line's leading indentation.
  *
  * BLOCK CONTAINERS ONLY, which is markup-carve/carve#1928's ruling: a LEAF span
- * begins at its markup, a CONTAINER keeps the indent latitude. The reason the
- * latitude exists is container-specific - the indent is what places a nested
- * item's marker, and a nested list's span legitimately starts at its parent's
- * content column rather than at the marker (corpus 245 and two others). That
- * reason does not reach a leaf, and until the ruling nothing narrowed it, so a
- * leaf inherited the latitude by accident and PART 12 §4's sentence had two
- * conformant readings.
+ * begins at its markup, and a CONTAINER can include indentation. The exact
+ * owner-column check for lists and items below implements the later #5063
+ * ruling; membership here only lets the marker probe cross indentation.
  *
  * Measured over the corpus before it was narrowed: of 3362 spans this rule
- * examines, exactly three types passed ONLY because of the walk - `list` (10)
- * and `list_item` (12), which are the reason it exists, and `comment` (14),
- * which is the leaf the ruling moves. Every other type already matched at its
- * own `startOffset`, so naming the containers costs nothing that was relying on
- * it.
+ * examines, exactly three types passed ONLY because of the walk - `list` (10),
+ * `list_item` (12), and `comment` (14). The later list ruling narrows the first
+ * two; #1928 narrowed the leaf.
  *
  * A TYPE SET rather than "has children", for the reason `OPENING_MARKUP` is
  * one: an EMPTY container is still a container, and a leaf that happens to hold
@@ -549,6 +543,61 @@ export const INDENT_LATITUDE = new Set([
 ])
 
 export function checkOpeningMarkup(doc, codepoints, findings) {
+  const parentOf = new WeakMap()
+  const rememberParents = (value, parent = null) => {
+    if (Array.isArray(value)) {
+      for (const child of value) rememberParents(child, parent)
+    } else if (value && typeof value === 'object' && typeof value.type === 'string') {
+      parentOf.set(value, parent)
+      for (const [key, child] of Object.entries(value)) {
+        if (key !== 'pos') rememberParents(child, value)
+      }
+    }
+  }
+  rememberParents(doc)
+  const lineStart = (offset) => {
+    let at = offset
+    while (at > 0 && codepoints[at - 1] !== '\n' && codepoints[at - 1] !== '\r') at--
+    return at
+  }
+  const offsetAtColumn = (start, column, from = start) => {
+    let offset = from
+    let visual = visualColumn(start, from)
+    while (visual < column && (codepoints[offset] === ' ' || codepoints[offset] === '\t')) {
+      const next = codepoints[offset] === '\t' ? visual + (4 - visual % 4) : visual + 1
+      if (next > column) return offset
+      visual = next
+      offset++
+    }
+    return offset
+  }
+  const visualColumn = (start, offset) => {
+    let column = 0
+    for (let at = start; at < offset; at++) {
+      column = codepoints[at] === '\t' ? column + (4 - column % 4) : column + 1
+    }
+    return column
+  }
+  const ownerColumn = (node) => {
+    let parent = parentOf.get(node)
+    if (node.type === 'list_item') parent = parentOf.get(parent)
+    while (parent && !['list_item', 'footnote', 'definition_description', 'admonition', 'div'].includes(parent.type) && !(parent.type === 'block_quote' && parent.fenced)) parent = parentOf.get(parent)
+    if (!parent?.pos || !Number.isInteger(parent.pos.startOffset)) return null
+    if (parent.type === 'admonition' || parent.type === 'div' || parent.type === 'block_quote') {
+      return visualColumn(lineStart(parent.pos.startOffset), parent.pos.startOffset)
+    }
+    if (parent.type === 'footnote') return visualColumn(lineStart(parent.pos.startOffset), parent.pos.startOffset) + 2
+    const start = lineStart(parent.pos.startOffset)
+    const head = codepoints.slice(start, codepoints.indexOf('\n', start) < 0 ? codepoints.length : codepoints.indexOf('\n', start)).join('')
+    if (parent.type === 'definition_description') {
+      const separator = /^: +/.exec(head.slice(parent.pos.startOffset - start))
+      return separator ? visualColumn(start, parent.pos.startOffset) + separator[0].length : null
+    }
+    const marker = /^([ \t]*)([-*.]|[0-9]+[.)]|[a-zA-Z]+[.)])(?:\{[^}]*\})?( )/.exec(head.slice(parent.pos.startOffset - start))
+    return marker
+      ? visualColumn(start, parent.pos.startOffset + marker[1].length) + marker[2].length + marker[3].length
+      : null
+  }
   let examined = 0
   for (const [node, path] of walkNodes(doc)) {
     const pattern = node.type === 'table' && (node.sourceFormat === 'csv' || node.sourceFormat === 'tsv')
@@ -582,10 +631,43 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
       if (c === '\n' || c === '\r') break
       if (c !== ' ' && c !== '\t') { indented = false; break }
     }
+    // Lists use the exact owner-column check below, including quote and
+    // description prefixes on the opening line. Let the marker probe pass
+    // through their indentation so it does not report a second, false error.
+    if (node.type === 'list' || node.type === 'list_item') indented = true
     if (indented) {
       while (at < pos.endOffset && (codepoints[at] === ' ' || codepoints[at] === '\t')) at += 1
     }
     examined += 1
+    if (node.type === 'list' || node.type === 'list_item') {
+      const start = lineStart(pos.startOffset)
+      const prefix = codepoints.slice(start, at).join('')
+      let prefixEnd = 0
+      let rest = prefix
+      while (rest) {
+        const marker = /^(?:[ \t]*> ?|[ \t]*: +|[ \t]*\[\^[^\]]+\]: +|[ \t]*(?:[-*.]|[0-9]+[.)]|[a-zA-Z]+[.)]) )/.exec(rest)
+        if (!marker) break
+        prefixEnd += marker[0].length
+        rest = rest.slice(marker[0].length)
+      }
+      const owner = ownerColumn(node)
+      // A task box or authored text between the owner column and the marker
+      // is content, not indentation, so it cannot enter the child's span.
+      const expected = /[^ \t]/.test(rest) ? at
+        : offsetAtColumn(start, owner || 0, start + prefixEnd)
+      const beforeOwner = owner !== null && visualColumn(start, at) < owner
+      if (beforeOwner) {
+        findings.push(
+          `pos does not begin at the markup that opens "${node.type}" at ${path}: ` +
+            `offset ${pos.startOffset} starts before its owner's content column ${owner}`,
+        )
+      } else if (pos.startOffset !== expected) {
+        findings.push(
+          `pos does not begin at the markup that opens "${node.type}" at ${path}: ` +
+            `offset ${pos.startOffset}, expected ${expected} at its owner's content column`,
+        )
+      }
+    }
     // WIDE ENOUGH FOR THE LONGEST MARKER. An ordered marker is digits then a
     // delimiter, so a window that truncates before the delimiter turns a
     // well-formed item into a reported violation - a false finding, not a

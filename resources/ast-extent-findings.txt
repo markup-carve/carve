@@ -54,7 +54,11 @@
 # undo. A check that cannot pass is the same defect as a check that cannot fail.
 #
 # <engine>  <rule>  <type>  <count>  <owner/repo#N>
-carve-rs  starts-past-opening-markup  list  1  markup-carve/carve-rs#3375
-carve-rs  starts-past-opening-markup  list_item  1  markup-carve/carve-rs#3375
+carve-js  starts-past-opening-markup  list  122  markup-carve/carve#5063
+carve-js  starts-past-opening-markup  list_item  154  markup-carve/carve#5063
+carve-php  starts-past-opening-markup  list  24  markup-carve/carve#5063
+carve-php  starts-past-opening-markup  list_item  27  markup-carve/carve#5063
+carve-rs  starts-past-opening-markup  list  87  markup-carve/carve#5063
+carve-rs  starts-past-opening-markup  list_item  113  markup-carve/carve#5063
 carve-php  starts-past-opening-markup  link_reference_definition  107  markup-carve/carve-php#4494
 carve-rs  starts-past-opening-markup  link_reference_definition  107  markup-carve/carve-rs#3768

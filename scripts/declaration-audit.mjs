@@ -247,7 +247,7 @@ const MANIFEST = [
   // `liveRows` collapses every whitespace run in a `js` row to one space - so
   // `declared` on a `js` entry reports every row UNDECLARED and can never pass.
   // Filed as markup-carve/carve#1939; when it is fixed this entry can move.
-  { repo: 'spec', path: 'tests/ast-positions.test.mjs', name: 'DECLARED_LEAF_INDENT_START', kind: 'js', policy: 'declared', guard: 'two-way', staleness: 'update DECLARED_LEAF_INDENT_START in the commit that moves the engines', owner: 'tests/ast-positions.test.mjs' },
+  { repo: 'spec', path: 'tests/ast-positions.test.mjs', name: 'DECLARED_LIST_INDENT_START', kind: 'js', policy: 'declared', guard: 'two-way', staleness: 'update DECLARED_LIST_INDENT_START in the commit that moves the engines', owner: 'tests/ast-positions.test.mjs' },
   // A pin window, like the AHEAD_OF_PIN rows below: while the pinned parser
   // cannot read a ruled tree back out of expected.crv, the two exits cannot
   // agree. Read by hand inside a PR, owed before a tag.
