@@ -1,0 +1,88 @@
+A blank inside a `+`-attached description keeps the list tight
+
+```
+- a
++
+:: term
+: d
+
+  x
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>d</p>
+        <p>x</p>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+- a
++
+:: t
+: d
+: e
+
+  x
+- b
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>t</dt>
+      <dd>d</dd>
+      <dd>
+        <p>e</p>
+        <p>x</p>
+      </dd>
+    </dl>
+  </li>
+  <li>b</li>
+</ul>
+```
+
+```
+- a
+  - b
+  +
+  :: t
+  : d
+
+    x
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <dl>
+          <dt>t</dt>
+          <dd>
+            <p>d</p>
+            <p>x</p>
+          </dd>
+        </dl>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
++
+> q
+
+  x
+.
+<ul>
+  <li><p>a</p>
+    <blockquote><p>q</p></blockquote>
+    <p>x</p>
+  </li>
+</ul>
+```
