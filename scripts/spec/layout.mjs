@@ -6341,6 +6341,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           (inItem || [qHost, ...qNestedHost.slice(0, qNestedPara.length)].some((host) => host?.kinds.some((kind) => kind === 'item' || kind === 'note' || kind === 'description')))
         if (lines[i] !== undefined && !bodyTakesMarker && (qOpenPara || foldedColon) &&
             !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
+            (foldedColon || !descriptionLeadSpanOpen(inner)) &&
             !COMMENT_LINE.test(lines[i]) &&
             (!peekInterrupts(i) || foldedColon || nestedMarkerFold) &&
             (!COLON_CLOSER.test(lines[i]) || foldedColon) && !CAPTION.test(lines[i])) {
@@ -6729,6 +6730,53 @@ const opensDescriptionAt = (bodyLines, col, end = bodyLines.length) => {
   }
   return false
 }
+// Whether a body ends inside a `%%%` span opened on a description's lead line
+// (`: %%%`), which the item and quote paragraph trackers read as text. The
+// span leaves nothing (CARVE-P9-047), so a line that ends it under S1 finds no
+// paragraph to fold into. Quote markers count toward a line's column, so a
+// quote the body holds is read too. Bodies only grow, so each line is read once.
+const leadSpanScans = new WeakMap()
+const quoteFreeMeasure = (line) => {
+  let measured = indentCols(stripLazy(line))
+  let base = 0
+  while (measured.rest[0] === '>') {
+    const width = measured.rest[1] === ' ' ? 2 : 1
+    base += measured.col + width
+    measured = indentCols(measured.rest.slice(width))
+  }
+  return { col: base + measured.col, rest: measured.rest }
+}
+function descriptionLeadSpanOpen(bodyLines) {
+  let scan = leadSpanScans.get(bodyLines)
+  if (!scan || scan.at > bodyLines.length) leadSpanScans.set(bodyLines, scan = { at: 0, span: null })
+  for (; scan.at < bodyLines.length; scan.at++) {
+    const line = bodyLines[scan.at]
+    // Only a line holding a `%` run can open or close a span; the rest is measured only inside one.
+    if (!scan.span && !line.includes('%%%')) continue
+    const measured = quoteFreeMeasure(line)
+    if (scan.span) {
+      const closer = COMMENT_FENCE.exec(measured.rest)
+      if (closer && closer[1].length === scan.span.run) scan.span = null
+      else if (measured.rest !== '' && !measured.rest.startsWith('%%') &&
+        (measured.col < scan.span.owner || line.startsWith(LAZY))) scan.span = null
+      continue
+    }
+    const lead = DESCRIPTION_LEAD.exec(measured.rest)
+    const opener = lead && COMMENT_FENCE_BODY.exec(measured.rest.slice(lead[0].length))
+    if (!opener) continue
+    // The entry above: the nearest line at or left of this column is its term (`opensDescriptionAt`).
+    for (let k = scan.at - 1; k >= 0; k--) {
+      const above = quoteFreeMeasure(bodyLines[k])
+      if (above.rest === '' || above.col > measured.col) continue
+      if (above.col === measured.col && DESCRIPTION_RUN.test(above.rest)) {
+        scan.span = { run: opener[1].length, owner: measured.col + lead[0].length }
+      }
+      break
+    }
+  }
+  return scan.span !== null
+}
+
 // `opensDescriptionAt` for the line just pushed, reading the entry above behind its markers.
 const entryAbove = (bodyLines, col) => {
   for (let k = bodyLines.length - 2; k >= 0; k--) {
@@ -7712,6 +7760,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (!isBlank(lines[i - 1] ?? '') && ind(i)?.col < contentCol && descendantStanzaOpen()) return true
       // A stanza holding no verse supplies none, whatever its spans left (carve#4956).
       if (ind(i)?.col < contentCol && leafStanzaEmpty()) return false
+      if (ind(i)?.col < contentCol && !ind(i).rest.startsWith('%%') && descriptionLeadSpanOpen(itemLines)) return false
       if (!paragraphIsOpen()) return false
       if (bodyQuote.at === i - 1 && bodyQuote.open &&
           !COLON_CLOSER.test(QUOTE.exec(ind(i - 1)?.rest ?? '')?.[1] ?? '')) return true
