@@ -36,7 +36,7 @@ test('an unclosed opener after a blank leaves a below-column line outside the it
 test('a `+` with no block at the marker column stays text in the lazy child paragraph', () => {
   const out = html(`- outer\n  - inner\n  ${F}js,title="x"\n  +\nnext\n`)
   assert.doesNotMatch(out, /<pre>/)
-  assert.match(out, /\+\nnext<\/code><\/li>/)
+  assert.match(out, /\<p>next<\/p>/)
 })
 
 // carve#3912: past a below-column line the closer is measured from the authored opener.

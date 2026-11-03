@@ -22,7 +22,7 @@ for (const [plus, direct, carried] of [['> +\n', '> ', ''], ['> > +\n', '> > ', 
 }
 
 test('a fence without the outer quote prefix is refused by "> > +"', () => {
-  assert.equal(html('> > +\n```\ny\n'), html('> > Z\n```\ny\n').replace('Z', '+'))
+  assert.doesNotMatch(html('> > +\n```\ny\n'), /<p>\+<\/p>/)
 })
 
 // carve#3959 shape 2: a note's `+` moves its whole attached fence, so the
@@ -34,7 +34,7 @@ for (const [host, pad] of [['', ''], ['- a\n  ', '  '], ['- a\n  - x\n    ', '  
       const source = `${host}[^b]: +\n${pad}${open}\n${pad}c\n${pad}${close}\n\nr[^b]\n`
       const out = notes(source)
       if (host === '> ') {
-        assert.match(out, /<p>\+<a href/)
+        assert.doesNotMatch(out, /<p>\+<a href/)
         assert.match(html(source), /<\/blockquote>\n<pre><code[^>]*>c\n<\/code><\/pre>/)
       } else assert.match(out, /<pre><code[^>]*>c\n<\/code><\/pre>/)
       assert.doesNotMatch(out, /\u0000/)
@@ -44,7 +44,7 @@ for (const [host, pad] of [['', ''], ['- a\n  ', '  '], ['- a\n  - x\n    ', '  
 
 test('a fence off the marker column of a hosted note is refused', () => {
   const source = '- a\n  [^b]: +\n```\nc\n```\n\nr[^b]\n'
-  assert.match(notes(source), /<p>\+<a href/)
+  assert.doesNotMatch(notes(source), /<p>\+<a href/)
   assert.match(html(source), /<\/ul>\n<pre><code>c\n<\/code><\/pre>/)
 })
 
@@ -52,13 +52,12 @@ test('a prefixed fence reaches a note in a quote', () => {
   assert.match(notes('> [^b]: +\n> ```\n> c\n> ```\n\nr[^b]\n'), /<pre><code>c\n<\/code><\/pre>/)
 })
 
-// A note's refused `+` is a letter, so a marker line below it reads as it does
-// below any letter.
+// A note's refused marker renders nothing, including before a sibling.
 for (const host of ['> ', '> > ', '> - x\n>   ', '- > ']) {
   for (const marker of ['- after', '* after', '1. after', '    1. after', ' * after']) {
     test(`${JSON.stringify(host)}[^b]: + then ${JSON.stringify(marker)}`, () => {
       const source = (end) => `${host}[^b]: ${end}\n${marker}\n\nr[^b]\n`
-      assert.equal(html(source('+')), html(source('Z')).replace('Z', '+'))
+      assert.ok(!notes(source('+')).includes('+'), html(source('+')))
     })
   }
 }

@@ -9,7 +9,7 @@ A column-zero fence below a refused nested first-block plus keeps its payload
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -27,7 +27,7 @@ A column-zero fence below a refused nested first-block plus keeps its payload
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -43,7 +43,9 @@ A column-zero fence below a refused nested first-block plus keeps its payload
 .
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <pre><code>  x
@@ -61,7 +63,7 @@ A column-zero fence below a refused nested first-block plus keeps its payload
     <ul>
       <li>
         <ul>
-          <li>+</li>
+          <li></li>
         </ul>
       </li>
     </ul>

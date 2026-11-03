@@ -14,10 +14,12 @@ A stacked list and quote opener refuses a follower one column in, and the `+` fo
 `````html
 <ul>
   <li>
-    <blockquote><p>+
-b</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
+<p>b</p>
 `````
 
 :::::::
@@ -37,12 +39,14 @@ In a nested item, a follower left of the opener line's column is refused
   <li>a
     <ul>
       <li>
-        <blockquote><p>+
-b</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
   </li>
 </ul>
+<p>b</p>
 `````
 
 :::::::
@@ -62,10 +66,12 @@ In a nested item, a follower between the opener line's column and the quote's co
   <li>a
     <ul>
       <li>
-        <blockquote><p>+
-b</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
+    b
   </li>
 </ul>
 `````
@@ -83,8 +89,10 @@ A `>` at the inner quote's marker column is no outer prefix, so the follower is 
 
 `````html
 <blockquote>
-  <blockquote><p>+
-q</p></blockquote>
+  <blockquote>
+
+  </blockquote>
+  <p>q</p>
 </blockquote>
 `````
 
@@ -104,8 +112,10 @@ The same lines inside a list item are refused the same way: the follower's `>` s
 <ul>
   <li>a
     <blockquote>
-      <blockquote><p>+
-q</p></blockquote>
+      <blockquote>
+
+      </blockquote>
+      <p>q</p>
     </blockquote>
   </li>
 </ul>

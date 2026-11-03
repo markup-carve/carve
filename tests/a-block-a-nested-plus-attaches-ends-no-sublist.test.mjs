@@ -22,8 +22,7 @@ test('the reproduction renders as the ticket expects', () => {
 })
 
 test('a block past the marker column is refused and belongs to the outer item', () => {
-  assert.equal(html('- foo\n  - +\n   # H\n\n    x\n'),
-    '<ul><li><p>foo</p><ul><li>+</li></ul><h1 id="H">H</h1><p>x</p></li></ul>')
+  assert.equal(html('- foo\n  - +\n   # H\n\n    x\n'), '<ul><li><p>foo</p><ul><li></li></ul><h1 id="H">H</h1><p>x</p></li></ul>')
 })
 
 test('a line at the outer content column still ends the sub-item', () => {

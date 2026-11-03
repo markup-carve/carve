@@ -19,7 +19,7 @@ A code fence at column zero refuses a nested first-block `+` (carve#4409) and st
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -43,7 +43,7 @@ A code fence at column zero refuses a nested first-block `+` (carve#4409) and st
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -65,7 +65,9 @@ A code fence at column zero refuses a nested first-block `+` (carve#4409) and st
 ```html
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <pre><code>  x
@@ -89,7 +91,7 @@ A code fence at column zero refuses a nested first-block `+` (carve#4409) and st
     <ul>
       <li>
         <ul>
-          <li>+</li>
+          <li></li>
         </ul>
       </li>
     </ul>

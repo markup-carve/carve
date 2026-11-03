@@ -7,8 +7,7 @@ A refused plus before an attribute run and a sibling is a letter
 - c
 .
 <ul>
-  <li>a
-+</li>
+  <li>a</li>
 </ul>
 <ul x="">
   <li>c</li>
@@ -21,7 +20,7 @@ A refused plus before an attribute run and a sibling is a letter
 - c
 .
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <ul x="">
   <li>c</li>
@@ -37,8 +36,7 @@ A refused plus before an attribute run and a sibling is a letter
 .
 <dl>
   <dt>t</dt>
-  <dd>a
-+</dd>
+  <dd>a</dd>
 </dl>
 <p x="">: b</p>
 ```
@@ -51,7 +49,7 @@ A refused plus before an attribute run and a sibling is a letter
 .
 <dl>
   <dt>t</dt>
-  <dd>+</dd>
+  <dd></dd>
 </dl>
 <p x="">: b</p>
 ```
@@ -65,8 +63,7 @@ A refused plus before an attribute run and a sibling is a letter
 .
 <dl>
   <dt>t</dt>
-  <dd>a
-+</dd>
+  <dd>a</dd>
 </dl>
 <ul x="">
   <li>c</li>

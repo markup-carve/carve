@@ -115,7 +115,7 @@ flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a
 
 ```html
 <ul>
-  <li>+
+  <li>
     <pre><code>x
 </code></pre>
   </li>
@@ -138,7 +138,7 @@ flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a
 <ul>
   <li>foo
     <ul>
-      <li>+
+      <li>
         <pre><code>x
 ``
 </code></pre>
@@ -213,7 +213,7 @@ see[^a]
 
 ```html
 <ul>
-  <li>+
+  <li>
     <pre><code>x
 </code></pre>
     para
@@ -234,7 +234,7 @@ see[^a]
 
 ```html
 <ul>
-  <li>+
+  <li>
     <pre><code>x
 </code></pre>
   </li>
@@ -283,7 +283,7 @@ see[^a]
 
 ```html
 <ul>
-  <li>+
+  <li>
     <pre class="x"><code>x
 </code></pre>
   </li>

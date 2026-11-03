@@ -23,6 +23,6 @@ test('an item-hosted first-block plus leaves the line to the host', () => {
 test('a paragraph attached by a first-block plus still takes a lazy line', () => {
   assert.equal(html('- +\npara\ntail\n'), '<ul>\n  <li>para\ntail</li>\n</ul>')
   assert.match(html('- +\n> q\nt\n'), /<blockquote><p>q\nt<\/p><\/blockquote>/)
-  assert.equal(html('- +\n  para\ntail\n'), '<ul>\n  <li>+\npara\ntail</li>\n</ul>')
+  assert.equal(html('- +\n  para\ntail\n'), '<ul>\n  <li>para\ntail</li>\n</ul>')
   assert.match(html('- +\n  > q\n> t\n'), /<\/ul>\n<blockquote><p>t<\/p><\/blockquote>$/)
 })

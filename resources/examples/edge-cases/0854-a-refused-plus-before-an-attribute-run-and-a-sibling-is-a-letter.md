@@ -17,8 +17,7 @@ The sibling test reads the block the run leads (CARVE-P9-067, carve#4447), so ne
 
 ```html
 <ul>
-  <li>a
-+</li>
+  <li>a</li>
 </ul>
 <ul x="">
   <li>c</li>
@@ -37,7 +36,7 @@ The sibling test reads the block the run leads (CARVE-P9-067, carve#4447), so ne
 
 ```html
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <ul x="">
   <li>c</li>
@@ -61,8 +60,7 @@ A description reads a `: ` sibling behind the run the same way (CARVE-P9-085).
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a
-+</dd>
+  <dd>a</dd>
 </dl>
 <p x="">: b</p>
 ```
@@ -81,7 +79,7 @@ A description reads a `: ` sibling behind the run the same way (CARVE-P9-085).
 ```html
 <dl>
   <dt>t</dt>
-  <dd>+</dd>
+  <dd></dd>
 </dl>
 <p x="">: b</p>
 ```
@@ -103,8 +101,7 @@ A description takes a list, but this one stands at the content column, so the `+
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a
-+</dd>
+  <dd>a</dd>
 </dl>
 <ul x="">
   <li>c</li>

@@ -5,7 +5,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 // carve#4409: a stacked quote's `+` takes only a follower carrying the outer
 // prefixes whose block stands at the owning quote's marker column, measured in
-// the source. Anywhere else the `+` reads like a letter.
+// the source. Anywhere else the marker is refused and renders nothing.
 const html = (lines) => renderDoc(parse(lines.join('\n') + '\n'))
 
 const hosts = {
@@ -33,8 +33,7 @@ for (const [hostName, host] of Object.entries(hosts)) {
             if (eligible) {
               assert.ok(!out.includes('+'), out)
             } else {
-              const letter = html([...host.pre, opener.replace(/\+$/, 'z'), follower]).replace('z', '+')
-              assert.equal(out, letter)
+              assert.ok(!out.includes('+'), out)
             }
           })
         }
@@ -49,7 +48,7 @@ test('the issue rows: an item-hosted follower at the inner marker column attache
   assert.equal(html(['- > > +', '  > q']),
     '<ul>\n  <li>\n    <blockquote>\n      <blockquote><p>q</p></blockquote>\n    </blockquote>\n  </li>\n</ul>')
   assert.equal(html(['- a', '  > > +', '    > q']),
-    '<ul>\n  <li>a\n    <blockquote>\n      <blockquote><p>+\nq</p></blockquote>\n    </blockquote>\n  </li>\n</ul>')
+    '<ul>\n  <li>a\n    <blockquote>\n      <blockquote>\n\n      </blockquote>\n      <p>q</p>\n    </blockquote>\n  </li>\n</ul>')
 })
 
 test('an attached follower keeps its later lines', () => {

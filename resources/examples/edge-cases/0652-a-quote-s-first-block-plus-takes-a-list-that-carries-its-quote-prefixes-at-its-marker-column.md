@@ -47,7 +47,9 @@ A quote opened on an item's marker line inside a host quote refuses a column-0 l
 <blockquote>
   <ul>
     <li>
-      <blockquote><p>+</p></blockquote>
+      <blockquote>
+
+      </blockquote>
     </li>
   </ul>
 </blockquote>
@@ -71,7 +73,9 @@ A stacked quote opener in an item refuses a list at the item's column
 <ul>
   <li>
     <blockquote>
-      <blockquote><p>+</p></blockquote>
+      <blockquote>
+
+      </blockquote>
     </blockquote>
     <ul>
       <li>s</li>

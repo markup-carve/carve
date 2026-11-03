@@ -12,8 +12,7 @@ PART 0 S4 (carve#4545). The section name predates the superseding ruling and is 
 
 ```html
 <ul>
-  <li>+
-b</li>
+  <li>b</li>
 </ul>
 <ul>
   <li>w1</li>

@@ -19,5 +19,11 @@
   },
   "ordered-list-split-by-indent/shift-right": {
     "actual": []
+  },
+  "second-marker-after-skipped-note": {
+    "actual": []
+  },
+  "second-marker-after-note-first-block": {
+    "actual": []
   }
 }

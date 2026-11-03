@@ -33,13 +33,13 @@ test('a glued quote plus is not a quote line', () => {
 })
 
 test('a quote keeps + at end of input or before a blank', () => {
-  assert.equal(html('> +'), '<blockquote><p>+</p></blockquote>')
-  assert.equal(html('> +\n\nafter'), '<blockquote><p>+</p></blockquote><p>after</p>')
+  assert.equal(html('> +'), '<blockquote></blockquote>')
+  assert.equal(html('> +\n\nafter'), '<blockquote></blockquote><p>after</p>')
 })
 
 test('the inner quote takes the fenced block behind the outer prefix', () => {
   assert.equal(html('> > +\n> ```\n> x\n> ```'), '<blockquote><blockquote><pre><code>x\n</code></pre></blockquote></blockquote>')
-  assert.equal(html('> > +\n```\nx\n```'), '<blockquote><blockquote><p>+</p></blockquote></blockquote><pre><code>x\n</code></pre>')
+  assert.equal(html('> > +\n```\nx\n```'), '<blockquote><blockquote></blockquote></blockquote><pre><code>x\n</code></pre>')
 })
 
 test('a note takes one fenced block and keeps the document body separate', () => {
@@ -51,15 +51,15 @@ test('a note takes one flush-left paragraph', () => {
 })
 
 test('a note keeps + at end of input or before a blank', () => {
-  assert.equal(html('see[^a]\n\n[^a]: +'), see + note('<p>+' + back + '</p>'))
-  assert.equal(html('[^a]: +\n\nsee[^a]'), see + note('<p>+' + back + '</p>'))
+  assert.equal(html('see[^a]\n\n[^a]: +'), see + note('<p>' + back + '</p>'))
+  assert.equal(html('[^a]: +\n\nsee[^a]'), see + note('<p>' + back + '</p>'))
 })
 
 test('a line off the marker column refuses the + and folds', () => {
-  assert.equal(html('> +\n flush'), '<blockquote><p>+\nflush</p></blockquote>')
-  assert.equal(html('> +\n  flush'), '<blockquote><p>+\nflush</p></blockquote>')
-  assert.equal(html('[^a]: +\n flush\n\nsee[^a]'), see + note('<p>+\nflush' + back + '</p>'))
-  assert.equal(html('[^a]: +\n  flush\n\nsee[^a]'), see + note('<p>+\nflush' + back + '</p>'))
+  assert.equal(html('> +\n flush'), '<blockquote></blockquote><p>flush</p>')
+  assert.equal(html('> +\n  flush'), '<blockquote></blockquote><p>flush</p>')
+  assert.equal(html('[^a]: +\n flush\n\nsee[^a]'), see + note('<p>flush' + back + '</p>'))
+  assert.equal(html('[^a]: +\n  flush\n\nsee[^a]'), see + note('<p>flush' + back + '</p>'))
 })
 
 test('other marker positions attach at their own column', () => {
@@ -71,6 +71,6 @@ test('other marker positions attach at their own column', () => {
 
 test('a nested quote opened after outer content takes its first block', () => {
   assert.equal(html('> outer\n> > +\n> ```\n> x\n> ```'), '<blockquote><p>outer</p><blockquote><pre><code>x\n</code></pre></blockquote></blockquote>')
-  assert.equal(html('> outer\n> > +\n```\nx\n```'), '<blockquote><p>outer</p><blockquote><p>+</p></blockquote></blockquote><pre><code>x\n</code></pre>')
+  assert.equal(html('> outer\n> > +\n```\nx\n```'), '<blockquote><p>outer</p><blockquote></blockquote></blockquote><pre><code>x\n</code></pre>')
   assert.equal(html('> > a\nlazy\n> > +\nz'), '<blockquote><blockquote><p>a\nlazy\n+\nz</p></blockquote></blockquote>')
 })

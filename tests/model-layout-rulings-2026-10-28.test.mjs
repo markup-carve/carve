@@ -60,13 +60,15 @@ test('1,000 task items have the ordered control ownership at the ruled column', 
   assert.equal(checked, 1000)
 })
 
-test('250 two-level lazy quote variants keep the deepest literal plus', () => {
+test('250 two-level lazy quote variants consume the deepest marker plus', () => {
   let checked = 0
   for (const marker of ['- ', '* ', '1. ', '. ', 'a.  '])
     for (const tail of ['s', 'tail', 'q', 'alpha', 'x9', 'more', 'body', 'next', 'z', 'line'])
       for (const items of [2, 3, 4, 5, 6]) {
         const source = ('> > ' + marker + '> +\n').repeat(items) + '>  ' + tail + '\n'
-        assert.ok(renderDoc(parse(source)).includes('<p>+\n' + tail + '</p>'), source)
+        const rendered = renderDoc(parse(source))
+        assert.doesNotMatch(rendered, /\+/, source)
+        assert.ok(rendered.includes('<p>' + tail + '</p>'), source)
         checked++
       }
   assert.equal(checked, 250)

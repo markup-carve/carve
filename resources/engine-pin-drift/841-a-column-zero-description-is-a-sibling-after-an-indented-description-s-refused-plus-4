@@ -1,1 +1,1 @@
-The pinned carve-js keeps an item tight across a blank before a sub-block, which PART 9 section 17 L1 now loosens (markup-carve/carve#5015, carve-js line open).
+The pinned carve-js retains the old marker-column + refusal reading of markup-carve/carve#5013 and the tightness reading before markup-carve/carve#5015. Both spec rulings change this row.

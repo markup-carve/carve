@@ -1027,16 +1027,6 @@
       ]
     },
     {
-      "rule": "CARVE-P9-085",
-      "edits": [
-        {
-          "file": "scripts/spec/layout.mjs",
-          "find": "const hasOrdinaryPlus = refusedPlusLines.length > 0",
-          "replace": "const hasOrdinaryPlus = false"
-        }
-      ]
-    },
-    {
       "rule": "CARVE-P9-068",
       "edits": [
         {

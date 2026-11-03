@@ -743,12 +743,6 @@
       "scope": "resolution-rendering"
     },
     {
-      "id": "CARVE-P9-085",
-      "part": "9",
-      "title": "A REFUSED `+` IS A PLAIN LETTER",
-      "scope": "resolution-rendering"
-    },
-    {
       "id": "CARVE-P9-068",
       "part": "9",
       "title": "A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT",

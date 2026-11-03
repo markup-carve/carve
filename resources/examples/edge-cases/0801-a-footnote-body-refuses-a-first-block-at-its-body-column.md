@@ -24,8 +24,7 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -49,7 +48,6 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+</p>
       <ul>
         <li>x</li>
         <li>y</li>
@@ -78,7 +76,6 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+</p>
       <p>later<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
@@ -102,8 +99,7 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -122,11 +118,11 @@ para
 <ul>
   <li>
     <ul>
-      <li>+
-para</li>
+      <li></li>
     </ul>
   </li>
 </ul>
+<p>para</p>
 ```
 
 :::
@@ -142,8 +138,7 @@ para</li>
 ```html
 <dl>
   <dt>t</dt>
-  <dd>+
-flush</dd>
+  <dd>flush</dd>
 </dl>
 ```
 
@@ -193,8 +188,7 @@ r[^q]
   <hr>
   <ol>
     <li id="fn1">
-      <p>+
-flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

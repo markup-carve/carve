@@ -16,10 +16,12 @@ A follower at the inner item's column refuses the quote's `+`, which then folds 
   <li>
     <ul>
       <li>
-        <blockquote><p>+
-b</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
+    b
   </li>
 </ul>
 `````
@@ -64,12 +66,14 @@ Nested one level, a follower at the opener line's own column is refused, since t
       <li>
         <ul>
           <li>
-            <blockquote><p>+
-b</p></blockquote>
+            <blockquote>
+
+            </blockquote>
           </li>
         </ul>
       </li>
     </ul>
+    b
   </li>
 </ul>
 `````

@@ -24,6 +24,6 @@ for (const [head, col] of [['- - ', 2], ['1. 1. ', 3], ['- 1. ', 2], ['1. - ', 3
 }
 
 test('a + at the middle marker of a chain stops at the middle item', () => {
-  assert.equal(html('- - - +\n  +\n  x\n'), '<ul><li><ul><li><ul><li>+</li></ul>x</li></ul></li></ul>')
+  assert.equal(html('- - - +\n  +\n  x\n'), '<ul><li><ul><li><ul><li></li></ul>x</li></ul></li></ul>')
   assert.equal(html('- - - +\n    +\n    x\n'), '<ul><li><ul><li><ul><li>x</li></ul></li></ul></li></ul>')
 })

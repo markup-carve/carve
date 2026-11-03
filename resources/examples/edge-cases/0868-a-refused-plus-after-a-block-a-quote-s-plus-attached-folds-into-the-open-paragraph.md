@@ -18,8 +18,7 @@ PART 9 §17 L3 (carve#3421, carve#4209). A `+` with no following block is read a
 ```html
 <blockquote>
   <ol>
-    <li>e
-+</li>
+    <li>e</li>
   </ol>
 </blockquote>
 ```

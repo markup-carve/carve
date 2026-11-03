@@ -7,7 +7,7 @@ Invisible lines after a plus are skipped and the first visible line decides
 text
 .
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <p>text</p>
 ```
@@ -21,7 +21,7 @@ c
 text
 .
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <p>text</p>
 ```
@@ -32,7 +32,7 @@ text
 - b
 .
 <ul>
-  <li>+</li>
+  <li></li>
   <li>b</li>
 </ul>
 ```
@@ -43,10 +43,9 @@ text
   text
 .
 <ul>
-  <li>+
-    text
-  </li>
+  <li></li>
 </ul>
+<p>text</p>
 ```
 
 ```

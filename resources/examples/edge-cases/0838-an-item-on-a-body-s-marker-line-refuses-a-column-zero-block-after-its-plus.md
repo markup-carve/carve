@@ -19,11 +19,11 @@ p
   <dt>t</dt>
   <dd>
     <ul>
-      <li>+
-p</li>
+      <li></li>
     </ul>
   </dd>
 </dl>
+<p>p</p>
 ```
 
 :::
@@ -46,8 +46,7 @@ r[^n]
   <ol>
     <li id="fn1">
       <ul>
-        <li>+
-p</li>
+        <li>p</li>
       </ul>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>

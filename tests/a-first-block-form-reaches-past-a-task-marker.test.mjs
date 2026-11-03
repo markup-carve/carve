@@ -46,7 +46,7 @@ test('the box still carries the state the author wrote', () => {
 test('an empty task item is spelled with {empty}, and a bare + with no follower is its text', () => {
   // `- [x]` is an item whose TEXT is `[x]`, asserted below.
   assert.equal(html('-{#k} [x] {empty}\n'), '<ul class="task-list"><li data-task-state="x" id="k"><input type="checkbox" checked disabled></li></ul>')
-  assert.equal(html('-{#k} [x] +\n'), '<ul class="task-list"><li data-task-state="x" id="k"><input type="checkbox" checked disabled aria-label="+"> +</li></ul>')
+  assert.equal(html('-{#k} [x] +\n'), '<ul class="task-list"><li data-task-state="x" id="k"><input type="checkbox" checked disabled></li></ul>')
   assert.equal(html('-{#k} [x]\n'), '<ul><li id="k">[x]</li></ul>')
 })
 
@@ -68,5 +68,5 @@ test('the plain-bullet form is unchanged', () => {
     '<ul><li><table><tbody><tr><td>a</td><td>b</td></tr></tbody></table></li></ul>',
   )
   assert.equal(html('- {empty}\n'), '<ul><li></li></ul>')
-  assert.equal(html('- +\n'), '<ul><li>+</li></ul>')
+  assert.equal(html('- +\n'), '<ul><li></li></ul>')
 })

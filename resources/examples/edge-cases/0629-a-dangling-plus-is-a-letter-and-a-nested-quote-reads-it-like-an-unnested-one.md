@@ -12,8 +12,7 @@ para
 ````
 
 ```html
-<blockquote><p>q
-+</p></blockquote>
+<blockquote><p>q</p></blockquote>
 <p>para</p>
 ```
 
@@ -27,8 +26,7 @@ para
 ````
 
 ```html
-<blockquote><p>q
-+</p></blockquote>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::::::
@@ -44,8 +42,7 @@ para
 
 ```html
 <ul>
-  <li>a
-+</li>
+  <li>a</li>
 </ul>
 <p>para</p>
 ```
@@ -70,8 +67,7 @@ para
   <hr>
   <ol>
     <li id="fn1">
-      <p>note
-+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -108,10 +104,9 @@ para
 
 ```html
 <blockquote>
-  <blockquote><p>q
-+
-para</p></blockquote>
+  <blockquote><p>q</p></blockquote>
 </blockquote>
+<p>para</p>
 ```
 
 :::::::
@@ -125,8 +120,7 @@ para</p></blockquote>
 
 ```html
 <blockquote>
-  <blockquote><p>q
-+</p></blockquote>
+  <blockquote><p>q</p></blockquote>
 </blockquote>
 ```
 

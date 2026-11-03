@@ -13,11 +13,11 @@ x
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li></li>
     </ul>
   </li>
 </ul>
+<p>x</p>
 ```
 
 ::::
@@ -56,11 +56,11 @@ Column 1 is no marker column: the `+` is refused and the line folds into it.
 <ul>
   <li>
     <ul>
-      <li>+
-x</li>
+      <li></li>
     </ul>
   </li>
 </ul>
+<p>x</p>
 ```
 
 ::::
@@ -92,8 +92,7 @@ x
 
 ```html
 <ul>
-  <li>+
-x</li>
+  <li>x</li>
 </ul>
 ```
 
@@ -143,12 +142,11 @@ after it (carve#4409).
 <ul>
   <li>x
     <ul>
-      <li>L
-+
-p</li>
+      <li>L</li>
     </ul>
   </li>
 </ul>
+<p>p</p>
 ```
 
 :::

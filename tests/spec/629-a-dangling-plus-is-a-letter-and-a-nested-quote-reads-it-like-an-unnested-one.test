@@ -6,8 +6,7 @@ A dangling plus is a letter, and a nested quote reads it like an unnested one
 
 para
 .
-<blockquote><p>q
-+</p></blockquote>
+<blockquote><p>q</p></blockquote>
 <p>para</p>
 ```
 
@@ -15,8 +14,7 @@ para
 > q
 +
 .
-<blockquote><p>q
-+</p></blockquote>
+<blockquote><p>q</p></blockquote>
 ```
 
 ```
@@ -26,8 +24,7 @@ para
 para
 .
 <ul>
-  <li>a
-+</li>
+  <li>a</li>
 </ul>
 <p>para</p>
 ```
@@ -46,8 +43,7 @@ para
   <hr>
   <ol>
     <li id="fn1">
-      <p>note
-+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -72,10 +68,9 @@ para
 para
 .
 <blockquote>
-  <blockquote><p>q
-+
-para</p></blockquote>
+  <blockquote><p>q</p></blockquote>
 </blockquote>
+<p>para</p>
 ```
 
 ```
@@ -83,8 +78,7 @@ para</p></blockquote>
 > +
 .
 <blockquote>
-  <blockquote><p>q
-+</p></blockquote>
+  <blockquote><p>q</p></blockquote>
 </blockquote>
 ```
 

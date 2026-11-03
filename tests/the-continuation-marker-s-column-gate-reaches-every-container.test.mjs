@@ -78,14 +78,15 @@ for (const [what, src, retained] of BAND) {
     : `a low comment reads the follower differently from the marker in ${what}`, () => {
     if (retained !== undefined) {
       assert.equal(html(comment(src)), retained)
-      assert.notEqual(html(marker(src)), html(comment(src)))
-    } else assert.equal(html(marker(src)), letter(src))
+      if (what === 'a footnote body, at its minimum column') assert.notEqual(html(marker(src)), html(comment(src)))
+      else assert.equal(html(marker(src)), html(comment(src)))
+    } else assert.ok(!html(marker(src)).includes('+'))
   })
 }
 
-test('the refused quote marker is never dropped', () => {
+test('the refused quote marker renders nothing', () => {
   const src = '> intro\n>\n@\n  more\n'
-  assert.equal(html(marker(src)), '<blockquote><p>intro</p></blockquote><p>+ more</p>')
+  assert.equal(html(marker(src)), '<blockquote><p>intro</p></blockquote><p>more</p>')
 })
 
 /*

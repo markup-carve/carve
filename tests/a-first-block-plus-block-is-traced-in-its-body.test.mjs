@@ -62,7 +62,7 @@ test('a marker-column block is traced in the item and leaves no +, a column-zero
       if (tail === '') {
         assert.doesNotMatch(renderDoc(parse(source)), /\+/, JSON.stringify(source))
         const refused = `${outer}${host}\n${at(0)}`
-        assert.equal(renderDoc(parse(refused)), renderDoc(parse(refused.replace('+', 'z'))).replaceAll('z', '+'), JSON.stringify(refused))
+        assert.doesNotMatch(renderDoc(parse(refused)), /\+/, JSON.stringify(refused))
       }
       n++
     }

@@ -20,7 +20,7 @@ w
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -48,7 +48,7 @@ w
   <dd>
     <p>a</p>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </dd>
 </dl>
@@ -70,12 +70,11 @@ w
 <ul>
   <li>a
     <ul>
-      <li>+
-+ y
-        <ul>
-          <li>z</li>
-        </ul>
-      </li>
+      <li></li>
+    </ul>
+    + y
+    <ul>
+      <li>z</li>
     </ul>
   </li>
 </ul>

@@ -6,8 +6,7 @@ A refused first-block plus folds its content-column line, and the next root bloc
 >
 .
 <ul>
-  <li>+
-x</li>
+  <li>x</li>
 </ul>
 <blockquote>
 
@@ -20,8 +19,7 @@ x</li>
 # h
 .
 <ul>
-  <li>+
-x</li>
+  <li>x</li>
 </ul>
 <section id="h">
   <h1>h</h1>
@@ -34,8 +32,7 @@ x</li>
 ---
 .
 <ul>
-  <li>+
-x</li>
+  <li>x</li>
 </ul>
 <hr>
 ```
@@ -46,8 +43,7 @@ x</li>
 >
 .
 <ul>
-  <li>+
-x</li>
+  <li>x</li>
 </ul>
 <blockquote>
 

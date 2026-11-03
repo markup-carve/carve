@@ -13,6 +13,6 @@ test('an attribute run before a + attached fence in an item does not end the fen
 })
 
 test('an attribute run that is all that follows refuses the +, carve#4449', () => {
-  assert.equal(renderDoc(parse('- a\n+\n{x\ny}\n')), '<ul>\n  <li>a\n+</li>\n</ul>')
-  assert.equal(renderDoc(parse('- a\n+\n{x\ny}\n- b\n')), '<ul>\n  <li>a\n+</li>\n</ul>\n<ul x="" y="">\n  <li>b</li>\n</ul>')
+  assert.equal(renderDoc(parse('- a\n+\n{x\ny}\n')), '<ul>\n  <li>a</li>\n</ul>')
+  assert.equal(renderDoc(parse('- a\n+\n{x\ny}\n- b\n')), '<ul>\n  <li>a</li>\n</ul>\n<ul x="" y="">\n  <li>b</li>\n</ul>')
 })

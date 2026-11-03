@@ -22,7 +22,7 @@ x
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>+</dd>
+      <dd></dd>
     </dl>
   </li>
 </ul>
@@ -51,7 +51,7 @@ x
       <li>b
         <dl>
           <dt>t</dt>
-          <dd>+</dd>
+          <dd></dd>
         </dl>
       </li>
     </ul>
@@ -77,7 +77,7 @@ x
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>+</dd>
+      <dd></dd>
     </dl>
   </li>
 </ol>
@@ -100,7 +100,7 @@ x
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>+</dd>
+      <dd></dd>
     </dl>
   </li>
 </ul>
@@ -128,7 +128,7 @@ see
   <li>a
     <dl>
       <dt>t</dt>
-      <dd>+</dd>
+      <dd></dd>
     </dl>
   </li>
 </ul>

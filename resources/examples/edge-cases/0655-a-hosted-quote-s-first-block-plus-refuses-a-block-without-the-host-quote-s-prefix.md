@@ -15,7 +15,9 @@ A heading at column 0 stands outside the host quote
 <blockquote>
   <ul>
     <li>
-      <blockquote><p>+</p></blockquote>
+      <blockquote>
+
+      </blockquote>
     </li>
   </ul>
 </blockquote>
@@ -39,7 +41,9 @@ A table row at column 0 stands outside the host quote
 <blockquote>
   <ul>
     <li>
-      <blockquote><p>+</p></blockquote>
+      <blockquote>
+
+      </blockquote>
     </li>
   </ul>
 </blockquote>
@@ -67,7 +71,9 @@ A stacked opener on a sibling item's line refuses the heading the same way
   <ul>
     <li>a</li>
     <li>
-      <blockquote><p>+</p></blockquote>
+      <blockquote>
+
+      </blockquote>
     </li>
   </ul>
 </blockquote>

@@ -31,7 +31,7 @@ test('a frame the walk keeps in an item the readers closed is not a list there',
 test('a marker left of the content column ends the paragraph a refused + left open', () => {
   const source = '1. +\n  - w1\n - w2\n'
   assert.deepEqual(steps(source), ['1 S5 doc/item:1 item', '2 S5 doc/item:2 item', '3 S5 doc/item:3 item'])
-  assert.equal(renderDoc(parse(source)), '<ol>\n  <li>+</li>\n</ol>\n<ul>\n  <li>w1</li>\n  <li>w2</li>\n</ul>')
+  assert.equal(renderDoc(parse(source)), '<ol>\n  <li></li>\n</ol>\n<ul>\n  <li>w1</li>\n  <li>w2</li>\n</ul>')
 })
 
 test('a line after a refused + continues its paragraph, and a later marker reads as after any letter', () => {

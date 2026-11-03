@@ -187,8 +187,7 @@ x[^a]
 <ul>
   <li>a
     <ul>
-      <li>b
-+</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
@@ -233,11 +232,9 @@ x[^a]
 <ul>
   <li>a
     <ul>
-      <li>b
-+
-        <blockquote><p>q</p></blockquote>
-      </li>
+      <li>b</li>
     </ul>
+    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
 ```
@@ -257,8 +254,7 @@ x[^a]
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="task +"> task
-+</li>
+      <li><input type="checkbox" disabled aria-label="task"> task</li>
     </ul>
     <ul>
       <li>x</li>
@@ -279,8 +275,7 @@ x[^a]
 
 ```html
 <ul>
-  <li>a
-+</li>
+  <li>a</li>
   <li>b</li>
 </ul>
 ```
@@ -393,7 +388,6 @@ x[^a]
         <pre><code></code></pre>
       </li>
     </ul>
-    <p>+</p>
     <p>tail</p>
   </li>
 </ul>
@@ -415,8 +409,7 @@ x[^a]
 <ul>
   <li><p>a</p>
     <ul>
-      <li>b
-+</li>
+      <li>b</li>
     </ul>
     <p>tail</p>
   </li>
@@ -437,8 +430,7 @@ x[^a]
 <ul>
   <li>a
     <ul>
-      <li>b
-+</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
@@ -632,7 +624,7 @@ x[^a]
 <ul>
   <li>a
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -652,7 +644,7 @@ x[^a]
 <ul>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ul>
@@ -672,7 +664,7 @@ x[^a]
 <ul>
   <li>
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="+"> +</li>
+      <li><input type="checkbox" disabled> </li>
     </ul>
   </li>
 </ul>
@@ -691,7 +683,9 @@ x[^a]
 ```html
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <blockquote><p>q</p></blockquote>
@@ -727,7 +721,7 @@ x[^a]
 <ol>
   <li>
     <ul>
-      <li>+</li>
+      <li></li>
     </ul>
   </li>
 </ol>

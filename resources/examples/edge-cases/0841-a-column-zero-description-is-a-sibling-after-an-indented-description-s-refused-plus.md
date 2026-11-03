@@ -18,10 +18,10 @@ l
 ```html
 <dl>
   <dt>t</dt>
-  <dd>+
-l</dd>
-  <dd>b</dd>
+  <dd></dd>
 </dl>
+<p>l
+: b</p>
 ```
 
 ::::
@@ -38,7 +38,7 @@ l</dd>
 ```html
 <dl>
   <dt>t</dt>
-  <dd>+</dd>
+  <dd></dd>
 </dl>
 <blockquote><p>q
 : b</p></blockquote>
@@ -58,10 +58,10 @@ l
 ```html
 <dl>
   <dt>t</dt>
-  <dd>+
-l</dd>
-  <dd>b</dd>
+  <dd></dd>
 </dl>
+<p>l
+: b</p>
 ```
 
 ::::
@@ -82,10 +82,10 @@ l</dd>
   <li><p>x</p>
     <dl>
       <dt>t</dt>
-      <dd>+
-l</dd>
-      <dd>b</dd>
+      <dd></dd>
     </dl>
+    <p>l
+: b</p>
   </li>
 </ul>
 ```
@@ -105,10 +105,10 @@ l</dd>
 <blockquote>
   <dl>
     <dt>t</dt>
-    <dd>+
-l</dd>
-    <dd>b</dd>
+    <dd></dd>
   </dl>
+  <p>l
+: b</p>
 </blockquote>
 ```
 
@@ -127,11 +127,11 @@ l
 ```html
 <dl>
   <dt>t</dt>
-  <dd>+
-l</dd>
-  <dd>b
-p</dd>
+  <dd></dd>
 </dl>
+<p>l
+: b
+p</p>
 ```
 
 ::::

@@ -15,12 +15,11 @@ tail
 <ul>
   <li>a
     <ul>
-      <li>b
-+
-tail</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::::::
@@ -37,8 +36,7 @@ tail</li>
 <ul>
   <li>a
     <ul>
-      <li>b
-+</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
@@ -57,10 +55,9 @@ tail</li>
 
 ```html
 <ul>
-  <li>a</li>
+  <li><p>a</p></li>
+  <li><p>s</p></li>
 </ul>
-<p>+
-- s</p>
 ```
 
 :::::::
@@ -78,9 +75,8 @@ tail</li>
   <li>
     <pre><code></code></pre>
   </li>
+  <li>s</li>
 </ul>
-<p>+
-- s</p>
 ```
 
 :::::::
@@ -124,7 +120,6 @@ tail</li>
         <pre><code></code></pre>
       </li>
     </ul>
-    +
   </li>
 </ul>
 ```
@@ -256,8 +251,7 @@ tail</li>
 <ul>
   <li>foo
     <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="task +"> task
-+</li>
+      <li><input type="checkbox" disabled aria-label="task"> task</li>
     </ul>
     <ul>
       <li>x</li>
@@ -278,8 +272,7 @@ tail</li>
 ```html
 <blockquote>
   <ul>
-    <li>a
-+</li>
+    <li>a</li>
   </ul>
 </blockquote>
 ```
@@ -299,8 +292,7 @@ tail</li>
 <ul>
   <li>a
     <ul>
-      <li>b
-+</li>
+      <li>b</li>
       <li>c</li>
     </ul>
   </li>
@@ -398,7 +390,6 @@ q</li>
         
       </li>
     </ul>
-    +
   </li>
 </ul>
 ```
@@ -418,12 +409,11 @@ left
 <ul>
   <li>a
     <ul>
-      <li>b
-+
-left</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
+<p>left</p>
 ```
 
 :::::::
@@ -440,8 +430,7 @@ left</li>
 <ul>
   <li>a
     <ul>
-      <li>b
-+</li>
+      <li>b</li>
     </ul>
   </li>
 </ul>
@@ -504,7 +493,7 @@ left</li>
 
 ```html
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 ```
 
@@ -520,7 +509,7 @@ para
 
 ```html
 <ul>
-  <li>+</li>
+  <li></li>
 </ul>
 <p>para</p>
 ```
@@ -536,7 +525,7 @@ para
 
 ```html
 <ul>
-  <li>+</li>
+  <li></li>
   <li>b</li>
 </ul>
 ```
@@ -551,7 +540,7 @@ para
 
 ```html
 <ol>
-  <li>+</li>
+  <li></li>
 </ol>
 ```
 
@@ -565,7 +554,7 @@ para
 
 ```html
 <ul class="task-list">
-  <li><input type="checkbox" disabled aria-label="+"> +</li>
+  <li><input type="checkbox" disabled> </li>
 </ul>
 ```
 
@@ -583,7 +572,7 @@ para
 <ul>
   <li>foo
     <ul>
-      <li>+</li>
+      <li></li>
       <li>b</li>
     </ul>
   </li>
@@ -614,9 +603,11 @@ flush
 
 ```html
 <blockquote>
-  <blockquote><p>+
-flush</p></blockquote>
+  <blockquote>
+
+  </blockquote>
 </blockquote>
+<p>flush</p>
 ```
 
 :::::::
@@ -635,7 +626,7 @@ flush</p></blockquote>
     <ul>
       <li>
         <ul>
-          <li>+</li>
+          <li></li>
         </ul>
       </li>
     </ul>
@@ -660,7 +651,7 @@ flush</p></blockquote>
     <ul>
       <li>
         <ul>
-          <li>+</li>
+          <li></li>
         </ul>
       </li>
     </ul>
@@ -684,10 +675,12 @@ flush</p></blockquote>
   <li>a
     <ul>
       <li>
-        <blockquote><p>+
-b</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
+    b
   </li>
 </ul>
 ```
@@ -719,7 +712,9 @@ b</p></blockquote>
 ```html
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <section id="h">
@@ -741,7 +736,9 @@ x
 ```html
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <pre><code>x
@@ -760,7 +757,9 @@ x
 ```html
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <table>
@@ -782,7 +781,9 @@ x
 ```html
 <ul>
   <li>
-    <blockquote><p>+</p></blockquote>
+    <blockquote>
+
+    </blockquote>
   </li>
 </ul>
 <blockquote><p>q</p></blockquote>
@@ -803,7 +804,9 @@ x
   <li>a
     <ul>
       <li>
-        <blockquote><p>+</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
   </li>
@@ -828,7 +831,9 @@ x
   <li>a
     <ul>
       <li>
-        <blockquote><p>+</p></blockquote>
+        <blockquote>
+
+        </blockquote>
       </li>
     </ul>
     <h1 id="h">h</h1>

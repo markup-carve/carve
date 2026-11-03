@@ -65,9 +65,11 @@ Below stacked quote openers the innermost quote owns the `+`, and a follower at 
 <ul>
   <li>
     <blockquote>
-      <blockquote><p>+
-b</p></blockquote>
+      <blockquote>
+
+      </blockquote>
     </blockquote>
+    b
   </li>
 </ul>
 `````

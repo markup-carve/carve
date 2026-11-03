@@ -11,7 +11,7 @@ const empty = '<dl><dt>term</dt><dd><p>body</p><pre><code></code></pre></dd></dl
 for (const [below, block] of [
   [' y', '<p>y</p>'],
   [' > y', '<blockquote><p>y</p></blockquote>'],
-  [' > > +', '<blockquote><blockquote><p>+</p></blockquote></blockquote>'],
+  [' > > +', '<blockquote><blockquote>\n</blockquote></blockquote>'],
   [' > > z', '<blockquote><blockquote><p>z</p></blockquote></blockquote>'],
 ]) {
   test(`a below-column line ends the description fence: ${below}`, () => {

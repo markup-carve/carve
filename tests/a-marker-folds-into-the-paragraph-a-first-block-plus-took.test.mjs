@@ -13,7 +13,7 @@ test('a marker between the columns ends the paragraph a first-block + took', () 
   }
   assert.equal(html('- +\nb\n * w1\n'), '<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>w1</li>\n</ul>')
   assert.equal(html('- +\nb\n * w1\n  c\n'), '<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>w1\nc</li>\n</ul>')
-  assert.equal(html('- +\n  b\n * w1\n'), '<ul>\n  <li>+\nb</li>\n</ul>\n<ul>\n  <li>w1</li>\n</ul>')
+  assert.equal(html('- +\n  b\n * w1\n'), '<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>w1</li>\n</ul>')
 })
 
 test('a column-zero or nested paragraph the + took ends there too', () => {

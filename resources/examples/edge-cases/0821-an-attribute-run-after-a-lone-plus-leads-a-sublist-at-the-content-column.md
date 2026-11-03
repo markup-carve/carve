@@ -17,8 +17,7 @@ The maintainer overruled this row's title (carve#4278, carve#4449): an attribute
 
 ```html
 <ul>
-  <li>a
-+</li>
+  <li>a</li>
 </ul>
 <ul x="">
   <li>c</li>
@@ -39,8 +38,7 @@ y}
 
 ```html
 <ul>
-  <li>a
-+</li>
+  <li>a</li>
 </ul>
 <ul x="" y="">
   <li>c</li>
@@ -63,8 +61,7 @@ The same holds inside a quote.
 ```html
 <blockquote>
   <ul>
-    <li>a
-+</li>
+    <li>a</li>
   </ul>
   <ul x="">
     <li>c</li>

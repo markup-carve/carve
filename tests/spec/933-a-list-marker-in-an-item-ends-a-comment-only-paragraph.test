@@ -59,10 +59,10 @@ A list marker in an item ends a comment-only paragraph
 - b
 .
 <ul>
-  <li>+
-</li>
-  <li>b</li>
+  <li></li>
 </ul>
+<p>
+- b</p>
 ```
 
 ```

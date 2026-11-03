@@ -19,9 +19,9 @@ A refused description plus folds a line below column 0, and a comment does not
 .
 <dl>
   <dt>t</dt>
-  <dd>+
-flush</dd>
+  <dd></dd>
 </dl>
+<p>flush</p>
 ```
 
 ```
@@ -43,9 +43,9 @@ flush</dd>
 .
 <dl>
   <dt>t</dt>
-  <dd>+
-flush</dd>
+  <dd></dd>
 </dl>
+<p>flush</p>
 ```
 
 ```
@@ -74,7 +74,7 @@ flush
  flush
 .
 <ul>
-  <li>+
-flush</li>
+  <li></li>
 </ul>
+<p>flush</p>
 ```

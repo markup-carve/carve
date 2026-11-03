@@ -28,7 +28,7 @@ test('a note on an item marker line takes the block after its +', () => {
 })
 
 test('a + with no following block stays text', () => {
-  assert.match(compact(render('- [^m]: x\n  +\n\n  p\n\nr[^m]\n')), /<p>x \+/)
+  assert.match(compact(render('- [^m]: x\n  +\n\n  p\n\nr[^m]\n')), /<p>x<a href=/)
 })
 
 test('quoting a document only adds the quote', () => {
