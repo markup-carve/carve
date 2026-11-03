@@ -226,3 +226,9 @@ carve/rust/952-native-head-rows-with-span-placeholders-2  markup-carve/carve#498
 carve/js/814-a-span-marker-with-no-origin-keeps-its-column-s-alignment-2  markup-carve/carve#4980 (carve-js), canonical writer still generates a separator for an orphan
 carve/php/814-a-span-marker-with-no-origin-keeps-its-column-s-alignment-2  markup-carve/carve#4980 (carve-php), canonical writer still generates a separator for an orphan
 carve/rust/814-a-span-marker-with-no-origin-keeps-its-column-s-alignment-2  markup-carve/carve#4980 (carve-rs), canonical writer still generates a separator for an orphan
+carve/js/952-native-head-rows-with-span-placeholders-6  markup-carve/carve#4980 (carve-js), header-kind span |=^ is still data content
+carve/php/952-native-head-rows-with-span-placeholders-6  markup-carve/carve#4980 (carve-php), header-kind span |=^ is still data content
+carve/rust/952-native-head-rows-with-span-placeholders-6  markup-carve/carve#4980 (carve-rs), header-kind span |=^ is still data content
+carve/js/952-native-head-rows-with-span-placeholders-9  markup-carve/carve#4980 (carve-js), canonical writer still generates a separator for an orphan
+carve/php/952-native-head-rows-with-span-placeholders-9  markup-carve/carve#4980 (carve-php), canonical writer still generates a separator for an orphan
+carve/rust/952-native-head-rows-with-span-placeholders-9  markup-carve/carve#4980 (carve-rs), canonical writer still generates a separator for an orphan

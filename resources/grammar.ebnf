@@ -9519,9 +9519,6 @@ EOF = (* end of file *) ;
       glued `span_alignment` (PART 2) would re-read as a span placeholder.
       Escape its opener, for example `| \<< |` for literal `<<`. A space
       followed by further content, as in `| <x |`, remains ordinary data.
-      A data payload `=^` needs no escape: the writer pads it (`| =^ |`,
-      CARVE-P11-014), and only an `=` glued to the opening pipe forms the
-      header-kind span `|=^ |` (PART 9 §5 T4).
 
       Escaping more than that is a defect, not a safe default.
 
