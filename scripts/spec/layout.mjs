@@ -6733,6 +6733,19 @@ const leavesFenceOpen = (block) => {
 }
 // The same for a quote's attached block: a list's fence may stand behind its
 // markers or on a later line, and a separator would become that fence's payload.
+// Whether ascending `list` holds `value`.
+const sortedHas = (list, value) => {
+  if (!list) return false
+  let lo = 0
+  let hi = list.length - 1
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1
+    if (list[mid] === value) return true
+    if (list[mid] < value) lo = mid + 1
+    else hi = mid - 1
+  }
+  return false
+}
 const attachedLeavesFenceOpen = (block, above = []) => {
   // A closer is measured like its opener, so only the opener's own indentation comes off.
   const openerIndent = /^[ \t]*/.exec(block.find((line) => FENCE.test(trimWsStart(line))) ?? '')[0].length
@@ -7728,6 +7741,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let lastListBlock = DEFLIST_TERM.test(head.text) ? 'term' : 'item'
     let lastTermSourceCol = DEFLIST_TERM.test(head.text) ? authoredMarkerCol + head.markerWidth : null
     const pushLine = (text, m = null, row = i) => {
+      // A host's `+` boundary bounds the item's blocks too, as it does the host's (carve#5046).
+      if (sortedHas(state.attachmentBoundaries?.get(lines), row)) {
+        const bounds = state.attachmentBoundaries
+        const indices = bounds.get(itemLines) ?? []
+        if (indices.at(-1) !== itemLines.length) indices.push(itemLines.length)
+        bounds.set(itemLines, indices)
+      }
       itemLines.push(text)
       itemMeas.push(m)
       itemSourceRows.push(row)
