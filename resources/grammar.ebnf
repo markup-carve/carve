@@ -119,8 +119,7 @@
    opens on its own line and ends at its closer, under S1, or at the end of
    its host (carve#4907). An unclosed `%%%` therefore hides every later line
    of its host, at top level the rest of the document; `carve lint` reports
-   it (`unclosed-comment-fence`). Of the fence-shaped openers only
-   frontmatter is decided by a later line (PART 1).
+   it (`unclosed-comment-fence`).
 
    ============================================================================ *)
 (* ============================================================================
@@ -692,20 +691,23 @@
 
 document = [frontmatter], {block}, EOF ;
 
-frontmatter = frontmatter_open, frontmatter_content, frontmatter_close ;
-(* A frontmatter opener is claimed when a closer follows its content. *)
+frontmatter = frontmatter_open, frontmatter_content, [frontmatter_close] ;
+(* A first-line opener is claimed immediately. Without a closer, its content
+   continues through the end of the document. *)
 (* An optional format token names the frontmatter dialect; bare `---` means
    yaml. Its padding slot is exactly one space (CARVE-P7-002):
    `---<TAB>yaml` and `---<SP><SP>yaml` are text. A trailing tab with no token
    is removed under CARVE-P2-025. The closer is a bare `---`, and trailing
    whitespace on it is removed the same way. *)
-frontmatter_open = "---", [space], [frontmatter_format], newline ;
+frontmatter_open = "---", [space], [frontmatter_format], (newline | EOF) ;
 frontmatter_close = "---", (newline | EOF) ;
 frontmatter_format = (letter | digit)+ ;
-frontmatter_content = {content_line - frontmatter_close} ;
+frontmatter_content = {content_line - frontmatter_close}, [frontmatter_final_line - frontmatter_close] ;
+frontmatter_final_line = (character - newline), {character - newline}, EOF ;
 content_line = {character - newline}, newline ;
 (* frontmatter_content lines are metadata in the named format, handed to that
-   format's parser; the grammar treats them as opaque lines. *)
+   format's parser; the grammar treats them as opaque lines. The last payload
+   line may end at EOF without a newline. *)
 
 block = heading
       | thematic_break
@@ -913,9 +915,9 @@ thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '
 
    THE COLLISION IS THE BARE SPELLING'S ALONE, which is why the test is too. A
    break is a dash run and nothing else (PART 1), so a typed opener is never a
-   thematic break and never a setext underline; with no closer ahead of it the
-   line is ordinary paragraph text. Once the author named the format there is
-   nothing left to infer.
+   thematic break and never a setext underline; it opens frontmatter even
+   without a closer. Once the author named the format there is nothing left
+   to infer.
 
    A BARE OPENER TAKES THE YAML TEST AND ONLY THAT ONE. PART 1 says a bare
    `---` defaults to `yaml`, so exactly one shape rule can apply to it. The

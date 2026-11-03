@@ -140,7 +140,8 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
   let segmentStartLine = 0
 
   const finalizePair = (endLine, atCloser = false) => {
-    if (currentSection && pendingBlocks.carve && (pendingBlocks.html || (compareModifiers.has('no-final-newline') && pendingBlocks.html === ''))) {
+    // An empty HTML fence is an explicit expectation for invisible blocks.
+    if (currentSection && pendingBlocks.carve && pendingBlocks.html !== null) {
       const example = {
         section: currentSection.title,
         carve: pendingBlocks.carve,
@@ -170,7 +171,7 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
       pairsInBlock++
       segmentStartLine = endLine
     } else if (currentSection) {
-      const miss = [!pendingBlocks.carve && 'carve', !pendingBlocks.html && 'html']
+      const miss = [!pendingBlocks.carve && 'carve', pendingBlocks.html === null && 'html']
         .filter(Boolean)
         .join(' + ')
       dropped.push(`line ${compareOpenLine} (section "${currentSection.title}"): missing ${miss} fence`)

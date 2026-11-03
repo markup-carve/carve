@@ -172,9 +172,9 @@ thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '
 
    THE COLLISION IS THE BARE SPELLING'S ALONE, which is why the test is too. A
    break is a dash run and nothing else (PART 1), so a typed opener is never a
-   thematic break and never a setext underline; with no closer ahead of it the
-   line is ordinary paragraph text. Once the author named the format there is
-   nothing left to infer.
+   thematic break and never a setext underline; it opens frontmatter even
+   without a closer. Once the author named the format there is nothing left
+   to infer.
 
    A BARE OPENER TAKES THE YAML TEST AND ONLY THAT ONE. PART 1 says a bare
    `---` defaults to `yaml`, so exactly one shape rule can apply to it. The
