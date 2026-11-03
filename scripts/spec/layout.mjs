@@ -3412,6 +3412,18 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
         { cell: `B-${inner.family}-${payloadForm === 'closer' ? 'end' : 'keep'}` })
       continue
     }
+    // A comment line below the column stays in an open `%%%` span, its own or a
+    // line block's, and an exact-width run there closes it (PART 0 S1, PART 9 §28, carve#4987).
+    const spanRun = inner.kind !== 'fence' ? null
+      : inner.family === 'comment' && !inner.span ? true
+        : inner.lineBlock && inner.span?.[0] === '%' ? inner.span : null
+    if (spanRun && missed && m.rest.startsWith('%%') && !frames.slice(reached + 1).some((f) => f.kind === 'quote')) {
+      if (spanRun !== true && COMMENT_FENCE_BODY.exec(m.rest)?.[1].length === spanRun.length) inner.span = null
+      lead(m.col)
+      result.push(out + src)
+      if (trace) emit(at, 'S1', ownerPath(), 'CARVE-P0-005', 'payload', { cell: `B-${inner.family}-keep` })
+      continue
+    }
     if (inner.kind === 'fence') frames.pop()
     let owner = frames[reached]
     if (m.rest !== '') for (const f of frames) {
