@@ -337,8 +337,17 @@
          is metadata and contributes ZERO: `-{.x} ` -> 2 and `1.{.x} ` -> 3,
          irrespective of the block's spelling, length or Unicode encoding. A
          task checkbox is content and contributes zero for the same coordinate:
-         `-{.x} [x] ` -> 2. A definition body's own `: ` separator sets its
-         content column, including every extra separator space. A footnote
+         `-{.x} [x] ` -> 2.
+
+         A floating attribute block in marker-line content remains pending at
+         the item's content column. A following child block at that column
+         receives it; a line that misses the item closes it and discards the
+         pending attribute under CARVE-P9-024. Thus `-{#item} {#next}`
+         followed by `  # H` keeps the heading in the item and puts `next` on
+         it.
+
+         A definition body's own `: ` separator sets its content column,
+         including every extra separator space. A footnote
          body adds two columns to its marker's authored column and consumes
          exactly two columns of prefix. All comparisons use C1; no marker
          family has its own reach test.

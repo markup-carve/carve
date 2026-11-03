@@ -77,12 +77,6 @@
       "scope": "parsing"
     },
     {
-      "id": "CARVE-P0-008",
-      "part": "0",
-      "title": "A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN",
-      "scope": "parsing"
-    },
-    {
       "id": "CARVE-P0-011",
       "part": "0",
       "title": "AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS UNDER",
@@ -2088,6 +2082,12 @@
     }
   ],
   "retired": [
+    {
+      "id": "CARVE-P0-008",
+      "part": "0",
+      "title": "A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN",
+      "replacement": "CARVE-P9-083"
+    },
     {
       "id": "CARVE-P9-028",
       "part": "9",

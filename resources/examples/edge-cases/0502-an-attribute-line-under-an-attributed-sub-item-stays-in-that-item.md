@@ -4,7 +4,7 @@ A marker-attached attribute block contributes zero to the content column (§24
 C3), so a line below it reaches the sub-item at the column it would reach with
 no such block. A sibling marker closes that item and §15 A4 drops the pending
 attribute, which may no more open a second sublist than escape to a document
-paragraph (CARVE-P0-008).
+paragraph (CARVE-P9-083).
 
 :::::: compare no-render
 

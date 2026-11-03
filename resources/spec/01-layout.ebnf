@@ -252,14 +252,6 @@
         A definition either registers or remains visible text; it never
         disappears from both.
 
-        A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN --
-        NORMATIVE [CARVE-P0-008]. Marker-attached attributes contribute zero
-        width to the content column, and a task checkbox is content, not
-        marker width. `-{#item} {#next}` / `  # H` keeps the item open and
-        attaches `{#next}` to the heading. One column further left the
-        heading misses the item: the item closes, its pending attribute is
-        discarded (CARVE-P9-024), and the heading opens in the document.
-
    STEP 3, LAZY.
 
      S4 LAZY. If the line missed a frame below its owner, it folds into the
@@ -373,7 +365,7 @@
      1. list item
         column     after the marker and its separator (PART 9 §24 C3); a
                    marker-attached attribute and a task checkbox add zero
-                   (CARVE-P0-008)
+                   (CARVE-P9-083)
         prefix     indentation up to the content column
         blank      reaches the item; a blank run stays in it when the next
                    nonblank line reaches the content column (PART 9 §24 C3)

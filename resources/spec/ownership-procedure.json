@@ -71,7 +71,6 @@
       "step": "S3",
       "title": "S3 Form",
       "rules": [
-        "CARVE-P0-008",
         "CARVE-P0-011"
       ],
       "checkerHelpers": [
