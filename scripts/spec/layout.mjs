@@ -1200,6 +1200,15 @@ function lineBlockEnd(bodyLines, k) {
   for (let j = k + 1; j < bodyLines.length; j++) if (COLON_CLOSER.exec(stripLazy(bodyLines[j]))?.[1].length === run) return j
   return bodyLines.length
 }
+// A quoted row's depth and content column past every `>` marker.
+function quotedColumn(row) {
+  let depth = 0
+  for (let m = QUOTE.exec(row); m; m = QUOTE.exec(row)) {
+    row = m[1] ?? ''
+    depth++
+  }
+  return { depth, col: indentCols(row).col, rest: row }
+}
 // The same for the line block an item or description at the body's end holds.
 // With `verse`, the stanza must also hold a verse line: a `%%%` span leaves
 // nothing however it ends, so the line after it reads the stanza as it stood
@@ -5790,6 +5799,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let qStanzaSpanRun = null
       let qStanzaOpen = false
       let qStanzaColumn = 0
+      let qStanzaQuoted = null
       let qDescriptionBodyCol = null
       let qNoteBodyCol = null
       const qColonRuns = []
@@ -6136,6 +6146,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (stanzaRun) {
           qStanzaOpen = true
           qStanzaColumn = runCol
+          qStanzaQuoted = null
         }
         const isOpener = !!(f && !stanzaRun &&
           state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH)
@@ -6294,13 +6305,19 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A closer or a line that retreats toward the host needs the full
             // ownership walk, which also decides whether the stanza has ended.
             // Past a `%%%` line the walk reads the stanza without its spans (carve#4956).
+            // A span leaves the stanza as it found it, so a same-column row still
+            // extends it; a nested quote row is measured past its own markers.
             const spanSeen = qStanzaSpanSeen ||= row.includes('%%%')
-            const stillOpen = !spanSeen && qStanzaOpen && trimWs(row) !== '' &&
-              col >= qStanzaColumn && !COLON_CLOSER.test(trimWsStart(row))
+            const quoted = QUOTE.test(row) ? quotedColumn(row) : null
+            const stillOpen = qStanzaOpen && trimWs(row) !== '' &&
+              col >= qStanzaColumn && !COLON_CLOSER.test(trimWsStart(row)) &&
+              (!spanSeen || !quoted || (quoted.depth === qStanzaQuoted?.depth && quoted.col >= qStanzaQuoted.col &&
+                trimWs(quoted.rest) !== '' && !COLON_CLOSER.test(trimWsStart(quoted.rest))))
             if (stillOpen || hostEndsInLineBlockStanza(inner, 0, spanSeen)) {
               qOpenPara = true
               qStanzaOpen = true
               qStanzaColumn = col
+              qStanzaQuoted = quoted
             } else if (!LINE_BLOCK_SHAPED.test(row) && !(spanSeen && hostEndsInLineBlockStanza(inner, 0))) {
               qStanzaCandidate = false
               qStanzaOpen = false
