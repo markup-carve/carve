@@ -19,9 +19,10 @@ test('a bidi control keeps its value inert in every carrier', () => {
   }
 })
 
-test('a stripped pipeline sentinel cannot hide a style vector', () => {
+// carve#5049: the model's frame characters are literal in an authored value, so the probe reads them.
+test('an authored frame character is kept in a style value and probed as emitted', () => {
   for (const c of ['\u0002', '', '']) {
-    assert.equal(render(`*x*{style="ur${c}l(a)"}\n`), '<p><strong style="">x</strong></p>')
+    assert.equal(render(`*x*{style="ur${c}l(a)"}\n`), `<p><strong style="ur${c}l(a)">x</strong></p>`)
   }
 })
 
