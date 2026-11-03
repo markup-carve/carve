@@ -2483,6 +2483,27 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
   if (h.colons?.at(-1)?.mode === 'line-block' && meas.col >= h.colons.at(-1).base) {
     return { meas, inner: meas, blockStart: false, popped: false }
   }
+  const fenceMissed = h.fenceMissed
+  h.fenceMissed = false
+  // A comment that misses an open fence or colon block ends it and is read
+  // where its column reaches (PART 0 S1): no claim keeps the item open.
+  const colon = h.colons?.at(-1)
+  const colonMissed = colon !== undefined && colon.base >= h.columns.at(-1) && meas.col < colon.base
+  if ((fenceMissed || colonMissed) && COMMENT_LINE.test(meas.rest) && !h.colonComment) {
+    while (h.columns.length > 1 && h.columns.at(-1) > meas.col) {
+      const column = h.columns.pop()
+      while (h.colons?.length && h.colons.at(-1).base >= column) h.colons.pop()
+      h.markerCols.pop()
+      h.markers.pop()
+      h.kinds.pop()
+    }
+  }
+  // A line that misses the span's host ends it (PART 0 S1); a comment line stays payload (carve#4994).
+  if (h.colonComment && h.colonCommentHost !== undefined && meas.rest !== '' &&
+      meas.col < h.colonCommentHost && !COMMENT_LINE.test(meas.rest)) {
+    h.colonComment = null
+    h.colonCommentHost = undefined
+  }
   if (meas.rest === '' || h.colonComment || COMMENT_LINE.test(meas.rest)) {
     h.descriptionParagraph = false
     if (COMMENT_LINE.test(meas.rest) && !h.colonComment) {
@@ -2629,6 +2650,7 @@ function hostColonStep(h, inner, commentOpens = false, markerLine = false, remai
     if (comment && commentOpens) {
       h.colonComment = comment[1].length
       h.colonCommentFloor = top.base
+      h.colonCommentHost = undefined
     }
     // Payload is inline, so its span pairs at any column past the host's
     // (ruled on carve-php#3137).
@@ -2648,6 +2670,7 @@ function hostColonStep(h, inner, commentOpens = false, markerLine = false, remai
     if (comment && commentOpens) {
       h.colonComment = comment[1].length
       h.colonCommentFloor = undefined
+      h.colonCommentHost = h.columns.length > 1 ? h.columns.at(-1) : undefined
     }
     return false
   }
@@ -2686,6 +2709,8 @@ function hostFenceStep(h, line) {
   const meas = indentCols(line)
   if (meas.rest !== '' && meas.col < span.host) {
     h[slot] = null
+    // A comment that ends a fence this way is read where its column reaches (PART 0 S1).
+    if (slot === 'fence') h.fenceMissed = true
     return false
   }
   const c = PURE_FENCE.exec(meas.rest)
@@ -6098,7 +6123,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           return
         }
         if (openComment !== null) {
-          const c = COMMENT_FENCE_BODY.exec(l)
+          // A closer matches at any indentation (PART 9 §28).
+          const c = COMMENT_FENCE_BODY.exec(indentCols(l).rest)
           if (c && c[1].length === openComment) openComment = null
           qOpenPara = false
           qTableOpen = false
@@ -6118,11 +6144,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qItemPara = false
           return
         }
-        const comment = COMMENT_FENCE_BODY.exec(l)
-        if (comment && qHost.colons?.at(-1)?.mode !== 'line-block') openComment = comment[1].length
         const belowRun = FENCE.exec(indentCols(l).rest)
         const belowFenceLazy = !!(belowRun && parseFenceInfo(belowRun[2], belowRun[1]) === null)
         const { meas, inner: inner0, blockStart, popped } = hostAdvance(qHost, l, qOpenPara, belowFenceLazy)
+        // After the advance: a span that misses a line block's column has left it.
+        const comment = COMMENT_FENCE_BODY.exec(l)
+        if (comment && qHost.colons?.at(-1)?.mode !== 'line-block') openComment = comment[1].length
         if (qHost.kinds.at(-1) === 'description') qOpenPara = qHost.descriptionParagraph
         const inLineBlock = qHost.colons?.at(-1)?.mode === 'line-block'
         if (state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(qHost, inner0, openComment === null, blockStart, MAX_NESTING_DEPTH - state.blockDepth - (qHost.columns.length - 1), (run, column, past) => closerFollows(idx, 1, run, column, past))) {
