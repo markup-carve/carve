@@ -20,3 +20,5 @@
 # resources/engine-pin-drift/.README says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+943-an-empty-comment-span-is-written-as-adjacent-delimiters  markup-carve/carve#5022: the pinned writer spells an empty comment span with an empty payload line, which loosens the list on the next pass.
+943-an-empty-comment-span-is-written-as-adjacent-delimiters-2  markup-carve/carve#5022: the pinned writer spells an empty comment span with an empty payload line, which loosens the list on the next pass.
