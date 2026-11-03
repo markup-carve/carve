@@ -5966,6 +5966,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        * what is above it, never to itself, which is the same order the outer
        * loop uses for its own rows.
        */
+      // A nested quote's first-block `+` opens no paragraph, as the quote's own does (carve#4993).
+      const firstBlockPlus = (text, idx) => CONT_MARKER.test(trimWs(text)) && idx + 1 < n && !isBlank(lines[idx + 1])
       const nestedQuoteOpensParagraph = (line, atStart, idx) => {
         let text = line
         let depth = 0
@@ -6024,6 +6026,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 return settle(false, depth)
               }
             }
+            if (firstBlockPlus(tail, idx)) return settle(false, depth)
             return settle(!isColonBlockOpener(tail) && opensParagraph(tail, true, false, prefixMemo(state, lines, idx).paragraph), depth)
           }
         }
@@ -6035,7 +6038,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           text = QUOTE.exec(text)[1] ?? ''
           // S2: an open payload makes this level's line verbatim, so a marker
           // on it is literal and A FENCED BODY IS NOT A PARAGRAPH.
+          const opensLevel = qNestedHost[depth] === undefined
           const host = qNestedHost[depth] ??= hostLadder()
+          if (opensLevel && !QUOTE.test(text) && firstBlockPlus(text, idx)) return settle(false, depth + 1)
           if (hostFenceStep(host, text)) return settle(host.colons?.at(-1)?.mode === 'line-block', depth + 1)
           if (host.colons?.at(-1)?.mode !== 'line-block' &&
               nestedCommentStep(text, depth, idx)) return settle(false, depth + 1)
