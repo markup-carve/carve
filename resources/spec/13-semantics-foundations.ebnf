@@ -293,6 +293,12 @@
          Any consumed marker run disqualifies a span. Thus `|= <|` and
          `|= ^|` are header cells holding literal `<` and `^`, while
          `|?^ <|` is a vertically aligned cell holding literal `<`.
+         A kind marker glued to both the opening `|` and a `^` is no marker
+         run: `|=^ |` is a HEADER-KIND rowspan marker, a span marker whose cell
+         is a header cell (PART 2 `header_rowspan_marker`). It may carry a glued
+         span alignment (`|=^~ |`). `|=^x |` holds `=^x` and `| =^ |` holds
+         `=^`, both data. A `<` has no header-kind form: `|=< |` is a
+         left-aligned empty header cell.
       T5 SPAN WALK -- NORMATIVE [CARVE-P9-002], a total function. Markers
          resolve in row-major order. Every position belongs to the cell whose
          rectangle covers it; a span never covers a position another cell
@@ -424,10 +430,13 @@
          Among native `|=` markers, only the head-row run (T9) sets column
          defaults. A later `|=` cell after a body row is a row header whose
          marker stays local, even when that later row has only header cells.
-         A colspan marker has no alignment run: a header cell spanning several
-         columns sets a default only for its ORIGIN column. A delimiter colon
-         in a covered column remains that column's default; the origin's marker
-         does not overwrite it. Corpus 659 pins this covered-column rule.
+         A span marker MAY have its own glued alignment run (PART 2). In a
+         head row, that explicit marker sets the default of the physical column
+         containing the placeholder, in the same last-explicit-marker order as
+         a header cell. An omitted marker does not reset an earlier default.
+         A header cell spanning several columns sets a default only for its
+         ORIGIN column; a covered column retains its own span marker or
+         delimiter colon default. Corpus 659 pins this covered-column rule.
       T8 ROW ATTRIBUTES -- NORMATIVE [CARVE-P9-005]. A `{…}` GLUED to a row's closing `|`
          (no intervening space) sets that row's `<tr>` attributes -- the
          row-level twin of a cell's attribute block, same syntax, same
@@ -455,7 +464,18 @@
          The head-row run is the leading rows that own a cell and in which
          every cell a row owns is a header cell; a span placeholder belongs
          to the cell covering it, so `|= A | < |` heads its table
-         (CARVE-P11-056).
+         (CARVE-P11-056). A placeholder with no origin takes its row's kind
+         when the other cells that row owns are headers. It remains a span
+         placeholder in the tree (PART 12 §26) and renders as an empty
+         `<th scope="col">` in the head row. A header-kind `^` (T4, `|=^ |`)
+         is a header cell itself, so a row of only orphan placeholders heads
+         its table when one of them is header-kind:
+
+             |=^ |
+             | x |
+
+         gives `<thead>` with one empty `<th scope="col">`. Below the head-row
+         run, an orphan header-kind `^` is an empty row header.
 
          An authored `scope` replaces the default (PART 10 §1), so
          `|={scope="colgroup"} a |` -- a header cell carrying attributes,
@@ -495,9 +515,9 @@
          is parsed as unaligned literal content; row attributes (T8) are
          unaffected.
 
-      T11 A MARKER RUN ENDS AT A SPACE -- NORMATIVE [CARVE-P9-008]. A cell's marker run is
-         the kind marker `=`, the alignment run and the attribute block, in
-         T10's order. A cell carrying ANY of the three must follow the run
+      T11 A MARKER RUN ENDS AT A SPACE -- NORMATIVE [CARVE-P9-008]. A header_cell
+         or data_cell marker run is the kind marker `=`, the alignment run and
+         the attribute block, in T10's order. A cell carrying ANY of the three must follow the run
          with one literal space. Without it there is no run at all, and every
          character of it is ordinary cell content:
 
@@ -507,10 +527,15 @@
              |{#x} =R |      data cell with `id="x"`, content `=R`
              |{#x}=R|        data cell, content `{#x}=R`
 
+         A span_cell is the exception: its optional span_alignment is glued
+         to `^` or `<` and ends at cell padding or the closing pipe (PART 2).
+         A header-kind span (`|=^ |`, T4) is a span_cell, not a marker run.
+
          A cell with NO run is unchanged -- `| a |` and `|a|` hold `a`, and
          `||` is one empty cell (CARVE-P9-082).
 
-         THE CLOSING PIPE IS NOT A TERMINATOR. `|=|` and `|{#x}|` carry no
+         FOR HEADER AND DATA RUNS, THE CLOSING PIPE IS NOT A TERMINATOR.
+         `|=|` and `|{#x}|` carry no
          run; an empty marked cell is `|= |` and `|{#x} |` -- which is what
          CARVE-P11-014's canonical writer already emits, and what `|> |` already
          required of the alignment run. NEITHER IS A TAB: PART 7 gives a tab

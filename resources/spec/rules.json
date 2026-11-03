@@ -1405,7 +1405,7 @@
     {
       "id": "CARVE-P11-066",
       "part": "11",
-      "title": "THE ROUNDTRIP WRITER PRESERVES A TABLE'S SEPARATOR ROW",
+      "title": "CANONICAL HEADERS ARE NATIVE AND ROUNDTRIP PRESERVES A SEPARATOR ROW",
       "scope": "canonical-writing"
     },
     {

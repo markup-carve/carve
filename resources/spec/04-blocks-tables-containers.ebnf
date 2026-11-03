@@ -82,10 +82,14 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
 (* THE MARKER RUN COMES FIRST, IN ONE ORDER, IN BOTH PRODUCTIONS. The kind
    marker `=` and then the alignment marker are glued to the opening `|` (no
    preceding whitespace); the attribute block attaches after them. A
-   cell containing only '^' or '<', with any space padding or none, is span_cell.
+   cell containing only '^' or '<', optionally followed by a glued
+   span_alignment, with any space padding or none, is span_cell. A '^'
+   glued to a kind marker that is glued to the opening `|` (`|=^ |`) is a
+   header-kind span_cell (PART 9 §5 T4).
 
-   A marker run ends with one space (PART 9 §5 T11). A cell with no run
-   accepts unpadded content (`|a|`). *)
+   A header or data marker run ends with one space (PART 9 §5 T11). A span
+   alignment ends at padding or the closing pipe. A cell with no run accepts
+   unpadded content (`|a|`). *)
 (* CELL ATTRIBUTES (NORMATIVE): an attribute block sets the cell's attributes.
    It binds last (PART 9 §5 T10) and is glued to the marker run or the
    opening `|` (`|=<{.x} …`, `|{.x} …`). The rest of the cell, after
@@ -106,10 +110,15 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    `|{#x}=R|` is a data cell whose content is `{#x}=R`; no marker run ends
    without a space (T11). `|{#x} =R |` has id `x` and content `=R`. *)
 cell_attributes = attributes ;
-span_cell = rowspan_marker | colspan_marker ;
+span_cell = header_rowspan_marker, [span_alignment], {space}
+          | rowspan_marker, [span_alignment], {space}
+          | colspan_marker, [span_alignment], {space} ;
+span_alignment = alignment_run ;  (* glued to the span marker; no space *)
 
-rowspan_marker = {space}, '^', {space} ;
-colspan_marker = {space}, '<', {space} ;
+header_rowspan_marker = '=', '^' ;  (* both glued: no space before or between *)
+
+rowspan_marker = {space}, '^' ;
+colspan_marker = {space}, '<' ;
 (* TABLE-CELL PADDING (NORMATIVE, PART 7). Every padding slot in the five
    productions above is spelled `space`. All of them sit after the row's
    opening `|`, so all of them are INLINE, and A TAB IS SYNTAX ONLY IN THE
@@ -118,7 +127,8 @@ colspan_marker = {space}, '<', {space} ;
    `|<TAB>a<TAB>|` is a cell whose text begins and ends with a tab, and
    `|<TAB>---<TAB>|` is not a delimiter_cell at all - the row is an ordinary
    row and promotes no header. Same for the two span markers: a tab beside
-   the `^` or `<` makes the cell ordinary content rather than a span. So a
+   the `^` or `<`, or between that marker and its alignment run, makes the
+   cell ordinary content rather than a span. So a
    cell is EMPTY only when nothing but space padding stands in it: `|<TAB>|`
    holds a tab, while `| |` and `||` are empty (PART 9 §5 CARVE-P9-082). *)
 
