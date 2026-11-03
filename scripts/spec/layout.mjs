@@ -6103,7 +6103,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // reaches it, so `> > - ``` ` answered differently from `> - ``` `
               // (its own depth-invariance row).
               const host = qNestedHost[depth - 1] ??= hostLadder()
-              if (host.colons?.at(-1)?.mode !== 'line-block' &&
+              if (host.colons?.at(-1)?.mode !== 'line-block' && !host.colonComment &&
                   nestedCommentStep(tail, depth - 1, idx)) return settle(false, depth)
               const { inner } = hostAdvance(host, tail, false)
               if (state.blockDepth + depth + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, true, true, MAX_NESTING_DEPTH - state.blockDepth - depth - (host.columns.length - 1), (run, column, past) => closerFollows(idx, depth + 1, run, column, past))) {
@@ -6133,7 +6133,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const host = qNestedHost[depth] ??= hostLadder()
           if (opensLevel && !QUOTE.test(text) && firstBlockPlus(text, idx)) return settle(false, depth + 1)
           if (hostFenceStep(host, text)) return settle(host.colons?.at(-1)?.mode === 'line-block', depth + 1)
-          if (host.colons?.at(-1)?.mode !== 'line-block' &&
+          if (!QUOTE.test(text) && !host.colonComment && qNestedComments[depth] === undefined && shortCloserStep(text, depth + 1)) return false
+          if (host.colons?.at(-1)?.mode !== 'line-block' && !host.colonComment &&
               nestedCommentStep(text, depth, idx)) return settle(false, depth + 1)
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
@@ -6189,6 +6190,22 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         qNestedPara.length = 0
         qNestedColon.length = 0
       }
+      // A comment fence a container holds; a line block's span ends at a line that misses the quote.
+      const heldFence = (host) => host?.colonCommentFloor === undefined ? host?.colonComment : undefined
+      // A comment fence line that stops short of a deeper level's open span is that span's closer (PART 0 S1).
+      const shortCloserStep = (text, depth) => {
+        const c = COMMENT_FENCE_BODY.exec(indentCols(text).rest)
+        if (!c) return false
+        for (let d = qNestedHost.length - 1; d >= depth; d--) {
+          const host = qNestedHost[d]
+          if (heldFence(host) === c[1].length) host.colonComment = null
+          else if (qNestedComments[d] === c[1].length) qNestedComments[d] = undefined
+          else continue
+          for (let k = 0; k <= d; k++) qNestedPara[k] = false
+          return true
+        }
+        return false
+      }
       const nestedCommentStep = (text, depth, idx) => {
         const fence = COMMENT_FENCE_BODY.exec(indentCols(text).rest)
         if (qNestedComments[depth] !== undefined) {
@@ -6215,6 +6232,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qOpenPara = !isBlank(l)
           qTableOpen = false
           clearNested()
+          qItemPara = false
+          return
+        }
+        // A closer short of a nested level's prefix still ends that level's span (PART 0 S1).
+        // Read at this level it would open one.
+        if (openComment === null && !qHost.colonComment && !QUOTE.test(sourceLine.rest) && shortCloserStep(l, 0)) {
+          qOpenPara = false
+          qTableOpen = false
           qItemPara = false
           return
         }
@@ -6245,7 +6270,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const { meas, inner: inner0, blockStart, popped } = hostAdvance(qHost, l, qOpenPara, belowFenceLazy)
         // After the advance: a span that misses a line block's column has left it.
         const comment = COMMENT_FENCE_BODY.exec(l)
-        if (comment && qHost.colons?.at(-1)?.mode !== 'line-block') openComment = comment[1].length
+        if (comment && !qHost.colonComment && qHost.colons?.at(-1)?.mode !== 'line-block') openComment = comment[1].length
         if (qHost.kinds.at(-1) === 'description') qOpenPara = qHost.descriptionParagraph
         const inLineBlock = qHost.colons?.at(-1)?.mode === 'line-block'
         if (state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(qHost, inner0, openComment === null, blockStart, MAX_NESTING_DEPTH - state.blockDepth - (qHost.columns.length - 1), (run, column, past) => closerFollows(idx, 1, run, column, past))) {
@@ -6497,9 +6522,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         // S1 tests an open comment span's closer before ownership, so an
         // unmarked exact closer ends the span inside the quote (carve#4721).
+        // The span may be the quote's own, a container's in it, or a nested quote's.
         const unmarkedCloser = COMMENT_FENCE.exec(lines[i] ?? '')
         if (unmarkedCloser && !qHost.fence &&
-            (openComment ?? qNestedComments.findLast((width) => width !== undefined)) === unmarkedCloser[1].length) {
+            (openComment ?? heldFence(qHost) ?? heldFence(qNestedHost.findLast(heldFence)) ??
+              qNestedComments.findLast((width) => width !== undefined)) === unmarkedCloser[1].length) {
           const closerText = trimWsStart(lines[i])
           inner.push(closerText)
           if (i + 1 < n) trackFence(closerText, i)
