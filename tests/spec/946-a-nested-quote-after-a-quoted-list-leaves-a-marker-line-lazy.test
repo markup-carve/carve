@@ -1,0 +1,59 @@
+A nested quote after a quoted list leaves a marker line lazy
+
+```
+> - a
+> > c
+- tail
+.
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+  <blockquote><p>c
+- tail</p></blockquote>
+</blockquote>
+```
+
+```
+> 1. a
+> > c
+1. tail
+.
+<blockquote>
+  <ol>
+    <li>a</li>
+  </ol>
+  <blockquote><p>c
+1. tail</p></blockquote>
+</blockquote>
+```
+
+```
+> - a
+>  > c
+- tail
+.
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+  <blockquote><p>c
+- tail</p></blockquote>
+</blockquote>
+```
+
+```
+> > - a
+> > > c
+> - tail
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>a</li>
+    </ul>
+    <blockquote><p>c
+- tail</p></blockquote>
+  </blockquote>
+</blockquote>
+```
