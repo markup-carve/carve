@@ -1,0 +1,81 @@
+A fence a quote's attached block opens ends with its container
+
+````
+> :: t
++
+: - ``` js
+> q
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>
+      <ul>
+        <li>
+          <pre><code class="language-js"></code></pre>
+        </li>
+      </ul>
+    </dd>
+  </dl>
+  <p>q</p>
+</blockquote>
+````
+
+````
+> :: t
++
+: - ``` js
+  - x
+> q
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>
+      <ul>
+        <li>
+          <pre><code class="language-js"></code></pre>
+        </li>
+        <li>x</li>
+      </ul>
+    </dd>
+  </dl>
+  <p>q</p>
+</blockquote>
+````
+
+````
+> +
+- ``` js
+- x
+> q
+.
+<blockquote>
+  <ul>
+    <li>
+      <pre><code class="language-js"></code></pre>
+    </li>
+    <li>x</li>
+  </ul>
+  <p>q</p>
+</blockquote>
+````
+
+````
+> a
++
+- ``` js
+- x
+> q
+.
+<blockquote>
+  <p>a</p>
+  <ul>
+    <li>
+      <pre><code class="language-js"></code></pre>
+    </li>
+    <li>x</li>
+  </ul>
+  <p>q</p>
+</blockquote>
+````
