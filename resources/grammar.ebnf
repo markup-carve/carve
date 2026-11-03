@@ -12139,8 +12139,8 @@ EOF = (* end of file *) ;
    image follow the inline rule and report no loss, exactly as for the same
    image mid-paragraph: `![alt](img.png){.x}` alone on its line reports
    none. The loss follows the construct the author wrote, not how it
-   renders. The shared AST keeps the merged set on the inline image, so an
-   AST-only renderer sees no block run and reports none.
+   renders. The shared AST keeps the block run on the paragraph (PART 12
+   §23), so an AST-only renderer reports it the same way.
    A code fence title dropped because the fence has no language reports
    `fence-title-dropped` with message
    `Dropped a code fence title without a language in Markdown`.
@@ -13524,6 +13524,29 @@ EOF = (* end of file *) ;
       The field is set by that phase and by NOTHING ELSE. It is present only as
       `true`; a paragraph that is not a block image omits it rather than
       carrying `false`, which is CARVE-P12-042's absent-value rule applied here.
+
+      PROMOTION MOVES NO ATTRIBUTES. A block attribute line above a promoted
+      paragraph stays in `paragraph.attrs`; the image's `attrs` hold only what
+      the image itself carries, the reference definition's attributes and the
+      ones written at the use site (carve#5039):
+
+        {.c}
+        ![a][ex]
+
+        [ex]: /i.png {.wide}
+
+        {"type":"paragraph","blockImage":true,"attrs":{"classes":["c"]},
+         "children":[{"type":"image","src":"/i.png","alt":"a",
+                      "ref":"ex","rawRef":"![a][ex]",
+                      "attrs":{"classes":["wide"]}}]}
+
+      Merged onto the image, the three sources cannot be told apart again: a
+      writer that gets the tree back either drops the line or repeats the
+      definition's attributes at the use site, and the HTML changes on the next
+      pass (CARVE-P12-005 publishes what the author wrote). A renderer applies
+      the paragraph's `attrs` exactly where it applies the block attribute
+      line it parsed (PART 10): on the bare `<img>`, or on the `<figure>` a
+      caption builds. The tree renders the HTML the source does.
 
       IT IS NOT A NON-ANCHOR FLAG. CARVE-P12-007 refuses a flag on a nested link because
       that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back
