@@ -25,7 +25,7 @@ item's column like any other block (carve#2556).
 
 ````html
 <ul>
-  <li>a</li>
+  <li><p>a</p></li>
 </ul>
 ````
 
@@ -61,9 +61,9 @@ item's column like any other block (carve#2556).
 
 ````html
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
-      <li>b</li>
+      <li><p>b</p></li>
     </ul>
   </li>
 </ul>
@@ -84,7 +84,7 @@ item's column like any other block (carve#2556).
 ````html
 <blockquote>
   <ul>
-    <li>a</li>
+    <li><p>a</p></li>
   </ul>
 </blockquote>
 ````
@@ -171,7 +171,7 @@ x[^1]
 
 ````html
 <ul>
-  <li>a
+  <li><p>a</p>
     <x>
   </li>
 </ul>

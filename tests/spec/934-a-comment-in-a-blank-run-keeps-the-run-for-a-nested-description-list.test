@@ -61,7 +61,7 @@ A comment in a blank run keeps the run for a nested description list
 <ul>
   <li>o
     <ul>
-      <li>p
+      <li><p>p</p>
         <dl>
           <dt>t</dt>
           <dd>x</dd>

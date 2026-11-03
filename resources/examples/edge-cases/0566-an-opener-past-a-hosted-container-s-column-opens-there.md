@@ -120,7 +120,7 @@ column belongs to the item and opens there too.
 
 ```html
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
       <li>para</li>
     </ul>

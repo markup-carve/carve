@@ -608,18 +608,15 @@ of any class the author wrote, so a stylesheet can drop the bullet without
 
 #### Tight vs loose
 
-A list is **tight** unless a blank line separates its items, or an item
-holds a second *paragraph*; then it is **loose**. A tight item renders its
+A list is **tight** unless a blank line separates its items, or a blank line
+separates two blocks of one item; then it is **loose**. A tight item renders its
 text directly (`<li>text</li>`); a loose item wraps each paragraph in `<p>`
 (PART 9 §17).
 
-**Compact list blocks** (Carve deviation from djot): a blank line before an
-item's sub-*block* (a sub-list, block quote, fenced code, fenced div,
-heading or table) does **not** loosen the list. The item stays tight with the
-block attached, so checklists-with-notes and steps-with-code stay compact. Only
-a real second paragraph or a blank between sibling items loosens it. The blank
-line is optional for a recognized opener; when present, it affects layout and
-looseness, not whether the opener is structural.
+A blank line before an item's sub-block (a sub-list, block quote, fenced code,
+fenced div, heading or table) loosens the list like a second paragraph does.
+To keep checklists-with-notes and steps-with-code compact, write the block
+without the blank line: a recognized opener needs none.
 
 **List continuation marker** (Carve addition): a lone `+` at the marker column
 attaches the following block at that column to the current item with no blank line,

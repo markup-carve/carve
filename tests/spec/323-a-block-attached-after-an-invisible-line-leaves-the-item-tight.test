@@ -8,12 +8,12 @@ A block attached after an invisible line leaves the item tight
 - c
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul class="x">
       <li>b</li>
     </ul>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
@@ -25,12 +25,12 @@ A block attached after an invisible line leaves the item tight
 - c
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
       <li>b</li>
     </ul>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
@@ -42,12 +42,12 @@ A block attached after an invisible line leaves the item tight
 - c
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
       <li>b</li>
     </ul>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
@@ -59,10 +59,10 @@ A block attached after an invisible line leaves the item tight
 - c
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <blockquote class="x"><p>q</p></blockquote>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
@@ -76,10 +76,10 @@ A block attached after an invisible line leaves the item tight
 - c
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <pre class="x"><code>code
 </code></pre>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ````

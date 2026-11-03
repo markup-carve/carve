@@ -729,7 +729,7 @@ An ordered child *below* the content column does not nest: an ordered marker doe
 
 :::
 
-After a blank line the **same content-column rule** applies: a continuation belongs to the item only if it reaches the item's content column (three columns under `1. `), exactly as without a blank. The blank line only decides whether the item is tight or loose; it never relaxes the column a block must reach. A block opener at the content column attaches and stays tight — unlike a second paragraph, a nested block does not loosen the list.
+After a blank line the **same content-column rule** applies: a continuation belongs to the item only if it reaches the item's content column (three columns under `1. `), exactly as without a blank. The blank line only decides whether the item is tight or loose; it never relaxes the column a block must reach. A block opener at the content column attaches, and like a second paragraph it loosens the list (PART 9 §17 L1).
 
 ::: compare
 
@@ -741,7 +741,7 @@ After a blank line the **same content-column rule** applies: a continuation belo
 
 ```html
 <ol>
-  <li>one
+  <li><p>one</p>
     <blockquote><p>q</p></blockquote>
   </li>
 </ol>
@@ -780,7 +780,7 @@ After a blank line the **same content-column rule** applies: a continuation belo
 
 ```html
 <ol>
-  <li>one
+  <li><p>one</p>
     <blockquote><p>q</p></blockquote>
   </li>
 </ol>
@@ -1100,7 +1100,7 @@ four, in both engine ledgers, until the pin moves.
 
 ```html
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
       <li>a</li>
     </ul>
@@ -1113,10 +1113,9 @@ four, in both engine ledgers, until the pin moves.
 
 :::
 
-The blank line after `- outer` is not part of the boundary, and the sidecar
-shows the writer dropping it: a blank line before a SUB-LIST does not loosen an
-item, only a blank line before a paragraph does. So the item comes back tight,
-with both sub-lists and the boundary between them.
+The blank line after `- outer` is not part of the boundary, but it loosens the
+item (PART 9 §17 L1), so the sidecar shows the writer keeping it, with both
+sub-lists and the boundary between them.
 
 A source whose run is LONGER than three is what tells a writer that preserves
 the boundary apart from one that copies its input, because §10i fixes the
@@ -1141,7 +1140,7 @@ twin of the top-level six-blank case.
 
 ```html
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
       <li>a</li>
     </ul>
@@ -1154,10 +1153,7 @@ twin of the top-level six-blank case.
 
 :::
 
-A LOOSE item takes the same boundary. That is one document to a reader and two
-code paths to a writer - the tight-item join is not involved at all - and the
-engines that got this wrong got it wrong in both places, so the loose shape is
-pinned rather than assumed to follow the tight one.
+An item with a second paragraph before the sub-lists takes the same boundary.
 
 ::: compare
 
@@ -4886,7 +4882,7 @@ cd</p>
 
 ```html
 <ul>
-  <li>x
+  <li><p>x</p>
     <div class="line-block">
       <p>ab<br>
 cd</p>

@@ -1,6 +1,6 @@
 ## A fence run that dedents out of a child keeps the outer item tight
 
-A fence opened in a child item can be closed by a run at the outer item's content column. That run opens a new, unclosed code block in the outer item, so the blank line and text below it are payload. The outer item holds one paragraph, and the blank inside the child belongs to the child (corpus 144, 563), so L1 reads the list as tight. A blank before the next sibling still loosens it (L1c), and a run that closes inside the child leaves `tail` as a second paragraph.
+A fence opened in a child item can be closed by a run at the outer item's content column. That run opens a new, unclosed code block in the outer item, so the blank line and text below it are payload. The outer item holds one paragraph, and the blank inside the child belongs to the child (corpus 144, 563), so L1 reads the list as tight. The child item is loose: its blank stands between its lead and its fence. A blank before the next sibling still loosens it (L1c), and a run that closes inside the child leaves `tail` as a second paragraph.
 
 A fence run that dedents to the outer content column
 
@@ -21,7 +21,7 @@ A fence run that dedents to the outer content column
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -54,7 +54,7 @@ A closer between the outer and child content columns
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -87,7 +87,7 @@ A tilde run
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -120,7 +120,7 @@ An opener indented past the child content column
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -153,7 +153,7 @@ A trailing line at the child content column
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -187,8 +187,8 @@ A second child item above the run
 <ul>
   <li>outer
     <ul>
-      <li>one</li>
-      <li>two
+      <li><p>one</p></li>
+      <li><p>two</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -221,7 +221,7 @@ An ordered outer item
 <ol>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -255,7 +255,7 @@ A list inside a block quote
   <ul>
     <li>outer
       <ul>
-        <li>head
+        <li><p>head</p>
           <pre><code>a
 </code></pre>
         </li>
@@ -290,7 +290,7 @@ A next sibling directly after the payload stays tight
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -324,7 +324,7 @@ A blank before the next sibling loosens the list
 <ul>
   <li><p>outer</p>
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -357,7 +357,7 @@ A run that closes inside the child leaves a second paragraph
 <ul>
   <li><p>outer</p>
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -390,7 +390,7 @@ A run right after a child fence that closed
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -424,7 +424,7 @@ A backtick run below an open tilde fence
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -460,7 +460,7 @@ A run that dedents out of a grandchild
     <ul>
       <li>head
         <ul>
-          <li>deep
+          <li><p>deep</p>
             <pre><code>a
 </code></pre>
           </li>

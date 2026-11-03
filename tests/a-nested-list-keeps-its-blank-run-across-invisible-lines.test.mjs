@@ -4,7 +4,8 @@ import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = (source) => renderDoc(parse(source)).trim()
-const twoLists = '<ul>\n  <li>o\n    <ul>\n      <li>a</li>\n    </ul>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul>'
+// The run stands between two of the item's own lists, so it loosens the item (PART 9 §17 L1).
+const twoLists = '<ul>\n  <li><p>o</p>\n    <ul>\n      <li>a</li>\n    </ul>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul>'
 
 test('erased comments do not split a nested list hard boundary', () => {
   for (const before of [1, 2, 3]) {

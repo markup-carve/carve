@@ -119,7 +119,8 @@ test('GUARD: the code and colon fences are untouched by this change', () => {
   // above - so nothing here is the same defect and neither was widened into.
   const code = '```'
   assert.equal(looseness(`- head\n\n  ${code}\n  a\n  ${code}\n\n  tail\n`), 'loose')
-  assert.equal(looseness(`- head\n\n  ${code}\n  a\n    ${code}\n\n  tail\n`), 'tight')
+  // The blank before the fence loosens the item (PART 9 §17 L1, carve#5015).
+  assert.equal(looseness(`- head\n\n  ${code}\n  a\n    ${code}\n\n  tail\n`), 'loose')
   assert.equal(looseness('- head\n\n  ::: note\n  a\n  :::\n\n  tail\n'), 'loose')
   assert.equal(looseness('- head\n\n  ::: note\n  a\n    :::\n\n  tail\n'), 'loose')
 })

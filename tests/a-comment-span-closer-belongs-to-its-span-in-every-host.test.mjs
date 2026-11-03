@@ -209,7 +209,7 @@ test('GUARD: a code fence and a colon fence in the same geometry are untouched',
   const code = '```'
   assert.equal(
     html(`- head\n\n    ${code}\n    HIDDEN\n${code}\n\n  tail\n`),
-    `<ul>\n  <li>head\n    <pre><code>HIDDEN\n</code></pre>\n  </li>\n</ul>\n<pre><code>\n  tail\n</code></pre>`,
+    `<ul>\n  <li><p>head</p>\n    <pre><code>HIDDEN\n</code></pre>\n  </li>\n</ul>\n<pre><code>\n  tail\n</code></pre>`,
   )
   assert.equal(
     html(':: t\n:  head\n\n     :::\n     HIDDEN\n:::\n'),

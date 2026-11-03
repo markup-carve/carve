@@ -18,7 +18,7 @@ after
 
 ```html
 <ul>
-  <li>body
+  <li><p>body</p>
     <h1 id="h">h</h1>
   </li>
 </ul>
@@ -42,7 +42,7 @@ after
 
 ```html
 <ul>
-  <li>body
+  <li><p>body</p>
     <blockquote><p>z</p></blockquote>
   </li>
 </ul>
@@ -92,7 +92,7 @@ after
 
 ```html
 <ul>
-  <li>body
+  <li><p>body</p>
     <ul>
       <li>item</li>
     </ul>

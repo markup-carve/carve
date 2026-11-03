@@ -38,7 +38,7 @@ const containers = [
   ['quote', lines => lines.map(l => `> ${l}`).join('\n') + '\n'],
   ['nested quote', lines => lines.map(l => `> > ${l}`).join('\n') + '\n'],
   ['item', lines => lines.map((l, i) => (i ? '  ' : '- ') + l).join('\n') + '\n'],
-  ['nested item', lines => '- a\n\n' + lines.map((l, i) => (i ? '    ' : '  - ') + l).join('\n') + '\n'],
+  ['nested item', lines => '- a\n' + lines.map((l, i) => (i ? '    ' : '  - ') + l).join('\n') + '\n'],
   ['ordered item', lines => lines.map((l, i) => (i ? '   ' : '1. ') + l).join('\n') + '\n'],
   ['footnote', lines => 'x[^1]\n\n' + lines.map((l, i) => (i ? '  ' : '[^1]: ') + l).join('\n') + '\n'],
   ['description', lines => ':: t\n' + lines.map((l, i) => (i ? '  ' : ': ') + l).join('\n') + '\n'],

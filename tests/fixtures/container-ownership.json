@@ -272,7 +272,7 @@
   {
     "id": "list/code/end",
     "source": "- a\n\n  ```\n  ```\n",
-    "html": "<ul>\n  <li>a\n    <pre><code></code></pre>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>a</p>\n    <pre><code></code></pre>\n  </li>\n</ul>"
   },
   {
     "id": "list/code/sibling",
@@ -287,7 +287,7 @@
   {
     "id": "quote-list/code/end",
     "source": "> - a\n> \n>   ```\n>   ```\n",
-    "html": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code></code></pre>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>a</p>\n      <pre><code></code></pre>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/code/sibling",
@@ -302,7 +302,7 @@
   {
     "id": "list/raw/end",
     "source": "- a\n\n  ```=latex\n  x\n  ```\n",
-    "html": "<ul>\n  <li>a</li>\n</ul>"
+    "html": "<ul>\n  <li><p>a</p></li>\n</ul>"
   },
   {
     "id": "list/raw/sibling",
@@ -317,7 +317,7 @@
   {
     "id": "quote-list/raw/end",
     "source": "> - a\n> \n>   ```=latex\n>   x\n>   ```\n",
-    "html": "<blockquote>\n  <ul>\n    <li>a</li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>a</p></li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/raw/sibling",
@@ -517,22 +517,22 @@
   {
     "id": "list/blank/2/heading",
     "source": "- intro\n\n  # tail\n",
-    "html": "<ul>\n  <li>intro\n    <h1 id=\"tail\">tail</h1>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <h1 id=\"tail\">tail</h1>\n  </li>\n</ul>"
   },
   {
     "id": "list/blank/2/sibling",
     "source": "- intro\n\n  - tail\n",
-    "html": "<ul>\n  <li>intro\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list/blank/2/quote",
     "source": "- intro\n\n  > tail\n",
-    "html": "<ul>\n  <li>intro\n    <blockquote><p>tail</p></blockquote>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <blockquote><p>tail</p></blockquote>\n  </li>\n</ul>"
   },
   {
     "id": "list/blank/2/fence",
     "source": "- intro\n\n  ```\n  tail\n  ```\n",
-    "html": "<ul>\n  <li>intro\n    <pre><code>tail\n</code></pre>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <pre><code>tail\n</code></pre>\n  </li>\n</ul>"
   },
   {
     "id": "list/blank/4/text",
@@ -542,22 +542,22 @@
   {
     "id": "list/blank/4/heading",
     "source": "- intro\n\n    # tail\n",
-    "html": "<ul>\n  <li>intro\n    <h1 id=\"tail\">tail</h1>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <h1 id=\"tail\">tail</h1>\n  </li>\n</ul>"
   },
   {
     "id": "list/blank/4/sibling",
     "source": "- intro\n\n    - tail\n",
-    "html": "<ul>\n  <li>intro\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list/blank/4/quote",
     "source": "- intro\n\n    > tail\n",
-    "html": "<ul>\n  <li>intro\n    <blockquote><p>tail</p></blockquote>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <blockquote><p>tail</p></blockquote>\n  </li>\n</ul>"
   },
   {
     "id": "list/blank/4/fence",
     "source": "- intro\n\n    ```\n    tail\n    ```\n",
-    "html": "<ul>\n  <li>intro\n    <pre><code>tail\n</code></pre>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <pre><code>tail\n</code></pre>\n  </li>\n</ul>"
   },
   {
     "id": "list/low-comment/0/text",
@@ -817,22 +817,22 @@
   {
     "id": "list/comment-blank/2/heading",
     "source": "- intro\n%% c\n\n  # tail\n",
-    "html": "<ul>\n  <li>intro\n    <h1 id=\"tail\">tail</h1>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <h1 id=\"tail\">tail</h1>\n  </li>\n</ul>"
   },
   {
     "id": "list/comment-blank/2/sibling",
     "source": "- intro\n%% c\n\n  - tail\n",
-    "html": "<ul>\n  <li>intro\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list/comment-blank/2/quote",
     "source": "- intro\n%% c\n\n  > tail\n",
-    "html": "<ul>\n  <li>intro\n    <blockquote><p>tail</p></blockquote>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <blockquote><p>tail</p></blockquote>\n  </li>\n</ul>"
   },
   {
     "id": "list/comment-blank/2/fence",
     "source": "- intro\n%% c\n\n  ```\n  tail\n  ```\n",
-    "html": "<ul>\n  <li>intro\n    <pre><code>tail\n</code></pre>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <pre><code>tail\n</code></pre>\n  </li>\n</ul>"
   },
   {
     "id": "list/comment-blank/4/text",
@@ -842,22 +842,22 @@
   {
     "id": "list/comment-blank/4/heading",
     "source": "- intro\n%% c\n\n    # tail\n",
-    "html": "<ul>\n  <li>intro\n    <h1 id=\"tail\">tail</h1>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <h1 id=\"tail\">tail</h1>\n  </li>\n</ul>"
   },
   {
     "id": "list/comment-blank/4/sibling",
     "source": "- intro\n%% c\n\n    - tail\n",
-    "html": "<ul>\n  <li>intro\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list/comment-blank/4/quote",
     "source": "- intro\n%% c\n\n    > tail\n",
-    "html": "<ul>\n  <li>intro\n    <blockquote><p>tail</p></blockquote>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <blockquote><p>tail</p></blockquote>\n  </li>\n</ul>"
   },
   {
     "id": "list/comment-blank/4/fence",
     "source": "- intro\n%% c\n\n    ```\n    tail\n    ```\n",
-    "html": "<ul>\n  <li>intro\n    <pre><code>tail\n</code></pre>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>intro</p>\n    <pre><code>tail\n</code></pre>\n  </li>\n</ul>"
   },
   {
     "id": "quote-list/ordinary/0/text",
@@ -1017,22 +1017,22 @@
   {
     "id": "quote-list/blank/2/heading",
     "source": "> - intro\n> \n>   # tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <h1 id=\"tail\">tail</h1>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <h1 id=\"tail\">tail</h1>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/blank/2/sibling",
     "source": "> - intro\n> \n>   - tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <ul>\n        <li>tail</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <ul>\n        <li>tail</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/blank/2/quote",
     "source": "> - intro\n> \n>   > tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <blockquote><p>tail</p></blockquote>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <blockquote><p>tail</p></blockquote>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/blank/2/fence",
     "source": "> - intro\n> \n>   ```\n>   tail\n>   ```\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <pre><code>tail\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <pre><code>tail\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/blank/4/text",
@@ -1042,22 +1042,22 @@
   {
     "id": "quote-list/blank/4/heading",
     "source": "> - intro\n> \n>     # tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <h1 id=\"tail\">tail</h1>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <h1 id=\"tail\">tail</h1>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/blank/4/sibling",
     "source": "> - intro\n> \n>     - tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <ul>\n        <li>tail</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <ul>\n        <li>tail</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/blank/4/quote",
     "source": "> - intro\n> \n>     > tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <blockquote><p>tail</p></blockquote>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <blockquote><p>tail</p></blockquote>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/blank/4/fence",
     "source": "> - intro\n> \n>     ```\n>     tail\n>     ```\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <pre><code>tail\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <pre><code>tail\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/low-comment/0/text",
@@ -1317,22 +1317,22 @@
   {
     "id": "quote-list/comment-blank/2/heading",
     "source": "> - intro\n> %% c\n> \n>   # tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <h1 id=\"tail\">tail</h1>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <h1 id=\"tail\">tail</h1>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/comment-blank/2/sibling",
     "source": "> - intro\n> %% c\n> \n>   - tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <ul>\n        <li>tail</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <ul>\n        <li>tail</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/comment-blank/2/quote",
     "source": "> - intro\n> %% c\n> \n>   > tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <blockquote><p>tail</p></blockquote>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <blockquote><p>tail</p></blockquote>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/comment-blank/2/fence",
     "source": "> - intro\n> %% c\n> \n>   ```\n>   tail\n>   ```\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <pre><code>tail\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <pre><code>tail\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/comment-blank/4/text",
@@ -1342,22 +1342,22 @@
   {
     "id": "quote-list/comment-blank/4/heading",
     "source": "> - intro\n> %% c\n> \n>     # tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <h1 id=\"tail\">tail</h1>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <h1 id=\"tail\">tail</h1>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/comment-blank/4/sibling",
     "source": "> - intro\n> %% c\n> \n>     - tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <ul>\n        <li>tail</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <ul>\n        <li>tail</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/comment-blank/4/quote",
     "source": "> - intro\n> %% c\n> \n>     > tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <blockquote><p>tail</p></blockquote>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <blockquote><p>tail</p></blockquote>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "quote-list/comment-blank/4/fence",
     "source": "> - intro\n> %% c\n> \n>     ```\n>     tail\n>     ```\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <pre><code>tail\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p>\n      <pre><code>tail\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
   },
   {
     "id": "list-quote/ordinary/0/text",
@@ -2042,22 +2042,22 @@
   {
     "id": "list-list/blank/4/heading",
     "source": "- - intro\n\n    # tail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        <h1 id=\"tail\">tail</h1>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <h1 id=\"tail\">tail</h1>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list-list/blank/4/sibling",
     "source": "- - intro\n\n    - tail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        <ul>\n          <li>tail</li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <ul>\n          <li>tail</li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list-list/blank/4/quote",
     "source": "- - intro\n\n    > tail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        <blockquote><p>tail</p></blockquote>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <blockquote><p>tail</p></blockquote>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list-list/blank/4/fence",
     "source": "- - intro\n\n    ```\n    tail\n    ```\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        <pre><code>tail\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <pre><code>tail\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list-list/low-comment/0/text",
@@ -2342,21 +2342,21 @@
   {
     "id": "list-list/comment-blank/4/heading",
     "source": "- - intro\n%% c\n\n    # tail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        <h1 id=\"tail\">tail</h1>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <h1 id=\"tail\">tail</h1>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list-list/comment-blank/4/sibling",
     "source": "- - intro\n%% c\n\n    - tail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        <ul>\n          <li>tail</li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <ul>\n          <li>tail</li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list-list/comment-blank/4/quote",
     "source": "- - intro\n%% c\n\n    > tail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        <blockquote><p>tail</p></blockquote>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <blockquote><p>tail</p></blockquote>\n      </li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "id": "list-list/comment-blank/4/fence",
     "source": "- - intro\n%% c\n\n    ```\n    tail\n    ```\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        <pre><code>tail\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <pre><code>tail\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>"
   }
 ]

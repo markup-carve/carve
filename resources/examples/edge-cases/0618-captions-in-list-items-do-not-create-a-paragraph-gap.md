@@ -1,6 +1,6 @@
 ## Captions in list items do not create a paragraph gap
 
-The caption slot permits zero or one blank line after its host. That blank does not loosen the enclosing list. Two blanks detach the caption; the resulting paragraph does loosen the list. These cases cover each captionable host. They also cover hosts after nested lists and hosts opened after a blank.
+The caption slot permits zero or one blank line after its host. That blank does not loosen the enclosing list. Two blanks detach the caption; the resulting paragraph does loosen the list. These cases cover each captionable host. They also cover hosts after nested lists and hosts opened after a blank. A blank before the host itself stands between two of the item's blocks and loosens the list (PART 9 §17 L1).
 
 No blank before a table caption
 
@@ -625,13 +625,13 @@ A blank opens a quote before its caption
 
 ```html
 <ul>
-  <li>text
+  <li><p>text</p>
     <figure>
       <blockquote><p>q</p></blockquote>
       <figcaption>cap</figcaption>
     </figure>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
@@ -654,13 +654,13 @@ A blank opens a figure group before its caption
 
 ```html
 <ul>
-  <li>text
+  <li><p>text</p>
     <figure class="carve-figure-group">
       <img src="b.png" alt="a">
       <figcaption>cap</figcaption>
     </figure>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
@@ -681,7 +681,7 @@ A blank opens a table before its caption
 
 ```html
 <ul>
-  <li>text
+  <li><p>text</p>
     <table>
       <caption>cap</caption>
       <tbody>
@@ -689,7 +689,7 @@ A blank opens a table before its caption
       </tbody>
     </table>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
@@ -709,7 +709,7 @@ A blank opens the final quote before its caption
 
 ```html
 <ul>
-  <li>text
+  <li><p>text</p>
     <figure>
       <blockquote><p>q</p></blockquote>
       <figcaption>cap</figcaption>

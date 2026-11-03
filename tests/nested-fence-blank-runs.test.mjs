@@ -44,7 +44,8 @@ test('a comment closer outside the item cannot hide its unfinished code fence', 
 
 test('an attached block starts after the item own unfinished fence', () => {
   const html = renderDoc(parse('- p\n\n  ```\n  code\n+\nflush\n'))
-  assert.ok(html.includes('code\n</code></pre>\n    flush'), html)
+  // The blank before the fence loosens the item (PART 9 §17 L1), so `flush` is wrapped.
+  assert.ok(html.includes('code\n</code></pre>\n    <p>flush</p>'), html)
 })
 
 test('an overindented comment can close at its owning item column', () => {

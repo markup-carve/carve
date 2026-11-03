@@ -14,8 +14,8 @@ for (const [name, source, expected] of [
   ['open paragraph control', '- a\n %% c\n  text\n', '<ul><li>a text\n</li></ul>'],
   ['blank control', '- a\n\n %% c\n  text\n', '<ul><li><p>a</p><p>text</p></li></ul>'],
   ['paragraph ends sublist', '- outer\n  - para\n\n  text\n\n    ```\n', '<ul><li><p>outer</p><ul><li>para</li></ul><p>text</p><pre><code></code></pre></li></ul>'],
-  ['quote ends sublist', '- outer\n  - para\n  > q\n\n    ```\n', '<ul><li>outer <ul><li>para</li></ul><blockquote><p>q</p></blockquote><pre><code></code></pre></li></ul>'],
-  ['blank before quote ends sublist', '- outer\n  - para\n\n  > q\n\n    ```\n', '<ul><li>outer <ul><li>para</li></ul><blockquote><p>q</p></blockquote><pre><code></code></pre></li></ul>'],
+  ['quote ends sublist', '- outer\n  - para\n  > q\n\n    ```\n', '<ul><li><p>outer</p><ul><li>para</li></ul><blockquote><p>q</p></blockquote><pre><code></code></pre></li></ul>'],
+  ['blank before quote ends sublist', '- outer\n  - para\n\n  > q\n\n    ```\n', '<ul><li><p>outer</p><ul><li>para</li></ul><blockquote><p>q</p></blockquote><pre><code></code></pre></li></ul>'],
 ]) {
   test(name, () => assert.equal(html(source), normalize(expected)))
 }

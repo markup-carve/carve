@@ -112,7 +112,7 @@ const protectedCases = [
   {
     "name": "blank-before-run",
     "source": "- outer\n  - head\n\n    ```\n    a\n   ```\n\n    tail\n",
-    "expected": "<ul>\n  <li>outer\n    <ul>\n      <li>head\n        <pre><code>a\n</code></pre>\n      </li>\n    </ul>\n    <pre><code>\n tail\n</code></pre>\n  </li>\n</ul>"
+    "expected": "<ul>\n  <li>outer\n    <ul>\n      <li><p>head</p>\n        <pre><code>a\n</code></pre>\n      </li>\n    </ul>\n    <pre><code>\n tail\n</code></pre>\n  </li>\n</ul>"
   },
   {
     "name": "outer-tail-four",

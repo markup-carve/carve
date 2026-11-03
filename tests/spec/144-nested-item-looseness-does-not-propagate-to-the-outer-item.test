@@ -9,7 +9,7 @@ Nested item looseness does not propagate to the outer item
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <blockquote><p>q</p></blockquote>
       </li>
     </ul>
@@ -42,7 +42,7 @@ Nested item looseness does not propagate to the outer item
 <ul class="task-list">
   <li><input type="checkbox" disabled aria-label="a"> a
     <ul>
-      <li>b
+      <li><p>b</p>
         <blockquote><p>q</p></blockquote>
       </li>
     </ul>

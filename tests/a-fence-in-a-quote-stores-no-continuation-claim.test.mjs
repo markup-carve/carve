@@ -386,7 +386,7 @@ test('shifted code and raw fences release unmarked lines at every quote depth', 
         const payload = opener.endsWith('=html') ? 'x\n' : '<pre><code>x\n</code></pre>\n'
         let expected = ''
         for (let i = 0; i < depth; i++) expected += '  '.repeat(i) + '<blockquote>\n'
-        expected += `${pad}<ul>\n${pad}  <li>a\n${pad}    ${payload}${pad}  </li>\n${pad}</ul>\n`
+        expected += `${pad}<ul>\n${pad}  <li><p>a</p>\n${pad}    ${payload}${pad}  </li>\n${pad}</ul>\n`
         for (let i = depth - 1; i >= 0; i--) expected += '  '.repeat(i) + '</blockquote>\n'
         expected += '<p>flush</p>'
         for (const closer of ['', `${q}${spaces}${opener.slice(0, 3)}\n`]) {

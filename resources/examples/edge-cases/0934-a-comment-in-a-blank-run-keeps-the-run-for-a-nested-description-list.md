@@ -87,7 +87,7 @@ The same run with a comment, before a new term.
 <ul>
   <li>o
     <ul>
-      <li>p
+      <li><p>p</p>
         <dl>
           <dt>t</dt>
           <dd>x</dd>

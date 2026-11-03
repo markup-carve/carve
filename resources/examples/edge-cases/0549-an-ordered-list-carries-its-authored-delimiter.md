@@ -78,7 +78,7 @@ d) delta
 
 ```html
 <ol>
-  <li>outer
+  <li><p>outer</p>
     <ol data-delim=")">
       <li>inner</li>
     </ol>

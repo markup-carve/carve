@@ -8,7 +8,7 @@ A dropped raw block takes no line in the container that holds it
   ```
 .
 <ul>
-  <li>a</li>
+  <li><p>a</p></li>
 </ul>
 ````
 
@@ -32,9 +32,9 @@ A dropped raw block takes no line in the container that holds it
     ```
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
-      <li>b</li>
+      <li><p>b</p></li>
     </ul>
   </li>
 </ul>
@@ -49,7 +49,7 @@ A dropped raw block takes no line in the container that holds it
 .
 <blockquote>
   <ul>
-    <li>a</li>
+    <li><p>a</p></li>
   </ul>
 </blockquote>
 ````
@@ -112,7 +112,7 @@ x[^1]
   ```
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <x>
   </li>
 </ul>

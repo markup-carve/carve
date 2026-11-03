@@ -325,7 +325,7 @@ own text and not a document paragraph.
 
 ```html
 <ul>
-  <li>intro
+  <li><p>intro</p>
     <dl>
       <dt>term</dt>
       <dd>
@@ -333,7 +333,7 @@ own text and not a document paragraph.
         <h1 id="H">H</h1>
       </dd>
     </dl>
-    tail
+    <p>tail</p>
   </li>
 </ul>
 ```

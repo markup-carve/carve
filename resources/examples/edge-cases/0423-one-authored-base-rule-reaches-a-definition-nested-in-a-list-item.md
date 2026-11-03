@@ -19,7 +19,7 @@ block's base, so the quote at the definition's content column remains in the
 
 ```html
 <ul>
-  <li>intro
+  <li><p>intro</p>
     <dl>
       <dt>term</dt>
       <dd>
@@ -58,7 +58,7 @@ see[^n]
     <li id="fn1">
       <p>intro</p>
       <ul>
-        <li>item
+        <li><p>item</p>
           <blockquote><p>quote</p></blockquote>
         </li>
       </ul>

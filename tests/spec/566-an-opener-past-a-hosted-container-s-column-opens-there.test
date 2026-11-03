@@ -87,7 +87,7 @@ tail
     ```
 .
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
       <li>para</li>
     </ul>

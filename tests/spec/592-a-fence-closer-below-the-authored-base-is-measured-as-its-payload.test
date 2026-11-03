@@ -46,7 +46,7 @@ A fence closer below the authored base is measured as its payload
   tail
 .
 <ul>
-  <li>item
+  <li><p>item</p>
     <pre><code>a
 ```
 

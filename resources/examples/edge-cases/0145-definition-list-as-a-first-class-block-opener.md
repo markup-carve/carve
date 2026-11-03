@@ -69,7 +69,7 @@ Below the content column but not at column 0, it folds in as lazy item text.
 
 :::
 
-A blank line before a nested definition list keeps the outer item tight (§17), like any other nested sub-block.
+A blank line before a nested definition list loosens the outer item (§17 L1), like any other block after the lead.
 
 ::: compare
 
@@ -82,7 +82,7 @@ A blank line before a nested definition list keeps the outer item tight (§17), 
 
 ```html
 <ul>
-  <li>one
+  <li><p>one</p>
     <dl>
       <dt>t</dt>
       <dd>d</dd>

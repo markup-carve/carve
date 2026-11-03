@@ -19,7 +19,7 @@ An indented list starts a new list at a different marker
    - y
 .
 <ul>
-  <li>p
+  <li><p>p</p>
     <ul>
       <li>x</li>
     </ul>

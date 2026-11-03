@@ -21,7 +21,7 @@ A list marker at the content column inside an open fence
   ```
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <pre><code>- x
 </code></pre>
   </li>

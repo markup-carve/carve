@@ -33,7 +33,7 @@ At the content column, it nests into the item.
 
 ```html
 <ul>
-  <li>one
+  <li><p>one</p>
     <blockquote><p>q</p></blockquote>
   </li>
 </ul>
@@ -53,7 +53,7 @@ Past the content column, a recognized opener remains structural and uses its aut
 
 ```html
 <ul>
-  <li>one
+  <li><p>one</p>
     <h1 id="h">h</h1>
   </li>
 </ul>

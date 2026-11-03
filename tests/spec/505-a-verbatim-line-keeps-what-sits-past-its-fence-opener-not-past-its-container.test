@@ -10,7 +10,7 @@ A verbatim line keeps what sits past its fence opener, not past its container
     ```
 .
 <ul>
-  <li>item
+  <li><p>item</p>
     <pre><code>a
   
 b
@@ -29,7 +29,7 @@ b
     ```
 .
 <ul>
-  <li>item
+  <li><p>item</p>
     <pre><code>a
 
 b

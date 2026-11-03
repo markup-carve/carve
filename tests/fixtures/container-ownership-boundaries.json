@@ -45,15 +45,15 @@
   },
   {
     "source": "- : d\n\n    > q",
-    "html": "<ul>\n  <li>: d\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>: d</p>\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ul>"
   },
   {
     "source": "- : d\n\n    ```\n    x\n    ```",
-    "html": "<ul>\n  <li>: d\n    <pre><code>x\n</code></pre>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>: d</p>\n    <pre><code>x\n</code></pre>\n  </li>\n</ul>"
   },
   {
     "source": "- : d\n\n    ::: html\n    <b>x</b>\n    :::",
-    "html": "<ul>\n  <li>: d\n    <div class=\"html\">\n      <p>&lt;b&gt;x&lt;/b&gt;</p>\n    </div>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li><p>: d</p>\n    <div class=\"html\">\n      <p>&lt;b&gt;x&lt;/b&gt;</p>\n    </div>\n  </li>\n</ul>"
   },
   {
     "source": "- > ::: html\n  > <b>x</b>\n    > y\n  > :::",

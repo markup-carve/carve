@@ -13,7 +13,7 @@ A fence run that dedents out of a child keeps the outer item tight
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -38,7 +38,7 @@ tail
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -63,7 +63,7 @@ tail
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -88,7 +88,7 @@ tail
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -113,7 +113,7 @@ tail
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -139,8 +139,8 @@ tail
 <ul>
   <li>outer
     <ul>
-      <li>one</li>
-      <li>two
+      <li><p>one</p></li>
+      <li><p>two</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -165,7 +165,7 @@ tail
 <ol>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -191,7 +191,7 @@ tail
   <ul>
     <li>outer
       <ul>
-        <li>head
+        <li><p>head</p>
           <pre><code>a
 </code></pre>
         </li>
@@ -218,7 +218,7 @@ tail
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -244,7 +244,7 @@ tail
 <ul>
   <li><p>outer</p>
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -269,7 +269,7 @@ tail
 <ul>
   <li><p>outer</p>
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -294,7 +294,7 @@ tail
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -320,7 +320,7 @@ c
 <ul>
   <li>outer
     <ul>
-      <li>head
+      <li><p>head</p>
         <pre><code>a
 </code></pre>
       </li>
@@ -348,7 +348,7 @@ tail
     <ul>
       <li>head
         <ul>
-          <li>deep
+          <li><p>deep</p>
             <pre><code>a
 </code></pre>
           </li>

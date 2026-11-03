@@ -2,7 +2,8 @@
 
 An over-indented recognized block after a nested list remains an attached block.
 Its authored quote column is temporary; it does not turn the quote into a
-paragraph or make the outer item loose.
+paragraph. The blank before it stands between two of the outer item's blocks,
+so the outer item is loose (PART 9 §17 L1).
 
 ::: compare
 
@@ -15,7 +16,7 @@ paragraph or make the outer item loose.
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
       <li>b</li>
     </ul>

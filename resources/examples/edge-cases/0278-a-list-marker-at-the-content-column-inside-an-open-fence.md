@@ -50,11 +50,8 @@ invisible to the other. A single row would let half of this rule stay broken and
 still read as done, which is the failure carve-php#1003 had to correct and the
 reason the ruling on carve-php#1007 asked for both shapes at once.
 
-The item stays TIGHT and `a` stays bare: PART 9 §17 L2 names fenced code among
-the sub-blocks a blank line attaches WITHOUT loosening, and no second paragraph
-ever appears here.
-`164-tight-list-item-keeps-trailing-text-after-a-block-bare-3` is this same
-opening plus a trailing paragraph, and that paragraph is what loosens it there.
+The item is loose and `a` is wrapped: the blank line stands between the lead
+and the fence, two of the item's blocks (PART 9 §17 L1).
 
 ::::: compare
 
@@ -68,7 +65,7 @@ opening plus a trailing paragraph, and that paragraph is what loosens it there.
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <pre><code>- x
 </code></pre>
   </li>

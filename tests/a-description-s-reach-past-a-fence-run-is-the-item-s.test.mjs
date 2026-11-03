@@ -188,7 +188,7 @@ test('the inner-item row now takes the owner table', () => {
   // container between the fence's host and that owner closes.
   assert.equal(
     html('- outer\n  - head\n\n    ```\n    a\n```\n'),
-    '<ul>\n  <li>outer\n    <ul>\n      <li>head\n        <pre><code>a\n' +
+    '<ul>\n  <li>outer\n    <ul>\n      <li><p>head</p>\n        <pre><code>a\n' +
       '</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code></code></pre>',
   )
 })

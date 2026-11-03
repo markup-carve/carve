@@ -15,7 +15,7 @@ A post-blank block attached to a nested (inner) item loosens only that inner ite
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <blockquote><p>q</p></blockquote>
       </li>
     </ul>
@@ -64,7 +64,7 @@ The content-column threshold follows the marker, so a task item's nested block b
 <ul class="task-list">
   <li><input type="checkbox" disabled aria-label="a"> a
     <ul>
-      <li>b
+      <li><p>b</p>
         <blockquote><p>q</p></blockquote>
       </li>
     </ul>

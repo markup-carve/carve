@@ -23,7 +23,7 @@ keeps the two columns past the opener rather than the four past the item.
 
 ````html
 <ul>
-  <li>item
+  <li><p>item</p>
     <pre><code>a
   
 b
@@ -52,7 +52,7 @@ content column does not turn it into two spaces.
 
 ````html
 <ul>
-  <li>item
+  <li><p>item</p>
     <pre><code>a
 
 b

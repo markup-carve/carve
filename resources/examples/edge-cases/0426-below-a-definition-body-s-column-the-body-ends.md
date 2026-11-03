@@ -153,7 +153,7 @@ written below it.
 
 ```html
 <ul>
-  <li>intro
+  <li><p>intro</p>
     <dl>
       <dt>term</dt>
       <dd>definition</dd>

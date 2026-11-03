@@ -8,7 +8,7 @@ A description marker line without a paragraph gives the next line no lazy host
 after
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <dl>
       <dt>T</dt>
       <dd>

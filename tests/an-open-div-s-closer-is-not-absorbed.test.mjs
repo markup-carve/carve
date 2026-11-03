@@ -11,7 +11,7 @@ test('a closed div leaves no paragraph for a line below, whatever hosts it', () 
   const cases = [
     [':::\n:::e\n:::\nl\n', `${div}<p>l</p>`],
     ['- :::\n  :::e\n  :::\nl\n', `<ul><li>${div}</li></ul><p>l</p>`],
-    ['- a\n\n  :::\n  :::e\n  :::\nl\n', `<ul><li>a ${div}</li></ul><p>l</p>`],
+    ['- a\n\n  :::\n  :::e\n  :::\nl\n', `<ul><li><p>a</p>${div}</li></ul><p>l</p>`],
     ['- o\n  - :::\n    :::e\n    :::\nl\n', `<ul><li>o <ul><li>${div}</li></ul></li></ul><p>l</p>`],
     ['> :::\n> :::e\n> :::\nl\n', `<blockquote>${div}</blockquote><p>l</p>`],
     [':: t\n: :::\n  :::e\n  :::\nl\n', `<dl><dt>t</dt><dd>${div}</dd></dl><p>l</p>`],

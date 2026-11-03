@@ -8,7 +8,7 @@ A description separator left of its item's column folds into the definition body
  :  under
 .
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>Term</dt>
       <dd>Def
@@ -26,7 +26,7 @@ A description separator left of its item's column folds into the definition body
 :  under
 .
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>Term</dt>
       <dd>Def</dd>
@@ -45,7 +45,7 @@ A description separator left of its item's column folds into the definition body
  :  under
 .
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>Term</dt>
       <dd>Def</dd>

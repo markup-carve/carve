@@ -17,7 +17,7 @@ paragraph, the definition body (CARVE-P9-083, PART 9 §10 I2; carve#3547).
 
 ```html
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>Term</dt>
       <dd>Def
@@ -44,7 +44,7 @@ document. It ends the item, and the line opens a paragraph (carve#3451).
 
 ```html
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>Term</dt>
       <dd>Def</dd>
@@ -72,7 +72,7 @@ line to fold into. Below the item's column it ends the list.
 
 ```html
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>Term</dt>
       <dd>Def</dd>

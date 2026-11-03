@@ -20,7 +20,7 @@ PART 0 S4, PART 9 §11 N1 (carve#4369). A list marker of another kind at column 
   <li>y</li>
 </ul>
 <ol>
-  <li>c
+  <li><p>c</p>
     <h1 id="h">h</h1>
   </li>
 </ol>
@@ -41,10 +41,10 @@ PART 0 S4, PART 9 §11 N1 (carve#4369). A list marker of another kind at column 
 
 ```html
 <ul>
-  <li>x
+  <li><p>x</p>
     <ol start="10">
-      <li>y</li>
-      <li>c
+      <li><p>y</p></li>
+      <li><p>c</p>
         <h1 id="h">h</h1>
       </li>
     </ol>
@@ -88,7 +88,7 @@ PART 0 S4, PART 9 §11 N1 (carve#4369). A list marker of another kind at column 
 
 ```html
 <ul>
-  <li>x
+  <li><p>x</p>
     <ol>
       <li>y</li>
     </ol>

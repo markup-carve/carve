@@ -83,7 +83,8 @@ test('authored list bases preserve exact looseness, ownership, and fence payload
   const exactImage = oracleHtml('- item\n\n  ![a](u)\n')
   assert.equal(oracleHtml('- item\n\n   ![a](u)\n'), exactImage)
   assert.match(exactImage, /<li><p>item<\/p>/)
-  assert.match(oracleHtml('- - a\n\n    # child\n'), /<li>a\s*<h1/)
+  // The blank before the heading loosens the inner item (PART 9 §17 L1, carve#5015).
+  assert.match(oracleHtml('- - a\n\n    # child\n'), /<li><p>a<\/p>\s*<h1/)
   assert.match(oracleHtml('- - a\n\n   # parent\n'), /<\/ul>\s*<h1 id="parent">/)
   const exactFence = '- item\n\n  ```\n  a\n\n   b\n  ```\n'
   const overFence = '- item\n\n     ```\n     a\n\n   b\n     ```\n'

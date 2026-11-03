@@ -17,7 +17,7 @@ An abbreviation definition in an item body is paragraph text
   - b
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
       <li>b</li>
     </ul>
@@ -33,12 +33,12 @@ An abbreviation definition in an item body is paragraph text
 - c
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
       <li>b</li>
     </ul>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
