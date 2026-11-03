@@ -1,0 +1,113 @@
+A quoted span after a hosted span's closer leaves the follower outside
+
+```
+> > - %%%
+> > %%%
+> > %%%
+> > x
+t
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li></li>
+    </ul>
+  </blockquote>
+</blockquote>
+<p>t</p>
+```
+
+```
+> - %%%
+> %%%
+> %%%
+> x
+t
+.
+<blockquote>
+  <ul>
+    <li></li>
+  </ul>
+</blockquote>
+<p>t</p>
+```
+
+```
+> > > 1. %%%%
+> > > %%%%
+> > > %%%%
+> > > x
+- t
+.
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <ol>
+        <li></li>
+      </ol>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<ul>
+  <li>t</li>
+</ul>
+```
+
+```
+> :: d
+> : %%%
+> %%%
+> %%%
+> x
+: t
+.
+<blockquote>
+  <dl>
+    <dt>d</dt>
+    <dd></dd>
+  </dl>
+</blockquote>
+<p>: t</p>
+```
+
+```
+> > - - %%%
+> >  %%%
+> > %%%
+> > x
+> - t
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>
+        <ul>
+          <li></li>
+        </ul>
+      </li>
+    </ul>
+  </blockquote>
+  <ul>
+    <li>t</li>
+  </ul>
+</blockquote>
+```
+
+```
+> > - %%%
+> > %%%
+> > %%%
+> > %%%
+> > x
+t
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li></li>
+    </ul>
+    <p>x
+t</p>
+  </blockquote>
+</blockquote>
+```
