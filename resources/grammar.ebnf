@@ -746,6 +746,15 @@ blank_line = {whitespace}, newline ;
    ============================================================================ *)
 
 (* --- Headings --- *)
+(* A BLOCK BRACE RUN CONTINUES PAST ITS OPENER -- NORMATIVE [CARVE-P2-035].
+   A block-position attribute or comment run continues only on lines indented
+   at least one column past its opening `{`, including a closing-delimiter-only
+   line. If a continuation fails, the entire run is paragraph text. The column
+   comparison is made inside its owner after quote prefixes are read. Inline
+   attribute and comment runs remain governed by their inline productions.
+   PART 4 `continuation` spells the attribute production; PART 9 §21a gives
+   comment rendering. The importer now passes these runs through. *)
+
 (* ATX (`#` prefix) only. Setext (underline) headings are intentionally
    NOT supported, matching djot: a `---` underline collides with the
    thematic break and frontmatter delimiter, reintroducing the ambiguity
@@ -3536,15 +3545,15 @@ quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' 
 (* Block-level attributes appear on their own line(s) preceding a block.
    A single attribute block may span multiple physical lines (the `}`
    need not be on the opening line): a continuation is a single line
-   break optionally followed by indentation. A BLANK line (two line
+   break followed by indentation at least one column past the opening `{`.
+   This includes a line containing only the closing `}`. A BLANK line (two line
    breaks) ends the block -- it is not interior padding; an attribute
    block interrupted by a blank line is not a `block_attributes`; its lines
    are literal paragraph text. Merge + reach semantics
    (including float-across-blank-lines BETWEEN separate blocks): PART 9 §15. *)
-(* Continuation lines may sit at any column but must carry the quote prefix
-   of the container that opened the block. A line without that prefix does
-   not continue the attribute: its first line is paragraph text, and the
-   prefix-less line may lazily continue that paragraph. *)
+(* Every continuation line must carry the quote prefix of its container and
+   reach at least one column past the opening `{`. If any line fails, the
+   entire run is paragraph text, as when a blank line interrupts it. *)
 block_attributes = block_attribute_block, {block_attribute_block}, newline ;
 block_attribute_block = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}' ;
 (* A GLUED RUN IS ONE ATTRIBUTE LINE. `{.a}{.b}` on a line of its own is one
@@ -3563,7 +3572,7 @@ block_attribute_block = '{', opt_pad, attribute, {attr_separator, attribute}, op
 attr_pad = {space} ;                     (* attribute-block padding within a
                                             line: spaces only, no tab and no
                                             line break *)
-opt_ws = {whitespace} ;                  (* a LEADING indentation run, spaces
+opt_ws = whitespace, {whitespace} ;      (* a LEADING indentation run, spaces
                                             and tabs. Read by continuation
                                             only *)
 opt_pad = attr_pad, [continuation] ;     (* block-attribute padding: spaces,
@@ -3571,24 +3580,7 @@ opt_pad = attr_pad, [continuation] ;     (* block-attribute padding: spaces,
                                             indentation -- a blank line ends the
                                             block and is never interior padding *)
 attr_separator = (space | continuation), attr_pad ;  (* one space OR one line break *)
-continuation = newline, opt_ws ;         (* a single line break + indent; NOT a blank line *)
-(* AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED --
-   NORMATIVE [CARVE-P4-008]. The `continuation` above is Carve's own, and it
-   admits an unindented second line; a source language need not. Djot requires
-   a block attribute's later lines to be indented past the run's opening
-   column, and that requirement covers every block-position brace run, the
-   comment-only form `{% ... %}` included -- one construct, so one rule, not a
-   separate reading for comments. Inline attribute and comment runs may span
-   unindented lines; this block-position requirement does not apply to them. An importer that meets a block-position brace run whose
-   continuation sits at or below the opener's own column takes the whole run as
-   ordinary text: `{% x` / `y %}` at column 0 imports as a paragraph carrying
-   both lines, and a following `# b` is paragraph text in that same paragraph
-   rather than a heading, so the ownership of the block after the run follows
-   from this rule and needs none of its own. Indented, `{% x` / `  y %}` is a
-   comment whose text is dropped, exactly as `{#id` / `  key=1}` applies
-   attributes where `{#id` / `key=1}` does not. Inside a container the column
-   compared is the opener's, so a list item's content column governs there.
- *)
+continuation = newline, opt_ws ;         (* one line break + indent past the opening `{`; NOT a blank line *)
 (* ============================================================================
    PART 5: ABBREVIATIONS
    ============================================================================ *)
@@ -6242,9 +6234,11 @@ EOF = (* end of file *) ;
          so `> {.k}` / `tail` ends the quote and A4 drops the attribute.
          This clause does not decide how an empty container renders.
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
-         one block: id `id`, class `foo`). A BLANK line inside the braces
-         ends the attempt -- the text is then literal, not a
-         block_attributes. Each block of a glued run (`{.a}{.b}`) wraps by
+         one block: id `id`, class `foo`). Every continuation line, including
+         a line containing only `}`, must be indented at least one column past
+         the opening `{` (PART 4 `continuation`). A line at or below that
+         column, like a BLANK line inside the braces, ends the attempt: the
+         whole run is paragraph text, not `block_attributes`. Each block of a glued run (`{.a}{.b}`) wraps by
          this same rule, so `{.a}{.b` / `}` and `{.a` / `}{.b}` are attribute
          lines. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
@@ -6252,10 +6246,10 @@ EOF = (* end of file *) ;
          indentation does not change what a wrapped block is
          (CARVE-P0-024): an indented block that wraps is an attribute line
          exactly like ` {.c}` and `{.c` + newline + ` }`. Its continuation
-         lines belong to it at any column, so it interrupts an open
-         paragraph (A1), and the line after its `}` is not lazy (PART 0 T:
+         lines that pass the opener's column belong to it, so it interrupts an
+         open paragraph (A1), and the line after its `}` is not lazy (PART 0 T:
          an attribute line leaves no paragraph open). `- a` / `   {.c` /
-         `   }` / `para` ends the item's paragraph, drops the attribute in
+         `    }` / `para` ends the item's paragraph, drops the attribute in
          the item (A4) and reads `para` as a document paragraph.
       A6 NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE. A `{…}` line whose
          braces do not parse as an attribute list is ordinary paragraph
@@ -6919,6 +6913,11 @@ EOF = (* end of file *) ;
       - MULTI-LINE WITHIN A PARAGRAPH. The run may cross soft line breaks:
         `a {% one\ntwo %} b` renders `<p>a  b</p>`. It never joins two
         paragraphs across a blank line -- `%%%` is the block form (§28).
+        At block position its continuations follow CARVE-P2-035: each later
+        line, including a `%}`-only closer, must be indented past the opening
+        `{`. Otherwise every line of the run is literal paragraph text, and a
+        following line without a blank joins that paragraph. The inline run
+        after `a ` above keeps its own rule.
       - ESCAPING. `\{%` is literal text.
       - EVERY RENDER TARGET DROPS IT. HTML, Markdown, plain text and ANSI emit
         nothing for it, as they already do for `%%`. A host that wants comments
@@ -9742,6 +9741,12 @@ EOF = (* end of file *) ;
       attributes. A spelling the AST records is the author's and is reproduced
       (`*` vs `-` bullets, ordered-list dialect).
       A spelling it does not record is chosen by the writer canonically.
+
+      A block attribute line the writer wraps indents every continuation at
+      least one column past its opening `{`, including a closing `}` alone
+      (CARVE-P2-035). A writer may instead keep the entire attribute on one
+      line. It MUST NOT emit a wrapped run that the reader takes as paragraph
+      text, since that loses the attribute under §1.
 
       THE SPACE AFTER A LIST MARKER is one space, except after a letter or
       roman numeral followed by `.`, which takes two (PART 2 ordered_item,

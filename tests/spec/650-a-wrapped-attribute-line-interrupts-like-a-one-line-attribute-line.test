@@ -9,9 +9,11 @@ y
 ~~~
 .
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+}</li>
 </ul>
-<pre class="c"><code>y
+<pre><code>y
 </code></pre>
 ```
 
@@ -22,9 +24,11 @@ y
 para
 .
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+.d}
+para</li>
 </ul>
-<p class="c d">para</p>
 ```
 
 ````
@@ -45,8 +49,11 @@ y
     </ul>
   </li>
 </ul>
-<pre class="c"><code>y
-</code></pre>
+<p>{.c
+}
+~~~
+y
+~~~</p>
 ````
 
 ```
@@ -58,7 +65,9 @@ para
 .
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+{.c
+}
+para</dd>
 </dl>
-<p class="c">para</p>
 ```

@@ -12,7 +12,7 @@ test('an attribute run before a + attached fence in an item does not end the fen
   assert.equal(renderDoc(parse('- a\n+\n{x}\npara\n  more\n')), '<ul>\n  <li>a\n    <p x="">para\nmore</p>\n  </li>\n</ul>')
 })
 
-test('an attribute run that is all that follows refuses the +, carve#4449', () => {
-  assert.equal(renderDoc(parse('- a\n+\n{x\ny}\n')), '<ul>\n  <li>a</li>\n</ul>')
-  assert.equal(renderDoc(parse('- a\n+\n{x\ny}\n- b\n')), '<ul>\n  <li>a</li>\n</ul>\n<ul x="" y="">\n  <li>b</li>\n</ul>')
+test('a shallow brace run after + stays literal, carve#5080', () => {
+  assert.equal(renderDoc(parse('- a\n+\n{x\ny}\n')), '<ul>\n  <li>a\n    {x\ny}\n  </li>\n</ul>')
+  assert.equal(renderDoc(parse('- a\n+\n{x\ny}\n- b\n')), '<ul>\n  <li>a\n    {x\ny}\n  </li>\n  <li>b</li>\n</ul>')
 })

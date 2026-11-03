@@ -7,8 +7,13 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (source) => renderDoc(parse(source)).replace(/\n\s*/g, '')
 const asLetter = (source) => html(source.replace(/^((?:> )?)\+$/m, '$1Z')).replace('Z', '+')
 
-test('a sublist at the content column refuses the + in every spelling of the run', () => {
+test('a sublist after an attribute run or a shallow literal brace run follows the ruling', () => {
   for (const run of ['{x}', '{x}\n{y}', '{x\ny}']) {
+    if (run === '{x\ny}') {
+      assert.equal(html(`- a\n+\n${run}\n  - c\n`), '<ul><li>a{xy}- c</li></ul>', run)
+      assert.equal(html(`1. a\n+\n${run}\n   - c\n`), '<ol><li>a{xy}- c</li></ol>', run)
+      continue
+    }
     const attrs = run === '{x}' ? ' x=""' : ' x="" y=""'
     assert.equal(html(`- a\n+\n${run}\n  - c\n`), `<ul><li>a</li></ul><ul${attrs}><li>c</li></ul>`, run)
     assert.equal(html(`1. a\n+\n${run}\n   - c\n`), `<ol><li>a</li></ol><ul${attrs}><li>c</li></ul>`, run)

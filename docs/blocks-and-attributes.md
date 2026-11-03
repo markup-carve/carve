@@ -13,6 +13,8 @@ Carve has two kinds of element, and **attributes attach to each kind in a differ
 
 This mirrors djot: block attributes lead the block; inline attributes trail the span. Carve keeps that rule uniform - there is no "trailing attribute" on a block line.
 
+A block attribute can wrap onto later lines only when every later line is indented past the opening `{`, including a line containing just `}`. A line at or below that column makes the entire run paragraph text. Inside a quote or list, compare columns after its structural prefix. Inline attribute runs follow their separate inline rule.
+
 ## Block elements
 
 A block owns a rectangle of the document: it starts on its own line and is separated from its neighbors by structure (a blank line, a marker, a fence).

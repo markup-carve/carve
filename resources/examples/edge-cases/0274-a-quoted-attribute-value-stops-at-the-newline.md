@@ -77,7 +77,9 @@ paragraph
 ```
 
 ```html
-<p class="a b">paragraph</p>
+<p>{.a
+.b}</p>
+<p>paragraph</p>
 ```
 
 :::

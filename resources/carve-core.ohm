@@ -720,7 +720,8 @@ CarveCore {
   // AT MOST ONE LINE BREAK PER SLOT, mirroring the three productions this
   // rule implements: `opt_pad = attr_pad, [continuation]`,
   // `attr_separator = (space | continuation), attr_pad` and
-  // `continuation = newline, opt_ws`. It ran on `battrSp*` with the newline
+  // `continuation = newline, opt_ws`, where opt_ws starts with indentation.
+  // It ran on `battrSp*` with the newline
   // folded into `battrSp`, so `{.a` + blank line + `.b}` matched here while
   // grammar.ebnf says a BLANK line ends a block attribute and is never
   // interior padding (carve#888).
@@ -739,7 +740,7 @@ CarveCore {
   blockAttrs = "{" battrPad attrItem (battrSep attrItem)* battrPad "}"
   battrPad   = " "* battrCont?
   battrSep   = (" " | battrCont) " "*
-  battrCont  = "\n" battrIndent*
+  battrCont  = "\n" battrIndent+
   battrIndent = " " | "\t"
   attrItem   = langAttr | idAttr | classAttr | kvAttr | boolAttr
   idAttr     = "#" explicitIdent

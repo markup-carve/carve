@@ -1,0 +1,1 @@
+The pinned carve-js build still applies the former block attribute continuation rule; PART 2 and markup-carve/carve#5080 require each wrapped line, including a closing brace line, to be indented past its opening brace column.

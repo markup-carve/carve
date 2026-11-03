@@ -6,7 +6,9 @@ A line-final run of spaces and tabs is dropped before the line is read
 
 paragraph
 .
-<p class="a b">paragraph</p>
+<p>{.a
+.b}</p>
+<p>paragraph</p>
 ```
 
 ```
@@ -15,5 +17,7 @@ paragraph
 
 paragraph
 .
-<p class="a b">paragraph</p>
+<p>{.a
+.b}</p>
+<p>paragraph</p>
 ```

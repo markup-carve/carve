@@ -145,7 +145,9 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {}
+const PINNED_DRIFT = {
+  '40-djot-a-brace-run-continuation-must-be-indented': 'carve#5080: pinned Djot importer still rewrites block-position brace runs that Carve now reads directly',
+}
 const PINNED_SOURCE_DRIFT = {}
 
 /**

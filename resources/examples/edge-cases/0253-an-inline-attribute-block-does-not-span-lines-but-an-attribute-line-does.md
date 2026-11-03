@@ -1,9 +1,9 @@
 ## An inline attribute block does not span lines, but an attribute line does
 
-`attributes` pads and separates with `opt_ws`, which grammar.ebnf annotates
-"spaces/tabs only, no line breaks". The line-spanning form is a different
-production: `block_attributes` separates with `attr_separator = (whitespace |
-continuation), opt_ws`, and `continuation` is where a newline is admitted.
+Inline `attributes` use spaces within one line. A standalone
+`block_attributes` run may span lines, but each continuation must be indented
+past its opening `{` (CARVE-P2-035). These historical unindented examples
+therefore read as paragraph text.
 
 So a brace run broken across two lines directly after an inline construct is
 literal text.
@@ -22,9 +22,9 @@ literal text.
 
 :::
 
-A standalone attribute line may be written the same way, and it attaches to the
-block below it. The line break is admitted in the padding as well as between
-two attributes, so all three placements are one block.
+A standalone attribute line may wrap at the separator, opening padding, or
+closing padding when the next line is indented past `{`. These three examples
+leave that indentation out, so each brace run stays text.
 
 ::: compare
 
@@ -36,7 +36,9 @@ paragraph
 ```
 
 ```html
-<p class="a b">paragraph</p>
+<p>{.a
+.b}</p>
+<p>paragraph</p>
 ```
 
 :::
@@ -56,8 +58,12 @@ second
 ```
 
 ```html
-<p class="a">first</p>
-<p class="b">second</p>
+<p>{
+.a}</p>
+<p>first</p>
+<p>{.b
+}</p>
+<p>second</p>
 ```
 
 :::

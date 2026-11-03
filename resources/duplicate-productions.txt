@@ -7,8 +7,8 @@
 # and this file has nothing to say about it.
 #
 # This file is for the other case: names that read alike today by coincidence.
-# Three kinds of indent are separate concepts whose bodies happen to agree, and
-# a later ruling could move one without moving the others. Collapsing them
+# Four indentation contexts are separate concepts whose bodies happen to agree,
+# and a later ruling could move one without moving the others. Collapsing them
 # would encode the coincidence as a rule.
 #
 # scripts/duplicate-productions.mjs fails in both directions: an undeclared
@@ -16,7 +16,7 @@
 #
 # Format: <space-separated productions> <TAB> <reason>
 
-definition_indent footnote_indent indent	Three different indents. A ruling could change what a definition or a footnote continuation requires without touching the others.
+definition_indent footnote_indent indent opt_ws	Four distinct indentation contexts. Definition, footnote, general block, and attribute continuation columns are ruled separately.
 caption_continuation_line lazy_continuation_line	Two continuation forms. Lazy continuation and caption folding are governed by separate clauses.
 continuation_marker_block first_block_content	The continuation marker's block and a container's first block. Their columns are ruled separately.
 code_block delimited_table	Both use a fenced body and optional caption. A preceding `{table}` marker and CSV or TSV info select the table interpretation.

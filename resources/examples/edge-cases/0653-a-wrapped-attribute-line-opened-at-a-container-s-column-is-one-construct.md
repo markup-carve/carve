@@ -1,8 +1,8 @@
 ## A wrapped attribute line opened at a container's column is one construct
 
-A block attribute opened at a container's column is one construct, and its continuation lines may sit at any column (PART 0, `block_attributes`). It reads like the one-line `{.c}` at that column: the attribute reaches no block and the line below it is outside the container (carve#3421).
+A block attribute opened at a container's column remains one construct only when every continuation passes its opening `{` column (CARVE-P2-035). The historical closer and token lines below fall short, so the runs become paragraph text. A deeper continuation retains the one-line attribute reading.
 
-A closer at column 0 ends the attribute the item opened, and `para` stays at document level
+A closer at column 0 refuses the attribute run
 
 ::::::: compare
 
@@ -15,14 +15,16 @@ para
 
 `````html
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+}
+para</li>
 </ul>
-<p>para</p>
 `````
 
 :::::::
 
-A closer at column 1 reads the same
+A closer at column 1 also falls short of the opening column
 
 ::::::: compare
 
@@ -35,14 +37,16 @@ para
 
 `````html
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+}
+para</li>
 </ul>
-<p>para</p>
 `````
 
 :::::::
 
-A continuation line holding more of the attribute reads the same
+A token continuation at column 0 also refuses the run
 
 ::::::: compare
 
@@ -55,9 +59,11 @@ para
 
 `````html
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+.d}
+para</li>
 </ul>
-<p>para</p>
 `````
 
 :::::::
@@ -76,9 +82,12 @@ para
 
 `````html
 <ul>
-  <li>a</li>
+  <li><p>a</p>
+    <p>{.c
+}
+para</p>
+  </li>
 </ul>
-<p>para</p>
 `````
 
 :::::::
@@ -98,9 +107,11 @@ para
 `````html
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+{.c
+}
+para</dd>
 </dl>
-<p>para</p>
 `````
 
 :::::::
@@ -121,11 +132,13 @@ para
 <ul>
   <li>a
     <ul>
-      <li>b</li>
+      <li>b
+{.c
+}
+para</li>
     </ul>
   </li>
 </ul>
-<p>para</p>
 `````
 
 :::::::
@@ -147,11 +160,13 @@ para
   <dt>t</dt>
   <dd>
     <ul>
-      <li>a</li>
+      <li>a
+{.c
+}
+para</li>
     </ul>
   </dd>
 </dl>
-<p>para</p>
 `````
 
 :::::::
@@ -176,11 +191,13 @@ para
   <dd>
     <p>d</p>
     <ul>
-      <li>a</li>
+      <li>a
+{.c
+}
+para</li>
     </ul>
   </dd>
 </dl>
-<p>para</p>
 `````
 
 :::::::
@@ -199,10 +216,12 @@ para
 `````html
 <blockquote>
   <ul>
-    <li>a</li>
+    <li>a
+{.c
+}
+para</li>
   </ul>
 </blockquote>
-<p>para</p>
 `````
 
 :::::::

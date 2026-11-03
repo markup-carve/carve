@@ -6,9 +6,10 @@ A wrapped attribute line leaves no paragraph open
 tail
 .
 <ul>
-  <li></li>
+  <li>{.a
+.b}
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -18,9 +19,11 @@ tail
 tail
 .
 <ul>
-  <li>prose</li>
+  <li>prose
+{.a
+.b}
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 ```

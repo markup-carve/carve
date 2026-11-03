@@ -1,9 +1,9 @@
 ## A wrapped attribute line leaves no paragraph open
 
-A block-attribute line is one interrupter even when its braces span physical
-lines. Its continuation is not paragraph text and cannot keep a list item open
-for a later below-column lazy line. The result is identical to the one-line
-attribute spelling.
+A wrapped block-attribute line is one interrupter only when every continuation
+passes its opening column. The examples below retain closers or continuations
+at that column, so the brace runs are paragraph text under CARVE-P2-035. The
+one-line spelling remains the control.
 
 ::: compare
 
@@ -15,16 +15,16 @@ tail
 
 ```html
 <ul>
-  <li></li>
+  <li>{.a
+.b}
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
 
-The same rule applies after visible item prose. The floating attributes remain
-scoped to the item and become dangling when the item closes; they do not escape
-onto the top-level paragraph.
+After visible item prose the refused run joins that prose; it supplies no
+floating attributes.
 
 ::: compare
 
@@ -37,9 +37,11 @@ tail
 
 ```html
 <ul>
-  <li>prose</li>
+  <li>prose
+{.a
+.b}
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::

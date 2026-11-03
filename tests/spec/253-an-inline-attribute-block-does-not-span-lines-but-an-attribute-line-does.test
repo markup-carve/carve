@@ -14,7 +14,9 @@ An inline attribute block does not span lines, but an attribute line does
 
 paragraph
 .
-<p class="a b">paragraph</p>
+<p>{.a
+.b}</p>
+<p>paragraph</p>
 ```
 
 ```
@@ -28,6 +30,10 @@ first
 
 second
 .
-<p class="a">first</p>
-<p class="b">second</p>
+<p>{
+.a}</p>
+<p>first</p>
+<p>{.b
+}</p>
+<p>second</p>
 ```

@@ -9,10 +9,9 @@ a
 ```
 
 ```html
-<blockquote>
-
-</blockquote>
-<p>a</p>
+<blockquote><p>{c
+}
+a</p></blockquote>
 ```
 
 ::::

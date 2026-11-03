@@ -821,7 +821,7 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "      if (lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5\n",
+          "find": "      if (!forcedAfterRefusal && lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5\n",
           "replace": ""
         }
       ]
@@ -1171,8 +1171,8 @@
       "edits": [
         {
           "file": "scripts/spec/html.mjs",
-          "find": "const html = renderInlineHardBreaks(c.lines.join('\\n'))",
-          "replace": "const html = renderInline(c.lines.join('\\n'))"
+          "find": "const html = renderInlineHardBreaks(paragraphInlineSource(c))",
+          "replace": "const html = renderInline(paragraphInlineSource(c))"
         }
       ]
     },
@@ -1609,6 +1609,21 @@
           "replace": "if (closeLen >= top.length) {"
         }
       ]
+    },
+    {
+      "rule": "CARVE-P2-035",
+      "edits": [
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (indentCols(lines[li]).col <= blockColumn) return null",
+          "replace": "if (false) return null"
+        },
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "if (i > start && measured.col <= blockColumn) shallow = true",
+          "replace": "if (false) shallow = true"
+        }
+      ]
     }
   ],
   "unmapped": {
@@ -1624,7 +1639,6 @@
     "CARVE-P2-034": "Markdown importer HTML-comment conversion; the model has no importer",
     "CARVE-P2-018": "implemented through the shared P0 S3 machinery for definition bodies; no targeted site found within the time box",
     "CARVE-P2-024": "render-loss reporting (losses/totalLosses result of a checked renderer); the model renderer has no loss channel",
-    "CARVE-P4-008": "djot importer behavior; the model has no importer",
     "CARVE-P9-070": "social link resolution is host resolver configuration; the model has no mention/tag resolver hook",
     "CARVE-P9-071": "media type and .crv file extension are transport/tooling facts with no model code",
     "CARVE-P9-009": "lint diagnostic id (table-marker-run-padding); the model emits no diagnostics",

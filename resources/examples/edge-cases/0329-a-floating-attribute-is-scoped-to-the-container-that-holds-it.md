@@ -9,6 +9,9 @@ A4 already dropped an attribute with no block left to attach to; a container's
 end is the second way to run out of blocks, and it drops the same way. Neither
 is silent: both are reported as `unattached-block-attribute`.
 
+A wrapped brace run must first satisfy CARVE-P2-035. A continuation at or below
+its opening column makes the whole run text, so it has no attribute to drop.
+
 The attribute does not escape over a blank line onto a document-level
 paragraph — `tail` here is unclassed:
 
@@ -110,9 +113,9 @@ tail
 
 :::
 
-An attribute block may WRAP across lines (§15 A5), and one block is one block
-however many lines it takes — a body ending `{.k` / `#x}` closes the same way as
-a body ending `{.k}`:
+An attribute block may wrap across lines (§15 A5), but the second line must
+pass the opening column (CARVE-P2-035). Here the body ending `{.k` / `#x}` is
+literal paragraph text, so it still does not reach `tail`:
 
 ::: compare
 
@@ -127,9 +130,11 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+{.k
+#x}
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 :::

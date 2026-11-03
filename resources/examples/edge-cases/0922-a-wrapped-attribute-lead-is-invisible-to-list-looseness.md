@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A wrapped attribute lead is invisible to list looseness
 
-PART 9 §17 L1a and L1b (CARVE-P9-029, CARVE-P9-030; carve#4758). An attribute block that wraps across physical lines is one invisible lead. A blank after it separates no visible item content, just as after a one-line attribute block.
+PART 9 §17 L1a and L1b (CARVE-P9-029, CARVE-P9-030; carve#4758) treat a valid wrapped attribute as one invisible lead. A run whose continuation fails CARVE-P2-035 is visible paragraph text instead. The examples below retain that historical input and show the new reading.
 
 :::::: compare
 
@@ -18,8 +18,11 @@ PART 9 §17 L1a and L1b (CARVE-P9-029, CARVE-P9-030; carve#4758). An attribute b
 
 ```html
 <ul>
-  <li><p x="" y="">b</p></li>
-  <li>a</li>
+  <li><p>{x
+y}</p>
+    <p>b</p>
+  </li>
+  <li><p>a</p></li>
 </ul>
 ```
 
@@ -39,8 +42,11 @@ The same rule applies to an ordered list with a wider content column.
 
 ```html
 <ol>
-  <li><p x="" y="">b</p></li>
-  <li>a</li>
+  <li><p>{x
+y}</p>
+    <p>b</p>
+  </li>
+  <li><p>a</p></li>
 </ol>
 ```
 

@@ -4,6 +4,12 @@
       (`*` vs `-` bullets, ordered-list dialect).
       A spelling it does not record is chosen by the writer canonically.
 
+      A block attribute line the writer wraps indents every continuation at
+      least one column past its opening `{`, including a closing `}` alone
+      (CARVE-P2-035). A writer may instead keep the entire attribute on one
+      line. It MUST NOT emit a wrapped run that the reader takes as paragraph
+      text, since that loses the attribute under §1.
+
       THE SPACE AFTER A LIST MARKER is one space, except after a letter or
       roman numeral followed by `.`, which takes two (PART 2 ordered_item,
       carve#4811): `a.  x`, `A.  x`, `iv.  x`. The item's content column moves

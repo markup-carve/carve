@@ -1625,17 +1625,26 @@ function dedentedWindow(lines, start, column, unframe = false) {
   })
 }
 
-function tryAttrLine(lines, i) {
+function tryAttrLine(lines, i, openerColumn = 0) {
   let text = lines[i]
   if (text === undefined || text[0] !== '{') return null
   const lists = []
   let pos = 0
   let li = i
+  let columnLine = i
+  let columnPos = 0
+  let column = openerColumn
   while (true) {
     // skip whitespace
     while (pos < text.length && (text[pos] === ' ' || text[pos] === '\t')) pos++
     if (pos >= text.length) break
     if (text[pos] !== '{') return null // trailing junk -> not an attr line
+    // Each glued block has its own opening column, including padding between
+    // blocks. Tabs advance to the next four-column stop.
+    if (columnLine !== li) { columnLine = li; columnPos = 0; column = 0 }
+    for (let k = columnPos; k < pos; k++) column = text[k] === '\t' ? (Math.floor(column / 4) + 1) * 4 : column + 1
+    columnPos = pos
+    const blockColumn = column
     // find the matching close brace, possibly across lines; a `}` inside a
     // quoted value is content, not the closer (corpus 64-6)
     let buf = ''
@@ -1670,6 +1679,9 @@ function tryAttrLine(lines, i) {
       li++
       layoutWork.attrScan++
       if (li >= lines.length || isBlank(lines[li])) return null // A5
+      // The indentation belongs to this run only when it passes the opening
+      // brace's column. Compare source columns before stripping its padding.
+      if (indentCols(lines[li]).col <= blockColumn) return null
       // A continuation starts a token or closes, and no token starts with `{`.
       if (/^[ \t]*\{/.test(lines[li])) return null
       line = lines[li]
@@ -1685,6 +1697,58 @@ function tryAttrLine(lines, i) {
   }
   if (lists.length === 0) return null
   return { lists, next: li + 1 }
+}
+
+// A block-position brace run whose only failure is a continuation that does
+// not pass the opening column is one literal paragraph run. Probe with the
+// indentation repaired to distinguish that case from malformed attributes.
+function refusedBlockBraceRun(lines, start, cache) {
+  const first = lines[start] ?? ''
+  const opener = indentCols(first)
+  const comment = opener.rest.startsWith('{%')
+  if (!opener.rest.startsWith('{')) return null
+  if (comment && cache.commentScannedThrough > start) return null
+  const run = []
+  let shallow = false
+  let depth = 0
+  let blockColumn = opener.col
+  for (let i = start; i < lines.length && !isBlank(lines[i]); i++) {
+    const line = lines[i]
+    const measured = indentCols(line)
+    // A new attribute opener cannot continue the preceding run. Stop here so
+    // a paragraph of unterminated openers is scanned once, not once per suffix.
+    if (i > start && !comment && measured.rest.startsWith('{')) return null
+    if (i > start && measured.col <= blockColumn) shallow = true
+    run.push(i === start ? opener.rest : ' '.repeat(Math.max(1, measured.col - opener.col, blockColumn - opener.col + 1)) + measured.rest)
+    if (comment) {
+      if (line.includes('%}')) {
+        if (!shallow) cache.commentScannedThrough = i + 1
+        return shallow ? i + 1 : null
+      }
+      continue
+    }
+    let quoted = null
+    let escaped = false
+    let sourceColumn = 0
+    for (let k = 0; k < line.length; k++) {
+      const ch = line[k]
+      if (escaped) escaped = false
+      else if (quoted) {
+        if (ch === '\\') escaped = true
+        else if (ch === quoted) quoted = null
+      } else if (ch === '"' || ch === "'") quoted = ch
+      else if (ch === '{' && depth === 0) { blockColumn = sourceColumn; depth = 1 }
+      else if (ch === '}' && --depth < 0) return null
+      sourceColumn = ch === '\t' ? (Math.floor(sourceColumn / 4) + 1) * 4 : sourceColumn + 1
+    }
+    if (depth === 0) return shallow && tryAttrLine(run, 0) ? i + 1 : null
+  }
+  if (comment) {
+    let end = start
+    while (end < lines.length && !isBlank(lines[end])) end++
+    cache.commentScannedThrough = end
+  }
+  return null
 }
 
 function isDefinitionOrAttributeLine(line) {
@@ -3318,7 +3382,29 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   }
   for (let at = start; at < lines.length; at++) {
     if (skipped) {
-      let rest = trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)
+      const raw = throughQuotes(lines[at], skipped.hostIndex).rest
+      let rest = trimWsStart(raw)
+      let bracePad = ''
+      if (skipped.brace) {
+        bracePad = ' '.repeat(Math.max(0, walkIndent(raw).col - skipped.brace.col))
+      } else if (rest.startsWith('{')) {
+        skipped.brace = { col: walkIndent(raw).col, comment: rest.startsWith('{%'), depth: 0, quote: null }
+      }
+      if (skipped.brace?.comment) {
+        if (rest.includes('%}')) skipped.brace = null
+      } else if (skipped.brace) {
+        const brace = skipped.brace
+        for (let k = 0; k < rest.length; k++) {
+          const ch = rest[k]
+          if (brace.quote) {
+            if (ch === '\\') k++
+            else if (ch === brace.quote) brace.quote = null
+          } else if (ch === '"' || ch === "'") brace.quote = ch
+          else if (ch === '{') brace.depth++
+          else if (ch === '}') brace.depth--
+        }
+        if (brace.depth <= 0) skipped.brace = null
+      }
       // A second marker in a skipped definition cannot claim the block the
       // earlier marker already took. It is consumed and linted (carve#5013).
       if (!skipped.fenced.has(at) && CONT_MARKER.test(rest)) {
@@ -3327,7 +3413,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           refusedPlus.push(at)
         } else rest = rest.replace('+', plusLetter)
       }
-      result.push(skipped.lead + (skipped.fenced.has(at) ? '%%' : rest))
+      result.push(skipped.lead + (skipped.fenced.has(at) ? '%%' : bracePad + rest))
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
       if (at + 1 === skipped.end) {
         if (skipped.host.plus === skipped.at) skipped.host.plus = at
@@ -4075,7 +4161,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const level = end < lines.length ? throughQuotes(lines[end], hostIndex) : null
     const basis = level ? lines[end] : lines[at]
     const rest = level?.rest ?? throughQuotes(lines[at], hostIndex)?.rest ?? lines[at]
-    skipped = { host, at, end, hostIndex, column, fenced, lead: markerLead ?? basis.slice(0, basis.length - rest.length) + ' '.repeat(host.markerCanon) }
+    skipped = { host, at, end, hostIndex, column, fenced, brace: null,
+      lead: markerLead ?? basis.slice(0, basis.length - rest.length) + ' '.repeat(host.markerCanon) }
   }
 
   // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Off the
@@ -4084,9 +4171,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // A line without the host's quote prefixes ends the quote, so no skipped construct reads it as text.
     const view = (k) => trimWsStart(throughQuotes(lines[k], hostIndex)?.rest ?? '')
     const fromHere = new Proxy([], {
-      get: (_, key) => key === 'length' ? lines.length : /^\d+$/.test(String(key)) && +key < lines.length ? view(+key) : undefined,
+      get: (_, key) => key === 'length' ? lines.length : /^\d+$/.test(String(key)) && +key < lines.length
+        ? throughQuotes(lines[+key], hostIndex)?.rest : undefined,
     })
     let k = from
+    const attrFromHere = new Proxy(fromHere, {
+      get: (target, key) => key === String(k) ? view(k) : target[key],
+    })
     while (k < lines.length) {
       if (throughQuotes(lines[k], hostIndex) === null) return k
       const rest = trimLineEnd(view(k))
@@ -4105,7 +4196,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         while (k < lines.length && foldablePlainLine(view(k))) k++
       } else if (COMMENT_LINE.test(rest) || isDefinitionLine(rest)) k++
       else {
-        const attr = rest[0] === '{' ? tryAttrLine(fromHere, k) : null
+        const attr = rest[0] === '{' ? tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[k], hostIndex)?.rest ?? '').col) : null
         // A paragraph of only comments is skipped as a `%%` line is (carve#4799).
         const para = attr || rest[1] !== '%' ? -1 : commentOnlyParaEnd(fromHere, k, frames[hostIndex].kind === 'item')
         if (para !== -1) k = para
@@ -4266,6 +4357,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // its continuations carry the owner's quote prefix (PART 4) and stay its own.
     if (rest[0] === '{') {
       const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
+      if (rest.startsWith('{%') && !rest.includes('%}')) {
+        let end = at + 1
+        for (; end < lines.length; end++) {
+          const body = stripQuotes(lines[end], depth)?.rest
+          if (body === undefined || indentCols(body).col <= col || isBlank(body)) break
+          if (body.includes('%}')) return { kind: 'leaf', interrupts: true, attrLines: end - at }
+        }
+      }
       const attr = tryAttrLine(new Proxy([], {
         get(_, key) {
           if (key === 'length') return lines.length - at
@@ -4273,7 +4372,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           const j = typeof key === 'string' && /^\d+$/.test(key) ? at + Number(key) : -1
           return j < 0 || j >= lines.length ? undefined : (stripQuotes(lines[j], depth)?.rest ?? '')
         },
-      }), 0)
+      }), 0, col)
       if (attr) return { kind: 'leaf', interrupts: true, attrLines: attr.next - 1 }
     }
     if (CAPTION.test(rest)) return { kind: 'leaf', interrupts: false, caption: true }
@@ -6792,12 +6891,58 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- paragraph ---
     const para = []
     const paraStart = i
+    const literalSegments = []
+    let forcedAfterRefusal = false
+    let refusedFollowerFenceEnd = -1
+    const refusedCache = { commentScannedThrough: -1 }
+    const inlineSpan = { scanned: 0, codeRun: 0, comment: false }
+    const inlineSpanOpen = () => {
+      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++) {
+        const line = para[inlineSpan.scanned]
+        for (let k = 0; k < line.length; k++) {
+          if (inlineSpan.comment) {
+            if (line[k] === '%' && line[k + 1] === '}') { inlineSpan.comment = false; k++ }
+            continue
+          }
+          if (line[k] === '`') {
+            let width = 1
+            while (line[k + width] === '`') width++
+            if (inlineSpan.codeRun === 0) inlineSpan.codeRun = width
+            else if (inlineSpan.codeRun === width) inlineSpan.codeRun = 0
+            k += width - 1
+            continue
+          }
+          if (inlineSpan.codeRun) continue
+          if (line[k] === '\\') {
+            let width = 1
+            while (line[k + width] === '\\') width++
+            const escaped = line[k + width] === '`' || line[k + width] === '{'
+            k += width - 1 + (escaped && width % 2 === 1 ? 1 : 0)
+            continue
+          }
+          if (line[k] === '{' && line[k + 1] === '%') { inlineSpan.comment = true; k++ }
+        }
+      }
+      return inlineSpan.codeRun !== 0 || inlineSpan.comment
+    }
     while (i < n && !isBlank(lines[i])) {
+      const refusedBraceEnd = ind(i).rest[0] === '{' && !inlineSpanOpen()
+        ? refusedBlockBraceRun(lines, i, refusedCache) : null
+      if (refusedBraceEnd !== null) {
+        const start = para.length
+        while (i < refusedBraceEnd) para.push(stripIndent(lines[i++]).replace(/[ \t]+$/, ''))
+        literalSegments.push([start, para.length])
+        inlineSpan.scanned = para.length
+        forcedAfterRefusal = true
+        refusedFollowerFenceEnd = -1
+        continue
+      }
       // A frame kept the column of a deeper container this line never reached (carve#4222).
       const framed = stripLazyLead(lines[i])
       if (framed.startsWith(LAZY)) {
         para.push(framed.slice(LAZY.length).replace(/[ \t]+$/, ''))
         i++
+        forcedAfterRefusal = false
         continue
       }
       // SS4, NOT SS10. A `^ ` line ends an open paragraph only where SS4 has
@@ -6815,11 +6960,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // form went unpinned until the canonical writer stopped force-escaping a
       // line-initial caret and `oracle(fmt(x))` parted from `oracle(x)` on a
       // document every engine agreed about (carve#1046).
-      if (CAPTION.test(lines[i]) && isCaptionableParagraph(para)) break
-      if (lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5
-      if (ind(i).rest.startsWith('%%')) break // SS10 I5 (comment line or fence)
-      if (inItem && para.length > 0 && matchMarkerAt(ind(i))) break // SS24 C3
-      if (para.length > 0) {
+      if (!forcedAfterRefusal && CAPTION.test(lines[i]) && isCaptionableParagraph(para)) break
+      if (!forcedAfterRefusal && lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5
+      if (!forcedAfterRefusal && ind(i).rest.startsWith('%%')) break // SS10 I5 (comment line or fence)
+      if (!forcedAfterRefusal && inItem && para.length > 0 && matchMarkerAt(ind(i))) break // SS24 C3
+      if (!forcedAfterRefusal && para.length > 0) {
         if (startsParagraphBlock(lines[i], top)) break // I1/I5
         if (fenceOpens?.has(i)) break
         {
@@ -6827,12 +6972,20 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         if (opensFence(lines, i)) break // I4: a valid opener interrupts
       }
+      // A fence-shaped first follower is paragraph text after a refused brace
+      // run. Keep its matching closer in that paragraph too; otherwise the
+      // closer would be reinterpreted as a fresh empty fence opener.
+      if (forcedAfterRefusal && opensFence(lines, i)) {
+        refusedFollowerFenceEnd = findCloser(lines, i, FENCE.exec(lines[i])[1])
+      }
       para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
       i++
+      forcedAfterRefusal = i <= refusedFollowerFenceEnd
     }
     // A paragraph of only comments emits nothing and leaves pending attributes floating (carve#4799).
-    if (COMMENT_ONLY_PARA.test(para.join('\n'))) continue
+    if (literalSegments.length === 0 && COMMENT_ONLY_PARA.test(para.join('\n'))) continue
     const pnode = { t: 'para', lines: para }
+    if (literalSegments.length) pnode.literalSegments = literalSegments
     paraStarts.set(pnode, { lines, start: paraStart })
     // AN UNBOUND CAPTION SLOT, NOT A CAPTION (PART 9 SS4; one blank line
     // allowed). carve#1784: block-image status is a property of the RESOLVED

@@ -8,7 +8,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = (source) => renderDoc(parse(source)).replace(/\s+</g, '<').replace(/>\s+/g, '>').trim()
 
-const COMMENTS = [['{% c %}'], ['{% c', 'd %}'], ['{% a', 'b', 'c %}'], ['{% a %} {% b %}']]
+const COMMENTS = [['{% c %}'], ['{% c', ' d %}'], ['{% a', ' b', ' c %}'], ['{% a %} {% b %}']]
 const SHAPES = [
   (b) => ['- ' + b[0], ...b.slice(1).map((l) => '  ' + l), '', '  Body.'],
   (b) => ['- a', '', ...b.map((l) => '  ' + l)],
@@ -17,9 +17,9 @@ const SHAPES = [
   (b) => ['- a', '', ...b, '', '- b'],
   (b) => ['1. a', '', ...b, '', '2. b'],
   (b) => [':: t', ': a', '', ...b, '', ':: u', ': b'],
-  (b) => ['- +', ...b, '', '# H'],
-  (b) => ['> +', ...b, '', 'x'],
-  (b) => ['- +', ...b, '# H'],
+  (b) => ['- +', b[0], ...b.slice(1).map((l) => '  ' + l), '', '# H'],
+  (b) => ['> +', b[0], ...b.slice(1).map((l) => '  ' + l), '', 'x'],
+  (b) => ['- +', b[0], ...b.slice(1).map((l) => '  ' + l), '# H'],
 ]
 
 for (const comment of COMMENTS) {

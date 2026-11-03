@@ -7,9 +7,11 @@ A wrapped attribute line opened at a container's column is one construct
 para
 .
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+}
+para</li>
 </ul>
-<p>para</p>
 ```
 
 ```
@@ -19,9 +21,11 @@ para
 para
 .
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+}
+para</li>
 </ul>
-<p>para</p>
 ```
 
 ```
@@ -31,9 +35,11 @@ para
 para
 .
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+.d}
+para</li>
 </ul>
-<p>para</p>
 ```
 
 ```
@@ -44,9 +50,12 @@ para
 para
 .
 <ul>
-  <li>a</li>
+  <li><p>a</p>
+    <p>{.c
+}
+para</p>
+  </li>
 </ul>
-<p>para</p>
 ```
 
 ```
@@ -58,9 +67,11 @@ para
 .
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+{.c
+}
+para</dd>
 </dl>
-<p>para</p>
 ```
 
 ```
@@ -73,11 +84,13 @@ para
 <ul>
   <li>a
     <ul>
-      <li>b</li>
+      <li>b
+{.c
+}
+para</li>
     </ul>
   </li>
 </ul>
-<p>para</p>
 ```
 
 ```
@@ -91,11 +104,13 @@ para
   <dt>t</dt>
   <dd>
     <ul>
-      <li>a</li>
+      <li>a
+{.c
+}
+para</li>
     </ul>
   </dd>
 </dl>
-<p>para</p>
 ```
 
 ```
@@ -112,11 +127,13 @@ para
   <dd>
     <p>d</p>
     <ul>
-      <li>a</li>
+      <li>a
+{.c
+}
+para</li>
     </ul>
   </dd>
 </dl>
-<p>para</p>
 ```
 
 ```
@@ -127,10 +144,12 @@ para
 .
 <blockquote>
   <ul>
-    <li>a</li>
+    <li>a
+{.c
+}
+para</li>
   </ul>
 </blockquote>
-<p>para</p>
 ```
 
 ```

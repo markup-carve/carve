@@ -21,7 +21,10 @@ A multi-line paragraph of only braced comments is an invisible line
   Body.
 .
 <ul>
-  <li>Body.</li>
+  <li>{% c
+d %}
+    Body.
+  </li>
 </ul>
 ```
 

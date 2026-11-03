@@ -22,10 +22,11 @@ y}
   - c
 .
 <ul>
-  <li>a</li>
-</ul>
-<ul x="" y="">
-  <li>c</li>
+  <li>a
+    {x
+y}
+- c
+  </li>
 </ul>
 ```
 

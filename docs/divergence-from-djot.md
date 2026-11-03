@@ -782,6 +782,11 @@ also a source break, since the same bytes parse to different block structure.
 
 ## 18. An attribute line in inline position is preserved, not consumed
 
+Block-position brace runs use Djot's continuation rule: every later line must
+be indented past the opening `{`, even a closing delimiter on its own line.
+The Djot importer can pass that spelling through without an indentation
+repair. This section concerns an attribute line in an open paragraph.
+
 **Djot:** a `{...}` line inside an open paragraph is consumed as attributes on
 the soft break. Those bytes leave no trace in the output.
 
