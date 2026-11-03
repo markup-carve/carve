@@ -537,7 +537,9 @@ binds as its caption only where the paragraph is promoted, so
 ```
 
 is a `figure` where `[r]` is defined and one paragraph holding both lines where
-it is not.
+it is not. `fmt` writes the source spelling, so promotion never shows in its
+output. See
+[`CARVE-P12-043`](./rules/ast-interchange), [`CARVE-P12-044`](./rules/ast-interchange) and [`CARVE-P12-045`](./rules/canonical-writing).
 
 Promotion moves no attributes. A block attribute line above the image stays in
 the paragraph's `attrs`, and the image's `attrs` hold only the reference
@@ -558,11 +560,10 @@ definition's and the use site's attributes:
                   "attrs": { "classes": ["wide"] } } ] }
 ```
 
-A renderer applies the paragraph's `attrs` to the `<img>` as it would apply the
-attribute line, so the tree renders `<img src="/i.png" alt="a" class="c wide">`
-like the source, and a writer can write the line back. `fmt` writes the source spelling, so promotion never shows in its
-output. See
-[`CARVE-P12-043`](./rules/ast-interchange), [`CARVE-P12-044`](./rules/ast-interchange) and [`CARVE-P12-045`](./rules/canonical-writing).
+A renderer applies the paragraph's `attrs` where it would apply the attribute
+line (on the bare `<img>`, or on the `<figure>` a caption builds), so the tree
+renders `<img src="/i.png" alt="a" class="c wide">` like the source, and a
+writer can write the line back.
 
 ## Adjacent text runs are coalesced
 

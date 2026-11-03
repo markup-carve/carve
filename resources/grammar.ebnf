@@ -13544,9 +13544,9 @@ EOF = (* end of file *) ;
       writer that gets the tree back either drops the line or repeats the
       definition's attributes at the use site, and the HTML changes on the next
       pass (CARVE-P12-005 publishes what the author wrote). A renderer applies
-      the paragraph's `attrs` to the `<img>` exactly as it applies the block
-      attribute line it parsed (PART 10), so the tree renders the HTML the
-      source does.
+      the paragraph's `attrs` exactly where it applies the block attribute
+      line it parsed (PART 10): on the bare `<img>`, or on the `<figure>` a
+      caption builds. The tree renders the HTML the source does.
 
       IT IS NOT A NON-ANCHOR FLAG. CARVE-P12-007 refuses a flag on a nested link because
       that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back
