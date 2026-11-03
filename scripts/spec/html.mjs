@@ -112,7 +112,72 @@ function renderTextBlockAttrs(lists, tag) {
 }
 
 export function renderDoc(doc) {
-  return withRawFrames(() => renderFramedDoc(doc))
+  const shield = shieldAuthoredFrames(doc)
+  if (!shield) return withRawFrames(() => renderFramedDoc(doc))
+  try {
+    return shield.restore(withRawFrames(() => renderFramedDoc(doc)))
+  } finally {
+    mapDocStrings(doc, shield.restore)
+  }
+}
+
+// The render frames are U+E000, U+E001 and U+0002, so an authored one would be read as
+// a frame. It renders as a stand-in of its own class (private use, or a C0 control for
+// U+0002, which the slug and the scheme probe drop) that the document does not hold,
+// and is put back in the output (PART 23, ALL STRING CONTENT IS LITERAL UNICODE).
+const FRAME_CHARS = /[\uE000\uE001\u0002]/
+const PRIVATE_STAND_INS = Array.from({ length: 0xf8ff - 0xe200 + 1 }, (_, i) => String.fromCharCode(0xf8ff - i))
+// U+0000 and U+0001 are frames of the layout pass; U+0009..U+000D are whitespace.
+const CONTROL_STAND_INS = [3, 4, 5, 6, 7, 8, ...Array.from({ length: 14 }, (_, i) => 0x0e + i)].map((c) => String.fromCharCode(c))
+function shieldAuthoredFrames(doc) {
+  let authored = false
+  const held = new Set()
+  mapDocStrings(doc, (s) => {
+    if (FRAME_CHARS.test(s)) authored = true
+    for (const [c] of s.matchAll(/[\u0003-\u001B\uE200-\uF8FF]/g)) held.add(c)
+    return s
+  })
+  if (!authored) return null
+  const free = (pool, n) => {
+    const picked = pool.filter((c) => !held.has(c)).slice(0, n)
+    if (picked.length < n) throw new Refuse('no stand-in is free for an authored frame character')
+    return picked
+  }
+  const [open, close] = free(PRIVATE_STAND_INS, 2)
+  const [separator] = free(CONTROL_STAND_INS, 1)
+  const toStandIn = { '\uE000': open, '\uE001': close, '\u0002': separator }
+  const toAuthored = { [open]: '\uE000', [close]: '\uE001', [separator]: '\u0002' }
+  const back = new RegExp(`[${open}${close}${separator}]`, 'g')
+  mapDocStrings(doc, (s) => s.replace(/[\uE000\uE001\u0002]/g, (c) => toStandIn[c]))
+  return { restore: (s) => s.replace(back, (c) => toAuthored[c]) }
+}
+
+// Rewrites every string of a parse result in place, Map keys included, so object
+// identity (and the WeakMap and WeakSet entries keyed on it) survives.
+function mapDocStrings(doc, map) {
+  const seen = new Set()
+  const visit = (value) => {
+    if (typeof value === 'string') return map(value)
+    if (!value || typeof value !== 'object' || seen.has(value)) return value
+    seen.add(value)
+    if (value instanceof Map) {
+      const entries = [...value]
+      value.clear()
+      for (const [key, entry] of entries) value.set(visit(key), visit(entry))
+    } else if (Array.isArray(value)) {
+      for (let i = 0; i < value.length; i++) {
+        const next = visit(value[i])
+        if (next !== value[i]) value[i] = next
+      }
+    } else if (!(value instanceof WeakMap || value instanceof WeakSet)) {
+      for (const key of Object.keys(value)) {
+        const next = visit(value[key])
+        if (next !== value[key]) value[key] = next
+      }
+    }
+    return value
+  }
+  visit(doc)
 }
 
 function renderFramedDoc(doc) {
