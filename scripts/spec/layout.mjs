@@ -180,7 +180,7 @@ const MAX_NESTING_DEPTH = 200
 /// so the answer comes from an index built once per depth and this counts the
 /// lines that index reads. `closerScan` counts the lines `findCloser` reads.
 /// `paragraphProbe` counts the lines the whole-body scans of `bodyLeavesParagraphOpen` read.
-export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0, closerScan: 0, attrScan: 0, paragraphProbe: 0 }
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0, closerScan: 0, attrScan: 0, paragraphProbe: 0, commentScan: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
@@ -196,6 +196,7 @@ export function resetLayoutWork() {
   layoutWork.captionHost = 0
   layoutWork.attrScan = 0
   layoutWork.paragraphProbe = 0
+  layoutWork.commentScan = 0
 }
 
 /**
@@ -2821,17 +2822,24 @@ const keptCommentDelimiter = (line) => {
   return col > 0 ? ' ' + rest : rest
 }
 
+// A collector asks again after each line it adds, so the scan resumes where the
+// last answer for the same array stopped; asked from scratch it is quadratic (carve#4996).
+const openCommentRunMemo = new WeakMap()
+
 function bodyOpenCommentRun(bodyLines) {
-  let opaque = null
+  const memo = openCommentRunMemo.get(bodyLines)
+  const resumes = memo && memo.n <= bodyLines.length && bodyLines[0] === memo.first && bodyLines[memo.n - 1] === memo.last
+  let opaque = resumes ? memo.opaque : null
   // §10 I2: a list marker never interrupts, so it opens a container only where a
   // block may begin. Both directions of getting this wrong publish a payload -
   // an invented opaque body hides a real opener, and a missed one invents a span
   // - so the flag is carried rather than assumed.
-  let atBlockStart = true
+  let atBlockStart = resumes ? memo.atBlockStart : true
   // Content columns of the marker containers open in the body.
-  const columns = [0]
-  for (let k = 0; k < bodyLines.length; k++) {
+  const columns = resumes ? [...memo.columns] : [0]
+  for (let k = resumes ? memo.n : 0; k < bodyLines.length; k++) {
     const raw = bodyLines[k]
+    layoutWork.commentScan++
     // Indentation is part of neither delimiter (§28, carve#2471), so the body's
     // lines are read at their own content. A collector hands them down at
     // whatever column its dedent left them at, and the answer may not turn on
@@ -2898,6 +2906,9 @@ function bodyOpenCommentRun(bodyLines) {
     }
     const comment = COMMENT_FENCE.exec(opener)
     if (comment) opaque = { kind: 'comment', run: comment[1], owner: columns.at(-1) }
+  }
+  if (bodyLines.length) {
+    openCommentRunMemo.set(bodyLines, { n: bodyLines.length, first: bodyLines[0], last: bodyLines.at(-1), opaque, atBlockStart, columns: [...columns] })
   }
   return opaque !== null && opaque.kind === 'comment' ? opaque.run : null
 }
@@ -8237,6 +8248,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const lead = markerFenceSummary(dmeas.rest.slice(width), new Map())
         if (lead) return { kind: 'code', run: lead.run, col: dmeas.col + width + lead.col, markerLine: true }
       }
+      // A comment span on a description or note marker line is the descendant's too (carve#4996).
+      if (markerOpens) {
+        const dd = DESCRIPTION_LEAD.test(dmeas.rest) && entryAbove(itemLines, dmeas.col) ? DESCRIPTION_LEAD.exec(dmeas.rest)[0] : null
+        const note = dd === null && FOOTNOTE_DEF.test(dmeas.rest) ? /^\[\^[^\]]+\]: +/.exec(dmeas.rest)[0] : null
+        const run = dd ?? note ? COMMENT_FENCE_BODY.exec(dmeas.rest.slice((dd ?? note).length)) : null
+        if (run) return { kind: 'comment', run: run[1], col: dmeas.col + (dd ? dd.length : FOOTNOTE_BODY_COLUMN), markerLine: true }
+      }
       if (dmeas.col === 0 || !descendantOwned) return null
       const comment = COMMENT_FENCE_BODY.exec(dmeas.rest)
       if (comment) return { kind: 'comment', run: comment[1], col: dmeas.col }
@@ -8618,6 +8636,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             pushLine(dd.text, dd.meas, k)
           }
         }
+        // A blank inside a descendant's live span is payload at any column of the comment line after it (PART 0 S1, carve#4996).
+        if (j < n && !descendantFence && COMMENT_LINE.test(ind(j).rest) && (nestedOpaque?.kind === 'comment' || bodyHoldsLiveCommentSpan())) {
+          for (let k = i; k < j; k++) if (!skipped.has(k)) pushLine('', BLANK_MEAS)
+          i = j
+          continue
+        }
         if (j >= n) { i = j; break }
         const jm = ind(j)
         const { col } = jm
@@ -8909,7 +8933,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         headSubActive = false
         headSubEnded = true
       }
-      if (lm.rest !== '') {
+      // A comment line in a span the note holds is column-exempt payload and keeps the note (PART 0 S1, carve#4996).
+      const spanPayload = () => lm.rest.startsWith('%%') &&
+        (fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment' || bodyHoldsLiveCommentSpan())
+      if (lm.rest !== '' && !(noteFrames.length && col < noteFrames.at(-1).body && spanPayload())) {
         while (noteFrames.length && col < noteFrames.at(-1).body) {
           const frame = noteFrames.at(-1)
           // A lazy line continues the note's open paragraph and keeps the note open.
@@ -9094,6 +9121,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           !foldedChildFence &&
           // A descendant code body's payload line opens nothing.
           !(nestedVerbatim() && lm.col - contentCol >= nestedOpaque.col) &&
+          // Nor does a comment line in a descendant's span (carve#4996).
+          !(nestedOpaque?.kind === 'comment' && lm.rest.startsWith('%%')) &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest) &&
           // A fence with no closer under an open paragraph is text (§10 I4), as the walk read it.
           (!isCodeBlockOpener(lm.rest) || bodyFenceOpens(i, lm.rest, col)) && !stanzaPayload()
