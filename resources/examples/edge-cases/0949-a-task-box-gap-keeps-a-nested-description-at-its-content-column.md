@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A task box gap keeps a nested description at its content column
 
-The space after the task box moves the marker-line child one column right. Its description at that child's content column joins the term (PART 0 S2 and S3, CARVE-P0-008, carve#5061).
+The space after the task box moves the marker-line child one column right. Its description at that child's content column joins the term (PART 0 S2 and S3, CARVE-P9-083, carve#5061).
 
 ::: compare
 

@@ -51,7 +51,6 @@
     "CARVE-P0-005": "951-an-unclosed-fence-in-a-marker-line-note-cannot-retain-the-following-line-2",
     "CARVE-P0-006": "266-a-reference-definition-is-anchored-at-end-of-line-14",
     "CARVE-P0-007": "326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-14",
-    "CARVE-P0-008": "413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not",
     "CARVE-P0-011": "326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-15",
     "CARVE-P0-012": "326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open",
     "CARVE-P0-013": "875-a-fence-opened-at-a-block-start-in-a-note-keeps-no-paragraph-open",

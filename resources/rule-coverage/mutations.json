@@ -77,16 +77,6 @@
       ]
     },
     {
-      "rule": "CARVE-P0-008",
-      "edits": [
-        {
-          "file": "scripts/spec/layout.mjs",
-          "find": "markerWidth: m[2].length + whitespaceWidth,",
-          "replace": "markerWidth: m[2].length + (m[3]?.length ?? 0) + whitespaceWidth,"
-        }
-      ]
-    },
-    {
       "rule": "CARVE-P0-011",
       "edits": [
         {

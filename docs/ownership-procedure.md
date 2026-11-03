@@ -65,7 +65,7 @@ quotes included, and every line the new block owns moves left by the opener's
 indentation. A block at the content column ends the paragraph above it and
 leaves the container open, a definition registers only in the owner S2 selected,
 and marker-attached attributes add no width to the content column. A term has no
-ownership of its own. Rules: CARVE-P0-008 and CARVE-P0-011.
+ownership of its own. Rule: CARVE-P0-011.
 
 ## S4 Lazy
 
