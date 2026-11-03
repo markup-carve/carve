@@ -1,0 +1,41 @@
+A task box gap keeps a nested description at its content column
+
+```
+- [?]  - :: t
+         : a
+.
+<ul class="task-list">
+  <li data-task-state="?"><input type="checkbox" disabled> 
+    <ul>
+      <li>
+        <dl>
+          <dt>t</dt>
+          <dd>a</dd>
+        </dl>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- [x]   - :: term
+           : desc
+           :: next
+           : body
+.
+<ul class="task-list">
+  <li data-task-state="x"><input type="checkbox" checked disabled> 
+    <ul>
+      <li>
+        <dl>
+          <dt>term</dt>
+          <dd>desc</dd>
+          <dt>next</dt>
+          <dd>body</dd>
+        </dl>
+      </li>
+    </ul>
+  </li>
+</ul>
+```

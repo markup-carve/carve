@@ -1797,8 +1797,8 @@ function carryPrefixMemo(state, source, index, target, targetIndex) {
   entries.set(targetIndex, memo)
 }
 
-// `marker.text` starts after a task box, which is content columns (CARVE-P0-008).
-const taskBoxWidth = marker => marker.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH
+// `marker.text` drops the authored gap after a task box; retain it in source columns.
+const taskTextOffset = marker => marker.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH + marker.taskGap
 
 function markerFenceSummary(text, memo) {
   const path = []
@@ -1816,7 +1816,7 @@ function markerFenceSummary(text, memo) {
       memo.set(text.length, summary)
       break
     }
-    path.push({ length: text.length, width: marker.indent + marker.markerWidth, box: taskBoxWidth(marker) })
+    path.push({ length: text.length, width: marker.indent + marker.markerWidth, box: taskTextOffset(marker) })
     text = marker.text
   }
   for (let k = path.length - 1; k >= 0; k--) {
@@ -2645,7 +2645,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
       h.columns.push(column)
       h.kinds.push('item')
       blockStart = true
-      box = marker.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH
+      box = taskTextOffset(marker)
       const next = indentCols(marker.text)
       inner = { col: h.columns.at(-1) + next.col, rest: next.rest }
       continue
@@ -7450,6 +7450,7 @@ function matchMarkerAt(meas, tabOrigin = 0) {
       bullet: m[2],
       attrs: m[3] ?? null, // marker-glued item attribute block (SS15 ext)
       task: m[5],
+      taskGap: m[5] === undefined ? 0 : /^ */.exec(m[6])[0].length,
       text: m[5] === undefined ? m[6] : m[6].replace(/^ +/, ''),
       // The task box is CONTENT and the attribute block is item METADATA, so
       // neither moves the bare marker's content column (carve#1701). Every
@@ -7959,9 +7960,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const headSubMarker = matchMarkerAt(indentCols(head.text))
     if (headSubMarker) separatorMarkerColumns.set(itemLines,
       new Map([[0, authoredMarkerCol + head.markerWidth]]))
-    // A marker after a task box starts four source columns past the item's content column.
+    // A marker after a task box starts after the checkbox and its authored gap.
     const headSubCol = headSubMarker
-      ? contentCol + (head.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH) + headSubMarker.indent + headSubMarker.markerWidth
+      ? contentCol + taskTextOffset(head) + headSubMarker.indent + headSubMarker.markerWidth
       : -1
     // The marker-line child owns this column until an outer authored block opens.
     let headSubActive = headSubCol >= 0
@@ -8409,7 +8410,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           memo.set(text.length, summary)
           break
         }
-        path.push({ length: text.length, width: marker.indent + marker.markerWidth, box: taskBoxWidth(marker) })
+        path.push({ length: text.length, width: marker.indent + marker.markerWidth, box: taskTextOffset(marker) })
         text = marker.text
       }
       for (let k = path.length - 1; k >= 0; k--) {
@@ -9420,8 +9421,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // one column deeper, which arrived at body column 1 instead of 0 and
         // stopped being an opener at all (carve#1772, corpus 422-8).
         // Rebase a marker-line child at its source column after the task box.
-        const localBase = head.task !== undefined && headSubMarker && openerBase !== null ? openerBase : head.task !== undefined && headSubMarker && !headSubEnded && col >= contentCol + TASK_MARKER_SOURCE_WIDTH &&
-          (!insideFence() || col === taskPlusColumn && CONT_MARKER.test(lm.rest)) ? authoredBlockBase ?? contentCol + TASK_MARKER_SOURCE_WIDTH
+        const localBase = head.task !== undefined && headSubMarker && openerBase !== null ? openerBase : head.task !== undefined && headSubMarker && !headSubEnded && col >= contentCol + taskTextOffset(head) &&
+          (!insideFence() || col === taskPlusColumn && CONT_MARKER.test(lm.rest)) ? authoredBlockBase ?? contentCol + taskTextOffset(head)
           // A marker-line note after a task box reads its body from its own source column.
           : head.task !== undefined && markerNoteEligible && col >= markerNoteBodyColumn
           ? markerNoteBodyColumn - FOOTNOTE_BODY_COLUMN
