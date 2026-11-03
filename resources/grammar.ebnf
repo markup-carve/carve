@@ -9978,8 +9978,17 @@ EOF = (* end of file *) ;
       spelling. Where the native header form can express the row, it writes
       `|=` header cells and no separator row. Each header cell retains its
       alignment as `|=<`, `|=~`, or `|=>`; a cell with no alignment uses `|=`.
-      A header with spans that cannot be spelled in native form still uses a
-      generated separator under §6. GFM separator form remains valid input.
+      A header whose complete tree cannot be spelled in native form uses a
+      generated separator under §6, independent of `separatorWidths`. This
+      includes an orphan span placeholder in the first row (a `^` without an
+      origin above it, or a `<` in the first column): `|= ^ |` would write a
+      literal header cell, while `|= |` would lose the placeholder's `span`
+      field. It also includes a column alignment default carried only by a
+      covered placeholder: moving that default to table attributes would
+      change the tree. The generated separator retains the placeholder and
+      the default in their original cells. For every other header, including
+      an empty aligned header cell, the canonical writer uses native `|=`
+      cells. GFM separator form remains valid input.
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,
@@ -11079,9 +11088,10 @@ EOF = (* end of file *) ;
       It emits `|=` on each first-row header cell and carries its alignment
       into the marker, including when `table.separatorWidths` records a GFM
       separator. It emits no authored separator row. A header whose spans need
-      a generated separator follows PART 11 §6; its separator is independent
-      of `table.separatorWidths`. A later, wider body row does not add header
-      cells.
+      a generated separator follows PART 11 §6h; its separator is independent
+      of `table.separatorWidths`. This includes an orphan first-row span
+      placeholder and a covered placeholder that alone carries a column
+      default. A later, wider body row does not add header cells.
 
       THE ROUNDTRIP WRITER PRESERVES A RECORDED SEPARATOR ROW. Its cell count
       is the entry count of `table.separatorWidths` (CARVE-P11-066), neither
