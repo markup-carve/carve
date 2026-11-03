@@ -5587,8 +5587,13 @@ EOF = (* end of file *) ;
       A closer token inside a brace group directly after a bare delimiter
       counts only where the reading leaves that group unattached, and such
       groups are settled for a whole run of them at once, not one per pass.
-      A linear bound for the combined token's second reading is open
-      (carve#3987).
+      A combined opener whose entry is removed by another closer is read a
+      second time as two bare candidates. Charge that second reading to the
+      opener: each combined opener can incur it at most once, and the stack
+      and closer index advance across each source position only a bounded
+      number of times. Thus the combined-token fallback, together with the
+      indexed nested readings and settled attribute runs above, has an
+      amortized linear bound in the block length.
 
    10. PARAGRAPH INTERRUPTION -- OPERATIONAL SEMANTICS (governs
       `paragraph` in PART 2). The relation interrupts(L, P) decides whether

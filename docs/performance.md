@@ -31,11 +31,28 @@ extension-hook surface).
 - **Metric:** `MB/s = input_bytes / wall_time`.
 - **carve config:** core conversion (no extensions). Extensions add a small,
   measurable overhead.
-- The benchmark harnesses themselves are kept out of this repo (they pull in
+- The throughput benchmark harnesses are kept out of this repo (they pull in
   every competing engine as a dependency). Each implementation ships its own
   regression guard instead, listed under [Regression guards](#regression-guards).
   For cross-engine render-speed comparisons (carve-js / carve-php / carve-rs), see
   [carve-bench](https://github.com/markup-carve/carve-bench).
+
+## Inline pairing growth probe
+
+Run `npm run bench:inline` from this repo to measure the PART 9 §9 model on
+five generated families: unclosed combined, braced, and bracket candidates;
+nested braced spans; and combined tokens split and read again. Each family runs
+at 2,048, 8,192, and 32,768 lines. The script also runs any built sibling
+`carve-js`, `carve-php`, and `carve-rs` checkouts and compares their HTML with
+the model. Set `CARVE_JS_DIR`, `CARVE_PHP_DIR`, or `CARVE_RS_DIR` for checkouts
+elsewhere. JS needs `dist/cli.js`, PHP needs `vendor/autoload.php`, and Rust
+needs a checkout-matching binary. Missing checkouts are skipped.
+
+For a fast smoke run, use `npm run bench:inline -- --quick`; `--model-only`
+skips engines and `--family=split-combined` selects one family. Times are wall
+milliseconds for parse plus HTML render; engine times also include CLI startup.
+This probe records growth and output agreement, while the throughput figures
+above use a separate warm in-process methodology.
 
 ## Snapshot (2026-06-22)
 
