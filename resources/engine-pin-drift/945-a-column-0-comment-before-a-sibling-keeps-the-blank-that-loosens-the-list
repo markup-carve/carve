@@ -1,0 +1,1 @@
+The pinned carve-js reads a list as tight when a column-0 comment or definition stands between a blank behind the item's invisible lines and the next sibling; the spec moved first (markup-carve/carve#5031).
