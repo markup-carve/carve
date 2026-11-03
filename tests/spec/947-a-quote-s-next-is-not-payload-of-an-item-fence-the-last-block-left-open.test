@@ -1,0 +1,84 @@
+A quote's next + is not payload of an item fence the last block left open
+
+````
+> a
++
+- ``` js
+  x
++
+- y
+.
+<blockquote>
+  <p>a</p>
+  <ul>
+    <li>
+      <pre><code class="language-js">x
+</code></pre>
+    </li>
+    <li><p>y</p></li>
+  </ul>
+</blockquote>
+````
+
+````
+> a
++
+1. ```
+   x
++
+y
+.
+<blockquote>
+  <p>a</p>
+  <ol>
+    <li>
+      <pre><code>x
+</code></pre>
+    </li>
+  </ol>
+  <p>y</p>
+</blockquote>
+````
+
+```
+> a
++
+- b
+  - ~~~
+    x
++
+- y
+.
+<blockquote>
+  <p>a</p>
+  <ul>
+    <li><p>b</p>
+      <ul>
+        <li>
+          <pre><code>x
+</code></pre>
+        </li>
+      </ul>
+    </li>
+    <li><p>y</p></li>
+  </ul>
+</blockquote>
+```
+
+````
+> a
++
+- ``` js
++
+- y
+.
+<blockquote>
+  <p>a</p>
+  <ul>
+    <li>
+      <pre><code class="language-js"></code></pre>
+    </li>
+    <li><p>y</p></li>
+  </ul>
+</blockquote>
+````
