@@ -40,3 +40,17 @@ test('data lookalikes remain text when the span production does not match', () =
   assert.match(html('|= <|\n'), /<th scope="col">&lt;<\/th>/)
   assert.match(html('| \\<< |\n'), /<td>&lt;&lt;<\/td>/)
 })
+
+test('a header-kind rowspan marker heads a row of only orphan placeholders', () => {
+  for (const head of ['|=^ |', '|=^|', '|=^ | ^ |', '|=^ | < |']) {
+    const output = html(`${head}\n| x | y |\n`)
+    assert.match(output, /<thead>/, head)
+    assert.match(output, /<th scope="col"( colspan="2")?><\/th>/, head)
+  }
+  assert.match(html('|=^~ |= a |\n| x | y |\n'), /<th scope="col" style="text-align: center;"><\/th>/)
+  assert.equal(html('|= a |\n|=^ |\n'), html('|= a |\n| ^ |\n'))
+  for (const data of ['| =^ |', '|=^x |', '|\\=^ |']) {
+    assert.doesNotMatch(html(`${data}\n`), /<th/, data)
+  }
+  assert.match(html('|= ^|\n'), /<th scope="col">\^<\/th>/)
+})

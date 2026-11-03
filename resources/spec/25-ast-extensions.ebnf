@@ -373,6 +373,16 @@
       Its optional `align` and `valign` fields record a glued span alignment
       even when the marker found no origin. The canonical writer writes that
       alignment on the placeholder itself, preserving the cell's tree fields.
+      Its `header` field is the authored kind: true for a header-kind `^`
+      (`|=^ |`, PART 9 §5 T4) or a separator-promoted placeholder, false for
+      a bare `^` or `<`, whose rendered kind T9 derives.
+
+        |=^ |
+        | x |
+
+        table{ rows: [
+          table_row{ cells: [ table_cell{ header: true, span: "rowspan" } ] },
+          table_row{ cells: [ table_cell{ header: false }[ "x" ] ] } ] }
 
       A MARKER THAT FOUND NO ORIGIN CONTRIBUTES NOTHING. The walk is a total
       function: a `^` in the first row, a `<` in the first column, or a marker

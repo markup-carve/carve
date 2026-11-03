@@ -1578,7 +1578,9 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    marker `=` and then the alignment marker are glued to the opening `|` (no
    preceding whitespace); the attribute block attaches after them. A
    cell containing only '^' or '<', optionally followed by a glued
-   span_alignment, with any space padding or none, is span_cell.
+   span_alignment, with any space padding or none, is span_cell. A '^'
+   glued to a kind marker that is glued to the opening `|` (`|=^ |`) is a
+   header-kind span_cell (PART 9 §5 T4).
 
    A header or data marker run ends with one space (PART 9 §5 T11). A span
    alignment ends at padding or the closing pipe. A cell with no run accepts
@@ -1603,9 +1605,12 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    `|{#x}=R|` is a data cell whose content is `{#x}=R`; no marker run ends
    without a space (T11). `|{#x} =R |` has id `x` and content `=R`. *)
 cell_attributes = attributes ;
-span_cell = rowspan_marker, [span_alignment], {space}
+span_cell = header_rowspan_marker, [span_alignment], {space}
+          | rowspan_marker, [span_alignment], {space}
           | colspan_marker, [span_alignment], {space} ;
 span_alignment = alignment_run ;  (* glued to the span marker; no space *)
+
+header_rowspan_marker = '=', '^' ;  (* both glued: no space before or between *)
 
 rowspan_marker = {space}, '^' ;
 colspan_marker = {space}, '<' ;
@@ -4822,6 +4827,12 @@ EOF = (* end of file *) ;
          Any consumed marker run disqualifies a span. Thus `|= <|` and
          `|= ^|` are header cells holding literal `<` and `^`, while
          `|?^ <|` is a vertically aligned cell holding literal `<`.
+         A kind marker glued to both the opening `|` and a `^` is no marker
+         run: `|=^ |` is a HEADER-KIND rowspan marker, a span marker whose cell
+         is a header cell (PART 2 `header_rowspan_marker`). It may carry a glued
+         span alignment (`|=^~ |`). `|=^x |` holds `=^x` and `| =^ |` holds
+         `=^`, both data. A `<` has no header-kind form: `|=< |` is a
+         left-aligned empty header cell.
       T5 SPAN WALK -- NORMATIVE [CARVE-P9-002], a total function. Markers
          resolve in row-major order. Every position belongs to the cell whose
          rectangle covers it; a span never covers a position another cell
@@ -4990,8 +5001,15 @@ EOF = (* end of file *) ;
          (CARVE-P11-056). A placeholder with no origin takes its row's kind
          when the other cells that row owns are headers. It remains a span
          placeholder in the tree (PART 12 §26) and renders as an empty
-         `<th scope="col">` in the head row. A row of only orphan placeholders
-         has no header cell to give it that kind.
+         `<th scope="col">` in the head row. A header-kind `^` (T4, `|=^ |`)
+         is a header cell itself, so a row of only orphan placeholders heads
+         its table when one of them is header-kind:
+
+             |=^ |
+             | x |
+
+         gives `<thead>` with one empty `<th scope="col">`. Below the head-row
+         run, an orphan header-kind `^` is an empty row header.
 
          An authored `scope` replaces the default (PART 10 §1), so
          `|={scope="colgroup"} a |` -- a header cell carrying attributes,
@@ -5045,6 +5063,7 @@ EOF = (* end of file *) ;
 
          A span_cell is the exception: its optional span_alignment is glued
          to `^` or `<` and ends at cell padding or the closing pipe (PART 2).
+         A header-kind span (`|=^ |`, T4) is a span_cell, not a marker run.
 
          A cell with NO run is unchanged -- `| a |` and `|a|` hold `a`, and
          `||` is one empty cell (CARVE-P9-082).
@@ -9498,8 +9517,11 @@ EOF = (* end of file *) ;
 
       In a data table cell, a payload consisting of `^` or `<` followed by a
       glued `span_alignment` (PART 2) would re-read as a span placeholder.
-      Escape its opener, for example `| \\<< |` for literal `<<`. A space
+      Escape its opener, for example `| \<< |` for literal `<<`. A space
       followed by further content, as in `| <x |`, remains ordinary data.
+      A data payload `=^` needs no escape: the writer pads it (`| =^ |`,
+      CARVE-P11-014), and only an `=` glued to the opening pipe forms the
+      header-kind span `|=^ |` (PART 9 §5 T4).
 
       Escaping more than that is a defect, not a safe default.
 
@@ -9983,9 +10005,11 @@ EOF = (* end of file *) ;
       forbids the padding, and one class of cell construct is written WITH the
       padding inside it:
 
-        span_cell      = rowspan_marker, [span_alignment], {space}
+        span_cell      = header_rowspan_marker, [span_alignment], {space}
+                       | rowspan_marker, [span_alignment], {space}
                        | colspan_marker, [span_alignment], {space} ;
         span_alignment = alignment_run ;
+        header_rowspan_marker = '=', '^' ;
         rowspan_marker = {space}, '^' ;
         colspan_marker = {space}, '<' ;
 
@@ -10032,8 +10056,15 @@ EOF = (* end of file *) ;
       alignment as `|=<`, `|=~`, or `|=>`; a cell with no alignment uses `|=`.
       A span placeholder keeps its marker and any glued alignment, including
       an orphan in the first row and a covered placeholder whose marker alone
-      sets its column default. The canonical writer NEVER writes a separator
-      row. GFM separator form remains valid input.
+      sets its column default. A `^` placeholder whose `header` field is true
+      is written header-kind, `|=^ |` (PART 9 §5 T4), so a separator-promoted
+      orphan keeps its kind: `| ^ | a |` over a separator is written
+      `|=^ |= a |`. The canonical writer NEVER writes a separator row. GFM
+      separator form remains valid input.
+
+      A head row whose only cells are `<` placeholders, such as `| < |` over a
+      separator, has no native spelling yet: a `<` has no header-kind form.
+      carve#4980 holds that decision.
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,
@@ -13701,6 +13732,16 @@ EOF = (* end of file *) ;
       Its optional `align` and `valign` fields record a glued span alignment
       even when the marker found no origin. The canonical writer writes that
       alignment on the placeholder itself, preserving the cell's tree fields.
+      Its `header` field is the authored kind: true for a header-kind `^`
+      (`|=^ |`, PART 9 §5 T4) or a separator-promoted placeholder, false for
+      a bare `^` or `<`, whose rendered kind T9 derives.
+
+        |=^ |
+        | x |
+
+        table{ rows: [
+          table_row{ cells: [ table_cell{ header: true, span: "rowspan" } ] },
+          table_row{ cells: [ table_cell{ header: false }[ "x" ] ] } ] }
 
       A MARKER THAT FOUND NO ORIGIN CONTRIBUTES NOTHING. The walk is a total
       function: a `^` in the first row, a `<` in the first column, or a marker

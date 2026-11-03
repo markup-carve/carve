@@ -54,7 +54,7 @@ test('native cells preserve the two formerly unspellable header trees', () => {
   const cases = [
     {
       source: '| ^ | a |\n|---|---|\n| 1 | 2 |\n',
-      fmt: '| ^ |= a |\n| 1 | 2 |\n',
+      fmt: '|=^ |= a |\n| 1 | 2 |\n',
     },
     {
       source: '| < | a |\n|---|---|\n| 1 | 2 |\n',
@@ -89,7 +89,7 @@ test('48 orphan header variants have a native spelling', () => {
   for (const wrap of containers) for (const orphan of ['^', '<']) {
     for (const text of ['a', 'long', 'two words']) for (const width of [1, 4]) {
       const source = wrap(`| ${orphan} | ${text} |\n|${'-'.repeat(width)}|${'-'.repeat(width)}|\n| 1 | 2 |\n`)
-      const fmt = wrap(`| ${orphan} |= ${text} |\n| 1 | 2 |\n`)
+      const fmt = wrap(`${orphan === '^' ? '|=^' : '| <'} |= ${text} |\n| 1 | 2 |\n`)
       assert.equal(renderDoc(parse(fmt)), renderDoc(parse(source)), `spec model variant ${count}`)
       count++
     }

@@ -57,3 +57,54 @@ Native head rows with span placeholders
   </tbody>
 </table>
 ```
+
+```
+|=^ |
+| x |
+.
+<table>
+  <thead>
+    <tr><th scope="col"></th></tr>
+  </thead>
+  <tbody>
+    <tr><td>x</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| =^ |
+|=^x |
+.
+<table>
+  <tbody>
+    <tr><td>=^</td></tr>
+    <tr><td>=^x</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|\=^ |
+.
+<table>
+  <tbody>
+    <tr><td>=^</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| ^ | a |
+|---|---|
+| 1 | 2 |
+.
+<table>
+  <thead>
+    <tr><th scope="col"></th><th scope="col">a</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```

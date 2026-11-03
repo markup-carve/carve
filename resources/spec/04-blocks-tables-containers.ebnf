@@ -83,7 +83,9 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    marker `=` and then the alignment marker are glued to the opening `|` (no
    preceding whitespace); the attribute block attaches after them. A
    cell containing only '^' or '<', optionally followed by a glued
-   span_alignment, with any space padding or none, is span_cell.
+   span_alignment, with any space padding or none, is span_cell. A '^'
+   glued to a kind marker that is glued to the opening `|` (`|=^ |`) is a
+   header-kind span_cell (PART 9 §5 T4).
 
    A header or data marker run ends with one space (PART 9 §5 T11). A span
    alignment ends at padding or the closing pipe. A cell with no run accepts
@@ -108,9 +110,12 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    `|{#x}=R|` is a data cell whose content is `{#x}=R`; no marker run ends
    without a space (T11). `|{#x} =R |` has id `x` and content `=R`. *)
 cell_attributes = attributes ;
-span_cell = rowspan_marker, [span_alignment], {space}
+span_cell = header_rowspan_marker, [span_alignment], {space}
+          | rowspan_marker, [span_alignment], {space}
           | colspan_marker, [span_alignment], {space} ;
 span_alignment = alignment_run ;  (* glued to the span marker; no space *)
+
+header_rowspan_marker = '=', '^' ;  (* both glued: no space before or between *)
 
 rowspan_marker = {space}, '^' ;
 colspan_marker = {space}, '<' ;

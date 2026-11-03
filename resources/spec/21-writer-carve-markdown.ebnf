@@ -224,9 +224,11 @@
       forbids the padding, and one class of cell construct is written WITH the
       padding inside it:
 
-        span_cell      = rowspan_marker, [span_alignment], {space}
+        span_cell      = header_rowspan_marker, [span_alignment], {space}
+                       | rowspan_marker, [span_alignment], {space}
                        | colspan_marker, [span_alignment], {space} ;
         span_alignment = alignment_run ;
+        header_rowspan_marker = '=', '^' ;
         rowspan_marker = {space}, '^' ;
         colspan_marker = {space}, '<' ;
 
@@ -273,8 +275,15 @@
       alignment as `|=<`, `|=~`, or `|=>`; a cell with no alignment uses `|=`.
       A span placeholder keeps its marker and any glued alignment, including
       an orphan in the first row and a covered placeholder whose marker alone
-      sets its column default. The canonical writer NEVER writes a separator
-      row. GFM separator form remains valid input.
+      sets its column default. A `^` placeholder whose `header` field is true
+      is written header-kind, `|=^ |` (PART 9 §5 T4), so a separator-promoted
+      orphan keeps its kind: `| ^ | a |` over a separator is written
+      `|=^ |= a |`. The canonical writer NEVER writes a separator row. GFM
+      separator form remains valid input.
+
+      A head row whose only cells are `<` placeholders, such as `| < |` over a
+      separator, has no native spelling yet: a `<` has no header-kind form.
+      carve#4980 holds that decision.
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,

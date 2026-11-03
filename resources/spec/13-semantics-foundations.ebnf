@@ -293,6 +293,12 @@
          Any consumed marker run disqualifies a span. Thus `|= <|` and
          `|= ^|` are header cells holding literal `<` and `^`, while
          `|?^ <|` is a vertically aligned cell holding literal `<`.
+         A kind marker glued to both the opening `|` and a `^` is no marker
+         run: `|=^ |` is a HEADER-KIND rowspan marker, a span marker whose cell
+         is a header cell (PART 2 `header_rowspan_marker`). It may carry a glued
+         span alignment (`|=^~ |`). `|=^x |` holds `=^x` and `| =^ |` holds
+         `=^`, both data. A `<` has no header-kind form: `|=< |` is a
+         left-aligned empty header cell.
       T5 SPAN WALK -- NORMATIVE [CARVE-P9-002], a total function. Markers
          resolve in row-major order. Every position belongs to the cell whose
          rectangle covers it; a span never covers a position another cell
@@ -461,8 +467,15 @@
          (CARVE-P11-056). A placeholder with no origin takes its row's kind
          when the other cells that row owns are headers. It remains a span
          placeholder in the tree (PART 12 §26) and renders as an empty
-         `<th scope="col">` in the head row. A row of only orphan placeholders
-         has no header cell to give it that kind.
+         `<th scope="col">` in the head row. A header-kind `^` (T4, `|=^ |`)
+         is a header cell itself, so a row of only orphan placeholders heads
+         its table when one of them is header-kind:
+
+             |=^ |
+             | x |
+
+         gives `<thead>` with one empty `<th scope="col">`. Below the head-row
+         run, an orphan header-kind `^` is an empty row header.
 
          An authored `scope` replaces the default (PART 10 §1), so
          `|={scope="colgroup"} a |` -- a header cell carrying attributes,
@@ -516,6 +529,7 @@
 
          A span_cell is the exception: its optional span_alignment is glued
          to `^` or `<` and ends at cell padding or the closing pipe (PART 2).
+         A header-kind span (`|=^ |`, T4) is a span_cell, not a marker run.
 
          A cell with NO run is unchanged -- `| a |` and `|a|` hold `a`, and
          `||` is one empty cell (CARVE-P9-082).

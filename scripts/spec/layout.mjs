@@ -1582,9 +1582,11 @@ function parseCell(seg) {
   const cell = { header: false, kindMarker: false, align: null, valign: null, attrs: null, content: '' }
   // A span occupies the whole cell. Its optional alignment is glued to the
   // span glyph and needs no marker-run terminator (PART 2 span_cell).
-  const span = /^ *([<^])([<>~](?:[\^~v])?|\?[\^~v])? *$/.exec(seg)
+  // `|=^ |` is a header-kind `^`: the `=` is glued to the pipe and the glyph (T4).
+  const span = /^(?:=(?=\^)| *)([<^])([<>~](?:[\^~v])?|\?[\^~v])? *$/.exec(seg)
   if (span && (!span[2] || decodeAlignment(span[2]))) {
     const alignment = decodeAlignment(span[2] ?? '')
+    cell.header = seg[0] === '='
     cell.spanMarker = span[1]
     cell.align = alignment.align
     cell.valign = alignment.valign

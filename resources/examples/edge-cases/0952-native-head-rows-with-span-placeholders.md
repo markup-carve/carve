@@ -102,3 +102,87 @@ A data payload shaped like a span alignment uses an escape (PART 11 §2).
 ```
 
 :::
+
+A `^` glued to a kind marker glued to the pipe is a header-kind span marker
+(CARVE-P9-006). It is a header cell itself, so a head row of only orphan
+placeholders still heads its table.
+
+::: compare
+
+```carve
+|=^ |
+| x |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col"></th></tr>
+  </thead>
+  <tbody>
+    <tr><td>x</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+An `=` after a space, or content after the `^`, leaves the cell as data.
+
+::: compare
+
+```carve
+| =^ |
+|=^x |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>=^</td></tr>
+    <tr><td>=^x</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|\=^ |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>=^</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+A separator-promoted orphan `^` is a header cell in the tree, and the
+canonical writer spells it header-kind (CARVE-P11-066).
+
+::: compare
+
+```carve
+| ^ | a |
+|---|---|
+| 1 | 2 |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col"></th><th scope="col">a</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+:::
