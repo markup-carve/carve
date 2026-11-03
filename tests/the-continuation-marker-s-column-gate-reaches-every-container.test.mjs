@@ -75,11 +75,10 @@ const BAND = [
 for (const [what, src, retained] of BAND) {
   test(retained === undefined
     ? `a refused marker renders as text in ${what}`
-    : `a low comment reads the follower differently from the marker in ${what}`, () => {
+    : `a low comment and refused marker keep the same follower owner in ${what}`, () => {
     if (retained !== undefined) {
       assert.equal(html(comment(src)), retained)
-      if (what === 'a footnote body, at its minimum column') assert.notEqual(html(marker(src)), html(comment(src)))
-      else assert.equal(html(marker(src)), html(comment(src)))
+      assert.equal(html(marker(src)), html(comment(src)))
     } else assert.ok(!html(marker(src)).includes('+'))
   })
 }

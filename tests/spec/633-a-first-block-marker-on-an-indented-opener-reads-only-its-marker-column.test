@@ -53,10 +53,11 @@ A first-block marker on an indented opener reads only its marker column
 <ul>
   <li>foo
     <ul>
-      <li>b</li>
-    </ul>
-    <ul>
-      <li>x</li>
+      <li>b
+        <ul>
+          <li>x</li>
+        </ul>
+      </li>
     </ul>
   </li>
 </ul>

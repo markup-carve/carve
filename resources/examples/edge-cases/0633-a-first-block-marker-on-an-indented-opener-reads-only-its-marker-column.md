@@ -79,10 +79,11 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 <ul>
   <li>foo
     <ul>
-      <li>b</li>
-    </ul>
-    <ul>
-      <li>x</li>
+      <li>b
+        <ul>
+          <li>x</li>
+        </ul>
+      </li>
     </ul>
   </li>
 </ul>

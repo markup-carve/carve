@@ -36,3 +36,39 @@ test('a plus inside an invisible comment fence is not a refused marker', () => {
   parse('- a\n+\n%%%\n+\n%%%\nb\n', { stateSink })
   assert.deepEqual(stateSink.refusedPlusLines, [])
 })
+
+test('a refused own-line marker keeps the next line in its item', () => {
+  const stateSink = {}
+  const doc = parse('- a\n+\n  b\n', { stateSink })
+  assert.deepEqual(stateSink.refusedPlusLines, [1])
+  assert.equal(doc.blocks.length, 1)
+  assert.equal(doc.blocks[0].items[0].blocks.at(-1).lines[0], 'b')
+})
+
+test('1,000 host, column, follower and sibling variants preserve refusal ownership', () => {
+  const hosts = [
+    ['- a', ''], ['1. a', ''], ['- [ ] a', ''], [':: t\n: a', ''],
+    ['[^n]: a', '\n\nsee[^n]'], ['> a', ''],
+    ['- a\n  - b', '  '], ['- a\n  1. b', '  '],
+  ]
+  const tails = ['b', '# h', '> q', '- s', '| a |']
+  let generated = 0
+  let refused = 0
+  for (const [host, prefix] of hosts)
+    for (const shift of [0, 1, 2, 3, 4])
+      for (const tail of tails)
+        for (const ending of ['', '\nlast', '\n\nlast', '\n- z', '\n%% c']) {
+          const follower = ' '.repeat(shift) + tail
+          const source = `${host}\n${prefix}+\n${follower}${ending}\n`
+          const stateSink = {}
+          const actual = renderDoc(parse(source, { stateSink }))
+          if (stateSink.refusedPlusLines.includes(host.split('\n').length)) {
+            const invisible = `${host}\n${prefix}%%\n${follower}${ending}\n`
+            assert.equal(actual, renderDoc(parse(invisible)), JSON.stringify(source))
+            refused++
+          }
+          generated++
+        }
+  assert.equal(generated, 1000)
+  assert.equal(refused, 725)
+})

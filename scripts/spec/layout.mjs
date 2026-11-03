@@ -3519,12 +3519,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
       reached--
     }
     if (plus) {
+      const closesDescendant = frames.length > frames.indexOf(plus) + 1
       frames.length = frames.indexOf(plus) + 1
       plus.para = false
       lead(plus.markerCanon)
       if (!plusAccepted || claimedMarkers.has(at)) {
         skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
-        result.push(out + '%%')
+        // The marker has no visible content, but its invisible placeholder
+        // must stay inside the host so the next line keeps the same owner.
+        const keepMarkerColumn = closesDescendant || claimedMarkers.has(at)
+        result.push(out + ' '.repeat(keepMarkerColumn ? 0 : Math.max(0, plus.canon - plus.markerCanon)) + '%%')
         refusedPlus.push(at)
         if (trace) emit(at, 'S2', ownerPath(), 'CARVE-P9-067', 'plus', { cell: 'B-plus-start' })
         continue
