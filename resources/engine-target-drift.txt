@@ -69,6 +69,12 @@ carve/rust/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#48
 carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  markup-carve/carve-js#4308 (carve-js), the payload is written at the opener column, not host-relative (markup-carve/carve#4988)
 carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  markup-carve/carve-js#4308 (carve-js), the payload is written at the opener column, not host-relative (markup-carve/carve#4988)
 carve/js/508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  markup-carve/carve-js#4308 (carve-js), the payload is written at the opener column, not host-relative (markup-carve/carve#4988)
+carve/js/187-a-comment-fence-is-a-comment-at-any-column-too  markup-carve/carve#4995 (carve-js), a document-level comment payload keeps every leading column
+carve/php/187-a-comment-fence-is-a-comment-at-any-column-too  markup-carve/carve#4995 (carve-php), a document-level comment payload keeps every leading column
+carve/rust/187-a-comment-fence-is-a-comment-at-any-column-too  markup-carve/carve#4995 (carve-rs), a document-level comment payload keeps every leading column
+carve/js/192-a-comment-fence-under-a-nested-item-does-not-close-it-either  markup-carve/carve#4995 (carve-js), a document-level comment payload keeps every leading column
+carve/php/192-a-comment-fence-under-a-nested-item-does-not-close-it-either  markup-carve/carve#4995 (carve-php), a document-level comment payload keeps every leading column
+carve/rust/192-a-comment-fence-under-a-nested-item-does-not-close-it-either  markup-carve/carve#4995 (carve-rs), a document-level comment payload keeps every leading column
 carve/php/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-34  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 carve/rust/535-a-marker-line-opaque-quote-keeps-overindented-markers-literal-34  markup-carve/carve#4850 (carve-rs), CARVE-P11-079 comment and indentation layout pending
 carve/php/616-a-line-is-read-in-the-container-whose-column-it-reaches-6  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending

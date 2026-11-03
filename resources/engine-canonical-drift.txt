@@ -6,3 +6,5 @@
 508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  CARVE-P11-079 (b) writes the payload at its host-relative indent (markup-carve/carve#4988); the pinned writer drops it to the opener column (markup-carve/carve-js#4308).
 508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  CARVE-P11-079 (b) writes the payload at its host-relative indent (markup-carve/carve#4988); the pinned writer drops it to the opener column (markup-carve/carve-js#4308).
 508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  CARVE-P11-079 (b) writes the payload at its host-relative indent (markup-carve/carve#4988); the pinned writer drops it to the opener column (markup-carve/carve-js#4308).
+187-a-comment-fence-is-a-comment-at-any-column-too  CARVE-P11-079 (b) writes a document-level payload with every leading column (markup-carve/carve#4995); the pinned writer drops it to column 0.
+192-a-comment-fence-under-a-nested-item-does-not-close-it-either  CARVE-P11-079 (b) writes a document-level payload with every leading column (markup-carve/carve#4995); the pinned writer drops it to column 0.
