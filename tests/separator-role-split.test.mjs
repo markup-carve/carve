@@ -382,8 +382,8 @@ const SITES = [
   {
     role: 'padding',
     site: 'rowspan_marker, the slots around the `^`',
-    required: /rowspan_marker = \{space\}, '\^', \{space\} ;/,
-    forbidden: /rowspan_marker = \{whitespace\}|'\^', \{whitespace\} ;/,
+    required: /rowspan_marker = \{space\}, '\^' ;/,
+    forbidden: /rowspan_marker = \{whitespace\}/,
     why: 'the marker is one token inside a cell that already exists; both sides sit inline',
     fixtures: [
       { slot: 'the leading slot', tab: '| a | b |\n|\t^ | c |\n', space: '| a | b |\n| ^ | c |\n' },
@@ -393,8 +393,8 @@ const SITES = [
   {
     role: 'padding',
     site: 'colspan_marker, the slots around the `<`',
-    required: /colspan_marker = \{space\}, '<', \{space\} ;/,
-    forbidden: /colspan_marker = \{whitespace\}|'<', \{whitespace\} ;/,
+    required: /colspan_marker = \{space\}, '<' ;/,
+    forbidden: /colspan_marker = \{whitespace\}/,
     why: 'the twin of the rowspan marker, and it reverts separately',
     fixtures: [
       { slot: 'the leading slot', tab: '| a | b |\n| c |\t< |\n', space: '| a | b |\n| c | < |\n' },

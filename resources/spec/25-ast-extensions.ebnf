@@ -139,13 +139,10 @@
       `align` or `valign` attributes.
 
       THE WRITER RETAINS THE MOST LOCAL AVAILABLE SPELLING. A headed table
-      keeps native column markers where a head cell starts in the aligned
-      column. A covered column, or a head row promoted by `header-rows` with
-      plain cell markers, cannot carry that native default: the writer uses
-      `aligns` and `valigns` for the affected physical columns. A delimiter
-      row generated to preserve a header span carries each explicit horizontal
-      head default in its origin column's colon, leaving a covered placeholder
-      unaligned unless that physical column has its own default.
+      keeps native column markers where a head cell or span placeholder starts
+      in the aligned column. A head row promoted by `header-rows` with plain
+      cell markers cannot carry that native default: the writer uses `aligns`
+      and `valigns` for the affected physical columns.
       A headerless aligned table emits `aligns`.
       Widths emit percentages with trailing zeroes removed. Metadata a target
       cannot spell is omitted and reported by conversion diagnostics.
@@ -158,7 +155,8 @@
    20. TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES -- NORMATIVE [CARVE-P12-040]. A cell
       alignment run is glued to its opening pipe, after an optional `=` kind
       marker, and is terminated by exactly one space after an optional glued
-      attribute block. Horizontal markers are `<`, `~`, `>`; vertical markers
+      attribute block. A span cell instead glues its run to `^` or `<` and
+      terminates at cell padding or the closing pipe. Horizontal markers are `<`, `~`, `>`; vertical markers
       are `^`, `~`, `v` for top, middle and bottom. A horizontal marker may
       stand alone; a vertical marker MUST follow a horizontal marker or the
       `?` inheritance placeholder. Vertical-then-horizontal order is invalid.
@@ -179,13 +177,15 @@
       columns. A plain `|` run supplies only that cell, including when
       `header-rows` later promotes the row to HTML headers. A run with no
       following space is not alignment: this deliberately changes the glued
-      `|>text` family so marker runs have an unambiguous terminator. `lint`
+      `|>text` family so ordinary marker runs have an unambiguous terminator. `lint`
       reports the old glued form and `fmt --migrate` inserts the space.
 
       `table_cell` carries optional `valign` beside `align`, with the same
-      inheritance rule. A cell containing only `^` or `<`, with any space
-      padding or none, remains a rowspan/colspan marker. The lone
-      glyph takes precedence over an empty alignment run.
+      inheritance rule. A span placeholder carries its optional glued
+      alignment in those same fields. In a head row its explicit marker sets
+      its physical column's default under T7. A cell containing only `^` or
+      `<`, with any space padding or none, remains a rowspan/colspan marker;
+      the lone glyph takes precedence over an empty alignment run.
 
    21. U+0000 IS REPLACED ON INGEST -- NORMATIVE [CARVE-P12-041]. A reader
       replaces every U+0000 with U+FFFD REPLACEMENT CHARACTER in every string
@@ -370,11 +370,16 @@
       a resolved reference keep `ref` and `rawRef` beside `href` and a resolved
       footnote reference keep its label beside its number (PART 12 §5).
 
+      Its optional `align` and `valign` fields record a glued span alignment
+      even when the marker found no origin. The canonical writer writes that
+      alignment on the placeholder itself, preserving the cell's tree fields.
+
       A MARKER THAT FOUND NO ORIGIN CONTRIBUTES NOTHING. The walk is a total
       function: a `^` in the first row, a `<` in the first column, or a marker
       every intermediate position of which is consumed extends nobody, so no
       cell's count moves. The marker is still published, still carrying
-      `span`. With no joined text it renders as an empty cell. A marker that
+      `span`. With no joined text it renders as an empty cell, taking the head
+      row's kind when its other owned cells are headers (T9). A marker that
       carries joined `+` text (PART 9 §5 T6) keeps `span`, holds that text as
       its children, and renders a cell holding that text; a Carve writer
       writes the marker back on the standard row and the text on its `+` line.

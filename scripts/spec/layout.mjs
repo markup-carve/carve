@@ -1580,7 +1580,18 @@ function readMarkerRun(seg) {
 // classify one raw cell segment
 function parseCell(seg) {
   const cell = { header: false, kindMarker: false, align: null, valign: null, attrs: null, content: '' }
-  const run = ['<', '^'].includes(padTrim(seg)) ? null : readMarkerRun(seg)
+  // A span occupies the whole cell. Its optional alignment is glued to the
+  // span glyph and needs no marker-run terminator (PART 2 span_cell).
+  const span = /^ *([<^])([<>~](?:[\^~v])?|\?[\^~v])? *$/.exec(seg)
+  if (span && (!span[2] || decodeAlignment(span[2]))) {
+    const alignment = decodeAlignment(span[2] ?? '')
+    cell.spanMarker = span[1]
+    cell.align = alignment.align
+    cell.valign = alignment.valign
+    cell.content = span[1]
+    return cell
+  }
+  const run = readMarkerRun(seg)
   // `\=` needs no case of its own: it is not `=`, so it opens no run and the
   // inline pass unescapes it into a literal `=` data cell.
   let s = seg
@@ -6091,8 +6102,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (ci >= prev.cells.length) {
               // A `<` marker counts as the cell of the row it extends (T5). A `^`
               // counts as itself: whether it reaches up depends on the sections.
-              const marker = (c) => c && !c.literal && !c.fragment && !c.kindMarker && c.attrs == null &&
-                c.valign == null && (c.align === null || c.align === c.delimiterAlign) && c.content === '<'
+              const marker = (c) => c && !c.literal && !c.fragment && c.spanMarker === '<'
               const covering = (c) => {
                 while (c > 0 && marker(prev.cells[c])) c--
                 return prev.cells[c]
@@ -6103,7 +6113,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               }
             }
             const cell = prev.cells[ci]
-            if (!cell.fragment && (cell.content === '^' || cell.content === '<') && cell.attrs == null) {
+            if (!cell.fragment && cell.spanMarker) {
               // the joined text belongs to the SPANNING cell (T6); applied
               // after the span walk resolves the marker's origin
               ;(cell.joins ??= []).push(add)

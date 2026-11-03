@@ -186,10 +186,9 @@
       cell and contributes to that grid column's width; it does not divide its
       width among columns.
 
-      A separator line (CARVE-P11-066) has no cell content segment. When a
-      header's spans require one, measure each generated separator segment by
-      its dash run and alignment colons. The roundtrip writer instead measures
-      each authored separator segment by its recorded dash run and alignment
+      A separator line (CARVE-P11-066) has no cell content segment. The
+      roundtrip writer measures each authored separator segment by its
+      recorded dash run and alignment
       colons. Each segment contributes to the column width. Add only trailing
       spaces to reach that width: do not change its dash count or colon
       placement. An extra authored separator entry beyond the last header cell
@@ -225,14 +224,17 @@
       forbids the padding, and one class of cell construct is written WITH the
       padding inside it:
 
-        span_cell      = rowspan_marker | colspan_marker ;
-        rowspan_marker = {space}, '^', {space} ;
-        colspan_marker = {space}, '<', {space} ;
+        span_cell      = rowspan_marker, [span_alignment], {space}
+                       | colspan_marker, [span_alignment], {space} ;
+        span_alignment = alignment_run ;
+        rowspan_marker = {space}, '^' ;
+        colspan_marker = {space}, '<' ;
 
-      A cell whose whole payload is `^` or `<` therefore re-reads as a SPAN
-      however it is padded, and CARVE-P11-014's space does nothing for it. §2 is what
-      applies, by its own test: omitting the escape changes the re-parsed AST,
-      so the payload is escaped and the writer emits `| \^ |` and `| \< |`.
+      A cell whose whole payload is `^` or `<`, optionally followed by a
+      glued alignment run, therefore re-reads as a SPAN however it is padded.
+      CARVE-P11-014's space does nothing for it. §2 applies by its own test:
+      omitting the escape changes the re-parsed AST, so the payload is escaped
+      and the writer emits `| \^ |`, `| \< |`, or `| \<< |` for literal data.
 
       THE RULE IS THE TEST, NOT THE TWO CHARACTERS. A cell payload is escaped
       wherever omitting the escape would make the cell re-read as something
@@ -260,27 +262,19 @@
       Every state but `x`/`X` renders an unchecked box (PART 2 `task_state`).
       The authored character also survives a format cycle.
 
-   6h. THE ROUNDTRIP WRITER PRESERVES A TABLE'S SEPARATOR ROW -- NORMATIVE
+   6h. CANONICAL HEADERS ARE NATIVE AND ROUNDTRIP PRESERVES A SEPARATOR ROW -- NORMATIVE
       [CARVE-P11-066]. A header row has two spellings, `|= cell |` and a plain
       row above a `|---|` separator, and they parse to the same rows and the
       same alignments. The AST records which one the author wrote, in
       `table.separatorWidths` (PART 12 §3). The `--roundtrip` writer reproduces
       that spelling: with the field, a separator row; without it, `|=` header
       cells. The canonical `fmt` writer ignores the field when choosing a
-      spelling. Where the native header form can express the row, it writes
-      `|=` header cells and no separator row. Each header cell retains its
+      spelling. It writes `|=` header cells for every head row. Each header cell retains its
       alignment as `|=<`, `|=~`, or `|=>`; a cell with no alignment uses `|=`.
-      A header whose complete tree cannot be spelled in native form uses a
-      generated separator under §6, independent of `separatorWidths`. This
-      includes an orphan span placeholder in the first row (a `^` without an
-      origin above it, or a `<` in the first column): `|= ^ |` would write a
-      literal header cell, while `|= |` would lose the placeholder's `span`
-      field. It also includes a column alignment default carried only by a
-      covered placeholder: moving that default to table attributes would
-      change the tree. The generated separator retains the placeholder and
-      the default in their original cells. For every other header, including
-      an empty aligned header cell, the canonical writer uses native `|=`
-      cells. GFM separator form remains valid input.
+      A span placeholder keeps its marker and any glued alignment, including
+      an orphan in the first row and a covered placeholder whose marker alone
+      sets its column default. The canonical writer NEVER writes a separator
+      row. GFM separator form remains valid input.
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,

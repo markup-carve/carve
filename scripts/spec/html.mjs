@@ -1401,9 +1401,7 @@ function renderTable(node, depth, ctx) {
   // the cell that carries them.
   // The cell reader resolves a padded lone `<` or `^` before an empty
   // alignment run. Keep that reading when walking spans.
-  const bareMarker = (cell) => !cell.literal && !cell.fragment && !cell.kindMarker &&
-    (cell.content === '<' || cell.content === '^') &&
-    (cell.align === null || cell.align === cell.delimiterAlign) && cell.valign === null && cell.attrs == null
+  const bareMarker = (cell) => !cell.literal && !cell.fragment && Boolean(cell.spanMarker)
   const absorb = (origin, cell, r, c) => {
     consumed.add(key(r, c))
     cover.set(key(r, c), origin)
@@ -1459,9 +1457,13 @@ function renderTable(node, depth, ctx) {
   // covering it (PART 11, carve#3048).
   let run = true
   for (let r = 0; r < rows.length; r++) {
-    run = run &&
-      rows[r].cells.some((_, c) => !consumed.has(key(r, c))) &&
-      rows[r].cells.every((cell, c) => (consumed.has(key(r, c)) ? cover.get(key(r, c)) : cell).header === true)
+    const owners = rows[r].cells.filter((_, c) => !consumed.has(key(r, c)))
+    const orphan = (cell) => Boolean(cell.spanMarker) && cell.empty
+    run = run && owners.some((cell) => cell.header) &&
+      rows[r].cells.every((cell, c) => {
+        const owner = consumed.has(key(r, c)) ? cover.get(key(r, c)) : cell
+        return owner.header || orphan(owner)
+      })
     rows[r].isHead = run
   }
   // column alignment: the last explicit marker in the head rows wins
@@ -1486,7 +1488,7 @@ function renderTable(node, depth, ctx) {
   }
   for (const row of rows.slice(0, headCount)) {
     row.cells.forEach((cell, column) => {
-      if (!cell.kindMarker && !row.gfmHead) return
+      if (!cell.kindMarker && !row.gfmHead && !cell.spanMarker) return
       if (cell.align) colAlign[column] = cell.align
       if (cell.valign) colValign[column] = cell.valign
     })
@@ -1539,9 +1541,9 @@ function renderTable(node, depth, ctx) {
       parsed = parsed.replace(new RegExp(` ${key}="[^"]*"`, 'gi'), '')
     }
     a += parsed
-    // An empty span-marker cell has no alignment of its own, but still takes its column's (carve#4277).
-    const align = (cell.empty ? null : cell.align) ?? colAlign[c] ?? null
-    const valign = (cell.empty ? null : cell.valign) ?? colValign[c] ?? null
+    // A bare orphan inherits its column; an aligned orphan keeps its own run.
+    const align = (cell.empty && !cell.spanMarker ? null : cell.align) ?? colAlign[c] ?? null
+    const valign = (cell.empty && !cell.spanMarker ? null : cell.valign) ?? colValign[c] ?? null
     if (align || valign) {
       const declarations = []
       if (align) declarations.push(`text-align: ${align};`)
