@@ -395,9 +395,10 @@
       It emits `|=` on each first-row header cell and carries its alignment
       into the marker, including when `table.separatorWidths` records a GFM
       separator. It emits no authored separator row. A header whose spans need
-      a generated separator follows PART 11 §6; its separator is independent
-      of `table.separatorWidths`. A later, wider body row does not add header
-      cells.
+      a generated separator follows PART 11 §6h; its separator is independent
+      of `table.separatorWidths`. This includes an orphan first-row span
+      placeholder and a covered placeholder that alone carries a column
+      default. A later, wider body row does not add header cells.
 
       THE ROUNDTRIP WRITER PRESERVES A RECORDED SEPARATOR ROW. Its cell count
       is the entry count of `table.separatorWidths` (CARVE-P11-066), neither
