@@ -50,7 +50,7 @@ Definition list as a first-class block opener
   :  d
 .
 <ul>
-  <li>one
+  <li><p>one</p>
     <dl>
       <dt>t</dt>
       <dd>d</dd>

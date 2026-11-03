@@ -45,7 +45,7 @@ A block opener indented under a definition term ends the term at every depth
     # H
 .
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>

@@ -14,14 +14,15 @@ const liDepth = (out) => {
 
 test('the issue rows', () => {
   const inner = '<ul>\n  <li>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n        </dl>\n      </li>\n    </ul>\n    : d\n'
+  // The blank stands between two of the outer item's blocks, so it is loose (PART 9 §17 L1).
   assert.equal(html(['- * :: t', '   : d', '', '    > r']),
-    inner + '    <blockquote><p>r</p></blockquote>\n  </li>\n</ul>')
+    inner.replace('    : d\n', '    <p>: d</p>\n') + '    <blockquote><p>r</p></blockquote>\n  </li>\n</ul>')
   assert.equal(html(['- * :: t', '   : d', '      > r']),
     inner + '    <blockquote><p>r</p></blockquote>\n  </li>\n</ul>')
 })
 
 test('a separator at the child marker column still opens in the outer item', () => {
-  assert.match(html(['- * :: t', '  : d', '', '    > r']), /<\/ul>\n    : d\n    <blockquote>/)
+  assert.match(html(['- * :: t', '  : d', '', '    > r']), /<\/ul>\n    <p>: d<\/p>\n    <blockquote>/)
 })
 
 const hosts = [[(l) => l], [(l) => (l === '' ? '>' : '> ' + l)], [(l) => (l === '' ? '' : '  ' + l), '- p', '']]

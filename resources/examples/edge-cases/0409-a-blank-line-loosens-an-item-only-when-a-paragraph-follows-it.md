@@ -1,27 +1,13 @@
 ## A blank line loosens an item only when a paragraph follows it
 
-PART 9 §17 L1 loosens a list when "some item holds a blank-line-separated second
-paragraph"; §17 L2 is the other half, where a sub-block attached after a blank
-ATTACHES and the item stays tight. Between them sits the question of which of the
-two a blank line opens, and the answer is decided by what follows it rather than
-by the blank.
-
-The mechanism is the one carve#1266 settled: an attached block CONSUMES the blank
-the gap held. A container has an opener, so the opener absorbs the separation and
-by the time tightness is decided there is no blank left to loosen with. A
-paragraph has no opener to absorb it, so the separation survives, and a
-blank-line-separated second paragraph is exactly what L1 asks for.
-
-So the line the rule draws is a following PARAGRAPH against every other block
-type, and it is the same line the
-`323-a-block-attached-after-an-invisible-line-leaves-the-item-tight` family
-already pins from the other side - there an invisible line sits in the gap and
-the attachment still consumes it.
-
-Nothing pinned the plain shapes, which is how carve#1622 found carve-js and
-carve-php disagreeing about the container. A tight list's HTML cannot show a
-paragraph boundary INSIDE a container, but it does show the lead's `<p>` wrapper,
-so an ordinary pair can see the difference at the item.
+The section title names the reading carve#5015 withdrew with PART 9 §17 L2. A
+blank line now loosens an item whatever block follows it: §17 L1 asks whether
+the item holds a blank-line-separated block after an earlier visible block of
+its own, and a container counts as much as a paragraph. carve#1622 found
+carve-js and carve-php disagreeing about the container, and these rows pin the
+plain shapes. A tight list's HTML cannot show a paragraph boundary INSIDE a
+container, but it does show the lead's `<p>` wrapper, so an ordinary pair can see
+the difference at the item.
 
 A paragraph after the blank: the item is loose, and every item of the list wraps.
 
@@ -46,8 +32,7 @@ A paragraph after the blank: the item is loose, and every item of the list wraps
 :::
 
 The same blank line above a container, which is carve#1622's shape: the item is
-tight, and the lead keeps no wrapper. The container's own body is loose for its
-own reasons - that is the div's blank line, not the item's.
+loose too, and the lead is wrapped. The div's own blank line is the div's.
 
 ::: compare
 
@@ -64,20 +49,20 @@ own reasons - that is the div's blank line, not the item's.
 
 ```html
 <ul>
-  <li>x
+  <li><p>x</p>
     <div class="d">
       <p>a</p>
       <p>b</p>
     </div>
   </li>
-  <li>z</li>
+  <li><p>z</p></li>
 </ul>
 ```
 
 :::
 
-A quote in the same position, because the rule is about the paragraph and not
-about the container specifically:
+A quote in the same position, because the rule is not about the div
+specifically:
 
 ::: compare
 
@@ -90,10 +75,10 @@ about the container specifically:
 
 ```html
 <ul>
-  <li>x
+  <li><p>x</p>
     <blockquote><p>q</p></blockquote>
   </li>
-  <li>z</li>
+  <li><p>z</p></li>
 </ul>
 ```
 

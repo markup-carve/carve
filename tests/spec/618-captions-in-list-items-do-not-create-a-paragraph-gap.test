@@ -441,13 +441,13 @@ more</figcaption>
 - c
 .
 <ul>
-  <li>text
+  <li><p>text</p>
     <figure>
       <blockquote><p>q</p></blockquote>
       <figcaption>cap</figcaption>
     </figure>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
@@ -462,13 +462,13 @@ more</figcaption>
 - c
 .
 <ul>
-  <li>text
+  <li><p>text</p>
     <figure class="carve-figure-group">
       <img src="b.png" alt="a">
       <figcaption>cap</figcaption>
     </figure>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
@@ -481,7 +481,7 @@ more</figcaption>
 - c
 .
 <ul>
-  <li>text
+  <li><p>text</p>
     <table>
       <caption>cap</caption>
       <tbody>
@@ -489,7 +489,7 @@ more</figcaption>
       </tbody>
     </table>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 
@@ -501,7 +501,7 @@ more</figcaption>
   ^ cap
 .
 <ul>
-  <li>text
+  <li><p>text</p>
     <figure>
       <blockquote><p>q</p></blockquote>
       <figcaption>cap</figcaption>

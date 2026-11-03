@@ -73,7 +73,7 @@ A `: ` description line is a sibling at any column once it misses the open body 
 
 ```html
 <ul>
-  <li>x
+  <li><p>x</p>
     <dl>
       <dt>t</dt>
       <dd>

@@ -22,7 +22,7 @@ test('a list refuses the + off its marker column, and always under an item', () 
 
 test('a closed block in a nested description leaves no paragraph for a column-0 line (CARVE-P0-011)', () => {
   assert.equal(flat('- a\n\n  :: T\n  : # h\nafter\n'),
-    '<ul><li>a<dl><dt>T</dt><dd><h1 id="h">h</h1></dd></dl></li></ul><p>after</p>')
+    '<ul><li><p>a</p><dl><dt>T</dt><dd><h1 id="h">h</h1></dd></dl></li></ul><p>after</p>')
   assert.equal(flat(':: s\n: a\n\n  :: T\n  : # h\nafter\n'),
     '<dl><dt>s</dt><dd><p>a</p><dl><dt>T</dt><dd><h1 id="h">h</h1></dd></dl></dd></dl><p>after</p>')
   assert.equal(flat(':: s\n: a\n\n  :: T\n  : +\n  # h\nafter\n'),
@@ -34,8 +34,8 @@ test('a closed block in a nested description leaves no paragraph for a column-0 
 })
 
 test('a paragraph between the enclosing item columns refuses a nested description + and folds into it (corpus 633-6)', () => {
-  assert.equal(flat('- a\n\n  :: T\n  : +\n q\n'), '<ul><li>a<dl><dt>T</dt><dd>+\nq</dd></dl></li></ul>')
-  assert.equal(flat('- a\n\n  * +\n q\n'), '<ul><li>a<ul><li>+\nq</li></ul></li></ul>')
+  assert.equal(flat('- a\n\n  :: T\n  : +\n q\n'), '<ul><li><p>a</p><dl><dt>T</dt><dd>+\nq</dd></dl></li></ul>')
+  assert.equal(flat('- a\n\n  * +\n q\n'), '<ul><li><p>a</p><ul><li>+\nq</li></ul></li></ul>')
 })
 
 test('an open paragraph in a nested description still takes a lazy line', () => {

@@ -52,11 +52,11 @@ stays a comment and the term goes on after it; a `%%%` fence keeps its body.
 
 ```html
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>
-    more
+    <p>more</p>
   </li>
 </ul>
 ```
@@ -144,11 +144,11 @@ A comment fence keeps its body and closer, and the term goes on after it.
 
 ```html
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>
-    more
+    <p>more</p>
   </li>
 </ul>
 ```
@@ -237,7 +237,7 @@ stays unresolved.
 ```html
 <p><a href="/u">t</a></p>
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>
@@ -343,7 +343,7 @@ x[^n]
 ```html
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>
@@ -481,7 +481,7 @@ x[^n]
 ```html
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>

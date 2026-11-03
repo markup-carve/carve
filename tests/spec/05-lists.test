@@ -101,7 +101,7 @@ not a list</p>
    > q
 .
 <ol>
-  <li>one
+  <li><p>one</p>
     <blockquote><p>q</p></blockquote>
   </li>
 </ol>
@@ -124,7 +124,7 @@ not a list</p>
     > q
 .
 <ol>
-  <li>one
+  <li><p>one</p>
     <blockquote><p>q</p></blockquote>
   </li>
 </ol>
@@ -294,7 +294,7 @@ lazy</li>
   - b
 .
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
       <li>a</li>
     </ul>
@@ -318,7 +318,7 @@ lazy</li>
   - b
 .
 <ul>
-  <li>outer
+  <li><p>outer</p>
     <ul>
       <li>a</li>
     </ul>

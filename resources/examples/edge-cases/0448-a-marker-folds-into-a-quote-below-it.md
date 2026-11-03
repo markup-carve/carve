@@ -150,7 +150,7 @@ and opens a list there.
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <blockquote>
       <ul>
         <li>x</li>

@@ -7,10 +7,10 @@ Compact list blocks
 - next
 .
 <ul>
-  <li>item
+  <li><p>item</p>
     <blockquote><p>note</p></blockquote>
   </li>
-  <li>next</li>
+  <li><p>next</p></li>
 </ul>
 ```
 
@@ -21,12 +21,12 @@ Compact list blocks
 - vegetables
 .
 <ul>
-  <li>fruit
+  <li><p>fruit</p>
     <ul>
       <li>apples</li>
     </ul>
   </li>
-  <li>vegetables</li>
+  <li><p>vegetables</p></li>
 </ul>
 ```
 

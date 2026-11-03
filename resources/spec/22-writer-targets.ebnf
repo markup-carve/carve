@@ -417,8 +417,8 @@
        This includes adjacent block quotes, tables, line blocks, definition
        lists, and lists whose marker kind is compatible. A single block opener
        that cannot fold into the paragraph above it remains canonically
-       indented at the content column. In a nested item, the blank line is
-       the compact-list separator specified by L2.
+       indented at the content column. A blank line between the two children
+       is no separator here: it would loosen the item (PART 9 §17 L1).
 
 
   10d. MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET -- NORMATIVE [CARVE-P11-031].

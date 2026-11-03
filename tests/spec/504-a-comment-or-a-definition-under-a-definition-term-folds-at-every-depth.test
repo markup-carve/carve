@@ -32,11 +32,11 @@ A comment or a definition under a definition term folds at every depth
     more
 .
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>
-    more
+    <p>more</p>
   </li>
 </ul>
 ```
@@ -98,11 +98,11 @@ A comment or a definition under a definition term folds at every depth
     more
 .
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>
-    more
+    <p>more</p>
   </li>
 </ul>
 ```
@@ -164,7 +164,7 @@ A comment or a definition under a definition term folds at every depth
 .
 <p><a href="/u">t</a></p>
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>
@@ -244,7 +244,7 @@ x[^n]
 .
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>
@@ -348,7 +348,7 @@ x[^n]
 .
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>

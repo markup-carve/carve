@@ -29,7 +29,7 @@ for (const [host, pad, close] of [['', '', ''], ['- ', '  ', '</li>\n</ul>'], ['
 
 test('an unclosed opener after a blank leaves a below-column line outside the item', () => {
   assert.equal(html(`- x\n  ${F}js,title="x"\n  a\n\n   ${F}\ntail\n`),
-    `<ul>\n  <li>x\n<code>js,title="x"\na</code>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>tail</p>`)
+    `<ul>\n  <li><p>x\n<code>js,title="x"\na</code></p>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>tail</p>`)
 })
 
 // §17 L3, L4: a marker body takes a `+` only with a block at its marker column.

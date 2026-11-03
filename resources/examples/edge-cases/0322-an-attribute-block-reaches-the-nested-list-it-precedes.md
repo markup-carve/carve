@@ -23,7 +23,7 @@ With a blank line before the attribute block:
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul class="x">
       <li>b</li>
     </ul>
@@ -33,9 +33,9 @@ With a blank line before the attribute block:
 
 :::
 
-The blank line decides nothing. The same three lines with no blank between them
-mean the same document, and the item stays tight either way (PART 9 §17 L2: a
-sub-block attached after a blank leaves the item tight):
+The blank line decides only looseness. The same three lines with no blank
+between them give the attribute to the same list, and without the blank the item
+stays tight (PART 9 §17 L1):
 
 ::: compare
 
@@ -57,7 +57,7 @@ sub-block attached after a blank leaves the item tight):
 
 :::
 
-That the blank is irrelevant is not a claim about lists in particular. The same
+That the attribute attaches either way is not a claim about lists in particular. The same
 unseparated attribute line in front of a PARAGRAPH has always attached, in the
 same position with the same spacing:
 
@@ -113,7 +113,7 @@ An ordered nested list is the same block in the same position:
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <ol class="x">
       <li>b</li>
     </ol>
@@ -140,7 +140,7 @@ says so:
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul class="x" id="i">
       <li>b</li>
     </ul>
@@ -219,7 +219,7 @@ the same authored base:
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul class="c">
       <li>b</li>
     </ul>
@@ -244,7 +244,7 @@ class lands on the item and the nested `<ul>` stays plain:
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
       <li class="x">b</li>
     </ul>

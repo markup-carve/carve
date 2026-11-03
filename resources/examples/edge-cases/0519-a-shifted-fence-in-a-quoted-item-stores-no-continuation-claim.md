@@ -19,7 +19,7 @@ flush
 `````html
 <blockquote>
   <ul>
-    <li>a
+    <li><p>a</p>
       <pre><code>x
 </code></pre>
     </li>
@@ -45,7 +45,7 @@ z
 `````html
 <blockquote>
   <ul>
-    <li>a
+    <li><p>a</p>
       <pre><code>x
 </code></pre>
     </li>
@@ -74,7 +74,7 @@ flush
 <blockquote>
   <blockquote>
     <ul>
-      <li>a
+      <li><p>a</p>
         x
       </li>
     </ul>

@@ -22,3 +22,6 @@
 # Format: <slug><space><space><reason>
 943-an-empty-comment-span-is-written-as-adjacent-delimiters  markup-carve/carve#5022: the pinned writer spells an empty comment span with an empty payload line, which loosens the list on the next pass.
 943-an-empty-comment-span-is-written-as-adjacent-delimiters-2  markup-carve/carve#5022: the pinned writer spells an empty comment span with an empty payload line, which loosens the list on the next pass.
+448-a-marker-folds-into-a-quote-below-it  markup-carve/carve#5015: the pinned writer separates the quote from the next sub-list with a blank line, which now loosens the item (PART 11 CARVE-P11-030).
+448-a-marker-folds-into-a-quote-below-it-3  markup-carve/carve#5015: the pinned writer separates the quote from the next sub-list with a blank line, which now loosens the item (PART 11 CARVE-P11-030).
+448-a-marker-folds-into-a-quote-below-it-4  markup-carve/carve#5015: the pinned writer separates the quote from the next sub-list with a blank line, which now loosens the item (PART 11 CARVE-P11-030).

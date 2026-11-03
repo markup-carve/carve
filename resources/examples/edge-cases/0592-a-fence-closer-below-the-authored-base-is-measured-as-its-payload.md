@@ -62,7 +62,7 @@
 
 ````html
 <ul>
-  <li>item
+  <li><p>item</p>
     <pre><code>a
 ```
 

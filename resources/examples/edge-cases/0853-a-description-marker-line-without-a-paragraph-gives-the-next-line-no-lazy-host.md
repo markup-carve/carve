@@ -18,7 +18,7 @@ after
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <dl>
       <dt>T</dt>
       <dd>

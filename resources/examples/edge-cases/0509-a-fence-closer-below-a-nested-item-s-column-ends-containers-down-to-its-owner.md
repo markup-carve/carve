@@ -38,7 +38,7 @@ fence.
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <pre><code>p
 </code></pre>
       </li>
@@ -69,7 +69,7 @@ fence.
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <pre><code>p
 </code></pre>
       </li>
@@ -100,7 +100,7 @@ fence.
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <pre><code>p
 </code></pre>
       </li>
@@ -184,7 +184,7 @@ fence.
     <ul>
       <li>b
         <ul>
-          <li>c
+          <li><p>c</p>
             <pre><code>p
 </code></pre>
           </li>
@@ -218,7 +218,7 @@ fence.
     <ul>
       <li>b
         <ul>
-          <li>c
+          <li><p>c</p>
             <pre><code>p
 </code></pre>
           </li>
@@ -251,7 +251,7 @@ fence.
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <pre><code>p
 </code></pre>
       </li>
@@ -282,7 +282,7 @@ fence.
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <b>p</b>
       </li>
     </ul>

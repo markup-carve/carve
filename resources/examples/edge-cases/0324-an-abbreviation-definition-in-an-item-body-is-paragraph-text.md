@@ -1,6 +1,6 @@
 ## An abbreviation definition in an item body is paragraph text
 
-An abbreviation definition in an item body is a definition (PART 12 §7, carve#4865), so it adds no paragraph and leaves the list tight. The section title names the reading carve#4865 replaced and stays as the corpus id.
+An abbreviation definition in an item body is a definition (PART 12 §7, carve#4865), so it adds no paragraph and on its own leaves the list tight. The section title names the reading carve#4865 replaced and stays as the corpus id.
 
 ::: compare
 
@@ -18,7 +18,7 @@ An abbreviation definition in an item body is a definition (PART 12 §7, carve#4
 
 :::
 
-Nothing changes when a sublist follows it:
+A sublist after it is a block after the blank, so the item is loose (PART 9 §17 L1b):
 
 ::: compare
 
@@ -31,7 +31,7 @@ Nothing changes when a sublist follows it:
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
       <li>b</li>
     </ul>
@@ -55,12 +55,12 @@ A sibling item reads the same way:
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
       <li>b</li>
     </ul>
   </li>
-  <li>c</li>
+  <li><p>c</p></li>
 </ul>
 ```
 

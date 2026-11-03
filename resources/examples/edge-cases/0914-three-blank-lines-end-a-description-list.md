@@ -95,7 +95,7 @@ An invisible line does not split the run, and the boundary holds inside a list i
 
 ```html
 <ul>
-  <li>o
+  <li><p>o</p>
     <dl>
       <dt>t</dt>
       <dd>x</dd>

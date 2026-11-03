@@ -1,6 +1,6 @@
 ## Compact list blocks
 
-A blank line is still required to start a block inside a list item, but it no longer makes the list *loose* when the indented content opens a block (sub-list, block quote, fenced code, fenced div, heading, table). The item stays **tight** — lead text inline, the block attached — so a checklist with notes or steps with code stay compact. (A Carve deviation: canonical djot renders these loose. Only the tight/loose rendering changes, not the block structure.)
+The section title names the reading carve#5015 withdrew (PART 9 §17 L2). A blank line before an item's sub-block (sub-list, block quote, fenced code, fenced div, heading, table) now loosens the list, as a blank before a second paragraph does (§17 L1). To keep a checklist with notes or steps with code compact, write the block without the blank line.
 
 ::: compare
 
@@ -13,16 +13,16 @@ A blank line is still required to start a block inside a list item, but it no lo
 
 ```html
 <ul>
-  <li>item
+  <li><p>item</p>
     <blockquote><p>note</p></blockquote>
   </li>
-  <li>next</li>
+  <li><p>next</p></li>
 </ul>
 ```
 
 :::
 
-A **sub-list** is one of those blocks, and the rule holds when a sibling item follows it: the blank belongs to the sub-list, not to the gap between items, so the whole list stays tight.
+A **sub-list** is one of those blocks: the blank stands between the item's lead and its sub-list, so the whole list is loose.
 
 ::: compare
 
@@ -35,12 +35,12 @@ A **sub-list** is one of those blocks, and the rule holds when a sibling item fo
 
 ```html
 <ul>
-  <li>fruit
+  <li><p>fruit</p>
     <ul>
       <li>apples</li>
     </ul>
   </li>
-  <li>vegetables</li>
+  <li><p>vegetables</p></li>
 </ul>
 ```
 
@@ -68,7 +68,7 @@ A genuine second prose paragraph still makes the list loose (and so does a blank
 
 :::
 
-An **invisible construct** does not loosen either, and for a plainer reason than L2: §17 L1 asks whether the item holds a blank-line-separated second *paragraph*, and a comment or a definition is not a paragraph - it renders nothing at all. An item wrapped in `<p>` because of a line that produces no output would be the blank line showing through.
+An **invisible construct** does not loosen: §17 L1 asks whether the item holds a blank-line-separated second *block*, and a comment or a definition is not a block - it renders nothing at all. An item wrapped in `<p>` because of a line that produces no output would be the blank line showing through.
 
 ::: compare
 
@@ -170,7 +170,7 @@ The attribute still reaches its paragraph **across a blank line**, exactly as it
 
 :::
 
-On its own, though, an attribute line leaves the item **tight** — it renders nothing, so it is not the second paragraph §17 L1 asks for, the same reason a comment or a definition is not.
+On its own, though, an attribute line leaves the item **tight** — it renders nothing, so it is not the second block §17 L1 asks for, the same reason a comment or a definition is not.
 
 ::: compare
 

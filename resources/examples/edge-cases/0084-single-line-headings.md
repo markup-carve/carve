@@ -175,7 +175,7 @@ A heading inside a container is a heading line too.
 ```html
 <blockquote>
   <ul>
-    <li>a
+    <li><p>a</p>
       <h3 id="b">b ###</h3>
     </li>
   </ul>

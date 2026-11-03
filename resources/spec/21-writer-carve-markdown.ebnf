@@ -602,13 +602,11 @@
    7e. A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE -- NORMATIVE [CARVE-P11-042].
       Where a tight list item's first block must be followed by a continuation
       marker, the writer puts that block on the marker line and the `+` on the
-      next line (`- > p`, then `+`) for a top-level item, never a bare `- +`
-      with the block at its marker column below it. For a nested tight item it first
-      writes the block at the item's content column with a blank line before
-      it, as L2 permits. It MAY write a `+` at the nested item's marker column
-      only when that blank-line spelling would change the parsed tree, including
-      tightness or block ownership. If no spelling
-      round-trips, it reports a writer loss.
+      next line at the item's marker column (`- > p`, then `+`), for a
+      top-level and a nested item alike, never a bare `- +` with the block at
+      its marker column below it. A blank line before the next block is no
+      substitute for the `+`: it would loosen the item (PART 9 §17 L1,
+      carve#5015). If no spelling round-trips, it reports a writer loss.
 
       A refused first-block `+` on a nested opener line is a letter
       (CARVE-P9-085). Where the block below it would otherwise attach to it,

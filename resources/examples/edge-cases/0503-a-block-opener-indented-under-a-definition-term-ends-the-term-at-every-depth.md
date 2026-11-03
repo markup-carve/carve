@@ -76,7 +76,7 @@ is past it.
 
 ```html
 <ul>
-  <li>item
+  <li><p>item</p>
     <dl>
       <dt>c</dt>
     </dl>

@@ -138,12 +138,13 @@ test('the item-count test disagrees, and it fails in both directions', () => {
   assert.equal(reParseSaysWriteTheKey(corpus(`${L7}-2`)), true)
 })
 
-test('05-lists-11 is tight now that its over-indented quote is structural', () => {
+// The blank before its quote loosens the one item (PART 9 §17 L1, carve#5015), so the count is wrong again.
+test('05-lists-11 is loose on the page, and only the item count asks for the key', () => {
   const source = readFileSync(resolve(corpusDir, '05-lists-11.crv'), 'utf8')
   const node = container(source)
-  assert.equal(isLoose(node), false)
+  assert.equal(isLoose(node), true)
   assert.equal(node.items.length, 1)
-  assert.equal(itemCountSaysWriteTheKey(source), false)
+  assert.equal(itemCountSaysWriteTheKey(source), true)
   assert.equal(reParseSaysWriteTheKey(source), false)
 })
 

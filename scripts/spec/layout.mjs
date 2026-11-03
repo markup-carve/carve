@@ -7968,6 +7968,17 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       : -1
     // The marker-line child owns this column until an outer authored block opens.
     let headSubActive = headSubCol >= 0
+    // The item's open child list and the blank lines seen since its last line,
+    // counted across invisible lines (§11 N1a), so its own blanks do not loosen this item.
+    let childList = headSubMarker ? { ...headSubMarker, indent: headSubCol - headSubMarker.markerWidth } : null
+    let childListBlanks = 0
+    const openChildList = (marker) => {
+      childList = marker
+      childListBlanks = 0
+    }
+    const insideChildList = (marker) => childList !== null && marker.indent >= childList.indent + childList.markerWidth
+    const continuesChildList = (marker, blanks) => childList !== null && marker.indent === childList.indent &&
+      sameAxes(markerAxes(childList), marker) && childListBlanks + blanks < 3
     // The deepest descendant item's marker, for a marker line that cannot be its sibling.
     // A sibling list at the content column has ended the marker-line child.
     let headSubEnded = false
@@ -9020,7 +9031,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             continue
           }
           if (opensSubBlock(dedented)) {
-            // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
+            // A blank-separated child block after a visible one loosens the item (SS17 L1, carve#5015).
+            if (!itemShowsNothing() && !descendantFence && !closedMarkerFence) list.tight = false
+            childList = null
             if (!descendantFence && !closedMarkerFence) pushGap()
             closePara()
             i = j
@@ -9048,6 +9061,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
                 (tryAttrLine(dedentedWindow(lines, j, contentCol), 0)?.next ?? 0) <= 1) pushGap()
             closePara()
             blankBeforeInvisible = true
+            childListBlanks += visibleDistance(i, j)
             // §17 L1b: the invisible line is not a separator either, so the
             // blank line's separation survives it. If a PARAGRAPH follows, the
             // item holds a blank-line-separated second paragraph and is loose;
@@ -9065,6 +9079,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)
           if (!firstVisible) list.tight = false
           if (col === contentCol) subCol = -1
+          childList = null
           startPara()
           i = j
           continue
@@ -9079,7 +9094,23 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // reaches it but carries residual indent is lazy paragraph text, again
         // mirroring the top level.) Falls through to detach below.
         if (nm && nm.indent >= contentCol) {
-          // sub-list after a blank: attaches, stays tight (SS17 L2)
+          // A sub-list after a blank loosens the item like any child block (SS17 L1, carve#5015).
+          // A blank inside the open child list, or a container the item holds, is that block's own.
+          if (authoredContainer && pendingAuthoredBlock !== null) {
+            authoredBlockLimit = authoredBlockEnd(lines, pendingAuthoredBlock, contentCol, state)
+            pendingAuthoredBlock = null
+          }
+          const noteBase = authoredBlockLimit !== null && j >= authoredBlockLimit ? null : authoredBlockBase ?? contentCol
+          const heldList = attachedDescriptionBodies.some(body => col >= body) ||
+            authoredContainer && (descriptionBodyColumns.some(body => col >= body) || j < heldContainerEnd ||
+              authoredBlockLimit !== null && j < authoredBlockLimit) ||
+            noteFrames.some(frame => col >= frame.body) ||
+            defBodyIndent !== null && noteBase !== null && col - noteBase >= defBodyIndent + FOOTNOTE_BODY_COLUMN
+          if (continuesChildList(nm, visibleDistance(i, j))) childListBlanks = 0
+          else if (!heldList && !insideChildList(nm)) {
+            if (!itemShowsNothing() && !descendantFence && !closedMarkerFence) list.tight = false
+            openChildList(nm)
+          }
           if (defBodyIndent !== null && nm.indent >= (authoredBlockBase ?? contentCol) + defBodyIndent + FOOTNOTE_BODY_COLUMN) {
             noteTailList = true
             noteListBodyColumn = (authoredBlockBase ?? contentCol) + defBodyIndent + FOOTNOTE_BODY_COLUMN
@@ -9200,6 +9231,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             !FENCE.test(lm.rest) && !nestedVerbatim() && i >= descendantBlockEnd &&
             !(nestedOpaque?.kind === 'comment' && COMMENT_FENCE.exec(lm.rest)?.[1].length === nestedOpaque.run.length)) {
           subCol = -1
+          if (!COMMENT_LINE.test(lm.rest) && !isDefinitionOrAttributeLine(lm.rest)) childList = null
           // A line still in the marker-line child's column stays in that child (PART 0 S4).
           if (!(headSubActive && reach >= headSubCol)) {
             descLive = false
@@ -9512,6 +9544,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // the item for it.
         // Fence payload attaches nothing: its lines are opaque (PART 0).
         if (dmeas.rest !== '' && !insideFence() && !nestedVerbatim() && (opensSubBlock(dedented) || matchMarkerAt(dmeas))) {
+          const ownChild = !(nm && (continuesChildList(nm, 0) || insideChildList(nm))) &&
+            !(noteBodyBoundary !== null && col >= noteBodyBoundary) && !noteFrames.some(frame => col >= frame.body) &&
+            !attachedDescriptionBodies.some(body => col >= body) && !descriptionBodyColumns.some(body => col >= body)
+          if (pendingSeparation && ownChild && !itemShowsNothing()) list.tight = false
+          if (ownChild) childList = nm ?? null
+          if (ownChild && nm) childListBlanks = 0
           blankBeforeInvisible = false
           pendingSeparation = false
         }
@@ -9650,6 +9688,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (subCol < 0 && nm && nm.indent >= contentCol && !inDefBody && !stanzaPayload()) {
           subCol = reach + nm.markerWidth
           paraBeforeSublist = paragraphIsOpen()
+          if (!continuesChildList(nm, 0)) openChildList(nm)
         } else if (nm && nm.indent >= contentCol && !inDefBody && reach + nm.markerWidth < subCol && !insideFence()) {
           // A shallower descendant marker ended that sublist; its item's column now owns the body.
           subCol = reach + nm.markerWidth

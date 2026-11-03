@@ -32,7 +32,7 @@ flush
 `````html
 <blockquote>
   <ul>
-    <li>a
+    <li><p>a</p>
       <pre><code>x
 </code></pre>
     </li>
@@ -59,7 +59,7 @@ flush
   <ul>
     <li>a
       <ul>
-        <li>b
+        <li><p>b</p>
           <pre><code>x
 </code></pre>
         </li>
@@ -86,7 +86,7 @@ flush
 `````html
 <blockquote>
   <ul>
-    <li>a
+    <li><p>a</p>
       <pre><code>x
 </code></pre>
     </li>
@@ -114,7 +114,7 @@ flush
   <ul>
     <li>a
       <ul>
-        <li>b
+        <li><p>b</p>
           <pre><code>x
 </code></pre>
         </li>
@@ -210,7 +210,7 @@ flush
 <blockquote>
   <blockquote>
     <ul>
-      <li>a
+      <li><p>a</p>
         <pre><code>x
 </code></pre>
       </li>
@@ -260,7 +260,7 @@ flush
 `````html
 <blockquote>
   <ul>
-    <li>a
+    <li><p>a</p>
       <pre><code>x
 </code></pre>
     </li>

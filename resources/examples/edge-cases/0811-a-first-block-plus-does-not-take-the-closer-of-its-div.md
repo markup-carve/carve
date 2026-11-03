@@ -95,7 +95,7 @@ after
 ````html
 <div class="d">
   <ul>
-    <li>d
+    <li><p>d</p>
       <blockquote><p>+</p></blockquote>
     </li>
   </ul>

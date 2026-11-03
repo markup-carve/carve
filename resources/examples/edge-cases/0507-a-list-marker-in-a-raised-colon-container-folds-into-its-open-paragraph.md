@@ -20,12 +20,12 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <p>a</p>
     </div>
   </li>
-  <li>second</li>
+  <li><p>second</p></li>
 </ul>
 `````
 
@@ -43,12 +43,12 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <aside class="admonition note" aria-label="Note">
       <p>a</p>
     </aside>
   </li>
-  <li>second</li>
+  <li><p>second</p></li>
 </ul>
 `````
 
@@ -66,12 +66,12 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <p>a</p>
     </div>
   </li>
-  <li>second</li>
+  <li><p>second</p></li>
 </ul>
 `````
 
@@ -89,12 +89,12 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <aside class="admonition note" aria-label="Note">
       <p>a</p>
     </aside>
   </li>
-  <li>second</li>
+  <li><p>second</p></li>
 </ul>
 `````
 
@@ -112,7 +112,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <p>a
 - second</p>
@@ -135,7 +135,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <aside class="admonition note" aria-label="Note">
       <p>a
 - second</p>
@@ -158,7 +158,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <p>a
 - second</p>
@@ -181,7 +181,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <aside class="admonition note" aria-label="Note">
       <p>a
 - second</p>
@@ -204,7 +204,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <p>a
 - second</p>
@@ -227,7 +227,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <aside class="admonition note" aria-label="Note">
       <p>a
 - second</p>
@@ -250,7 +250,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <p>a
 - second</p>
@@ -273,7 +273,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <aside class="admonition note" aria-label="Note">
       <p>a
 - second</p>
@@ -297,7 +297,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <p>a</p>
     </div>
@@ -321,7 +321,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <ul>
         <li>second</li>
@@ -350,7 +350,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
 `````html
 <ul>
-  <li>head
+  <li><p>head</p>
     <div>
       <pre><code>:::
 </code></pre>

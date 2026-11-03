@@ -14,7 +14,7 @@ A fenced code block indented past the content column remains a block opener. Its
 
 ```html
 <ul>
-  <li>one
+  <li><p>one</p>
     <pre><code>c
 </code></pre>
   </li>

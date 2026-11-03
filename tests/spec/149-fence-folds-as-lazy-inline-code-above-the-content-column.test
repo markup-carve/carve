@@ -8,7 +8,7 @@ Fence folds as lazy inline code above the content column
    ```
 .
 <ul>
-  <li>one
+  <li><p>one</p>
     <pre><code>c
 </code></pre>
   </li>

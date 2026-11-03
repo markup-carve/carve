@@ -21,7 +21,7 @@ PART 9 §11 N1a and PART 0 S1 (carve#4760). A nested list reads the full blank r
 
 ```html
 <ul>
-  <li>o
+  <li><p>o</p>
     <ul>
       <li>a</li>
     </ul>
@@ -50,7 +50,7 @@ The same boundary holds when the comment divides the run after two blanks.
 
 ```html
 <ul>
-  <li>o
+  <li><p>o</p>
     <ul>
       <li>a</li>
     </ul>

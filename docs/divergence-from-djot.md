@@ -802,31 +802,30 @@ notice, because the output is well-formed and merely missing something. This is
 an AST break as much as a source one: Djot's tree has no node carrying those
 attributes at all.
 
-## 19. An attached sub-block leaves the item tight
+## 19. A blank line before a nested list loosens the item
 
 **Djot:** a blank line inside an item makes the item loose, so its lead becomes
-a `<p>`, whatever follows the blank.
+a `<p>`, except before a nested list: djot.js keeps that item tight.
 
-**Carve:** a sub-block attached after a blank keeps the item tight - the lead
-stays bare. §17 L2.
+**Carve:** a blank line between two of an item's blocks loosens the list,
+whatever the second block is. §17 L1.
 
 ```
 - a
 
-  > q
+  - b
+- c
 
-Djot:   <li><p>a</p><blockquote><p>q</p></blockquote></li>
-Carve:  <li>a<blockquote><p>q</p></blockquote></li>
+Djot:   <li>a<ul><li>b</li></ul></li><li>c</li>
+Carve:  <li><p>a</p><ul><li>b</li></ul></li><li><p>c</p></li>
 ```
 
-Measured across the attached kinds: a block quote, a code fence, a colon div, a
-heading and a table all diverge this way. **A nested list does not** - Djot keeps
-that item tight too, so the two agree there. A plain paragraph after the blank is
-loose in both, which is the control.
+A block quote, a code fence, a colon div, a heading and a table after the blank
+are loose in both. To keep the list tight, drop the blank line: a nested list
+needs none (§24 C3).
 
-**Why.** The blank line is how a sub-block is attached at all, so treating it as
-a looseness signal makes attachment and spacing the same gesture. An AST break:
-the difference is a `<p>` wrapper, not the content.
+**Why.** One rule for every block kind, the one CommonMark applies too
+(carve#5015). An AST break: the difference is a `<p>` wrapper, not the content.
 
 ## 20. A typed container is a native admonition
 

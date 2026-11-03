@@ -25,7 +25,8 @@ for (const depth of [0, 1, 2]) for (const lead of ['    ```js,title="x"', '  ```
     // A marker that misses the item closes it (PART 0 S4, carve#4860), so only plain text folds.
     if (tail === 'TAIL') test(`an open paragraph after that block still takes the line: depth ${depth}, ${JSON.stringify(lead)}, blank ${blank}, ${name}, ${tail}`, () => {
       const out = html(quoted(depth, [...body, '  more']) + tail + '\n')
-      assert.match(out, /more\n?TAIL<\/li><\/ul>/)
+      // A blank before the item's next block loosens it (PART 9 §17 L1, carve#5015).
+      assert.match(out, blank ? /more\n?TAIL<\/p><\/li><\/ul>/ : /more\n?TAIL<\/li><\/ul>/)
     })
   }
 }

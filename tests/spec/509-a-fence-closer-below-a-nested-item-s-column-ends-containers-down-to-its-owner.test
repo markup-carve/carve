@@ -13,7 +13,7 @@ A fence closer below a nested item's column ends containers down to its owner
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <pre><code>p
 </code></pre>
       </li>
@@ -38,7 +38,7 @@ A fence closer below a nested item's column ends containers down to its owner
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <pre><code>p
 </code></pre>
       </li>
@@ -63,7 +63,7 @@ A fence closer below a nested item's column ends containers down to its owner
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <pre><code>p
 </code></pre>
       </li>
@@ -129,7 +129,7 @@ A fence closer below a nested item's column ends containers down to its owner
     <ul>
       <li>b
         <ul>
-          <li>c
+          <li><p>c</p>
             <pre><code>p
 </code></pre>
           </li>
@@ -157,7 +157,7 @@ A fence closer below a nested item's column ends containers down to its owner
     <ul>
       <li>b
         <ul>
-          <li>c
+          <li><p>c</p>
             <pre><code>p
 </code></pre>
           </li>
@@ -184,7 +184,7 @@ A fence closer below a nested item's column ends containers down to its owner
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <pre><code>p
 </code></pre>
       </li>
@@ -209,7 +209,7 @@ A fence closer below a nested item's column ends containers down to its owner
 <ul>
   <li>a
     <ul>
-      <li>b
+      <li><p>b</p>
         <b>p</b>
       </li>
     </ul>

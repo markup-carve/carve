@@ -7,7 +7,7 @@ Outer item with an internal blank before an attached block is loose
    > q
 .
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
       <li>b</li>
     </ul>

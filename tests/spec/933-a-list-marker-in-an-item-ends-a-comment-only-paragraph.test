@@ -9,7 +9,7 @@ A list marker in an item ends a comment-only paragraph
   - b
 .
 <ul>
-  <li>p
+  <li><p>p</p>
     <ul>
       <li><p>a</p></li>
       <li><p>b</p></li>
@@ -27,7 +27,7 @@ A list marker in an item ends a comment-only paragraph
   * b
 .
 <ul>
-  <li>p
+  <li><p>p</p>
     <ul>
       <li>a</li>
     </ul>
@@ -45,7 +45,7 @@ A list marker in an item ends a comment-only paragraph
   - b
 .
 <ul>
-  <li>p
+  <li><p>p</p>
     <ul>
       <li>b</li>
     </ul>

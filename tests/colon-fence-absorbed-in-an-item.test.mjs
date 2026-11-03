@@ -56,7 +56,7 @@ test('a malformed opener alone is a paragraph of its own', () => {
 test('a bare fence after a blank opens a div', () => {
   assert.equal(
     html('- item\n  :::note\n\n  :::\n  body\n  :::\ntail\n'),
-    '<ul><li>item :::note <div><p>body</p></div></li></ul><p>tail</p>',
+    '<ul><li><p>item :::note</p><div><p>body</p></div></li></ul><p>tail</p>',
   )
 })
 
