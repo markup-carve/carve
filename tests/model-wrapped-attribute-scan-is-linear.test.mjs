@@ -30,7 +30,7 @@ for (const [head, unit, tail = ''] of shapes) {
 }
 
 test('a bare value may hold a brace on a wrapped line below a footnote body (carve#4104)', () => {
-  assert.match(html('[^f]: d\n  {.c\nk=a{b}\n  x\n\n[^f]\n'), /<p>d<\/p>\n {6}<p class="c" k="a\{b">x/)
+  assert.match(html('[^f]: d\n  {.c\n   k=a{b}\n  x\n\n[^f]\n'), /<p>d<\/p>\n {6}<p class="c" k="a\{b">x/)
 })
 
 test('a line that opens a block still ends a wrap', () => {

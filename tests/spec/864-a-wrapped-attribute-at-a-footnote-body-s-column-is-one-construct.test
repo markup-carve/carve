@@ -13,8 +13,10 @@ A wrapped attribute at a footnote body's column is one construct
   <hr>
   <ol>
     <li id="fn1">
-      <p>d</p>
-      <p class="c">x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>d
+{.c
+}
+x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -28,7 +30,8 @@ A wrapped attribute at a footnote body's column is one construct
 .
 <ul>
   <li>d
-    <p class="c">x</p>
-  </li>
+{.c
+}
+x</li>
 </ul>
 ```

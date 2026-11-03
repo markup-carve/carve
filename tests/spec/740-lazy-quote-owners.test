@@ -5,10 +5,9 @@ Lazy quote owners
 > }
 a
 .
-<blockquote>
-
-</blockquote>
-<p>a</p>
+<blockquote><p>{c
+}
+a</p></blockquote>
 ```
 
 ```

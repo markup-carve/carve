@@ -2,11 +2,12 @@
 
 Line-final spaces and tabs are insignificant: they are dropped before anything
 reads the line (`CARVE-P7-001` item 5, markup-carve/carve#2978). On an attribute
-line that wraps, the run before the line break is no part of the separator, so
-the block still closes on the next line.
+line that wraps, the run before the line break is no part of the separator.
+The next line must still be indented past `{` (CARVE-P2-035), so the historical
+column-0 examples below are paragraph text.
 
 <!-- The first line ends in a SPACE. -->
-A space before the line break of a wrapped attribute line is dropped.
+A space before the line break is dropped; it does not supply continuation indentation.
 
 ::: compare
 
@@ -18,7 +19,9 @@ paragraph
 ```
 
 ```html
-<p class="a b">paragraph</p>
+<p>{.a
+.b}</p>
+<p>paragraph</p>
 ```
 
 :::
@@ -36,7 +39,9 @@ paragraph
 ```
 
 ```html
-<p class="a b">paragraph</p>
+<p>{.a
+.b}</p>
+<p>paragraph</p>
 ```
 
 :::

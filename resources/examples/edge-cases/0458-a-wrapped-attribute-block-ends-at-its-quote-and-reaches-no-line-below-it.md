@@ -1,11 +1,10 @@
 ## A wrapped attribute block ends at its quote and reaches no line below it
 
-An attribute block at the end of a quote ends where the quote ends. A line
-below the quote carries no quote marker, so it is not the block's target - the
-block is dropped and the line is a top-level paragraph. The WRAPPED spelling of
-the block (`{.k` then `#x}` on two quoted lines) used to reach past the quote's
-closing boundary and pull that line inside; it now stops at the boundary, exactly
-as the equivalent single-line block already does (markup-carve/carve#1956).
+An attribute block at the end of a quote ends where the quote ends. These
+historical wrapped inputs place the second line at or below the opening `{`
+column after the quote marker. CARVE-P2-035 therefore reads the whole brace run
+as paragraph text. A valid wrapped block still cannot attribute a line outside
+its quote (markup-carve/carve#1956).
 
 ::: compare
 
@@ -18,9 +17,11 @@ tail
 
 ```html
 <blockquote>
-  <blockquote><p>q</p></blockquote>
+  <blockquote><p>q
+{.k
+#x}
+tail</p></blockquote>
 </blockquote>
-<p>tail</p>
 ```
 
 :::
@@ -59,10 +60,10 @@ same.
 
 ```html
 <blockquote>
-  <blockquote>
-    <p>q</p>
-    <p class="k" id="x">after</p>
-  </blockquote>
+  <blockquote><p>q
+{.k
+#x}
+after</p></blockquote>
 </blockquote>
 ```
 

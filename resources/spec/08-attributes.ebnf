@@ -210,15 +210,15 @@ quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' 
 (* Block-level attributes appear on their own line(s) preceding a block.
    A single attribute block may span multiple physical lines (the `}`
    need not be on the opening line): a continuation is a single line
-   break optionally followed by indentation. A BLANK line (two line
+   break followed by indentation at least one column past the opening `{`.
+   This includes a line containing only the closing `}`. A BLANK line (two line
    breaks) ends the block -- it is not interior padding; an attribute
    block interrupted by a blank line is not a `block_attributes`; its lines
    are literal paragraph text. Merge + reach semantics
    (including float-across-blank-lines BETWEEN separate blocks): PART 9 §15. *)
-(* Continuation lines may sit at any column but must carry the quote prefix
-   of the container that opened the block. A line without that prefix does
-   not continue the attribute: its first line is paragraph text, and the
-   prefix-less line may lazily continue that paragraph. *)
+(* Every continuation line must carry the quote prefix of its container and
+   reach at least one column past the opening `{`. If any line fails, the
+   entire run is paragraph text, as when a blank line interrupts it. *)
 block_attributes = block_attribute_block, {block_attribute_block}, newline ;
 block_attribute_block = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}' ;
 (* A GLUED RUN IS ONE ATTRIBUTE LINE. `{.a}{.b}` on a line of its own is one
@@ -237,7 +237,7 @@ block_attribute_block = '{', opt_pad, attribute, {attr_separator, attribute}, op
 attr_pad = {space} ;                     (* attribute-block padding within a
                                             line: spaces only, no tab and no
                                             line break *)
-opt_ws = {whitespace} ;                  (* a LEADING indentation run, spaces
+opt_ws = whitespace, {whitespace} ;      (* a LEADING indentation run, spaces
                                             and tabs. Read by continuation
                                             only *)
 opt_pad = attr_pad, [continuation] ;     (* block-attribute padding: spaces,
@@ -245,21 +245,4 @@ opt_pad = attr_pad, [continuation] ;     (* block-attribute padding: spaces,
                                             indentation -- a blank line ends the
                                             block and is never interior padding *)
 attr_separator = (space | continuation), attr_pad ;  (* one space OR one line break *)
-continuation = newline, opt_ws ;         (* a single line break + indent; NOT a blank line *)
-(* AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED --
-   NORMATIVE [CARVE-P4-008]. The `continuation` above is Carve's own, and it
-   admits an unindented second line; a source language need not. Djot requires
-   a block attribute's later lines to be indented past the run's opening
-   column, and that requirement covers every block-position brace run, the
-   comment-only form `{% ... %}` included -- one construct, so one rule, not a
-   separate reading for comments. Inline attribute and comment runs may span
-   unindented lines; this block-position requirement does not apply to them. An importer that meets a block-position brace run whose
-   continuation sits at or below the opener's own column takes the whole run as
-   ordinary text: `{% x` / `y %}` at column 0 imports as a paragraph carrying
-   both lines, and a following `# b` is paragraph text in that same paragraph
-   rather than a heading, so the ownership of the block after the run follows
-   from this rule and needs none of its own. Indented, `{% x` / `  y %}` is a
-   comment whose text is dropped, exactly as `{#id` / `  key=1}` applies
-   attributes where `{#id` / `key=1}` does not. Inside a container the column
-   compared is the opener's, so a list item's content column governs there.
- *)
+continuation = newline, opt_ws ;         (* one line break + indent past the opening `{`; NOT a blank line *)

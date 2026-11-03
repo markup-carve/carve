@@ -4,7 +4,7 @@ page: edge-footnotes
 
 ## A wrapped attribute at a footnote body's column is one construct
 
-PART 9 §24 C3 and §15 A1, A5 (carve#4104). A wrapped attribute line at the body column ends the paragraph and attaches to the next block, in a footnote body as in a list item.
+PART 9 §24 C3 and §15 A1, A5 (carve#4104) still recognize a wrapped attribute line at the body column when its continuation passes the opening `{`. The historical closers below do not, so CARVE-P2-035 makes each run paragraph text in its footnote or list item.
 
 :::::: compare
 
@@ -23,8 +23,10 @@ PART 9 §24 C3 and §15 A1, A5 (carve#4104). A wrapped attribute line at the bod
   <hr>
   <ol>
     <li id="fn1">
-      <p>d</p>
-      <p class="c">x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>d
+{.c
+}
+x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -46,8 +48,9 @@ The list item twin.
 ```html
 <ul>
   <li>d
-    <p class="c">x</p>
-  </li>
+{.c
+}
+x</li>
 </ul>
 ```
 

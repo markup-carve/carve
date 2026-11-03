@@ -388,6 +388,11 @@ closer, or at their last *placed* child when they have no closer - which is what
 a container whose closer is implicit has instead of one. Break nodes own their
 line terminator and therefore end at column 1 of the following line.
 
+For a block-position brace run refused by CARVE-P2-035, no attribute or comment
+node owns the delimiter lines. They belong to the paragraph as literal text;
+the paragraph's source span covers the entire run and any following folded
+line. A valid indented run keeps its ordinary attribute or comment ownership.
+
 **A hoisted sibling is not a child.** A definition written at a container's
 content column is collected and hoisted to the document ([`CARVE-P12-029`](./rules/ast-interchange)), so it leaves the
 container while its `pos` still points inside the source that container

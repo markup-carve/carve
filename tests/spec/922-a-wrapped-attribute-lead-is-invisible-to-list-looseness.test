@@ -8,8 +8,11 @@ A wrapped attribute lead is invisible to list looseness
 - a
 .
 <ul>
-  <li><p x="" y="">b</p></li>
-  <li>a</li>
+  <li><p>{x
+y}</p>
+    <p>b</p>
+  </li>
+  <li><p>a</p></li>
 </ul>
 ```
 
@@ -21,7 +24,10 @@ A wrapped attribute lead is invisible to list looseness
 2. a
 .
 <ol>
-  <li><p x="" y="">b</p></li>
-  <li>a</li>
+  <li><p>{x
+y}</p>
+    <p>b</p>
+  </li>
+  <li><p>a</p></li>
 </ol>
 ```

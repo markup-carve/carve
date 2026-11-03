@@ -317,6 +317,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P2-035",
+      "part": "2",
+      "title": "A BLOCK BRACE RUN CONTINUES PAST ITS OPENER",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P3-001",
       "part": "3",
       "title": "WHICH SPANS THE SCAN SKIPS",
@@ -483,12 +489,6 @@
       "part": "4",
       "title": "A `class` KEY-VALUE IS A SPELLING OF THE CLASS SLOT",
       "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P4-008",
-      "part": "4",
-      "title": "AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED",
-      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P6-001",
@@ -2207,6 +2207,12 @@
       "part": "0",
       "title": "A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE CONTAINER",
       "replacement": "CARVE-P0-005"
+    },
+    {
+      "id": "CARVE-P4-008",
+      "part": "4",
+      "title": "AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED",
+      "replacement": "CARVE-P2-035"
     }
   ]
 }

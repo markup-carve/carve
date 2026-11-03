@@ -3,6 +3,15 @@
    ============================================================================ *)
 
 (* --- Headings --- *)
+(* A BLOCK BRACE RUN CONTINUES PAST ITS OPENER -- NORMATIVE [CARVE-P2-035].
+   A block-position attribute or comment run continues only on lines indented
+   at least one column past its opening `{`, including a closing-delimiter-only
+   line. If a continuation fails, the entire run is paragraph text. The column
+   comparison is made inside its owner after quote prefixes are read. Inline
+   attribute and comment runs remain governed by their inline productions.
+   PART 4 `continuation` spells the attribute production; PART 9 §21a gives
+   comment rendering. The importer now passes these runs through. *)
+
 (* ATX (`#` prefix) only. Setext (underline) headings are intentionally
    NOT supported, matching djot: a `---` underline collides with the
    thematic break and frontmatter delimiter, reintroducing the ambiguity

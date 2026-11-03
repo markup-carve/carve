@@ -65,19 +65,24 @@ const QUOTED_VALUE = [
 // `block_attributes` admits a line break BETWEEN tokens and never inside one,
 // and admits AT MOST ONE per slot: `opt_pad = attr_pad, [continuation]`,
 // `attr_separator = (space | continuation), attr_pad`, and
-// `continuation = newline, opt_ws` - "a single line break + indent; NOT a blank
-// line". Every slot is listed, because they revert independently.
+// `continuation = newline, opt_ws` requires indentation past the opener.
+// Every slot is listed, because they revert independently.
 const BLOCK_LINE_BREAKS = [
   { src: '{.a .b}', accept: true, what: 'no line break at all' },
-  { src: '{.a\n.b}', accept: true, what: 'one break as the separator' },
-  { src: '{\n.a}', accept: true, what: 'one break as the opening padding' },
-  { src: '{.a\n}', accept: true, what: 'one break as the closing padding' },
-  { src: '{\n .a\n}', accept: true, what: 'a break plus indentation, both slots' },
+  { src: '{.a\n.b}', accept: false, what: 'unindented separator' },
+  { src: '{\n.a}', accept: false, what: 'unindented opening padding' },
+  { src: '{.a\n}', accept: false, what: 'unindented closing padding' },
+  { src: '{\n .a\n}', accept: false, what: 'unindented closer after indented opener padding' },
+  { src: '{.a\n .b}', accept: true, what: 'indented separator' },
+  { src: '{\n .a}', accept: true, what: 'indented opening padding' },
+  { src: '{.a\n }', accept: true, what: 'indented closing padding' },
+  { src: '{\n .a\n }', accept: true, what: 'indented padding at both slots' },
   { src: '{.a\n\n.b}', accept: false, what: 'a BLANK line as the separator' },
   { src: '{\n\n.a}', accept: false, what: 'a BLANK line as the opening padding' },
   { src: '{.a\n\n}', accept: false, what: 'a BLANK line as the closing padding' },
   { src: '{.a\n\n\n.b}', accept: false, what: 'three breaks' },
-  { src: '{.a\n.b\n.c}', accept: true, what: 'one break at each of two separators' },
+  { src: '{.a\n.b\n.c}', accept: false, what: 'unindented breaks at two separators' },
+  { src: '{.a\n .b\n .c}', accept: true, what: 'indented breaks at two separators' },
 ]
 
 // CARVE-P4-001: within a line every slot is a space run. A tab is indentation
@@ -132,7 +137,7 @@ test('both directions are covered at both slots, and the counts are asserted', (
   // that rejects correctly. The denominators are what make the two loops above
   // a check rather than a list.
   assert.equal(QUOTED_VALUE.length, 5, 'the quoted-value table lost or gained rows')
-  assert.equal(BLOCK_LINE_BREAKS.length, 10, 'the block-line-break table lost or gained rows')
+  assert.equal(BLOCK_LINE_BREAKS.length, 15, 'the block-line-break table lost or gained rows')
   assert.equal(BLOCK_TABS.length, 7, 'the block-tab table lost or gained rows')
   for (const [name, table] of [['QUOTED_VALUE', QUOTED_VALUE], ['BLOCK_LINE_BREAKS', BLOCK_LINE_BREAKS], ['BLOCK_TABS', BLOCK_TABS]]) {
     assert.ok(table.some((r) => r.accept), `${name} has no ACCEPT row; a rule matching nothing would pass`)

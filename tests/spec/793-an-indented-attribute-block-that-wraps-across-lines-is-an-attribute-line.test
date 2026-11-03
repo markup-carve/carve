@@ -15,8 +15,10 @@ a
  }
 para
 .
-<p>a</p>
-<p class="c">para</p>
+<p>a
+{.c
+}
+para</p>
 ```
 
 ```
@@ -34,7 +36,9 @@ para
  }
 para
 .
-<p class="c">para</p>
+<p>{.c
+}
+para</p>
 ```
 
 ```
@@ -44,9 +48,11 @@ para
 para
 .
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+}
+para</li>
 </ul>
-<p>para</p>
 ```
 
 ```
@@ -57,8 +63,9 @@ para
 .
 <ul>
   <li>a
-    <p class="c">para</p>
-  </li>
+{.c
+}
+para</li>
 </ul>
 ```
 
@@ -71,9 +78,11 @@ para
 .
 <dl>
   <dt>t</dt>
-  <dd>a</dd>
+  <dd>a
+{.c
+}
+para</dd>
 </dl>
-<p>para</p>
 ```
 
 ```
@@ -82,10 +91,10 @@ para
 > }
 > para
 .
-<blockquote>
-  <p>a</p>
-  <p class="c">para</p>
-</blockquote>
+<blockquote><p>a
+{.c
+}
+para</p></blockquote>
 ```
 
 ```

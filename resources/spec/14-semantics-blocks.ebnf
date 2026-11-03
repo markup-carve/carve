@@ -911,9 +911,11 @@
          so `> {.k}` / `tail` ends the quote and A4 drops the attribute.
          This clause does not decide how an empty container renders.
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
-         one block: id `id`, class `foo`). A BLANK line inside the braces
-         ends the attempt -- the text is then literal, not a
-         block_attributes. Each block of a glued run (`{.a}{.b}`) wraps by
+         one block: id `id`, class `foo`). Every continuation line, including
+         a line containing only `}`, must be indented at least one column past
+         the opening `{` (PART 4 `continuation`). A line at or below that
+         column, like a BLANK line inside the braces, ends the attempt: the
+         whole run is paragraph text, not `block_attributes`. Each block of a glued run (`{.a}{.b}`) wraps by
          this same rule, so `{.a}{.b` / `}` and `{.a` / `}{.b}` are attribute
          lines. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
@@ -921,10 +923,10 @@
          indentation does not change what a wrapped block is
          (CARVE-P0-024): an indented block that wraps is an attribute line
          exactly like ` {.c}` and `{.c` + newline + ` }`. Its continuation
-         lines belong to it at any column, so it interrupts an open
-         paragraph (A1), and the line after its `}` is not lazy (PART 0 T:
+         lines that pass the opener's column belong to it, so it interrupts an
+         open paragraph (A1), and the line after its `}` is not lazy (PART 0 T:
          an attribute line leaves no paragraph open). `- a` / `   {.c` /
-         `   }` / `para` ends the item's paragraph, drops the attribute in
+         `    }` / `para` ends the item's paragraph, drops the attribute in
          the item (A4) and reads `para` as a document paragraph.
       A6 NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE. A `{…}` line whose
          braces do not parse as an attribute list is ordinary paragraph

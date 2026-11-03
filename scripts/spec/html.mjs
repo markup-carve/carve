@@ -530,6 +530,24 @@ function withoutCommentBlocks(lines, spanEndList = []) {
   return kept
 }
 
+function paragraphInlineSource(b) {
+  if (!b.literalSegments) return b.lines.join('\n')
+  const lines = b.lines.slice()
+  for (const [start, end] of b.literalSegments) {
+    // Escape syntax on the literal lines while keeping one inline parse across
+    // every soft break. An emphasis or code span can begin before this run and
+    // close after it; splitting renderInline at either edge would lose it.
+    for (let i = start; i < end; i++) {
+      lines[i] = lines[i].replace(/[!-/:-@[-`{-~]/g, ch => `\\${ch}`)
+    }
+  }
+  return lines.join('\n')
+}
+
+function renderParagraphText(b) {
+  return renderInline(paragraphInlineSource(b))
+}
+
 function renderBlock(b, depth, ctx) {
   const pad = '  '.repeat(depth)
   const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
@@ -552,7 +570,7 @@ function renderBlock(b, depth, ctx) {
         }
         return pad + image
       }
-      const html = renderInline(b.lines.join('\n'))
+      const html = renderParagraphText(b)
       if (b.caption !== undefined) {
         const id = / id="([^"]*)"/i.exec(ba)?.[1]
         const cap = numberCaption(b.caption, ctx, id)
@@ -866,7 +884,7 @@ function renderBlock(b, depth, ctx) {
       // keep normal behavior (PART 9 SS23)
       const parts = b.children.map((c) => {
         if (c.t === 'para' && !c.blockImage) {
-          const html = renderInlineHardBreaks(c.lines.join('\n'))
+          const html = renderInlineHardBreaks(paragraphInlineSource(c))
           return `${'  '.repeat(depth + 1)}<p${renderTextBlockAttrs(c.battrs, 'p')}>${html}</p>`
         }
         return renderBlock(c, depth + 1, ctx)
@@ -898,7 +916,7 @@ function renderBlock(b, depth, ctx) {
         // that already holds two blocks is wrapped either way, so the key is a
         // no-op there.
         if (blocks.length === 1 && blocks[0].t === 'para' && !blocks[0].blockImage && blocks[0].caption === undefined) {
-          const inline = renderInline(blocks[0].lines.join('\n'))
+          const inline = renderParagraphText(blocks[0])
           // An attributed paragraph keeps its `<p>`, as in a tight item (CARVE-P9-081).
           const pattrs = renderTextBlockAttrs(blocks[0].battrs, 'p')
           return `${pad}  <dd>${b.loose || pattrs ? `<p${pattrs}>${inline}</p>` : inline}</dd>`
@@ -1192,7 +1210,7 @@ function renderItem(item, list, depth, ctx) {
       // breaks) so an inline construct spanning a soft break -- e.g. a
       // multi-line `` ``` ``-run folded in as lazy text -- is one span, not one
       // per line. Matches the top-level para path in renderBlock.
-      const html = renderInline(b.lines.join('\n'))
+      const html = renderParagraphText(b)
       // A paragraph inside an item carries its block attributes like any other
       // (PART 9 §15). This path built the `<p>` by hand and never consulted
       // `battrs`, so `- a` + blank + `  {.c}` + `  text` parsed the attribute

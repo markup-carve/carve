@@ -1,8 +1,8 @@
 ## A wrapped attribute line interrupts like a one-line attribute line
 
-A block attribute may span lines (PART 4, `block_attributes`), and a wrapped one is still one attribute line: at column 0 below a list item or description it closes the open paragraph and ends the container, exactly as `{.c}` on one line does (CARVE-P9-013 I5), and the block below takes its attributes.
+A block attribute may span lines (PART 4, `block_attributes`) only when its continuation passes the opening `{` column. The historical inputs below have column-0 continuations or closers. CARVE-P2-035 makes those runs paragraph text, while a deeper continuation still interrupts like a one-line attribute.
 
-A wrapped attribute line below an item paragraph closes it and reaches the fence below
+A refused wrapped run below an item paragraph stays text before the fence
 
 ::::::: compare
 
@@ -17,9 +17,11 @@ y
 
 `````html
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+}</li>
 </ul>
-<pre class="c"><code>y
+<pre><code>y
 </code></pre>
 `````
 
@@ -38,9 +40,11 @@ para
 
 `````html
 <ul>
-  <li>a</li>
+  <li>a
+{.c
+.d}
+para</li>
 </ul>
-<p class="c d">para</p>
 `````
 
 :::::::
@@ -69,8 +73,11 @@ y
     </ul>
   </li>
 </ul>
-<pre class="c"><code>y
-</code></pre>
+<p>{.c
+}
+~~~
+y
+~~~</p>
 `````
 
 :::::::
@@ -90,9 +97,11 @@ para
 `````html
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+{.c
+}
+para</dd>
 </dl>
-<p class="c">para</p>
 `````
 
 :::::::

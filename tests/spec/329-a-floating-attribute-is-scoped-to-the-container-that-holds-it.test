@@ -66,9 +66,11 @@ tail
 .
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+{.k
+#x}
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 ```
