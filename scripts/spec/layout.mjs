@@ -6739,12 +6739,14 @@ const leadSpanScans = new WeakMap()
 const quoteFreeMeasure = (line) => {
   let measured = indentCols(stripLazy(line))
   let base = 0
+  const quotes = []
   while (measured.rest[0] === '>') {
     const width = measured.rest[1] === ' ' ? 2 : 1
+    quotes.push(base + measured.col)
     base += measured.col + width
     measured = indentCols(measured.rest.slice(width))
   }
-  return { col: base + measured.col, rest: measured.rest }
+  return { col: base + measured.col, rest: measured.rest, quotes }
 }
 function descriptionLeadSpanOpen(bodyLines) {
   let scan = leadSpanScans.get(bodyLines)
@@ -6757,8 +6759,11 @@ function descriptionLeadSpanOpen(bodyLines) {
     if (scan.span) {
       const closer = COMMENT_FENCE.exec(measured.rest)
       if (closer && closer[1].length === scan.span.run) scan.span = null
-      else if (measured.rest !== '' && !measured.rest.startsWith('%%') &&
-        (measured.col < scan.span.owner || line.startsWith(LAZY))) scan.span = null
+      // A quote the line opens past the span's own stands at its marker's column.
+      else if (measured.quotes.length > scan.span.depth) {
+        if (measured.quotes[scan.span.depth] < scan.span.owner) scan.span = null
+      } else if ((measured.rest !== '' && !measured.rest.startsWith('%%') &&
+        (measured.col < scan.span.owner || line.startsWith(LAZY))) || measured.quotes.length < scan.span.depth) scan.span = null
       continue
     }
     const lead = DESCRIPTION_LEAD.exec(measured.rest)
@@ -6769,7 +6774,7 @@ function descriptionLeadSpanOpen(bodyLines) {
       const above = quoteFreeMeasure(bodyLines[k])
       if (above.rest === '' || above.col > measured.col) continue
       if (above.col === measured.col && DESCRIPTION_RUN.test(above.rest)) {
-        scan.span = { run: opener[1].length, owner: measured.col + lead[0].length }
+        scan.span = { run: opener[1].length, owner: measured.col + lead[0].length, depth: measured.quotes.length }
       }
       break
     }

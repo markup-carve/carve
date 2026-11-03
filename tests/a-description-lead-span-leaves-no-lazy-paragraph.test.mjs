@@ -21,6 +21,11 @@ test('a line at the item column still lands in the item', () => {
     '<ul> <li>a <dl> <dt>u</dt> <dd></dd> </dl> zz </li> </ul>')
 })
 
+test('a quote that ends the span holds the lazy line below it', () => {
+  assert.equal(flat('- a\n  :: u\n  : %%%\n  > n\nzz\n'),
+    '<ul> <li>a <dl> <dt>u</dt> <dd></dd> </dl> <blockquote><p>n zz</p></blockquote> </li> </ul>')
+})
+
 // The span leaves nothing (CARVE-P9-047), so its payload lines cannot change
 // where the line after it goes.
 test('a span body line changes nothing for the line after it', () => {
