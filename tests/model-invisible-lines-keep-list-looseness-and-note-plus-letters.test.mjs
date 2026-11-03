@@ -8,7 +8,8 @@ const html = (src) => renderDoc(parse(src)).trim()
 test('a column-0 comment before a sibling keeps the blank that loosens the list (carve#5031)', () => {
   assert.equal(html('- a\n\n  %% y\n%% z\n- c\n'), html('- a\n\n  %% y\n- c\n'))
   assert.equal(html('- a\n\n  %% y\n%% z\n- c\n'), '<ul>\n  <li><p>a</p></li>\n  <li><p>c</p></li>\n</ul>')
-  assert.equal(html('- %%%\n\n%%%\n%% z\n- c\n'), '<ul>\n  <li></li>\n  <li><p>c</p></li>\n</ul>')
+  // The blank sits inside the span and its closer follows it, so it is interior (carve#5030).
+  assert.equal(html('- %%%\n\n%%%\n%% z\n- c\n'), '<ul>\n  <li></li>\n  <li>c</li>\n</ul>')
 })
 
 test('item content after a marker-line span keeps the list tight (carve#5029)', () => {

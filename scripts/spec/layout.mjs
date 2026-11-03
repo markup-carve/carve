@@ -7540,28 +7540,40 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
   // no closer is read as it opens (§28), and it is linear.
   // Rows up to `codeRow` were read as a code body's opener, payload or closer:
   // visible content, so a blank or a comment-shaped line there is no separator.
-  // A span opened on the marker line is read from its opener, so the item's
-  // content after its closer stays visible (carve#5029). A blank inside that
-  // span still counts as the model read it before; carve#5030 owns that question.
+  // A span opened after a lead (a marker line, a description's `: `) is read
+  // from its opener like an own-line span (carve#5029). A blank inside a span is
+  // payload: its closer is the item's and follows the blank (carve#5030).
+  const leadOpener = (k, from) => {
+    const measured = ind(k)
+    const marker = matchMarkerAt(measured)
+    if (marker) return COMMENT_FENCE_BODY.exec(marker.text ?? '')?.[1] ?? null
+    const lead = DESCRIPTION_LEAD.exec(measured.rest)
+    if (!lead) return null
+    for (let j = k - 1; j >= from; j--) {
+      const above = ind(j)
+      if (above.rest === '' || above.col > measured.col) continue
+      if (above.col !== measured.col || !DESCRIPTION_RUN.test(above.rest)) return null
+      break
+    }
+    return COMMENT_FENCE_BODY.exec(measured.rest.slice(lead[0].length))?.[1] ?? null
+  }
   const blankBehindInvisible = (at, from, codeRow = -1) => {
-    let lead = codeRow < from ? COMMENT_FENCE_BODY.exec(matchMarkerAt(ind(from))?.text ?? '')?.[1] ?? null : null
+    let span = codeRow < from ? leadOpener(from, from) : null
     from = Math.max(from, codeRow)
-    let span = null
     let blank = -1
     let skipped = false
     let visible = false
     for (let k = from + 1; k < at; k++) {
       const rest = ind(k).rest
       const fence = COMMENT_FENCE_BODY.exec(rest)?.[1]
-      if (lead !== null && rest !== '') {
-        if (fence === lead) lead = null
-        skipped = true
-      } else if (span !== null) {
+      if (span !== null) {
         if (fence === span) span = null
         skipped = true
       } else if (fence) {
         span = fence
         skipped = true
+      } else if (rest !== '' && (span = leadOpener(k, from)) !== null) {
+        visible = true
       } else if (rest === '') {
         blank = k
         skipped = false
