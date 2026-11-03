@@ -1364,6 +1364,13 @@ function commentTailSince(bodyLines, from) {
   return tail
 }
 
+// The span scan resumes from its memo, so only the lines it has not read yet are charged.
+function holdsOpenCommentSpanSince(bodyLines, from) {
+  const tail = from === 0 ? bodyLines : bodyLines.slice(from)
+  layoutWork.commentTail += tail.length - commentRunResumeAt(tail)
+  return bodyHoldsOpenCommentSpan(tail)
+}
+
 function isColonBlockOpener(line) {
   const cf = COLON_FENCE.exec(line)
   return !!(cf && parseColonOpener(cf[2]) !== null)
@@ -2927,9 +2934,18 @@ const keptCommentDelimiter = (line) => {
 // last answer for the same array stopped; asked from scratch it is quadratic (carve#4996).
 const openCommentRunMemo = new WeakMap()
 
+function commentRunMemoResumes(bodyLines, memo) {
+  return !!memo && memo.n <= bodyLines.length && bodyLines[0] === memo.first && bodyLines[memo.n - 1] === memo.last
+}
+
+function commentRunResumeAt(bodyLines) {
+  const memo = openCommentRunMemo.get(bodyLines)
+  return commentRunMemoResumes(bodyLines, memo) ? memo.n : 0
+}
+
 function bodyOpenCommentRun(bodyLines) {
   const memo = openCommentRunMemo.get(bodyLines)
-  const resumes = memo && memo.n <= bodyLines.length && bodyLines[0] === memo.first && bodyLines[memo.n - 1] === memo.last
+  const resumes = commentRunMemoResumes(bodyLines, memo)
   let opaque = resumes ? memo.opaque : null
   // §10 I2: a list marker never interrupts, so it opens a container only where a
   // block may begin. Both directions of getting this wrong publish a payload -
@@ -4933,7 +4949,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let retainedParagraph = false
       let lazyParagraphOpen = null
       let openFence = -1
-      const missedLiveSpan = liveSpanTest(bodyLines, () => bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom)))
+      const missedLiveSpan = liveSpanTest(bodyLines, () => holdsOpenCommentSpanSince(bodyLines, commentScanFrom))
       const endsNoteAt = (at) => (ind(at)?.col === 0 && FOOTNOTE_DEF.test(ind(at).rest)) ||
         (isBlank(lines[at]) && footnoteBlankRunEnd(lines, at, n) === -1)
       // Lazy lines open no fence and only shorten the closer search, so a
@@ -5017,7 +5033,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lazyParagraphOpen = false
           i = end
         } else if (isBlank(lines[i]) && blankRunBeforeSpanComment(lines, i, n) !== -1 &&
-            bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom))) {
+            holdsOpenCommentSpanSince(bodyLines, commentScanFrom)) {
           // A blank inside a live span is payload; a comment line below the column still closes it (§28).
           const end = blankRunBeforeSpanComment(lines, i, n)
           for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
@@ -5036,10 +5052,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lazyParagraphOpen = null
           attachPending = false
           i = end
-        } else if (measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom))) {
+        } else if (measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !holdsOpenCommentSpanSince(bodyLines, commentScanFrom)) {
           // A list marker that misses a marker body closes it (PART 0 S3).
           break
-        } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(commentTailSince(bodyLines, commentScanFrom))) {
+        } else if (COMMENT_LINE.test(lines[i] ?? '') && holdsOpenCommentSpanSince(bodyLines, commentScanFrom)) {
           // carve#2488, the same arm the `dd` carries. This body ends at a
           // comment below column 2, and a comment INSIDE a span the body already
           // holds is not one - see `bodyHoldsOpenCommentSpan`. carve#2488 reads
@@ -5371,8 +5387,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // span open, so the fold questions below read the tail only.
           let ddScanFrom = 0
           let retainedParagraph = false
-          const sinceComment = () => commentTailSince(bodyLines, ddScanFrom)
-          const bodyHoldsLiveSpan = () => bodyHoldsOpenCommentSpan(sinceComment())
+          const bodyHoldsLiveSpan = () => holdsOpenCommentSpanSince(bodyLines, ddScanFrom)
           const missedLiveSpan = liveSpanTest(bodyLines, bodyHoldsLiveSpan)
           let openFence = -1
           let nestedLeadFenceColumn = descriptionLeadHasUnterminatedNestedFence(
