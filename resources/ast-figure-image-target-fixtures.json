@@ -1,0 +1,29 @@
+[
+  {
+    "name": "870-3 trailing line comment",
+    "source": "![a](/i) %% c\n^ cap\n",
+    "canonical": "![a](/i) %% c\n^ cap\n",
+    "targetChildren": ["image", "comment"],
+    "commentContent": "c"
+  },
+  {
+    "name": "870-4 trailing braced comment",
+    "source": "![a](/i){%%}\n^ cap\n",
+    "canonical": "![a](/i){%  %}\n^ cap\n",
+    "targetChildren": ["image", "comment"],
+    "commentContent": ""
+  },
+  {
+    "name": "872-17 leading braced comment",
+    "source": "{%%}![a](/i)\n^ cap\n",
+    "canonical": "{%  %}![a](/i)\n^ cap\n",
+    "targetChildren": ["comment", "image"],
+    "commentContent": ""
+  },
+  {
+    "name": "sole image keeps the compact target",
+    "source": "![a](/i)\n^ cap\n",
+    "canonical": "![a](/i)\n^ cap\n",
+    "targetChildren": ["image"]
+  }
+]

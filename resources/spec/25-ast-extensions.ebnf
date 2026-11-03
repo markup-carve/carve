@@ -30,6 +30,15 @@
       becomes a `figure` when a `^ ` line follows it; its wrapper round-trips
       exactly. A table has its own caption slot.
 
+      A CAPTIONED BLOCK-IMAGE PARAGRAPH KEEPS ITS OTHER INLINE CHILDREN
+      (carve#5038). When its sole inline child is the image, `figure.target`
+      is that `image`. When it contains any additional inline child, including
+      a comment that renders nothing, `figure.target` is the `paragraph` with
+      `blockImage: true` and its complete ordered `children`. The caption stays
+      on the figure. A writer emits those children with the image before the
+      caption line, so source and AST round-trip without dropping content.
+      Both targets render the same promoted image and figcaption under PART 10.
+
    18. A CITATION DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-037].
       `type: "citation_definition"`, carrying:
         key       the citation key as the author wrote it, without the `@`

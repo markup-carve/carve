@@ -148,6 +148,14 @@ written back exactly. A composite figure's table panel is not this wrapper
 either: a table inside a `::: figure` group is a plain `table` child of the
 `figure_group` ([`CARVE-P12-035`](./rules/ast-interchange)), not a `figure` targeting one.
 
+For a captioned block image, the target is the `image` when it is the
+paragraph's only inline child. If the paragraph has another inline child, the
+target is the full `paragraph` with `blockImage: true`. For example,
+`{%%}![a](/i)` followed by `^ cap` has a figure target whose children are the
+comment and image, in that order. This preserves the comment in an AST source
+round trip while rendering the same image and figcaption. The rule applies to
+every additional inline child, regardless of where it occurs around the image.
+
 A `table` may likewise carry an optional `rowGroups` object ([`CARVE-P12-034`](./rules/imports-security-extensions)), which
 partitions its `rows` into a head, any number of body groups and a foot:
 
@@ -875,9 +883,9 @@ Generated from [the checked summary table](https://github.com/markup-carve/carve
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `figure.shortCaption,table.shortCaption` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L321) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
 | `figure.target[table]` | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | `table_caption` | `figure` | `unspecified` | `unspecified` | `unspecified` | `clause` |
-| `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L389) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
+| `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L398) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
 | `table.rowGroups[attrs]` | [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L356) | `omit_field` | `unspecified` | `omit_field` | `omit_field` | `omit_field` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
-| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L436) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
+| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L445) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
 | `section` | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L2) | `unwrap` | `section` | `unwrap` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
 | `ruby` | [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L54) | `parenthesized_pairs` | `ruby` | `ruby` | `parenthesized_pairs` | `parenthesized_pairs` | `ruby-flattened (Carve,Plain,ANSI)` |
 | `block_extension[unknown name]` | [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L91) | `fallback` | `fallback` | `fallback` | `fallback` | `fallback` | `clause` |
