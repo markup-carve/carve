@@ -1,0 +1,67 @@
+A marked blank inside a quoted verse span leaves the stanza open
+
+```
+> :: t
+> : ::: |
+>   x
+>   %%%
+>
+>   %%%
+b
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd>
+      <div class="line-block">
+        <p>x<br>
+b</p>
+      </div>
+    </dd>
+  </dl>
+</blockquote>
+```
+
+```
+> > :: t
+> > : ::: |
+> >   x
+> >   %%%
+> >
+> >   %%%
+b
+.
+<blockquote>
+  <blockquote>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <div class="line-block">
+          <p>x<br>
+b</p>
+        </div>
+      </dd>
+    </dl>
+  </blockquote>
+</blockquote>
+```
+
+```
+> - ::: |
+>   x
+>   %%%
+>
+>   %%%
+b
+.
+<blockquote>
+  <ul>
+    <li>
+      <div class="line-block">
+        <p>x<br>
+b</p>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+```

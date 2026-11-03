@@ -646,7 +646,7 @@
 {"id":"ownership-86a6f7033072","source":"- foo\n  - [ ] task\n  +\n\n  > q\n","html":"<ul>\n  <li>foo\n    <ul class=\"task-list\">\n      <li><input type=\"checkbox\" disabled aria-label=\"task +\"> task\n+</li>\n    </ul>\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ul>"},
 {"id":"ownership-86f643f42014","source":" - - text\n   ![i](x.png)\n\n  ^ cap\n> - c\n","html":"<ul>\n  <li>\n    <ul>\n      <li>text\n<img src=\"x.png\" alt=\"i\"></li>\n    </ul>\n  </li>\n</ul>\n<p>^ cap</p>\n<blockquote>\n  <ul>\n    <li>c</li>\n  </ul>\n</blockquote>"},
 {"id":"ownership-8725b3a75372","source":"- a\n  - %%%\n     hidden\n %%%\ntail\n","html":"<ul>\n  <li>a\n    <ul>\n      <li></li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"},
-{"id":"ownership-8760a6163bbb","source":"- a\n  - %%%\n    hidden\n\n%%%\n$`x`\ntail\n","html":"<ul>\n  <li>a\n    <ul>\n      <li></li>\n    </ul>\n  </li>\n</ul>"},
+{"id":"ownership-8760a6163bbb","source":"- a\n  - %%%\n    hidden\n\n%%%\n$`x`\ntail\n","html":"<ul>\n  <li>a\n    <ul>\n      <li></li>\n    </ul>\n  </li>\n</ul>\n<p><span class=\"math inline\" role=\"math\">\\(x\\)</span>\ntail</p>"},
 {"id":"ownership-87ad8da432fc","source":":: t\n- :  a\n     + b |\ntail\n","html":"<dl>\n  <dt>t</dt>\n</dl>\n<ul>\n  <li>:  a\n+ b |\ntail</li>\n</ul>"},
 {"id":"ownership-87c7e043134e","source":"- > para\n  >  [^f]: n\n\ntail\n","html":"<ul>\n  <li>\n    <blockquote><p>para</p></blockquote>\n  </li>\n</ul>\n<p>tail</p>"},
 {"id":"ownership-888cfcda6e9c","source":"- inner\ncode\n  %% c\ntail\n","html":"<ul>\n  <li>inner\ncode</li>\n</ul>\n<p>tail</p>"},
