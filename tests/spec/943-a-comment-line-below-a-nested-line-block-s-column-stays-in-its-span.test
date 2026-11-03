@@ -1,0 +1,153 @@
+A comment line below a nested line block's column stays in its span
+
+```
+- - ::: |
+    %%%
+%%%%
+    %%%
+z
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="line-block">
+
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>z</p>
+```
+
+```
+- x
+  - ::: |
+    %%%
+%% c
+    %%%
+z
+.
+<ul>
+  <li>x
+    <ul>
+      <li>
+        <div class="line-block">
+
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>z</p>
+```
+
+```
+- - ::: |
+    %%%
+   %%%%
+    %%%
+    b
+z
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="line-block">
+          <p>b<br>
+z</p>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- - ::: |
+    %%%
+  %%%%
+    %%%
+    b
+z
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="line-block">
+          <p>b<br>
+z</p>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- - ::: |
+    a
+    %%%
+%%%%
+z
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="line-block">
+          <p>a<br>
+z</p>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- :: t
+  : ::: |
+    %%%
+%%%%
+    %%%
+z
+.
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <div class="line-block">
+
+        </div>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>z</p>
+```
+
+```
+- - ::: |
+    %%%
+x
+    %%%
+z
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <div class="line-block">
+
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```

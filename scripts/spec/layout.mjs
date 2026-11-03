@@ -2068,19 +2068,93 @@ function lazyRunStart(bodyLines, k, reach, depth) {
   if (j === 0 || trimWs(bodyLines[j - 1]) === '') return -1
   return bodyLeavesParagraphOpen(bodyLines.slice(0, j), false, depth + 1) ? j : -1
 }
+const pastMarkers = (at) => {
+  for (let mk = matchMarkerAt(at); mk; mk = matchMarkerAt(at)) {
+    const next = indentCols(mk.text)
+    at = { col: mk.indent + mk.markerWidth + next.col, rest: next.rest }
+  }
+  return at
+}
+// A description lead continues the entry above it, whose term may follow list markers.
+const descriptionAbove = (bodyLines, col, end) => {
+  for (let k = end - 1; k >= 0; k--) {
+    const measured = indentCols(bodyLines[k])
+    if (measured.rest === '' || measured.col > col) continue
+    const at = pastMarkers(measured)
+    return at.col === col && DESCRIPTION_RUN.test(at.rest)
+  }
+  return false
+}
+// The comment-shaped lines written below a line block's column that its open
+// `%%%` span holds as payload (PART 0 S1, PART 9 §28, carve#4994), each mapped
+// to its span's opener. A collector appends to its body as it reads, so the
+// scan resumes where it stopped.
+const belowSpanPayload = new WeakMap()
+function spanPayloadBelow(bodyLines) {
+  let memo = belowSpanPayload.get(bodyLines)
+  if (!memo || memo.at > bodyLines.length || memo.at > 0 && bodyLines[memo.at - 1] !== memo.tail) {
+    memo = { at: 0, tail: null, held: new Map(), block: null, span: null, opener: -1 }
+    belowSpanPayload.set(bodyLines, memo)
+  }
+  const { held } = memo
+  let { block, span, opener } = memo
+  for (let j = memo.at; j < bodyLines.length; j++) {
+    const line = bodyLines[j]
+    if (trimWs(line) === '') continue
+    if (line.includes(LAZY)) { block = span = null; continue }
+    const m = indentCols(line)
+    if (block && span !== null) {
+      if (m.col < block.column) {
+        if (m.rest.startsWith('%%')) {
+          held.set(j, opener)
+          if (COMMENT_FENCE_BODY.exec(m.rest)?.[1].length === span) span = null
+          continue
+        }
+      } else {
+        if (/^[ \t]*(%{3,})/.exec(m.rest)?.[1].length === span) span = null
+        continue
+      }
+      block = span = null
+    }
+    if (block && m.col >= block.column) {
+      const rel = ' '.repeat(m.col - block.column) + m.rest
+      if (COLON_CLOSER.exec(rel)?.[1].length === block.length) block = null
+      else if ((span = /^ {0,3}(%{3,})/.exec(rel)?.[1].length ?? null) !== null) opener = j
+      continue
+    }
+    block = null
+    if (!LINE_BLOCK_SHAPED.test(line)) continue
+    let at = pastMarkers(m)
+    const lead = DESCRIPTION_LEAD.exec(at.rest)
+    if (lead && descriptionAbove(bodyLines, at.col, j)) at = { col: at.col + lead[0].length, rest: at.rest.slice(lead[0].length) }
+    const colon = COLON_FENCE.exec(at.rest)
+    if (colon && parseColonOpener(colon[2])?.mode === 'line-block') block = { column: at.col, length: colon[1].length }
+  }
+  Object.assign(memo, { at: bodyLines.length, tail: bodyLines.at(-1) ?? null, block, span, opener })
+  return held
+}
 function trailingHostBody(bodyLines, last, tail, depth, quoteBody = false) {
-  let reach = tail.col
-  for (let k = last; k >= 0; k--) {
+  // Span payload below the column leaves the walk where it was: it goes on at the span's opener.
+  const heldBelow = (k, col) => col < reach && indentCols(bodyLines[k]).rest.startsWith('%%') ? spanPayloadBelow(bodyLines).get(k) : undefined
+  let reach = Infinity
+  const from = heldBelow(last, 0) ?? last
+  reach = from === last ? tail.col : indentCols(bodyLines[from]).col
+  for (let k = from; k >= 0; k--) {
     if (trimWs(bodyLines[k]) === '') continue
     if (bodyLines[k].includes(LAZY)) continue
     const measured = indentCols(bodyLines[k])
-    if (k < last && measured.col >= reach) continue
+    if (k < from && measured.col >= reach) continue
+    const opener = k < from ? heldBelow(k, measured.col) : undefined
+    if (opener !== undefined) {
+      k = opener + 1
+      continue
+    }
     const marker = matchMarkerAt(measured)
     const lead = marker ? marker.markerWidth
       : DESCRIPTION_LEAD.test(measured.rest) && opensDescriptionAt(bodyLines, measured.col, k) ? DESCRIPTION_LEAD.exec(measured.rest)[0].length
       : 0
-    if (lead === 0 || measured.col + lead > reach && k < last) {
-      const run = lead === 0 && k < last ? lazyRunStart(bodyLines, k, reach, depth) : -1
+    if (lead === 0 || measured.col + lead > reach && k < from) {
+      const run = lead === 0 && k < from ? lazyRunStart(bodyLines, k, reach, depth) : -1
       if (run !== -1) {
         k = run
         continue
@@ -7491,6 +7565,15 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // The body length at which a descendant's stanza was last found open; each
     // lazy line pushed after it extends that answer without another walk.
     let stanzaOpenAt = -1
+    // Span payload below the column leaves a stanza as it stood (CARVE-P9-047),
+    // so an answer holds across the held lines pushed after it.
+    const heldSince = (memo) => {
+      if (memo.at < 0) return false
+      const held = spanPayloadBelow(itemLines)
+      while (memo.through < itemLines.length && held.has(memo.through)) memo.through++
+      return memo.through === itemLines.length
+    }
+    const stanzaVerse = { at: -1, through: -1, open: false }
     const descendantStanzaOpen = () => {
       if (!holdsLineBlock) return false
       if (stanzaOpenAt === itemLines.length) return true
@@ -7498,19 +7581,20 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         stanzaOpenAt = itemLines.length
         return true
       }
-      if (!hostEndsInLineBlockStanza(itemLines, 0, true)) return false
+      if (heldSince(stanzaVerse)) return stanzaVerse.open
+      Object.assign(stanzaVerse, { at: itemLines.length, through: itemLines.length, open: hostEndsInLineBlockStanza(itemLines, 0, true) })
+      if (!stanzaVerse.open) return false
       stanzaOpenAt = itemLines.length
       return true
     }
-    let leafStanzaAt = -1
-    let leafStanza = false
+    const leafStanza = { at: -1, through: -1, empty: false }
     const leafStanzaEmpty = () => {
       if (!holdsLineBlock) return false
-      if (leafStanzaAt !== itemLines.length) {
-        leafStanzaAt = itemLines.length
-        leafStanza = hostEndsInLineBlockStanza(itemLines, 0) && !hostEndsInLineBlockStanza(itemLines, 0, true)
+      if (leafStanza.through !== itemLines.length && !heldSince(leafStanza)) {
+        Object.assign(leafStanza, { at: itemLines.length, through: itemLines.length,
+          empty: hostEndsInLineBlockStanza(itemLines, 0) && !hostEndsInLineBlockStanza(itemLines, 0, true) })
       }
-      return leafStanza
+      return leafStanza.empty
     }
     let lineBlockFenceCol = holdsLineBlock ? contentCol + head.text.indexOf(':::') : -1
     const captionGaps = []
@@ -9483,7 +9567,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           notePara = i
         }
         // A comment line in verse is an empty verse line, so its stanza stays open (PART 9 §23).
-        else if (COMMENT_LINE.test(dedented) && stanzaPayload()) openParaWith()
+        else if (COMMENT_LINE.test(dedented) && !inDescendantSpan && stanzaPayload()) openParaWith()
         else if (COMMENT_LINE.test(dedented)) {
           closePara()
           if (markerNoteEligible && col >= markerNoteBodyColumn) defBodyIndent = defBody
