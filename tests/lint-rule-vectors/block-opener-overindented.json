@@ -36,6 +36,65 @@
       }
     },
     {
+      "name": "document-spaced-dash-break",
+      "description": "A spaced dash thematic break past the document column (carve#5003).",
+      "source": "  - - -\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 3,
+            "includes": [
+              "thematic break",
+              "the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "document-spaced-star-break",
+      "description": "A spaced star thematic break past the document column.",
+      "source": "para\n\n  * * *\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "thematic break",
+              "the document"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "quote-spaced-break",
+      "description": "A spaced thematic break past the quote's content column.",
+      "source": "> x\n>\n>   - - -\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 5,
+            "includes": [
+              "thematic break",
+              "block quote"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "spaced-underscore-paragraph",
+      "description": "A spaced underscore run is a paragraph, not a thematic break.",
+      "source": "  _ _ _\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
       "name": "document-code-fence",
       "description": "A code fence past the document column.",
       "source": "  ```\n  code\n  ```\n",
