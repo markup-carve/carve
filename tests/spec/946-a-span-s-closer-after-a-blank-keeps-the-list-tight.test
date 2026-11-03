@@ -1,0 +1,92 @@
+A span's closer after a blank keeps the list tight
+
+```
+- %%%
+
+  %%%
+- d
+.
+<ul>
+  <li></li>
+  <li>d</li>
+</ul>
+```
+
+```
+- a
+  %%%
+
+  %%%
+- d
+.
+<ul>
+  <li>a</li>
+  <li>d</li>
+</ul>
+```
+
+```
+- a
+  - b
+    %%%
+
+    %%%
+- c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- a
+  :: u
+  : %%%
+
+    %%%
+- c
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>u</dt>
+      <dd></dd>
+    </dl>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- a
+  - %%%
+
+    %%%
+- c
+.
+<ul>
+  <li>a
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- a
+  %%%
+
+- d
+.
+<ul>
+  <li><p>a</p></li>
+  <li><p>d</p></li>
+</ul>
+```
