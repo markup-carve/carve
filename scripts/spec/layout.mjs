@@ -7537,6 +7537,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     }
     return blank > from && skipped && !visible && (span !== null || ind(at - 1).rest !== '')
   }
+  let lastItemEnd = null
   const commentsBeforeSibling = (at) => {
     if (at >= n || !invisibleAt(at)) return at
     // Invisible lines are erased from layout, so blank lines on either side
@@ -7569,7 +7570,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     if (k >= n || longest >= 3) return at
     const next = matchMarkerAt(ind(k))
     if (!next || next.indent !== baseIndent || !sameAxes(list, next)) return at
-    if (blanks > 0) list.tight = false
+    // An invisible line that ended the item above is erased too, so the item's
+    // own §17 L1c question is asked as if the item had met the sibling (CARVE-P9-013).
+    const item = lastItemEnd
+    if (blanks > 0 || (item && (item.blankBeforeInvisible || blankBehindInvisible(at, item.head, item.codeRow)))) list.tight = false
     registerSkippedDefinitions(lines, at, k, (j) => ind(j).rest, state, top)
     return k
   }
@@ -10119,6 +10123,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       }
     }
     list.items.push(item)
+    lastItemEnd = { head: itemHead, codeRow: codeBodyRow, blankBeforeInvisible }
     // Returning rather than breaking leaves `i` on the marker line, so the
     // caller parses it as the first item of the next list.
     if (hardListBoundary) return i
