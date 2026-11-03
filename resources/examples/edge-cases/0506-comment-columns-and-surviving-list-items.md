@@ -14,9 +14,9 @@ tail
 
 ```html
 <ul>
-  <li>intro</li>
+  <li>intro
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -31,9 +31,9 @@ tail
 
 ```html
 <ul>
-  <li>intro</li>
+  <li>intro
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -86,9 +86,9 @@ tail
 
 ```html
 <ul>
-  <li>intro</li>
+  <li>intro
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -104,9 +104,9 @@ tail
 
 ```html
 <ul>
-  <li>intro</li>
+  <li>intro
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -123,8 +123,7 @@ tail
 ```html
 <ul>
   <li>intro
-    tail
-  </li>
+tail</li>
 </ul>
 ```
 

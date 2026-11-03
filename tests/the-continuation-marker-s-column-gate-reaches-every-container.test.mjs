@@ -49,25 +49,18 @@ const comment = (src) => src.replace('@', '%% c')
 // A refused `+` is text, so it renders as a letter at its column would (carve#3421).
 const letter = (src) => html(src.replace('@', 'Z')).replaceAll('Z', '+')
 
-// A comment below the body's column closes the body, so the follower leaves it (carve#3885).
-const closedNote =
-  '<p>more</p><p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>' +
-  '<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1">' +
-  '<p>intro<a href="#fnref1" role="doc-backlink" ' +
-  'aria-label="Back to reference">↩</a></p></li></ol></section>'
-const closedDescription = '<dl><dt>term</dt><dd>intro</dd></dl><p>more</p>'
-// A comment closes no footnote body, so a follower at the body column stays in it (carve#4862).
-const keptNote =
+// An erased comment leaves the next visible line in the host (PART 0 S1).
+const joinedNote =
   '<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>' +
   '<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1">' +
-  '<p>intro</p><p>more<a href="#fnref1" role="doc-backlink" ' +
+  '<p>intro more<a href="#fnref1" role="doc-backlink" ' +
   'aria-label="Back to reference">↩</a></p></li></ol></section>'
-
+const joinedDescription = '<dl><dt>term</dt><dd>intro more</dd></dl>'
 const BAND = [
-  ['a footnote body, below its minimum column', '[^a]: intro\n@\n more\n\nsee[^a]\n', closedNote],
-  ['a footnote body, at its minimum column', '[^a]: intro\n@\n  more\n\nsee[^a]\n', keptNote],
-  ['a description, below its content column', ':: term\n:  intro\n@\n  more\n', closedDescription],
-  ['a description, one column further below', ':: term\n:  intro\n@\n more\n', closedDescription],
+  ['a footnote body, below its minimum column', '[^a]: intro\n@\n more\n\nsee[^a]\n', joinedNote],
+  ['a footnote body, at its minimum column', '[^a]: intro\n@\n  more\n\nsee[^a]\n', joinedNote],
+  ['a description, below its content column', ':: term\n:  intro\n@\n  more\n', joinedDescription],
+  ['a description, one column further below', ':: term\n:  intro\n@\n more\n', joinedDescription],
   ['a block quote, with the quoted paragraph closed', '> intro\n>\n@\n  more\n'],
   ['a list item, the container that always held the gate', '- intro\n@\n  more\n'],
 ]
@@ -75,10 +68,10 @@ const BAND = [
 for (const [what, src, retained] of BAND) {
   test(retained === undefined
     ? `a refused marker renders as text in ${what}`
-    : `a low comment and refused marker keep the same follower owner in ${what}`, () => {
+    : `an erased comment and refused marker differ in ${what}`, () => {
     if (retained !== undefined) {
       assert.equal(html(comment(src)), retained)
-      assert.equal(html(marker(src)), html(comment(src)))
+      assert.notEqual(html(marker(src)), html(comment(src)))
     } else assert.ok(!html(marker(src)).includes('+'))
   })
 }

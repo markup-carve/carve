@@ -66,3 +66,12 @@ Next
 <p>Para</p>
 <p class="class">Next</p>
 ```
+
+```
+{.a}
+[^f]: note
+
+Visible
+.
+<p class="a">Visible</p>
+```

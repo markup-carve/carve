@@ -577,8 +577,7 @@ See [r][].
   <dd>
     <ul>
       <li>a
-        more
-      </li>
+more</li>
     </ul>
   </dd>
 </dl>

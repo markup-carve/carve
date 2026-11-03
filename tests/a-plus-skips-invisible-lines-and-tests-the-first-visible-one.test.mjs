@@ -35,7 +35,9 @@ for (const host of hosts) {
     test(`${JSON.stringify(host)} over ${JSON.stringify(invisible)}: a block at the marker column attaches as without it`, () => {
       for (const block of ['text', '# H', '> q', '```\nk\n```']) {
         const tail = prefix(host, block)
-        assert.equal(html(`${host}\n${prefix(host, invisible)}\n${tail}\n`), html(`${host}\n${tail}\n`), block)
+        const quoteMarker = /^(?:[ \t]*>[ ]?)+/.exec(prefix(host, invisible))?.[0].trimEnd()
+        const retained = (invisible === '%% c' || invisible === '[r]: /u') && quoteMarker ? `${quoteMarker}\n` : ''
+        assert.equal(html(`${host}\n${prefix(host, invisible)}\n${tail}\n`), html(`${host}\n${retained}${tail}\n`), block)
       }
     })
     test(`${JSON.stringify(host)} over ${JSON.stringify(invisible)}: an invisible or visible line off the column refuses`, () => {
@@ -51,7 +53,7 @@ for (const host of hosts) {
 test('the ruling\'s Expected shapes', () => {
   assert.equal(html('- +\n%% c\n\ntext\n'), '<ul><li></li></ul><p>text</p>')
   assert.equal(html('- +\n%% c\n- b\n'), '<ul><li></li><li>b</li></ul>')
-  assert.equal(html('- +\n%% c\n  text\n'), '<ul><li></li></ul><p>text</p>')
+  assert.equal(html('- +\n%% c\n  text\n'), '<ul><li>text</li></ul>')
   assert.equal(html('- +\n%% c\ntext\n'), '<ul><li>text</li></ul>')
   assert.equal(html('- +\n%%%\nc\n%%%\ntext\n'), '<ul><li>text</li></ul>')
 })
@@ -61,6 +63,6 @@ test('a note definition keeps its lazy body, so nothing follows it', () => {
   assert.equal(html('- +\n[^q]: n\n# H\n'), '<ul><li><h1 id="H">H</h1></li></ul>')
 })
 
-test('a nested + is refused by an invisible line left of its marker', () => {
-  assert.equal(html('- a\n  * +\n%% c\n  after\n'), html('- a\n  * %%\n%% c\n  after\n'))
+test('a nested + sees past an erased line left of its marker', () => {
+  assert.equal(html('- a\n  * +\n%% c\n  after\n'), html('- a\n  * +\n  after\n'))
 })

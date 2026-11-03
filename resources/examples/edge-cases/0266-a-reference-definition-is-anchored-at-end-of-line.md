@@ -279,8 +279,8 @@ more
 ```
 
 ```html
-<blockquote><p>text</p></blockquote>
-<p>more</p>
+<blockquote><p>text
+more</p></blockquote>
 <p><a href="/u" class="c">a</a></p>
 ```
 

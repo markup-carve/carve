@@ -43,9 +43,8 @@ text
   text
 .
 <ul>
-  <li></li>
+  <li>text</li>
 </ul>
-<p>text</p>
 ```
 
 ```

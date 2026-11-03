@@ -67,9 +67,9 @@ z
 .
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>x
+z</dd>
 </dl>
-<p>z</p>
 ```
 
 ```
@@ -108,10 +108,8 @@ b
 .
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x
+more</dd>
 </dl>
 ```
 
@@ -182,9 +180,7 @@ z
 .
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x
+more</dd>
 </dl>
 ```

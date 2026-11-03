@@ -27,7 +27,8 @@ for (const marker of markers) for (const depth of [2, 3, 4]) {
   for (const block of blocks) for (const tail of ['z', ' z']) {
     test(`after a grandchild list a block at the child column leaves no paragraph: ${JSON.stringify(marker)}, depth ${depth}, ${block}, ${JSON.stringify(tail)}`, () => {
       const out = html([chain, deep + '- b', child + block, tail].join('\n') + '\n')
-      assert.match(out, /<p>z<\/p>$/)
+      if (block === '%% c') assert.match(out, /bz<\/li>/)
+      else assert.match(out, /<p>z<\/p>$/)
     })
   }
   test(`a sibling after a nested fence takes the lazy line: ${JSON.stringify(marker)}, depth ${depth}`, () => {

@@ -98,6 +98,12 @@ for (const run of ['```', '~~~']) for (const info of ['raw,html', '=html "title"
     const tailHtml = () => carveToHtml(lines.join('\n') + '\n').trim()
     test(`invalid ${JSON.stringify(run + info)} leaves an item after ${JSON.stringify(comment)}`, () => {
       const source = ['- lead', comment, ...lines].join('\n') + '\n'
+      if (comment === ' %% hidden') {
+        const erased = source.replace(comment + '\n', '')
+        assert.deepEqual(parse(source).blocks, parse(erased).blocks)
+        assert.equal(renderDoc(parse(source)), renderDoc(parse(erased)))
+        return
+      }
       assert.deepEqual(parse(source).blocks, [{
         t: 'list', task: false, bullet: '-', ord: null, tight: true,
         items: [{ blocks: [{ t: 'para', lines: ['lead'] }] }],
@@ -106,6 +112,12 @@ for (const run of ['```', '~~~']) for (const info of ['raw,html', '=html "title"
     })
     test(`invalid ${JSON.stringify(run + info)} leaves a description after ${JSON.stringify(comment)}`, () => {
       const source = [':: t', ': lead', comment, ...lines].join('\n') + '\n'
+      if (comment === ' %% hidden') {
+        const erased = source.replace(comment + '\n', '')
+        assert.deepEqual(parse(source).blocks, parse(erased).blocks)
+        assert.equal(renderDoc(parse(source)), renderDoc(parse(erased)))
+        return
+      }
       assert.deepEqual(parse(source).blocks, [{
         t: 'deflist', items: [{ dt: 't' }, { ddBlocks: [{ t: 'para', lines: ['lead'] }] }],
       }, tail])
@@ -114,6 +126,12 @@ for (const run of ['```', '~~~']) for (const info of ['raw,html', '=html "title"
     })
     test(`invalid ${JSON.stringify(run + info)} leaves a note after ${JSON.stringify(comment)}`, () => {
       const source = ['[^n]: lead', comment, ...lines].join('\n') + '\n'
+      if (comment === ' %% hidden') {
+        const erased = source.replace(comment + '\n', '')
+        assert.deepEqual(parse(source).footnoteDefs, parse(erased).footnoteDefs)
+        assert.equal(renderDoc(parse(source)), renderDoc(parse(erased)))
+        return
+      }
       const doc = parse(source)
       assert.deepEqual(doc.footnoteDefs.get('n'), [{ t: 'para', lines: ['lead'] }])
       assert.deepEqual(doc.blocks, [tail])

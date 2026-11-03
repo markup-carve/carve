@@ -11,7 +11,7 @@ for (const [name, source, expected] of [
   ['closed container', '- ::: box\n  :::\n %% c\n  text\n', '<ul><li><div class="box"></div> text\n</li></ul>'],
   ['heading', '- # h\n %% c\n  text\n', '<ul><li><h1 id="h">h</h1> text\n</li></ul>'],
   ['closed marker-line code', '- ```\n  x\n  ```\n %% c\n  text\n', '<ul><li><pre><code>x\n</code></pre> text\n</li></ul>'],
-  ['open paragraph control', '- a\n %% c\n  text\n', '<ul><li>a text\n</li></ul>'],
+  ['open paragraph control', '- a\n %% c\n  text\n', '<ul><li>a text</li></ul>'],
   ['blank control', '- a\n\n %% c\n  text\n', '<ul><li><p>a</p><p>text</p></li></ul>'],
   ['paragraph ends sublist', '- outer\n  - para\n\n  text\n\n    ```\n', '<ul><li><p>outer</p><ul><li>para</li></ul><p>text</p><pre><code></code></pre></li></ul>'],
   ['quote ends sublist', '- outer\n  - para\n  > q\n\n    ```\n', '<ul><li><p>outer</p><ul><li>para</li></ul><blockquote><p>q</p></blockquote><pre><code></code></pre></li></ul>'],

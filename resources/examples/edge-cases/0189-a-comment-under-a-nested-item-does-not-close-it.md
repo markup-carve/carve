@@ -14,11 +14,11 @@ A comment renders nothing, so it cannot decide which item the line after it belo
 <ul>
   <li>
     <ul>
-      <li>a</li>
+      <li>a
+b</li>
     </ul>
   </li>
 </ul>
-<p>b</p>
 ```
 
 :::

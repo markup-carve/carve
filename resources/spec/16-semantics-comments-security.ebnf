@@ -385,7 +385,7 @@
              This is the `invisible` field of the list item row of PART 0
              FAMILIES: below the column a footnote definition or
              block-attribute line interrupts, closes the item and is read in
-             the surviving owner, where a definition registers (CARVE-P0-010)
+             the surviving owner, where a footnote definition registers (PART 9 §10 I5)
              and an attribute line is pending (§15 A2).
            - AT OR PAST content_column: a block opener nests and a list marker
              opens a sublist. A non-list opener past the column opens in the

@@ -3,11 +3,11 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
-test('a link definition in a note closes the claim for a following document line', () => {
+test('a link definition in a note leaves the claim for a following line', () => {
   const source = '[^n]: d\n  - para\n    [r]: /u\nx\n\n[r][] [^n]\n'
   const html = renderDoc(parse(source))
-  assert.match(html, /^<p>x<\/p>\n<p><a href="\/u">r<\/a>/)
-  assert.doesNotMatch(html, /<p>x<a href="#fnref/)
+  assert.match(html, /^<p><a href="\/u">r<\/a>/)
+  assert.match(html, /<li>para\nx<\/li>/)
 })
 
 test('a quoted definition closes the note claim after an interior blank', () => {

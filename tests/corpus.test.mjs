@@ -66,7 +66,7 @@ for (const entry of emptyDestinationCases.cases.filter((item) => item.kind && !i
 // A comment closes no item, so the follower's column decides (carve#4862).
 test('a nonzero below-column comment closes no item', () => {
   assert.equal(oracleHtml('- intro\n  %% a\n %% b\n  tail\n'),
-    '<ul>\n  <li>intro\n    tail\n  </li>\n</ul>')
+    '<ul>\n  <li>intro\ntail</li>\n</ul>')
 })
 
 test('over-column list block groups match their exact-column spelling', () => {

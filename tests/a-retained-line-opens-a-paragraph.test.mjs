@@ -35,15 +35,25 @@ for (const depth of [0, 1, 2]) for (const [host, [outer, pad]] of Object.entries
     const lines = [...outer, ' '.repeat(pad) + '- ' + head, ...comment.map((line) => at + line), ...follower.map((line) => band + line)]
     for (const tail of depth > 0 ? ['TAIL', '- TAIL', '1. TAIL'] : ['TAIL']) {
       test(`an at-column comment releases the line below: depth ${depth}, ${host}, ${head}, ${kind} comment, ${shape}, ${tail}`, () => {
-        const out = html(quoted(depth, lines) + tail + '\n')
+        const source = quoted(depth, lines) + tail + '\n'
+        const out = html(source)
         const headSource = quoted(depth, [...outer, ' '.repeat(pad) + '- ' + head])
-        assert.deepEqual(deepestItem(quoted(depth, lines) + tail + '\n'), deepestItem(headSource), out)
+        if (kind === 'line') {
+          const retained = depth > 0
+            ? lines.map(line => line.trim().startsWith('%%') ? '' : line)
+            : lines.filter(line => !line.trim().startsWith('%%'))
+          const erased = quoted(depth, retained) + tail + '\n'
+          assert.deepEqual(parse(source).blocks, parse(erased).blocks, out)
+        } else assert.deepEqual(deepestItem(source), deepestItem(headSource), out)
         assert.ok(out.includes('TAIL'), out)
       })
     }
     if (depth === 0) test(`a line at document column 0 after the comment is not retained: ${host}, ${head}, ${kind} comment, ${shape}`, () => {
       const out = html([...lines.slice(0, -follower.length), ...follower].join('\n') + '\nTAIL\n')
-      assert.match(out, /<\/ul>(?!.*<\/li>).*TAIL/)
+      if (kind === 'line') {
+        const erased = [...lines.slice(0, -follower.length), ...follower].filter(line => !line.trim().startsWith('%%')).join('\n') + '\nTAIL\n'
+        assert.equal(out, html(erased))
+      } else assert.match(out, /<\/ul>(?!.*<\/li>).*TAIL/)
     })
   }
 }
@@ -55,5 +65,5 @@ test('at-column spans release the fence to the box', () => {
 })
 
 test('a document paragraph keeps a noninterrupting marker', () => {
-  assert.match(html('- inner\n  %% c\n code\n- tail\n'), /<\/ul><p>code - tail<\/p>/)
+  assert.match(html('- inner\n  %% c\n code\n- tail\n'), /<li>inner code<\/li><li>tail<\/li>/)
 })

@@ -10,11 +10,11 @@ const fence = '```'
 
 for (const [name, source, expected] of [
   ['comment ends the item code fence', `> - ${fence}\n> %% c\n>   x\n- t\n`,
-    '<blockquote><ul><li><pre><code></code></pre></li></ul><p>x - t</p></blockquote>'],
+    '<blockquote><ul><li><pre><code> x </code></pre></li></ul></blockquote><ul><li>t</li></ul>'],
   ['closed span ends the item code fence', `> - ${fence}\n> %%%\n> %%%\n>   x\n1. t\n`,
     '<blockquote><ul><li><pre><code></code></pre></li></ul><p>x 1. t</p></blockquote>'],
   ['comment ends the item line block', '> - ::: |\n> %% c\n>   x\n- t\n',
-    '<blockquote><ul><li><div class="line-block"></div></li></ul><p>x - t</p></blockquote>'],
+    '<blockquote><ul><li><div class="line-block"><p>x</p></div></li></ul></blockquote><ul><li>t</li></ul>'],
   ['second span after a line-block item', '> - ::: |\n> %%%\n> %%%\n> %%%\n> m\nTAILX\n',
     '<blockquote><ul><li><div class="line-block"></div></li></ul></blockquote><p>TAILX</p>'],
   ['second span after a numbered line-block item', '> 10. ::: |\n> %%%\n> %%%\n> %%%\n> m\nTAILX\n',
@@ -26,7 +26,7 @@ for (const [name, source, expected] of [
   ['heading control', `> - ${fence}\n> # h\n>   x\n- t\n`,
     '<blockquote><ul><li><pre><code></code></pre></li></ul><h1 id="h">h</h1><p>x - t</p></blockquote>'],
   ['open paragraph keeps the item', '> - a\n> %% c\n>   x\n- t\n',
-    '<blockquote><ul><li>a x </li></ul></blockquote><ul><li>t</li></ul>'],
+    '<blockquote><ul><li><p>a</p><p>x</p></li></ul></blockquote><ul><li>t</li></ul>'],
 ]) {
   test(name, () => assert.equal(html(source), normalize(expected)))
 }

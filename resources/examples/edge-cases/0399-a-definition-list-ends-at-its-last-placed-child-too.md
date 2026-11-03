@@ -57,9 +57,9 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a</dd>
+  <dd>a
+tail</dd>
 </dl>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 

@@ -8,9 +8,9 @@ tail
 .
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 ```
@@ -21,9 +21,9 @@ tail
 .
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 ```
@@ -128,9 +128,9 @@ tail
 .
 <dl>
   <dt>term</dt>
-  <dd>definition</dd>
+  <dd>definition
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 ```

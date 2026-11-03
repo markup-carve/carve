@@ -132,9 +132,9 @@ z
 ```html
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>x
+z</dd>
 </dl>
-<p>z</p>
 ```
 
 :::
@@ -202,10 +202,8 @@ body: a comment closes no description body, so the follower's column decides
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x
+more</dd>
 </dl>
 ```
 
@@ -320,10 +318,8 @@ which the body keeps.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>x</p>
-    <p>more</p>
-  </dd>
+  <dd>x
+more</dd>
 </dl>
 ```
 

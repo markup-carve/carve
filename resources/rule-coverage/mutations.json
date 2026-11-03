@@ -87,16 +87,6 @@
       ]
     },
     {
-      "rule": "CARVE-P0-010",
-      "edits": [
-        {
-          "file": "scripts/spec/layout.mjs",
-          "find": "    if (isDefinitionOrAttributeLine(text)) return finish(false)\n",
-          "replace": "    if (false) return finish(false)\n"
-        }
-      ]
-    },
-    {
       "rule": "CARVE-P0-011",
       "edits": [
         {
@@ -931,8 +921,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "        attrs: def.attrs,\n      })\n      i++\n      continue",
-          "replace": "        attrs: def.attrs,\n      })\n      pending.length = 0\n      i++\n      continue"
+          "find": "state.footnoteDefs.set(key, parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true))",
+          "replace": "state.footnoteDefs.set(key, parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true))\n        pending.length = 0"
         }
       ]
     },

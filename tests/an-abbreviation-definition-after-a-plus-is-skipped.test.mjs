@@ -21,7 +21,7 @@ for (const host of hosts) {
 }
 
 test('under a host in a quote or an item the + skips it too', () => {
-  assert.equal(html('> - +\n> *[A]: b\n> text\n\nA\n'), '<blockquote><ul><li>text</li></ul></blockquote><p><abbr title="b">A</abbr></p>')
+  assert.equal(html('> - +\n> *[A]: b\n> text\n\nA\n'), '<blockquote><ul><li></li></ul><p>text</p></blockquote><p><abbr title="b">A</abbr></p>')
   assert.equal(html('- x\n  - +\n  *[A]: b\n  text\n\nA\n'), '<ul><li>x<ul><li>text</li></ul></li></ul><p><abbr title="b">A</abbr></p>')
 })
 

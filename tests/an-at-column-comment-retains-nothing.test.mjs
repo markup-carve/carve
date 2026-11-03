@@ -28,8 +28,12 @@ for (const depth of [0, 1, 2]) for (const nested of [0, 1, 2]) {
         const source = [...parents, ...head, ...comment, ' '.repeat(column - 1) + 'FOLLOW']
           .map(line => '> '.repeat(depth) + line).join('\n') + '\n'
         const body = leaf(parse(source).blocks)
-        // A span below the body's column closes the body, so nothing is retained at any offset.
-        assert.equal(JSON.stringify(body).includes('FOLLOW'), false, html(source))
+        // The line's content is erased; quoted marker prefixes remain.
+        if (kind === 'line') {
+          const control = [...parents, ...head, ...(depth ? [''] : []), ' '.repeat(column - 1) + 'FOLLOW']
+            .map(line => '> '.repeat(depth) + line).join('\n') + '\n'
+          assert.deepEqual(parse(source).blocks, parse(control).blocks, html(source))
+        } else assert.equal(JSON.stringify(body).includes('FOLLOW'), false, html(source))
         assert.ok(html(source).includes('FOLLOW'), html(source))
         assert.ok(!html(source).includes('HIDDEN'), html(source))
       })
@@ -51,8 +55,13 @@ for (const kind of ['%% c', '%%%\n  hidden\n  %%%']) {
   test(`a note at its body column releases the follower: ${kind}`, () => {
     const source = `[^n]: HEAD\n  ${kind}\n FOLLOW\n\n[^n]\n`
     const out = html(source)
-    assert.match(out, /^<p>FOLLOW<\/p>/)
-    assert.ok(!out.slice(out.indexOf('<section')).includes('FOLLOW'), out)
+    if (kind === '%% c') {
+      assert.doesNotMatch(out, /^<p>FOLLOW<\/p>/)
+      assert.ok(out.slice(out.indexOf('<section')).includes('HEAD\nFOLLOW'), out)
+    } else {
+      assert.match(out, /^<p>FOLLOW<\/p>/)
+      assert.ok(!out.slice(out.indexOf('<section')).includes('FOLLOW'), out)
+    }
   })
 }
 
@@ -68,7 +77,10 @@ for (const depth of [0, 1, 2]) for (const column of [2, 3]) {
     test(`an at/past-column comment clears an earlier low comment: depth ${depth}, column ${column}, ${kind}`, () => {
       const source = ['- HEAD', ' %% low', ' '.repeat(column) + kind, ' FOLLOW']
         .join('\n').split('\n').map(line => '> '.repeat(depth) + line).join('\n') + '\n'
-      assert.deepEqual(leaf(parse(source).blocks), [{t: 'para', lines: ['HEAD']}], html(source))
+      if (kind === '%% c' && depth > 0) {
+        const control = ['- HEAD', '', '', ' FOLLOW'].map(line => '> '.repeat(depth) + line).join('\n') + '\n'
+        assert.deepEqual(parse(source).blocks, parse(control).blocks, html(source))
+      } else assert.deepEqual(leaf(parse(source).blocks), [{t: 'para', lines: kind === '%% c' ? ['HEAD', 'FOLLOW'] : ['HEAD']}], html(source))
     })
   }
 }

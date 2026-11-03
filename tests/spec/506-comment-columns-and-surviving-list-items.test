@@ -6,9 +6,9 @@ Comment columns and surviving list items
 tail
 .
 <ul>
-  <li>intro</li>
+  <li>intro
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -17,9 +17,9 @@ tail
 tail
 .
 <ul>
-  <li>intro</li>
+  <li>intro
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -54,9 +54,9 @@ c
 tail
 .
 <ul>
-  <li>intro</li>
+  <li>intro
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -66,9 +66,9 @@ tail
 tail
 .
 <ul>
-  <li>intro</li>
+  <li>intro
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -79,8 +79,7 @@ tail
 .
 <ul>
   <li>intro
-    tail
-  </li>
+tail</li>
 </ul>
 ```
 

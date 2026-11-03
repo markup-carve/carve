@@ -8,10 +8,8 @@ A comment ends the paragraph it sits under
 - c
 .
 <ul>
-  <li>a</li>
-</ul>
-<p>b</p>
-<ul>
-  <li>c</li>
+  <li><p>a
+b</p></li>
+  <li><p>c</p></li>
 </ul>
 ```

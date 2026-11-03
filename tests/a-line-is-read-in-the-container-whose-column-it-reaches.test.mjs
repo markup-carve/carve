@@ -81,14 +81,14 @@ const cases = [
     "<ul>\n<li>\n<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n<ul>\n<li>li</li>\n</ul>\n</li>\n</ul>"
   ],
   [
-    "a column-0 comment closes the item after a marked quote continuation",
+    "a column-0 comment leaves the marked quote continuation open",
     "- > para\n  > more\n%% c\nx\n",
-    "<ul>\n<li>\n<blockquote><p>para\nmore</p></blockquote>\n</li>\n</ul>\n<p>x</p>"
+    "<ul>\n<li>\n<blockquote><p>para\nmore\nx</p></blockquote>\n</li>\n</ul>"
   ],
   [
-    "a definition below the item column closes the quote and the item",
+    "a definition below the item column leaves the quote and item open",
     "- > a\n  > b\n [r]: /u\nx\n",
-    "<ul>\n<li>\n<blockquote><p>a\nb</p></blockquote>\n</li>\n</ul>\n<p>x</p>"
+    "<ul>\n<li>\n<blockquote><p>a\nb\nx</p></blockquote>\n</li>\n</ul>"
   ],
   [
     "a footnote body in a quote takes the lazy line",

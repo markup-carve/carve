@@ -6,7 +6,7 @@ A comment is recognized at any column
 b
 .
 <ul>
-  <li>a</li>
+  <li>a
+b</li>
 </ul>
-<p>b</p>
 ```

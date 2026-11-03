@@ -41,9 +41,9 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -155,9 +155,8 @@ tail
 ```html
 <ul>
   <li>a
-    “T”
-tail
-  </li>
+“T”
+tail</li>
 </ul>
 <p><a href="/u">r</a></p>
 ```

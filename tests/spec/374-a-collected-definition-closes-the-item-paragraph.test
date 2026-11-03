@@ -7,10 +7,10 @@ A collected definition closes the item paragraph
 tail
 .
 <ul>
-  <li>a</li>
+  <li>a
+more
+tail</li>
 </ul>
-<p>more
-tail</p>
 ```
 
 ```
@@ -20,10 +20,10 @@ tail</p>
 tail
 .
 <ol>
-  <li>a</li>
+  <li>a
+more
+tail</li>
 </ol>
-<p>more
-tail</p>
 ```
 
 ```

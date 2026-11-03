@@ -1132,7 +1132,7 @@ function findColonCloser(lines, openIdx, len) {
  *  an item line does after an item's paragraph, where it starts the next item
  *  instead of folding in. A line reaching the open item's content column is
  *  read there (`inItem`, where a marker opens a sublist), so a block at that
- *  column closes the item's paragraph (CARVE-P0-010, CARVE-P0-011). */
+ *  column closes the item's paragraph (CARVE-P0-011). */
 const ITEM_PREFIX = /^-(\d+);/
 function leavesParagraphOpen(lines, idx, wasOpen, inItem = false) {
   const line = lines[idx]
@@ -3272,7 +3272,7 @@ const TRACE_RULE = { blank: 'CARVE-P0-003', leaf: 'CARVE-P0-011' }
  * column. A fence's payload loses at most the indentation it has. The block
  * readers below therefore only meet openers at a content column.
  */
-function ownLines(lines, trace = null, plusLetter = '\uE100') {
+function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter = true) {
   const result = []
   const frames = [{ kind: 'doc', col: 0, canon: 0, cut: 0, para: false, last: null }]
   const top = () => frames[frames.length - 1]
@@ -3310,7 +3310,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   // line at its content column, as the readers do (§17 L3, carve#4167).
   let afterPlusBlock = null
   let start = 0
-  if (lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
+  if (allowFrontmatter && lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
     const close = lines.findIndex((line, k) => k > 0 && /^---[ \t]*$/.test(line))
     if (close > 0) {
       result.push(...lines.slice(0, close + 1))
@@ -4457,13 +4457,13 @@ function restoreOrdinaryPlus(value, sentinel) {
  * it could not otherwise be checked by a test. Passing one changes no answer.
  * Introduced with the per-descendant question-1 state (carve#2746).
  */
-export function parse(src, { stateSink = null, includeFiles = null, trace = null } = {}) {
+function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace = null, allowFrontmatter = true } = {}) {
   src = normalizeSource(src)
   // A private character keeps a refused `+` a letter through every reader.
   let sentinel = '\uE100'
   while (src.includes(sentinel)) sentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
   const authored = src.split('\n')
-  const walked = ownLines(authored, trace, sentinel)
+  const walked = ownLines(authored, trace, sentinel, allowFrontmatter)
   src = walked.join('\n')
   const refusedPlusLines = walked.refusedPlus
   const hasOrdinaryPlus = src.includes(sentinel)
@@ -4532,7 +4532,7 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   //
   // AUTHORED LINES, because the walk above has already dropped a leading run:
   // `frontmatter_open` and `frontmatter_close` admit no indent.
-  if (authored[0] !== undefined && FRONTMATTER_OPENER.test(authored[0])) {
+  if (allowFrontmatter && authored[0] !== undefined && FRONTMATTER_OPENER.test(authored[0])) {
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(authored[j])) {
         lines.splice(0, j + 1)
@@ -4566,6 +4566,132 @@ export function parse(src, { stateSink = null, includeFiles = null, trace = null
   if (stateSink) stateSink.markerFenceProbeSteps = state.markerFenceProbeSteps
   delete state.markerFenceProbeSteps
   return { blocks, ...state }
+}
+
+// PART 0 S1: a one-line comment or link/abbreviation definition in ordinary
+// block content has no layout boundary. Use the ownership walk's classification
+// to exclude opaque payloads and marker-line content; then let every container
+// reader see the same visible stream. The first pass also collects definitions
+// in their authored order, before the erased lines lose their positions.
+export function parse(src, options = {}) {
+  if (!/(?:^|\n)[^\n]*(?:%%|\[[^\]\n]+\]:|\*\[[A-Za-z0-9]+\]:)/.test(src)) {
+    return parseWithBoundaries(src, options)
+  }
+  const classified = []
+  const original = parseWithBoundaries(src, { includeFiles: options.includeFiles, trace: classified })
+  const lines = normalizeSource(src).split('\n')
+  const erased = new Set()
+  const erasedOwners = new Map()
+  const erasedDefinitions = []
+  for (const record of classified) {
+    if (record.form !== 'leaf' || record.step !== 'S5') continue
+    const index = record.line - 1
+    const rest = trimLineEnd(lines[index]?.replace(/^(?:[ \t]*>[ ]?)*[ \t]*/, '') ?? '')
+    if (COMMENT_LINE.test(rest) && !COMMENT_FENCE_BODY.test(rest) && !REGION_MARKER.test(rest) ||
+        (isDefinitionLine(rest) && !FOOTNOTE_DEF.test(rest))) {
+      erased.add(index)
+      erasedOwners.set(index, record.owner)
+      if (isDefinitionLine(rest) && !FOOTNOTE_DEF.test(rest)) erasedDefinitions.push({ index, rest })
+    }
+  }
+  if (erased.size === 0) return options.trace || options.stateSink
+    ? parseWithBoundaries(src, options) : original
+  // A quote prefix is structural even when the line's content is erased.
+  // Keep its empty marker line so it still closes an open quoted paragraph.
+  const retainedQuote = new Set()
+  const kept = lines.flatMap((line, index) => {
+    if (!erased.has(index)) return [{ line, index }]
+    const prefix = /^(?:[ \t]*>[ ]?)+/.exec(line)?.[0]
+    if (!prefix) return []
+    retainedQuote.add(index)
+    return [{ line: prefix.trimEnd(), index }]
+  })
+  const visible = kept.map(({ line }) => line).join('\n')
+  const traceStart = options.trace?.length ?? 0
+  const visibleTrace = options.trace ?? (erasedDefinitions.length ? [] : null)
+  const result = parseWithBoundaries(visible, { ...options, trace: visibleTrace, allowFrontmatter: !erased.has(0) })
+  if (erasedDefinitions.length) {
+    // The second parse decides which retained lines still register definitions.
+    // Only definitions ON erased lines are imported from the authored stream.
+    // A retained marker-line definition can occur after an erased one, so its
+    // source position decides the last-wins rule for each label.
+    const visibleLast = new Map()
+    const markerContent = line => {
+      let rest = line.trimStart()
+      for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+        const item = BULLET.exec(rest) ?? ORDERED.exec(rest)
+        if (item) {
+          rest = item[6].trimStart()
+          continue
+        }
+        const prefix = /^(?:> ?|\[\^[^\]\n]+\]: +|: +)/.exec(rest)
+        if (!prefix) break
+        rest = rest.slice(prefix[0].length).trimStart()
+      }
+      return trimLineEnd(rest)
+    }
+    for (const record of visibleTrace.slice(traceStart)) {
+      if (['text', 'payload', 'closer', 'blank', 'lazy', 'code', 'comment', 'frontmatter'].includes(record.form)) continue
+      const source = kept[record.line - 1]
+      if (!source) continue
+      const rest = markerContent(source.line)
+      const link = matchLinkDef(rest)
+      if (link) {
+        const key = labelKey(link.label)
+        const registered = result.linkDefs.get(key)
+        if (registered?.rawLabel === link.label && registered.url === link.url &&
+            registered.title === link.title && JSON.stringify(registered.attrs) === JSON.stringify(link.attrs)) {
+          visibleLast.set(`link:${key}`, source.index)
+        }
+      }
+      const abbr = ABBR_DEF.exec(rest)
+      if (abbr && result.abbrDefs.get(abbr[1]) === abbr[2]) visibleLast.set(`abbr:${abbr[1]}`, source.index)
+    }
+    for (const { index, rest } of erasedDefinitions.sort((a, b) => a.index - b.index)) {
+      const link = matchLinkDef(rest)
+      if (link) {
+        const key = labelKey(link.label)
+        if (index > (visibleLast.get(`link:${key}`) ?? -1)) result.linkDefs.set(key, {
+          rawLabel: link.label, url: link.url, title: link.title, attrs: link.attrs,
+        })
+      }
+      const abbr = ABBR_DEF.exec(rest)
+      if (abbr && index > (visibleLast.get(`abbr:${abbr[1]}`) ?? -1)) result.abbrDefs.set(abbr[1], abbr[2])
+    }
+  }
+  if (options.stateSink?.refusedPlusLines) {
+    options.stateSink.refusedPlusLines = options.stateSink.refusedPlusLines.map(index => kept[index]?.index ?? index)
+  }
+  if (options.trace) {
+    const sourceLine = line => kept[line - 1] ? kept[line - 1].index + 1 : line
+    const path = value => typeof value === 'string'
+      ? value.replace(/:(\d+)/g, (_, line) => `:${sourceLine(Number(line))}`) : value
+    const tracedQuote = new Set()
+    for (const record of options.trace.slice(traceStart)) {
+      record.line = sourceLine(record.line)
+      record.owner = path(record.owner)
+      if (record.reached) record.reached = path(record.reached)
+      if (record.plus) record.plus = sourceLine(record.plus)
+      if (retainedQuote.has(record.line - 1)) {
+        const rest = lines[record.line - 1].replace(/^(?:[ \t]*>[ ]?)*[ \t]*/, '')
+        record.step = 'S1'
+        record.owner = erasedOwners.get(record.line - 1) ?? record.owner
+        record.rule = 'CARVE-P0-005'
+        record.form = COMMENT_LINE.test(rest) ? 'comment' : 'leaf'
+        tracedQuote.add(record.line - 1)
+      }
+    }
+    for (const index of erased) {
+      if (tracedQuote.has(index)) continue
+      const rest = lines[index].replace(/^(?:[ \t]*>[ ]?)*[ \t]*/, '')
+      options.trace.push({ line: index + 1, step: 'S1', owner: erasedOwners.get(index) ?? 'doc', rule: 'CARVE-P0-005',
+        form: COMMENT_LINE.test(rest) ? 'comment' : 'leaf' })
+    }
+    const appended = options.trace.splice(traceStart)
+    appended.sort((a, b) => a.line - b.line)
+    options.trace.push(...appended)
+  }
+  return result
 }
 
 /*

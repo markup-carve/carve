@@ -43,10 +43,10 @@ tail</p>
 
 ```html
 <ul>
-  <li>inner</li>
+  <li>inner
+code</li>
+  <li>tail</li>
 </ul>
-<p>code
-- tail</p>
 ```
 
 :::

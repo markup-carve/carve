@@ -25,9 +25,9 @@ See [text][r].
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+tail</dd>
 </dl>
-<p>tail</p>
 <p>See <a href="/u">text</a>.</p>
 ```
 
@@ -105,9 +105,9 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 :::
@@ -150,9 +150,9 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 :::

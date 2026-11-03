@@ -26,7 +26,8 @@ for (const depth of [0, 1, 2]) for (const lead of ['    ```js,title="x"', '  ```
     if (tail === 'TAIL') test(`an open paragraph after that block still takes the line: depth ${depth}, ${JSON.stringify(lead)}, blank ${blank}, ${name}, ${tail}`, () => {
       const out = html(quoted(depth, [...body, '  more']) + tail + '\n')
       // A blank before the item's next block loosens it (PART 9 §17 L1, carve#5015).
-      assert.match(out, blank ? /more\n?TAIL<\/p><\/li><\/ul>/ : /more\n?TAIL<\/li><\/ul>/)
+      const loose = blank || (depth > 0 && name === 'comment')
+      assert.match(out, loose ? /more\n?TAIL<\/p><\/li><\/ul>/ : /more\n?TAIL<\/li><\/ul>/)
     })
   }
 }
@@ -45,6 +46,13 @@ for (const depth of [1, 2]) for (const first of [null, '  - a', '    - a']) for 
 
 for (const depth of [1, 2]) for (const block of ['# h', '---', '| t |', '[r]: /u', '{.x}']) {
   test(`a block at a quoted item's content column leaves the quote no paragraph: depth ${depth}, ${block}`, () => {
+    if (block === '[r]: /u') {
+      const without = quoted(depth, ['- a', '']) + 'TAIL\n'
+      assert.deepEqual(parse(quoted(depth, ['- a', '  ' + block]) + 'TAIL\n').blocks, parse(without).blocks)
+      assert.deepEqual(parse(quoted(depth, ['- a', '  - b', '    ' + block]) + 'TAIL\n').blocks,
+        parse(quoted(depth, ['- a', '  - b', '']) + 'TAIL\n').blocks)
+      return
+    }
     assert.ok(outside(html(quoted(depth, ['- a', '  ' + block]) + 'TAIL\n'), depth))
     assert.ok(outside(html(quoted(depth, ['- a', '  - b', '    ' + block]) + 'TAIL\n'), depth))
   })
@@ -92,6 +100,13 @@ for (const depth of [0, 1, 2]) for (const opener of ['::: inner', ':::', ':::: w
     assert.match(html(source), /<div[^>]*>/)
   })
   test(`a content-column line after a comment enters the open marker-line container: depth ${depth}, ${opener}, ${comment[0]}`, () => {
+    if (depth > 0 && /^\s*%%(?!%)/.test(comment[0])) {
+      const erased = quoted(depth, ['- ' + opener, '', '  text'])
+      const closedErased = quoted(depth, ['- ' + opener, closer, '', '  text'])
+      assert.deepEqual(parse(quoted(depth, ['- ' + opener, ...comment, '  text'])).blocks, parse(erased).blocks)
+      assert.deepEqual(parse(quoted(depth, ['- ' + opener, closer, ...comment, '  text'])).blocks, parse(closedErased).blocks)
+      return
+    }
     const source = parse(quoted(depth, ['- ' + opener, ...comment, '  text']))
     const twin = parse(quoted(depth, ['- ' + opener, closer, ...comment, '  text']))
     const blocksAt = doc => {

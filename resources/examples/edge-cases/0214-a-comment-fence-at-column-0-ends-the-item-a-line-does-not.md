@@ -33,9 +33,9 @@ b
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+b</li>
 </ul>
-<p>b</p>
 ```
 
 :::

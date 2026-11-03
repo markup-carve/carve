@@ -27,7 +27,12 @@ for (const stack of stacks) {
   }
   for (const block of blocks) {
     test(`\`${first}para\` then \`${block[0]}\`: an unmarked line opens a top-level paragraph`, () => {
-      assert.match(html([first + 'para', ...block.map((b) => rest + b), 'tail']), /\n<p[^>]*>tail<\/p>$/)
+      const source = [first + 'para', ...block.map((b) => rest + b), 'tail']
+      if (block[0] === '[r]: /u') {
+        const marker = /^(?:[ \t]*>[ ]?)+/.exec(rest + block[0])?.[0].trimEnd()
+        assert.deepEqual(parse(source.join('\n') + '\n').blocks,
+          parse([first + 'para', ...(marker ? [marker] : []), 'tail'].join('\n') + '\n').blocks)
+      } else assert.match(html(source), /\n<p[^>]*>tail<\/p>$/)
     })
   }
   test(`\`${first}para\` then a paragraph line: an unmarked line folds into it`, () => {

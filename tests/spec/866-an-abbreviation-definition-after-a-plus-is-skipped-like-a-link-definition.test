@@ -48,8 +48,9 @@ A
 .
 <blockquote>
   <ul>
-    <li>text</li>
+    <li></li>
   </ul>
+  <p>text</p>
 </blockquote>
 <p><abbr title="b">A</abbr></p>
 ```
@@ -80,8 +81,7 @@ text
 A
 .
 <ul>
-  <li></li>
+  <li>text</li>
 </ul>
-<p>text</p>
 <p><abbr title="b">A</abbr></p>
 ```

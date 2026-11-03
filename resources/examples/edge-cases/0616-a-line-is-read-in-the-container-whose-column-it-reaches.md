@@ -42,10 +42,10 @@ x
 <ul>
   <li>
     <blockquote><p>para
-more</p></blockquote>
+more
+x</p></blockquote>
   </li>
 </ul>
-<p>x</p>
 ```
 
 ::::::
@@ -258,10 +258,10 @@ x
 <ul>
   <li>
     <blockquote><p>a
-b</p></blockquote>
+b
+x</p></blockquote>
   </li>
 </ul>
-<p>x</p>
 ```
 
 ::::::

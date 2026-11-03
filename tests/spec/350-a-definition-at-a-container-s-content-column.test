@@ -8,9 +8,9 @@ tail
 [r][]
 .
 <ul>
-  <li>a</li>
+  <li>a
+tail</li>
 </ul>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -44,9 +44,9 @@ tail
 [r][]
 .
 <ul>
-  <li>a</li>
+  <li>a
+tail</li>
 </ul>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -56,9 +56,9 @@ tail
 tail
 .
 <ul>
-  <li>a</li>
+  <li>a
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -71,9 +71,9 @@ tail
 .
 <dl>
   <dt>t</dt>
-  <dd>a</dd>
+  <dd>a
+tail</dd>
 </dl>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -85,9 +85,9 @@ tail
 .
 <dl>
   <dt>t</dt>
-  <dd>a</dd>
+  <dd>a
+tail</dd>
 </dl>
-<p>tail</p>
 ```
 
 ```

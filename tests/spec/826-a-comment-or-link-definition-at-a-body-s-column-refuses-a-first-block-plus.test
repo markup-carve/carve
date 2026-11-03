@@ -22,9 +22,8 @@ after
 after
 .
 <ul>
-  <li></li>
+  <li>after</li>
 </ul>
-<p>after</p>
 ```
 
 ```
@@ -52,10 +51,11 @@ z
 ```
 .
 <ul>
-  <li></li>
-</ul>
-<pre><code>z
+  <li>
+    <pre><code>z
 </code></pre>
+  </li>
+</ul>
 ````
 
 ```
@@ -67,9 +67,8 @@ z
 <ul>
   <li>a
     <ul>
-      <li></li>
+      <li>after</li>
     </ul>
-    after
   </li>
 </ul>
 ```
@@ -83,9 +82,8 @@ z
 <ul>
   <li>a
     <ul>
-      <li></li>
+      <li>after</li>
     </ul>
-    after
   </li>
 </ul>
 ```

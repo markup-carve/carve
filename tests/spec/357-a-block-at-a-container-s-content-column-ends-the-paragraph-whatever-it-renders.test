@@ -17,9 +17,9 @@ tail
 tail
 .
 <ul>
-  <li>a</li>
+  <li>a
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -90,9 +90,8 @@ tail
 .
 <ul>
   <li>a
-    “T”
-tail
-  </li>
+“T”
+tail</li>
 </ul>
 <p><a href="/u">r</a></p>
 ```

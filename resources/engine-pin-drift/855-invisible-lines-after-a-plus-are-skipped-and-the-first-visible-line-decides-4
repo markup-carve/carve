@@ -1,1 +1,1 @@
-The pinned carve-js reads this marker-column + under the older letter/refusal rule; PART 9 §17 L4 now consumes the marker under markup-carve/carve#5013 (carve-js line pending).
+The pinned carve-js retains a line comment or one-line definition as a layout boundary; PART 0 S1 erases it before layout (markup-carve/carve#5012).

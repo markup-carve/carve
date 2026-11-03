@@ -26,11 +26,11 @@ x
   <dd>
     <p>d</p>
     <ul>
-      <li>para</li>
+      <li>para
+x</li>
     </ul>
   </dd>
 </dl>
-<p>x</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -55,11 +55,11 @@ x
   <dd>
     <p>d</p>
     <ol>
-      <li>para</li>
+      <li>para
+x</li>
     </ol>
   </dd>
 </dl>
-<p>x</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -78,7 +78,6 @@ x
 ````
 
 ```html
-<p>x</p>
 <p><a href="/u">r</a> <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
@@ -86,7 +85,8 @@ x
     <li id="fn1">
       <p>d</p>
       <ul>
-        <li>para</li>
+        <li>para
+x</li>
       </ul>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
@@ -116,9 +116,9 @@ paragraph:
   <dd>
     <p>d</p>
     <ul>
-      <li>para</li>
+      <li>para
+more</li>
     </ul>
-    <p>more</p>
   </dd>
 </dl>
 <p><a href="/u">r</a></p>
@@ -199,11 +199,11 @@ x
   <dd>
     <p>d</p>
     <ul>
-      <li>para</li>
+      <li>para
+x</li>
     </ul>
   </dd>
 </dl>
-<p>x</p>
 ```
 
 ::::::

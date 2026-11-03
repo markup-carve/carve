@@ -156,9 +156,9 @@ tail
 
 `````html
 <ul>
-  <li>item</li>
+  <li>item
+tail</li>
 </ul>
-<p>tail</p>
 `````
 
 :::

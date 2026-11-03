@@ -89,10 +89,10 @@ tail
 <ul>
   <li>a
     <ul>
-      <li>inner</li>
+      <li>inner
+code
+tail</li>
     </ul>
-    code
-tail
   </li>
 </ul>
 ```
@@ -113,10 +113,10 @@ does not interrupt it; a line at document column 0 also leaves the item.
 
 ```html
 <ul>
-  <li>inner</li>
+  <li>inner
+code</li>
+  <li>tail</li>
 </ul>
-<p>code
-- tail</p>
 ```
 
 ````carve
@@ -128,10 +128,10 @@ tail
 
 ```html
 <ul>
-  <li>inner</li>
+  <li>inner
+code
+tail</li>
 </ul>
-<p>code
-tail</p>
 ```
 
 :::

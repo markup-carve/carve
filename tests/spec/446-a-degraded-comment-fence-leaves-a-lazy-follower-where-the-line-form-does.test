@@ -17,9 +17,9 @@ A degraded comment fence leaves a lazy follower where the line form does
  y
 .
 <ul>
-  <li>x</li>
+  <li>x
+y</li>
 </ul>
-<p>y</p>
 ```
 
 ```
@@ -42,9 +42,8 @@ y
 .
 <ul>
   <li>x
-    body
-y
-  </li>
+body
+y</li>
 </ul>
 ```
 

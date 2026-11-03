@@ -48,8 +48,10 @@ A column-0 comment before a sibling keeps the blank that loosens the list
 .
 <blockquote>
   <ul>
-    <li><p>a</p></li>
-    <li><p>c</p></li>
+    <li>a</li>
+  </ul>
+  <ul>
+    <li>c</li>
   </ul>
 </blockquote>
 ```

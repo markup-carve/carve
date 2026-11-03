@@ -579,7 +579,7 @@
 {"id":"guards-7822d4b0f82c","source":" {{ data/p2.csv @code:csv @lines:2- }}\n","html":"<p>{{ data/p2.csv @code:csv @lines:2- }}</p>"},
 {"id":"guards-784386fcc34c","source":"/uusr/local/\n","html":"<p>/uusr/local/</p>"},
 {"id":"guards-786c92b34221","source":" [okref]: https://e.com/path\n \n[t](u v) and [ok](u-v)\n\n[r]: https://e.com /path\n[text][r] and [text][okref]\n","html":"<p>[t](u v) and <a href=\"u-v\">ok</a></p>\n<p>[r]: https://e.com /path\n[text][r] and <a href=\"https://e.com/path\">text</a></p>"},
-{"id":"guards-788c3b55707f","source":"Rad the [introduction][intro] first.\n[intro]: https://example.com/intro \"Introduction\"\n* \n","html":"<p>Rad the <a href=\"https://example.com/intro\" title=\"Introduction\">introduction</a> first.</p>\n<p>*</p>"},
+{"id":"guards-788c3b55707f","source":"Rad the [introduction][intro] first.\n[intro]: https://example.com/intro \"Introduction\"\n* \n","html":"<p>Rad the <a href=\"https://example.com/intro\" title=\"Introduction\">introduction</a> first.\n*</p>"},
 {"id":"guards-78c787ed948f","source":"1. foo_bar_baz and snake_case stay literal\n![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n\n","html":"<ol>\n  <li>foo_bar_baz and snake_case stay literal\n<img src=\"safe.png\" alt=\"a\" srcset=\"\"></li>\n</ol>"},
 {"id":"guards-78e08f0c44e8","source":"[y](safe.html){attributionsrc=\"https://examplle.com/s javascript:alert(1)\"}\n","html":"<p><a href=\"safe.html\" attributionsrc=\"\">y</a></p>"},
 {"id":"guards-7901a108d667","source":"[x](http://a/b\\)c) and ::: |[y](a\\\\b) and [z](a\\qb)\n","html":"<p><a href=\"http://a/b)c\">x</a> and ::: |<a href=\"a\\b\">y</a> and <a href=\"a\\qb\">z</a></p>"},
