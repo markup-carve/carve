@@ -1,0 +1,1 @@
+The pinned engines miss a %%% span opened on a description or note marker line, so a closer below the body column or after a blank inside the span does not close it; the spec moved first (markup-carve/carve-php#4508).

@@ -1,0 +1,149 @@
+A comment span on a description or note marker line closes below its column
+
+```
+- a
+  :: u
+  : %%%
+%%%
+c
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>u</dt>
+      <dd></dd>
+    </dl>
+  </li>
+</ul>
+<p>c</p>
+```
+
+```
+- a
+
+  [^n]: %%%
+%%%
+c
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>c</p>
+```
+
+```
+- a
+  :: u
+  : x
+    %%%
+%%%
+:: c
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>u</dt>
+      <dd>x</dd>
+    </dl>
+  </li>
+</ul>
+<dl>
+  <dt>c</dt>
+</dl>
+```
+
+```
+:: u
+: %%%
+    n
+
+%%%
+c
+.
+<dl>
+  <dt>u</dt>
+  <dd></dd>
+</dl>
+<p>c</p>
+```
+
+```
+x[^n]
+
+[^n]: %%%
+    n
+
+%%%
+c
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p>c</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- a
+  - %%%
+    n
+
+%%%
+c
+.
+<ul>
+  <li>a
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>c</p>
+```
+
+```
+- a
+  :: u
+  : %%%
+
+%%%
+  c
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>u</dt>
+      <dd></dd>
+    </dl>
+    c
+  </li>
+</ul>
+```
+
+```
+- a
+  :: u
+  : %%%
+    n
+    %%%
+  zz
+
+%%%
+c
+%%%
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>u</dt>
+      <dd></dd>
+    </dl>
+    zz
+  </li>
+</ul>
+```
