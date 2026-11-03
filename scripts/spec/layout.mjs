@@ -3590,8 +3590,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     }
     const form = classify(m.rest, owner, at, m.col)
     // A lazy line folds into a line block's open stanza and closes nothing,
-    // so the block's closer still finds it (PART 0 S4).
-    if (inner.kind === 'fence' && inner.lineBlock && missed && form.kind === 'text' && inner.verse) {
+    // so the block's closer still finds it (PART 0 S4). An open payload span
+    // cannot carry that stanza past a quote the line missed (carve#5062).
+    if (inner.kind === 'fence' && inner.lineBlock && missed && form.kind === 'text' && inner.verse &&
+        !(inner.span && inner.span[0] !== '%' && frames.slice(reached + 1).some((f) => f.kind === 'quote'))) {
       // The line misses the span's owner and ends it (PART 0 S1).
       if (inner.span?.[0] === '%') inner.span = null
       frames.push(inner)
