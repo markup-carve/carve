@@ -6753,17 +6753,24 @@ const attachedLeavesFenceOpen = (block, above = []) => {
     }
     return false
   }
+  // Each line read behind its containers: the text, and the column it stands at.
   const read = block.map((line, k) => {
     const measured = behindMarkers(line)
-    return DESCRIPTION_TEXT.test(measured.rest) && isDescription(above.length + k, measured.col)
-      ? measured.rest.replace(DESCRIPTION_TEXT, '')
-      : measured.rest
+    if (!DESCRIPTION_TEXT.test(measured.rest) || !isDescription(above.length + k, measured.col)) return measured
+    // A description's body may open a list, so its markers come off too.
+    const body = behindMarkers(measured.rest.replace(DESCRIPTION_TEXT, ''))
+    return { col: measured.col + 2 + body.col, rest: body.rest }
   })
+  const text = read.map((line) => line.rest)
   for (let at = 0; at < read.length; at++) {
-    const m = FENCE.exec(read[at])
+    const m = FENCE.exec(text[at])
     if (!m || parseFenceInfo(m[2], m[1]) === null) continue
-    at = findCloser(read, at, m[1])
-    if (at === -1) return true
+    // A line left of the opener's column leaves its container, and the fence ends with it.
+    const closes = (j) => findCloser([m[1], text[j]], 0, m[1]) === 1
+    let end = at + 1
+    while (end < read.length && (isBlank(block[end]) || indentCols(block[end]).col >= read[at].col) && !closes(end)) end++
+    if (end === read.length) return true
+    at = closes(end) ? end : end - 1
   }
   return false
 }
