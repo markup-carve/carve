@@ -9392,7 +9392,17 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             noteFenceEnd = below - 1
             noteFenceOpensPast = true
           } else if (closer >= 0) noteFenceEnd = closer
-          else absorbedNoteFence = true
+          else if (parseFenceInfo(noteFence[2], noteFence[1]) !== null) {
+            // An unclosed fence owns its payload through the note's boundary.
+            // A missing closer does not turn it into paragraph text (I4).
+            let end = i + 1
+            while (end < lines.length) {
+              const measured = ind(end)
+              if (measured.rest !== '' && measured.col < markerNoteBodyColumn) break
+              end++
+            }
+            noteFenceEnd = end - 1
+          } else absorbedNoteFence = true
         } else if (!markerNoteEligible && noteFrames.length && !descendantOwned && !insideFence() &&
             noteFence && parseFenceInfo(noteFence[2], noteFence[1]) !== null && col >= noteFrames.at(-1).body) {
           // A note opened on its own line asks the same lookahead: a closer past
