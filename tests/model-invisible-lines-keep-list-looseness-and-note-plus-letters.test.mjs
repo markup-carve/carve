@@ -10,3 +10,10 @@ test('a column-0 comment before a sibling keeps the blank that loosens the list 
   assert.equal(html('- a\n\n  %% y\n%% z\n- c\n'), '<ul>\n  <li><p>a</p></li>\n  <li><p>c</p></li>\n</ul>')
   assert.equal(html('- %%%\n\n%%%\n%% z\n- c\n'), '<ul>\n  <li></li>\n  <li><p>c</p></li>\n</ul>')
 })
+
+test('item content after a marker-line span keeps the list tight (carve#5029)', () => {
+  const tight = '<ul>\n  <li>c</li>\n  <li>d</li>\n</ul>'
+  assert.equal(html('- %%%\n\n  %%%\n  c\n- d\n'), tight)
+  assert.equal(html('- %%%\n\n%%%\n\n  c\n- d\n'), tight)
+  assert.equal(html('- %%%\n\n%%%\n  c\n- d\n'), tight)
+})

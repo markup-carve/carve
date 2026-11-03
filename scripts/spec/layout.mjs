@@ -7513,7 +7513,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
   // no closer is read as it opens (§28), and it is linear.
   // Rows up to `codeRow` were read as a code body's opener, payload or closer:
   // visible content, so a blank or a comment-shaped line there is no separator.
+  // A span opened on the marker line is read from its opener, so the item's
+  // content after its closer stays visible (carve#5029). A blank inside that
+  // span still counts as the model read it before; carve#5030 owns that question.
   const blankBehindInvisible = (at, from, codeRow = -1) => {
+    let lead = codeRow < from ? COMMENT_FENCE_BODY.exec(matchMarkerAt(ind(from))?.text ?? '')?.[1] ?? null : null
     from = Math.max(from, codeRow)
     let span = null
     let blank = -1
@@ -7522,7 +7526,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     for (let k = from + 1; k < at; k++) {
       const rest = ind(k).rest
       const fence = COMMENT_FENCE_BODY.exec(rest)?.[1]
-      if (span !== null) {
+      if (lead !== null && rest !== '') {
+        if (fence === lead) lead = null
+        skipped = true
+      } else if (span !== null) {
         if (fence === span) span = null
         skipped = true
       } else if (fence) {
