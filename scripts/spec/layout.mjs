@@ -3318,7 +3318,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
   }
   for (let at = start; at < lines.length; at++) {
     if (skipped) {
-      const rest = trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)
+      let rest = trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)
+      // Off the marker column a skipped note's `+` is a letter of its body, as the gate read it (carve#5034).
+      if (CONT_MARKER.test(rest) && docColumn(lines[at], rest) !== skipped.column) {
+        rest = rest.replace('+', plusLetter)
+        refusedPlus.push(at)
+      }
       result.push(skipped.lead + (skipped.fenced.has(at) ? '%%' : rest))
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
       if (at + 1 === skipped.end) {
@@ -4036,7 +4041,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100') {
     const end = firstVisibleLine(at + 1, hostIndex, column, fenced)
     if (end === at + 1) return
     const rest = throughQuotes(lines[end], hostIndex).rest
-    skipped = { host, at, end, hostIndex, fenced, lead: markerLead ?? lines[end].slice(0, lines[end].length - rest.length) + ' '.repeat(host.markerCanon) }
+    skipped = { host, at, end, hostIndex, column, fenced, lead: markerLead ?? lines[end].slice(0, lines[end].length - rest.length) + ' '.repeat(host.markerCanon) }
   }
 
   // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Off the

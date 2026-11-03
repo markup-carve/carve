@@ -17,3 +17,12 @@ test('item content after a marker-line span keeps the list tight (carve#5029)', 
   assert.equal(html('- %%%\n\n%%%\n\n  c\n- d\n'), tight)
   assert.equal(html('- %%%\n\n%%%\n  c\n- d\n'), tight)
 })
+
+test('an indented + in a note a + host skips is a letter of the note (carve#5034)', () => {
+  const doc = html('[^a]: +\n[^n]: a\n +\npara\n> q\n\nsee[^n] [^a]\n')
+  assert.match(doc, /<li id="fn1">\n\s*<p>a\n\+\npara<a /)
+  assert.match(doc, /<li id="fn2">\n\s*<blockquote><p>q<\/p><\/blockquote>/)
+  const item = html('- +\n[^n]: a\n +\npara\n> q\n\nsee[^n]\n')
+  assert.match(item, /^<ul>\n  <li>\n    <blockquote><p>q<\/p><\/blockquote>\n  <\/li>\n<\/ul>/)
+  assert.match(item, /<p>a\n\+\npara<a /)
+})
