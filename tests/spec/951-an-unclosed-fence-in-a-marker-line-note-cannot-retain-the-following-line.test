@@ -1,0 +1,30 @@
+An unclosed fence in a marker-line note cannot retain the following line
+
+```
+- [^n]: t
+  %%
+
+    ~~~
+    e
+]
+.
+<ul>
+  <li></li>
+</ul>
+<p>]</p>
+```
+
+```
+- [^n]: t
+  %%%
+  %%%
+
+    ~~~
+    e
+]
+.
+<ul>
+  <li></li>
+</ul>
+<p>]</p>
+```

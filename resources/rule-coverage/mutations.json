@@ -51,8 +51,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "const COMMENT_LINE = /^[ \\t]*%%/",
-          "replace": "const COMMENT_LINE = /^%%/"
+          "find": "COMMENT_LINE.test(lm.rest) && !insideFence()) markerNoteCommentSeen = true",
+          "replace": "false && !insideFence()) markerNoteCommentSeen = true"
         }
       ]
     },

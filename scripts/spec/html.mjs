@@ -2057,7 +2057,17 @@ function resolveCrossrefs(html, ctx) {
     const text = resolveRefs(flattenInnerLinks(hit.html).replace(/\uE000(?!ref:|\uE001)[\s\S]*?\uE001/g, ''), ctx)
     // The clone is link-derived text. Strip inner raw frames before wrapping
     // the whole clone so the final abbreviation pass cannot enter it.
-    const opaque = text.replaceAll(RAW_MARK, '')
+    // An unresolved reference is an opaque frame until the final abbreviation
+    // pass. This clone is made raw now, so discharge those frames here or the
+    // final pass will skip them along with the rest of the cloned text.
+    const opaque = text.replace(REF_FRAME, (frame, json) => {
+      try {
+        const ref = JSON.parse(json)
+        return ref.opaque ? ref.literal : frame
+      } catch {
+        return frame
+      }
+    }).replaceAll(RAW_MARK, '')
     return rawFrame(renderClonedHeadingLink(textOnly, opaque, hit))
   })
 }
