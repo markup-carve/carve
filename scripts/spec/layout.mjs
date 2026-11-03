@@ -2613,7 +2613,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     (h.columns.length === 2 || h.colons?.length ||
       h.kinds.at(-2) === 'item') && matchMarkerAt(meas) === null &&
     (!FENCE.test(meas.rest) || belowFenceLazy && meas.col < h.columns.at(-1)) && !isColonBlockOpener(meas.rest) &&
-    !DEFLIST_TERM.test(meas.rest) && opensParagraph(meas.rest)
+    !DEFLIST_TERM.test(meas.rest) && !QUOTE.test(meas.rest) && opensParagraph(meas.rest)
   // A marker at or left of an item's own marker column ends that item and
   // opens a list: it is not text of the paragraph the item held (SS24 C3).
   let leftOfClosedItem = false
