@@ -410,11 +410,12 @@ closer is looked for, so a colon line inside an unclosed fence is payload.
 Djot's reading, where a fence never interrupts a paragraph, was weighed and
 not taken.
 
-## PART 9 §9 to §15: provenance and rationale
+## PART 9 §9 to §15: provenance and comparisons
 
-The ticket numbers and reasons below used to sit inside the active clauses of
-`14-semantics-blocks.ebnf`. The clauses now state only the rule; this list
-keeps where each one came from.
+The ticket numbers and comparisons below used to sit inside the active clauses
+of `14-semantics-blocks.ebnf`. The clauses now state only the rule; this list
+keeps where each one came from. The design reasons moved to
+[Technical rationale](./technical-rationale.md#block-semantics).
 
 Provenance:
 
@@ -432,35 +433,14 @@ Provenance:
 - §12 ONE COLON-FENCE FRAME, a `+`-attached frame ends at its host: carve#4717
   and carve#4798.
 
-Comparisons and reasons:
+Comparisons:
 
 - §10 I2 and §11 N1 match Djot: list markers do not interrupt a paragraph,
   and a marker change starts a new list (Djot also has a `+` bullet, Carve
   does not). §10 I5 is a small deviation from Djot, which keeps a block
   attribute line as paragraph text. §10 I4 follows CommonMark.
-- §12 Tier 1: CSS frameworks target the eight admonition class names, which
-  is why the set is fixed. Tier 2 is the fenced-div primitive the
-  block-extension mechanism builds on (`::: mermaid`, `::: codepen`); an
-  unregistered type renders as a plain div so the document stays readable.
-- CARVE-P9-018: an unnamed landmark is an anonymous row in a screen reader's
-  landmark list. `aria-labelledby` keeps the visible and accessible name one
-  string. When the author names the aside, a second naming attribute would
-  leave the name undefined, and the author's is the more specific statement.
-- §13 follows Djot's `headings.test`; the skipped-level nesting falls out of
-  the stack-close test (`top.level >= N`). Attributes other than the id stay
-  on the heading because they describe it, not the section; see
-  divergence-from-djot.md for Djot's placement. Headings in containers do
-  not wrap because a `<section>` models this document's outline: quoted
-  material carries another document's outline, and a div or list item groups
-  within one section. With `sections` off the top-level shape equals the
-  in-container one, so id and attribute placement follow one rule. A fragment
-  URL resolves to a `<section id>` as it does to an `<h* id>`.
-- CARVE-P9-021: the empty attribute block exists so a default-attribute
-  processor can target the span.
+- §13 follows Djot's `headings.test`; see divergence-from-djot.md for Djot's
+  placement of heading attributes.
 - CARVE-P9-022: boolean attributes are a Carve extension beyond canonical
   Djot, matching djot-php. §15 matches Djot's block attributes, and A3's merge
   example is Djot's canonical one. A7 is Djot-strict.
-- CARVE-P9-013 is the one classification for invisible lines. A clause that
-  restates its properties 1 to 3 for one kind restates it; a clause stating an
-  action, a pipeline order, a source-map overlap or column arithmetic does
-  not, and stays where it is.

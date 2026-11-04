@@ -666,6 +666,30 @@ Authors get:
 - clearer expectations about what is literal and what is markup
 - less dependence on which Markdown flavor a tool happened to embed
 
+## Block semantics (PART 9 §12 to §15) {#block-semantics}
+
+Reasons behind rules in `resources/spec/14-semantics-blocks.ebnf`. The clauses
+themselves state only the rule.
+
+- §12 Tier 1: CSS frameworks target the eight admonition class names, which
+  is why the set is fixed. Tier 2 is the fenced-div primitive the
+  block-extension mechanism builds on (`::: mermaid`, `::: codepen`); an
+  unregistered type renders as a plain div so the document stays readable.
+- CARVE-P9-018: an unnamed landmark is an anonymous row in a screen reader's
+  landmark list. `aria-labelledby` keeps the visible and accessible name one
+  string. When the author names the aside, a second naming attribute would
+  leave the name undefined, and the author's is the more specific statement.
+- §13: the skipped-level nesting falls out of the stack-close test
+  (`top.level >= N`). Attributes other than the id stay on the heading
+  because they describe it, not the section. Headings in containers do not
+  wrap because a `<section>` models this document's outline: quoted material
+  carries another document's outline, and a div or list item groups within
+  one section. With `sections` off the top-level shape equals the
+  in-container one, so id and attribute placement follow one rule. A fragment
+  URL resolves to a `<section id>` as it does to an `<h* id>`.
+- CARVE-P9-021: the empty attribute block exists so a default-attribute
+  processor can target the span.
+
 ## Relationship to the rest of the docs
 
 Use this page as the overview, then drill down:
