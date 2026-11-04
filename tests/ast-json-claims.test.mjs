@@ -360,6 +360,15 @@ const PERMITTED_PHRASE = {
   cell_wrap: 'reassembled `cell_wrap`',
   code: 'verbatim run continued on a `+` line',
   non_breaking_space: 'line-block column a tab expanded',
+  paragraph: 'paragraph folded across an erased comment line',
+  soft_break: 'soft break crossing an erased comment line',
+  comment: 'stand-in comment for a consumed `+`',
+  list: 'list an erased comment line sits inside',
+  list_item: 'list item an erased comment line sits inside',
+  definition_list: 'description list an erased comment line sits inside',
+  definition_description: 'description an erased comment line sits inside',
+  link: 'link read across an escaped cell pipe',
+  image: 'image read across an escaped cell pipe',
 }
 
 test('every engine the position ledger names has a row, and every reconciled engine its own', () => {
