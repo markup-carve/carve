@@ -1545,12 +1545,12 @@ function decodeAlignment(marks) {
 // D3: alignment symbols lead the cell attribute block. A third symbol or a
 // duplicate axis invalidates the whole block, leaving it as literal content.
 function cellAlignment(payload) {
-  const match = /^([<>~?])([\^~v])?(?=\s|$)/.exec(payload)
+  const match = /^([<>~?])([\^~v])?(?= |$)/.exec(payload)
   if (!match) return null
   const alignment = decodeAlignment(match[1] + (match[2] ?? ''))
   if (!alignment) return null
-  const tail = payload.slice(match[0].length).trimStart()
-  if (/^[<>~?^v](?:\s|$)/.test(tail)) return null
+  const tail = payload.slice(match[0].length).replace(/^ +/, '')
+  if (/^[^\S ]/.test(tail) || /^[<>~?^v](?: |$)/.test(tail)) return null
   const attrs = tail ? `{${tail}}` : null
   if (attrs && parseAttrBlock(attrs) === null) return null
   return { ...alignment, attrs, alignOnly: !attrs }

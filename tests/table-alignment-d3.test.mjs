@@ -19,7 +19,8 @@ test('D3 alignment is consumed only at the start of a cell attribute block', () 
       { header: true, align: 'center', valign: null, attrs: null, content: 'x' },
     ],
   )
-  for (const source of ['|{> ^} x |', '|{> ^ ~} x |', '|{.num >} x |', '|{?} x |']) {
+  for (const source of ['|{> ^} x |', '|{> ^ ~} x |', '|{.num >} x |', '|{?} x |',
+    '|{>\t.x} x |', '|{>\u00a0.x} x |', '|{> \t.x} x |']) {
     assert.equal(cell(`${source}\n`).content, source.slice(1, -1).trim())
   }
 })
