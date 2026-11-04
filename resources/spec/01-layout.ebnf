@@ -267,9 +267,9 @@
         survives.
 
         Leading space stops no line form (S3), so past a missed item a list
-        marker is a sibling when it matches the list on every §11 N1 axis and
-        otherwise a new list, so `- a` / ` - b` is one list and `- a` / ` * b`
-        and `1. a` / ` a. b` are two (carve#4545). Every item measures its
+        marker is a sibling when it matches the list on every PART 9 §11 N1
+        axis and otherwise a new list, so `- a` / ` - b` is one list and
+        `- a` / ` * b` and `1. a` / ` a. b` are two (carve#4545). Every item measures its
         content against its own content column. `- y` / `1. c` / blank /
         `   # h` puts the heading in the `1.` item, the same as `1. c` /
         blank / `   # h` alone (carve#4369).

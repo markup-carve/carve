@@ -50,7 +50,9 @@ block = heading
    `comment_line`, `reference_definition`, `footnote_definition` and
    `abbreviation_definition` are the INVISIBLE blocks: they are parsed and
    consumed (collected into the definition table / dropped) and emit no
-   output; like `block_attributes` they also interrupt an open paragraph
-   (PART 9 §10, INVISIBLE CONSTRUCTS). *)
+   output. A footnote definition, like `block_attributes`, also interrupts
+   an open paragraph (PART 9 §10 I5); a `comment_line` and a one-line
+   reference or abbreviation definition are erased before layout (PART 0
+   S1) and interrupt nothing. *)
 
 blank_line = {whitespace}, newline ;

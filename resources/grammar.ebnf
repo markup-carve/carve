@@ -391,9 +391,9 @@
         survives.
 
         Leading space stops no line form (S3), so past a missed item a list
-        marker is a sibling when it matches the list on every §11 N1 axis and
-        otherwise a new list, so `- a` / ` - b` is one list and `- a` / ` * b`
-        and `1. a` / ` a. b` are two (carve#4545). Every item measures its
+        marker is a sibling when it matches the list on every PART 9 §11 N1
+        axis and otherwise a new list, so `- a` / ` - b` is one list and
+        `- a` / ` * b` and `1. a` / ` a. b` are two (carve#4545). Every item measures its
         content against its own content column. `- y` / `1. c` / blank /
         `   # h` puts the heading in the `1.` item, the same as `1. c` /
         blank / `   # h` alone (carve#4369).
@@ -737,8 +737,10 @@ block = heading
    `comment_line`, `reference_definition`, `footnote_definition` and
    `abbreviation_definition` are the INVISIBLE blocks: they are parsed and
    consumed (collected into the definition table / dropped) and emit no
-   output; like `block_attributes` they also interrupt an open paragraph
-   (PART 9 §10, INVISIBLE CONSTRUCTS). *)
+   output. A footnote definition, like `block_attributes`, also interrupts
+   an open paragraph (PART 9 §10 I5); a `comment_line` and a one-line
+   reference or abbreviation definition are erased before layout (PART 0
+   S1) and interrupt nothing. *)
 
 blank_line = {whitespace}, newline ;
 (* ============================================================================
@@ -1096,9 +1098,11 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
      - not blank (a blank line ends the blockquote), and
      - not a line that interrupts a paragraph under PART 9 §10 I1 to I5 in
        the selected owner's coordinates: a heading, table, fenced code opener
-       (§10 I4), `:::` div, thematic break, `:: ` term, or an invisible
-       definition or comment recognized there ends the quote and starts
-       outside it, and
+       (§10 I4), `:::` div, thematic break, `:: ` term, or a footnote
+       definition, `%%%` comment span or block-attribute line recognized
+       there (§10 I5) ends the quote and starts outside it. A `%%` line
+       comment and a one-line link or abbreviation definition are erased
+       before layout (PART 0 S1) and end nothing, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
    A LIST MARKER (bullet or ordered) is NOT an exclusion when it misses only
    quotes and is read in the document, a quote or a colon body: it folds into the
@@ -1328,8 +1332,8 @@ indent = whitespace, {whitespace} ;
    that innermost opener when the next line stands at the opener's marker
    column, through the prefixes of its enclosing quotes. At a list item's
    marker column a list marker is a sibling and a description's `: ` line is a
-   sibling at its marker column, so the `+` is a letter and the refused-marker
-   lint reports it. *)
+   sibling at its marker column, so the `+` is a refused marker: it renders
+   nothing and `continuation-marker-refused` reports it (CARVE-P9-067). *)
 continuation_marker = '+', newline ;
 (* CARVE-P7-001 item 5 removes a line-final space/tab run before this
    production is matched, so that source spelling remains a marker. A
@@ -2010,9 +2014,9 @@ quote_block_open = colon_fence:open, space, ">" ;
 (* --- Comments --- *)
 (* A line comment may be indented: optional leading whitespace before `%%` does
    not matter, so an indented line whose first non-whitespace content is `%%` is
-   a comment line just like one in the first column. Like every block, it
-   interrupts an open paragraph (the lines before and after become separate
-   paragraphs) and renders nothing. *)
+   a comment line just like one in the first column. It is erased before
+   layout (PART 0 S1): it renders nothing and does not interrupt an open
+   paragraph, so the lines before and after stay one paragraph. *)
 comment_line = [whitespace], "%%", [space], {character}, newline ;
 
 (* A `%%%` fence line is a DELIMITER plus an INSIGNIFICANT TAIL: only the
@@ -4899,10 +4903,11 @@ EOF = (* end of file *) ;
          a continuation joins is the row above it in the SOURCE. T7 CONSUMES
          the delimiter row - it produces no `<tr>` and is not a row of the
          table - so a `+` line directly under one has no row above it to join
-         and is ordinary prose, and corpus 115 pins it. An invisible line (a
-         `%%` comment, an attribute line) ends the table too, so a `+` line
-         after it is prose as well: `| a |`, `%% c`, `+ b |` is a table and a
-         paragraph `+ b |`.
+         and is ordinary prose, and corpus 115 pins it. A block-level
+         invisible line (§10 I5: an attribute line, say) ends the table too,
+         so a `+` line after it is prose as well: `| a |`, `{.x}`, `+ b |` is
+         a table and a paragraph `+ b |`. An erased `%%` line (PART 0 S1) is
+         not there: `| a |`, `%% c`, `+ b |` is one row `a b`.
 
          AND THE ROW ABOVE IS A LINE OF THE SAME CONTAINER. A table in a
          quote does not precede a continuation line lacking that quote's prefix.
@@ -7096,8 +7101,8 @@ EOF = (* end of file *) ;
 
         A COMMENT IS THE ONE EXCEPTION, and the exception is about TIMING
         rather than about what a comment is. `comment_line` IS a block, listed
-        in PART 1 among the INVISIBLE blocks and ruled by §10 I5 to interrupt
-        an open paragraph and be consumed. It survives the suppression above
+        in PART 1 among the INVISIBLE blocks and erased before layout (PART 0
+        S1, §10 I5). It survives the suppression above
         because it is the only construct on that list whose recognition
         PRESERVES the verse instead of rewriting it: a definition or a fence
         opener CLAIMS the line and changes what renders, while a comment-only

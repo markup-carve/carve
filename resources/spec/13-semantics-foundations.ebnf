@@ -358,10 +358,11 @@
          a continuation joins is the row above it in the SOURCE. T7 CONSUMES
          the delimiter row - it produces no `<tr>` and is not a row of the
          table - so a `+` line directly under one has no row above it to join
-         and is ordinary prose, and corpus 115 pins it. An invisible line (a
-         `%%` comment, an attribute line) ends the table too, so a `+` line
-         after it is prose as well: `| a |`, `%% c`, `+ b |` is a table and a
-         paragraph `+ b |`.
+         and is ordinary prose, and corpus 115 pins it. A block-level
+         invisible line (§10 I5: an attribute line, say) ends the table too,
+         so a `+` line after it is prose as well: `| a |`, `{.x}`, `+ b |` is
+         a table and a paragraph `+ b |`. An erased `%%` line (PART 0 S1) is
+         not there: `| a |`, `%% c`, `+ b |` is one row `a b`.
 
          AND THE ROW ABOVE IS A LINE OF THE SAME CONTAINER. A table in a
          quote does not precede a continuation line lacking that quote's prefix.
