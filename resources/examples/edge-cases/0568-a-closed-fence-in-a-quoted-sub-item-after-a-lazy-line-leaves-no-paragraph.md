@@ -3,7 +3,7 @@
 A lazy line folds into the paragraph of the nested item, and a fence at that
 item's column then closes it. The closed code block leaves no paragraph in any
 frame, so the unmarked line below closes the quote and the list
-(`CARVE-P0-009`, markup-carve/carve#2973). The unquoted spelling reads the
+(`CARVE-P0-024`, markup-carve/carve#2973). The unquoted spelling reads the
 same way.
 
 ::: compare

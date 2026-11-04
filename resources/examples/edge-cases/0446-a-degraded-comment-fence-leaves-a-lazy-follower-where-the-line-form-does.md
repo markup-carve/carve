@@ -8,7 +8,7 @@ closer ahead as deciding the span, it records the reading the ruling replaced.
 
 §28 says an opener with no exact-width closer ahead opens NO block and becomes
 a line comment. At or past the content column, both forms close the item's
-paragraph and retain nothing (`CARVE-P0-009` X1, `CARVE-P9-053`). A following
+paragraph and retain nothing (`CARVE-P0-024`, `CARVE-P0-005`). A following
 below-column line opens a document paragraph.
 
 Section 443 pins the band where the follower sits at column 0 or at the content
@@ -162,7 +162,7 @@ a document paragraph.
 A fence that DOES close is not reached by §28 at all - it is an ordinary comment
 block. At the content column it ends the paragraph under it and retains
 nothing, so the below-column follower opens a document paragraph
-(`CARVE-P0-009` X1, `CARVE-P9-053`).
+(`CARVE-P0-024`, `CARVE-P0-005`).
 
 ::: compare
 

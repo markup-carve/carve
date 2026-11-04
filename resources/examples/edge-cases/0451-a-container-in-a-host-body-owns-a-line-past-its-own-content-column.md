@@ -14,7 +14,7 @@ source in the output. Without it the two answers render alike and the row pins
 nothing.
 
 A definition past the container's content column opens on its authored base and is
-consumed, in a list item as under a definition or footnote body (CARVE-P0-004,
+consumed, in a list item as under a definition or footnote body (CARVE-P0-024,
 CARVE-P0-011, CARVE-P9-083).
 
 :::: compare

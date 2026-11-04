@@ -1,8 +1,8 @@
 ## An at-column comment retains nothing
 
 A comment at or past the content column closes the item’s paragraph and grants
-no retention to the following below-column line (`CARVE-P0-009` X1,
-`CARVE-P9-053`).
+no retention to the following below-column line (`CARVE-P0-024`,
+`CARVE-P0-005`).
 
 ::: compare
 

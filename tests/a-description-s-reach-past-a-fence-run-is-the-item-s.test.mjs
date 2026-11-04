@@ -173,7 +173,7 @@ test('GUARD: an unterminated comment fence in a dd hides the rest of the dd', ()
 
 test('GUARD: a colon container host opens a fence past the column under a paragraph too', () => {
   // The run is an opener past the column whether or not a paragraph is open
-  // (carve#4018); it takes its authored base (CARVE-P0-004), so the line below
+  // (carve#4018); it takes its authored base (CARVE-P0-024), so the line below
   // leaves (CARVE-P0-013).
   for (const lead of ['  text\n', '']) {
     const opened = html(`- a\n  ::: note\n${lead}    ` + '```' + `\n    p\nx\n`)

@@ -1,6 +1,6 @@
 ## A block opener indented under a definition term ends the term at every depth
 
-A term has no content column (CARVE-P2-028), so a line under an open term is read
+A term has no content column (CARVE-P0-024), so a line under an open term is read
 against the container that holds the list. A block opener there, at that column or
 past it, ends the term and opens (carve#4300).
 

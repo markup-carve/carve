@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
-// CARVE-P0-009: a below-column line continues a paragraph only where one is
+// CARVE-P0-024: a below-column line continues a paragraph only where one is
 // open at the deepest frame. Otherwise it closes the list and begins a new
 // block, and no surviving frame adopts it.
 const html = (source) => renderDoc(parse(source)).replace(/\n\s*/g, '')

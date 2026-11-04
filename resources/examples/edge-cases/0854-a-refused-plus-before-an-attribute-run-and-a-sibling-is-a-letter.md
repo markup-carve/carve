@@ -45,7 +45,7 @@ The sibling test reads the block the run leads (CARVE-P9-067, carve#4447), so ne
 
 :::
 
-A description reads a `: ` sibling behind the run the same way (CARVE-P9-085).
+A description reads a `: ` sibling behind the run the same way (CARVE-P9-067).
 
 ::: compare
 

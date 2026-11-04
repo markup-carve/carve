@@ -1,6 +1,6 @@
 ## A comment span opened below every content column is located there
 
-`CARVE-P9-053` names the `%%%` form as the one "whose body and closer travel with
+`CARVE-P0-005` names the `%%%` form as the one "whose body and closer travel with
 its opener", so the column that answers for the line after the span is the
 OPENER's. `CARVE-P0-013` lets the closing run stand at any column and end no
 container, which is what makes the two halves separable at all. carve#2527 read

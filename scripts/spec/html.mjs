@@ -351,7 +351,7 @@ function renderDocPass(doc, footnoteProbe) {
     abbrDefs: doc.abbrDefs,
     footnoteDefs: doc.footnoteDefs,
     headingIds: new Map(), // exact slug -> { id, html }
-    // PART 11 R1 implicit heading fallback: normalized rendered TEXT -> id.
+    // PART 9R R1 implicit heading fallback: normalized rendered TEXT -> id.
     // Separate from headingIds, which is keyed by slug and serves `</#id>`.
     headingRefs: new Map(),
     // True while rendering inside a blockquote. R1 declines a heading with a
@@ -1167,7 +1167,7 @@ function renderItem(item, list, depth, ctx) {
   // nothing new is written in English and nothing is translated twice. An item
   // whose first block is not a paragraph, or whose text derives to nothing,
   // takes NO attribute: an empty name is worse than none.
-  // PART 10 S11. Structural, so it leads the authored attributes (S1).
+  // PART 10 §11 (CARVE-P10-009). Structural, so it leads the authored attributes (S1).
   // A done item names its state too, always as the lowercase `x` (carve#2887).
   const taskState = item.taskState ?? (list.task && item.checked ? 'x' : undefined)
   if (taskState !== undefined) {

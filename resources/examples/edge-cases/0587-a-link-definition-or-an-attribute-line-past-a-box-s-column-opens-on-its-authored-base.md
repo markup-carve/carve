@@ -1,6 +1,6 @@
 ## A link definition or an attribute line past a box's column opens on its authored base
 
-A link definition or attribute line past a box's content column opens on its authored base (CARVE-P0-004, CARVE-P0-011, CARVE-P9-083), as a footnote definition there is hoisted (corpus 582).
+A link definition or attribute line past a box's content column opens on its authored base (CARVE-P0-024, CARVE-P0-011, CARVE-P9-083), as a footnote definition there is hoisted (corpus 582).
 
 :::: compare
 

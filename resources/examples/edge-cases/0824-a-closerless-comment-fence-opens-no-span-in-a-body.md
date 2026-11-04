@@ -10,7 +10,7 @@ owner or the end of its container (PART 9 §28). The rows below follow that
 reading; where the prose describes a closerless opener as a `%%` line or a
 closer ahead as deciding the span, it records the reading the ruling replaced.
 
-A `%%%` with no exact-width closer ahead is the line form of a comment and opens no span (CARVE-P9-053). A comment below the body column after it closes no body (carve#4862), in a description and a footnote body as in a list item, so a line after it at the body column stays in the body.
+A `%%%` with no exact-width closer ahead is the line form of a comment and opens no span. A comment below the body column after it closes no body (carve#4862), in a description and a footnote body as in a list item, so a line after it at the body column stays in the body.
 
 ::::::: compare
 

@@ -10,7 +10,7 @@ A matched `%%%` span opened at DOCUMENT column 0 below a description body ends
 the body. The opener is classified in the surviving context, where the matching
 run below it makes it a comment BLOCK, and the line between the two delimiters
 renders nothing (markup-carve/carve#1930). A list item answers the same way
-(PART 0 X1, corpus 214).
+(CARVE-P0-005, corpus 214).
 
 What ends the body there is the column-0 line after the span. A comment itself
 closes no description body at any column (carve#4862, which replaced the closing

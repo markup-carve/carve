@@ -1,6 +1,6 @@
 ## A comment in a marker-line note changes nothing
 
-A comment is invisible at any column (CARVE-P9-053); at the note's content column it retains nothing (PART 0 X1).
+A comment is invisible at any column (CARVE-P0-005); at the note's content column it retains nothing.
 
 :::: compare
 

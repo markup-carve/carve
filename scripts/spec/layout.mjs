@@ -5380,7 +5380,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         } else if (afterComment &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !opensFence(lines, i)) {
-          // A retained marker is paragraph text and opens no list (PART 0 X1).
+          // A retained marker is paragraph text and opens no list (CARVE-P0-005).
           bodyLines.push(isBulletLine(measured.rest) || isOrderedMarkerLine(measured.rest) ? lazyFrame(measured.rest) : measured.rest)
           afterComment = afterCommentTransition(afterComment, {})
           lazyParagraphOpen = true
@@ -5884,7 +5884,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * All four kinds reach the body by one path.
              */
             // Below the body's column an opener folds into the open paragraph
-            // (PART 0 O3, CARVE-P0-024); in an item it opens there unless a quote holds the band (X2).
+            // (PART 0 S4, CARVE-P0-024); in an item it opens there unless a quote holds the band.
             const lastBlock = stripIndent(lastBlockLine)
             if (authoredCol > 0 && authoredCol < bodyColumn && (!inItem || QUOTE.test(lastBlock)) &&
                 (HEADING.test(dedented) || HR.test(dedented) || isTableRow(dedented) ||
@@ -8133,7 +8133,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
     if (list.task) item.checked = /^[xX]$/.test(head.task)
-    // PART 11 S6g. `X` folds to `x` - the two spell one state.
+    // CARVE-P11-041: `X` folds to `x` - the two spell one state.
     if (list.task && !item.checked && head.task !== ' ') item.taskState = head.task
     // The marker line's text opens the item paragraph -- unless that text is
     // itself a construct that opens none. `. >` is an EMPTY quote, so nothing

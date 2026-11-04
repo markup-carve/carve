@@ -1,7 +1,7 @@
 ## What a content-column block does not reach
 
 A comment at the content column closes the item's paragraph and retains
-nothing (`CARVE-P0-009` X1, `CARVE-P9-053`). The following below-column line
+nothing (`CARVE-P0-024`, `CARVE-P0-005`). The following below-column line
 opens a document paragraph:
 
 ::: compare

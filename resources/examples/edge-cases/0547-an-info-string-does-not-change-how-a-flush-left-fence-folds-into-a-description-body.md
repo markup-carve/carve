@@ -2,7 +2,7 @@
 
 A closed nested fence leaves no paragraph open. A flush-left fence line ends
 the description body and opens a document block, with or without a language
-(CARVE-P0-009; carve#2895).
+(CARVE-P0-024; carve#2895).
 
 ::: compare
 

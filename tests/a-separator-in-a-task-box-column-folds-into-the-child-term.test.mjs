@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
-// CARVE-P0-008 (carve#3976): a task box is content, so a line in the box's
+// CARVE-P9-083 (carve#3976): a task box is content, so a line in the box's
 // columns sits below a marker-line child. A term takes no fold (carve#4861), so
 // the line ends the child.
 const html = (src) => renderDoc(parse(src))

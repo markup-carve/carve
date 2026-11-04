@@ -1,7 +1,7 @@
 ## A footnote definition past a box's column is hoisted
 
 A footnote definition past a colon body's content column is a block on its
-authored base, so it is hoisted like one at the box's own column (CARVE-P0-004,
+authored base, so it is hoisted like one at the box's own column (CARVE-P0-024,
 CARVE-P9-083).
 
 :::: compare

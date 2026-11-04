@@ -1,7 +1,7 @@
 ## A below-column marker after a comment, where no paragraph is open
 
 A comment closes the paragraph. At the content column it retains nothing
-(`CARVE-P0-009` X1, `CARVE-P9-053`), so a following below-column marker starts
+(`CARVE-P0-024`, `CARVE-P0-005`), so a following below-column marker starts
 a separate list.
 
 ::: compare

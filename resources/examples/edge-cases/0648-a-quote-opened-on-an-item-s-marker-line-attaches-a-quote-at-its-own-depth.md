@@ -1,6 +1,6 @@
 ## A quote opened on an item's marker line attaches a quote at its own depth
 
-A `> +` under a stacked quote opened on a list item's or description's first line reads like its top-level twin: the attached quote nests in the quote the `+` names (CARVE-P9-033, carve#3421).
+A `> +` under a stacked quote opened on a list item's or description's first line reads like its top-level twin: the attached quote nests in the quote the `+` names (CARVE-P0-024, carve#3421).
 
 The marker-line form
 

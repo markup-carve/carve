@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A refused plus is escaped when the block below would attach
 
-CARVE-P11-042 and CARVE-P9-085 (carve#4868). The blank refuses the `+` in each source, so the inner item holds the letter and the block belongs to the outer item. The `.fmt` beside each row spells the letter `\+` and writes the block at the outer item's content column with no blank line.
+CARVE-P11-042 and CARVE-P9-067 (carve#4868). The blank refuses the `+` in each source, so the inner item holds the letter and the block belongs to the outer item. The `.fmt` beside each row spells the letter `\+` and writes the block at the outer item's content column with no blank line.
 
 :::::: compare
 

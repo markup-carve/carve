@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
-// CARVE-P0-009 X1 and CARVE-P9-053 grant retention only below the content column.
+// CARVE-P0-024 and CARVE-P0-005 grant retention only below the content column.
 const html = (source) => renderDoc(parse(source)).replace(/\s+/g, ' ').replace(/ ?(<[^>]+>) ?/g, '$1')
 const quoted = (depth, lines) => lines.map((line) => ('> '.repeat(depth) + line).trimEnd()).join('\n') + '\n'
 
@@ -28,7 +28,7 @@ const followers = { text: ['code'], fence: ['```', 'code'], span: ['``x'] }
 for (const depth of [0, 1, 2]) for (const [host, [outer, pad]] of Object.entries(hosts)) for (const head of ['inner', '::: inner', '# h']) {
   for (const [kind, comment] of Object.entries(comments)) for (const [shape, follower] of Object.entries(followers)) {
     // Under a plain outer item a fence run in the child's band is that outer
-    // item's own opener at a block start (CARVE-P0-004), so nothing is retained.
+    // item's own opener at a block start (CARVE-P0-024), so nothing is retained.
     if (host === 'nested' && shape === 'fence') continue
     const at = ' '.repeat(pad + 2)
     const band = ' '.repeat(pad + 1)

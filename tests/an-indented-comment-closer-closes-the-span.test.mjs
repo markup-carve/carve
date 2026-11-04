@@ -8,7 +8,7 @@
  * not part of the delimiter, "so the length match below compares runs and an
  * indented closer closes an indented opener". Two documents that differ only in
  * the closer's column are therefore the same block structure, and §17 L1b
- * (CARVE-P9-030) then decides the tightness off the blank line the invisible run
+ * (CARVE-P9-013) then decides the tightness off the blank line the invisible run
  * appears to interrupt: the separation is intact and the item is LOOSE.
  *
  * The item collector's incremental fence tracker matched the closer with

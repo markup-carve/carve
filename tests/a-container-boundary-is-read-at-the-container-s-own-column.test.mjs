@@ -6,8 +6,8 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (source) => renderDoc(parse(source)).replace(/\s+/g, ' ').replace(/ ?(<[^>]+>) ?/g, '$1')
 const quoted = (depth, lines) => lines.map((line) => ('> '.repeat(depth) + line).trimEnd()).join('\n') + '\n'
 
-// CARVE-P0-004: a recognized opener past the content column takes its authored
-// column as the base of that one block (CARVE-P2-017).
+// CARVE-P0-024: a recognized opener past the content column takes its authored
+// column as the base of that one block (CARVE-P9-083).
 for (const depth of [0, 1, 2]) for (const box of ['::: box', ':::', ':::: w']) for (const child of ['::: note', '::: inner', '::: tip "T"']) {
   for (const over of [1, 2, 4]) for (const closed of [true, false]) {
     const pad = ' '.repeat(2 + over)

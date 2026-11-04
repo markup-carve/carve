@@ -18,7 +18,7 @@ const blocks = {
 }
 const closesParagraph = new Set(['backtick', 'tilde', 'raw', 'heading', 'note'])
 
-// CARVE-P0-018, CARVE-P2-028: a term on the marker line sits at the item's
+// CARVE-P9-083, CARVE-P0-024: a term on the marker line sits at the item's
 // content column, so its description has the same body column as when text
 // leads the item, and the lead decides nothing (ruled on carve-php#3174).
 for (const depth of [0, 1, 2]) for (const blanks of [0, 1]) for (const col of [2, 4, 5, 6]) {
@@ -38,7 +38,7 @@ for (const depth of [0, 1, 2]) for (const blanks of [0, 1]) for (const col of [2
         assert.doesNotMatch(html(termLed), /<\/dl>(<pre>|<h1|<blockquote>|<aside|<b>)/)
       })
     }
-    // CARVE-P0-009: no paragraph open at the deepest frame, so no frame adopts it.
+    // CARVE-P0-024: no paragraph open at the deepest frame, so no frame adopts it.
     if (tail && depth === 0 && col >= 4 && closesParagraph.has(kind)) {
       test(`the line below a closed block leaves the list: ${name}`, () => {
         assert.match(html(termLed), /<\/ul><p>after<\/p>$/)
@@ -53,7 +53,7 @@ for (const depth of [0, 1, 2]) for (const blanks of [0, 1]) for (const col of [2
   }
 }
 
-// CARVE-P0-009 for a quote the item holds: its last block answers.
+// CARVE-P0-024 for a quote the item holds: its last block answers.
 for (const col of [2, 3, 4]) for (const lead of [[], ['q']]) {
   for (const [kind, block] of Object.entries(blocks)) {
     if (kind === 'quote') continue

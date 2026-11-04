@@ -3,7 +3,7 @@
 A `+` at an open marker column attaches one block starting at that column in every container. A block at another column follows ordinary ownership rules (markup-carve/carve#3421).
 
 A column below the body's minimum. The note consumes the comment and retains
-the line as a new paragraph of the note (PART 0 X1, ruled on
+the line as a new paragraph of the note (CARVE-P0-005, ruled on
 markup-carve/carve#2978), so in a footnote body and a description body the
 comment row no longer answers as the marker row does.
 

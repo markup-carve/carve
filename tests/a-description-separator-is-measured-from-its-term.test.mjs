@@ -6,7 +6,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = source => renderDoc(parse(source))
 const dds = out => [...out.matchAll(/<dd>([^]*?)<\/dd>/g)].map(m => m[1].trim())
 
-// CARVE-P0-008 and CARVE-P0-024 S3: a `: ` line at its term's column opens the
+// CARVE-P9-083 and CARVE-P0-024 S3: a `: ` line at its term's column opens the
 // next description wherever the term stands (carve#4094).
 test('a second description after a task item term opens its own dd', () => {
   assert.deepEqual(dds(html('- [ ] :: t\n      : a\n      : b\n')), ['a', 'b'])

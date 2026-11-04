@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A refused plus after an attached block ends nothing
 
-Only a `+` at the host's marker column reaches the host again. Any other `+` is a letter and ends nothing (CARVE-P9-085).
+Only a `+` at the host's marker column reaches the host again. Any other `+` is a letter and ends nothing (CARVE-P9-067).
 
 ::: compare
 

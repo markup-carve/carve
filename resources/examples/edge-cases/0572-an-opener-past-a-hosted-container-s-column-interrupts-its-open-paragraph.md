@@ -1,7 +1,7 @@
 ## An opener past a hosted container's column interrupts its open paragraph
 
 A recognized opener past an item-hosted colon body's column interrupts its
-open paragraph as it does in an item (`CARVE-P9-083`, `CARVE-P0-004`).
+open paragraph as it does in an item (`CARVE-P9-083`, `CARVE-P0-024`).
 
 :::: compare
 

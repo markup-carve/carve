@@ -1,6 +1,6 @@
 /*
  * A `%%%` with no closer ahead still opens a span in every body host (§28,
- * carve#4907, which replaced the line-form reading of CARVE-P9-053 here). A
+ * carve#4907, which replaced the earlier line-form reading here). A
  * comment below the column closes no body and ends no span, so the span runs to
  * the end of the body and hides `tail` (carve#4862).
  */

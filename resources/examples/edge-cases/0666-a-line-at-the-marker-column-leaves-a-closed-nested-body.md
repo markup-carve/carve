@@ -1,7 +1,7 @@
 ## A line at the marker column leaves a closed nested body
 
 After the definition body and its code fence end, the line at the item's
-marker column belongs outside the list (PART 0 O2).
+marker column belongs outside the list (PART 0 S2).
 
 ::: compare
 

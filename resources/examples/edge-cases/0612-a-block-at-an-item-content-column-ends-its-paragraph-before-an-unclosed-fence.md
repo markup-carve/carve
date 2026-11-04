@@ -1,7 +1,7 @@
 ## A block at an item content column ends its paragraph before an unclosed fence
 
 A link or footnote definition at a list item's content column ends the
-item's paragraph (CARVE-P0-010), and so does any other block there
+item's paragraph (CARVE-P0-005), and so does any other block there
 (CARVE-P0-011). The unclosed fence on the next line misses the item, so the
 item closes and the fence opens in the note, where it runs to the end:
 `::::`, the note's own closer and `after *b*` are fence content:

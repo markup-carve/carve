@@ -7,7 +7,7 @@ page: edge-lists
 
 Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
 
-CARVE-P9-067 and CARVE-P9-085: a `+` attaches only at its innermost owner's marker column, and a refused `+` is a plain letter (carve#4409, carve#4396).
+CARVE-P9-067: a `+` attaches only at its innermost owner's marker column, and a refused `+` is a plain letter (carve#4409, carve#4396).
 
 :::: compare
 

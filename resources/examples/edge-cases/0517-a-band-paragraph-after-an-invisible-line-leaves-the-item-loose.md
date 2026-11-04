@@ -1,8 +1,8 @@
 ## A band paragraph after an invisible line leaves the item loose
 
 A comment at the content column retains nothing, so the below-column followers
-in the first two rows open document paragraphs (`CARVE-P0-009` X1,
-`CARVE-P9-053`). The third row's content-column follower is the item's second
+in the first two rows open document paragraphs (`CARVE-P0-024`,
+`CARVE-P0-005`). The third row's content-column follower is the item's second
 paragraph, and the blank-line separation makes the item loose (CARVE-P9-013 property 3).
 The fourth row's comment fence also leaves the follower outside the item, and
 the last row's below-column marker starts a separate list.

@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A line folded into a child's paragraph is not the item's text
 
-An invalid opener that folds into a child item's or a quote's paragraph belongs to that paragraph. The item's own paragraph has not absorbed it, so a bare run at the item's column opens a div, and a column-0 line leaves the item (CARVE-P0-024, CARVE-P9-016).
+An invalid opener that folds into a child item's or a quote's paragraph belongs to that paragraph. The item's own paragraph has not absorbed it, so a bare run at the item's column opens a div, and a column-0 line leaves the item (CARVE-P0-024, CARVE-P9-084).
 
 ::::: compare
 

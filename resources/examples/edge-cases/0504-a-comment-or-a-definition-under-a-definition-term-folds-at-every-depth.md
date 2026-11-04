@@ -1,6 +1,6 @@
 ## A comment or a definition under a definition term folds at every depth
 
-A term has no content column (CARVE-P2-028), and that holds for the invisible
+A term has no content column (CARVE-P0-024), and that holds for the invisible
 lines too. Past the column of the container that holds the list, a comment
 stays a comment and the term goes on after it; a `%%%` fence keeps its body.
 
