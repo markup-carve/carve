@@ -116,18 +116,10 @@
     },
     {
       "name": "lone-dash-run-at-byte-0",
-      "description": "A `---` at byte 0 with no closer is a break and is reported.",
+      "description": "A `---` at byte 0 with no closer opens frontmatter through EOF (carve#5016).",
       "source": "---\n\na\n",
       "expected": {
-        "findings": [
-          {
-            "line": 1,
-            "column": 1,
-            "includes": [
-              "***"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
