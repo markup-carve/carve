@@ -1502,6 +1502,12 @@ test('a container ends after a consumed plus that leaves no node (carve#5161)', 
   assert.equal(stopFindings(item('- a\n+ b\n', 7, 3), '- a\n+ b\n').length, 1)
   // A `> +` line opens a sibling quote; it is not the list's markup.
   assert.equal(stopFindings(item('- a\n> +\n', 7, 3), '- a\n> +\n').length, 1)
+  // Only a container can host a `+`; a paragraph reaching over one still reports.
+  const para = {
+    type: 'document',
+    children: [{ type: 'paragraph', pos: pos(0, 4), children: [{ type: 'text', value: 'ab', pos: pos(0, 2) }] }],
+  }
+  assert.equal(stopFindings(para, 'ab\n+\n').length, 1)
 })
 
 test('a container holding an unplaced child is skipped rather than guessed at', () => {
