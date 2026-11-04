@@ -659,6 +659,43 @@ This is unambiguous:
 The underline heading form is absent, so the parser does not need to ask
 whether `---` belongs to the previous line or stands alone.
 
+## Carve writer (PART 11 §6 to §8) {#carve-writer}
+
+Reasons behind rules in `resources/spec/21-writer-carve-markdown.ebnf`. The
+clauses themselves state only the rule.
+
+- §6 combined form: `/*x*/` is the spelling Carve teaches, so normalizing it
+  away would rewrite the documented form into one documented nowhere.
+- CARVE-P11-014: an unprefixed cell was always padded (`| a | b |`), and the
+  padded side is the one a reader can scan, so prefixed cells take the same
+  padding.
+- CARVE-P11-015: the rule is stated as a test rather than as the two
+  characters `^` and `<`, because an enumeration goes stale the next time a
+  cell-level marker is added.
+- CARVE-P11-041: `X` and `x` spell one state, nothing downstream can tell
+  them apart, and §1 holds because both parse to the same AST, so the field
+  admits eight characters rather than nine.
+- CARVE-P11-016: indenting a blank line inside a list item to the content
+  column would keep the block structure visible in the source, but a
+  whitespace-only line is not stable. Editors that strip trailing whitespace
+  on save, `git apply --whitespace=fix` and CI whitespace checks all rewrite
+  it, so a formatter emitting one produces output that ordinary tooling
+  changes behind it, and is not idempotent in practice.
+- CARVE-P11-017: normalizing a whitespace-only element to a space keeps a
+  node while discarding the one property that distinguishes U+00A0 from a
+  space. The paragraph it leaves is unspellable, so it vanishes the moment
+  the writer runs, the two exits disagree about the same import, and §1
+  breaks on a document the importer built itself.
+- CARVE-P11-020: the depth half of the line-block rule matters. A reading
+  under which a boundary inside an emphasis run stays soft removes the
+  permission's premise, and the writer would then lose the break on `*a\`
+  over `b*`. The permission is stated as the property it rests on rather
+  than as a list of the places it runs out; it is §7 applied where §7's
+  condition does not hold, not a new principle.
+- CARVE-P11-022 M2: an authored escape carries intent. `\-\-` was written so
+  that a processor with smart punctuation on would not read an en dash, and
+  `"` `'` `-` `.` are not Markdown metacharacters, so no M1 row covers them.
+
 ## What this buys implementers
 
 If you are writing a parser, syntax highlighter, linter, formatter, or editor

@@ -162,6 +162,21 @@ escapes. The remaining counts described test methodology and implementation
 status, so they were removed from the normative writer procedure (carve#1507,
 carve#1532, carve#1533, carve#1549).
 
+## PART 11 §6 to §8: writer provenance
+
+The ticket numbers below used to sit inside the active clauses of
+`21-writer-carve-markdown.ebnf`. The design reasons moved to
+[Technical rationale](./technical-rationale.md#carve-writer).
+
+- §6 two spaces after a letter or roman-numeral ordered marker: carve#4811.
+- §6 an italic holding a word-flanked `/` is written braced: carve#4810.
+- §6 a thematic break is written `***`: carve#4973 (see "Thematic break
+  spelling" below).
+- CARVE-P11-042, a blank line is no substitute for the `+`: carve#5015.
+- CARVE-P11-073 (a), a region marker still closes containers: carve#4862.
+- CARVE-P11-079, one layout for collected definitions, comments and blocks
+  below a body: carve#4850; the `%%%` payload columns: carve#4988.
+
 ## Renderer and AST convergence
 
 Several rules were originally accompanied by snapshots of which engine had
