@@ -51,7 +51,7 @@
          `toc`, `glossary`, `index`, `tabs` or `code-group` class. Where the
          author did write a class, the marker-derived class is appended after
          the authored classes inside that class slot: `{.verse}` over
-         `::: |` gives `class="verse line-block"` (carve#2328, carve#2338).
+         `::: |` gives `class="verse line-block"`.
       R5 A RENDER ANNOTATION. The one in the core is `data-source-line` (the
          `sourceLine` render option), which records where a block was written.
 
@@ -128,9 +128,7 @@
       attribute. Every element outside the text-block set, a table cell
       included, and every value outside the three named values, likewise
       keeps the authored attribute; a cell's computed alignment still adds
-      its declaration to `style` (carve#4715).
-      Rewriting a table's placement as `text-align` would change the document,
-      not modernize an equivalent spelling.
+      its declaration to `style`.
 
    2. ATTRIBUTE QUOTING + ESCAPING. Attribute values are double-quoted.
       In an attribute value escape `&`->&amp;, `<`->&lt;, `>`->&gt;,
@@ -406,8 +404,7 @@
       ON THE `<li>`, NOT ON THE `<input>`. The state is a property of the
       ITEM -- PART 2 says so of the checkbox itself -- and a stylesheet
       reaching the item's own text is what the attribute is for
-      (`li[data-task-state="-"]`). Putting it on the box would put the
-      selector one level below the content it wants to reach.
+      (`li[data-task-state="-"]`).
 
       IT IS A STRUCTURAL ATTRIBUTE and leads the authored ones (§1), like
       `<ol>`'s `type` and a link's `href`: the item derives it from its own
@@ -423,19 +420,14 @@
       AN IMPORTER CONSUMES IT, and consuming is not the same as dropping a
       DERIVED attribute (CARVE-P9-065). The checkbox `<input>` is already
       consumed into the item's state rather than kept as content; this
-      attribute is the other half of that state and is read the same way. It
-      is what lets a document survive a render-and-import cycle: without it
-      `[-]` comes back as `[ ]`, silently, because both spellings render the
-      same box and no diagnostic can see a difference that is not there.
+      attribute is the other half of that state and is read the same way.
       `data-task-state="x"` beside a checked box is the done state, consumed
       with the box rather than kept as an authored attribute, and the list's
       `task-list` class is consumed as a structural class: neither comes back
       in the imported source.
 
       THE ACCESSIBLE NAME DOES NOT MOVE. The box keeps the item's own text as
-      its `aria-label` (PART 2). Naming the state there would invent copy the
-      author did not write, and the states are an author's shorthand rather
-      than a vocabulary this spec can translate.
+      its `aria-label` (PART 2).
 
    12. AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST -- NORMATIVE
       [CARVE-P10-014]. PART 2 admits `.` and `)` after an ordered marker, and
@@ -613,12 +605,9 @@
       so a raw block whose format this target cannot write is dropped under
       this option exactly as it is without it, and the render reports the
       dropped format as a diagnostic in both cases. ENABLING THE OPTION NEVER
-      SUPPRESSES THAT DIAGNOSTIC: a preservation mode that loses a block
-      silently is worse than a default one that says so. NO CARRIER IS
+      SUPPRESSES THAT DIAGNOSTIC. NO CARRIER IS
       DEFINED FOR ONE, AND THAT IS A STATED LIMIT on this target and on the
-      Markdown target alike. A carrier would put arbitrary foreign content
-      into an attribute or a comment, the target can never render those
-      bytes, and roundtrip import is not a trust decision (CARVE-P10-017).
+      Markdown target alike.
 
       A RAW INLINE REPORTS THE SAME DIAGNOSTIC AND IS CARRIED. A raw inline
       whose format this target cannot write reports `raw-format-dropped` with
@@ -731,14 +720,8 @@
 
         a {~old~>new~} b  ->  <p>a <span data-carve-substitution><del>old</del><ins>new</ins></span> b</p>
 
-      A CONSTRUCT'S VERBATIM SOURCE IS WHAT THE RULE STILL EXCLUDES, which is
-      why `data-carve-src` is absent from the rows above. It is not awaiting a
-      field: [CARVE-P11-013] rules the glued opener canonical and says the tree
-      records no padding, fence length or fence character, so the one
-      distinction such a carrier is observed to move -- the space in
-      ``` ``` php ``` -- is a spelling this specification has already ruled
-      against keeping. A field for it would reverse that clause rather than add
-      to it.
+      A CONSTRUCT'S VERBATIM SOURCE IS WHAT THE RULE STILL EXCLUDES:
+      `data-carve-src` is absent from the rows above.
 
       AN EXTENSION WRITES ITS OWN CARRIERS, under the reserved prefix, for the
       distinctions ITS nodes record. They are scoped to that extension and
@@ -751,29 +734,19 @@
       every import mode.
 
       A WIDTH IS A POSITIVE INTEGER, AND 1000 IS THE BOUND ON BOTH SIDES OF
-      THE CARRIER. The widths arrive as a comma-joined list in an attribute an
-      importer reads off UNTRUSTED HTML, and the writer spells one `-` per
-      unit, so six characters of attribute buy a megabyte of separator row.
-      That is an amplification the SOURCE side does not have -- an author who
-      types a thousand dashes has already paid for them -- so the bound
-      belongs on the carrier rather than on the field.
+      THE CARRIER. The bound is on the carrier, not on the field.
 
       A READER REFUSES THE WHOLE CARRIER -- writing no field at all, which
       means the `|=` form -- where any entry is empty, contains whitespace,
       or is not a run of decimal digits, or
       where any entry is below 1 or exceeds 1000. Not a partial read and not a
-      clamp to the bound: both put a separator row on the page whose widths
-      nobody wrote,
-      and refusing leaves the table correct in its other spelling.
+      clamp to the bound.
 
       THE READER COMPARES THE DECIMAL VALUE WITHOUT INTEGER OVERFLOW. Leading
       zeros do not change that value; a writer emits ordinary decimal integers.
 
       A WRITER WRITES NO CARRIER where the field is absent, empty, or holds an
-      entry below 1 or above 1000, for the same reason read the other way: a carrier a conforming reader will
-      refuse is a round-trip promise the writer cannot keep. The FIELD itself
-      has no upper bound, because a parse records what the author typed and no
-      amplification happens there.
+      entry below 1 or above 1000. The FIELD itself has no upper bound.
 
       A VALUE ESCAPES AS §2 ESCAPES ANY ATTRIBUTE VALUE. §2's text-content
       exception for U+00A0 is not an attribute rule, so a carrier value
@@ -782,12 +755,7 @@
       A CARRIER THAT HOLDS ITS PAYLOAD AS CONTENT ESCAPES IT AS §2 ESCAPES TEXT
       CONTENT, and a reader takes the element's TEXT rather than its serialized
       markup. `data-carve-raw`, `data-carve-escaped` and
-      `data-carve-abbreviations` are the three, and for `data-carve-raw` this is
-      not a formatting preference: written unescaped, a payload of `<b>` opens a
-      tag the span never closes and the rest of the paragraph disappears into
-      it. Reading the serialized markup back is the same mistake from the other
-      side, because it escapes the payload a second time and a raw inline
-      holding `&` returns holding `&amp;`.
+      `data-carve-abbreviations` are the three.
 
       A PRESENCE CARRIER CARRIES NOTHING IN ITS VALUE.
       `data-carve-explicit-id`, `data-carve-generated-id`,
@@ -800,8 +768,7 @@
 
       ONE ESCAPE PER ELEMENT. A `data-carve-escaped` span holds exactly ONE
       escaped character. A writer never collects a run of escapes onto one
-      span and a reader never reassembles one, because a span holding `abc`
-      would import as `\a\b\c`, which is not Carve. A span carrying more than
+      span and a reader never reassembles one. A span carrying more than
       one character is MALFORMED and the importer takes its content as text.
       Reporting it is permitted, not required: an importer that builds a tree
       without a diagnostic channel still has to read the span.
