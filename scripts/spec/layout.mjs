@@ -2552,6 +2552,8 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement) {
   for (let k = scan.index; k < end; k++) {
     const measured = measurement(k) ?? indentCols(lines[k])
     const line = measured.rest
+    // A line left of the column that holds a code fence ends it (PART 0 S1).
+    if (opaque?.kind === 'code' && line !== '' && measured.col < opaque.base && !lines[k].startsWith(LAZY)) opaque = null
     if (opaque) {
       const close = opaque.kind === 'code' ? PURE_FENCE.exec(line) : COMMENT_FENCE_BODY.exec(line)
       if (close && close[1][0] === opaque.run[0] &&
@@ -3775,10 +3777,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             chain = matchMarkerAt({ col: 0, rest: tail })
             continue
           }
+          // A marker that misses only quotes or a colon body folds as text,
+          // and so does its `+` (PART 0 S4, PART 9 §10 I2).
           if (!attachesAt('item', at, column, reached + 1)) {
-            src = src.slice(0, src.length - inner.rest.length) + '%%'
+            src = src.slice(0, src.length - inner.rest.length) + inner.rest.replace('+', plusLetter)
             m = walkIndent(src)
-            refusedPlus.push(at)
           }
           break
         }
@@ -4017,7 +4020,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           }
         }
         lead(m.col)
-        frame.para = frame.plus !== at
+        // A refused `+` opens no paragraph either (§17 L3); a note body still
+        // takes the next line lazily (corpus 437-2, 838-2).
+        frame.para = frame.plus !== at && (refusedPlus.at(-1) !== at || frames.some((f) => f.kind === 'note'))
         frame.last = 'para'
         return
       }

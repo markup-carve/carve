@@ -35,9 +35,9 @@ test('a marker left of the content column ends the paragraph a refused + left op
 })
 
 test('a line after a refused + continues its paragraph, and a later marker reads as after any letter', () => {
-  assert.deepEqual(steps('1. +\n + w1\n   - w2\n').slice(1), ['2 S4 doc/item:1 lazy', '3 S5 doc/item:1/item:3 item'])
-  assert.deepEqual(steps('1. +\n + w1\n1. w2\n').slice(1), ['2 S4 doc/item:1 lazy', '3 S5 doc/item:3 item'])
-  assert.deepEqual(steps('- a\n  - +\n + w1\n  * w2\n').slice(2), ['3 S4 doc/item:1/item:2 lazy', '4 S5 doc/item:1/item:4 item'])
-  assert.deepEqual(steps('- a\n  - +\n   + w1\n  * w2\n').slice(2), ['3 S4 doc/item:1/item:2 lazy', '4 S5 doc/item:1/item:4 item'])
-  assert.deepEqual(steps('- a\n  - +\n   + w1\n1. w2\n').slice(2), ['3 S4 doc/item:1/item:2 lazy', '4 S5 doc/item:4 item'])
+  assert.deepEqual(steps('1. +\n + w1\n   - w2\n').slice(1), ['2 S5 doc text', '3 S5 doc text'])
+  assert.deepEqual(steps('1. +\n + w1\n1. w2\n').slice(1), ['2 S5 doc text', '3 S5 doc text'])
+  assert.deepEqual(steps('- a\n  - +\n + w1\n  * w2\n').slice(2), ['3 S5 doc text', '4 S5 doc text'])
+  assert.deepEqual(steps('- a\n  - +\n   + w1\n  * w2\n').slice(2), ['3 S5 doc/item:1 text', '4 S5 doc/item:1/item:4 item'])
+  assert.deepEqual(steps('- a\n  - +\n   + w1\n1. w2\n').slice(2), ['3 S5 doc/item:1 text', '4 S5 doc/item:4 item'])
 })

@@ -34,7 +34,7 @@ test('a marker-column quote and paragraph are traced in the item', () => {
 
 test('a column-zero quote and paragraph are refused', () => {
   assert.equal(steps('- foo\n  - +\n> b\n').at(-1), '3 S5 doc/quote:3 quote')
-  assert.equal(steps('- foo\n  - +\npara\n').at(-1), '3 S4 doc/item:1/item:2 lazy')
+  assert.equal(steps('- foo\n  - +\npara\n').at(-1), '3 S5 doc text')
 })
 
 test('an unclosed marker-column fence still ends at its block', () => {
