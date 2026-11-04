@@ -45,8 +45,7 @@ for (const depth of [0, 1]) {
       test(`${limit}, comment column ${column}, quote depth ${depth}`, () => {
         const outputs = hosts.map(host => html(source(host, body(host), depth)))
         const kept = hosts.map((host, index) => inside(outputs[index], host))
-        const ruledExpected = depth > 0 && limit.startsWith('an erased') ? false : expected
-        assert.equal(kept[0], ruledExpected, `item control:\n${outputs[0]}`)
+        assert.equal(kept[0], expected, `item control:\n${outputs[0]}`)
         for (let index = 1; index < hosts.length; index++) {
           assert.equal(kept[index], kept[0], `${hosts[index].name} disagrees with item:\n${outputs[index]}`)
         }

@@ -1159,16 +1159,17 @@ const INTERRUPTS = [
 ]
 
 // Three of the eight sites survived every shape above when reverted ALONE, and
-// each needed its own. A definition INSIDE a quote is what leaves the quote
-// with no open paragraph; a definition after a blank line inside an item is an
+// each needed its own. A definition INSIDE a quote is erased with its `>`,
+// so the lazy line below folds into the quote; a definition after a blank line inside an item is an
 // invisible construct rather than a second paragraph, so the list stays TIGHT
 // (PART 9 SS17 L1/L2). Asserted on the whole render, because what moves is the
 // SHAPE around the definition rather than the definition itself.
 const PREDICATE_SHAPES = [
   [
-    'a definition inside a quote leaves no open paragraph',
+    // Erased with its `>`, so the lazy line folds (carve#5129).
+    'a definition inside a quote is erased with its prefix',
     '> text\n> [a]: /u {.c}\nlazy\n',
-    '<blockquote><p>text</p></blockquote>\n<p>lazy</p>',
+    '<blockquote><p>text\nlazy</p></blockquote>',
   ],
   [
     'a definition after a blank inside an item keeps the list tight',

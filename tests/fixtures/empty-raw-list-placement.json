@@ -369,7 +369,7 @@
   },
   {
     "source": "> - a\n>   %% n\n>   x\n",
-    "html": "<blockquote>\n  <ul>\n    <li><p>a</p>\n      <p>x</p>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li>a\nx</li>\n  </ul>\n</blockquote>"
   },
   {
     "source": "- a\n\n  %% n\n  x\n",

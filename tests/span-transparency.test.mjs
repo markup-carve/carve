@@ -50,10 +50,10 @@ test('an erased comment remains in the source trace at its authored line', () =>
   assert.deepEqual(reused.map(record => record.line), [1, 1, 2])
 })
 
-test('a quoted invisible line keeps its structural quote prefix', () => {
-  assert.equal(html('> a\n> %% c\nb\n'), html('> a\n>\nb\n'))
-  assert.equal(html('> a\n> [r]: /u\nb [r][]\n'), html('> a\n>\nb [r][]\n[r]: /u\n'))
-  assert.equal(html('> a\n> %% c\n> b\n'), html('> a\n>\n> b\n'))
+test('a quoted invisible line is erased with its quote prefix', () => {
+  assert.equal(html('> a\n> %% c\nb\n'), html('> a\nb\n'))
+  assert.equal(html('> a\n> [r]: /u\nb [r][]\n'), html('> a\nb [r][]\n[r]: /u\n'))
+  assert.equal(html('> a\n> %% c\n> b\n'), html('> a\n> b\n'))
   const trace = []
   parse('> a\n> %% c\nb\n', { trace })
   assert.equal(trace.filter(record => record.line === 2).length, 1)

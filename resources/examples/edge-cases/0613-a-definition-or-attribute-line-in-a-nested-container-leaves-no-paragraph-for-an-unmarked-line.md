@@ -243,8 +243,8 @@ tail
 
 ::::::
 
-With the quote inside an item, a column-0 line reaches the document past
-both containers:
+With the quote inside an item, the definition is erased with its `>`
+(carve#5129), so a column-0 line folds into the open paragraph:
 :::::: compare
 
 ````carve
@@ -258,17 +258,17 @@ tail
   <li>
     <blockquote>
       <ul>
-        <li>para</li>
+        <li>para
+tail</li>
       </ul>
     </blockquote>
   </li>
 </ul>
-<p>tail</p>
 ```
 
 ::::::
 
-An attribute line in the same position:
+An attribute line in the same position is not erased, so a column-0 line reaches the document past both containers:
 :::::: compare
 
 ````carve
@@ -335,7 +335,7 @@ item's next paragraph:
 
 ::::::
 
-An abbreviation definition inside a container reads the same way (CARVE-P12-026), so `tail` leaves it:
+An abbreviation definition inside a quote is erased with its `>` like a link definition (CARVE-P12-026, carve#5129), so `tail` folds into the item:
 :::::: compare
 
 ````carve
@@ -347,10 +347,10 @@ tail
 ```html
 <blockquote>
   <ul>
-    <li>para</li>
+    <li>para
+tail</li>
   </ul>
 </blockquote>
-<p>tail</p>
 ```
 
 ::::::

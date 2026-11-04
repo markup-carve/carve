@@ -280,8 +280,11 @@
         ends an open paragraph and an unmarked quote, and closes the items its
         FAMILIES rows name. Retain a comment node with its authored
         spelling and complete source extent in the AST and source map.
-        Marker-line structural prefixes remain; only their comment or
-        definition content is erased. A `%%%` span is instead block-level:
+        An erased line that continues an open quote loses its `>` prefixes
+        with it, so it reads the same inside a quote as outside one
+        (carve#5129). A marker line that opens a container keeps its opener;
+        only its comment or definition content is erased: `> %% c` with no
+        quote open is an empty quote. A `%%%` span is instead block-level:
         it carries its opener, opaque body and
         exact-width closer as one extent across authored indentation. A
         `%%%` opener opens its span without looking for a closer; with none,

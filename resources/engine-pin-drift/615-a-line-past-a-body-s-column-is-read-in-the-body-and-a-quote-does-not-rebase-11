@@ -1,0 +1,1 @@
+The pinned carve-js keeps the quote prefix of an erased comment or one-line definition as a quote blank line; the spec erases the prefix with the line (markup-carve/carve#5129, carve-js line open).

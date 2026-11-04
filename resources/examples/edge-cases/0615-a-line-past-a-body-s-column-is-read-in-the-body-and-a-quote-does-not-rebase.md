@@ -208,9 +208,9 @@ x</li>
 
 ::::::
 
-A block quote does not rebase (CARVE-P0-004), so a definition one column
-past the quote marker is paragraph text. It registers nothing, and the quoted
-paragraph stays open for `tail` (carve#3280):
+A block quote does not rebase (CARVE-P0-004). A definition one column past
+the quote marker is erased with its `>` (carve#5129), so the quoted paragraph
+stays open for `tail` (carve#3280):
 :::::: compare
 
 ````carve
@@ -224,10 +224,10 @@ tail
 ```html
 <ul>
   <li>
-    <blockquote><p>para</p></blockquote>
+    <blockquote><p>para
+tail</p></blockquote>
   </li>
 </ul>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -289,18 +289,18 @@ tail
 <blockquote>
   <ul>
     <li>
-      <blockquote><p>para</p></blockquote>
+      <blockquote><p>para
+tail</p></blockquote>
     </li>
   </ul>
 </blockquote>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 
 ::::::
 
-At a quoted description body's content column a definition leaves no
-paragraph open (CARVE-P0-011), so the unmarked `tail` leaves the quote:
+At a quoted description body's content column a definition is erased with
+its `>` (carve#5129), so the unmarked `tail` folds into the body:
 :::::: compare
 
 ````carve
@@ -314,15 +314,15 @@ tail
 <blockquote>
   <dl>
     <dt>t</dt>
-    <dd>d</dd>
+    <dd>d
+tail</dd>
   </dl>
 </blockquote>
-<p>tail</p>
 ```
 
 ::::::
 
-An attribute line there does the same:
+An attribute line there is not erased: it leaves no paragraph open (CARVE-P0-011), so `tail` leaves the quote:
 :::::: compare
 
 ````carve

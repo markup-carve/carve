@@ -4,7 +4,7 @@ page: edge-definitions
 
 ## An indented quote prefix keeps an invisible plus follower in its host
 
-CARVE-P9-067 and the latest carve#4449 ruling (carve#4698). The normalized quote prefix of an accepted own-line `+` places its followers in the quote. Under CARVE-P0-005, an invisible follower keeps its quote marker, but its content is erased before the following line is laid out.
+CARVE-P9-067 and the latest carve#4449 ruling (carve#4698). The normalized quote prefix of an accepted own-line `+` places its followers in the quote. Under CARVE-P0-005 an erased comment or definition line goes with its quote marker (carve#5129), so `b` stays in the inner quote, as it does after an attribute line.
 
 ::: compare
 
@@ -37,8 +37,10 @@ CARVE-P9-067 and the latest carve#4449 ruling (carve#4698). The normalized quote
 
 ````html
 <blockquote>
-  <blockquote><p>a</p></blockquote>
-  <p>b</p>
+  <blockquote>
+    <p>a</p>
+    <p>b</p>
+  </blockquote>
 </blockquote>
 ````
 
@@ -55,8 +57,10 @@ CARVE-P9-067 and the latest carve#4449 ruling (carve#4698). The normalized quote
 
 ````html
 <blockquote>
-  <blockquote><p>a</p></blockquote>
-  <p>b</p>
+  <blockquote>
+    <p>a</p>
+    <p>b</p>
+  </blockquote>
 </blockquote>
 ````
 

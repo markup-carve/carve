@@ -9,8 +9,9 @@ const html = (source) => normalize(renderDoc(parse(source)))
 const fence = '```'
 
 for (const [name, source, expected] of [
+  // An erased comment takes its `>` with it (carve#5129).
   ['comment ends the item code fence', `> - ${fence}\n> %% c\n>   x\n- t\n`,
-    '<blockquote><ul><li><pre><code> x </code></pre></li></ul></blockquote><ul><li>t</li></ul>'],
+    '<blockquote><ul><li><pre><code>x </code></pre></li></ul></blockquote><ul><li>t</li></ul>'],
   ['closed span ends the item code fence', `> - ${fence}\n> %%%\n> %%%\n>   x\n1. t\n`,
     '<blockquote><ul><li><pre><code></code></pre></li></ul><p>x 1. t</p></blockquote>'],
   ['comment ends the item line block', '> - ::: |\n> %% c\n>   x\n- t\n',
@@ -26,7 +27,7 @@ for (const [name, source, expected] of [
   ['heading control', `> - ${fence}\n> # h\n>   x\n- t\n`,
     '<blockquote><ul><li><pre><code></code></pre></li></ul><h1 id="h">h</h1><p>x - t</p></blockquote>'],
   ['open paragraph keeps the item', '> - a\n> %% c\n>   x\n- t\n',
-    '<blockquote><ul><li><p>a</p><p>x</p></li></ul></blockquote><ul><li>t</li></ul>'],
+    '<blockquote><ul><li>a x</li></ul></blockquote><ul><li>t</li></ul>'],
 ]) {
   test(name, () => assert.equal(html(source), normalize(expected)))
 }

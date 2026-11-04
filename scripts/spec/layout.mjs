@@ -4745,16 +4745,8 @@ export function parse(src, options = {}) {
   }
   if (erased.size === 0) return options.trace || options.stateSink
     ? parseWithBoundaries(src, options) : original
-  // A quote prefix is structural even when the line's content is erased.
-  // Keep its empty marker line so it still closes an open quoted paragraph.
-  const retainedQuote = new Set()
-  const kept = lines.flatMap((line, index) => {
-    if (!erased.has(index)) return [{ line, index }]
-    const prefix = /^(?:[ \t]*>[ ]?)+/.exec(line)?.[0]
-    if (!prefix) return []
-    retainedQuote.add(index)
-    return [{ line: prefix.trimEnd(), index }]
-  })
+  // An erased line goes with its quote prefixes (carve#5129).
+  const kept = lines.flatMap((line, index) => erased.has(index) ? [] : [{ line, index }])
   const visible = kept.map(({ line }) => line).join('\n')
   const traceStart = options.trace?.length ?? 0
   const visibleTrace = options.trace ?? (erasedDefinitions.length ? [] : null)
@@ -4815,23 +4807,13 @@ export function parse(src, options = {}) {
     const sourceLine = line => kept[line - 1] ? kept[line - 1].index + 1 : line
     const path = value => typeof value === 'string'
       ? value.replace(/:(\d+)/g, (_, line) => `:${sourceLine(Number(line))}`) : value
-    const tracedQuote = new Set()
     for (const record of options.trace.slice(traceStart)) {
       record.line = sourceLine(record.line)
       record.owner = path(record.owner)
       if (record.reached) record.reached = path(record.reached)
       if (record.plus) record.plus = sourceLine(record.plus)
-      if (retainedQuote.has(record.line - 1)) {
-        const rest = lines[record.line - 1].replace(/^(?:[ \t]*>[ ]?)*[ \t]*/, '')
-        record.step = 'S1'
-        record.owner = erasedOwners.get(record.line - 1) ?? record.owner
-        record.rule = 'CARVE-P0-005'
-        record.form = COMMENT_LINE.test(rest) ? 'comment' : 'leaf'
-        tracedQuote.add(record.line - 1)
-      }
     }
     for (const index of erased) {
-      if (tracedQuote.has(index)) continue
       const rest = lines[index].replace(/^(?:[ \t]*>[ ]?)*[ \t]*/, '')
       options.trace.push({ line: index + 1, step: 'S1', owner: erasedOwners.get(index) ?? 'doc', rule: 'CARVE-P0-005',
         form: COMMENT_LINE.test(rest) ? 'comment' : 'leaf' })
