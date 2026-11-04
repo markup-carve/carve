@@ -621,6 +621,16 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
     let parent = parentOf.get(node)
     if (node.type === 'list_item') parent = parentOf.get(parent)
     while (parent && !['list_item', 'footnote', 'definition_description', 'admonition', 'div'].includes(parent.type) && !(parent.type === 'block_quote' && parent.fenced)) parent = parentOf.get(parent)
+    // A description holding a comment written above a term omits pos (CARVE-P12-022); its
+    // marker line is the line of its first placed block after the comments.
+    if (parent?.type === 'definition_description' && !Number.isInteger(parent.pos?.startOffset)) {
+      const placed = (parent.children ?? []).find((child) => child.type !== 'comment' && Number.isInteger(child.pos?.startOffset))
+      if (!placed) return undefined
+      let opener = lineStart(placed.pos.startOffset)
+      while ([' ', '\t', '>'].includes(codepoints[opener])) opener++
+      const separator = codepoints[opener] === ':' ? /^: +/.exec(codepoints.slice(opener, opener + 64).join('')) : null
+      return separator ? visualColumn(lineStart(opener), opener) + separator[0].length : undefined
+    }
     if (!parent?.pos || !Number.isInteger(parent.pos.startOffset)) return null
     if (parent.type === 'admonition' || parent.type === 'div' || parent.type === 'block_quote') {
       return visualColumn(lineStart(parent.pos.startOffset), parent.pos.startOffset)
@@ -629,13 +639,14 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
     let opener = parent.pos.startOffset
     if (parent.type === 'definition_description' && codepoints[opener] !== ':') {
       // A comment written above the `:` line starts the description (CARVE-P12-027,
-      // carve#5167); the separator is on the line after the leading comments.
+      // carve#5167); the separator is on the next line after the leading comments
+      // that holds more than blanks and quote markers.
       for (const child of parent.children ?? []) {
         if (child.type !== 'comment' || !Number.isInteger(child.pos?.endOffset)) break
         const next = codepoints.indexOf('\n', child.pos.endOffset)
         if (next < 0) return null
         opener = next + 1
-        while (codepoints[opener] === ' ' || codepoints[opener] === '\t' || codepoints[opener] === '>') opener++
+        while ([' ', '\t', '>', '\n', '\r'].includes(codepoints[opener])) opener++
       }
     }
     const start = lineStart(opener)
@@ -708,13 +719,14 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
       // is content, not indentation, so it cannot enter the child's span.
       const expected = /[^ \t]/.test(rest) ? at
         : offsetAtColumn(start, owner || 0, start + prefixEnd)
-      const beforeOwner = owner !== null && visualColumn(start, at) < owner
+      // `undefined`: an unplaced owner with no marker line to measure from.
+      const beforeOwner = owner != null && visualColumn(start, at) < owner
       if (beforeOwner) {
         findings.push(
           `pos does not begin at the markup that opens "${node.type}" at ${path}: ` +
             `offset ${pos.startOffset} starts before its owner's content column ${owner}`,
         )
-      } else if (pos.startOffset !== expected) {
+      } else if (owner !== undefined && pos.startOffset !== expected) {
         findings.push(
           `pos does not begin at the markup that opens "${node.type}" at ${path}: ` +
             `offset ${pos.startOffset}, expected ${expected} at its owner's content column`,
