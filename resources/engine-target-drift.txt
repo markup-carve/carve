@@ -8,6 +8,9 @@ carve/js/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#5012
 carve/js/620-generated-container-documents-23  markup-carve/carve#5160 (carve-js), the pinned writer keeps the source where a duplicate note leaves a line with no node, instead of collecting the definitions (CARVE-P11-079 (a))
 carve/php/620-generated-container-documents-23  markup-carve/carve#5160, the pinned carve-php writes the dropped note's `[r][]` as a paragraph; carve-php main writes the fixture
 carve/rust/620-generated-container-documents-23  markup-carve/carve#5160, the pinned carve-rs writes the dropped note's `[r][]` as a paragraph; carve-rs main writes the fixture
+markdown/js/84-single-line-headings-10  markup-carve/carve#5159, the pinned carve-js writes the tight spelling; carve-js main writes the fixture
+markdown/php/84-single-line-headings-10  markup-carve/carve#5159, the pinned carve-php writes the tight spelling; carve-php main writes the fixture
+markdown/rust/84-single-line-headings-10  markup-carve/carve#5159, the pinned carve-rs writes the tight spelling; carve-rs main writes the fixture
 markdown/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
 ansi/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
 html/php/741-visible-footnote-headings  markup-carve/carve-php#4119, used-note implicit heading reference pending
