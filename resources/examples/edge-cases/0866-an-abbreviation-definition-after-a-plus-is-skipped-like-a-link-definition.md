@@ -82,9 +82,8 @@ A
 ```html
 <blockquote>
   <ul>
-    <li></li>
+    <li>text</li>
   </ul>
-  <p>text</p>
 </blockquote>
 <p><abbr title="b">A</abbr></p>
 ```

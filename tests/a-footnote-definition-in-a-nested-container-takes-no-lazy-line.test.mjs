@@ -45,7 +45,8 @@ test('a line at the sub-item column after a note opens the item paragraph', () =
   assert.equal(oracle('- a\n  - para\n    [^f]: n\n    more\nx\n'),
     '<ul><li>a <ul><li>para</li></ul></li></ul>')
 })
-test('an abbreviation line in a quoted item leaves no paragraph', () => {
+// An erased abbreviation line goes with its quote prefix (carve#5129).
+test('an abbreviation line in a quoted item leaves the paragraph open', () => {
   assert.equal(oracle('> - para\n>   *[A]: b\ntail\n'),
-    '<blockquote><ul><li>para</li></ul></blockquote><p>tail</p>')
+    '<blockquote><ul><li>para tail</li></ul></blockquote>')
 })

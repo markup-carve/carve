@@ -713,18 +713,6 @@
       "scope": "resolution-rendering"
     },
     {
-      "id": "CARVE-P9-029",
-      "part": "9",
-      "title": "L1a THE ITEM'S FIRST VISIBLE BLOCK MAY BE ANY KIND",
-      "scope": "parsing"
-    },
-    {
-      "id": "CARVE-P9-030",
-      "part": "9",
-      "title": "L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION",
-      "scope": "parsing"
-    },
-    {
       "id": "CARVE-P9-067",
       "part": "9",
       "title": "ONE ATTACH RULE FOR EVERY HOST",
@@ -741,12 +729,6 @@
       "part": "9",
       "title": "THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP",
       "scope": "resolution-rendering"
-    },
-    {
-      "id": "CARVE-P9-034",
-      "part": "9",
-      "title": "L6 A COLLECTED DEFINITION LEAVES NO TRACE",
-      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-035",
@@ -2082,6 +2064,24 @@
     }
   ],
   "retired": [
+    {
+      "id": "CARVE-P9-029",
+      "part": "9",
+      "title": "L1a THE ITEM'S FIRST VISIBLE BLOCK MAY BE ANY KIND",
+      "replacement": "CARVE-P9-013"
+    },
+    {
+      "id": "CARVE-P9-030",
+      "part": "9",
+      "title": "L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION",
+      "replacement": "CARVE-P9-013"
+    },
+    {
+      "id": "CARVE-P9-034",
+      "part": "9",
+      "title": "L6 A COLLECTED DEFINITION LEAVES NO TRACE",
+      "replacement": "CARVE-P9-013"
+    },
     {
       "id": "CARVE-P0-008",
       "part": "0",

@@ -1,1 +1,0 @@
-The pinned carve-js still treats quoted one-line invisible content as a layout boundary; the spec retains its quote marker and erases the content before layout (markup-carve/carve#5012, carve-js line open).

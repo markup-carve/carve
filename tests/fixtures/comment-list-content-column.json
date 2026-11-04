@@ -97,7 +97,7 @@
   },
   {
     "source": "> - intro\n> %% c\n>  - tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p></li>\n    <li><p>tail</p></li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li>intro</li>\n    <li>tail</li>\n  </ul>\n</blockquote>"
   },
   {
     "source": "> - intro\n> %% c\n>  1. tail\n",
@@ -105,7 +105,7 @@
   },
   {
     "source": "> - intro\n>   %% c\n>  - tail\n",
-    "html": "<blockquote>\n  <ul>\n    <li><p>intro</p></li>\n    <li><p>tail</p></li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li>intro</li>\n    <li>tail</li>\n  </ul>\n</blockquote>"
   },
   {
     "source": "> - intro\n>   %%%\n>   hidden\n>   %%%\n>  - tail\n",

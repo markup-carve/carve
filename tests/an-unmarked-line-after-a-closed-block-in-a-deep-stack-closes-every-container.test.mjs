@@ -29,9 +29,9 @@ for (const stack of stacks) {
     test(`\`${first}para\` then \`${block[0]}\`: an unmarked line opens a top-level paragraph`, () => {
       const source = [first + 'para', ...block.map((b) => rest + b), 'tail']
       if (block[0] === '[r]: /u') {
-        const marker = /^(?:[ \t]*>[ ]?)+/.exec(rest + block[0])?.[0].trimEnd()
+        // The erased definition goes with its quote prefixes (carve#5129).
         assert.deepEqual(parse(source.join('\n') + '\n').blocks,
-          parse([first + 'para', ...(marker ? [marker] : []), 'tail'].join('\n') + '\n').blocks)
+          parse([first + 'para', 'tail'].join('\n') + '\n').blocks)
       } else assert.match(html(source), /\n<p[^>]*>tail<\/p>$/)
     })
   }

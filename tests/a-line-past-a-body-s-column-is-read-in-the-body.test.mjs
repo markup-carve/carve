@@ -24,13 +24,14 @@ const CASES = [
     '<dl><dt>t</dt><dd><p>d</p><ul><li>para <h1 id="H">H</h1></li></ul></dd></dl><p>x</p>'],
   ['an attribute line after a sublist', ':: t\n: d\n  - para\n    {#k}\nx\n',
     '<dl><dt>t</dt><dd><p>d</p><ul><li>para</li></ul></dd></dl><p>x</p>'],
+  // An erased definition takes its `>` with it (carve#5129), so `tail` folds.
   ['an over-indented definition in a quoted item', '- > para\n  >  [r]: /u\ntail\n\n[r][]\n',
-    `<ul><li><blockquote><p>para</p></blockquote></li></ul><p>tail</p>${link}`],
+    `<ul><li><blockquote><p>para tail</p></blockquote></li></ul>${link}`],
   // The note takes `tail` as a lazy line (carve#3885).
   ['an over-indented footnote definition in a quoted item', '- > para\n  >  [^f]: n\ntail\n',
     '<ul><li><blockquote><p>para</p></blockquote></li></ul>'],
   ['an over-indented definition in a quoted item in a quote', '> - > para\n>   >  [r]: /u\ntail\n\n[r][]\n',
-    `<blockquote><ul><li><blockquote><p>para</p></blockquote></li></ul></blockquote><p>tail</p>${link}`],
+    `<blockquote><ul><li><blockquote><p>para tail</p></blockquote></li></ul></blockquote>${link}`],
 ]
 
 for (const [what, src, expected] of CASES) {
@@ -49,7 +50,7 @@ test('a footnote body reads a definition past its column after a sublist', () =>
 // (CARVE-P0-020), and an abbreviation inside a body stays text.
 test('a definition past a quoted sub-item column registers', () => {
   assert.equal(oracle('- > - x\n  >    [r]: /u\ntail\n\n[r][]\n'),
-    `<ul><li><blockquote><ul><li>x</li></ul></blockquote></li></ul><p>tail</p>${link}`)
+    `<ul><li><blockquote><ul><li>x tail</li></ul></blockquote></li></ul>${link}`)
 })
 test('an abbreviation after a sublist is a definition', () => {
   assert.equal(oracle(':: t\n: d\n  - para\n    *[A]: b\nx\n'),

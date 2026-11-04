@@ -3519,7 +3519,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // frames the walk closed when it read that block where it stands.
     if (attachedTo && CONT_MARKER.test(trimWs(src).replace(/^(?:>[ \t]*)*/, ''))) {
       const stands = stripQuotes(src, attachedTo.depth)
-      if (stands && CONT_MARKER.test(trimWs(stands.rest)) && walkIndent(stands.rest).col === attachedTo.host.markerCol && attachedTo.endsAt(at)) {
+      // Behind a quote host's own `>` the `+` continues that quote at its content column (carve#5132).
+      const own = attachedTo.host.kind === 'quote' ? stripQuotes(src, attachedTo.depth + 1) : null
+      const reaches = stands && CONT_MARKER.test(trimWs(stands.rest)) && walkIndent(stands.rest).col === attachedTo.host.markerCol
+      if ((reaches || own && CONT_MARKER.test(trimWs(own.rest))) && attachedTo.endsAt(at)) {
         frames.length = 0
         frames.push(...attachedTo.frames)
       }
@@ -3655,7 +3658,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       plus.para = false
       lead(plus.markerCanon)
       if (!plusAccepted || claimedMarkers.has(at)) {
-        skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
+        skipInvisible(plus, at, docColumn(lines[at], m.rest), out, true)
         // The marker has no visible content, but its invisible placeholder
         // must stay inside the host so the next line keeps the same owner.
         const keepMarkerColumn = closesDescendant || claimedMarkers.has(at)
@@ -4037,7 +4040,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             src = src.replace('+', '%%')
             m = walkIndent(src)
             refusedPlus.push(at)
-            skipInvisible(frame, at, frame.docMarker)
+            skipInvisible(frame, at, frame.docMarker, null, true)
           }
         }
         lead(m.col)
@@ -4211,10 +4214,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   // line, so each host reads them as it reads a comment before its block. An
   // own-line marker passes its normalized prefix; its raw follower may still
   // carry quote indentation the walk has already removed.
-  function skipInvisible(host, at, column, markerLead = null) {
+  function skipInvisible(host, at, column, markerLead = null, refused = false) {
     const hostIndex = frames.indexOf(host)
     const fenced = new Set()
-    const end = firstVisibleLine(at + 1, hostIndex, column, fenced)
+    const end = firstVisibleLine(at + 1, hostIndex, column, fenced, refused)
     if (end === at + 1) return
     const level = end < lines.length ? throughQuotes(lines[end], hostIndex) : null
     const basis = level ? lines[end] : lines[at]
@@ -4223,9 +4226,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       lead: markerLead ?? basis.slice(0, basis.length - rest.length) + ' '.repeat(host.markerCanon) }
   }
 
-  // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Off the
-  // marker column an invisible line is that next line, and a note definition's body is its own.
-  function firstVisibleLine(from, hostIndex, column, fenced = null) {
+  // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Only the
+  // lines the host keeps are skipped: at the marker column or at or past its content column
+  // (carve#5130). A refused marker moves no line, so it skips only those at its column.
+  // A note definition's body is its own.
+  function firstVisibleLine(from, hostIndex, column, fenced = null, refused = false) {
+    const host = frames[hostIndex]
+    const content = !refused && ['item', 'dd', 'note'].includes(host.kind) ? host.docMarker + host.col - host.markerCol : Infinity
     // A line without the host's quote prefixes ends the quote, so no skipped construct reads it as text.
     const view = (k) => trimWsStart(throughQuotes(lines[k], hostIndex)?.rest ?? '')
     const fromHere = new Proxy([], {
@@ -4239,13 +4246,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     while (k < lines.length) {
       if (throughQuotes(lines[k], hostIndex) === null) return k
       const rest = trimLineEnd(view(k))
-      if (docColumn(lines[k], view(k)) !== column) return k
+      const at = docColumn(lines[k], view(k))
+      if (at !== column && at < content) return k
       const comment = COMMENT_FENCE_BODY.exec(rest)
       if (comment) {
         const opener = k++
-        // A nonblank line that misses the host ends the span under S1 (CARVE-P0-005, carve#4870).
+        // A nonblank line that misses the span's owner ends the span under S1 (CARVE-P0-005, carve#4870);
+        // a span the host keeps at its content column is missed below that column.
+        const bound = at === column ? column : content
         const closes = (j) => COMMENT_FENCE_BODY.exec(trimLineEnd(view(j)))?.[1].length === comment[1].length
-        const misses = (j) => throughQuotes(lines[j], hostIndex) === null || (trimLineEnd(view(j)) !== '' && docColumn(lines[j], view(j)) < column)
+        const misses = (j) => throughQuotes(lines[j], hostIndex) === null || (trimLineEnd(view(j)) !== '' && docColumn(lines[j], view(j)) < bound)
         while (k < lines.length && !closes(k) && !misses(k)) k++
         if (k < lines.length && closes(k)) k++
         for (let j = opener; fenced && j < Math.min(k, lines.length); j++) fenced.add(j)
@@ -4745,16 +4755,8 @@ export function parse(src, options = {}) {
   }
   if (erased.size === 0) return options.trace || options.stateSink
     ? parseWithBoundaries(src, options) : original
-  // A quote prefix is structural even when the line's content is erased.
-  // Keep its empty marker line so it still closes an open quoted paragraph.
-  const retainedQuote = new Set()
-  const kept = lines.flatMap((line, index) => {
-    if (!erased.has(index)) return [{ line, index }]
-    const prefix = /^(?:[ \t]*>[ ]?)+/.exec(line)?.[0]
-    if (!prefix) return []
-    retainedQuote.add(index)
-    return [{ line: prefix.trimEnd(), index }]
-  })
+  // An erased line goes with its quote prefixes (carve#5129).
+  const kept = lines.flatMap((line, index) => erased.has(index) ? [] : [{ line, index }])
   const visible = kept.map(({ line }) => line).join('\n')
   const traceStart = options.trace?.length ?? 0
   const visibleTrace = options.trace ?? (erasedDefinitions.length ? [] : null)
@@ -4815,23 +4817,13 @@ export function parse(src, options = {}) {
     const sourceLine = line => kept[line - 1] ? kept[line - 1].index + 1 : line
     const path = value => typeof value === 'string'
       ? value.replace(/:(\d+)/g, (_, line) => `:${sourceLine(Number(line))}`) : value
-    const tracedQuote = new Set()
     for (const record of options.trace.slice(traceStart)) {
       record.line = sourceLine(record.line)
       record.owner = path(record.owner)
       if (record.reached) record.reached = path(record.reached)
       if (record.plus) record.plus = sourceLine(record.plus)
-      if (retainedQuote.has(record.line - 1)) {
-        const rest = lines[record.line - 1].replace(/^(?:[ \t]*>[ ]?)*[ \t]*/, '')
-        record.step = 'S1'
-        record.owner = erasedOwners.get(record.line - 1) ?? record.owner
-        record.rule = 'CARVE-P0-005'
-        record.form = COMMENT_LINE.test(rest) ? 'comment' : 'leaf'
-        tracedQuote.add(record.line - 1)
-      }
     }
     for (const index of erased) {
-      if (tracedQuote.has(index)) continue
       const rest = lines[index].replace(/^(?:[ \t]*>[ ]?)*[ \t]*/, '')
       options.trace.push({ line: index + 1, step: 'S1', owner: erasedOwners.get(index) ?? 'doc', rule: 'CARVE-P0-005',
         form: COMMENT_LINE.test(rest) ? 'comment' : 'leaf' })

@@ -1,0 +1,40 @@
+A quote plus after a quote-attached paragraph is a letter
+
+```
+> +
+q
+> +
+.
+<blockquote>
+  <p>q</p>
+  <p>+</p>
+</blockquote>
+```
+
+```
+> +
+q
+> +
+r
+.
+<blockquote>
+  <p>q</p>
+  <p>+
+r</p>
+</blockquote>
+```
+
+```
+> +
+q
+> +
+# h
+.
+<blockquote>
+  <p>q</p>
+  <p>+</p>
+</blockquote>
+<section id="h">
+  <h1>h</h1>
+</section>
+```

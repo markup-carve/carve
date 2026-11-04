@@ -1,0 +1,72 @@
+A plus skips every invisible line its host keeps
+
+```
+- +
+  %%%
+  c
+  %%%
+text
+.
+<ul>
+  <li>text</li>
+</ul>
+```
+
+```
+- +
+  {x}
+text
+.
+<ul>
+  <li><p x="">text</p></li>
+</ul>
+```
+
+````
+- +
+  [^n]: x
+```
+z
+```
+
+r[^n]
+.
+<ul>
+  <li>
+    <pre><code>z
+</code></pre>
+  </li>
+</ul>
+<p>r<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+```
+- +
+  %%%
+  c
+  %%%
+  text
+.
+<ul>
+  <li>text</li>
+</ul>
+```
+
+```
+- +
+ {x}
+text
+.
+<ul>
+  <li></li>
+</ul>
+<p x="">text</p>
+```

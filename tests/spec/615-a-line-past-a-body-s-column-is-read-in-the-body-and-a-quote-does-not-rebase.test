@@ -158,10 +158,10 @@ tail
 .
 <ul>
   <li>
-    <blockquote><p>para</p></blockquote>
+    <blockquote><p>para
+tail</p></blockquote>
   </li>
 </ul>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -200,11 +200,11 @@ tail
 <blockquote>
   <ul>
     <li>
-      <blockquote><p>para</p></blockquote>
+      <blockquote><p>para
+tail</p></blockquote>
     </li>
   </ul>
 </blockquote>
-<p>tail</p>
 <p><a href="/u">r</a></p>
 ```
 
@@ -217,10 +217,10 @@ tail
 <blockquote>
   <dl>
     <dt>t</dt>
-    <dd>d</dd>
+    <dd>d
+tail</dd>
   </dl>
 </blockquote>
-<p>tail</p>
 ```
 
 ```

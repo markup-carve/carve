@@ -39,10 +39,8 @@ for (const depth of [0, 1, 2]) for (const [host, [outer, pad]] of Object.entries
         const out = html(source)
         const headSource = quoted(depth, [...outer, ' '.repeat(pad) + '- ' + head])
         if (kind === 'line') {
-          const retained = depth > 0
-            ? lines.map(line => line.trim().startsWith('%%') ? '' : line)
-            : lines.filter(line => !line.trim().startsWith('%%'))
-          const erased = quoted(depth, retained) + tail + '\n'
+          // The erased line goes with its quote prefix (carve#5129).
+          const erased = quoted(depth, lines.filter(line => !line.trim().startsWith('%%'))) + tail + '\n'
           assert.deepEqual(parse(source).blocks, parse(erased).blocks, out)
         } else assert.deepEqual(deepestItem(source), deepestItem(headSource), out)
         assert.ok(out.includes('TAIL'), out)

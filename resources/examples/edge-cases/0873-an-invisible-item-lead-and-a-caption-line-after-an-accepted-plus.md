@@ -4,7 +4,7 @@ page: edge-lists
 
 ## An invisible item lead and a caption line after an accepted plus
 
-PART 9 §4 and §17 L1b (carve#4639). A line an accepted `+` reads inside its host never captions the host itself. A blank after an invisible item lead separates nothing visible, so the list stays tight, as it does with the lead removed.
+PART 9 §4 and CARVE-P9-013 (carve#4639). A line an accepted `+` reads inside its host never captions the host itself. A blank after an invisible item lead separates nothing visible, so the list stays tight, as it does with the lead removed.
 
 :::::: compare
 

@@ -288,8 +288,8 @@ more</p></blockquote>
 
 Two more, found the same way: each of the eight sites was reverted on its own,
 and three of them survived every shape above. A definition INSIDE a quote is
-the third site -- it is what leaves the quote with no open paragraph, so a
-following lazy line starts its own block instead of folding in:
+the third site. It is erased with its `>` (carve#5129), so a following lazy
+line folds in, as it does without the definition:
 
 ::: compare
 
@@ -300,8 +300,8 @@ lazy
 ```
 
 ```html
-<blockquote><p>text</p></blockquote>
-<p>lazy</p>
+<blockquote><p>text
+lazy</p></blockquote>
 ```
 
 :::

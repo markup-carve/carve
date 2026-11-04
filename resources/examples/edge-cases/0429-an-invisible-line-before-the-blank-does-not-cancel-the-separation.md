@@ -1,12 +1,12 @@
 ## An invisible line before the blank does not cancel the separation
 
-L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION is pinned in one line
+CARVE-P9-013 property 3 (an invisible line does not cancel the separation) is pinned in one line
 order only. Corpus 186 writes the blank line first and the comment second; the
 mirror - the invisible line first, the blank second - was never pinned, and a
 rule whose answer turned on which of the two lines was authored first would
-need a reason there is none of. L1b's own argument does not mention order: a
-line that renders nothing "is not a separator, so the separation it appears to
-interrupt is intact". The two paragraphs are separated by the blank line either
+need a reason there is none of. The property does not mention order: a
+line that renders nothing is not a separator, so the separation it appears to
+interrupt is intact. The two paragraphs are separated by the blank line either
 way, so the item is LOOSE either way.
 
 ::: compare

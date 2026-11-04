@@ -823,6 +823,21 @@
           "file": "scripts/spec/layout.mjs",
           "find": "      if (!forcedAfterRefusal && lines[i][0] === '{' && tryAttrLine(lines, i)) break // §15 A1 / §10 I5\n",
           "replace": ""
+        },
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "          if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)\n          if (!firstVisible) list.tight = false\n          if (col === contentCol) subCol = -1",
+          "replace": "          if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)\n          if (!firstVisible && !matchMarkerAt(indentCols(head.text))) list.tight = false\n          if (col === contentCol) subCol = -1"
+        },
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "pendingSeparation = true",
+          "replace": "pendingSeparation = false"
+        },
+        {
+          "file": "scripts/spec/layout.mjs",
+          "find": "        attrs: def.attrs,\n      })\n      i++\n      continue",
+          "replace": "        attrs: def.attrs,\n      })\n      if (!top) blocks.push({ t: 'para', lines: [''] })\n      i++\n      continue"
         }
       ]
     },
@@ -977,26 +992,6 @@
       ]
     },
     {
-      "rule": "CARVE-P9-029",
-      "edits": [
-        {
-          "file": "scripts/spec/layout.mjs",
-          "find": "          if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)\n          if (!firstVisible) list.tight = false\n          if (col === contentCol) subCol = -1",
-          "replace": "          if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)\n          if (!firstVisible && !matchMarkerAt(indentCols(head.text))) list.tight = false\n          if (col === contentCol) subCol = -1"
-        }
-      ]
-    },
-    {
-      "rule": "CARVE-P9-030",
-      "edits": [
-        {
-          "file": "scripts/spec/layout.mjs",
-          "find": "pendingSeparation = true",
-          "replace": "pendingSeparation = false"
-        }
-      ]
-    },
-    {
       "rule": "CARVE-P9-067",
       "edits": [
         {
@@ -1013,16 +1008,6 @@
           "file": "scripts/spec/layout.mjs",
           "find": "if (trimWs(trimmed.join('')) !== '') blocks.push({ t: 'para', lines: trimmed })",
           "replace": "if (trimWs(trimmed.join('')) !== '') blocks.push({ t: 'para', lines: trimmed.slice(1) })"
-        }
-      ]
-    },
-    {
-      "rule": "CARVE-P9-034",
-      "edits": [
-        {
-          "file": "scripts/spec/layout.mjs",
-          "find": "        attrs: def.attrs,\n      })\n      i++\n      continue",
-          "replace": "        attrs: def.attrs,\n      })\n      if (!top) blocks.push({ t: 'para', lines: [''] })\n      i++\n      continue"
         }
       ]
     },

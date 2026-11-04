@@ -21,8 +21,10 @@ An indented quote prefix keeps an invisible plus follower in its host
  > b
 .
 <blockquote>
-  <blockquote><p>a</p></blockquote>
-  <p>b</p>
+  <blockquote>
+    <p>a</p>
+    <p>b</p>
+  </blockquote>
 </blockquote>
 ```
 
@@ -33,7 +35,9 @@ An indented quote prefix keeps an invisible plus follower in its host
  > b
 .
 <blockquote>
-  <blockquote><p>a</p></blockquote>
-  <p>b</p>
+  <blockquote>
+    <p>a</p>
+    <p>b</p>
+  </blockquote>
 </blockquote>
 ```

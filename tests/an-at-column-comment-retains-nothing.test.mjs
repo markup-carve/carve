@@ -28,9 +28,9 @@ for (const depth of [0, 1, 2]) for (const nested of [0, 1, 2]) {
         const source = [...parents, ...head, ...comment, ' '.repeat(column - 1) + 'FOLLOW']
           .map(line => '> '.repeat(depth) + line).join('\n') + '\n'
         const body = leaf(parse(source).blocks)
-        // The line's content is erased; quoted marker prefixes remain.
+        // The line is erased with its quote prefixes (carve#5129).
         if (kind === 'line') {
-          const control = [...parents, ...head, ...(depth ? [''] : []), ' '.repeat(column - 1) + 'FOLLOW']
+          const control = [...parents, ...head, ' '.repeat(column - 1) + 'FOLLOW']
             .map(line => '> '.repeat(depth) + line).join('\n') + '\n'
           assert.deepEqual(parse(source).blocks, parse(control).blocks, html(source))
         } else assert.equal(JSON.stringify(body).includes('FOLLOW'), false, html(source))
@@ -77,10 +77,7 @@ for (const depth of [0, 1, 2]) for (const column of [2, 3]) {
     test(`an at/past-column comment clears an earlier low comment: depth ${depth}, column ${column}, ${kind}`, () => {
       const source = ['- HEAD', ' %% low', ' '.repeat(column) + kind, ' FOLLOW']
         .join('\n').split('\n').map(line => '> '.repeat(depth) + line).join('\n') + '\n'
-      if (kind === '%% c' && depth > 0) {
-        const control = ['- HEAD', '', '', ' FOLLOW'].map(line => '> '.repeat(depth) + line).join('\n') + '\n'
-        assert.deepEqual(parse(source).blocks, parse(control).blocks, html(source))
-      } else assert.deepEqual(leaf(parse(source).blocks), [{t: 'para', lines: kind === '%% c' ? ['HEAD', 'FOLLOW'] : ['HEAD']}], html(source))
+      assert.deepEqual(leaf(parse(source).blocks), [{t: 'para', lines: kind === '%% c' ? ['HEAD', 'FOLLOW'] : ['HEAD']}], html(source))
     })
   }
 }

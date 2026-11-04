@@ -35,9 +35,7 @@ for (const host of hosts) {
     test(`${JSON.stringify(host)} over ${JSON.stringify(invisible)}: a block at the marker column attaches as without it`, () => {
       for (const block of ['text', '# H', '> q', '```\nk\n```']) {
         const tail = prefix(host, block)
-        const quoteMarker = /^(?:[ \t]*>[ ]?)+/.exec(prefix(host, invisible))?.[0].trimEnd()
-        const retained = (invisible === '%% c' || invisible === '[r]: /u') && quoteMarker ? `${quoteMarker}\n` : ''
-        assert.equal(html(`${host}\n${prefix(host, invisible)}\n${tail}\n`), html(`${host}\n${retained}${tail}\n`), block)
+        assert.equal(html(`${host}\n${prefix(host, invisible)}\n${tail}\n`), html(`${host}\n${tail}\n`), block)
       }
     })
     test(`${JSON.stringify(host)} over ${JSON.stringify(invisible)}: an invisible or visible line off the column refuses`, () => {
