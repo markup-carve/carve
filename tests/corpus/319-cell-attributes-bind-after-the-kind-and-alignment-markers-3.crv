@@ -1,2 +1,2 @@
 |= Item |= Cost |
-| Pen |>{.num} 9 |
+| Pen |{> .num} 9 |

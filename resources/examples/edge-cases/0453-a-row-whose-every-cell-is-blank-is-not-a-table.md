@@ -121,7 +121,7 @@ An empty cell carrying an alignment run:
 ::: compare
 
 ```carve
-|> |
+|{>} |
 ```
 
 ```html

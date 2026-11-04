@@ -5,14 +5,16 @@
     {
       "id": "each-alignment",
       "source": "| Left | Center | Right | Plain |\n|:---|:---:|---:|---|\n| a | b | c | d |\n",
-      "fmt": "|=< Left |=~ Center |=> Right |= Plain |\n| a | b | c | d |\n",
-      "roundtrip": "| Left | Center | Right | Plain |\n|:---|:---:|---:|---|\n| a | b | c | d |\n"
+      "fmt": "|={<} Left |={~} Center |={>} Right |= Plain |\n| a | b | c | d |\n",
+      "roundtrip": "| Left | Center | Right | Plain |\n|:---|:---:|---:|---|\n| a | b | c | d |\n",
+      "legacyFmt": "|=< Left |=~ Center |=> Right |= Plain |\n| a | b | c | d |\n"
     },
     {
       "id": "header-only",
       "source": "| Left | Center | Right |\n|:---|:---:|---:|\n",
-      "fmt": "|=< Left |=~ Center |=> Right |\n",
-      "roundtrip": "| Left | Center | Right |\n|:---|:---:|---:|\n"
+      "fmt": "|={<} Left |={~} Center |={>} Right |\n",
+      "roundtrip": "| Left | Center | Right |\n|:---|:---:|---:|\n",
+      "legacyFmt": "|=< Left |=~ Center |=> Right |\n"
     },
     {
       "id": "body-wider-than-separator",

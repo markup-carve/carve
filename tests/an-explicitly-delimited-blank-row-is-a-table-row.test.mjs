@@ -35,9 +35,9 @@ test('a lone pipe has no slot and stays prose', () => {
 test('an empty marked cell needs the space that ends its run', () => {
   assert.deepEqual(shape(onlyRow('|= |\n').cells[0]), { ...empty, header: true })
   assert.deepEqual(shape(onlyRow('|=|\n').cells[0]), { ...empty, content: '=' })
-  assert.deepEqual(shape(onlyRow('|> |\n').cells[0]), { ...empty, align: 'right' })
+  assert.deepEqual(shape(onlyRow('|{>} |\n').cells[0]), { ...empty, align: 'right' })
   assert.deepEqual(shape(onlyRow('|>|\n').cells[0]), { ...empty, content: '>' })
-  assert.deepEqual(shape(onlyRow('|=~{.x} |\n').cells[0]), { header: true, align: 'center', attrs: '{.x}', content: '' })
+  assert.deepEqual(shape(onlyRow('|={~ .x} |\n').cells[0]), { header: true, align: 'center', attrs: '{.x}', content: '' })
   assert.deepEqual(shape(onlyRow('|{#x} |\n').cells[0]), { ...empty, attrs: '{#x}' })
   assert.deepEqual(shape(onlyRow('|{#x}|\n').cells[0]), { ...empty, content: '{#x}' })
 })

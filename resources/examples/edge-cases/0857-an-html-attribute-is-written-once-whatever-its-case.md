@@ -128,7 +128,7 @@ A cell merges its alignment into an authored `style`.
 ::: compare
 
 ```carve
-|>{style="color:red"} a |
+|{> style="color:red"} a |
 ```
 
 ```html

@@ -71,7 +71,7 @@ An explicitly delimited row of blank cells is a table
 ```
 
 ```
-|> |
+|{>} |
 .
 <table>
   <tbody>
@@ -91,7 +91,7 @@ An explicitly delimited row of blank cells is a table
 ```
 
 ```
-|=~{.x} |
+|={~ .x} |
 .
 <table>
   <thead>
@@ -137,7 +137,7 @@ An explicitly delimited row of blank cells is a table
 ```
 
 ```
-|{bad!!} |
+| {bad!!} |
 .
 <table>
   <tbody>

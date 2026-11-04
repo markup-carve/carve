@@ -34,7 +34,7 @@ cell still sets the whole column's alignment.
 ::: compare
 
 ```carve
-|=~{#score} Score |
+|={~ #score} Score |
 | 9 |
 ```
 
@@ -58,7 +58,7 @@ alignment composes with the authored block rather than replacing it.
 
 ```carve
 |= Item |= Cost |
-| Pen |>{.num} 9 |
+| Pen |{> .num} 9 |
 ```
 
 ```html
@@ -122,8 +122,8 @@ compose with cell attributes written in the new position.
 ::: compare
 
 ```carve
-|=<{.h} Name |=>{.c} Score |{.head}
-| Ann |>{.num} 9 |{.win}
+|={< .h} Name |={> .c} Score |{.head}
+| Ann |{> .num} 9 |{.win}
 ```
 
 ```html

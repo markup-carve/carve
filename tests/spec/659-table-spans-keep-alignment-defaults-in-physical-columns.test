@@ -23,7 +23,7 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|=> Wide|<|=~ Last|
+|={>} Wide|<|={~} Last|
 |a|b|c|
 .
 <table>
@@ -37,7 +37,7 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|> Wide|<|~ Last|
+|{>} Wide|<|{~} Last|
 |:--|:--|:--|
 |a|b|c|
 .
@@ -53,7 +53,7 @@ Table spans keep alignment defaults in physical columns
 
 ```
 {header-rows=1}
-|> Wide|<|~ Last|
+|{>} Wide|<|{~} Last|
 |a|b|c|
 .
 <table>
@@ -67,7 +67,7 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|< Wide|<|<|~ Last|
+|{<} Wide|<|<|{~} Last|
 |a|b|c|d|
 .
 <table>
@@ -79,7 +79,7 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|a|?^ <|
+|a|{?^} \<|
 .
 <table>
   <tbody>
@@ -105,7 +105,7 @@ Table spans keep alignment defaults in physical columns
 
 ```
 {header-rows=1 aligns=right,left}
-|> First|< Second|
+|{>} First|{<} Second|
 |a|b|
 .
 <table>
@@ -119,9 +119,9 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|=>^ A|<|=~ B|
+|={>^} A|<|={~} B|
 |a|b|c|
-|=<v D|<|= End|
+|={<v} D|<|= End|
 |d|e|f|
 .
 <table>
@@ -138,7 +138,7 @@ Table spans keep alignment defaults in physical columns
 
 ```
 |a|b|
-|=> X|=~ Y|
+|={>} X|={~} Y|
 |c|d|
 .
 <table>
@@ -249,7 +249,7 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|~ |
+|{~} |
 .
 <table>
   <tbody>
@@ -259,7 +259,7 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|> |
+|{>} |
 .
 <table>
   <tbody>
@@ -269,7 +269,7 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|~{.x} |
+|{~ .x} |
 .
 <table>
   <tbody>

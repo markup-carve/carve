@@ -3,7 +3,7 @@
 ::: compare
 
 ```carve
-|= Name |=> Age |=~ City |
+|= Name |={>} Age |={~} City |
 | Alice  | 28     | NYC     |
 | Bob    | 34     | London  |
 ```

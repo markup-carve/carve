@@ -1,9 +1,9 @@
 A table alignment run carries two independent axes
 
 ```
-|=~ Item |=>^ Qty |
+|={~} Item |={>^} Qty |
 | Apple | 12 |
-| Subtotal |<v 12 |
+| Subtotal |{<v} 12 |
 .
 <table>
   <thead>

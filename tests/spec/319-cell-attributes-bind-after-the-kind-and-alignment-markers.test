@@ -15,7 +15,7 @@ Cell attributes bind after the kind and alignment markers
 ```
 
 ```
-|=~{#score} Score |
+|={~ #score} Score |
 | 9 |
 .
 <table>
@@ -30,7 +30,7 @@ Cell attributes bind after the kind and alignment markers
 
 ```
 |= Item |= Cost |
-| Pen |>{.num} 9 |
+| Pen |{> .num} 9 |
 .
 <table>
   <thead>
@@ -63,8 +63,8 @@ Cell attributes bind after the kind and alignment markers
 ```
 
 ```
-|=<{.h} Name |=>{.c} Score |{.head}
-| Ann |>{.num} 9 |{.win}
+|={< .h} Name |={> .c} Score |{.head}
+| Ann |{> .num} 9 |{.win}
 .
 <table>
   <thead>

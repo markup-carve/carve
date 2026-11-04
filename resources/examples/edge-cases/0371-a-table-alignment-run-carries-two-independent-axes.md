@@ -8,9 +8,9 @@ defaults; a later row-header run or a body-cell run overrides only that cell.
 ::: compare
 
 ```carve
-|=~ Item |=>^ Qty |
+|={~} Item |={>^} Qty |
 | Apple | 12 |
-| Subtotal |<v 12 |
+| Subtotal |{<v} 12 |
 ```
 
 ```html

@@ -33,7 +33,7 @@ origin's marker applies only to the origin column (CARVE-P9-004).
 ::: compare
 
 ```carve
-|=> Price |<< |=~ Stock |
+|={>} Price |{<} < |={~} Stock |
 | 12.50 | EUR | 3 |
 ```
 

@@ -61,7 +61,7 @@ A row whose every cell is blank is not a table
 ```
 
 ```
-|> |
+|{>} |
 .
 <table>
   <tbody>

@@ -1676,8 +1676,8 @@ With no leading header row, every first cell can still be a row header — the t
 ::: compare
 
 ```carve
-|=> a |
-|=< b |
+|={>} a |
+|={<} b |
 | 1 |
 ```
 
@@ -1698,7 +1698,7 @@ With no leading header row, every first cell can still be a row header — the t
 ::: compare
 
 ```carve
-|=> a |
+|={>} a |
 |= b |
 | 1 |
 ```
