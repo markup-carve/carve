@@ -61,5 +61,6 @@
   "glob-shaped-strong": "*.js,*.ts\n",
   "html-comment-renders-as-text": "<!-- TODO secret -->\n",
   "markdown-definition-paragraph": "Term\n: definition\n",
-  "github-alert-marker": "> [!WARNING]\n> Careful.\n"
+  "github-alert-marker": "> [!WARNING]\n> Careful.\n",
+  "deprecated-cell-alignment": "|=> Price |\n| 1 |\n"
 }

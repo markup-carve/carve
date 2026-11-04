@@ -1,1 +1,0 @@
-The pinned carve-js counts a blank inside an item's %%% span, with only the closer after it, as loosening the list, as the spec model did before markup-carve/carve#5030 (carve-js line of #5030 open).

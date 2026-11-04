@@ -37,7 +37,3 @@
 #     Delete the line in the same commit as the fix.
 #
 # Format: <document id><space><space><reason>
-docs/validation.md#1  pinned carve-js still renders a refused marker as a letter; PART 9 §17 L3, carve#5013
-docs/parsing-ambiguities.md#4  markup-carve/carve#5012 (carve-js), PART 0 S1 erases a one-line comment or definition before layout; the pinned engine still treats it as a boundary.
-docs/cheatsheet.md#3  markup-carve/carve#5091 D3, PART 9 §5 T10: the spec reads leading alignment symbols inside cell braces; the pinned carve-js still reads only the retired marker run.
-docs/native-features-analysis.md#6  markup-carve/carve#4980 stage 1, PART 9 §5 T4/T9: the spec reads `|= < |` as a header-kind colspan placeholder; the pinned carve-js still renders `<` as text.

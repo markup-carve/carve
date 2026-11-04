@@ -74,7 +74,7 @@ test('native cells preserve the two formerly unspellable header trees', () => {
 test('an empty aligned header still has a native spelling', () => {
   const source = '| | a |\n|:--|--:|\n| 1 | 2 |\n'
   const fmt = '|={<} |={>} a |\n| 1 | 2 |\n'
-  assert.equal(carveToCarve(source), '|=< |=> a |\n| 1 | 2 |\n')
+  assert.equal(carveToCarve(source), fmt)
   assert.equal(renderDoc(parse(fmt)), renderDoc(parse(source)))
   assert.equal(carveToHtml(carveToCarve(source)), carveToHtml(source))
 })

@@ -1,1 +1,0 @@
-The pinned carve-js skips an invisible line after a + only at the marker column; the spec skips every invisible line the host keeps, at or past its content column too (markup-carve/carve#5130, carve-js line open).

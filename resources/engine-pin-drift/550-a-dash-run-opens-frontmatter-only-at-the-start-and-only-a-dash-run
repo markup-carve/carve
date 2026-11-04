@@ -1,1 +1,0 @@
-The pinned carve-js reads a lone first-line --- as a thematic break; PART 1 now consumes it as frontmatter through EOF (markup-carve/carve#5016).

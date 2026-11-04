@@ -1,1 +1,0 @@
-markup-carve/carve#4980 stage 1, PART 9 §5 T9: the pinned carve-js still reads `|= ^ |` as text instead of a header-kind orphan span placeholder.

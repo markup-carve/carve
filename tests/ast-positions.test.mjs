@@ -332,7 +332,9 @@ test('no corpus document has a span starting on a line terminator', () => {
     // the source as it arrived, so applying those would move every offset in a
     // CRLF or BOM'd document (carve#876).
     const source = replaceNulls(raw)
-    const findings = findingsFor(parse(raw), source)
+    // The PART 12 wire shape: carve-js applies the carve#5136 omissions in
+    // toAstJson, and its parse tree keeps the folded paragraph's span.
+    const findings = findingsFor(toAstJson(parse(raw)), source)
     const unexpected = findings.filter(
       (f) =>
         !f.startsWith('missing pos on ') &&
@@ -1130,56 +1132,21 @@ test('an astral footnote label does not shift a same-line list start', () => {
  * step of each engine's fix.
  */
 const DECLARED_LIST_INDENT_START = [
-  "05-lists-14.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "05-lists-8.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "151-indented-ordered-marker-content-column-includes-the-marker-indent.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "157-an-indented-attribute-line-attaches-at-top-level-2.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "161-below-content-column-div-body-in-a-list-item-stays-literal.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-5.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-7.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "206-a-nested-list-in-a-footnote-body-stays-nested.crv 4  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "245-sibling-markers-that-reach-one-column-are-one-list.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open-4.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open-5.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "290-adjacent-sibling-lists-survive-the-round-trip-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "290-adjacent-sibling-lists-survive-the-round-trip.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "322-an-attribute-block-reaches-the-nested-list-it-precedes-9.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "410-a-footnote-continuation-survives-a-blank-run-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "410-a-footnote-continuation-survives-a-blank-run-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "422-a-recognized-opener-in-a-body-needs-no-blank-line-above-it-5.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "423-one-authored-base-rule-reaches-a-definition-nested-in-a-list-item-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-2.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-5.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-6.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-9.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "447-the-host-does-not-change-which-column-a-definition-reaches-7.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "503-a-block-opener-indented-under-a-definition-term-ends-the-term-at-every-depth-9.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-14.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-16.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-3.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-4.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-12.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "556-a-closed-block-leaves-no-frame-for-the-line-below-12.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "556-a-closed-block-leaves-no-frame-for-the-line-below-4.crv 4  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "556-a-closed-block-leaves-no-frame-for-the-line-below-5.crv 4  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "556-a-closed-block-leaves-no-frame-for-the-line-below-7.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-5.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-6.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-7.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
@@ -1188,17 +1155,8 @@ const DECLARED_LIST_INDENT_START = [
   "615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-7.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "616-a-line-is-read-in-the-container-whose-column-it-reaches-12.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "616-a-line-is-read-in-the-container-whose-column-it-reaches-5.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "616-a-line-is-read-in-the-container-whose-column-it-reaches-7.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "632-a-continuation-marker-uses-its-container-column-34.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "636-a-tab-indented-nested-list-starts-at-its-marker.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "637-definition-body-note-and-fence-owner-boundaries-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "637-definition-body-note-and-fence-owner-boundaries-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "653-a-wrapped-attribute-line-opened-at-a-container-s-column-is-one-construct-8.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "666-a-line-at-the-marker-column-leaves-a-closed-nested-body-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "666-a-line-at-the-marker-column-leaves-a-closed-nested-body.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "697-a-final-tab-does-not-change-list-ownership-in-a-description.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "700-a-marker-line-sublist-stays-open-in-a-description-body.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "756-a-description-keeps-a-list-marker-below-its-hosted-footnote.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
@@ -1208,54 +1166,18 @@ const DECLARED_LIST_INDENT_START = [
   "800-a-list-marker-under-a-note-paragraph-in-a-description-is-text.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "801-a-footnote-body-refuses-a-first-block-at-its-body-column-2.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "801-a-quote-on-a-description-body-marker-line-takes-a-plus-at-its-column-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "806-a-marker-folds-into-the-paragraph-a-first-block-plus-took.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "81-paragraph-interruption-15.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "811-a-lazy-line-after-a-narrower-list-in-a-note-folds-into-its-item-2.crv 4  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "811-a-lazy-line-after-a-narrower-list-in-a-note-folds-into-its-item-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "811-a-lazy-line-after-a-narrower-list-in-a-note-folds-into-its-item.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "821-an-attribute-run-after-a-lone-plus-leads-a-sublist-at-the-content-column-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "821-an-attribute-run-after-a-lone-plus-leads-a-sublist-at-the-content-column-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "821-an-attribute-run-after-a-lone-plus-leads-a-sublist-at-the-content-column.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "840-content-behind-a-lead-tab-offers-no-first-block-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "846-a-lazy-line-continues-a-quoted-term-only-as-plain-text-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "846-a-lazy-line-continues-a-quoted-term-only-as-plain-text-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "846-a-lazy-line-continues-a-quoted-term-only-as-plain-text-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "846-a-lazy-line-continues-a-quoted-term-only-as-plain-text-5.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "846-a-lazy-line-continues-a-quoted-term-only-as-plain-text-6.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "846-a-lazy-line-continues-a-quoted-term-only-as-plain-text-7.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "846-a-lazy-line-continues-a-quoted-term-only-as-plain-text-8.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "846-a-lazy-line-continues-a-quoted-term-only-as-plain-text.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "846-a-quoted-term-takes-no-lazy-marker-or-separator.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "851-a-first-block-plus-shape-reads-the-one-attach-rule-5.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "852-a-plus-after-a-note-in-an-item-gives-the-note-its-list-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "852-a-plus-after-a-note-in-an-item-gives-the-note-its-list.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "853-a-line-after-a-marker-line-folded-into-a-sublist-item-folds-too.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "853-an-indented-list-starts-a-new-list-at-a-different-marker-2.crv 4  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "853-an-indented-list-starts-a-new-list-at-a-different-marker.crv 4  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter-5.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "855-a-marker-after-a-note-plus-paragraph-is-text.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "856-a-child-on-a-note-s-marker-line-is-measured-from-its-source-column-4.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "865-a-list-marker-inside-an-item-ends-a-caption-like-a-paragraph-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "868-a-line-below-a-note-div-past-a-closed-block-leaves-the-note.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "868-a-list-marker-between-an-item-s-columns-is-a-sibling-only-on-every-axis-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "868-a-list-marker-between-an-item-s-columns-is-a-sibling-only-on-every-axis-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "868-a-list-marker-between-an-item-s-columns-is-a-sibling-only-on-every-axis-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "868-a-list-marker-between-an-item-s-columns-is-a-sibling-only-on-every-axis-5.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "868-a-list-marker-between-an-item-s-columns-is-a-sibling-only-on-every-axis-6.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "868-a-list-marker-between-an-item-s-columns-is-a-sibling-only-on-every-axis-7.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "868-a-list-marker-between-an-item-s-columns-is-a-sibling-only-on-every-axis.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "868-a-paragraph-a-lone-plus-attaches-stays-the-item-s-open-paragraph.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "871-a-first-block-plus-whose-next-line-misses-the-opener-s-marker-column-is-a-letter-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "872-every-list-item-measures-its-content-against-its-own-content-column-6.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "872-the-third-confirmation-round-s-model-findings-11.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "872-the-third-confirmation-round-s-model-findings-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "872-the-third-confirmation-round-s-model-findings.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "875-a-fence-opened-at-a-block-start-in-a-note-keeps-no-paragraph-open-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "875-a-fence-opened-at-a-block-start-in-a-note-keeps-no-paragraph-open.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "878-a-folded-marker-keeps-a-note-item-measured-from-its-source-column-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "878-a-folded-marker-keeps-a-note-item-measured-from-its-source-column-3.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "878-a-folded-marker-keeps-a-note-item-measured-from-its-source-column.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "879-a-shifted-line-block-keeps-a-lazy-follower-at-its-reader-column.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "880-an-own-line-plus-reaches-a-marker-line-quote-at-its-authored-column-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
@@ -1543,6 +1465,49 @@ test('an emptied item reaching past its marker line markup still reports', () =>
     assert.equal(findings.length, 1, line)
     assert.match(findings[0], /span covers more than its own markup on an empty "list_item"/)
   }
+})
+
+test('a container ends after a consumed plus that leaves no node (carve#5161)', () => {
+  // `- a` / `+` / `- x` and `> > q` / `> +`: all three engines end the host
+  // after the authored `+`.
+  const item = (source, end, childEnd) => ({
+    type: 'document',
+    children: [
+      {
+        type: 'list',
+        pos: pos(0, end),
+        items: [
+          {
+            type: 'list_item',
+            pos: pos(0, end),
+            children: [{ type: 'paragraph', pos: pos(2, childEnd), children: [] }],
+          },
+        ],
+      },
+    ],
+  })
+  assert.deepEqual(stopFindings(item('- a\n+\n', 5, 3), '- a\n+\n'), [])
+  const quote = {
+    type: 'document',
+    children: [
+      {
+        type: 'block_quote',
+        pos: pos(0, 9),
+        children: [{ type: 'block_quote', pos: pos(2, 5), children: [{ type: 'paragraph', pos: pos(4, 5), children: [] }] }],
+      },
+    ],
+  }
+  assert.deepEqual(stopFindings(quote, '> > q\n> +\npara\n'), [])
+  // A line holding anything besides the plus is not the container's markup.
+  assert.equal(stopFindings(item('- a\n+ b\n', 7, 3), '- a\n+ b\n').length, 1)
+  // A `> +` line opens a sibling quote; it is not the list's markup.
+  assert.equal(stopFindings(item('- a\n> +\n', 7, 3), '- a\n> +\n').length, 1)
+  // Only a container can host a `+`; a paragraph reaching over one still reports.
+  const para = {
+    type: 'document',
+    children: [{ type: 'paragraph', pos: pos(0, 4), children: [{ type: 'text', value: 'ab', pos: pos(0, 2) }] }],
+  }
+  assert.equal(stopFindings(para, 'ab\n+\n').length, 1)
 })
 
 test('a container holding an unplaced child is skipped rather than guessed at', () => {

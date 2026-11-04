@@ -688,7 +688,7 @@
             "column": 5,
             "includes": [
               "sibling",
-              "block quote"
+              "list item"
             ]
           }
         ]

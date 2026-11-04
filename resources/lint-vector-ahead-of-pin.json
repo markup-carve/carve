@@ -1,12 +1,4 @@
 {
-  "thematic-break-spelling/lone-dash-run-at-byte-0": {
-    "actual": [
-      [
-        1,
-        1
-      ]
-    ]
-  },
   "ordered-list-split-by-indent/right-aligned-pair": {
     "actual": []
   },
@@ -26,12 +18,6 @@
     "actual": []
   },
   "ordered-list-split-by-indent/shift-right": {
-    "actual": []
-  },
-  "second-marker-after-skipped-note": {
-    "actual": []
-  },
-  "second-marker-after-note-first-block": {
     "actual": []
   }
 }

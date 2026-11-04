@@ -1,1 +1,0 @@
-The pinned carve-js retains a line comment or one-line definition as a layout boundary; PART 0 S1 erases it before layout (markup-carve/carve#5012).

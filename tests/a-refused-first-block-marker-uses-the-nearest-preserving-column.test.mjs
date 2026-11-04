@@ -12,13 +12,14 @@ for (const [name, block] of [
 ]) {
   test(`${name} below a refused nested plus uses the nearest preserving column`, () => {
     const source = `- foo\n  1. +\n${block.map(line => `    ${line}`).join('\n')}\n`
-    // carve#4868: the refused `+` is escaped and the block sits at the enclosing content column.
-    const expected = `- foo\n  1. \\+\n${block.map(line => `  ${line}`).join('\n')}\n`
+    // carve#5013: the refused `+` is consumed, so the block stays in the enclosing item.
+    // The empty item's spelling is carve#5108; only the re-read is pinned here.
+    const written = carveToCarve(source)
     const attached = `- foo\n  1. +\n${block.map(line => `  ${line}`).join('\n')}\n`
 
-    assert.equal(carveToCarve(source), expected)
-    assert.notEqual(html(expected), html(source))
-    assert.notEqual(html(attached), html(expected))
+    assert.equal(html(written), html(source))
+    assert.doesNotMatch(html(source), /\+/)
+    assert.notEqual(html(attached), html(source))
     assert.doesNotMatch(html(attached), /\+/)
   })
 }

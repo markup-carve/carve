@@ -1,1 +1,0 @@
-The pinned engines read a description span in a sublist, closed at the outer item's column after a blank, as the spec model did before markup-carve/carve#4996 moved it (carve-js line of #4996 open).

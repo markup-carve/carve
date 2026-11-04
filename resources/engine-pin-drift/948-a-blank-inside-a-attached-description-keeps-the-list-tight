@@ -1,1 +1,0 @@
-The pinned carve-js gives a line at a +-attached description's body column to the item instead of the <dd> (markup-carve/carve#5055, carve-js line open).

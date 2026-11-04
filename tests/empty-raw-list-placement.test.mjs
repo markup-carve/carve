@@ -8,7 +8,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 // Declared lag: the pinned carve-js keeps an item tight across a blank before a
 // sub-block, which PART 9 §17 L1 now loosens (carve#5015, carve-js line open).
 // Structure is still compared; only the <p> wrapper is excused. Goes with the pin bump.
-const L1_LAG = true
+const L1_LAG = false
 const lagging = (source) => L1_LAG && /\n[> ]*\n/.test(source)
 const unwrapped = (html) => html.replace(/<\/?p>/g, '')
 const engineAgrees = (source, html) => lagging(source)
@@ -39,13 +39,8 @@ const TASK_CASE = '- [ ] ```=html\n  ```\n'
 test('matching, dropped and visible blocks retain placement across 108 shapes', () => {
   const cases = JSON.parse(readFileSync(new URL('./fixtures/empty-raw-list-placement.json', import.meta.url), 'utf8'))
   assert.equal(cases.length, 108)
-  for (const [index, { source, html }] of cases.entries()) {
+  for (const { source, html } of cases) {
     assert.equal(renderDoc(parse(source)), html, source)
-    if (index >= 90 && index <= 92) {
-      // The pinned engine still treats the line comment as a placement boundary (carve#5012).
-      assert.notEqual(carveToHtml(source), html, source)
-      continue
-    }
     if (PIN_LAG && source === TASK_CASE) {
       // The detector is the missing class itself, so the first engine to write
       // it fails here and takes the declaration with it.

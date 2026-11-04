@@ -50,32 +50,30 @@
                     {
                       "type": "text",
                       "value": "head"
+                    },
+                    {
+                      "type": "soft_break"
+                    },
+                    {
+                      "type": "text",
+                      "value": "tail"
                     }
                   ]
+                },
+                {
+                  "type": "comment",
+                  "content": "hidden",
+                  "block": false,
+                  "pos": {
+                    "startLine": 2,
+                    "endLine": 2,
+                    "startColumn": 2,
+                    "endColumn": 11,
+                    "startOffset": 8,
+                    "endOffset": 17
+                  }
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "comment",
-          "content": "hidden",
-          "block": false,
-          "pos": {
-            "startLine": 2,
-            "endLine": 2,
-            "startColumn": 2,
-            "endColumn": 11,
-            "startOffset": 8,
-            "endOffset": 17
-          }
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "tail"
             }
           ]
         }
@@ -133,6 +131,13 @@
                     {
                       "type": "text",
                       "value": "head"
+                    },
+                    {
+                      "type": "soft_break"
+                    },
+                    {
+                      "type": "text",
+                      "value": "tail"
                     }
                   ]
                 },
@@ -150,15 +155,6 @@
                   }
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "tail"
             }
           ]
         }
