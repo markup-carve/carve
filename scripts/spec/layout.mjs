@@ -1542,55 +1542,62 @@ function decodeAlignment(marks) {
   return null
 }
 
-// PART 9 SS5 T11: a cell's marker run is the kind marker, the alignment run and
-// the attribute block, in T10's order, and it ENDS AT A SPACE. Returns the
-// decoded run plus its length, or null when the cell carries no run - either
-// because it opens with content, or because what looked like a run is not
-// followed by the space that terminates one. Both cases mean the same thing to
-// the caller: every character of the segment is content.
-//
-// Candidates are tried LONGEST FIRST, because a run that fails the space test
-// may contain a shorter one that passes: `|=~ x |` is header-plus-center, while
-// `|=~x~ |` is neither (it is the highlight its author wrote). The kind marker
-// is not tried separately - nothing shorter than `=` can start an alignment
-// run, so if the `=` family fails there is no run.
+// D3: alignment symbols lead the cell attribute block. A third symbol or a
+// duplicate axis invalidates the whole block, leaving it as literal content.
+function cellAlignment(payload) {
+  const match = /^([<>~?])([\^~v])?(?=\s|$)/.exec(payload)
+  if (!match) return null
+  const alignment = decodeAlignment(match[1] + (match[2] ?? ''))
+  if (!alignment) return null
+  const tail = payload.slice(match[0].length).trimStart()
+  if (/^[<>~?^v](?:\s|$)/.test(tail)) return null
+  const attrs = tail ? `{${tail}}` : null
+  if (attrs && parseAttrBlock(attrs) === null) return null
+  return { ...alignment, attrs, alignOnly: !attrs }
+}
+
+// T11: the kind marker and cell attribute block end at a literal space.
 function readMarkerRun(seg) {
   const header = seg[0] === '='
   const start = header ? 1 : 0
-  const marks = (/^[<>~^v?]{1,2}/.exec(seg.slice(start)) || [''])[0]
-  for (let len = marks.length; len >= 0; len--) {
-    const alignment = decodeAlignment(marks.slice(0, len))
-    if (alignment === null) continue
-    const afterMarks = start + len
-    // Validity decides here, not at render time: "the whole brace payload must
-    // be valid attribute syntax; otherwise the `{` is literal content". Testing
-    // it downstream made an invalid payload REFUSE the document instead.
-    const at = new RegExp(`^\\{(${ATTR_PAYLOAD})\\}`).exec(seg.slice(afterMarks))
-    const attrs = at && parseAttrBlock(`{${at[1]}}`) !== null ? `{${at[1]}}` : null
-    for (const withAttrs of attrs ? [true, false] : [false]) {
-      const end = withAttrs ? afterMarks + at[0].length : afterMarks
-      if (end === 0) return null // no marker at all: the unpadded cell is unchanged
-      if (seg[end] !== ' ') continue // a tab is not padding (PART 7), nor is the closing pipe
-      return { header, align: alignment.align, valign: alignment.valign, attrs: withAttrs ? attrs : null, end }
+  const at = new RegExp(`^\\{(${ATTR_PAYLOAD})\\}`).exec(seg.slice(start))
+  if (at) {
+    const aligned = cellAlignment(at[1])
+    const ordinary = parseAttrBlock(at[0]) !== null
+    const end = start + at[0].length
+    if (seg[end] === ' ' && (aligned || ordinary)) {
+      return { header, align: aligned?.align ?? null, valign: aligned?.valign ?? null,
+        attrs: aligned?.attrs ?? (ordinary ? at[0] : null), alignOnly: aligned?.alignOnly ?? false, end }
     }
   }
-  return null
+  // The released 0.1.13 marker spelling remains readable until 0.2.0.
+  // It has the same tree as the braced spelling; the writer emits braces.
+  const marks = (/^[<>~^v?]{1,2}/.exec(seg.slice(start)) || [''])[0]
+  for (let len = marks.length; len > 0; len--) {
+    const alignment = decodeAlignment(marks.slice(0, len))
+    if (!alignment) continue
+    const afterMarks = start + len
+    const legacyAttrs = new RegExp(`^\\{(${ATTR_PAYLOAD})\\}`).exec(seg.slice(afterMarks))
+    for (const withAttrs of legacyAttrs && parseAttrBlock(legacyAttrs[0]) !== null ? [true, false] : [false]) {
+      const end = withAttrs ? afterMarks + legacyAttrs[0].length : afterMarks
+      if (seg[end] === ' ') return { header, ...alignment, attrs: withAttrs ? legacyAttrs[0] : null,
+        alignOnly: false, deprecated: true, end }
+    }
+  }
+  if (header && seg[1] === ' ') return { header, align: null, valign: null, attrs: null, alignOnly: false, end: 1 }
+  return null // a tab never ends a run
 }
 
 // classify one raw cell segment
 function parseCell(seg) {
   const cell = { header: false, kindMarker: false, align: null, valign: null, attrs: null, content: '' }
-  // A span occupies the whole cell. Its optional alignment is glued to the
-  // span glyph and needs no marker-run terminator (PART 2 span_cell).
-  // `|=^ |` is a header-kind `^`: the `=` is glued to the pipe and the glyph (T4).
-  const span = /^(?:=(?=\^)| *)([<^])([<>~](?:[\^~v])?|\?[\^~v])? *$/.exec(seg)
-  if (span && (!span[2] || decodeAlignment(span[2]))) {
-    const alignment = decodeAlignment(span[2] ?? '')
+  // A kind marker may be glued to either span glyph. The trailing space
+  // separates a span from an unpadded payload such as `=^` or `=<`.
+  const span = /^(?:=(?=[<^])| *)([<^]) +$/.exec(seg)
+  if (span || ['<', '^'].includes(padTrim(seg))) {
     cell.header = seg[0] === '='
-    cell.spanMarker = span[1]
-    cell.align = alignment.align
-    cell.valign = alignment.valign
-    cell.content = span[1]
+    cell.spanMarker = span?.[1] ?? padTrim(seg)
+    cell.content = cell.spanMarker
     return cell
   }
   const run = readMarkerRun(seg)
@@ -1598,6 +1605,15 @@ function parseCell(seg) {
   // inline pass unescapes it into a literal `=` data cell.
   let s = seg
   if (run) {
+    const content = padTrim(seg.slice(run.end))
+    if (run.alignOnly && ['<', '^'].includes(content)) {
+      cell.header = run.header
+      cell.spanMarker = content
+      cell.content = content
+      cell.align = run.align
+      cell.valign = run.valign
+      return cell
+    }
     cell.header = run.header
     cell.kindMarker = run.header
     cell.align = run.align

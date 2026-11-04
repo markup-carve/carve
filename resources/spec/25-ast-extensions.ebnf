@@ -152,40 +152,26 @@
       one `col` per entry. Markdown keeps only column horizontal alignment where
       it can emit a delimiter row. Plain and ANSI ignore all three fields.
 
-   20. TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES -- NORMATIVE [CARVE-P12-040]. A cell
-      alignment run is glued to its opening pipe, after an optional `=` kind
-      marker, and is terminated by exactly one space after an optional glued
-      attribute block. A span cell instead glues its run to `^` or `<` and
-      terminates at cell padding or the closing pipe. Horizontal markers are `<`, `~`, `>`; vertical markers
-      are `^`, `~`, `v` for top, middle and bottom. A horizontal marker may
-      stand alone; a vertical marker MUST follow a horizontal marker or the
-      `?` inheritance placeholder. Vertical-then-horizontal order is invalid.
-      `~~` means center plus middle. Any other
-      duplicate axis is invalid and falls back visibly rather than consuming
-      a prefix. The only valid order is horizontal (`x`) then vertical (`y`).
+   20. TABLE CELL ALIGNMENT SYMBOLS CARRY TWO INDEPENDENT AXES -- NORMATIVE [CARVE-P12-040].
+      A cell's alignment symbols lead its attribute block, after an optional
+      `=` kind marker: `|{>^ .num} 12.50 |` and `|={~} Stock |`. Horizontal
+      symbols are `<`, `~`, `>` for left, center and right; vertical symbols
+      are `^`, `~`, `v` for top, middle and bottom. A horizontal symbol may
+      stand alone. A vertical symbol MUST follow a horizontal symbol or the
+      `?` inheritance placeholder. Reverse order and duplicate axes leave
+      the whole block as literal content; `~~` or `~ ~` means center plus
+      middle. `?^`, `?~` and `?v` contribute only a cell-level `valign` and
+      inherit horizontal alignment from the column. A lone `?` is invalid.
 
-      A lone `~` is horizontal center. `?` is the horizontal-inheritance
-      placeholder and is valid only before a vertical marker: `?^`, `?~` and
-      `?v` contribute no cell-level `align`, so that field resolves from the
-      column while the run contributes `top`, `middle` or `bottom` as the
-      cell-level `valign`. A lone `?`, a reversed vertical-plus-`?` pair and
-      every other `?` run are ordinary visible content. A native `|=` run
-      supplies a default only from a head row (T9), and only for its starting
-      physical column. A marker on
-      a GFM-promoted head-row cell overrides the delimiter default only in
-      that same column. Its colspan does not copy the default into covered
-      columns. A plain `|` run supplies only that cell, including when
-      `header-rows` later promotes the row to HTML headers. A run with no
-      following space is not alignment: this deliberately changes the glued
-      `|>text` family so ordinary marker runs have an unambiguous terminator. `lint`
-      reports the old glued form and `fmt --migrate` inserts the space.
-
-      `table_cell` carries optional `valign` beside `align`, with the same
-      inheritance rule. A span placeholder carries its optional glued
-      alignment in those same fields. In a head row its explicit marker sets
-      its physical column's default under T7. A cell containing only `^` or
-      `<`, with any space padding or none, remains a rowspan/colspan marker;
-      the lone glyph takes precedence over an empty alignment run.
+      `table_cell` carries optional `align` and `valign` fields. A head-row
+      header cell's symbols set the default only for its physical starting
+      column (T7 and T9). A header cell's colspan does not copy that default
+      into a covered column. A placeholder whose block contains only
+      alignment stays a span and may set its physical column's default in a
+      head row. A block with any ordinary attribute makes a lone `^` or `<`
+      literal content. A body cell's symbols apply only to that cell, even
+      when `header-rows` promotes it to an HTML header. A GFM delimiter colon
+      remains lower priority than an explicit head-row symbol.
 
    21. U+0000 IS REPLACED ON INGEST -- NORMATIVE [CARVE-P12-041]. A reader
       replaces every U+0000 with U+FFFD REPLACEMENT CHARACTER in every string
@@ -370,11 +356,11 @@
       a resolved reference keep `ref` and `rawRef` beside `href` and a resolved
       footnote reference keep its label beside its number (PART 12 §5).
 
-      Its optional `align` and `valign` fields record a glued span alignment
+      Its optional `align` and `valign` fields record an alignment-only block
       even when the marker found no origin. The canonical writer writes that
       alignment on the placeholder itself, preserving the cell's tree fields.
-      Its `header` field is the authored kind: true for a header-kind `^`
-      (`|=^ |`, PART 9 §5 T4) or a separator-promoted placeholder, false for
+      Its `header` field is the authored kind: true for a header-kind `^` or `<`
+      (`|=^ |` or `|=< |`, PART 9 §5 T4) or a separator-promoted placeholder, false for
       a bare `^` or `<`, whose rendered kind T9 derives.
 
         |=^ |

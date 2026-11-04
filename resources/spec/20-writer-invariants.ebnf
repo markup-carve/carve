@@ -325,12 +325,13 @@
    2. THE ESCAPING RULE -- NORMATIVE [CARVE-P11-006]. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
-      In a data table cell, a payload consisting of `^` or `<` followed by a
-      glued `span_alignment` (PART 2) would re-read as a span placeholder.
-      Escape its opener, for example `| \<< |` for literal `<<`. A space
+      In a data table cell, a payload consisting of `^` or `<`, including after
+      an alignment-only block (PART 2), would re-read as a span placeholder.
+      Escape its opener, for example `|{?^} \< |` for a literal `<`. A space
       followed by further content, as in `| <x |`, remains ordinary data.
-
-      Escaping more than that is a defect, not a safe default.
+      Escape a lone data payload `=^` or `=<` and a leading `=` before a brace
+      block when that `=` would turn the cell into a header. Escaping more than
+      needed to preserve the tree is a defect, not a safe default.
 
       THE UNIT IS THE OPENER, NOT THE CHARACTER. Where a construct opens on a
       RUN of characters, the whole run is escaped. `--` opens an en dash

@@ -1,0 +1,32 @@
+{
+  "rule": "deprecated-cell-alignment",
+  "fix": "fmt",
+  "vectors": [
+    {
+      "name": "head-row column default",
+      "source": "|=> Price |\n| 12 |\n",
+      "fixed": "|={>} Price |\n| 12 |\n"
+    },
+    {
+      "name": "body inherited horizontal and bottom vertical",
+      "source": "|?v x |\n",
+      "fixed": "|{?v} x |\n"
+    },
+    {
+      "name": "alignment before ordinary attributes",
+      "source": "|>{.num} 9 |\n",
+      "fixed": "|{> .num} 9 |\n"
+    },
+    {
+      "name": "glued horizontal and vertical marker",
+      "source": "|>^ x |\n",
+      "fixed": "|{>^} x |\n"
+    },
+    {
+      "name": "bare span has no finding",
+      "source": "| < | ^ |\n",
+      "fixed": "| < | ^ |\n",
+      "findings": []
+    }
+  ]
+}

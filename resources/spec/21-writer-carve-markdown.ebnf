@@ -114,19 +114,19 @@
    6e. A TABLE CELL'S CONTENT IS PADDED -- NORMATIVE [CARVE-P11-014].
       The canonical writer emits every cell as its PREFIX glued to the opening
       pipe, then ONE space, then the content, then one space before the closing
-      pipe. The prefix is the kind marker `=`, the alignment marker and the
-      attribute block, in the order PART 9 §5 T10 fixes:
+      pipe. The prefix is the kind marker `=` and the optional attribute block;
+      alignment symbols lead that block (PART 9 §5 T10):
 
           |= Heading |
           |={.total} Total |= 99 |
-          |=<{.h} Name |=>{.c} Score |{.head}
+          |={< .h} Name |={> .c} Score |{.head}
 
       An EMPTY cell takes a single space (`|= |`, `| |`), not one from each end,
       so a column does not grow a space each time the document is formatted.
 
       A ROW OF EMPTY CELLS IS WRITTEN AS A ROW. Every AST cell gets one
       explicit slot, so one empty data cell is `| |` and two are `| | |`; a
-      marked empty cell keeps its prefix and the space after it (`|=~{.x} |`).
+      marked empty cell keeps its prefix and the space after it (`|={~ .x} |`).
       PART 9 §5 CARVE-P9-082 reads that row back with the same row count,
       cell count, kinds, alignment, attributes and empty children. A table
       with zero rows has no spelling, and this clause does not give it one.
@@ -224,19 +224,21 @@
       forbids the padding, and one class of cell construct is written WITH the
       padding inside it:
 
-        span_cell      = header_rowspan_marker, [span_alignment], {space}
-                       | rowspan_marker, [span_alignment], {space}
-                       | colspan_marker, [span_alignment], {space} ;
-        span_alignment = alignment_run ;
-        header_rowspan_marker = '=', '^' ;
+        span_cell      = header_rowspan_marker | header_colspan_marker
+                       | ['='], cell_alignment_block, space, ('^' | '<'), {space}
+                       | rowspan_marker | colspan_marker ;
+        header_rowspan_marker = '=', '^', space ;
+        header_colspan_marker = '=', '<', space ;
         rowspan_marker = {space}, '^' ;
         colspan_marker = {space}, '<' ;
 
-      A cell whose whole payload is `^` or `<`, optionally followed by a
-      glued alignment run, therefore re-reads as a SPAN however it is padded.
+      A cell whose whole payload is `^` or `<`, optionally following an
+      alignment-only block, therefore re-reads as a SPAN however it is padded.
       CARVE-P11-014's space does nothing for it. §2 applies by its own test:
       omitting the escape changes the re-parsed AST, so the payload is escaped
-      and the writer emits `| \^ |`, `| \< |`, or `| \<< |` for literal data.
+      and the writer emits `| \^ |`, `| \< |`, or `|{?^} \< |` for literal data.
+      A data payload `=^` or `=<` is escaped at `=`; a literal `=` before a
+      brace block is escaped whenever it would start a header prefix.
 
       THE RULE IS THE TEST, NOT THE TWO CHARACTERS. A cell payload is escaped
       wherever omitting the escape would make the cell re-read as something
@@ -272,18 +274,15 @@
       that spelling: with the field, a separator row; without it, `|=` header
       cells. The canonical `fmt` writer ignores the field when choosing a
       spelling. It writes `|=` header cells for every head row. Each header cell retains its
-      alignment as `|=<`, `|=~`, or `|=>`; a cell with no alignment uses `|=`.
-      A span placeholder keeps its marker and any glued alignment, including
-      an orphan in the first row and a covered placeholder whose marker alone
-      sets its column default. A `^` placeholder whose `header` field is true
-      is written header-kind, `|=^ |` (PART 9 §5 T4), so a separator-promoted
-      orphan keeps its kind: `| ^ | a |` over a separator is written
-      `|=^ |= a |`. The canonical writer NEVER writes a separator row. GFM
-      separator form remains valid input.
-
-      A head row whose only cells are `<` placeholders, such as `| < |` over a
-      separator, has no native spelling yet: a `<` has no header-kind form.
-      carve#4980 holds that decision.
+      alignment in the cell's leading attribute-block symbols (`|={< |`,
+      `|={~} |`, `|={>} |`); a cell with no alignment uses `|=` alone.
+      A span placeholder keeps its marker and any alignment-only block,
+      including an orphan in the first row and a covered placeholder whose
+      block alone sets its column default. A `^` or `<` placeholder whose
+      `header` field is true is written header-kind, `|=^ |` or `|=< |`
+      (PART 9 §5 T4). Thus a separator-promoted orphan keeps its kind:
+      `| ^ | a |` over a separator becomes `|=^ |= a |`. The canonical writer
+      NEVER writes a separator row. GFM separator form remains valid input.
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,
