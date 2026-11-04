@@ -12,8 +12,7 @@ to the whole column (CARVE-P9-004), so the empty cell carries it too
 ::: compare
 
 ```carve
-| a | b |
-|-:|:-:|
+|={>} a |={~} b |
 | < | c |
 ```
 
@@ -36,8 +35,7 @@ marker aligns.
 ::: compare
 
 ```carve
-| ^ |={>} b |
-|-:|---|
+|={>} ^ |={>} b |
 | c | d |
 ```
 

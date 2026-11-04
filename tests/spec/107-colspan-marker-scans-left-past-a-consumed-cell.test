@@ -1,8 +1,7 @@
 Colspan marker scans left past a consumed cell
 
 ```
-| p | q | r | s |
-|---|---|---|---|
+|= p |= q |= r |= s |
 | a | b | c | d |
 | p | ^ | < | e |
 .

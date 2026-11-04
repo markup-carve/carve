@@ -33,12 +33,10 @@ header row becomes part of the first table's body.
 ```carve
 - x
 +
-| a |
-|---|
+|= a |
 | b |
 +
-| a |
-|---|
+|= a |
 | b |
 ```
 

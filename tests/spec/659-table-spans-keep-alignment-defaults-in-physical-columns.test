@@ -37,8 +37,7 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|{>} Wide|<|{~} Last|
-|:--|:--|:--|
+|={>} Wide |={<} < |={~} Last |
 |a|b|c|
 .
 <table>

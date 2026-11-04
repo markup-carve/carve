@@ -1,7 +1,6 @@
 {#fig-m}
 ::: figure
-| Kind | N |
-|------|---|
+|= Kind |= N |
 | a    | 1 |
 
 ```js

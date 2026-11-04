@@ -18,12 +18,10 @@ Adjacent block openers in an attached run stay separate
 ```
 - x
 +
-| a |
-|---|
+|= a |
 | b |
 +
-| a |
-|---|
+|= a |
 | b |
 .
 <ul>

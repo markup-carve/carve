@@ -9,8 +9,7 @@ cell with no marker it sits directly against the opening `|`.
 ::: compare
 
 ```carve
-|{.highlight} Total | 99 |
-|---|---|
+|={.highlight} Total |= 99 |
 | a | b |
 ```
 

@@ -61,8 +61,7 @@ a  %% hidden
 ::: compare
 
 ```carve
-| a	%% hidden | b |
-|---|---|
+|= a	%% hidden |= b |
 | 1 | 2 |
 ```
 
@@ -82,8 +81,7 @@ a  %% hidden
 ::: compare
 
 ```carve
-| %% hidden | b |
-|---|---|
+|= %% hidden |= b |
 | 1 | 2 |
 ```
 

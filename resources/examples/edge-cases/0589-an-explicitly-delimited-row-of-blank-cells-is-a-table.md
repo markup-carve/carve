@@ -576,8 +576,7 @@ header row (T7):
 ::: compare
 
 ```carve
-| | |
-|---|---|
+|= |= |
 | a | b |
 ```
 

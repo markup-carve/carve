@@ -95,8 +95,7 @@ Native head rows with span placeholders
 ```
 
 ```
-| ^ | a |
-|---|---|
+|= ^ |= a |
 | 1 | 2 |
 .
 <table>

@@ -16,8 +16,7 @@ that rowspan, so the leftward walk runs off the edge with nothing to merge and t
 ::: compare
 
 ```carve
-| A | B | C |
-|---|---|---|
+|= A |= B |= C |
 | x | y | z |
 | ^ | < | d |
 ```

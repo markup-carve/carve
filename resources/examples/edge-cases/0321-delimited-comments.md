@@ -116,8 +116,7 @@ the spelling it was given rather than normalizing one into the other.
 ::: compare
 
 ```carve
-| a {% hidden %} b | c |
-|---|---|
+|= a {% hidden %} b |= c |
 | d %% tail | e |
 ```
 
