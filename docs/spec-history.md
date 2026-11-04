@@ -312,6 +312,17 @@ to derive each bound from the parser limit using that representation's
 worst-case expansion. Per-engine measurements and the rollout status were
 removed from PART 9 and PART 12 (carve#494, carve#533).
 
+## PART 10 HTML serialization provenance
+
+The ticket numbers below used to sit inside the active clauses of
+`19-html-serialization.ebnf`. The design reasons moved to
+[Technical rationale](./technical-rationale.md#html-serialization).
+
+- R4, a marker-derived class appended after authored classes
+  (`class="verse line-block"`): carve#2328 and carve#2338.
+- §1, a table cell's computed alignment adds its declaration to `style`:
+  carve#4715.
+
 ## Security target convergence
 
 URL filtering and C0-control handling first landed in individual renderers.

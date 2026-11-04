@@ -502,6 +502,48 @@ auto-resolving wiki links, list continuation, admonitions, abbreviations,
 comments, mentions and tags, and target-aware rendering - are the subject of
 the section above and of the [Case Study](./case-study/).
 
+## HTML serialization (PART 10) {#html-serialization}
+
+Reasons behind rules in `resources/spec/19-html-serialization.ebnf`. The
+clauses themselves state only the rule.
+
+- §1: rewriting a table's `align` placement as `text-align` would change the
+  document, not modernize an equivalent spelling.
+- CARVE-P10-009 `data-task-state`: on the box, the attribute would put the
+  selector one level below the content it wants to reach. It is what lets a
+  document survive a render-and-import cycle: without it `[-]` comes back as
+  `[ ]`, silently, because both spellings render the same box and no
+  diagnostic can see a difference that is not there. Naming the state in the
+  `aria-label` would invent copy the author did not write; the states are an
+  author's shorthand rather than a vocabulary the spec can translate.
+- CARVE-P10-015, raw blocks: a preservation mode that loses a block silently
+  is worse than a default one that says so, so the option never suppresses
+  the diagnostic. A carrier for a raw block would put arbitrary foreign
+  content into an attribute or a comment, the target can never render those
+  bytes, and roundtrip import is not a trust decision (CARVE-P10-017).
+- CARVE-P10-016, no `data-carve-src` row: the verbatim-source carrier is not
+  awaiting a field. CARVE-P11-013 rules the glued opener canonical and the
+  tree records no padding, fence length or fence character, so the one
+  distinction such a carrier is observed to move, the space in
+  ```` ``` php ````, is a spelling the specification already ruled against
+  keeping. A field for it would reverse that clause rather than add to it.
+- CARVE-P10-016, the width bound: the widths arrive as a comma-joined list an
+  importer reads off untrusted HTML, and the writer spells one `-` per unit,
+  so six characters of attribute buy a megabyte of separator row. The source
+  side has no such amplification (an author who types a thousand dashes has
+  already paid for them), so the bound belongs on the carrier rather than on
+  the field. A partial read or a clamp would both put a separator row on the
+  page whose widths nobody wrote; refusing leaves the table correct in its
+  other spelling. A writer writes no out-of-bound carrier because a carrier a
+  conforming reader will refuse is a round-trip promise the writer cannot
+  keep.
+- CARVE-P10-016, content-escaped carriers: written unescaped, a
+  `data-carve-raw` payload of `<b>` opens a tag the span never closes and the
+  rest of the paragraph disappears into it. Reading the serialized markup back
+  escapes the payload a second time, so a raw inline holding `&` returns
+  holding `&amp;`. One escape per element because a span holding `abc` would
+  import as `\a\b\c`, which is not Carve.
+
 ## Concrete ambiguities Carve resolves
 
 ## Paths vs italics
