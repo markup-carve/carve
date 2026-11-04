@@ -173,6 +173,14 @@ The specification now retains the required output or wire behavior only;
 implementation coverage belongs in generated conformance reports (carve#625,
 carve#637, carve#917, carve#994, carve#1551, carve#1601, carve#1624).
 
+## PART 11 §1 to §5: writer invariant provenance
+
+- §5, an inline extension's content is bracketed content: carve#4513.
+- §1, the growth half of the invariant is usually where over-escaping is
+  first noticed: a value that gains an escape per pass.
+- CARVE-P11-007: CARVE-P11-009's bound on how far the fallback reaches was
+  not the only thing that was too wide; the escapes inside the unit were too.
+
 ## Inline spacing roles
 
 The grammar once widened padding slots to general whitespace because padding

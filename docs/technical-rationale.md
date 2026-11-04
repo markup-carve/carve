@@ -655,6 +655,31 @@ Carve is designed so implementers can rely on:
 That should lower the cost of building a second implementation that
 matches the first one.
 
+## Writer invariants (PART 11 §1 to §5) {#writer-invariants}
+
+Reasons behind rules in `resources/spec/20-writer-invariants.ebnf`. The
+clauses themselves state only the rule.
+
+- CARVE-P11-003: a block that contributes nothing is not a side, so the rule
+  is written over contributed tokens rather than over sibling positions.
+- CARVE-P11-004: a contract that promises the invariant without
+  qualification, while carrying an exception nothing declares, is worse than
+  a narrower contract that is true as written, because every reader of the
+  first one is entitled to rely on it. The rule is stated over what a shape
+  spells because the two shapes share no node type: `image` is in the inline
+  vocabulary and `comment` in the block one (docs/profiles.md), so a rule over
+  types would have to name them one at a time. A writer that consulted
+  resolution would write the same paragraph differently depending on whether
+  a definition appears elsewhere in the document, which is why the writer
+  does not read `paragraph.blockImage`. Uniformity is the half of the rule
+  that decides the shape rather than merely describing it.
+- CARVE-P11-005: the clause states what it does not forgive because a
+  checker asserting `parse(fmt(x)) == parse(x)` has to encode both halves.
+- CARVE-P11-010: a lone bracket is in the always-escaped set because of the
+  search, not the output. A page with one such bracket per link, such as a
+  wiki's `[edit]` markers, would otherwise drive CARVE-P11-009's halving to
+  single units and spend its whole budget there.
+
 ## What this buys authors
 
 The same design helps writers, even if they never think in parser terms.

@@ -14,8 +14,7 @@
       author's spelling (indentation, marker alignment, escape form) but MUST
       NOT change what the document says. Authored destinations are preserved,
       denied schemes included (CARVE-P9-054). The second
-      forbids growth -- a value that gains an escape per pass violates it,
-      which is how over-escaping is usually first noticed.
+      forbids growth -- a value that gains an escape per pass violates it.
 
       FOR `fmt`, EQUALITY ALSO IGNORES `table.separatorWidths`. That
       author-choice field records a separator spelling,
@@ -87,8 +86,7 @@
       construct delimiter. This applies to every inline construct, including
       future constructs.
 
-      A BLOCK THAT CONTRIBUTES NOTHING IS NOT A SIDE, which is why the rule is
-      written over contributed tokens rather than over sibling positions.
+      A BLOCK THAT CONTRIBUTES NOTHING IS NOT A SIDE.
 
         <figcaption><p>a</p><p></p><p>b</p></figcaption>
 
@@ -168,10 +166,7 @@
         - A PRODUCER WITH NO CHANNEL STATES THE CEILING IN ITS CONTRACT.
           `carve fmt` and the `carve` render target have no diagnostic list and
           can only throw, so what they owe is that their stated contract NAMES
-          this shape as one it does not cover. A contract that promises the
-          invariant without qualification, while carrying an exception nothing
-          declares, is worse than a narrower contract that is true as written:
-          every reader of the first one is entitled to rely on it.
+          this shape as one it does not cover.
 
       STATED OVER WHAT THE SHAPE SPELLS, never over the node type, the same way
       CARVE-P11-037 is. Two shapes have the property, and they share no node type,
@@ -179,9 +174,7 @@
       whole content is one `image`, which writes `![a](u)` and reads back as
       the standalone image; and a `paragraph` whose whole content is one
       `comment`, which writes `%% c` and reads back as the block comment.
-      `image` is in the INLINE vocabulary and `comment` is in the BLOCK one
-      (docs/profiles.md), so a rule written over the types would have had to
-      name them one at a time. A block whose content spells anything ELSE -- a
+      A block whose content spells anything ELSE -- a
       second node beside it, a text run, a NO-BREAK SPACE (§7) -- keeps its
       wrapper and no ceiling is reached.
 
@@ -190,15 +183,12 @@
 
       DECIDED ON THE SPELLING, NEVER ON RESOLUTION -- and PART 9R R7 does not
       change that. R7's promotion phase reads the RESOLVED tree; this clause
-      reads what a shape SPELLS, and the two are deliberately independent. A
-      writer that consulted resolution would write the same paragraph
-      differently depending on whether a definition appears somewhere else in
-      the document -- the reason `paragraph.blockImage` (PART 12 §23) is a
-      field the writer does not read. So this clause's ceiling is reached by
+      reads what a shape SPELLS, and the two are independent:
+      `paragraph.blockImage` (PART 12 §23) is a field the writer does not
+      read. So this clause's ceiling is reached by
       `![a](u)` and by `![a][r]` alike, defined or not.
 
-      THE CEILING IS UNIFORM AND NOT POSITIONAL, which is the half that decides
-      the shape rather than merely describing it. Padding does not spell the
+      THE CEILING IS UNIFORM AND NOT POSITIONAL. Padding does not spell the
       image paragraph at any level: ` ![a](u)` is a standalone image at top
       level, and inside a list item or a definition description the marker's
       own content column absorbs the padding, so `- ![a](u)` and
@@ -239,8 +229,7 @@
 
       WRAPPER LOSS IS THE ONLY STRUCTURAL EQUALITY CARVE-OUT -- NORMATIVE [CARVE-P11-005].
       The paragraph above says what this clause forgives. This
-      says what it does NOT, because a checker asserting `parse(fmt(x)) ==
-      parse(x)` has to encode both halves.
+      says what it does NOT.
 
       THE RULE. The two trees MUST agree once every wrapper this clause names
       is dissolved into its content, on BOTH sides. Nothing else is forgiven: a
@@ -373,8 +362,8 @@
       ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT -- NORMATIVE [CARVE-P11-007].
       One occurrence needing the conservative form does not put
       the OTHER
-      occurrences in the unit with it. CARVE-P11-009 bounds how far the fallback reaches;
-      the reach is not the only thing that was too wide. A paragraph
+      occurrences in the unit with it. CARVE-P11-009 bounds how far the fallback
+      reaches. A paragraph
       whose text reads `{.note}` is written
 
         \{.note}
@@ -436,12 +425,9 @@
       safe default -- the escape changes nothing, and it is in the document
       only because a DIFFERENT block needed one.
 
-      THE COMPARISON STAYS DOCUMENT-SCOPED, WHICH IS THE OTHER QUESTION. §4
-      rules out re-parsing a LINE on its own, because a line has lost the
-      document's link-reference and footnote definitions and reports a
-      difference escaping never caused. That argument is about what the writer
-      PARSES in order to decide; this section is about which BYTES the decision
-      then selects.
+      THE COMPARISON STAYS DOCUMENT-SCOPED (§4). This section is about which
+      BYTES the decision selects, not what the writer PARSES in order to
+      decide.
 
       THE UNIT NESTS, AND IT IS TRIED SMALLEST FIRST. The inline run carrying
       the occurrence is tried before the block that holds it. A failure that
@@ -514,10 +500,7 @@
         This is §2's answer, not an exception to it: a lone bracket is always
         load bearing. A lone `]` closes the enclosing construct early. A lone
         `[` takes the construct's own `]` as its partner and leaves the
-        construct's opener unmatched. What the membership changes is the
-        SEARCH: a page with one such bracket per link, such as a wiki's
-        `[edit]` markers, otherwise drives CARVE-P11-009's halving to single units and
-        spends its whole budget there.
+        construct's opener unmatched.
 
         A span whose content is one `[`, beside a link and a span holding one
         `]`:
@@ -552,8 +535,8 @@
         Nowhere else. `f(x)`, `(see above)` and `[a] (b)` stay bare, and so
         does `[a](b c)`, whose tail is not a complete link destination.
 
-        An INLINE EXTENSION's content (`:name[...]`) is bracketed content
-        (carve#4513). Corpus `45-inline-extensions-6` is a balanced pair,
+        An INLINE EXTENSION's content (`:name[...]`) is bracketed content.
+        Corpus `45-inline-extensions-6` is a balanced pair,
         written as authored:
 
           :foo[a [b] c]
