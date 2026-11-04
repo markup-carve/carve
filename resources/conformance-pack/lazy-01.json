@@ -444,7 +444,7 @@
 {"id":"lazy-5d7a0b5b7aa4","source":"> q\n> ```\n  \ntail\n","html":"<blockquote>\n  <p>q</p>\n  <pre><code></code></pre>\n</blockquote>\n<p>tail</p>"},
 {"id":"lazy-5d96f214fe7c","source":"> :: [d]: ut\n>   [r]: /u\ntail\ntail\n","html":"<blockquote>\n  <dl>\n    <dt>[d]: ut</dt>\n  </dl>\n</blockquote>\n<p>tail\ntail</p>"},
 {"id":"lazy-5e3b700691b8","source":"> > [^f]: t\n  >:::\n  >   ```\n>   x\nflush\n","html":"<blockquote>\n  <blockquote>\n\n  </blockquote>\n  <pre><code>x\n</code></pre>\n</blockquote>\n<p>flush</p>"},
-{"id":"lazy-5e5b39627ed0","source":"> +\nq\n> +\n","html":"<blockquote><p>q</p></blockquote>"},
+{"id":"lazy-5e5b39627ed0","source":"> +\nq\n> +\n","html":"<blockquote>\n  <p>q</p>\n  <p>+</p>\n</blockquote>"},
 {"id":"lazy-5e6ce23bb8dc","source":":: t\n:  [^f]: note\n    - nested\n     - nested\ntail\n","html":"<dl>\n  <dt>t</dt>\n  <dd>\n    <ul>\n      <li>nested</li>\n      <li>nested\ntail</li>\n    </ul>\n  </dd>\n</dl>"},
 {"id":"lazy-5ea0802ba06c","source":"- {.k}\n","html":"<ul>\n  <li></li>\n</ul>"},
 {"id":"lazy-5ed698cc1361","source":"para\n1. - +\n","html":"<p>para\n1. - +</p>"},

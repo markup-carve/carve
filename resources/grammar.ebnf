@@ -6648,6 +6648,10 @@ EOF = (* end of file *) ;
            block at the marker column, or drop the `+`.
          - `- a` / `  - +` / `para` is refused: the inner marker column is 2.
          - `> > +` / `# H` is refused: the line lacks the outer quote's prefix.
+         - `> +` / `q` / `> +` gives the quote `q` and then a paragraph `+`:
+           the attached paragraph is the quote's, so the second line
+           continues that quote and its `+` stands at the quote's content
+           column, a letter as in `> a` / `> +` (carve#5132).
          - `- +` / `- b` is refused: an empty first item and a sibling item.
          - `- +` / `%% c` / `text` gives the item the paragraph, and a
            `%%%` comment fence reads the same. So does a paragraph holding

@@ -3519,7 +3519,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // frames the walk closed when it read that block where it stands.
     if (attachedTo && CONT_MARKER.test(trimWs(src).replace(/^(?:>[ \t]*)*/, ''))) {
       const stands = stripQuotes(src, attachedTo.depth)
-      if (stands && CONT_MARKER.test(trimWs(stands.rest)) && walkIndent(stands.rest).col === attachedTo.host.markerCol && attachedTo.endsAt(at)) {
+      // Behind a quote host's own `>` the `+` continues that quote at its content column (carve#5132).
+      const own = attachedTo.host.kind === 'quote' ? stripQuotes(src, attachedTo.depth + 1) : null
+      const reaches = stands && CONT_MARKER.test(trimWs(stands.rest)) && walkIndent(stands.rest).col === attachedTo.host.markerCol
+      if ((reaches || own && CONT_MARKER.test(trimWs(own.rest))) && attachedTo.endsAt(at)) {
         frames.length = 0
         frames.push(...attachedTo.frames)
       }
