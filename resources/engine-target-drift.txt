@@ -175,11 +175,6 @@ carve/php/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-2  mar
 carve/php/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-3  markup-carve/carve#4868 (carve-php), the pinned writer predates it; carve-php main writes the fixture
 carve/php/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-4  markup-carve/carve#4868 (carve-php), the pinned writer predates it; carve-php main writes the fixture
 carve/php/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-5  markup-carve/carve#4868 (carve-php), the pinned writer predates it; carve-php main writes the fixture
-carve/rust/929-a-refused-plus-is-escaped-when-the-block-below-would-attach  markup-carve/carve#4868 (carve-rs), CARVE-P11-042 spells a refused + as \+ when the block below would attach
-carve/rust/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-2  markup-carve/carve#4868 (carve-rs), CARVE-P11-042 spells a refused + as \+ when the block below would attach
-carve/rust/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-3  markup-carve/carve#4868 (carve-rs), CARVE-P11-042 spells a refused + as \+ when the block below would attach
-carve/rust/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-4  markup-carve/carve#4868 (carve-rs), CARVE-P11-042 spells a refused + as \+ when the block below would attach
-carve/rust/929-a-refused-plus-is-escaped-when-the-block-below-would-attach-5  markup-carve/carve#4868 (carve-rs), CARVE-P11-042 spells a refused + as \+ when the block below would attach
 carve/rust/01-emphasis-13  markup-carve/carve#4967 (carve-rs), the pinned writer unwraps {/a/b/} to the bare /a/b/; carve-rs main escapes the slash instead of bracing it
 carve/rust/425-an-ordered-item-s-separator-width-sets-its-content-column-12  markup-carve/carve#4811 (carve-rs), the writer still emits one space after a roman marker, which the ruling reads as text
 carve/rust/425-an-ordered-item-s-separator-width-sets-its-content-column-13  markup-carve/carve#4811 (carve-rs), the writer still emits one space after a roman marker, which the ruling reads as text
