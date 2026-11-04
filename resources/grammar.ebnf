@@ -9833,8 +9833,8 @@ EOF = (* end of file *) ;
       text, since that loses the attribute under §1.
 
       THE SPACE AFTER A LIST MARKER is one space, except after a letter or
-      roman numeral followed by `.`, which takes two (PART 2 ordered_item,
-      carve#4811): `a.  x`, `A.  x`, `iv.  x`. The item's content column moves
+      roman numeral followed by `.`, which takes two (PART 2 ordered_item):
+      `a.  x`, `A.  x`, `iv.  x`. The item's content column moves
       with the second space, and the item's later lines are indented to it.
 
       FENCE LENGTH IS NOT ONE OF THEM: `code_block` records neither fence
@@ -9845,20 +9845,19 @@ EOF = (* end of file *) ;
       requires the extra width, and §1 holds through both.
 
       THE COMBINED FORM IS RECORDED: a `strong` parsed from `bold_italic`
-      carries `boldItalic` (PART 12 §3), and the writer reproduces it. `/*x*/` is also the spelling Carve teaches, so normalizing
-      it away would rewrite the documented form into one documented nowhere.
+      carries `boldItalic` (PART 12 §3), and the writer reproduces it.
       Where a letter or digit stands against its outer `/`, the bare token
       does not parse (PART 3 `bold_italic`), so the writer spells the strong
       and its emphasis in the forced form: `a{*/y/*}b`.
 
-      AN ITALIC HOLDING A WORD-FLANKED `/` IS WRITTEN BRACED (carve#4810).
+      AN ITALIC HOLDING A WORD-FLANKED `/` IS WRITTEN BRACED.
       A bare span holding its own delimiter between two word characters does
       not form (PART 9 §9 R2), so such an `emphasis` is spelled
       `{/usr/local/}`, not `/usr\/local/`; an `escaped_text` slash the tree
       records is still written escaped.
 
-      A THEMATIC BREAK IS WRITTEN `***`, whatever the author wrote
-      (carve#4973). `---`, `***`, `___`, a longer run and the spaced `- - -`
+      A THEMATIC BREAK IS WRITTEN `***`, whatever the author wrote.
+      `---`, `***`, `___`, a longer run and the spaced `- - -`
       and `* * *` are spellings of one construct, and the canonical writer
       writes every one of them, in every container, as exactly `***`. The AST
       still records the character -- `marker` (PART 12 §3) -- as an
@@ -9956,9 +9955,8 @@ EOF = (* end of file *) ;
       THE PREFIX IS GLUED BECAUSE THE READER REQUIRES IT. A space in front of
       `=` or of an attribute block makes it literal cell content (PART 9 §5
       T10, corpus `table cell attributes`), so only the CONTENT side is the
-      writer's to choose. An UNPREFIXED cell was always padded (`| a | b |`);
-      prefixed and unprefixed cells therefore share one padding rule, and the
-      padded side is the one a reader can scan.
+      writer's to choose. Prefixed and unprefixed cells share one padding
+      rule.
 
       Cell padding follows §6's rule for spelling absent from the AST
       (CARVE-P11-013).
@@ -10066,8 +10064,7 @@ EOF = (* end of file *) ;
       THE RULE IS THE TEST, NOT THE TWO CHARACTERS. A cell payload is escaped
       wherever omitting the escape would make the cell re-read as something
       other than content, which is §2 run over the CELL rather than over the
-      line. Naming `^` and `<` here would be an enumeration that goes stale the
-      next time a cell-level marker is added.
+      line.
 
    6g. A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE -- NORMATIVE [CARVE-P11-041].
       PART 2 admits nine task marker spellings while rendering collapses
@@ -10079,9 +10076,7 @@ EOF = (* end of file *) ;
       by hand or by a converter carries.
 
       `X` IS A CASE, NOT A STATE. `[X]` is written `[x]`.
-      The field admits eight characters rather than nine for that reason: the
-      two spell one state, nothing downstream can tell them apart, and §1 is
-      satisfied because the AST they parse to is the same one.
+      The field admits eight characters rather than nine.
 
       `[_]` SPELLS THE OPEN STATE. A writer retains `_` when it appears in
       `taskState`; absent `taskState` still writes `[ ]` for an open item.
@@ -10177,15 +10172,7 @@ EOF = (* end of file *) ;
       than the content column is an empty code line.
 
       The case this decides is a blank line INSIDE a list item, where the item's
-      continuation is indented. Indenting the blank line to the content column
-      would keep the block structure visible in the source; the empty line wins
-      anyway.
-
-      The empty line is required. A whitespace-only line is not stable: editors
-      that strip trailing whitespace on save, `git apply --whitespace=fix`, and
-      CI whitespace checks all rewrite it, so a formatter emitting one produces
-      output that ordinary tooling changes behind it, and is not idempotent in
-      practice whatever §1 says about it in isolation.
+      continuation is indented: the empty line wins, and it is required.
 
       AND IT DOES EXTEND to whitespace at the end of a line that HAS content.
 
@@ -10227,11 +10214,7 @@ EOF = (* end of file *) ;
       line parses back as a PARAGRAPH and a lone ASCII-space line is a BLANK
       LINE, which is the whole of why the two rows differ.
 
-      NORMALIZING TO A SPACE IS THE ONE ANSWER FORBIDDEN OUTRIGHT. It keeps a
-      node while discarding the single property that distinguishes U+00A0 from
-      a space, and the paragraph it leaves is unspellable, so it vanishes the
-      moment the writer runs -- the two exits then disagree about the same
-      import, and §1 is broken on a document the importer built itself.
+      NORMALIZING TO A SPACE IS THE ONE ANSWER FORBIDDEN OUTRIGHT.
 
       THE DROP IS REPORTED because it is a real loss: an element the input had
       contributes nothing, which is `element-dropped` and needs no new code.
@@ -10290,12 +10273,7 @@ EOF = (* end of file *) ;
       its own accord, AT EVERY DEPTH (PART 9 §23, AN INLINE CONSTRUCT IS NOT A
       DEPTH THE RULE STOPS AT), which is the whole of why the writer may
       spell a `hard_break` there as a BARE NEWLINE rather than as the PART 3
-      form. The depth half is load-bearing and not decoration: a reading under
-      which a boundary inside an emphasis run stays soft takes the permission's
-      own premise away, and this writer rule then LOSES the break on `*a\` over
-      `b*` while claiming §1 preservation. The permission is not
-      general, and it is stated as
-      the PROPERTY it rests on rather than as a list of the places it runs out:
+      form. The permission is not general:
 
         THE WRITER SPELLS A `hard_break` INSIDE A LINE BLOCK AS A BARE
         NEWLINE WHERE, AND ONLY WHERE, RE-READING THAT NEWLINE YIELDS THE
@@ -10305,8 +10283,7 @@ EOF = (* end of file *) ;
       §7 strips a content line's trailing whitespace because CARVE-P2-025 drops it on parse. The
       parser does NOT discard it when a backslash follows: CARVE-P2-025 makes the
       run before a line-break backslash INTERIOR, and PART 9 §23 gives that
-      the visible consequence. So none of this is a new principle, it is §7
-      applied where its condition does not hold.
+      the visible consequence.
 
       A BARE NEWLINE RE-DERIVES A `hard_break` AT A BOUNDARY BETWEEN TWO BODY
       LINES, and nowhere else. CARVE-P9-044 hardens the boundary BETWEEN lines, so a
@@ -10436,8 +10413,7 @@ EOF = (* end of file *) ;
       next line at the item's marker column (`- > p`, then `+`), for a
       top-level and a nested item alike, never a bare `- +` with the block at
       its marker column below it. A blank line before the next block is no
-      substitute for the `+`: it would loosen the item (PART 9 §17 L1,
-      carve#5015). If no spelling round-trips, it reports a writer loss.
+      substitute for the `+`: it would loosen the item (PART 9 §17 L1). If no spelling round-trips, it reports a writer loss.
 
       A refused first-block `+` on a nested opener line is an empty
       structural marker (PART 9 §17 L3). To write a literal letter, the
@@ -10495,7 +10471,7 @@ EOF = (* end of file *) ;
           a div, admonition or block quote written with a closing `:::` fence,
           since a `%%` line written directly below anything else can be read
           into it. A region marker is the one comment that still closes
-          containers (the exception to PART 0 S1, carve#4862): written below a
+          containers (the exception to PART 0 S1): written below a
           list it stands at the list's own column and closes every item of it,
           so it is the list's sibling. Otherwise, and in a tree without
           positions, the ordinary separator applies.
@@ -10629,8 +10605,7 @@ EOF = (* end of file *) ;
 
    7i. A COLLECTED DEFINITION, A COMMENT AND A BLOCK BELOW A BODY HAVE ONE
       LAYOUT -- NORMATIVE [CARVE-P11-079]. Several layouts of these shapes
-      meet §1, and the writer emits the one this clause names
-      (markup-carve/carve#4850). The `.fmt` fixtures of the rows cited below
+      meet §1, and the writer emits the one this clause names. The `.fmt` fixtures of the rows cited below
       are the canonical bytes.
 
       (a) A DEFINITION IN A CONTAINER IS COLLECTED. A link reference or
@@ -10665,7 +10640,7 @@ EOF = (* end of file *) ;
           both delimiters at that container's content column, and each
           payload line at that column plus the indentation it keeps under
           PART 9 §28, so the comment's value survives (§1); rows 418, 508
-          and 508-4 pin where its payload lines go (carve#4988). So
+          and 508-4 pin where its payload lines go. So
 
             - - a
              %% c
@@ -10738,10 +10713,7 @@ EOF = (* end of file *) ;
         M3    any other      never                                    bare
               character
 
-      M2 EXISTS BECAUSE AN AUTHORED ESCAPE CARRIES INTENT. `\-\-` was written
-      so that a processor with smart punctuation on would not read an en
-      dash, and `"` `'` `-` `.` are not Markdown metacharacters, so no M1 row
-      covers them. A document that escapes nothing gains no backslashes from
+      A document that escapes nothing gains no backslashes from
       M2. An implementation whose AST has no `escaped_text` node cannot honor
       M2; that is a defect in the AST, not license to skip the row.
 
