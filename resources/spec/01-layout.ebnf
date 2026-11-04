@@ -66,8 +66,8 @@
              content_column     minimum column of ordinary child blocks
              container_open     whether the frame may own another line
              paragraph_open     whether its current leaf accepts lazy text
-             last_boundary_kind ordinary | blank | line_comment |
-                                fenced_comment | definition | attribute_line |
+             last_boundary_kind ordinary | blank | fenced_comment |
+                                footnote_definition | attribute_line |
                                 heading | thematic_break | quote | code_fence |
                                 raw_fence | colon_fence | table | nested_list |
                                 continuation | end
@@ -151,7 +151,10 @@
         `%%` line comment and a one-line link or abbreviation definition
         before S2: neither supplies a boundary, changes paragraph state or
         selects an owner for the next visible line. A definition still
-        registers document-wide. Retain a comment node with its authored
+        registers document-wide. A region marker (CARVE-P11-073) is not
+        erased: it stays a block-level invisible line (PART 9 §10 I5), so it
+        ends an open paragraph and an unmarked quote, and closes the items its
+        FAMILIES rows name. Retain a comment node with its authored
         spelling and complete source extent in the AST and source map.
         Marker-line structural prefixes remain; only their comment or
         definition content is erased. A `%%%` span is instead block-level:
@@ -190,19 +193,17 @@
 
             > - x
 
-            >   [r]: /u
+            >   > q
 
-            > [r][]
-
-        no item is open when the definition is read, so it is read in the
-        second quote, past that quote's content column, and registers there
-        (S3).
+        no item is open when `> q` is read, so it opens a quote in the
+        second quote, past that quote's content column (S3). Without the
+        blank it opens in the item.
 
         AT OR PAST MEANS THE DEEPEST COLUMN THE LINE REACHES -- NORMATIVE [CARVE-P0-020].
         A line is read in the innermost open container whose content column
         it reaches. A deeper container the line does not reach neither owns
-        nor withholds it. In `- - x` / `   [r]: /url` the items' content
-        columns are 2 and 4, and the definition at column 3 registers in the
+        nor withholds it. In `- - x` / `   > q` the items' content
+        columns are 2 and 4, and the quote at column 3 opens in the
         outer item. Past a content column, extra indentation may change the
         owner but never takes the line out of every owner.
 

@@ -4,9 +4,8 @@
   "boundaries": {
     "ordinary": { "containerOpen": true, "paragraphOpen": true },
     "blank": { "containerOpen": true, "paragraphOpen": false },
-    "line_comment": { "containerOpen": true, "paragraphOpen": false },
     "fenced_comment": { "containerOpen": true, "paragraphOpen": false },
-    "definition": { "containerOpen": true, "paragraphOpen": false },
+    "footnote_definition": { "containerOpen": true, "paragraphOpen": false },
     "attribute_line": { "containerOpen": true, "paragraphOpen": false },
     "heading": { "containerOpen": true, "paragraphOpen": false },
     "thematic_break": { "containerOpen": true, "paragraphOpen": false },
