@@ -8550,6 +8550,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // (raised by codex review). A VERBATIM BODY IS ALSO NOT A PARAGRAPH
       // (CARVE-P0-013), so the answer here is the same either way.
       if (verbatim) { close(); return }
+      // A marker left of an open colon fence ends the item holding it, and the fence with it (PART 0 S1).
+      const marker = descColons.length && idx >= 0 && !lines[idx].startsWith(LAZY) ? matchMarkerAt(ind(idx)) : null
+      if (marker) while (descColons.length && marker.indent < descColons.at(-1).column) descColons.pop()
       const rowOpen = descTableOpen
       descTableOpen = tableRunStep(rowOpen, text)
       // A colon fence line leaves no paragraph open; the body's own lines take
