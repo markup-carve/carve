@@ -293,7 +293,8 @@
          attribute disqualifies a span. A header cell holding literal `<` or
          `^` escapes the glyph as `|= \\< |` or `|= \\^ |`; `|{?^} \\< |` is a
          vertically aligned cell holding literal `<`. A block containing only
-         alignment preserves the span: `|{<} < |` sets its column default.
+         alignment preserves the span: in a head row, `|{<} < |` sets its
+         column default (T7).
          A header cell whose whole content is a span glyph makes a
          HEADER-KIND placeholder: `|= ^ |` is rowspan and `|= < |` is colspan.
          Both keep `span` in the tree. The released `|=< |` is an empty

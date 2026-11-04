@@ -4844,7 +4844,8 @@ EOF = (* end of file *) ;
          attribute disqualifies a span. A header cell holding literal `<` or
          `^` escapes the glyph as `|= \\< |` or `|= \\^ |`; `|{?^} \\< |` is a
          vertically aligned cell holding literal `<`. A block containing only
-         alignment preserves the span: `|{<} < |` sets its column default.
+         alignment preserves the span: in a head row, `|{<} < |` sets its
+         column default (T7).
          A header cell whose whole content is a span glyph makes a
          HEADER-KIND placeholder: `|= ^ |` is rowspan and `|= < |` is colspan.
          Both keep `span` in the tree. The released `|=< |` is an empty
@@ -8329,7 +8330,7 @@ EOF = (* end of file *) ;
       examples are quoted, so their headings do not wrap (CARVE-P9-019):
 
         > {k=v .attr}  -> <ol type="a" k="v" class="attr">
-        > a. alpha
+        > a.  alpha
         > {a=b .c}     -> <h1 a="b" class="c" id="Auto">
         > # Auto
         > {#x a=b}     -> <h1 id="x" a="b">
@@ -8378,7 +8379,7 @@ EOF = (* end of file *) ;
 
       A TABLE CELL'S ALIGNMENT MERGES THE SAME WAY. A cell's `text-align` and
       `vertical-align` declarations (PART 9 §5) are appended to an authored
-      `style` at its authored slot, as above, so `|>{style="color:red"} a |`
+      `style` at its authored slot, as above, so `|{> style="color:red"} a |`
       gives `<td style="color:red; text-align: right;">a</td>`.
 
       The element and value sets are closed. On `<table>`, `align` means block
