@@ -391,9 +391,10 @@
         survives.
 
         Leading space stops no line form (S3), so past a missed item a list
-        marker is a sibling when it matches the list on every §11 N1 axis and
-        otherwise a new list, so `- a` / ` - b` is one list and `- a` / ` * b`
-        and `1. a` / ` a. b` are two (carve#4545). Every item measures its
+        marker is a sibling when it matches the list on every PART 9 §11 N1
+        axis and otherwise a new list, so `- a` / ` - b` is one list and
+        `- a` / ` * b` and `1. a` / ` a.  b` are two (carve#4545; an initial
+        takes two spaces, carve#4811). Every item measures its
         content against its own content column. `- y` / `1. c` / blank /
         `   # h` puts the heading in the `1.` item, the same as `1. c` /
         blank / `   # h` alone (carve#4369).
@@ -443,8 +444,10 @@
         THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK -- NORMATIVE [CARVE-P0-007].
         Marker-line content is the container's first block and answers S4
         like any other block. Headings, tables, thematic breaks, fenced
-        comments, footnote definitions and floating attributes leave no paragraph open, so a
-        following line below the content column closes the container.
+        comments and floating attributes leave no paragraph open, so a
+        following line below the content column closes the container. A
+        footnote definition's own body keeps its paragraph open (FAMILIES
+        row 3, PART 9 §17 L6).
         Ordinary prose, or a container ending in an open paragraph, permits a
         lazy fold. Definitions are collected where written (CARVE-P9-034).
 
@@ -737,8 +740,10 @@ block = heading
    `comment_line`, `reference_definition`, `footnote_definition` and
    `abbreviation_definition` are the INVISIBLE blocks: they are parsed and
    consumed (collected into the definition table / dropped) and emit no
-   output; like `block_attributes` they also interrupt an open paragraph
-   (PART 9 §10, INVISIBLE CONSTRUCTS). *)
+   output. A footnote definition, like `block_attributes`, also interrupts
+   an open paragraph (PART 9 §10 I5); a `comment_line` and a one-line
+   reference or abbreviation definition are erased before layout (PART 0
+   S1) and interrupt nothing. *)
 
 blank_line = {whitespace}, newline ;
 (* ============================================================================
@@ -1096,9 +1101,11 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
      - not blank (a blank line ends the blockquote), and
      - not a line that interrupts a paragraph under PART 9 §10 I1 to I5 in
        the selected owner's coordinates: a heading, table, fenced code opener
-       (§10 I4), `:::` div, thematic break, `:: ` term, or an invisible
-       definition or comment recognized there ends the quote and starts
-       outside it, and
+       (§10 I4), `:::` div, thematic break, `:: ` term, or a footnote
+       definition, `%%%` comment span or block-attribute line recognized
+       there (§10 I5) ends the quote and starts outside it. A `%%` line
+       comment and a one-line link or abbreviation definition are erased
+       before layout (PART 0 S1) and end nothing, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
    A LIST MARKER (bullet or ordered) is NOT an exclusion when it misses only
    quotes and is read in the document, a quote or a colon body: it folds into the
@@ -1328,8 +1335,8 @@ indent = whitespace, {whitespace} ;
    that innermost opener when the next line stands at the opener's marker
    column, through the prefixes of its enclosing quotes. At a list item's
    marker column a list marker is a sibling and a description's `: ` line is a
-   sibling at its marker column, so the `+` is a letter and the refused-marker
-   lint reports it. *)
+   sibling at its marker column, so the `+` is a refused marker: it renders
+   nothing and `continuation-marker-refused` reports it (CARVE-P9-067). *)
 continuation_marker = '+', newline ;
 (* CARVE-P7-001 item 5 removes a line-final space/tab run before this
    production is matched, so that source spelling remains a marker. A
@@ -1698,8 +1705,10 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
      1. a blank line ends the caption;
      2. a line that INTERRUPTS a paragraph under PART 9 §10 I1 to I5 -- a
         heading, blockquote, table, fenced code, `:::` div, thematic break,
-        `:: ` term, `%%%` comment, or a reference, note or abbreviation
-        definition -- ends the caption and starts that block;
+        `:: ` term, `%%%` comment, footnote definition or block-attribute
+        line -- ends the caption and starts that block; a `%%` line and a
+        one-line link or abbreviation definition are erased before layout
+        (PART 0 S1) and end nothing;
      3. a LIST MARKER does NOT end the caption (PART 9 §10 I2): `^ cap` + `- x`
         yields the caption `cap\n- x`;
      4. a further `^ ` line does NOT continue the caption (there is no repeated
@@ -2010,9 +2019,9 @@ quote_block_open = colon_fence:open, space, ">" ;
 (* --- Comments --- *)
 (* A line comment may be indented: optional leading whitespace before `%%` does
    not matter, so an indented line whose first non-whitespace content is `%%` is
-   a comment line just like one in the first column. Like every block, it
-   interrupts an open paragraph (the lines before and after become separate
-   paragraphs) and renders nothing. *)
+   a comment line just like one in the first column. It is erased before
+   layout (PART 0 S1): it renders nothing and does not interrupt an open
+   paragraph, so the lines before and after stay one paragraph. *)
 comment_line = [whitespace], "%%", [space], {character}, newline ;
 
 (* A `%%%` fence line is a DELIMITER plus an INSIGNIFICANT TAIL: only the
@@ -2502,8 +2511,9 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    the normalized key is present, not whether its destination is truthy;
    duplicate definitions still obey PART 9R R1's last-wins rule. A bare empty
    definition is valid but produces `empty-reference-definition`, a warning
-   that does not change its AST or rendering. It follows the existing
-   invisible-opener policy and can interrupt a paragraph. An escaped opener
+   that does not change its AST or rendering. Like any one-line link
+   definition it is erased before layout (PART 0 S1) and does not interrupt
+   a paragraph. An escaped opener
    remains literal, and a line at a quote column that cannot open a
    definition remains paragraph text. *)
 (* ANCHORED AT END OF LINE -- NORMATIVE [CARVE-P3-005]. The production ends in `newline`.
@@ -3575,10 +3585,10 @@ block_attributes = block_attribute_block, {block_attribute_block}, newline ;
 block_attribute_block = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}' ;
 (* A GLUED RUN IS ONE ATTRIBUTE LINE. `{.a}{.b}` on a line of its own is one
    attribute line whose blocks merge as PART 9 §15 A3 merges stacked lists.
-   Each block wraps by the rule above, so `{.a}{.b` + newline + `}` and `{.a` +
-   newline + `}{.b}` are attribute lines too. *)
+   Each block wraps by the rule above, so `{.a}{.b` + newline + `     }` (past
+   the second `{`) and `{.a` + newline + ` }{.b}` are attribute lines too. *)
 (* THE PADDING ADMITS A LINE BREAK TOO, not only the separator: `{` + newline
-   + `.a}`, `{.a` + newline + `}` and `{.a` + newline + `.b}` are all block
+   + ` .a}`, `{.a` + newline + ` }` and `{.a` + newline + ` .b}` are all block
    attributes, and the paragraph below takes `class="a"` or `class="a b"`
    accordingly. The INLINE `attributes` production pads with
    `attr_pad = {space}` alone, which admits no line break. *)
@@ -4787,8 +4797,8 @@ EOF = (* end of file *) ;
          (corpus 140). This matches the `standard_row` production, which
          ends in `'|'`; there is no lenient open form.
          The two uses may never disagree: a line the block parser builds a
-         table from but the §17 sub-block test calls prose would make a list
-         item loose AND fill it with a table.
+         table from but the §10 I1 test calls prose would fold into an open
+         paragraph in one reading and open a table in the other.
          Lint reports `table-shaped-paragraph` at the first line of a
          table-shaped run lacking its closing pipe. A non-table-shaped
          paragraph does not qualify. A pipe-table body row with more or
@@ -4834,7 +4844,8 @@ EOF = (* end of file *) ;
          attribute disqualifies a span. A header cell holding literal `<` or
          `^` escapes the glyph as `|= \\< |` or `|= \\^ |`; `|{?^} \\< |` is a
          vertically aligned cell holding literal `<`. A block containing only
-         alignment preserves the span: `|{<} < |` sets its column default.
+         alignment preserves the span: in a head row, `|{<} < |` sets its
+         column default (T7).
          A header cell whose whole content is a span glyph makes a
          HEADER-KIND placeholder: `|= ^ |` is rowspan and `|= < |` is colspan.
          Both keep `span` in the tree. The released `|=< |` is an empty
@@ -4899,10 +4910,11 @@ EOF = (* end of file *) ;
          a continuation joins is the row above it in the SOURCE. T7 CONSUMES
          the delimiter row - it produces no `<tr>` and is not a row of the
          table - so a `+` line directly under one has no row above it to join
-         and is ordinary prose, and corpus 115 pins it. An invisible line (a
-         `%%` comment, an attribute line) ends the table too, so a `+` line
-         after it is prose as well: `| a |`, `%% c`, `+ b |` is a table and a
-         paragraph `+ b |`.
+         and is ordinary prose, and corpus 115 pins it. A block-level
+         invisible line (§10 I5: an attribute line, say) ends the table too,
+         so a `+` line after it is prose as well: `| a |`, `{.x}`, `+ b |` is
+         a table and a paragraph `+ b |`. An erased `%%` line (PART 0 S1) is
+         not there: `| a |`, `%% c`, `+ b |` is one row `a b`.
 
          AND THE ROW ABOVE IS A LINE OF THE SAME CONTAINER. A table in a
          quote does not precede a continuation line lacking that quote's prefix.
@@ -5317,8 +5329,9 @@ EOF = (* end of file *) ;
    ends that document scope from its own line. A comma or ASCII space may
    separate ids; an absent id means all rules. The directive begins after the
    `%%` comment opener, with one ASCII space. It is itself a Carve comment and
-   never renders. A directive in code, raw content, an inline comment, or a
-   fenced comment body is inert. A later enable does not undo a line or
+   never renders. A directive in code, raw content, a braced `{% %}`
+   comment, or a fenced comment body is inert; a trailing `%%` comment
+   (`inline_comment`) is a line comment and carries one. A later enable does not undo a line or
    next-line suppression. For included files, source-line scopes use the
    included file's own lines and document scopes do not cross file boundaries.
    Suppression applies by the finding's reported source line; for any rule id,
@@ -6243,7 +6256,7 @@ EOF = (* end of file *) ;
       A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK -- NORMATIVE [CARVE-P9-023]. pending
          floats PAST an INVISIBLE LINE and attaches to the next VISIBLE block.
          The class is §10 I5's, AN INVISIBLE LINE IS ONE CLASSIFICATION -- the
-         five kinds are enumerated there, and "renders nothing" is its property
+         three kinds are enumerated there, and "renders nothing" is its property
          2. This clause is that property's consequence for a floating
          attribute, and nothing more:
 
@@ -6292,8 +6305,8 @@ EOF = (* end of file *) ;
          the opening `{` (PART 4 `continuation`). A line at or below that
          column, like a BLANK line inside the braces, ends the attempt: the
          whole run is paragraph text, not `block_attributes`. Each block of a glued run (`{.a}{.b}`) wraps by
-         this same rule, so `{.a}{.b` / `}` and `{.a` / `}{.b}` are attribute
-         lines. A quoted value containing a literal `}` across
+         this same rule, so `{.a}{.b` / `     }` (past the second `{`) and
+         `{.a` / ` }{.b}` are attribute lines. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
          follows PART 4 `block_attributes` and PART 0 S4. The opener's
          indentation does not change what a wrapped block is
@@ -7096,10 +7109,11 @@ EOF = (* end of file *) ;
 
         A COMMENT IS THE ONE EXCEPTION, and the exception is about TIMING
         rather than about what a comment is. `comment_line` IS a block, listed
-        in PART 1 among the INVISIBLE blocks and ruled by §10 I5 to interrupt
-        an open paragraph and be consumed. It survives the suppression above
-        because it is the only construct on that list whose recognition
-        PRESERVES the verse instead of rewriting it: a definition or a fence
+        in PART 1 among the INVISIBLE blocks and erased before layout in
+        ordinary block content (PART 0 S1, §10 I5); a line-block body is not
+        ordinary block content, so there it is still recognized. It survives
+        the suppression above because it is the only construct on that list
+        whose recognition PRESERVES the verse instead of rewriting it: a definition or a fence
         opener CLAIMS the line and changes what renders, while a comment-only
         body line leaves an EMPTY verse line.
 
@@ -7998,9 +8012,10 @@ EOF = (* end of file *) ;
       cross-reference index only when the footnote is used and rendered.
       An unused definition is dropped by R2, so its headings are not targets.
    R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS --
-      NORMATIVE [CARVE-P9R-002]. A link or
-      footnote definition interrupts a paragraph under PART 0 S4, so one beside
-      an open paragraph defines. A definition-shaped line the block structure
+      NORMATIVE [CARVE-P9R-002]. A footnote
+      definition interrupts a paragraph under PART 0 S4 and a one-line link
+      definition is erased before layout (S1), so either one beside an open
+      paragraph defines. A definition-shaped line the block structure
       keeps as text, should a placement fold one, yields no
       entry in ANY symbol table -- linkDefs or footnoteDefs. It is
       paragraph text, it renders as the text the author typed, and nothing on it
@@ -8315,7 +8330,7 @@ EOF = (* end of file *) ;
       examples are quoted, so their headings do not wrap (CARVE-P9-019):
 
         > {k=v .attr}  -> <ol type="a" k="v" class="attr">
-        > a. alpha
+        > a.  alpha
         > {a=b .c}     -> <h1 a="b" class="c" id="Auto">
         > # Auto
         > {#x a=b}     -> <h1 id="x" a="b">
@@ -8364,7 +8379,7 @@ EOF = (* end of file *) ;
 
       A TABLE CELL'S ALIGNMENT MERGES THE SAME WAY. A cell's `text-align` and
       `vertical-align` declarations (PART 9 §5) are appended to an authored
-      `style` at its authored slot, as above, so `|>{style="color:red"} a |`
+      `style` at its authored slot, as above, so `|{> style="color:red"} a |`
       gives `<td style="color:red; text-align: right;">a</td>`.
 
       The element and value sets are closed. On `<table>`, `align` means block
@@ -9614,7 +9629,7 @@ EOF = (* end of file *) ;
 
       It also violates §2's THE UNIT IS THE OPENER: an opener run
       such as `%%%` must not be split into a partial opener and stray text.
-      Writing `* %%` as `* +` changes the output as well as the tree: a lone
+      Writing `* %%` as `* +` changes the tree but not the output: a lone
       `+` with nothing to attach is a refused structural marker and
       renders nothing (PART 9 §17 L3), so `* +` and `* %%` both render an
       empty `<li></li>` while retaining different parse forms.
@@ -10073,7 +10088,7 @@ EOF = (* end of file *) ;
       that spelling: with the field, a separator row; without it, `|=` header
       cells. The canonical `fmt` writer ignores the field when choosing a
       spelling. It writes `|=` header cells for every head row. Each header cell retains its
-      alignment in the cell's leading attribute-block symbols (`|={< |`,
+      alignment in the cell's leading attribute-block symbols (`|={<} |`,
       `|={~} |`, `|={>} |`); a cell with no alignment uses `|=` alone.
       A span placeholder keeps its marker and any alignment-only block,
       including an orphan in the first row and a covered placeholder whose
@@ -10662,9 +10677,8 @@ EOF = (* end of file *) ;
       (c) A BLOCK BELOW A FOOTNOTE BODY OR A NESTED FENCE. A block that
           follows a list opened on a footnote definition's line is written at
           that list's column, a literal `+` after a nested fence is written
-          escaped at the outer item's content column, and a table separator cell
-          takes at least three hyphens beside its alignment colon. Rows
-          410-4, 616-6, 626-8 and 659-4 pin it.
+          escaped at the outer item's content column. Rows 410-4, 616-6 and
+          626-8 pin it.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It answers to a Markdown

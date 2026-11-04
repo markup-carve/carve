@@ -496,8 +496,8 @@
       "edits": [
         {
           "file": "scripts/spec/render.mjs",
-          "find": "  const list = attrsOf(attrs)\n  // PART 10 SS1: the base classes",
-          "replace": "  const list = []\n  // PART 10 SS1: the base classes"
+          "find": "  const list = attrsOf(attrs)\n  // PART 10 §1: the base classes",
+          "replace": "  const list = []\n  // PART 10 §1: the base classes"
         }
       ]
     },
@@ -821,7 +821,7 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "      if (!forcedAfterRefusal && lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5\n",
+          "find": "      if (!forcedAfterRefusal && lines[i][0] === '{' && tryAttrLine(lines, i)) break // §15 A1 / §10 I5\n",
           "replace": ""
         }
       ]
@@ -1121,8 +1121,8 @@
       "edits": [
         {
           "file": "scripts/spec/render.mjs",
-          "find": "    // of a line block lives (PART 11 SS7c).\n    return '<br>\\n'",
-          "replace": "    // of a line block lives (PART 11 SS7c).\n    return hardBreaks ? '<br>\\n<br>\\n' : '<br>\\n'"
+          "find": "    // of a line block lives (PART 11 §7c).\n    return '<br>\\n'",
+          "replace": "    // of a line block lives (PART 11 §7c).\n    return hardBreaks ? '<br>\\n<br>\\n' : '<br>\\n'"
         }
       ]
     },

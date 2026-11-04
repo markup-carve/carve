@@ -353,9 +353,11 @@ quote_continuation_line = '>', { space, '>' }, space, continuation_marker ;
      - not blank (a blank line ends the blockquote), and
      - not a line that interrupts a paragraph under PART 9 §10 I1 to I5 in
        the selected owner's coordinates: a heading, table, fenced code opener
-       (§10 I4), `:::` div, thematic break, `:: ` term, or an invisible
-       definition or comment recognized there ends the quote and starts
-       outside it, and
+       (§10 I4), `:::` div, thematic break, `:: ` term, or a footnote
+       definition, `%%%` comment span or block-attribute line recognized
+       there (§10 I5) ends the quote and starts outside it. A `%%` line
+       comment and a one-line link or abbreviation definition are erased
+       before layout (PART 0 S1) and end nothing, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
    A LIST MARKER (bullet or ordered) is NOT an exclusion when it misses only
    quotes and is read in the document, a quote or a colon body: it folds into the
@@ -585,8 +587,8 @@ indent = whitespace, {whitespace} ;
    that innermost opener when the next line stands at the opener's marker
    column, through the prefixes of its enclosing quotes. At a list item's
    marker column a list marker is a sibling and a description's `: ` line is a
-   sibling at its marker column, so the `+` is a letter and the refused-marker
-   lint reports it. *)
+   sibling at its marker column, so the `+` is a refused marker: it renders
+   nothing and `continuation-marker-refused` reports it (CARVE-P9-067). *)
 continuation_marker = '+', newline ;
 (* CARVE-P7-001 item 5 removes a line-final space/tab run before this
    production is matched, so that source spelling remains a marker. A

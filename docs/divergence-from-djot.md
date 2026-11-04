@@ -160,9 +160,9 @@ marker**: a lone `+` at an open container's marker column, or last on a marker
 line, attaches the next line's block when that line stands at the marker column
 and carries the prefixes of the quotes around the host. On a line of stacked
 openers the innermost one owns the `+`. A following list item under a list item
-is a sibling, so the `+` is ordinary text and the refused-marker lint reports it
-(markup-carve/carve#3421). Every other refused `+` is a plain letter too
-(markup-carve/carve#4409). One block attaches in either form, and a list
+is a sibling, so the `+` is refused: it renders nothing and the refused-marker
+lint reports it (markup-carve/carve#3421, markup-carve/carve#5013). A `+` off
+every marker column stays a letter. One block attaches in either form, and a list
 stays tight. A list item, block quote, footnote body, and definition description
 can take the marker. The quote form follows the quote spacing rule: `> +` and `> > +`
 are markers, while `>+`, `>>+` and `>> +` read as text and `> >+` is a quote holding the text `>+`.

@@ -357,8 +357,9 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    the normalized key is present, not whether its destination is truthy;
    duplicate definitions still obey PART 9R R1's last-wins rule. A bare empty
    definition is valid but produces `empty-reference-definition`, a warning
-   that does not change its AST or rendering. It follows the existing
-   invisible-opener policy and can interrupt a paragraph. An escaped opener
+   that does not change its AST or rendering. Like any one-line link
+   definition it is erased before layout (PART 0 S1) and does not interrupt
+   a paragraph. An escaped opener
    remains literal, and a line at a quote column that cannot open a
    definition remains paragraph text. *)
 (* ANCHORED AT END OF LINE -- NORMATIVE [CARVE-P3-005]. The production ends in `newline`.

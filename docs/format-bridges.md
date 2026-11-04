@@ -450,7 +450,8 @@ title: Hi
 `---yaml`, `---toml`, `---json`, `---neon` and any other `frontmatter_format`
 are front matter unconditionally. A thematic break is a dash run and nothing
 else, so a typed opener never collides with one and never underlines a setext
-heading; with no closer ahead of it the line is ordinary paragraph text. The
+heading; with no closer it still opens front matter, which runs to the end of the
+document (markup-carve/carve#5016). The
 collision the shape test resolves can only happen on the bare spelling, and once
 the author named the format there is nothing left to infer. `---yaml` / `Foo` /
 `---` is front matter whose payload is a scalar, which is the author's business.

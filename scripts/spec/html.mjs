@@ -18,7 +18,7 @@ import { labelKey } from './label-key.mjs'
 import { delimitedRowCount } from './delimited-table.mjs'
 
 /*
- * THE WORDS THE ENGINE WRITES ITSELF (PART 9 SS16a, carve#1456).
+ * THE WORDS THE ENGINE WRITES ITSELF (PART 9 §16a, carve#1456).
  *
  * A renderer's `labels` map overrides these; the oracle pins the DEFAULTS,
  * which is what the corpus documents. Every value is TEXT and is escaped at the
@@ -40,7 +40,7 @@ import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, 
 
 const IMG_ONLY = /^<img [^>]*>$/
 
-// PART 9 SS12: the engine writes an accessible name for an admonition only
+// PART 9 §12: the engine writes an accessible name for an admonition only
 // where the author wrote none. Either ARIA naming attribute counts, because
 // emitting a second one beside the author's leaves the name undefined.
 //
@@ -387,7 +387,7 @@ function renderDocPass(doc, footnoteProbe) {
         out.push(`${indent()}</section>`)
       }
       // an explicit {#id} from a preceding attribute line lands on the
-      // <section> (PART 9 SS13/SS15); remaining attrs go on the <h*>
+      // <section> (PART 9 §13/§15); remaining attrs go on the <h*>
       let id = null
       let hAttrs = ''
       if (b.battrs) {
@@ -445,14 +445,14 @@ function renderDocPass(doc, footnoteProbe) {
 }
 
 /**
- * One line of a line block, as INLINE SOURCE (PART 9 SS23).
+ * One line of a line block, as INLINE SOURCE (PART 9 §23).
  *
  * Leading whitespace is preserved down to a single column; an inner or trailing
  * run of TWO OR MORE columns is a medial gap and is preserved too. A lone inner
  * space stays an ordinary collapsible space so a long line can still wrap
  * between words. Preserved columns become NO-BREAK SPACE CHARACTERS, which
  * `renderInline` serializes as `&nbsp;`; a tab advances to the next multiple of
- * four, counted from the column its run starts at (SS24 C1).
+ * four, counted from the column its run starts at (§24 C1).
  *
  * WHY SOURCE AND NOT HTML (carve#1282). This used to render each whitespace
  * segment separately and concatenate the results, which made every gap - and
@@ -490,18 +490,18 @@ function renderLineBlockLine(line) {
     }
     // A LONE run at the END of the line is TRAILING WHITESPACE and is dropped
     // (PART 2, NO TRAILING WHITESPACE; carve#926). The order is what makes
-    // this consistent rather than an exception: SS23's MEDIAL GAPS rule
+    // this consistent rather than an exception: §23's MEDIAL GAPS rule
     // converts a run of two or more columns into NBSP CONTENT first, and
     // content is not whitespace, so the general rule only ever reaches the
-    // one-column case - which SS23 leaves as an ordinary collapsible space,
-    // and which cannot serve the purpose SS23 gives it (letting a long line
+    // one-column case - which §23 leaves as an ordinary collapsible space,
+    // and which cannot serve the purpose §23 gives it (letting a long line
     // wrap between words) at the end of a line.
   }
   return out
 }
 
 // The one block kind renderBlock answers `null` for, which every host filters
-// out of its body: a raw block the target does not match (PART 9 SS20). Asking
+// out of its body: a raw block the target does not match (PART 9 §20). Asking
 // this BEFORE rendering is what lets a host read its own shape from what its
 // children will render rather than from how many it holds; a comment, a
 // reference definition and a footnote definition never reach here, because the
@@ -510,7 +510,7 @@ const rendersNoElement = (b) => b.t === 'raw' && b.format !== 'html'
 
 // A closed `%%%` pair in verse leaves nothing: no verse line, and a blank line
 // in its body splits no stanza (CARVE-P9-047). Its opener is indented by at
-// most three spaces, as everywhere else (carve#4469); the closer takes SS28's indent.
+// most three spaces, as everywhere else (carve#4469); the closer takes §28's indent.
 // An unclosed span runs to the end of the line block (PART 9 §28) or to the
 // lazy line that ends it under PART 0 S1 (`spanEnds`, carve#4956).
 function withoutCommentBlocks(lines, spanEndList = []) {
@@ -556,7 +556,7 @@ function renderBlock(b, depth, ctx) {
       // A directive invalid on its face keeps its spelling, pinned by corpus 715.
       return `${pad}<p${renderTextBlockAttrs(b.battrs, 'p')}>${b.inline ? renderInline(b.text) : escapeHtml(b.text)}</p>`
     case 'para': {
-      // PART 11 SS1c IS ALREADY SETTLED WHEN THIS RUNS (carve#1784). `blockImage`
+      // PART 11 §1c IS ALREADY SETTLED WHEN THIS RUNS (carve#1784). `blockImage`
       // is set by the promotion phase, the one place allowed to ask whether a
       // paragraph's whole content resolves to a single image, and this arm reads
       // the answer instead of re-deriving it by rendering and testing the result.
@@ -600,7 +600,7 @@ function renderBlock(b, depth, ctx) {
         .replaceAll('\u00a0', '&nbsp;')
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;')
-      // A fence header title is authored (PART 10 SS1 R3), written after the attribute line above it.
+      // A fence header title is authored (PART 10 §1 R3), written after the attribute line above it.
       return `${pad}<pre${ba}${title}><code${cls}>${esc}</code></pre>`
     }
     case 'quote': {
@@ -652,7 +652,7 @@ function renderBlock(b, depth, ctx) {
       // visible paragraph and a dropped raw block counted two and took the long
       // spelling for a body that renders as one element - the long spelling then
       // spent no line on the dropped block either, leaving the paragraph alone
-      // on its own indented line. PART 10 SS4 gives a line to each block ELEMENT,
+      // on its own indented line. PART 10 §4 gives a line to each block ELEMENT,
       // and a dropped block is not one. `CARVE-P0-014` refuses the mirror of
       // this move for container reach, which is not extended by what the
       // innermost block happens to be; a rendered shape is read the same way.
@@ -697,7 +697,7 @@ function renderBlock(b, depth, ctx) {
         attrStr = renderTextBlockAttrs(b.battrs, 'div')
       } else {
         // typed block: the type class leads; attribute-line classes merge
-        // into it, everything else follows in source order (PART 9 SS15)
+        // into it, everything else follows in source order (PART 9 §15)
         const baseCls = TIER1.has(b.type) ? ['admonition', b.type] : [b.type]
         const extra = []
         const rest = []
@@ -717,12 +717,12 @@ function renderBlock(b, depth, ctx) {
         attrStr = ` class="${escapeAttr([...baseCls, ...extra].join(' '))}"` +
           (tag === 'div' ? renderTextBlockAttrs(rest, tag) : renderBlockAttrs(rest))
       }
-      // PART 9 SS12 AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME
+      // PART 9 §12 AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME
       // (carve#1468). An `<aside>` is a COMPLEMENTARY LANDMARK, and a landmark
       // with no name is an anonymous row in a landmark list. A titled
       // admonition already shows its name, so the title `<p>` is given an id
       // and the aside points at it; an untitled one has no visible name to
-      // point at and takes the TYPE WORD from the `labels` map (SS16a).
+      // point at and takes the TYPE WORD from the `labels` map (§16a).
       // A `<div>` (an untyped `:::` block) is not a landmark and takes neither.
       // An author who wrote their own `aria-label` / `aria-labelledby` on the
       // attribute line keeps it - the engine never writes a name over one the
@@ -748,7 +748,7 @@ function renderBlock(b, depth, ctx) {
       if (b.label !== null) parts.push(`${pad2}  <p class="div-label">${renderInline(b.label)}</p>`)
       for (const c of b.children) {
         // A DROPPED BLOCK TAKES NO LINE (carve#2556). renderBlock answers `null`
-        // for a raw block the target does not match (SS20), and PART 10 SS4 gives
+        // for a raw block the target does not match (§20), and PART 10 §4 gives
         // a body slot only to a container that renders NOTHING - so a container
         // holding one visible block and one dropped block is not empty and has no
         // line to spare for the dropped one. Joining the `null` spent one anyway.
@@ -763,7 +763,7 @@ function renderBlock(b, depth, ctx) {
       return `${open}\n${parts.join('\n')}\n${pad2}${closeTag}`
     }
     case 'figure-group': {
-      // PART 9 SS4c: one figure, its direct captionable children as panels.
+      // PART 9 §4c: one figure, its direct captionable children as panels.
       const pad2 = '  '.repeat(depth)
       // class-first, the typed-container convention: `carve-figure-group`
       // leads, attribute-line classes merge after it, id and the rest follow
@@ -771,9 +771,9 @@ function renderBlock(b, depth, ctx) {
       // class position, so prepending a synthetic class list IS that rule).
       const attrStr = renderBlockAttrs([[['class', 'carve-figure-group']], ...(b.battrs ?? [])])
       const groupId = / id="([^"]*)"/i.exec(attrStr)?.[1]
-      // panels: direct children the inner SS4 rules made captionable things
+      // panels: direct children the inner §4 rules made captionable things
       // of -- a captioned paragraph host (image / display math / promoted
-      // reference image), a captioned code listing, a captioned quote (SS4b:
+      // reference image), a captioned code listing, a captioned quote (§4b:
       // a caption makes its host a figure, and a quote is not a special host
       // inside the group either), or any table. An UNCAPTIONED quote is
       // plain group content.
@@ -782,14 +782,14 @@ function renderBlock(b, depth, ctx) {
       let cap
       if (b.caption !== undefined) {
         // the group is ONE numbering unit; its draw also registers the panel
-        // ids with letters (SS4c), so number BEFORE rendering the children.
+        // ids with letters (§4c), so number BEFORE rendering the children.
         const panelIds = b.children.filter(isPanel).map((c) => {
           const a = c.battrs ? renderBlockAttrs(c.battrs) : ''
           return / id="([^"]*)"/i.exec(a)?.[1]
         })
         cap = numberCaption(b.caption, ctx, groupId, panelIds)
       }
-      // PANELS NEST DIRECTLY (SS4c): HTML's figure content model is a
+      // PANELS NEST DIRECTLY (§4c): HTML's figure content model is a
       // figcaption first or last plus flow content, and figure is itself
       // flow content, so no wrapper element sits between the group and its
       // panels -- the shape Pandoc's writers produce for subfigures too.
@@ -802,7 +802,7 @@ function renderBlock(b, depth, ctx) {
             if (c.t === 'table') {
               // a table does not render as a <figure> on its own, so the
               // panel wrapper is explicit; the table keeps its own attrs and
-              // its own <caption> (SS4c).
+              // its own <caption> (§4c).
               const t = renderBlock(c, depth + 2, ctx)
               return `${pad2}  <figure class="carve-figure-panel">\n${t}\n${pad2}  </figure>`
             }
@@ -830,7 +830,7 @@ function renderBlock(b, depth, ctx) {
     case 'line-block': {
       const pad2 = '  '.repeat(depth)
       // stanzas split on blank lines; soft breaks harden; leading spaces
-      // serialize as NBSP entities (PART 9 SS23)
+      // serialize as NBSP entities (PART 9 §23)
       const stanzas = []
       let cur = []
       for (const l of withoutCommentBlocks(b.lines, b.spanEnds)) {
@@ -842,9 +842,9 @@ function renderBlock(b, depth, ctx) {
       if (cur.length) stanzas.push(cur)
       const ps = stanzas.map((st) => {
         // A COMMENT-ONLY BODY LINE IS REMOVED AT THE BLOCK LAYER (PART 9
-        // SS23), which is to say HERE - before the stanza is handed to the
+        // §23), which is to say HERE - before the stanza is handed to the
         // inline parser below. Doing it after would let an unclosed verbatim
-        // run opened on an earlier line claim the line under SS21's verbatim
+        // run opened on an earlier line claim the line under §21's verbatim
         // exclusion and PUBLISH the comment, which is what all three engines
         // and this checker did (markup-carve/carve#1333).
         //
@@ -881,7 +881,7 @@ function renderBlock(b, depth, ctx) {
     case 'hardbreaks': {
       const pad2 = '  '.repeat(depth)
       // direct paragraph children harden their soft breaks; nested blocks
-      // keep normal behavior (PART 9 SS23)
+      // keep normal behavior (PART 9 §23)
       const parts = b.children.map((c) => {
         if (c.t === 'para' && !c.blockImage) {
           const html = renderInlineHardBreaks(paragraphInlineSource(c))
@@ -927,7 +927,7 @@ function renderBlock(b, depth, ctx) {
       return `${pad}<dl${dlAttrs}>\n${rows.join('\n')}\n${pad}</dl>`
     }
     case 'raw':
-      // PART 9 SS20: verbatim for the html target, dropped otherwise.
+      // PART 9 §20: verbatim for the html target, dropped otherwise.
       //
       // ONLY THE OPENING IS PLACED. The raw block sits where the container puts
       // any block, and its own line structure is passed through untouched -
@@ -938,10 +938,10 @@ function renderBlock(b, depth, ctx) {
       // is how three engines gave three answers (carve#800).
       return rawFrame(b.format === 'html' ? pad + rawPassthrough(b.text) : null)
     case 'heading': {
-      // a heading inside a container: no section wrapper (SS13 wraps
+      // a heading inside a container: no section wrapper (§13 wraps
       // top-level headings only); the id lands on the <h*> itself
       const html = renderInline(b.text)
-      // PART 10 SS1: the author's own attributes keep their source order,
+      // PART 10 §1: the author's own attributes keep their source order,
       // and a GENERATED attribute joins at the end. So an authored {#id}
       // renders in place through renderBlockAttrs, while an auto slug is
       // appended after everything the author wrote.
@@ -1124,7 +1124,7 @@ function renderList(list, depth, ctx) {
   return `${pad}<${tag}${attrs}>\n${items.join('\n')}\n${pad}</${tag}>`
 }
 
-// PART 10 SS1: a task list's `task-list` base class is prepended INSIDE the
+// PART 10 §1: a task list's `task-list` base class is prepended INSIDE the
 // authored class slot, which keeps its first-appearance position, and leads
 // when the author wrote no class (carve#2887). The math span does the same.
 function withTaskListClass(list) {
@@ -1238,7 +1238,7 @@ function renderItem(item, list, depth, ctx) {
     } else {
       // A DROPPED BLOCK IS NOT A PART (carve#2556). Every other host filters
       // renderBlock's `null`; this one concatenated it into the `<li>` template,
-      // so a raw block the target does not match (SS20) reached the HTML as the
+      // so a raw block the target does not match (§20) reached the HTML as the
       // four characters `null` at every item depth, quoted items included.
       const html = renderBlock(b, depth + 1, ctx)
       if (html !== null) parts.push({ inlineable: false, html })
@@ -1275,7 +1275,7 @@ function renderItem(item, list, depth, ctx) {
 // crossrefs (R4). No label word is required -- `^ # x` numbers under the empty
 // label (carve#2112).
 //
-// PART 9 SS4c: a PANEL of a composite figure is not a sequence unit, so a
+// PART 9 §4c: a PANEL of a composite figure is not a sequence unit, so a
 // caption rendered under `ctx.inPanel` keeps its `#` literal and registers
 // nothing; the panel's crossref text comes from the GROUP's draw instead --
 // `panelIds` are the ids of the group's panels in panel order, registered as
@@ -1348,7 +1348,7 @@ function tableBodyGroups(keys, rows) {
   return remaining === 0 ? { head, foot, bodies } : null
 }
 
-// --- tables: PART 9 SS5 T5 span walk + serialization -------------------------
+// --- tables: PART 9 §5 T5 span walk + serialization -------------------------
 function renderTable(node, depth, ctx) {
   const pad = '  '.repeat(depth)
   const tableKeys = new Map()
@@ -1632,7 +1632,7 @@ function resolveImageRef(parsed, ctx, literal, blockAttrs = null) {
   // what the author wrote, and dropping it deleted content silently. All
   // three engines emit it verbatim (carve#679).
   // LITERAL means what the author typed, HTML-escaped like any other text
-  // node (PART 10 SS2): `&`/`<`/`>` and a no-break space all need it, the
+  // node (PART 10 §2): `&`/`<`/`>` and a no-break space all need it, the
   // same as every other piece of content this renderer emits.
   if (!def) return refFrame({ opaque: true, literal: `![${escapeHtml(alt)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}` })
   const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
@@ -1711,13 +1711,13 @@ function resolveRefsOnce(html, ctx) {
       // never wrote, with the markers that identify it as a reference silently
       // consumed. All three engines emit the source; nothing pinned it because
       // no corpus case paired an unresolved reference with a decorated label.
-      // Same PART 10 SS2 escaping as the image-reference literal above.
+      // Same PART 10 §2 escaping as the image-reference literal above.
       return refFrame({ opaque: true, literal: `[${escapeHtml(source ?? text)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}` })
     }
     if (flat) return text
     const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
     // R1: the definition's attributes transfer to the link, and the link's own
-    // override per key. "Per key" is SS15 A3's merge - the one stacked
+    // override per key. "Per key" is §15 A3's merge - the one stacked
     // attribute lists already use - so a repeated id/key takes the LAST value
     // (the link's) and classes ACCUMULATE ACROSS the two lists. Definition
     // list first, link list second (carve#604).
@@ -1959,7 +1959,7 @@ function resolveFootnotes(html, ctx) {
       continue
     }
     const body = ctx.footnoteDefs.get(label)
-    // A body whose every block RENDERS NOTHING is an empty body (PART 9 SS16,
+    // A body whose every block RENDERS NOTHING is an empty body (PART 9 §16,
     // CARVE-P9-077). `every` answers the zero-block case too, which is what
     // keeps a definition line whose whole body is a block-attribute run on the
     // same reading.
@@ -1971,7 +1971,7 @@ function resolveFootnotes(html, ctx) {
   const notes = order.map((label, idx) => {
     const n = idx + 1
     let { rendered, noBlocks } = bodies[idx]
-    // backlink into the LAST paragraph (PART 9 SS16); a k-th repeat
+    // backlink into the LAST paragraph (PART 9 §16); a k-th repeat
     // reference adds an indexed backlink `↩<sup>k</sup>`
     const total = counts.get(label) ?? 1
     // The accessible name is the label plus what the link VISIBLY says
@@ -2001,7 +2001,7 @@ function resolveFootnotes(html, ctx) {
     }
     return `    <li id="fn${n}">\n${rendered}\n    </li>`
   })
-  // PART 9 SS16 THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME (carve#1468):
+  // PART 9 §16 THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME (carve#1468):
   // the section is named for the same
   // reason its backlinks do - `role="doc-endnotes"` says what the region IS and
   // nothing said what it is CALLED, so a landmark list held an anonymous entry.
@@ -2052,7 +2052,7 @@ function resolveCrossrefs(html, ctx) {
       const cap = target ? dropCloneIds(resolveRefs(target.label, ctx)) : undefined
       // A numbered label and an unresolved literal are not scanned for abbreviations either (carve#4742).
       if (cap) return rawFrame(textOnly ? cap.replaceAll(RAW_MARK, '') : `<a href="#${escapeAuthoredAttr(target.id)}">${cap.replaceAll(RAW_MARK, '')}</a>`)
-      // unresolved: literal source text (PART 9 SS19), HTML-escaped -- an
+      // unresolved: literal source text (PART 9 §19), HTML-escaped -- an
       // unresolved id may carry `<`/`>`/`&` (e.g. `</#<script>`) which must not
       // reach the output raw.
       const esc = id.replace(/[\u202A-\u202E\u2066-\u2069]/g, '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')

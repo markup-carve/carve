@@ -71,7 +71,7 @@
       examples are quoted, so their headings do not wrap (CARVE-P9-019):
 
         > {k=v .attr}  -> <ol type="a" k="v" class="attr">
-        > a. alpha
+        > a.  alpha
         > {a=b .c}     -> <h1 a="b" class="c" id="Auto">
         > # Auto
         > {#x a=b}     -> <h1 id="x" a="b">
@@ -120,7 +120,7 @@
 
       A TABLE CELL'S ALIGNMENT MERGES THE SAME WAY. A cell's `text-align` and
       `vertical-align` declarations (PART 9 §5) are appended to an authored
-      `style` at its authored slot, as above, so `|>{style="color:red"} a |`
+      `style` at its authored slot, as above, so `|{> style="color:red"} a |`
       gives `<td style="color:red; text-align: right;">a</td>`.
 
       The element and value sets are closed. On `<table>`, `align` means block

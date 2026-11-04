@@ -2213,6 +2213,24 @@
       "part": "4",
       "title": "AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED",
       "replacement": "CARVE-P2-035"
+    },
+    {
+      "id": "CARVE-P9-016",
+      "part": "9",
+      "title": "A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER",
+      "replacement": "CARVE-P9-084"
+    },
+    {
+      "id": "CARVE-P9-017",
+      "part": "9",
+      "title": "ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY",
+      "replacement": "CARVE-P9-084"
+    },
+    {
+      "id": "CARVE-P9-085",
+      "part": "9",
+      "title": "A REFUSED `+` IS A PLAIN LETTER",
+      "replacement": "CARVE-P9-067"
     }
   ]
 }
