@@ -69,7 +69,6 @@ const OPT_IN_ONLY = {
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
 const ENGINE_ROLLOUT_PENDING = {
-  'table_cell.valign': 'carve#5091 D3 alignment syntax: the pinned engine cannot read the migrated vertical-alignment corpus until the carve-js port lands',
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'small_caps.*': 'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and format-bridge consumers',
   'ruby.*': 'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and HTML-import consumers',
