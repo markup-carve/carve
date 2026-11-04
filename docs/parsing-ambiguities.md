@@ -314,12 +314,12 @@ not form, so `/usr/local/` and `_my_var_` stay text. See PART 8's disambiguation
 - `\%%` (escaped first percent) is literal
 - A **whole-line** comment may be **indented**: leading whitespace before `%%`
   does not matter, so an indented line whose first non-whitespace content is
-  `%%` is a comment line just like one in the first column. Like any block it
-  interrupts an open paragraph and renders nothing (it leaves no empty
-  paragraph)
+  `%%` is a comment line just like one in the first column. It is erased
+  before layout: it renders nothing and does not interrupt an open paragraph
+  (PART 0 S1, CARVE-P0-005)
 - The column does not matter **inside a container** either. Below a list item's
-  content column a comment still ends the open paragraph and renders nothing,
-  and it closes no item (PART 9 §10 I5, CARVE-P9-013)
+  content column a comment is erased too, so the open paragraph continues and
+  no item closes (`- a` / `    %% c` / `  more` is one item `a more`)
 
 **Block comments:**
 - `%%%` must start the line to open/close; the **leading run of `%` is the
@@ -451,8 +451,8 @@ Some other text
 - A **lone** `+` at an open container's marker column or directly after quote
   markers attaches one following block at that same column. At an open list
   item's marker column, a following list item at that column is a sibling, so
-  the `+` is ordinary text and the
-  refused-marker lint reports it (markup-carve/carve#3421).
+  the `+` is refused: it renders nothing and the
+  refused-marker lint reports it (markup-carve/carve#3421, markup-carve/carve#5013).
 - A `+ ... |` line (pipe structure) is a table continuation
 - A `+` at no open marker column is ordinary text or fence payload, placed by
   its own column.
@@ -572,10 +572,12 @@ of this matches Djot; the heading half deliberately does not.
 2. **Image excluded** — a bare image `![alt](url)` is inline content, not a
    block, so it renders inside the paragraph.
 
-**Invisible constructs** (link/footnote/abbreviation reference definitions,
-`%%`/`%%%` comments, and `{…}` block-attribute lines) interrupt with no blank
-line, as they always have: they produce no block of their own, so they are
-collected/consumed (an attribute line floats forward to the next block, §15).
+**Block-level invisible constructs** (footnote definitions, `%%%` comments and
+`{…}` block-attribute lines) interrupt with no blank line: they produce no block
+of their own, so they are collected/consumed (an attribute line floats forward
+to the next block, §15). A `%%` line comment and a one-line link or
+abbreviation definition are erased before layout and interrupt nothing (PART 0
+S1, markup-carve/carve#5012).
 
 | Input | Result | Reason |
 |-------|--------|--------|
@@ -599,9 +601,9 @@ collected/consumed (an attribute line floats forward to the next block, §15).
 | `- a` / `  - b` | nested sublist | indented sublist still nests (content column) |
 | `- a` / ` - b` | two sibling items | a marker of the same kind below the content column is a sibling (carve#3885) |
 | `1. a` / ` - b` | one item (folds) | a marker of another kind below the content column is lazy text |
-| `1. a` / `[r]: /u` / `after` | list, then document paragraph | column-zero definition interrupts and closes the item |
-| `1. a` / ` [r]: /u` | list, and `r` registers | a definition below the content column closes the item (PART 0 S3) |
-| `1. a` / `   [r]: /u` / `   after` | one tight item with two paragraphs | definition is at the item's content column |
+| `1. a` / `[r]: /u` / `after` | one item, paragraph `a after`, and `r` registers | a one-line definition is erased before layout at any column (PART 0 S1) |
+| `1. a` / ` [r]: /u` / `after` | one item, paragraph `a after`, and `r` registers | erased below the content column too; it closes nothing |
+| `1. a` / `   [r]: /u` / `   after` | one item, paragraph `a after` | erased at the item's content column as well |
 | `- text` / `  # H` | item: text + heading | heading interrupts inside the item |
 
 The formal statement is in `resources/grammar.ebnf`, PART 9 §10.

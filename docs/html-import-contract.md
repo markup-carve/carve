@@ -1349,8 +1349,8 @@ additions.
 
 `: +` spells no empty body. It attaches a block at the description's marker
 column (PART 9 §17 L3): `:: term` / `: +` / `text` is a description whose body is
-`text`. Over a blank line the `+` is refused and stays a letter, `<dd>+</dd>`
-(markup-carve/carve#4409). The sentinel claims no line below it at any column.
+`text`. Over a blank line the `+` is refused and renders nothing, `<dd></dd>`
+(markup-carve/carve#4409, markup-carve/carve#5013). The sentinel claims no line below it at any column.
 
 **Nothing that is not an attribute block spells it.** A description marker takes
 a separator space and non-empty content (PART 2, MARKER REQUIRES CONTENT), so a

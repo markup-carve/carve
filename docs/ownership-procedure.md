@@ -40,10 +40,11 @@ Rule: CARVE-P0-024.
 
 An open code, raw or comment fence tests the line against its closer first. A
 nonblank line that misses the fence's owner ends the fence. Comments are then
-classified before S3 reads the visible residue. A comment closes no list item,
-description body or footnote body at any column: the next visible line picks the
-owner. An unmarked comment still ends a quote, a region marker below a list closes
-every item, and a line that ended a fence is read where it stands. Rules:
+classified before S3 reads the visible residue: a `%%` line comment and a
+one-line link or abbreviation definition are erased there and affect no frame. A
+`%%%` comment closes no list item, description body or footnote body at any
+column: the next visible line picks the owner. An unmarked `%%%` comment still
+ends a quote, a region marker below a list closes every item, and a line that ended a fence is read where it stands. Rules:
 CARVE-P0-005, CARVE-P9-013.
 
 ## S2 Owner
@@ -63,7 +64,8 @@ Classify the rest of the line in the owner's coordinates. An opener past the
 owner's content column opens in the owner at every level, the document and
 quotes included, and every line the new block owns moves left by the opener's
 indentation. A block at the content column ends the paragraph above it and
-leaves the container open, a definition registers only in the owner S2 selected,
+leaves the container open, a one-line link or abbreviation definition (erased
+in S1) registers document-wide,
 and marker-attached attributes add no width to the content column. A term has no
 ownership of its own. Rule: CARVE-P0-011.
 
