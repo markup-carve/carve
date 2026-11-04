@@ -27,7 +27,7 @@
          inside a `/*` ... `*/` shape it ends at the shape's closer token
          whether or not the combined token forms, and P2 reads the region as
          if the comment were absent, so /x /*a %% b*/ y ->
-         <em>x /<strong>a</strong></em> y (carve#4042).
+         <em>x /<strong>a</strong></em> y.
       P2 READING. Read each region left to right with one stack of open bare
          entries (R1 to R5). A braced or editorial opener starts a NESTED
          READING of a new region; a combined opener is a stack entry. Braced,
@@ -59,7 +59,7 @@
       - GUARD EXEMPTION. A guard character that is itself an open entry on
         the stack where d stands is markup and does not block: _*x*_ nests.
         Whether that entry closes later does not matter, so _*x* q renders
-        _<strong>x</strong> q (carve#3973 X1). The mark of the braced or
+        _<strong>x</strong> q. The mark of the braced or
         editorial span being read is markup too, neither a guard nor the
         same delimiter for the adjacency test: {_*a* b_} nests, and in
         {~~a~ b~>c~} the second `~` opens. Any other
@@ -93,7 +93,7 @@
          read like any character there: a bare candidate (text for
          ^ , + -), or the first character of the enclosing reading's closer
          token. So `{*}` and `{**}` form nothing and their characters are
-         read like any others (CARVE-P3-014, carve#3973 X6):
+         read like any others (CARVE-P3-014):
            *a {*} b*  ->  <strong>a {</strong>} b*
            {,{,}      ->  <sub>{</sub>
          An editorial `{+` or `{-` directly in a frame of its own kind starts
@@ -107,7 +107,7 @@
       R2 CLOSE FIRST. If d can close and an entry of kind d is on the stack,
          close the nearest such entry. Every entry above it is removed and
          becomes text; spans nest, never overlap. The new span is final.
-         A BARE SPAN HOLDING ITS OWN DELIMITER DOES NOT FORM (carve#4810). If
+         A BARE SPAN HOLDING ITS OWN DELIMITER DOES NOT FORM. If
          d is bare and the content this closer would end holds, in this region,
          a literal d with a word character (letter or digit, with any
          grapheme extenders) on each side in source, no span forms: this
@@ -141,11 +141,10 @@
 
       THE COMBINED TOKEN. A combined opener is a `/` followed by `*`, where
       the `/` can open, the `*` is followed by neither whitespace nor a
-      grapheme_extender, and neither `/` nor `*` is on the stack
-      (carve#3234). A braced span of either kind does not block it:
+      grapheme_extender, and neither `/` nor `*` is on the stack.
+      A braced span of either kind does not block it:
       {*a /*b*/ c*} holds a combined span inside the strong one, while a
-      bare `/` or `*` of the span's own kind stays text (OWN KINDS,
-      carve#2903). Its closer token is a `*` that is not after
+      bare `/` or `*` of the span's own kind stays text (OWN KINDS). Its closer token is a `*` that is not after
       whitespace, followed by a `/` that is not followed by alnum, and that
       does not stand directly after the opener. The opener looks ahead in
       its own region, outside atoms and formed nested spans, for a closer
@@ -189,7 +188,7 @@
                          exactly n backticks; verbatim, and a glued
                          `{=format}` makes it raw inline. Unclosed, the rest
                          of the block, or of an extension's content, is code,
-                         inside a braced span or frame too (carve#3973 X5):
+                         inside a braced span or frame too:
                          ``:foo[`a] b`` closes the extension at its `]`.
         math             a dollar sign or two before a code span, to the
                          code span's end; verbatim; unclosed as a code span.
@@ -216,7 +215,7 @@
       and *[*g*] x* holds two strong spans. Braced spans, editorial frames
       and combined spans are not atoms; P2 finds them, so an attribute block
       that a bare closer has not taken is visible to them: in ={_a={c_} the
-      `{_` forms and the `=` closes nothing (carve#3940).
+      `{_` forms and the `=` closes nothing.
 
       KIND TABLE (P2): kind, bare mark, other spelling, attribute run.
         emphasis        /      {/ /}      after the closer
@@ -245,7 +244,7 @@
       DEPTH. Bare and braced spans share the nesting cap; a braced span over
       it stays literal as a whole (§22).
 
-      LINEAR TIME (carve#3936). The result MUST be
+      LINEAR TIME. The result MUST be
       computed in time linear in the block; reading a range again once per
       failed braced or editorial opener does not meet this. Two facts make
       it possible. A nested reading depends only on where it starts, so each
@@ -295,7 +294,7 @@
          NEITHER a bullet (`- `/`* `, `- [x] ` task) NOR an ordered marker
          (decimal, letter, roman, any value) interrupts a paragraph owned by
          the document, a quote or a colon body: the line FOLDS into P as lazy continuation;
-         a list needs a blank line before it (matching Djot).
+         a list needs a blank line before it.
          "Liste: \n - eins \n - zwei" is ONE paragraph, so is
          "x = 5 \n * 3 + 17"; a blank line starts the list.
          IN A MARKER BODY A LIST MARKER ALWAYS OPENS: the `markers` field of the
@@ -304,13 +303,13 @@
          does not interrupt: an image is not a block of its own in Carve;
          it stays an inline image inside the paragraph.
       I4 FENCE OPENERS INTERRUPT WITHOUT LOOKAHEAD. A valid ``` or ~~~
-         code or raw opener interrupts an open paragraph, as in CommonMark.
+         code or raw opener interrupts an open paragraph.
          No closer is searched for: an unclosed fence runs to the end of its
          container (PART 0 S1). A recovered opener (PART 9 §2) interrupts
          too; a line with invalid metadata that does not recover is not an
          opener and stays paragraph text. Pinned by corpus
          81-paragraph-interruption-19: `Text` / ``` / `code` as a paragraph
-         followed by a code block holding `code` (carve#4018).
+         followed by a code block holding `code`.
 
          A `:::` colon opener interrupts an open paragraph even without a
          closer. PART 2's UNCLOSED `admonition` rule determines where its
@@ -328,8 +327,7 @@
          below, so "p\n%% #region x\nq" is two paragraphs. "See[^m].\n
          [^m]: note" resolves the footnote; "para\n%% x\nmore" is one paragraph;
          "Para\n{.x}" ends the paragraph with the attribute line floating
-         forward (§15; corpus 89-block-attribute-lines-7). (A small
-         deviation from djot, which keeps such a line as paragraph text.)
+         forward (§15; corpus 89-block-attribute-lines-7).
          A BLOCK-LEVEL INVISIBLE LINE IS ONE CLASSIFICATION -- NORMATIVE [CARVE-P9-013].
          The span, footnote definition, attribute line and region marker
          above are one class. An invisible line in that class, in the container that owns it:
@@ -349,14 +347,11 @@
          thing a per-kind clause has left to state: a span DISCARDS its
          visible content (§21, §28), an attribute line RETAINS pending
          metadata in the current container (§15 A2), and a definition
-         REGISTERS metadata in its permitted scope (L6, PART 9R). A clause that
-         restates properties 1 to 3 for one kind is restating this one; a clause
-         that states an action, a pipeline ORDER, a source-map overlap or column
-         ARITHMETIC is not, and stays where it is.
+         REGISTERS metadata in its permitted scope (L6, PART 9R).
 
          WHAT AN INVISIBLE LINE DOES TO THE CONTAINER AROUND IT is the
          `invisible` field of that container's PART 0 FAMILIES row: a `%%%`
-         span closes no indentation container (carve#4862), an unmarked one
+         span closes no indentation container, an unmarked one
          ends a quote, and below a content column a block-attribute line and
          a footnote definition close the missed containers. Erased lines
          reach none of these fields.
@@ -399,8 +394,7 @@
          axes: bullet character (`-` vs `*`; `+` is NOT a bullet in Carve --
          it is the continuation marker, §17), ordered_marker alternative,
          delimiter (`.` vs `)`), and plain-vs-task classification. Any axis
-         differs -> a new sibling list at the same indent. Matches djot
-         (minus djot's `+` bullet). Example:
+         differs -> a new sibling list at the same indent. Example:
            - a              produces:    <ul><li>a</li><li>b</li></ul>
            - b                            <ul><li>c</li><li>d</li></ul>
            * c
@@ -431,9 +425,7 @@
          at any run length -- which is §17's content-column model unchanged,
          and is why three blank lines before indented text still leave one
          loose item.
-         Two blank lines remain ordinary decorative spacing; three establish
-         the boundary.
-         DESCRIPTION LISTS TOO (carve#4759). The same run ends a description
+         DESCRIPTION LISTS TOO. The same run ends a description
          list: after it a `:: ` term opens a NEW description list, and a `: `
          description has no term above it and is read as a paragraph. As for
          items, the run closes no description on its own: a continuation at
@@ -479,7 +471,7 @@
       ends at its host boundary, and no closer further down is looked for: a
       frame a `+` attaches in a list item or definition body ends at its host's
       next sibling marker whether or not a later `:::` exists. That later line
-      opens a frame of its own after the host (carve#4717, carve#4798).
+      opens a frame of its own after the host.
       Resolve the closer before classifying its body line. A nested opener starts
       a child frame when the kind permits
       nesting; the same extent and column rule applies at every depth.
@@ -555,8 +547,7 @@
             </aside>
         The canonical set is the eight call-out types
         `note`, `tip`, `warning`, `danger`, `info`, `success`,
-        `example`, `quote`. Consuming CSS frameworks target these exact
-        class names. A type is a keyword, not a name, and matches
+        `example`, `quote`. A type is a keyword, not a name, and matches
         exactly: `::: Note` is not the `note` admonition but the Tier-2
         `<div class="Note">`.
 
@@ -566,13 +557,9 @@
               [<p class="admonition-title">{quoted_title}</p>]
               {body}
             </div>
-        This is the carve fenced-div primitive that the block-extension
-        mechanism builds on -- e.g. `::: tabs`,
-        `::: mermaid`, `::: codepen` produce `<div class="tabs">`,
-        `<div class="mermaid">`, `<div class="codepen">` respectively,
-        which a registered extension may post-process. An unregistered
-        custom type still renders as its generic `<div class="{type}">`
-        so the document stays readable. `details` is an ordinary Tier-2
+        `::: tabs` produces `<div class="tabs">`, which a registered
+        extension may post-process. An unregistered custom type still
+        renders as its generic `<div class="{type}">`. `details` is an ordinary Tier-2
         type (`<div class="details">`); an extension that wants the
         HTML5 `<details>/<summary>` disclosure element registers for the
         `details` type and post-processes that div, as above.
@@ -590,14 +577,12 @@
            title. Applies to both tiers.
 
       AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-018]. A
-      Tier-1 block renders `<aside>`, which is a COMPLEMENTARY LANDMARK, and a
-      landmark with no name is an anonymous row in a reader's landmark list.
+      Tier-1 block renders `<aside>`, which is a COMPLEMENTARY LANDMARK.
       Tier 2 renders `<div>`, is not a landmark, and takes nothing here.
 
         TITLED: the name is the title the author already wrote. The
         `<p class="admonition-title">` takes an `id` and the aside points at it
-        with `aria-labelledby`, so the visible name and the accessible name are
-        ONE string that cannot drift apart:
+        with `aria-labelledby`:
             <aside class="admonition warning" aria-labelledby="adm-1">
               <p class="admonition-title" id="adm-1">Careful</p>
 
@@ -619,8 +604,7 @@
         attribute line carries either `aria-label` or `aria-labelledby` under
         ANY ASCII casing -- an author's attribute NAME is emitted verbatim and
         HTML attribute names are case-insensitive, so `ARIA-LABEL` is the same
-        attribute -- the engine writes NEITHER attribute and mints no id: a second naming attribute beside the author's leaves
-        the name undefined, and the author's is the more specific statement.
+        attribute -- the engine writes NEITHER attribute and mints no id.
         The title `<p>` is still emitted, unchanged, without an id.
 
       A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES -- NORMATIVE
@@ -681,8 +665,7 @@
       content; only the endnotes section and TOC nav can carry a name.
 
    13. HEADING SECTION WRAPPING -- NORMATIVE [CARVE-P9-019] (governs `atx_heading` in
-      PART 2 and the renderer; matches djot, see `jgm/djot` official
-      `headings.test`). Every top-level heading emits a `<section id="{id}">`
+      PART 2 and the renderer). Every top-level heading emits a `<section id="{id}">`
       wrapper around itself and the following content up to the next
       same-or-shallower heading. CARVE-P2-004 computes the heading id; this
       clause places it on the `<section>` element, NOT on the
@@ -703,10 +686,8 @@
       - Adjacent same-level headings: produce sibling sections at the
         same level (`# A / # B` -> two <section>s).
       - Skipped levels: a `# H1 / ### H3` sequence nests H3's section
-        inside H1's, because the stack-close test above (top.level
-        >= N) only closes sections at level >= 3 (none open at level 3
-        or 5/6). The structure mirrors djot's behavior; carve does NOT
-        synthesize intermediate <h2>/<section> nodes.
+        inside H1's; carve does NOT synthesize intermediate
+        <h2>/<section> nodes.
       - Explicit `{#id}` on a heading: the id still lives on the
         `<section>`, not on the `<h*>`. The dedup namespace is unchanged -- explicit ids are
         reserved before auto-ids in document order.
@@ -717,16 +698,11 @@
           # abc
           {a=b .c #x}   -> <section id="x"><h1 a="b" class="c">
           # abc
-        Other attributes describe the heading, not the surrounding section.
-        See divergence-from-djot.md for the different Djot placement.
       - HEADINGS INSIDE CONTAINERS DO NOT WRAP. The algorithm walks
         TOP-LEVEL blocks (and the sections it opens), so a heading
         inside a blockquote, div, admonition, list item, definition,
         or footnote definition emits a bare `<h* id="...">`
-        with the id ON THE HEADING and no `<section>` around it. A
-        `<section>` models THIS document's outline: quoted material
-        carries another document's outline, and a div or list item is
-        author grouping within one section rather than a new one.
+        with the id ON THE HEADING and no `<section>` around it.
         Everything else about such a heading is unchanged -- it is
         slugged, it shares the one document-order dedup namespace with
         top-level headings (`# abc` then `> # abc` gives `abc` then
@@ -736,10 +712,6 @@
         has one exception: a footnote definition's headings take their ids
         after every body heading, in definition order, so `[^n]: # abc`
         written above `# abc` leaves the body `abc` and the note `abc-2`.
-        When the `sections` option below is off, the top-level shape becomes
-        identical to this one, so id
-        placement and attribute placement follow ONE rule everywhere in
-        the document.
       - Empty document or doc with no headings: zero <section> elements
         are emitted.
       - THE `sections` RENDER OPTION. A host MAY offer a boolean
@@ -769,8 +741,7 @@
       - The two-pass id resolution (collect explicit ids first, then
         auto-slug headings with collision-dedup) is unaffected by this
         rule -- only the EMISSION site of the id moves from <h*> to
-        <section>. The fragment URL `#{slug}` resolves to <section id> the
-        same way browsers resolve to <h* id>.
+        <section>.
       - Carve does NOT add `<section>` wrappers around non-heading
         top-level blocks. Headings are the only trigger.
 
@@ -810,8 +781,7 @@
           block: a bare `<span>text</span>`. A TAB inside it is not padding
           and the block is unrecognized (CARVE-P4-001). The empty block is a blessed
           exception -- the bare `attribute_list` production nominally needs
-          >= 1 attribute -- so a default-attribute processor can target the
-          span. It is an ordinary member of the span's glued run
+          >= 1 attribute. It is an ordinary member of the span's glued run
           (`span_attribute_run`, PART 3) that contributes no attribute, in
           any position: `[text]{}{.c}`, `[text]{}{}{.c}` and `[text]{.c}{}`
           all render `<span class="c">text</span>`. Only the bracketed span
@@ -837,8 +807,7 @@
       `key_value_attribute` form (so `k=v` stays a key/value) and mixes freely
       with id/class/key=value in source order; multiple are allowed; a
       digit-first bare word is not a valid name (the block stays literal, as for
-      any digit-first identifier). All impls support it (a carve extension
-      beyond canonical djot, matching djot-php).
+      any digit-first identifier).
       THE THREE NAMES OF CARVE-P10-003 ARE THE EXCEPTION TO `name=""`: on an
       ordinary span, `abbr`, `time` and `kbd` are consumed into an HTML
       element instead of reaching the output as an attribute, so `[Tab]{kbd}`
@@ -857,7 +826,7 @@
       over, inside an unquoted VALUE (`{k=a:b}`), which `unquoted_value` admits.
 
    15. BLOCK ATTRIBUTE LINES -- OPERATIONAL SEMANTICS (governs
-      `block_attributes` in PART 4; matches djot). STATE: pending := the
+      `block_attributes` in PART 4). STATE: pending := the
       ordered list of collected attribute blocks not yet attached.
       A1 COLLECT. A `{…}` alone on a line (the `}` may arrive on a later
          line, A5) that parses as a valid attribute list appends to
@@ -870,10 +839,8 @@
          <p id="id">Text</p>.
       A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK -- NORMATIVE [CARVE-P9-023]. pending
          floats PAST an INVISIBLE LINE and attaches to the next VISIBLE block.
-         The class is §10 I5's, AN INVISIBLE LINE IS ONE CLASSIFICATION -- the
-         three kinds are enumerated there, and "renders nothing" is its property
-         2. This clause is that property's consequence for a floating
-         attribute, and nothing more:
+         The class is §10 I5's (CARVE-P9-013); this is its property 2 for a
+         floating attribute:
 
              {#i}
              [^f]: note
@@ -889,7 +856,7 @@
            the earlier block's, which is what makes stacking work. A class
            already present is not added twice, in one block or across
            several.
-         Worked djot-canonical example: the lines {#id}, {key=val},
+         Example: the lines {#id}, {key=val},
          {.foo .bar}, {key=val2}, {.baz} and {#id2}, each on its own line,
          then "Okay" ->
          <p id="id2" key="val2" class="foo bar baz">Okay</p>.
@@ -937,7 +904,7 @@
          content under normal inline rules (a `{#a #}` line is an editorial
          comment, §9 braced family).
       A7 THE ONLY BLOCK CHANNEL. NO block construct takes a trailing `{…}`
-         on its own line (djot-strict; headings, fences and `:::` openers
+         on its own line (headings, fences and `:::` openers
          included) -- the preceding block-attribute line is the sole
          block-level attribute channel. A trailing `{…}` on a heading line
          is literal inline content (PART 2, headings).
