@@ -275,7 +275,7 @@
       that spelling: with the field, a separator row; without it, `|=` header
       cells. The canonical `fmt` writer ignores the field when choosing a
       spelling. It writes `|=` header cells for every head row. Each header cell retains its
-      alignment in the cell's leading attribute-block symbols (`|={< |`,
+      alignment in the cell's leading attribute-block symbols (`|={<} |`,
       `|={~} |`, `|={>} |`); a cell with no alignment uses `|=` alone.
       A span placeholder keeps its marker and any alignment-only block,
       including an orphan in the first row and a covered placeholder whose
@@ -864,9 +864,8 @@
       (c) A BLOCK BELOW A FOOTNOTE BODY OR A NESTED FENCE. A block that
           follows a list opened on a footnote definition's line is written at
           that list's column, a literal `+` after a nested fence is written
-          escaped at the outer item's content column, and a table separator cell
-          takes at least three hyphens beside its alignment colon. Rows
-          410-4, 616-6, 626-8 and 659-4 pin it.
+          escaped at the outer item's content column. Rows 410-4, 616-6 and
+          626-8 pin it.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It answers to a Markdown

@@ -916,8 +916,8 @@
          the opening `{` (PART 4 `continuation`). A line at or below that
          column, like a BLANK line inside the braces, ends the attempt: the
          whole run is paragraph text, not `block_attributes`. Each block of a glued run (`{.a}{.b}`) wraps by
-         this same rule, so `{.a}{.b` / `}` and `{.a` / `}{.b}` are attribute
-         lines. A quoted value containing a literal `}` across
+         this same rule, so `{.a}{.b` / `     }` (past the second `{`) and
+         `{.a` / ` }{.b}` are attribute lines. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
          follows PART 4 `block_attributes` and PART 0 S4. The opener's
          indentation does not change what a wrapped block is

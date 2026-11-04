@@ -134,9 +134,10 @@
       cross-reference index only when the footnote is used and rendered.
       An unused definition is dropped by R2, so its headings are not targets.
    R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS --
-      NORMATIVE [CARVE-P9R-002]. A link or
-      footnote definition interrupts a paragraph under PART 0 S4, so one beside
-      an open paragraph defines. A definition-shaped line the block structure
+      NORMATIVE [CARVE-P9R-002]. A footnote
+      definition interrupts a paragraph under PART 0 S4 and a one-line link
+      definition is erased before layout (S1), so either one beside an open
+      paragraph defines. A definition-shaped line the block structure
       keeps as text, should a placement fold one, yields no
       entry in ANY symbol table -- linkDefs or footnoteDefs. It is
       paragraph text, it renders as the text the author typed, and nothing on it

@@ -2506,8 +2506,9 @@ empty_reference_label = (character - ']' - '@' - '^' - newline),
    the normalized key is present, not whether its destination is truthy;
    duplicate definitions still obey PART 9R R1's last-wins rule. A bare empty
    definition is valid but produces `empty-reference-definition`, a warning
-   that does not change its AST or rendering. It follows the existing
-   invisible-opener policy and can interrupt a paragraph. An escaped opener
+   that does not change its AST or rendering. Like any one-line link
+   definition it is erased before layout (PART 0 S1) and does not interrupt
+   a paragraph. An escaped opener
    remains literal, and a line at a quote column that cannot open a
    definition remains paragraph text. *)
 (* ANCHORED AT END OF LINE -- NORMATIVE [CARVE-P3-005]. The production ends in `newline`.
@@ -3579,10 +3580,10 @@ block_attributes = block_attribute_block, {block_attribute_block}, newline ;
 block_attribute_block = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}' ;
 (* A GLUED RUN IS ONE ATTRIBUTE LINE. `{.a}{.b}` on a line of its own is one
    attribute line whose blocks merge as PART 9 §15 A3 merges stacked lists.
-   Each block wraps by the rule above, so `{.a}{.b` + newline + `}` and `{.a` +
-   newline + `}{.b}` are attribute lines too. *)
+   Each block wraps by the rule above, so `{.a}{.b` + newline + `     }` (past
+   the second `{`) and `{.a` + newline + ` }{.b}` are attribute lines too. *)
 (* THE PADDING ADMITS A LINE BREAK TOO, not only the separator: `{` + newline
-   + `.a}`, `{.a` + newline + `}` and `{.a` + newline + `.b}` are all block
+   + ` .a}`, `{.a` + newline + ` }` and `{.a` + newline + ` .b}` are all block
    attributes, and the paragraph below takes `class="a"` or `class="a b"`
    accordingly. The INLINE `attributes` production pads with
    `attr_pad = {space}` alone, which admits no line break. *)
@@ -4791,8 +4792,8 @@ EOF = (* end of file *) ;
          (corpus 140). This matches the `standard_row` production, which
          ends in `'|'`; there is no lenient open form.
          The two uses may never disagree: a line the block parser builds a
-         table from but the §17 sub-block test calls prose would make a list
-         item loose AND fill it with a table.
+         table from but the §10 I1 test calls prose would fold into an open
+         paragraph in one reading and open a table in the other.
          Lint reports `table-shaped-paragraph` at the first line of a
          table-shaped run lacking its closing pipe. A non-table-shaped
          paragraph does not qualify. A pipe-table body row with more or
@@ -6298,8 +6299,8 @@ EOF = (* end of file *) ;
          the opening `{` (PART 4 `continuation`). A line at or below that
          column, like a BLANK line inside the braces, ends the attempt: the
          whole run is paragraph text, not `block_attributes`. Each block of a glued run (`{.a}{.b}`) wraps by
-         this same rule, so `{.a}{.b` / `}` and `{.a` / `}{.b}` are attribute
-         lines. A quoted value containing a literal `}` across
+         this same rule, so `{.a}{.b` / `     }` (past the second `{`) and
+         `{.a` / ` }{.b}` are attribute lines. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
          follows PART 4 `block_attributes` and PART 0 S4. The opener's
          indentation does not change what a wrapped block is
@@ -8004,9 +8005,10 @@ EOF = (* end of file *) ;
       cross-reference index only when the footnote is used and rendered.
       An unused definition is dropped by R2, so its headings are not targets.
    R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS --
-      NORMATIVE [CARVE-P9R-002]. A link or
-      footnote definition interrupts a paragraph under PART 0 S4, so one beside
-      an open paragraph defines. A definition-shaped line the block structure
+      NORMATIVE [CARVE-P9R-002]. A footnote
+      definition interrupts a paragraph under PART 0 S4 and a one-line link
+      definition is erased before layout (S1), so either one beside an open
+      paragraph defines. A definition-shaped line the block structure
       keeps as text, should a placement fold one, yields no
       entry in ANY symbol table -- linkDefs or footnoteDefs. It is
       paragraph text, it renders as the text the author typed, and nothing on it
@@ -9620,7 +9622,7 @@ EOF = (* end of file *) ;
 
       It also violates §2's THE UNIT IS THE OPENER: an opener run
       such as `%%%` must not be split into a partial opener and stray text.
-      Writing `* %%` as `* +` changes the output as well as the tree: a lone
+      Writing `* %%` as `* +` changes the tree but not the output: a lone
       `+` with nothing to attach is a refused structural marker and
       renders nothing (PART 9 §17 L3), so `* +` and `* %%` both render an
       empty `<li></li>` while retaining different parse forms.
@@ -10079,7 +10081,7 @@ EOF = (* end of file *) ;
       that spelling: with the field, a separator row; without it, `|=` header
       cells. The canonical `fmt` writer ignores the field when choosing a
       spelling. It writes `|=` header cells for every head row. Each header cell retains its
-      alignment in the cell's leading attribute-block symbols (`|={< |`,
+      alignment in the cell's leading attribute-block symbols (`|={<} |`,
       `|={~} |`, `|={>} |`); a cell with no alignment uses `|=` alone.
       A span placeholder keeps its marker and any alignment-only block,
       including an orphan in the first row and a covered placeholder whose
@@ -10668,9 +10670,8 @@ EOF = (* end of file *) ;
       (c) A BLOCK BELOW A FOOTNOTE BODY OR A NESTED FENCE. A block that
           follows a list opened on a footnote definition's line is written at
           that list's column, a literal `+` after a nested fence is written
-          escaped at the outer item's content column, and a table separator cell
-          takes at least three hyphens beside its alignment colon. Rows
-          410-4, 616-6, 626-8 and 659-4 pin it.
+          escaped at the outer item's content column. Rows 410-4, 616-6 and
+          626-8 pin it.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It answers to a Markdown

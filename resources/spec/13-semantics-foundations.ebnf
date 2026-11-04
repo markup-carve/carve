@@ -246,8 +246,8 @@
          (corpus 140). This matches the `standard_row` production, which
          ends in `'|'`; there is no lenient open form.
          The two uses may never disagree: a line the block parser builds a
-         table from but the §17 sub-block test calls prose would make a list
-         item loose AND fill it with a table.
+         table from but the §10 I1 test calls prose would fold into an open
+         paragraph in one reading and open a table in the other.
          Lint reports `table-shaped-paragraph` at the first line of a
          table-shaped run lacking its closing pipe. A non-table-shaped
          paragraph does not qualify. A pipe-table body row with more or
