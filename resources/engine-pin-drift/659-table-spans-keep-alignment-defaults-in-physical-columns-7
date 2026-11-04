@@ -1,1 +1,0 @@
-markup-carve/carve#5091 D3: pinned carve-js reads the retired table alignment marker syntax; this source uses alignment symbols inside cell attribute braces.

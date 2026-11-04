@@ -47,7 +47,8 @@ test('a spaced - or * run is a thematic break, a spaced _ run is not', () => {
   assert.equal(modelHtml('- - -\n'), '<hr>')
   assert.equal(modelHtml('* * *\n'), '<hr>')
   assert.doesNotMatch(modelHtml('_ _ _\n'), /<hr/)
-  assert.equal(html('---\n'), '<hr>')
+  // carve#5016: a lone first-line `---` opens frontmatter through EOF.
+  assert.equal(html('---\n'), '')
 })
 
 test('GFM double tilde is literal; Carve strikethrough is single', () => {

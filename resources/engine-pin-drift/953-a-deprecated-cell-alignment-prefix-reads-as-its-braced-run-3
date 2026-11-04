@@ -1,1 +1,0 @@
-markup-carve/carve#5091 D3: pinned carve-js reads `|=< |` as the retired empty left-aligned header; the ruling makes it the header-kind colspan placeholder.

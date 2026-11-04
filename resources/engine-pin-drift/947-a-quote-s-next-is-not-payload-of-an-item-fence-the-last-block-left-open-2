@@ -1,1 +1,0 @@
-The pinned carve-js writes a quote's next + as a separator blank into an item fence the previous attached block left open, as the spec model did before markup-carve/carve#5046 (fixed in markup-carve/carve-js#4334, not yet pinned).

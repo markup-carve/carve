@@ -1,1 +1,0 @@
-The pinned carve-js reads a comment line between a nested item's column and its line block's column, inside the block's open %%% span, as the spec model did before markup-carve/carve#5021 (carve-js line of #5021 open).

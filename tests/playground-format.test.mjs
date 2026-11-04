@@ -34,8 +34,8 @@ test('without alignTables the writer leaves columns unpadded', () => {
 test('the vendored WASM build exports the writer, so Rust mode formats natively', async () => {
   const wasmFormat = wasmWriter(await vendoredWasm())
   assert.notEqual(wasmFormat, null, 'rebuild with `npm run sync-carve-wasm`: the bundle lacks toCarveWithOptions')
-  // Native headers: the vendored build predates carve-rs's `|=` writer (PART 11 §6h), so a separator row would differ.
-  const native = '|=< Name |=> Qty |\n| apple | 3 |\n| fig | 12 |\n'
+  // Unaligned native headers: the vendored build predates both the `|=` writer (PART 11 §6h) and the #5091 `|={<}` spelling.
+  const native = '|= Name |= Qty |\n| apple | 3 |\n| fig | 12 |\n'
   for (const alignTables of [true, false]) {
     const result = formatCarve(native, { engine: 'rust', alignTables, jsFormat: carveToCarve, wasmFormat })
     assert.equal(result.engine, 'rust')

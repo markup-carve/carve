@@ -156,10 +156,6 @@ const NOT_IN_THE_PIN_YET = new Map([
     'specified by carve#4980 stage 2; the pinned build predates the migration warning',
   ],
   [
-    'deprecated-cell-alignment',
-    'specified by carve#5091; the pinned build predates the D3 alignment migration',
-  ],
-  [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',
   ],

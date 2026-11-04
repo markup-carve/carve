@@ -1465,6 +1465,8 @@ test('an emptied item reaching past its marker line markup still reports', () =>
     assert.equal(findings.length, 1, line)
     assert.match(findings[0], /span covers more than its own markup on an empty "list_item"/)
   }
+})
+
 test('a container ends after a consumed plus that leaves no node (carve#5161)', () => {
   // `- a` / `+` / `- x` and `> > q` / `> +`: all three engines end the host
   // after the authored `+`.

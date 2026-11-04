@@ -147,7 +147,6 @@ const PINNED_UNIMPLEMENTED = {}
  */
 const PINNED_DRIFT = {
   '40-djot-a-brace-run-continuation-must-be-indented': 'carve#5080: pinned Djot importer still rewrites block-position brace runs that Carve now reads directly',
-  '84-html-empty-aligned-body-cell': 'carve#5101: pinned HTML importer predates carve-js#4372 and drops the empty cell alignment that D3 spells as `|{<} |`',
 }
 const PINNED_SOURCE_DRIFT = {}
 
