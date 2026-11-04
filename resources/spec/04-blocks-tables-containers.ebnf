@@ -57,7 +57,7 @@ continuation_cell = {space}, cell_content, {space} ;
    (no intervening space) sets the row's `<tr>` attributes -- the row-level twin
    of a cell's attribute block (cell_attributes). The two are NOT in the same
    position: a row's block follows the row's LAST `|`, a cell's follows the
-   cell's marker run (CELL ATTRIBUTES below). The whole
+   cell's marker run (CARVE-P2-036 below). The whole
    payload must be valid attribute syntax (PART 9 §15); otherwise the `{` is ordinary
    content and the line is not a row attribute (see PART 9 §5, ROW
    ATTRIBUTES). *)
@@ -84,7 +84,7 @@ data_cell   =      [cell_attributes], cell_padding, cell_content, {space} ;
    ends with one space (PART 9 §5 T11). A cell with no prefix accepts unpadded
    content (`|a|`). A placeholder with an alignment-only block remains a
    span_cell; ordinary attributes make its glyph literal (T4). *)
-(* CELL ATTRIBUTES (NORMATIVE): an attribute block sets the cell's attributes.
+(* AN ATTRIBUTE BLOCK SETS THE CELL'S ATTRIBUTES -- NORMATIVE [CARVE-P2-036].
    It follows the optional `=` and is glued to it or to the
    opening `|` (`|={> .x} …`, `|{.x} …`). The rest of the cell, after
    optional whitespace, is the content. A space before the brace (`| {.x}`) is
@@ -127,7 +127,7 @@ header_colspan_marker = '=', space, {space}, '<', {space} ;
 
 rowspan_marker = {space}, '^' ;
 colspan_marker = {space}, '<' ;
-(* TABLE-CELL PADDING (NORMATIVE, PART 7). Every padding slot in the five
+(* TABLE-CELL PADDING (PART 7, CARVE-P7-001). Every padding slot in the five
    productions above is spelled `space`. All of them sit after the row's
    opening `|`, so all of them are INLINE, and A TAB IS SYNTAX ONLY IN THE
    LEADING RUN (CARVE-P7-001). A tab written in one of these slots is not padding:

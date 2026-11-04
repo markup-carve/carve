@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
-// §17 L1 (carve#3977): a comment closer pairs at any column (CARVE-P9-053), so
+// §17 L1 (carve#3977): a comment closer pairs at any column (CARVE-P0-005), so
 // one written below a nested item's column ends no sublist, and a paragraph the
 // nested item holds after a blank does not loosen the outer item.
 const html = (lines) => renderDoc(parse(lines.join('\n') + '\n'))

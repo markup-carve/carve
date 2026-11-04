@@ -93,7 +93,7 @@ The end of a list item ends the fence the same way its own closer would.
 
 A fence opened on a nested list marker line keeps the blank too, even with no
 line before it and at any depth. A blank line supplies every indentation prefix
-(PART 0 O1), so nesting depth does not change which frame owns it
+(PART 0 S2), so nesting depth does not change which frame owns it
 (markup-carve/carve-php#3573, markup-carve/carve-rs#2925).
 
 ::: compare

@@ -126,7 +126,7 @@ const cases = [
     "<ul>\n<li>\n<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n</li>\n</ul>\n<pre><code></code></pre>"
   ],
   [
-    "a marker past the item column below its description opens a sibling list (CARVE-P2-017)",
+    "a marker past the item column below its description opens a sibling list (CARVE-P9-083)",
     "- :: t\n  : para\n   - li\n",
     "<ul>\n<li>\n<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n<ul>\n<li>li</li>\n</ul>\n</li>\n</ul>"
   ],

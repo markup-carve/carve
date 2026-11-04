@@ -4,7 +4,7 @@ import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 // PART 1 S4 (carve#3968, carve#3980): a quote reached through several markers,
-// or through a task box (CARVE-P0-008), ends on its own last block, so an
+// or through a task box (CARVE-P9-083), ends on its own last block, so an
 // unmarked line after a block that leaves no paragraph closes every container.
 const html = (lines) => renderDoc(parse(lines.join('\n') + '\n'))
 const stacks = [['- ', '- '], ['- ', '- ', '- '], ['* ', '1. ', '- '], ['- [ ] '], ['- ', '- [x] '], ['- [ ] ', '1. ']]

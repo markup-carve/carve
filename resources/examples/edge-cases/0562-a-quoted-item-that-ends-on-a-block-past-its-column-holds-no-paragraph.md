@@ -1,8 +1,8 @@
 ## A quoted item that ends on a block past its column holds no paragraph
 
 An opener past a nested item's content column inside a quote. The heading is
-rebased into the item (`CARVE-P0-004`), which then holds no paragraph, so no
-frame of the quote adopts the line below (`CARVE-P0-009`,
+rebased into the item (`CARVE-P0-024`), which then holds no paragraph, so no
+frame of the quote adopts the line below (`CARVE-P0-024`,
 markup-carve/carve#2960). In the second document the backtick run opens a
 fence under the item's paragraph, so the tilde lines below it are its content.
 

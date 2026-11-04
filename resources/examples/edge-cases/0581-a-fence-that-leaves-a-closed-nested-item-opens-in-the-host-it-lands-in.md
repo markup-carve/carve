@@ -1,7 +1,7 @@
 ## A fence that leaves a closed nested item opens in the host it lands in
 
 A closed block leaves no paragraph open, so a fence run below a nested item's
-column leaves that item and is read in the enclosing host (CARVE-P0-009). With
+column leaves that item and is read in the enclosing host (CARVE-P0-024). With
 nothing to interrupt and no closer to take, an unclosed fence opens a code block
 that runs to the end of that host, and a bare `:::` past a box's column is
 text, not the box's closer (PART 2 `admonition`, A CLOSER IS REQUIRED).

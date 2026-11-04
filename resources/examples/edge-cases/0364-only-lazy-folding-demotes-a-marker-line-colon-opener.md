@@ -30,7 +30,7 @@ tail
 
 The line below the content column. The opener has opened an empty container,
 which holds no paragraph, so `tail` has nothing to fold into and is a document
-paragraph (`CARVE-P0-009`, `CARVE-P9-084`).
+paragraph (`CARVE-P0-024`, `CARVE-P9-084`).
 
 ::: compare
 

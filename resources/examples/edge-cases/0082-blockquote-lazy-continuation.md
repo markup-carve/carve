@@ -77,7 +77,7 @@ b
 :::
 
 A definition **term** is an ordinary line, so it leaves the quote open for lazy
-text and the next line folds into the term (`CARVE-P2-028`).
+text and the next line folds into the term (`CARVE-P0-024`).
 
 ::: compare
 

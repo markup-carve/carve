@@ -3,7 +3,7 @@
  * item a fence attached below the content column leaves the blank after it to
  * the host (carve#4048), and a descendant's attached fence runs through its
  * closer past a blank. A task box's columns fold into the marker-line child's
- * paragraph after a lazy line too (carve#4038, CARVE-P0-008, PART 0 S4).
+ * paragraph after a lazy line too (carve#4038, CARVE-P9-083, PART 0 S4).
  */
 
 import { test } from 'node:test'

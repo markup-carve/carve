@@ -3,7 +3,7 @@
  * folds into it (PART 9 §10 I2) and opens no item, so a line past the body's
  * column is read in the body: a definition registers (CARVE-P0-020, ruled on
  * carve#3279) and a heading or attribute line opens on its authored base
- * (CARVE-P0-004). A definition one column past a quote marker opens in the
+ * (CARVE-P0-024). A definition one column past a quote marker opens in the
  * quote and registers (carve#3885).
  */
 

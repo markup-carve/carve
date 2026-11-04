@@ -127,7 +127,7 @@ more</li>
 ::::::
 
 A heading past the body's column opens on its authored base
-(CARVE-P0-004), and `x` leaves the body (CARVE-P0-012):
+(CARVE-P0-024), and `x` leaves the body (CARVE-P0-012):
 :::::: compare
 
 ````carve
@@ -208,7 +208,7 @@ x</li>
 
 ::::::
 
-A block quote does not rebase (CARVE-P0-004). A definition one column past
+A block quote does not rebase (CARVE-P0-024). A definition one column past
 the quote marker is erased with its `>` (carve#5129), so the quoted paragraph
 stays open for `tail` (carve#3280):
 :::::: compare

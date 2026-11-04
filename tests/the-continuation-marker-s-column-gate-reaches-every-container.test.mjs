@@ -25,7 +25,7 @@
  * agree.
  *
  * A FOOTNOTE BODY AND A DESCRIPTION NO LONGER TAKE THE COMMENT CONTROL. A line
- * comment below their column now retains the follower (PART 0 X1), as in a list
+ * comment below their column now retains the follower (CARVE-P0-005), as in a list
  * item, so those four rows pin the retained output and that the marker spelling
  * differs from it.
  */

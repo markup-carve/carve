@@ -27,7 +27,7 @@ for (const fence of ['```', '````', '~~~']) {
 }
 
 // A task box before a further marker shifts the chain's fence column, so a
-// task item two levels up still sees the line end the fence (CARVE-P0-008).
+// task item two levels up still sees the line end the fence (CARVE-P9-083).
 test('a task chain folds at every depth too', () => {
   assert.match(render('- [ ] - [ ] - [ ] - [ ] ~~~\n                  x\ntail\n'), /x\ntail\n/)
   assert.match(render('- - [ ] - [ ] - ```\n          x\ntail\n'), /x\ntail\n/)

@@ -1,6 +1,6 @@
 ## A lazy colon-shaped line in a quote paragraph keeps no indentation
 
-A line with no `>` prefix below an open quote paragraph folds into it as a lazy line (PART 0 O3). Its leading whitespace is stripped like that of any other paragraph continuation line, so a colon-shaped line keeps none of it, whatever its width (carve#3493).
+A line with no `>` prefix below an open quote paragraph folds into it as a lazy line (PART 0 S4). Its leading whitespace is stripped like that of any other paragraph continuation line, so a colon-shaped line keeps none of it, whatever its width (carve#3493).
 
 A colon-shaped lazy line below a quote paragraph that starts with colon-shaped text
 

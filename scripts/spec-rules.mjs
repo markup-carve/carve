@@ -52,6 +52,13 @@ for (const context of markers.idless) {
   console.error(`normative clause carries no stable id: ...${context}`)
   process.exitCode = 1
 }
+// `(NORMATIVE)` marks a whole PART in its header; a clause spelled that way would get no id.
+for (const line of grammar.split('\n')) {
+  if (/\(NORMATIVE\b/.test(line) && !/PART \d+R?:/.test(line)) {
+    console.error(`normative clause marked with a parenthesis, not -- NORMATIVE [id]: ${line.trim()}`)
+    process.exitCode = 1
+  }
+}
 const reached = new Set(actual.map(({ id }) => id))
 for (const id of markers.ids) {
   if (!reached.has(id)) {

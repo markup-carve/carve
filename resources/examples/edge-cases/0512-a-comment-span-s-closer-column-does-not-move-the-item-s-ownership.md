@@ -6,7 +6,7 @@ owner or the end of its container (PART 9 §28). The rows below follow that
 reading; where the prose describes a closerless opener as a `%%` line or a
 closer ahead as deciding the span, it records the reading the ruling replaced.
 
-`CARVE-P9-053` recognizes a comment at every column and names both spellings: the
+`CARVE-P0-005` recognizes a comment at every column and names both spellings: the
 `%%` line form, and the `%%%` fence form "whose body and closer travel with its
 opener". `CARVE-P0-013` adds that a `%%%` run closes the span at any column and
 ends no container, because `comment_block_open` and `comment_block_close` each

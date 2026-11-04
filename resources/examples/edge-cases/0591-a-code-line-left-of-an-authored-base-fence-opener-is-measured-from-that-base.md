@@ -1,6 +1,6 @@
 ## A code line left of an authored-base fence opener is measured from that base
 
-A fence past the box content column establishes its own authored base. Payload left of that base loses its available prefix, while payload to the right keeps its extra spaces (CARVE-P0-004). The fence has no closer, so the box's `:::` is payload too, and `after` ends the fence, the box and the item. A fence at the box content column uses that column as its base.
+A fence past the box content column establishes its own authored base. Payload left of that base loses its available prefix, while payload to the right keeps its extra spaces (CARVE-P0-024). The fence has no closer, so the box's `:::` is payload too, and `after` ends the fence, the box and the item. A fence at the box content column uses that column as its base.
 
 :::: compare
 

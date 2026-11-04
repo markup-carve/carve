@@ -1,6 +1,6 @@
 ## A fence after a footnote quote has its own base
 
-PART 0 [CARVE-P0-004] gives a recognized opener past the footnote body's
+PART 0 [CARVE-P0-024] gives a recognized opener past the footnote body's
 minimum column its own authored base. Under PART 2 [CARVE-P2-008], an
 unmarked blank ends the preceding quote, so the code or raw fence opens a
 sibling block in the footnote.

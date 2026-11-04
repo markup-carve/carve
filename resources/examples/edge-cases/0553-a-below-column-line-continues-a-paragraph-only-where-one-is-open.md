@@ -4,7 +4,7 @@ A line below an item's content column is not that item's content. It reaches the
 document only through lazy continuation, which extends an OPEN PARAGRAPH and
 nothing else, so the question is asked at the deepest frame: a paragraph open
 there takes the line, and otherwise the list closes and the line begins a new
-block (`CARVE-P0-009`, markup-carve/carve#2884).
+block (`CARVE-P0-024`, markup-carve/carve#2884).
 
 The clause used to carve out a heading and then hand the line to a surviving
 frame's paragraph anyway, which adopted a column-0 line into an item two columns

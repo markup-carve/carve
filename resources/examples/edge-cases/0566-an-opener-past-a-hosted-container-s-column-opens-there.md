@@ -2,7 +2,7 @@
 
 A recognized block opener past the content column of a colon container that a
 list item hosts takes its authored column as the base of that one block
-(`CARVE-P0-004`, `CARVE-P9-083`, ruled on
+(`CARVE-P0-024`, `CARVE-P9-083`, ruled on
 markup-carve/carve#2973). The line-block spelling, a code fence and a heading
 open like a named container does, with the container on the marker line or
 below it, quoted or not.
@@ -75,7 +75,7 @@ tail
 ::::
 
 Under a paragraph of the container the same opener closes the paragraph
-and opens its block (`CARVE-P9-083`, `CARVE-P0-004`).
+and opens its block (`CARVE-P9-083`, `CARVE-P0-024`).
 
 :::: compare
 

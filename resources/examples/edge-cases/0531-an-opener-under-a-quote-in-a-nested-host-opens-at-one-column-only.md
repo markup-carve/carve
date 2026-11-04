@@ -1,8 +1,8 @@
 ## An opener under a quote in a nested host opens at one column only
 
-PART 0 [CARVE-P0-021] folds a block opener into a surviving quote's open
+PART 0 [CARVE-P0-024] folds a block opener into a surviving quote's open
 paragraph at every column but the host's own content column. PART 0
-[CARVE-P0-004] rebases a RECOGNIZED opener, and past the content column a line
+[CARVE-P0-024] rebases a RECOGNIZED opener, and past the content column a line
 is one only where no open paragraph can take it as text; PART 0 [CARVE-P0-011]
 is why that column itself always opens. The item's content column is 2 and the
 quote's is 4, so column 2 is the control and 1, 3, 4 and 8 all fold. A raw fence

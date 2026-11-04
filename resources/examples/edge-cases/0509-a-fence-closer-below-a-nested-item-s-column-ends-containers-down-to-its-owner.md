@@ -1,6 +1,6 @@
 ## A fence closer below a nested item's column ends containers down to its owner
 
-`CARVE-P0-004`'s owner table carries no depth term, so a closing run below its
+`CARVE-P0-024`'s owner table carries no depth term, so a closing run below its
 fence's base selects an owner at any depth
 ([carve#2490](https://github.com/markup-carve/carve/issues/2490)). The host's
 content column is 4, and with no container holding an open paragraph the run's

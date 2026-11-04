@@ -1610,6 +1610,17 @@
         }
       ]
     }
+,
+    {
+      "rule": "CARVE-P2-036",
+      "edits": [
+        {
+          "file": "scripts/spec/html.mjs",
+          "find": "parsed = parsed.replace(new RegExp(` ${key}=\"[^\"]*\"`, 'gi'), '')",
+          "replace": "parsed = parsed.replace(new RegExp(` ${key}=\"[^\"]*\"`, 'gi'), ' data-x=\"0\"')"
+        }
+      ]
+    }
   ],
   "unmapped": {
     "CARVE-P0-003": "frame record is the whole layout; implemented, but no single targeted site found within the time box (layout-transitions.json is not editable)",
@@ -1639,6 +1650,7 @@
     "CARVE-P9R-008": "unanswerable probe for unrecognized/extension constructs; the model has no probe or extension matchers",
     "CARVE-P9R-009": "direct numbering of labeled display math (math.label/number); the model has no equation-label numbering",
     "CARVE-P10-010": "directive (toc/glossary/index) generated-content indentation; the model refuses ::: toc and renders no generated directive content",
+    "CARVE-P11-080": "CLI exit status and stderr category; the model has no CLI",
     "CARVE-P12-009": "consumer obligation on serialized AST hrefs; the model's denylist is P9-054 at its own render",
     "CARVE-P12-032": "source-layout AST sidecar; the model emits HTML only, no sidecar",
     "CARVE-P12-033": "AST shortCaption field is interchange-only; no Carve source or model code produces it",

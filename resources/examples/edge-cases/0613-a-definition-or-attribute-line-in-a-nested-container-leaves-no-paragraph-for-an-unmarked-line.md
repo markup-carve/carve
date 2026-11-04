@@ -10,7 +10,7 @@ the note.
 
 A definition or attribute line at a sub-item's content column ends the
 sub-item's paragraph and leaves none open anywhere in the stack
-(CARVE-P0-010, CARVE-P0-011), so a line at document column 0 leaves the
+(CARVE-P0-005, CARVE-P0-011), so a line at document column 0 leaves the
 list instead of folding into the outer item:
 :::::: compare
 

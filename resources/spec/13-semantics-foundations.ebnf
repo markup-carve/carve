@@ -654,8 +654,8 @@
         straight into the text buffer is NOT conformant: it discards the
         spelling, after which `...` cannot be told from a literal U+2026 and
         the writer has nothing to reproduce.
-        * SOURCE OUTPUT ON THE MARKDOWN TARGET -- OPTIONAL, NORMATIVE WHERE
-          OFFERED. The glyph above is the DEFAULT on every presentation
+        * SOURCE OUTPUT ON THE MARKDOWN TARGET IS AN OPTIONAL FEATURE --
+          NORMATIVE [CARVE-P9-086]. The glyph above is the DEFAULT on every presentation
           target and stays so. An implementation MAY additionally offer, as
           the named optional feature `markdown-typography-source`, a
           Markdown-renderer setting that emits the SOURCE RUN instead. An

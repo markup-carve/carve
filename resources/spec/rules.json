@@ -323,6 +323,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P2-036",
+      "part": "2",
+      "title": "AN ATTRIBUTE BLOCK SETS THE CELL'S ATTRIBUTES",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P3-001",
       "part": "3",
       "title": "WHICH SPANS THE SCAN SKIPS",
@@ -1511,6 +1517,18 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-080",
+      "part": "11",
+      "title": "A CLI INPUT OR USAGE ERROR EXITS WITH STATUS 2",
+      "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P11-081",
+      "part": "11",
+      "title": "THE FORMATTER CHECK NAMES THE FIRST CHANGED LINE",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P12-001",
       "part": "12",
       "title": "AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY",
@@ -2061,6 +2079,12 @@
       "part": "9",
       "title": "ONE COLON-FENCE FRAME",
       "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P9-086",
+      "part": "9",
+      "title": "SOURCE OUTPUT ON THE MARKDOWN TARGET IS AN OPTIONAL FEATURE",
+      "scope": "canonical-writing"
     }
   ],
   "retired": [

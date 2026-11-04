@@ -6,7 +6,7 @@ owner or the end of its container (PART 9 §28). The rows below follow that
 reading; where the prose describes a closerless opener as a `%%` line or a
 closer ahead as deciding the span, it records the reading the ruling replaced.
 
-Comments leave block ownership unchanged (CARVE-P0-005, CARVE-P9-053). The colon fence after the heading opens an empty div on its authored base (CARVE-P0-004, CARVE-P9-084).
+Comments leave block ownership unchanged (CARVE-P0-005). The colon fence after the heading opens an empty div on its authored base (CARVE-P0-024, CARVE-P9-084).
 
 :::: compare
 

@@ -85,26 +85,6 @@
      `.github/CONTRIBUTING.md`, and what earns a new clause lives beside it
      under WHAT EARNS A CLAUSE. Both are process rules, not language rules.
 
-   CLI ERROR CONTRACT (NORMATIVE). A command-line invocation exits with status
-   2 for an unknown option or invalid option value (`usage`), a missing or
-   unreadable input file (`input-unreadable`), or invalid AST JSON supplied to
-   `--from-json` (`ast-json-invalid`). The same status applies to each class
-   on every implementation.
-
-   The first stderr diagnostic line begins `carve[CATEGORY]:`, with CATEGORY
-   replaced by exactly one of the three names above. The category token is
-   stable for scripts; text after the colon is implementation-specific. The
-   category identifies the failed input or invocation, not a parser or lint
-   finding within a successfully read document.
-
-   FORMATTER DIAGNOSTIC CONTRACT (NORMATIVE). When `carve fmt --check`
-   finds a change, it prints the first changed source line for each file as
-   `path:line`, followed by the old and new line text. The path for stdin is
-   `<stdin>`. `carve fmt --diff` prints a unified source diff. Both modes
-   leave the input unchanged and return status 1 for a formatting change,
-   status 0 for no change, and the existing usage or input error status for
-   failures. The diagnostic does not change what the canonical writer emits.
-
    RECOVERY DECISION TABLE (PARTS 0-9; construct guards still govern).
    Decide within the current host after testing the complete opener:
    | Case | Recovery |
@@ -1294,7 +1274,7 @@ ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')')
 roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
               | ('I' | 'V' | 'X' | 'L' | 'C' | 'D' | 'M')+ ;
 
-(* LIST-ITEM ATTRIBUTES (Carve addition; NORMATIVE -- extends PART 9 §15). An
+(* LIST-ITEM ATTRIBUTES (Carve addition; extends PART 9 §15, CARVE-P2-013). An
    attribute block ABUTTING the marker (no space between marker and `{`)
    attaches its attributes to the `<li>` itself; the marker's required space
    follows the block:
@@ -1568,7 +1548,7 @@ continuation_cell = {space}, cell_content, {space} ;
    (no intervening space) sets the row's `<tr>` attributes -- the row-level twin
    of a cell's attribute block (cell_attributes). The two are NOT in the same
    position: a row's block follows the row's LAST `|`, a cell's follows the
-   cell's marker run (CELL ATTRIBUTES below). The whole
+   cell's marker run (CARVE-P2-036 below). The whole
    payload must be valid attribute syntax (PART 9 §15); otherwise the `{` is ordinary
    content and the line is not a row attribute (see PART 9 §5, ROW
    ATTRIBUTES). *)
@@ -1595,7 +1575,7 @@ data_cell   =      [cell_attributes], cell_padding, cell_content, {space} ;
    ends with one space (PART 9 §5 T11). A cell with no prefix accepts unpadded
    content (`|a|`). A placeholder with an alignment-only block remains a
    span_cell; ordinary attributes make its glyph literal (T4). *)
-(* CELL ATTRIBUTES (NORMATIVE): an attribute block sets the cell's attributes.
+(* AN ATTRIBUTE BLOCK SETS THE CELL'S ATTRIBUTES -- NORMATIVE [CARVE-P2-036].
    It follows the optional `=` and is glued to it or to the
    opening `|` (`|={> .x} …`, `|{.x} …`). The rest of the cell, after
    optional whitespace, is the content. A space before the brace (`| {.x}`) is
@@ -1638,7 +1618,7 @@ header_colspan_marker = '=', space, {space}, '<', {space} ;
 
 rowspan_marker = {space}, '^' ;
 colspan_marker = {space}, '<' ;
-(* TABLE-CELL PADDING (NORMATIVE, PART 7). Every padding slot in the five
+(* TABLE-CELL PADDING (PART 7, CARVE-P7-001). Every padding slot in the five
    productions above is spelled `space`. All of them sit after the row's
    opening `|`, so all of them are INLINE, and A TAB IS SYNTAX ONLY IN THE
    LEADING RUN (CARVE-P7-001). A tab written in one of these slots is not padding:
@@ -5214,8 +5194,8 @@ EOF = (* end of file *) ;
         straight into the text buffer is NOT conformant: it discards the
         spelling, after which `...` cannot be told from a literal U+2026 and
         the writer has nothing to reproduce.
-        * SOURCE OUTPUT ON THE MARKDOWN TARGET -- OPTIONAL, NORMATIVE WHERE
-          OFFERED. The glyph above is the DEFAULT on every presentation
+        * SOURCE OUTPUT ON THE MARKDOWN TARGET IS AN OPTIONAL FEATURE --
+          NORMATIVE [CARVE-P9-086]. The glyph above is the DEFAULT on every presentation
           target and stays so. An implementation MAY additionally offer, as
           the named optional feature `markdown-typography-source`, a
           Markdown-renderer setting that emits the SOURCE RUN instead. An
@@ -12222,6 +12202,27 @@ EOF = (* end of file *) ;
    an engine API option). Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering.
+
+   A CLI INPUT OR USAGE ERROR EXITS WITH STATUS 2 -- NORMATIVE [CARVE-P11-080]. A command-line invocation exits with status
+   2 for an unknown option or invalid option value (`usage`), a missing or
+   unreadable input file (`input-unreadable`), or invalid AST JSON supplied to
+   `--from-json` (`ast-json-invalid`). The same status applies to each class
+   on every implementation.
+
+   The first stderr diagnostic line begins `carve[CATEGORY]:`, with CATEGORY
+   replaced by exactly one of the three names above. The category token is
+   stable for scripts; text after the colon is implementation-specific. The
+   category identifies the failed input or invocation, not a parser or lint
+   finding within a successfully read document.
+
+   THE FORMATTER CHECK NAMES THE FIRST CHANGED LINE -- NORMATIVE
+   [CARVE-P11-081]. When `carve fmt --check`
+   finds a change, it prints the first changed source line for each file as
+   `path:line`, followed by the old and new line text. The path for stdin is
+   `<stdin>`. `carve fmt --diff` prints a unified source diff. Both modes
+   leave the input unchanged and return status 1 for a formatting change,
+   status 0 for no change, and the existing usage or input error status for
+   failures. The diagnostic does not change what the canonical writer emits.
    ============================================================================ *)
 (* ============================================================================
    PART 12: AST SERIALIZATION (NORMATIVE)

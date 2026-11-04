@@ -1,7 +1,7 @@
 ## Implicit heading references with no definition
 
 A `[text][]` that matches no link definition falls back to the document's
-headings by their rendered text (PART 11 R1). The label and the heading text
+headings by their rendered text (PART 9R R1). The label and the heading text
 are both trimmed, whitespace-collapsed and NFC-normalized, then compared
 exactly: case is not folded, so `[getting started][]` does not reach
 `# Getting Started` and stays literal.

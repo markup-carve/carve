@@ -2,7 +2,7 @@
 
 A comment at or past an item’s content column closes its paragraph and grants
 no retention to a following below-column line; only a comment consumed below
-that column grants retention (`CARVE-P0-009` X1, `CARVE-P9-053`).
+that column grants retention (`CARVE-P0-024`, `CARVE-P0-005`).
 
 ::: compare
 

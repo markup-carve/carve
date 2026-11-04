@@ -5,7 +5,7 @@ Inside a list item the block openers key on the item content column, not column
 line is (PART 2, "A MARKER-LINE OPENER OPENS TOO", ruled on
 markup-carve/carve#2978). Lines below the content column are not its body, and
 the empty container leaves no paragraph for them to fold into
-(`CARVE-P0-009`), so they are read at the document. The section keeps the title
+(`CARVE-P0-024`), so they are read at the document. The section keeps the title
 of the reading it used to pin.
 
 :::: compare

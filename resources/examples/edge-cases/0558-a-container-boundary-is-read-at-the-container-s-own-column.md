@@ -6,7 +6,7 @@ fence closer written after its item had ended (markup-carve/carve#2925).
 
 A named colon opener written past the content column inside a container an item
 hosts. The opener is recognized and takes its
-authored column as the base of that one block (`CARVE-P0-004`,
+authored column as the base of that one block (`CARVE-P0-024`,
 markup-carve/carve-php#3137). The quoted spelling reads the same way, and with
 the box left unclosed the line below still leaves the quote.
 
@@ -60,7 +60,7 @@ tail
 :::
 
 Under a paragraph of the box the same opener closes the paragraph and
-establishes its own base (`CARVE-P9-083`, `CARVE-P0-004`).
+establishes its own base (`CARVE-P9-083`, `CARVE-P0-024`).
 
 :::: compare
 
@@ -95,7 +95,7 @@ outer item's column end the child item, so the later run is not inside it and
 closes nothing: the first run opens a code block that the heading ends
 (`CARVE-P0-014`, markup-carve/carve#2961). The later run is past the outer
 item's column with no paragraph open, so it opens a code block of its own
-(`CARVE-P0-004`). The top-level spelling reads the first run the same way.
+(`CARVE-P0-024`). The top-level spelling reads the first run the same way.
 
 ::: compare
 

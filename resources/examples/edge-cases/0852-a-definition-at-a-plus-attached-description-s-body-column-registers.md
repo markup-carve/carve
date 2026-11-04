@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A definition at a plus-attached description's body column registers
 
-PART 9 §17 L3, CARVE-P0-010 and carve#4439. A first-block `+` hands the item the same block a `- a` / `+` spelling does, so a definition at the description body's column is a definition there too.
+PART 9 §17 L3, CARVE-P0-005 and carve#4439. A first-block `+` hands the item the same block a `- a` / `+` spelling does, so a definition at the description body's column is a definition there too.
 
 :::: compare
 

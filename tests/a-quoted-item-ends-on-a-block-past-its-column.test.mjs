@@ -8,8 +8,8 @@ const quoted = (depth, lines) => lines.map((line) => ('> '.repeat(depth) + line)
 
 const items = (nesting) => Array.from({ length: nesting }, (_, k) => ' '.repeat(2 * k) + '- item' + k)
 
-// CARVE-P0-004 rebases a recognized opener past the content column, and the
-// item then ends on that block. CARVE-P0-009: no frame adopts the line below.
+// CARVE-P0-024 rebases a recognized opener past the content column, and the
+// item then ends on that block. CARVE-P0-024: no frame adopts the line below.
 for (const depth of [1, 2]) for (const nesting of [1, 2, 3]) for (const over of [1, 2, 4]) {
   const pad = ' '.repeat(2 * nesting + over)
   for (const block of ['# h', '---', '| a |']) {

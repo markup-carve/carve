@@ -3,7 +3,7 @@
 
 Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
 
-A marker at the item column opens a list (PART 0 O2).
+A marker at the item column opens a list (PART 0 S2).
 :::::: compare
 
 ````carve
@@ -28,7 +28,7 @@ A marker at the item column opens a list (PART 0 O2).
 
 ::::::
 
-A marked quoted continuation keeps its claim (PART 0 X1).
+A marked quoted continuation keeps its claim (PART 0 S2).
 :::::: compare
 
 ````carve
@@ -129,7 +129,7 @@ A marker below every content column folds into the item (PART 9 §24 C3).
 
 ::::::
 
-An opener past the note body and below the item opens in the note (CARVE-P0-004).
+An opener past the note body and below the item opens in the note (CARVE-P0-024).
 :::::: compare
 
 ````carve
@@ -181,7 +181,7 @@ A marker below the description body column opens a sibling list when it reaches 
 
 ::::::
 
-A lazy quoted continuation keeps its existing claim (CARVE-P0-010).
+A lazy quoted continuation keeps its existing claim (CARVE-P0-005).
 :::::: compare
 
 ````carve
@@ -312,7 +312,7 @@ x
 
 ::::::
 
-An opener below a description body's column folds into a quote held there; only the body column opens (CARVE-P0-021).
+An opener below a description body's column folds into a quote held there; only the body column opens (CARVE-P0-024).
 :::::: compare
 
 ````carve
@@ -398,7 +398,7 @@ A table row below a description body's column folds into its paragraph (carve#32
 
 ::::::
 
-The `+` at the description marker column attaches the next paragraph to that description. The quote past the item column then opens in the item (CARVE-P9-031, markup-carve/carve#3421).
+The `+` at the description marker column attaches the next paragraph to that description. The quote past the item column then opens in the item (CARVE-P0-024, markup-carve/carve#3421).
 :::::: compare
 
 ````carve
@@ -557,7 +557,7 @@ A blank line inside a retained code block does not loosen the item (carve#3285).
 
 ::::::
 
-After a marked quote line, a matched comment fence below the item column retains the item as a comment line does (CARVE-P9-053).
+After a marked quote line, a matched comment fence below the item column retains the item as a comment line does (CARVE-P0-005).
 :::::: compare
 
 ````carve

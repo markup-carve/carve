@@ -3,9 +3,9 @@
 A list item whose marker line is a definition term. A block that reaches the
 description body's column stays in the description, after a blank and without
 one, exactly as it does when ordinary text leads the item (`CARVE-P9-083`,
-`CARVE-P2-028`, ruled on markup-carve/carve-php#3174). The description ends on
+`CARVE-P0-024`, ruled on markup-carve/carve-php#3174). The description ends on
 that block and holds no paragraph, so the line below leaves the list
-(`CARVE-P0-009`).
+(`CARVE-P0-024`).
 
 ::: compare
 
@@ -92,7 +92,7 @@ after
 
 The same line below a description or a quote in an item that ends on a code
 block. No paragraph is open at the deepest frame, so no surviving frame adopts
-the line (`CARVE-P0-009`).
+the line (`CARVE-P0-024`).
 
 ::: compare
 

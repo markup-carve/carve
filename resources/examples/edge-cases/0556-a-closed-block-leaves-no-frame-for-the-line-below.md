@@ -9,7 +9,7 @@ closer ahead as deciding the span, it records the reading the ruling replaced.
 
 Since markup-carve/carve#4860 a list marker opens a list in a list item, description body or footnote body and closes a body it misses, so the rows below that show a marker in such a body read that way.
 
-`CARVE-P0-009` asks one question of a line below an item's content column: is a
+`CARVE-P0-024` asks one question of a line below an item's content column: is a
 paragraph open at the deepest frame? Where the last block there is closed, the
 line closes the list and begins a new block, and no surviving frame adopts it.
 These documents pin the answer in the shapes where a reader kept the line in a
@@ -407,7 +407,7 @@ after a container closed on the next line.
 
 :::
 
-An unmatched comment fence is the line form (`CARVE-P9-053`), so it grants and
+An unmatched comment fence is the line form (`CARVE-P0-005`), so it grants and
 refuses ownership exactly as `%%` does. A comment below the item's column closes
 neither item (carve#4862, which replaced markup-carve/carve#2950), so the
 follower at the item's column stays where it was.
