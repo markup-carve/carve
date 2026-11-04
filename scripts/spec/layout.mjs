@@ -2552,6 +2552,8 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement) {
   for (let k = scan.index; k < end; k++) {
     const measured = measurement(k) ?? indentCols(lines[k])
     const line = measured.rest
+    // A line left of the column that holds a code fence ends it (PART 0 S1).
+    if (opaque?.kind === 'code' && line !== '' && measured.col < opaque.base && !lines[k].startsWith(LAZY)) opaque = null
     if (opaque) {
       const close = opaque.kind === 'code' ? PURE_FENCE.exec(line) : COMMENT_FENCE_BODY.exec(line)
       if (close && close[1][0] === opaque.run[0] &&
