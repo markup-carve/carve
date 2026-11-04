@@ -839,8 +839,10 @@
       (c) A BLOCK BELOW A FOOTNOTE BODY OR A NESTED FENCE. A block that
           follows a list opened on a footnote definition's line is written at
           that list's column, a literal `+` after a nested fence is written
-          escaped at the outer item's content column. Rows 410-4, 616-6 and
-          626-8 pin it.
+          escaped at the outer item's content column. Rows 410-4 and 616-6
+          pin it. A refused `+` after a nested fence is no literal: it leaves
+          no node (CARVE-P11-040), so the fence is written closed at its base
+          column (CARVE-P11-074), as row 626-8 pins.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It answers to a Markdown
