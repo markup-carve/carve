@@ -611,7 +611,7 @@ test('the normative inventory does not fall below its floor', () => {
 })
 
 test('ownership transitions keep container and paragraph state independent', () => {
-  const closedLeaves = ['blank', 'line_comment', 'fenced_comment', 'definition', 'heading',
+  const closedLeaves = ['blank', 'fenced_comment', 'footnote_definition', 'heading',
     'code_fence', 'raw_fence', 'colon_fence', 'table']
   for (const boundary of closedLeaves) {
     assert.deepEqual(ownershipTransition(boundary), { containerOpen: true, paragraphOpen: false })

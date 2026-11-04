@@ -52,6 +52,11 @@ for (const entry of emptyDestinationCases.cases.filter((item) => Object.hasOwn(i
     }
   })
 }
+for (const entry of emptyDestinationCases.cases.filter((item) => Object.hasOwn(item, 'visibleParagraphs'))) {
+  test(`empty destination paragraphs: ${entry.id}`, () => {
+    assert.equal(oracleHtml(entry.source).match(/<p>/g)?.length ?? 0, entry.visibleParagraphs)
+  })
+}
 for (const entry of emptyDestinationCases.cases.filter((item) => item.kind && !item.html)) {
   test(`empty destination shape: ${entry.id}`, () => {
     const rendered = oracleHtml(entry.source)

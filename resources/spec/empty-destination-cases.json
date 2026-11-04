@@ -133,9 +133,9 @@
       }
     },
     {
-      "id": "empty-definition-interrupts",
+      "id": "empty-definition-is-erased",
       "source": "Some text\n[r]:\nmore",
-      "visibleParagraphs": 2,
+      "visibleParagraphs": 1,
       "definition": {
         "label": "r",
         "href": ""
