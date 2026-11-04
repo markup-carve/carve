@@ -3061,7 +3061,8 @@ function bodyOpenCommentRun(bodyLines) {
     // A nonblank line that misses a comment span's owner ends it (PART 0 S1);
     // comment lines are column-exempt and may still close it.
     // A lazy line missed the owner where it was written (carve#4956).
-    if (opaque?.kind === 'comment' && line !== '' && !line.startsWith('%%') && (measured.col < opaque.owner || raw.startsWith(LAZY))) {
+    // A code fence is not a paragraph, so a line below its owner closes it too (CARVE-P0-013).
+    if (opaque && line !== '' && (opaque.kind === 'code' || !line.startsWith('%%')) && (measured.col < opaque.owner || raw.startsWith(LAZY))) {
       opaque = null
       atBlockStart = true
     }
@@ -3113,7 +3114,7 @@ function bodyOpenCommentRun(bodyLines) {
     atBlockStart = false
     const code = FENCE.exec(opener)
     if (code && parseFenceInfo(code[2], code[1]) !== null) {
-      opaque = { kind: 'code', run: code[1] }
+      opaque = { kind: 'code', run: code[1], owner: columns.at(-1) }
       continue
     }
     const comment = COMMENT_FENCE.exec(opener)
