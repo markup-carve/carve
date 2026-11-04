@@ -5053,8 +5053,9 @@ EOF = (* end of file *) ;
          is parsed as unaligned literal content; row attributes (T8) are
          unaffected.
 
-         The released 0.1.13 cell alignment prefixes remain readable through
-         0.1.x and yield the same tree as their braced spelling. Symbols inside
+         DEPRECATED, REMOVED IN 0.2.0: the released 0.1.13 cell alignment
+         prefixes remain readable through 0.1.x and yield the same tree as
+         their braced spelling. Symbols inside
          braces form one GLUED run: `{>^}` is aligned, `{> ^}` is literal.
          `lint` reports `deprecated-cell-alignment` for a legacy alignment
          prefix such as `|=> Price |` or `|?v x |` and offers a `fmt` fix that
