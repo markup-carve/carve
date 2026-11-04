@@ -424,3 +424,38 @@ CommonMark, and that an unclosed fence runs to the end of its container. No
 closer is looked for, so a colon line inside an unclosed fence is payload.
 Djot's reading, where a fence never interrupts a paragraph, was weighed and
 not taken.
+
+## PART 9 §9 to §15: provenance and comparisons
+
+The ticket numbers and comparisons below used to sit inside the active clauses
+of `14-semantics-blocks.ebnf`. The clauses now state only the rule; this list
+keeps where each one came from. The design reasons moved to
+[Technical rationale](./technical-rationale.md#block-semantics).
+
+Provenance:
+
+- §9 P1, a `%%` comment inside a `/*` shape: carve#4042.
+- §9 GUARD EXEMPTION, `_*x* q`: carve#3973 X1. R1 failed openers: carve#3973
+  X6. Unclosed code span inside a braced span: carve#3973 X5.
+- §9 R2, a bare span holding its own delimiter: carve#4810.
+- §9 THE COMBINED TOKEN: carve#3234, with OWN KINDS from carve#2903.
+- §9 braced spans visible to P2 (`={_a={c_}`): carve#3940.
+- §9 LINEAR TIME: carve#3936.
+- §10 I4, an unclosed fence interrupts: carve#4018 (see "Fence openers
+  without a closer" above).
+- §10 I5, a `%%%` span closes no indentation container: carve#4862.
+- §11 N1a DESCRIPTION LISTS TOO: carve#4759.
+- §12 ONE COLON-FENCE FRAME, a `+`-attached frame ends at its host: carve#4717
+  and carve#4798.
+
+Comparisons:
+
+- §10 I2 and §11 N1 match Djot: list markers do not interrupt a paragraph,
+  and a marker change starts a new list (Djot also has a `+` bullet, Carve
+  does not). §10 I5 is a small deviation from Djot, which keeps a block
+  attribute line as paragraph text. §10 I4 follows CommonMark.
+- §13 follows Djot's `headings.test`; see divergence-from-djot.md for Djot's
+  placement of heading attributes.
+- CARVE-P9-022: boolean attributes are a Carve extension beyond canonical
+  Djot, matching djot-php. §15 matches Djot's block attributes, and A3's merge
+  example is Djot's canonical one. A7 is Djot-strict.

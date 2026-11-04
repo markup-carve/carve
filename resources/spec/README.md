@@ -69,5 +69,10 @@ issue provenance. Put these elsewhere:
 - extended examples: `resources/examples/` and `tests/corpus/`
 - design rationale: `docs/technical-rationale.md`
 
+CARVE-P9-013 is the one classification for invisible lines. A clause that
+restates its properties 1 to 3 for one kind restates it and should cite it
+instead; a clause stating an action, a pipeline order, a source-map overlap or
+column arithmetic does not, and stays where it is.
+
 `tests/normativity.test.mjs` enforces the boundary for known volatile headings
 and verifies the structured contracts.
