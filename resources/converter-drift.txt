@@ -260,3 +260,10 @@ php/105-markdown-an-html-comment-that-ends-a-nested-list-stays-in-the-outer-item
 php/106-markdown-an-html-comment-that-ends-a-list-in-a-quote  CARVE-P2-034: writes the comment into the first item
 php/107-markdown-an-html-comment-that-ends-an-ordered-list  CARVE-P2-034: writes the comment into the first item
 php/108-markdown-an-html-comment-that-interrupts-a-list-item  CARVE-P2-034: writes the comment into the first item
+
+# PART 11 section 6h and the D3 ruling at carve#5091: an empty left-aligned body
+# cell imports as `|{<} |` and keeps its alignment (carve#5101). The pinned
+# engines predate the D3 importer (carve-js#4372) and still write `| |`.
+js/84-html-empty-aligned-body-cell  The pinned carve-js predates carve-js#4372 and drops the empty cell's alignment; pending the pin.
+php/84-html-empty-aligned-body-cell  The pinned carve-php predates the D3 port and drops the empty cell's alignment; pending the pin.
+rust/84-html-empty-aligned-body-cell  The pinned carve-rs predates the D3 port and drops the empty cell's alignment; pending the pin.
