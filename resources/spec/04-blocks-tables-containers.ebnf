@@ -75,29 +75,23 @@ delimiter_cell = {space}, [':'], '-', {'-'}, [':'], {space} ;
    padding. An EMPTY cell is NOT a delimiter_cell, so a row containing one
    (`|---||`) is not a delimiter row (it is an ordinary row). *)
 
-table_cell = header_cell | data_cell | span_cell ;
+table_cell = header_cell | data_cell | span_cell | deprecated_aligned_cell ;
 
-header_cell = '=', [alignment_run], [cell_attributes], cell_padding, cell_content, {space} ;
-data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_content, {space} ;
-(* THE MARKER RUN COMES FIRST, IN ONE ORDER, IN BOTH PRODUCTIONS. The kind
-   marker `=` and then the alignment marker are glued to the opening `|` (no
-   preceding whitespace); the attribute block attaches after them. A
-   cell containing only '^' or '<', optionally followed by a glued
-   span_alignment, with any space padding or none, is span_cell. A '^'
-   glued to a kind marker that is glued to the opening `|` (`|=^ |`) is a
-   header-kind span_cell (PART 9 §5 T4).
-
-   A header or data marker run ends with one space (PART 9 §5 T11). A span
-   alignment ends at padding or the closing pipe. A cell with no run accepts
-   unpadded content (`|a|`). *)
+header_cell = '=', [cell_attributes], cell_padding, cell_content, {space} ;
+data_cell   =      [cell_attributes], cell_padding, cell_content, {space} ;
+(* Only the header kind `=` precedes the cell's attribute block. Alignment
+   symbols are the first tokens INSIDE that block. A header or data prefix
+   ends with one space (PART 9 §5 T11). A cell with no prefix accepts unpadded
+   content (`|a|`). A placeholder with an alignment-only block remains a
+   span_cell; ordinary attributes make its glyph literal (T4). *)
 (* CELL ATTRIBUTES (NORMATIVE): an attribute block sets the cell's attributes.
-   It binds last (PART 9 §5 T10) and is glued to the marker run or the
-   opening `|` (`|=<{.x} …`, `|{.x} …`). The rest of the cell, after
+   It follows the optional `=` and is glued to it or to the
+   opening `|` (`|={> .x} …`, `|{.x} …`). The rest of the cell, after
    optional whitespace, is the content. A space before the brace (`| {.x}`) is
    ordinary content, NOT attributes. The whole brace payload must be valid
    attribute syntax (PART 9 §15); otherwise the '{' is literal content. A cell
-   carrying attributes is never a bare span_cell -- its content is literal even
-   if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
+   carrying ordinary attributes is never a bare span_cell -- its content is
+   literal even if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
    `|{.x} < |` is `<td class="x">&lt;</td>`; `| {.x} < |` has ordinary
    text `{.x} <` because the space precedes the brace.
    Only the `^` and `<` span markers shape the grid, so an authored `rowspan`
@@ -109,13 +103,24 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
 
    `|{#x}=R|` is a data cell whose content is `{#x}=R`; no marker run ends
    without a space (T11). `|{#x} =R |` has id `x` and content `=R`. *)
-cell_attributes = attributes ;
-span_cell = header_rowspan_marker, [span_alignment], {space}
-          | rowspan_marker, [span_alignment], {space}
-          | colspan_marker, [span_alignment], {space} ;
-span_alignment = alignment_run ;  (* glued to the span marker; no space *)
-
-header_rowspan_marker = '=', '^' ;  (* both glued: no space before or between *)
+cell_attributes = alignment_attributes | attributes ;
+alignment_attributes = '{', cell_alignment, [space+, attribute_list], {space}, '}' ;
+(* The ordinary `attribute_list` is from PART 9 §15; it may be absent only
+   when cell_alignment is present. Alignment symbols
+   precede every ordinary attribute. Invalid or duplicate axis tokens leave
+   the whole block as literal content. *)
+cell_alignment = horizontal_alignment, [vertical_alignment]
+               | inherited_horizontal_alignment, vertical_alignment ;
+deprecated_aligned_cell = ['='], cell_alignment, [attributes], space, cell_content, {space} ;
+(* The 0.1.13 prefix remains readable through 0.1.x. It gives the same tree
+   as cell_alignment in braces; lint warns and fmt writes only braces.
+   `|=< |` is reserved for the header-kind colspan placeholder. *)
+span_cell = header_rowspan_marker | header_colspan_marker
+          | ['='], cell_alignment_block, space, ('^' | '<'), {space}
+          | rowspan_marker | colspan_marker ;
+cell_alignment_block = '{', cell_alignment, {space}, '}' ;
+header_rowspan_marker = '=', '^', space ;
+header_colspan_marker = '=', '<', space ;
 
 rowspan_marker = {space}, '^' ;
 colspan_marker = {space}, '<' ;
@@ -127,19 +132,18 @@ colspan_marker = {space}, '<' ;
    `|<TAB>a<TAB>|` is a cell whose text begins and ends with a tab, and
    `|<TAB>---<TAB>|` is not a delimiter_cell at all - the row is an ordinary
    row and promotes no header. Same for the two span markers: a tab beside
-   the `^` or `<`, or between that marker and its alignment run, makes the
+   the `^` or `<` makes the
    cell ordinary content rather than a span. So a
    cell is EMPTY only when nothing but space padding stands in it: `|<TAB>|`
    holds a tab, while `| |` and `||` are empty (PART 9 §5 CARVE-P9-082). *)
 
-alignment_run = horizontal_alignment, [vertical_alignment]
-              | inherited_horizontal_alignment, vertical_alignment ;
 horizontal_alignment = '<' | '>' | '~' ;  (* left, right, center *)
 vertical_alignment = '^' | '~' | 'v' ;    (* top, middle, bottom *)
 inherited_horizontal_alignment = '?' ;
 cell_padding = space | (* empty only when the cell carries no marker run *) ;
-(* An alignment run is a horizontal marker, optionally followed by a vertical
-   marker. Its ending space follows PART 9 §5 T11. A
+(* Cell alignment is one GLUED leading symbol run inside the attribute block: a
+   horizontal marker, optionally followed by a vertical marker. Its block's
+   ending space follows PART 9 §5 T11. A
    vertical marker therefore never stands
    alone: `|^ x` and `|v x` keep `^`/`v` as visible content.
    Reverse-order pairs are invalid. Duplicate axes are invalid, except `~~`,
@@ -148,7 +152,7 @@ cell_padding = space | (* empty only when the cell carries no marker run *) ;
    only vertical alignment and inherit horizontal alignment from the column.
    It is valid only in that leading two-marker form. A lone `~` is horizontal
    center; no vertical value has a one-marker spelling.
-   With no alignment run, an unpadded cell follows the `data_cell` production. *)
+   With no prefix, an unpadded cell follows the `data_cell` production. *)
 
 cell_content = [inline_content] ;
 (* CELL CONTENT MAY BE EMPTY. `inline_content` is one-or-more, so the option

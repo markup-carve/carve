@@ -17,19 +17,19 @@ function check(source, headers, bodyRows) {
 }
 
 test('a head marker wins over a conflicting delimiter colon', () => {
-  check('|=> a |= b |\n|:-- |:-- |\n| 1 | 2 |\n', ['right', 'left'], [['right', 'left']])
+  check('|={>} a |= b |\n|:-- |:-- |\n| 1 | 2 |\n', ['right', 'left'], [['right', 'left']])
 })
 
 test('a head marker sets a column whose delimiter has no colon', () => {
-  check('|=< a |= b |\n|--- |--: |\n| 1 | 2 |\n', ['left', 'right'], [['left', 'right']])
+  check('|={<} a |= b |\n|--- |--: |\n| 1 | 2 |\n', ['left', 'right'], [['left', 'right']])
 })
 
 test('a center head marker wins while a body marker overrides only its own cell', () => {
-  check('|=~ a |= b |\n|--: |:-- |\n| 1 |> 2 |\n| 3 | 4 |\n',
+  check('|={~} a |= b |\n|--: |:-- |\n| 1 |{>} 2 |\n| 3 | 4 |\n',
     ['center', 'left'], [['center', 'right'], ['center', 'left']])
 })
 
 test('native head markers still set columns without a delimiter row', () => {
-  check('|=> a |=~ b |\n| 1 |< 2 |\n| 3 | 4 |\n',
+  check('|={>} a |={~} b |\n| 1 |{<} 2 |\n| 3 | 4 |\n',
     ['right', 'center'], [['right', 'left'], ['right', 'center']])
 })

@@ -1570,29 +1570,23 @@ delimiter_cell = {space}, [':'], '-', {'-'}, [':'], {space} ;
    padding. An EMPTY cell is NOT a delimiter_cell, so a row containing one
    (`|---||`) is not a delimiter row (it is an ordinary row). *)
 
-table_cell = header_cell | data_cell | span_cell ;
+table_cell = header_cell | data_cell | span_cell | deprecated_aligned_cell ;
 
-header_cell = '=', [alignment_run], [cell_attributes], cell_padding, cell_content, {space} ;
-data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_content, {space} ;
-(* THE MARKER RUN COMES FIRST, IN ONE ORDER, IN BOTH PRODUCTIONS. The kind
-   marker `=` and then the alignment marker are glued to the opening `|` (no
-   preceding whitespace); the attribute block attaches after them. A
-   cell containing only '^' or '<', optionally followed by a glued
-   span_alignment, with any space padding or none, is span_cell. A '^'
-   glued to a kind marker that is glued to the opening `|` (`|=^ |`) is a
-   header-kind span_cell (PART 9 §5 T4).
-
-   A header or data marker run ends with one space (PART 9 §5 T11). A span
-   alignment ends at padding or the closing pipe. A cell with no run accepts
-   unpadded content (`|a|`). *)
+header_cell = '=', [cell_attributes], cell_padding, cell_content, {space} ;
+data_cell   =      [cell_attributes], cell_padding, cell_content, {space} ;
+(* Only the header kind `=` precedes the cell's attribute block. Alignment
+   symbols are the first tokens INSIDE that block. A header or data prefix
+   ends with one space (PART 9 §5 T11). A cell with no prefix accepts unpadded
+   content (`|a|`). A placeholder with an alignment-only block remains a
+   span_cell; ordinary attributes make its glyph literal (T4). *)
 (* CELL ATTRIBUTES (NORMATIVE): an attribute block sets the cell's attributes.
-   It binds last (PART 9 §5 T10) and is glued to the marker run or the
-   opening `|` (`|=<{.x} …`, `|{.x} …`). The rest of the cell, after
+   It follows the optional `=` and is glued to it or to the
+   opening `|` (`|={> .x} …`, `|{.x} …`). The rest of the cell, after
    optional whitespace, is the content. A space before the brace (`| {.x}`) is
    ordinary content, NOT attributes. The whole brace payload must be valid
    attribute syntax (PART 9 §15); otherwise the '{' is literal content. A cell
-   carrying attributes is never a bare span_cell -- its content is literal even
-   if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
+   carrying ordinary attributes is never a bare span_cell -- its content is
+   literal even if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
    `|{.x} < |` is `<td class="x">&lt;</td>`; `| {.x} < |` has ordinary
    text `{.x} <` because the space precedes the brace.
    Only the `^` and `<` span markers shape the grid, so an authored `rowspan`
@@ -1604,13 +1598,24 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
 
    `|{#x}=R|` is a data cell whose content is `{#x}=R`; no marker run ends
    without a space (T11). `|{#x} =R |` has id `x` and content `=R`. *)
-cell_attributes = attributes ;
-span_cell = header_rowspan_marker, [span_alignment], {space}
-          | rowspan_marker, [span_alignment], {space}
-          | colspan_marker, [span_alignment], {space} ;
-span_alignment = alignment_run ;  (* glued to the span marker; no space *)
-
-header_rowspan_marker = '=', '^' ;  (* both glued: no space before or between *)
+cell_attributes = alignment_attributes | attributes ;
+alignment_attributes = '{', cell_alignment, [space+, attribute_list], {space}, '}' ;
+(* The ordinary `attribute_list` is from PART 9 §15; it may be absent only
+   when cell_alignment is present. Alignment symbols
+   precede every ordinary attribute. Invalid or duplicate axis tokens leave
+   the whole block as literal content. *)
+cell_alignment = horizontal_alignment, [vertical_alignment]
+               | inherited_horizontal_alignment, vertical_alignment ;
+deprecated_aligned_cell = ['='], cell_alignment, [attributes], space, cell_content, {space} ;
+(* The 0.1.13 prefix remains readable through 0.1.x. It gives the same tree
+   as cell_alignment in braces; lint warns and fmt writes only braces.
+   `|=< |` is reserved for the header-kind colspan placeholder. *)
+span_cell = header_rowspan_marker | header_colspan_marker
+          | ['='], cell_alignment_block, space, ('^' | '<'), {space}
+          | rowspan_marker | colspan_marker ;
+cell_alignment_block = '{', cell_alignment, {space}, '}' ;
+header_rowspan_marker = '=', '^', space ;
+header_colspan_marker = '=', '<', space ;
 
 rowspan_marker = {space}, '^' ;
 colspan_marker = {space}, '<' ;
@@ -1622,19 +1627,18 @@ colspan_marker = {space}, '<' ;
    `|<TAB>a<TAB>|` is a cell whose text begins and ends with a tab, and
    `|<TAB>---<TAB>|` is not a delimiter_cell at all - the row is an ordinary
    row and promotes no header. Same for the two span markers: a tab beside
-   the `^` or `<`, or between that marker and its alignment run, makes the
+   the `^` or `<` makes the
    cell ordinary content rather than a span. So a
    cell is EMPTY only when nothing but space padding stands in it: `|<TAB>|`
    holds a tab, while `| |` and `||` are empty (PART 9 §5 CARVE-P9-082). *)
 
-alignment_run = horizontal_alignment, [vertical_alignment]
-              | inherited_horizontal_alignment, vertical_alignment ;
 horizontal_alignment = '<' | '>' | '~' ;  (* left, right, center *)
 vertical_alignment = '^' | '~' | 'v' ;    (* top, middle, bottom *)
 inherited_horizontal_alignment = '?' ;
 cell_padding = space | (* empty only when the cell carries no marker run *) ;
-(* An alignment run is a horizontal marker, optionally followed by a vertical
-   marker. Its ending space follows PART 9 §5 T11. A
+(* Cell alignment is one GLUED leading symbol run inside the attribute block: a
+   horizontal marker, optionally followed by a vertical marker. Its block's
+   ending space follows PART 9 §5 T11. A
    vertical marker therefore never stands
    alone: `|^ x` and `|v x` keep `^`/`v` as visible content.
    Reverse-order pairs are invalid. Duplicate axes are invalid, except `~~`,
@@ -1643,7 +1647,7 @@ cell_padding = space | (* empty only when the cell carries no marker run *) ;
    only vertical alignment and inherit horizontal alignment from the column.
    It is valid only in that leading two-marker form. A lone `~` is horizontal
    center; no vertical value has a one-marker spelling.
-   With no alignment run, an unpadded cell follows the `data_cell` production. *)
+   With no prefix, an unpadded cell follows the `data_cell` production. *)
 
 cell_content = [inline_content] ;
 (* CELL CONTENT MAY BE EMPTY. `inline_content` is one-or-more, so the option
@@ -4823,16 +4827,15 @@ EOF = (* end of file *) ;
          Neither is a span. Leading or trailing U+0020 padding
          does not disqualify the marker. `|<|`, `| <|`, `|< |` and `| < |`
          are spans, as are all four corresponding `^` forms. A lone span
-         glyph takes precedence over an alignment run on an empty cell.
-         Any consumed marker run disqualifies a span. Thus `|= <|` and
-         `|= ^|` are header cells holding literal `<` and `^`, while
-         `|?^ <|` is a vertically aligned cell holding literal `<`.
-         A kind marker glued to both the opening `|` and a `^` is no marker
-         run: `|=^ |` is a HEADER-KIND rowspan marker, a span marker whose cell
-         is a header cell (PART 2 `header_rowspan_marker`). It may carry a glued
-         span alignment (`|=^~ |`). `|=^x |` holds `=^x` and `| =^ |` holds
-         `=^`, both data. A `<` has no header-kind form: `|=< |` is a
-         left-aligned empty header cell.
+         glyph takes precedence over an empty alignment block. An ordinary
+         attribute disqualifies a span. Thus `|= <|` and `|= ^|` are header
+         cells holding literal `<` and `^`, while `|{?^} \\< |` is a
+         vertically aligned cell holding literal `<`. A block containing only
+         alignment preserves the span: `|{<} < |` sets its column default.
+         A kind marker glued to the opening `|` and a span glyph makes a
+         HEADER-KIND placeholder: `|=^ |` is rowspan and `|=< |` is colspan.
+         Both keep `span` in the tree. `|=^x |` holds `=^x`; unpadded `|=^|`
+         and `|=<|` are ordinary data content.
       T5 SPAN WALK -- NORMATIVE [CARVE-P9-002], a total function. Markers
          resolve in row-major order. Every position belongs to the cell whose
          rectangle covers it; a span never covers a position another cell
@@ -4950,26 +4953,26 @@ EOF = (* end of file *) ;
          alignment. POSITION IS STRICT: a delimiter-shaped row anywhere
          else (first line, or after the second) is an ordinary row whose
          `-` runs are inline content (`---` may smart-render as an em
-         dash). Native `|=` header cells and `<`/`>`/`~` alignment markers
+         dash). Native `|=` header cells and alignment blocks
          may COEXIST with a delimiter row. Where one column carries both, THE
          MARKER WINS OVER THE DELIMITER COLON (CARVE-P12-039): a marker on a
          head-row cell sets its own physical column, header and body cells, and a
-         marker on a body cell sets that cell alone. So `|=> a |` over
+         marker on a body cell sets that cell alone. So `|={>} a |` over
          `|:-- |` right-aligns column a in the header and the body. WITH
-         SEVERAL HEAD ROWS, THE LAST EXPLICIT MARKER IN A COLUMN SETS THE
+         SEVERAL HEAD ROWS, THE LAST EXPLICIT SYMBOL IN A COLUMN SETS THE
          COLUMN, and an omitted marker does not reset an earlier one, the
          order CARVE-P11-031 reads for the Markdown delimiter; each head cell
-         keeps its own marker. So `|=> a |` over `|=< b |` over `| 1 |`
+         keeps its own alignment. So `|={>} a |` over `|={<} b |` over `| 1 |`
          left-aligns the body cell. Corpus 09-tables-3 pins effect 2.
-         Among native `|=` markers, only the head-row run (T9) sets column
+         Among native `|=` cells, only the head-row run (T9) sets column
          defaults. A later `|=` cell after a body row is a row header whose
-         marker stays local, even when that later row has only header cells.
-         A span marker MAY have its own glued alignment run (PART 2). In a
-         head row, that explicit marker sets the default of the physical column
+         alignment stays local, even when that later row has only header cells.
+         A span marker MAY have its own alignment-only block (PART 2). In a
+         head row, that explicit symbol sets the default of the physical column
          containing the placeholder, in the same last-explicit-marker order as
          a header cell. An omitted marker does not reset an earlier default.
          A header cell spanning several columns sets a default only for its
-         ORIGIN column; a covered column retains its own span marker or
+         ORIGIN column; a covered column retains its own span block or
          delimiter colon default. Corpus 659 pins this covered-column rule.
       T8 ROW ATTRIBUTES -- NORMATIVE [CARVE-P9-005]. A `{…}` GLUED to a row's closing `|`
          (no intervening space) sets that row's `<tr>` attributes -- the
@@ -5030,17 +5033,18 @@ EOF = (* end of file *) ;
          span markers shape the grid: `|{colspan=2} a | b |` writes
          `<td>a</td><td>b</td>`.
 
-      T10 CELL ATTRIBUTES BIND LAST -- NORMATIVE [CARVE-P9-007]. A cell's `{…}` block
-         attaches AFTER the kind marker and AFTER the alignment marker, in
-         every cell. One order, both productions (PART 2 `header_cell`,
+      T10 ALIGNMENT LEADS THE CELL ATTRIBUTE BLOCK -- NORMATIVE [CARVE-P9-007].
+         Only the optional `=` kind marker precedes a cell's `{…}` block.
+         Alignment symbols, when present, lead the block before ordinary
+         attributes. One order, both productions (PART 2 `header_cell`,
          `data_cell`):
 
              |={.x} h |      header, attributed
-             |=~{.x} h |     header, centered, attributed
-             |>{.x} d |      data, right-aligned, attributed
+             |={~ .x} h |    header, centered, attributed
+             |{> .x} d |     data, right-aligned, attributed
              |{.x} d |       data, no marker, attributed
 
-         The block is GLUED: to the marker run where the cell has one, to
+         The block is GLUED: to the kind marker where the cell has one, to
          the opening `|` where it has none. A space anywhere in front of it
          makes it ordinary content (T4's `| {.x} < |` is unchanged), and the
          validity rule is T8's.
@@ -5049,9 +5053,19 @@ EOF = (* end of file *) ;
          is parsed as unaligned literal content; row attributes (T8) are
          unaffected.
 
-      T11 A MARKER RUN ENDS AT A SPACE -- NORMATIVE [CARVE-P9-008]. A header_cell
-         or data_cell marker run is the kind marker `=`, the alignment run and
-         the attribute block, in T10's order. A cell carrying ANY of the three must follow the run
+         The released 0.1.13 cell alignment prefixes remain readable through
+         0.1.x and yield the same tree as their braced spelling. Symbols inside
+         braces form one GLUED run: `{>^}` is aligned, `{> ^}` is literal.
+         `lint` reports `deprecated-cell-alignment` for a legacy alignment
+         prefix such as `|=> Price |` or `|?v x |` and offers a `fmt` fix that
+         moves its symbols into the leading cell attribute block. A lone `<`
+         or `^` span placeholder is not an old alignment prefix. The lint
+         vectors in `resources/spec/table-alignment-lint-vectors.json` pin
+         the input and fixed bytes.
+
+      T11 A CELL PREFIX ENDS AT A SPACE -- NORMATIVE [CARVE-P9-008]. A header_cell
+         or data_cell prefix is the kind marker `=` and the optional attribute
+         block, in T10's order. A cell carrying either must follow the prefix
          with one literal space. Without it there is no run at all, and every
          character of it is ordinary cell content:
 
@@ -5061,9 +5075,9 @@ EOF = (* end of file *) ;
              |{#x} =R |      data cell with `id="x"`, content `=R`
              |{#x}=R|        data cell, content `{#x}=R`
 
-         A span_cell is the exception: its optional span_alignment is glued
-         to `^` or `<` and ends at cell padding or the closing pipe (PART 2).
-         A header-kind span (`|=^ |`, T4) is a span_cell, not a marker run.
+         A span_cell is the exception: a bare `^` or `<` accepts space padding
+         or a closing pipe (PART 2). A header-kind span (`|=^ |` or `|=< |`,
+         T4) requires its separating space; `|=^|` and `|=<|` are data.
 
          A cell with NO run is unchanged -- `| a |` and `|a|` hold `a`, and
          `||` is one empty cell (CARVE-P9-082).
@@ -5071,8 +5085,7 @@ EOF = (* end of file *) ;
          FOR HEADER AND DATA RUNS, THE CLOSING PIPE IS NOT A TERMINATOR.
          `|=|` and `|{#x}|` carry no
          run; an empty marked cell is `|= |` and `|{#x} |` -- which is what
-         CARVE-P11-014's canonical writer already emits, and what `|> |` already
-         required of the alignment run. NEITHER IS A TAB: PART 7 gives a tab
+         CARVE-P11-014's canonical writer already emits. NEITHER IS A TAB: PART 7 gives a tab
          no padding role inline, so `|=<TAB>h |` is content too.
 
          AN ESCAPE REACHES THE OTHER READING where a space cannot. `|\= a |`
@@ -5084,8 +5097,8 @@ EOF = (* end of file *) ;
          TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID -- NORMATIVE [CARVE-P9-009]. The id is
          `table-marker-run-padding`. One id
          for the whole run, because T11 is one rule for the whole run: it
-         reports a glued kind marker, a glued alignment run and a glued
-         attribute block alike, and `fmt --migrate` repairs any of them by
+         reports a glued kind marker and a glued attribute block alike, and
+         `fmt --migrate` repairs either by
          inserting the space.
 
    6. REFERENCE RESOLUTION -- PART 9R R1-R3.
@@ -9515,12 +9528,13 @@ EOF = (* end of file *) ;
    2. THE ESCAPING RULE -- NORMATIVE [CARVE-P11-006]. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
-      In a data table cell, a payload consisting of `^` or `<` followed by a
-      glued `span_alignment` (PART 2) would re-read as a span placeholder.
-      Escape its opener, for example `| \<< |` for literal `<<`. A space
+      In a data table cell, a payload consisting of `^` or `<`, including after
+      an alignment-only block (PART 2), would re-read as a span placeholder.
+      Escape its opener, for example `|{?^} \< |` for a literal `<`. A space
       followed by further content, as in `| <x |`, remains ordinary data.
-
-      Escaping more than that is a defect, not a safe default.
+      Escape a lone data payload `=^` or `=<` and a leading `=` before a brace
+      block when that `=` would turn the cell into a header. Escaping more than
+      needed to preserve the tree is a defect, not a safe default.
 
       THE UNIT IS THE OPENER, NOT THE CHARACTER. Where a construct opens on a
       RUN of characters, the whole run is escaped. `--` opens an en dash
@@ -9892,19 +9906,19 @@ EOF = (* end of file *) ;
    6e. A TABLE CELL'S CONTENT IS PADDED -- NORMATIVE [CARVE-P11-014].
       The canonical writer emits every cell as its PREFIX glued to the opening
       pipe, then ONE space, then the content, then one space before the closing
-      pipe. The prefix is the kind marker `=`, the alignment marker and the
-      attribute block, in the order PART 9 §5 T10 fixes:
+      pipe. The prefix is the kind marker `=` and the optional attribute block;
+      alignment symbols lead that block (PART 9 §5 T10):
 
           |= Heading |
           |={.total} Total |= 99 |
-          |=<{.h} Name |=>{.c} Score |{.head}
+          |={< .h} Name |={> .c} Score |{.head}
 
       An EMPTY cell takes a single space (`|= |`, `| |`), not one from each end,
       so a column does not grow a space each time the document is formatted.
 
       A ROW OF EMPTY CELLS IS WRITTEN AS A ROW. Every AST cell gets one
       explicit slot, so one empty data cell is `| |` and two are `| | |`; a
-      marked empty cell keeps its prefix and the space after it (`|=~{.x} |`).
+      marked empty cell keeps its prefix and the space after it (`|={~ .x} |`).
       PART 9 §5 CARVE-P9-082 reads that row back with the same row count,
       cell count, kinds, alignment, attributes and empty children. A table
       with zero rows has no spelling, and this clause does not give it one.
@@ -10002,19 +10016,21 @@ EOF = (* end of file *) ;
       forbids the padding, and one class of cell construct is written WITH the
       padding inside it:
 
-        span_cell      = header_rowspan_marker, [span_alignment], {space}
-                       | rowspan_marker, [span_alignment], {space}
-                       | colspan_marker, [span_alignment], {space} ;
-        span_alignment = alignment_run ;
-        header_rowspan_marker = '=', '^' ;
+        span_cell      = header_rowspan_marker | header_colspan_marker
+                       | ['='], cell_alignment_block, space, ('^' | '<'), {space}
+                       | rowspan_marker | colspan_marker ;
+        header_rowspan_marker = '=', '^', space ;
+        header_colspan_marker = '=', '<', space ;
         rowspan_marker = {space}, '^' ;
         colspan_marker = {space}, '<' ;
 
-      A cell whose whole payload is `^` or `<`, optionally followed by a
-      glued alignment run, therefore re-reads as a SPAN however it is padded.
+      A cell whose whole payload is `^` or `<`, optionally following an
+      alignment-only block, therefore re-reads as a SPAN however it is padded.
       CARVE-P11-014's space does nothing for it. §2 applies by its own test:
       omitting the escape changes the re-parsed AST, so the payload is escaped
-      and the writer emits `| \^ |`, `| \< |`, or `| \<< |` for literal data.
+      and the writer emits `| \^ |`, `| \< |`, or `|{?^} \< |` for literal data.
+      A data payload `=^` or `=<` is escaped at `=`; a literal `=` before a
+      brace block is escaped whenever it would start a header prefix.
 
       THE RULE IS THE TEST, NOT THE TWO CHARACTERS. A cell payload is escaped
       wherever omitting the escape would make the cell re-read as something
@@ -10050,18 +10066,15 @@ EOF = (* end of file *) ;
       that spelling: with the field, a separator row; without it, `|=` header
       cells. The canonical `fmt` writer ignores the field when choosing a
       spelling. It writes `|=` header cells for every head row. Each header cell retains its
-      alignment as `|=<`, `|=~`, or `|=>`; a cell with no alignment uses `|=`.
-      A span placeholder keeps its marker and any glued alignment, including
-      an orphan in the first row and a covered placeholder whose marker alone
-      sets its column default. A `^` placeholder whose `header` field is true
-      is written header-kind, `|=^ |` (PART 9 §5 T4), so a separator-promoted
-      orphan keeps its kind: `| ^ | a |` over a separator is written
-      `|=^ |= a |`. The canonical writer NEVER writes a separator row. GFM
-      separator form remains valid input.
-
-      A head row whose only cells are `<` placeholders, such as `| < |` over a
-      separator, has no native spelling yet: a `<` has no header-kind form.
-      carve#4980 holds that decision.
+      alignment in the cell's leading attribute-block symbols (`|={< |`,
+      `|={~} |`, `|={>} |`); a cell with no alignment uses `|=` alone.
+      A span placeholder keeps its marker and any alignment-only block,
+      including an orphan in the first row and a covered placeholder whose
+      block alone sets its column default. A `^` or `<` placeholder whose
+      `header` field is true is written header-kind, `|=^ |` or `|=< |`
+      (PART 9 §5 T4). Thus a separator-promoted orphan keeps its kind:
+      `| ^ | a |` over a separator becomes `|=^ |= a |`. The canonical writer
+      NEVER writes a separator row. GFM separator form remains valid input.
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,
@@ -13261,8 +13274,8 @@ EOF = (* end of file *) ;
       Without `body-rows`, an invalid `header-rows` or `footer-rows` is
       consumed in HTML like a valid one.
       Promotion changes the HTML cell kind and row group, not the source
-      marker run: a plain `|>` in an explicit header row remains a cell-only
-      override and creates no column default. A native `|=>` still sets its
+      marker run: a plain `|{>} ` cell in an explicit header row remains a cell-only
+      override and creates no column default. A native `|={>}` still sets its
       starting column's default, even in an explicit header row.
 
       A pipe table MAY additionally carry `body-rows="N,..."`. Each entry
@@ -13508,40 +13521,26 @@ EOF = (* end of file *) ;
       one `col` per entry. Markdown keeps only column horizontal alignment where
       it can emit a delimiter row. Plain and ANSI ignore all three fields.
 
-   20. TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES -- NORMATIVE [CARVE-P12-040]. A cell
-      alignment run is glued to its opening pipe, after an optional `=` kind
-      marker, and is terminated by exactly one space after an optional glued
-      attribute block. A span cell instead glues its run to `^` or `<` and
-      terminates at cell padding or the closing pipe. Horizontal markers are `<`, `~`, `>`; vertical markers
-      are `^`, `~`, `v` for top, middle and bottom. A horizontal marker may
-      stand alone; a vertical marker MUST follow a horizontal marker or the
-      `?` inheritance placeholder. Vertical-then-horizontal order is invalid.
-      `~~` means center plus middle. Any other
-      duplicate axis is invalid and falls back visibly rather than consuming
-      a prefix. The only valid order is horizontal (`x`) then vertical (`y`).
+   20. TABLE CELL ALIGNMENT SYMBOLS CARRY TWO INDEPENDENT AXES -- NORMATIVE [CARVE-P12-040].
+      A cell's alignment symbols lead its attribute block, after an optional
+      `=` kind marker: `|{>^ .num} 12.50 |` and `|={~} Stock |`. Horizontal
+      symbols are `<`, `~`, `>` for left, center and right; vertical symbols
+      are `^`, `~`, `v` for top, middle and bottom. A horizontal symbol may
+      stand alone. A vertical symbol MUST follow a horizontal symbol or the
+      `?` inheritance placeholder. Reverse order and duplicate axes leave
+      the whole block as literal content; the glued `~~` means center plus
+      middle. `?^`, `?~` and `?v` contribute only a cell-level `valign` and
+      inherit horizontal alignment from the column. A lone `?` is invalid.
 
-      A lone `~` is horizontal center. `?` is the horizontal-inheritance
-      placeholder and is valid only before a vertical marker: `?^`, `?~` and
-      `?v` contribute no cell-level `align`, so that field resolves from the
-      column while the run contributes `top`, `middle` or `bottom` as the
-      cell-level `valign`. A lone `?`, a reversed vertical-plus-`?` pair and
-      every other `?` run are ordinary visible content. A native `|=` run
-      supplies a default only from a head row (T9), and only for its starting
-      physical column. A marker on
-      a GFM-promoted head-row cell overrides the delimiter default only in
-      that same column. Its colspan does not copy the default into covered
-      columns. A plain `|` run supplies only that cell, including when
-      `header-rows` later promotes the row to HTML headers. A run with no
-      following space is not alignment: this deliberately changes the glued
-      `|>text` family so ordinary marker runs have an unambiguous terminator. `lint`
-      reports the old glued form and `fmt --migrate` inserts the space.
-
-      `table_cell` carries optional `valign` beside `align`, with the same
-      inheritance rule. A span placeholder carries its optional glued
-      alignment in those same fields. In a head row its explicit marker sets
-      its physical column's default under T7. A cell containing only `^` or
-      `<`, with any space padding or none, remains a rowspan/colspan marker;
-      the lone glyph takes precedence over an empty alignment run.
+      `table_cell` carries optional `align` and `valign` fields. A head-row
+      header cell's symbols set the default only for its physical starting
+      column (T7 and T9). A header cell's colspan does not copy that default
+      into a covered column. A placeholder whose block contains only
+      alignment stays a span and may set its physical column's default in a
+      head row. A block with any ordinary attribute makes a lone `^` or `<`
+      literal content. A body cell's symbols apply only to that cell, even
+      when `header-rows` promotes it to an HTML header. A GFM delimiter colon
+      remains lower priority than an explicit head-row symbol.
 
    21. U+0000 IS REPLACED ON INGEST -- NORMATIVE [CARVE-P12-041]. A reader
       replaces every U+0000 with U+FFFD REPLACEMENT CHARACTER in every string
@@ -13726,11 +13725,11 @@ EOF = (* end of file *) ;
       a resolved reference keep `ref` and `rawRef` beside `href` and a resolved
       footnote reference keep its label beside its number (PART 12 §5).
 
-      Its optional `align` and `valign` fields record a glued span alignment
+      Its optional `align` and `valign` fields record an alignment-only block
       even when the marker found no origin. The canonical writer writes that
       alignment on the placeholder itself, preserving the cell's tree fields.
-      Its `header` field is the authored kind: true for a header-kind `^`
-      (`|=^ |`, PART 9 §5 T4) or a separator-promoted placeholder, false for
+      Its `header` field is the authored kind: true for a header-kind `^` or `<`
+      (`|=^ |` or `|=< |`, PART 9 §5 T4) or a separator-promoted placeholder, false for
       a bare `^` or `<`, whose rendered kind T9 derives.
 
         |=^ |

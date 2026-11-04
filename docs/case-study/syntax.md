@@ -848,34 +848,31 @@ The `^` prefix adds a `<caption>` element to the table.
 
 #### Alignment
 
-Alignment is set by an explicit marker glued **directly** to the cell-opening
-pipe: no whitespace between the pipe and the marker. Whitespace *inside* a
-cell is cosmetic padding only and never affects alignment.
+Alignment symbols lead a cell's attribute block, after an optional `=` header
+kind. They may be followed by ordinary attributes in the same braces.
 
-| Marker            | On          | Alignment                              |
-|-------------------|-------------|----------------------------------------|
-| `\|=<` `\|=>` `\|=~` | header cell | column default: left / right / center  |
-| `\|<` `\|>` `\|~`    | body cell   | this cell only: left / right / center  |
+| Cell form | On | Alignment |
+|-----------|----|-----------|
+| `\|={<}` `\|={>}` `\|={~}` | header cell | column default: left / right / center |
+| `\|{<}` `\|{>}` `\|{~}` | body cell | this cell only: left / right / center |
 
 Mnemonics: `<` left, `>` right, `~` center.
 
 ```
-|= Name |=> Age |=~ City |
+|= Name |={>} Age |={~} City |
 | Alice  |   28   | NYC     |
 | Bob    |   34   | London  |
 ```
 
 The `Age` column is right-aligned, `City` centered, `Name` left (default).
-The ragged source whitespace above is irrelevant; only the markers matter.
+The ragged source whitespace above is irrelevant; only the alignment blocks matter.
 
-**Disambiguation.** A lone `<` or `^` is a colspan / rowspan marker in
-every space-padding form, including `|< |` and `|^ |`. An alignment run
-beginning with `<` needs content after its terminating space. Other alignment
-markers retain their empty-cell readings. Exactly one optional marker character is
-recognized; a repeated character (`|=<<`) is content. An escaped pipe (`\|`)
-never opens a cell and so never carries a marker.
-After a kind or alignment run has been consumed, the lone glyph is literal
-cell content: `|= <|` and `|?^ <|` do not make spans.
+**Disambiguation.** A lone `<` or `^` is a colspan / rowspan placeholder in
+every space-padding form. A block holding only alignment preserves the span
+and sets that physical column's default; ordinary attributes make the glyph
+literal. `|=< |` and `|=^ |` are header-kind placeholders. Alignment symbols
+must lead the attribute block; a vertical symbol needs a horizontal symbol or
+`?` inheritance token first.
 
 **Rules.**
 
@@ -902,7 +899,7 @@ cell content: `|= <|` and `|?^ <|` do not make spans.
 no effective alignment renders with **no** `style` attribute.
 
 ```
-|=> Price |
+|={>} Price |
 | 9        |
 ```
 

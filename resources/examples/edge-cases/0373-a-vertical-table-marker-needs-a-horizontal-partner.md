@@ -10,7 +10,7 @@ rest read as data cells whose text begins with `=`.
 ::: compare
 
 ```carve
-|=^ Top |=v Bottom |=<^ Paired |=v> Reverse |=~> Middle |
+|=^ Top |=v Bottom |={<^} Paired |=v> Reverse |=~> Middle |
 | a | b | c | d | e |
 ```
 

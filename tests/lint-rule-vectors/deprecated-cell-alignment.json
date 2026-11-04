@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "rule": "deprecated-cell-alignment",
+  "vectors": [
+    {
+      "name": "header-default",
+      "description": "The released header alignment prefix remains readable and gets a migration warning.",
+      "source": "|=> Price |\n| 12 |\n",
+      "expected": { "findings": [{ "line": 1, "column": 3, "includes": ["deprecated", "fmt"] }] }
+    },
+    {
+      "name": "body-pair",
+      "description": "A released body alignment pair gets one migration warning.",
+      "source": "|?v x |\n",
+      "expected": { "findings": [{ "line": 1, "column": 2, "includes": ["deprecated", "fmt"] }] }
+    },
+    {
+      "name": "braced-pair",
+      "description": "The canonical glued braced pair has no migration warning.",
+      "source": "|{>^} x |\n",
+      "expected": { "findings": [] }
+    },
+    {
+      "name": "span-placeholder",
+      "description": "A span placeholder is not a legacy alignment prefix.",
+      "source": "| < | ^ |\n",
+      "expected": { "findings": [] }
+    }
+  ]
+}

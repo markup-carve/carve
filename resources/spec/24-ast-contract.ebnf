@@ -421,8 +421,8 @@
       Without `body-rows`, an invalid `header-rows` or `footer-rows` is
       consumed in HTML like a valid one.
       Promotion changes the HTML cell kind and row group, not the source
-      marker run: a plain `|>` in an explicit header row remains a cell-only
-      override and creates no column default. A native `|=>` still sets its
+      marker run: a plain `|{>} ` cell in an explicit header row remains a cell-only
+      override and creates no column default. A native `|={>}` still sets its
       starting column's default, even in an explicit header row.
 
       A pipe table MAY additionally carry `body-rows="N,..."`. Each entry

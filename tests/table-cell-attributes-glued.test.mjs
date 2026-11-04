@@ -95,8 +95,8 @@ test('a brace run that never closes stays literal', () => {
 })
 
 /*
- * §5 T10: the block binds AFTER the kind marker and after the alignment
- * marker. The cases above all write a cell with NO marker, where every
+ * §5 T10: alignment symbols lead the cell attribute block, after the
+ * optional kind marker. The cases above all write a cell with NO marker, where every
  * candidate order agrees - which is exactly why the corpus could not see the
  * defect (carve#1224). These pin the positions that tell the orders apart.
  */
@@ -106,13 +106,13 @@ test('a header cell may carry attributes', () => {
   assert.match(html('|={#x} R |\n'), /<th scope="col" id="x">R<\/th>/)
 })
 
-test('the block follows the alignment marker on a header cell', () => {
-  const out = html('|=~{#x} R |\n')
+test('alignment symbols lead a header cell block', () => {
+  const out = html('|={~ #x} R |\n')
   assert.match(out, /<th scope="col" id="x" style="text-align: center;">R<\/th>/, out)
 })
 
-test('the block follows the alignment marker on a data cell', () => {
-  const out = html('|>{.num} 9 |\n')
+test('alignment symbols lead a data cell block', () => {
+  const out = html('|{> .num} 9 |\n')
   assert.match(out, /<td class="num" style="text-align: right;">9<\/td>/, out)
 })
 
@@ -143,7 +143,7 @@ test('a space still keeps the block literal after a marker', () => {
 
 test('row attributes did not move', () => {
   // T8 is unchanged and composes with a cell block in the new position.
-  const out = html('|>{.c} a |{.r}\n')
+  const out = html('|{> .c} a |{.r}\n')
   assert.match(out, /<tr class="r">/, out)
   assert.match(out, /<td class="c" style="text-align: right;">a<\/td>/, out)
 })

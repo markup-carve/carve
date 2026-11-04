@@ -1,2 +1,2 @@
-|=> Price |<< |=~ Stock |
+|={>} Price |{<} < |={~} Stock |
 | 12.50 | EUR | 3 |

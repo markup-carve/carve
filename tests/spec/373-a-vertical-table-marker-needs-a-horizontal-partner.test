@@ -1,7 +1,7 @@
 A vertical table marker needs a horizontal partner
 
 ```
-|=^ Top |=v Bottom |=<^ Paired |=v> Reverse |=~> Middle |
+|=^ Top |=v Bottom |={<^} Paired |=v> Reverse |=~> Middle |
 | a | b | c | d | e |
 .
 <table>

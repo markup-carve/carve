@@ -1,8 +1,8 @@
 Headerless table alignment
 
 ```
-| a |> 9  |
-| b |> 10 |
+| a |{>} 9  |
+| b |{>} 10 |
 .
 <table>
   <tbody>

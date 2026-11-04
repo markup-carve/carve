@@ -3,7 +3,7 @@
 ::: compare
 
 ```carve
-|=> Category |= Item   |= Price |
+|={>} Category |= Item   |= Price |
 | Fruit       | Apple    | $1      |
 | Total       | <        | $1.50   |
 ```

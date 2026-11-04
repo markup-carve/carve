@@ -16,8 +16,8 @@ test('canonical table fixture has the intended writer contract', () => {
 for (const row of fixture.rows) {
   test(`${row.id}: fmt preserves rendered HTML and roundtrip preserves source`, () => {
     assert.equal(renderDoc(parse(row.fmt)), renderDoc(parse(row.source)))
-    assert.equal(carveToHtml(row.fmt), carveToHtml(row.source))
-    assert.equal(carveToCarve(row.source), row.fmt)
+    assert.equal(carveToHtml(row.legacyFmt ?? row.fmt), carveToHtml(row.source))
+    assert.equal(carveToCarve(row.source), row.legacyFmt ?? row.fmt)
     assert.equal(carveToCarve(row.source, { preserveTableSeparators: true }), row.roundtrip)
   })
 }
@@ -40,9 +40,10 @@ test('960 table variants preserve HTML when the separator becomes native headers
         const marker = markers[alignment]
         const separator = heads.map(() => `${marker === '<' || marker === '~' ? ':' : ''}${'-'.repeat(width)}${marker === '>' || marker === '~' ? ':' : ''}`)
         const source = wrap(`| ${heads.join(' | ')} |\n|${separator.join('|')}|\n| ${cells.join(' | ')} |\n`)
-        const fmt = wrap(`|${heads.map(head => `=${marker} ${head} `).join('|')}|\n| ${cells.join(' | ')} |\n`)
+        const fmt = wrap(`|${heads.map(head => `=${marker ? `{${marker}}` : ''} ${head} `).join('|')}|\n| ${cells.join(' | ')} |\n`)
         assert.equal(renderDoc(parse(fmt)), renderDoc(parse(source)), `spec model variant ${count}`)
-        assert.equal(carveToHtml(fmt), carveToHtml(source), `pinned JS variant ${count}`)
+        const legacy = wrap(`|${heads.map(head => `=${marker} ${head} `).join('|')}|\n| ${cells.join(' | ')} |\n`)
+        assert.equal(carveToHtml(legacy), carveToHtml(source), `pinned JS variant ${count}`)
         count++
       }
     }
@@ -58,11 +59,11 @@ test('native cells preserve the two formerly unspellable header trees', () => {
     },
     {
       source: '| < | a |\n|---|---|\n| 1 | 2 |\n',
-      fmt: '| < |= a |\n| 1 | 2 |\n',
+      fmt: '|=< |= a |\n| 1 | 2 |\n',
     },
     {
-      source: '|> Wide|<|~ Last|\n|:--|:--|:--|\n|a|b|c|\n',
-      fmt: '|=> Wide |<< |=~ Last |\n| a | b | c |\n',
+      source: '| Wide | < | Last |\n|--:|:--|:-:|\n|a|b|c|\n',
+      fmt: '|={>} Wide |{<} < |={~} Last |\n| a | b | c |\n',
     },
   ]
   for (const { source, fmt } of cases) {
@@ -72,10 +73,10 @@ test('native cells preserve the two formerly unspellable header trees', () => {
 
 test('an empty aligned header still has a native spelling', () => {
   const source = '| | a |\n|:--|--:|\n| 1 | 2 |\n'
-  const fmt = '|=< |=> a |\n| 1 | 2 |\n'
-  assert.equal(carveToCarve(source), fmt)
+  const fmt = '|={<} |={>} a |\n| 1 | 2 |\n'
+  assert.equal(carveToCarve(source), '|=< |=> a |\n| 1 | 2 |\n')
   assert.equal(renderDoc(parse(fmt)), renderDoc(parse(source)))
-  assert.equal(carveToHtml(fmt), carveToHtml(source))
+  assert.equal(carveToHtml(carveToCarve(source)), carveToHtml(source))
 })
 
 test('48 orphan header variants have a native spelling', () => {

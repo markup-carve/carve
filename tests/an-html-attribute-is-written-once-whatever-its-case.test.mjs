@@ -31,9 +31,9 @@ test('names merge ASCII case-insensitively at the first spelling with the last v
 })
 
 test('a cell merges its alignment into an authored style', () => {
-  assert.match(html('|>{style="color:red"} a |\n'), /<td style="color:red; text-align: right;">a<\/td>/)
-  assert.match(html('|>{STYLE="color:red;"} a |\n'), /<td STYLE="color:red; text-align: right;">a<\/td>/)
-  assert.match(html('|>{style=""} a |\n'), /<td style="text-align: right;">a<\/td>/)
+  assert.match(html('|{> style="color:red"} a |\n'), /<td style="color:red; text-align: right;">a<\/td>/)
+  assert.match(html('|{> STYLE="color:red;"} a |\n'), /<td STYLE="color:red; text-align: right;">a<\/td>/)
+  assert.match(html('|{> style=""} a |\n'), /<td style="text-align: right;">a<\/td>/)
 })
 
 test('a caption reference reaches an authored ID in any spelling', () => {

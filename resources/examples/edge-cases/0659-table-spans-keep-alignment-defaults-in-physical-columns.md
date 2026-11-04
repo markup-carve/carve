@@ -47,7 +47,7 @@ covered column remains independent in later rows.
 ::: compare
 
 ```carve
-|=> Wide|<|=~ Last|
+|={>} Wide|<|={~} Last|
 |a|b|c|
 ```
 
@@ -70,7 +70,7 @@ on the merged head cell overrides the delimiter only in its starting column.
 ::: compare
 
 ```carve
-|> Wide|<|~ Last|
+|{>} Wide|<|{~} Last|
 |:--|:--|:--|
 |a|b|c|
 ```
@@ -95,7 +95,7 @@ without promoting its per-cell alignment markers into column defaults.
 
 ```carve
 {header-rows=1}
-|> Wide|<|~ Last|
+|{>} Wide|<|{~} Last|
 |a|b|c|
 ```
 
@@ -117,7 +117,7 @@ Two consecutive span markers extend the aligned origin across three columns.
 ::: compare
 
 ```carve
-|< Wide|<|<|~ Last|
+|{<} Wide|<|<|{~} Last|
 |a|b|c|d|
 ```
 
@@ -137,7 +137,7 @@ A vertical marker before `<` makes it literal cell content.
 ::: compare
 
 ```carve
-|a|?^ <|
+|a|{?^} \<|
 ```
 
 ```html
@@ -179,7 +179,7 @@ An explicit header row keeps column defaults in table attributes.
 
 ```carve
 {header-rows=1 aligns=right,left}
-|> First|< Second|
+|{>} First|{<} Second|
 |a|b|
 ```
 
@@ -201,9 +201,9 @@ A later row of header cells keeps its alignment local after body data.
 ::: compare
 
 ```carve
-|=>^ A|<|=~ B|
+|={>^} A|<|={~} B|
 |a|b|c|
-|=<v D|<|= End|
+|={<v} D|<|= End|
 |d|e|f|
 ```
 
@@ -228,7 +228,7 @@ An all-header row after body data stays in `tbody` without a `thead`, and its al
 
 ```carve
 |a|b|
-|=> X|=~ Y|
+|={>} X|={~} Y|
 |c|d|
 ```
 
@@ -399,7 +399,7 @@ An all-header row after body data stays in `tbody` without a `thead`, and its al
 ::: compare
 
 ```carve
-|~ |
+|{~} |
 ```
 
 ```html
@@ -415,7 +415,7 @@ An all-header row after body data stays in `tbody` without a `thead`, and its al
 ::: compare
 
 ```carve
-|> |
+|{>} |
 ```
 
 ```html
@@ -431,7 +431,7 @@ An all-header row after body data stays in `tbody` without a `thead`, and its al
 ::: compare
 
 ```carve
-|~{.x} |
+|{~ .x} |
 ```
 
 ```html

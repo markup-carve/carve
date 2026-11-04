@@ -7,7 +7,7 @@ only its own cell. Columns without a head marker keep delimiter alignment.
 ::: compare
 
 ```carve
-|=> a |= b |
+|={>} a |= b |
 |:-- |:-- |
 | 1 | 2 |
 ```
@@ -28,9 +28,9 @@ only its own cell. Columns without a head marker keep delimiter alignment.
 ::: compare
 
 ```carve
-|=~ a |= b |
+|={~} a |= b |
 |--: |:-- |
-| 1 |> 2 |
+| 1 |{>} 2 |
 | 3 | 4 |
 ```
 

@@ -181,6 +181,7 @@ the command-line and editor behavior stay aligned.
 | `markdown-definition-paragraph` | `term` followed by `: definition` remains a paragraph; Carve needs `:: term` |
 | `github-alert-marker` | `[!NOTE]` or `[!WARNING]` in a blockquote stays literal text |
 | `caption-looking-paragraph` | opt-in hint for a caption-like paragraph directly before or after a table or image |
+| `deprecated-cell-alignment` | a released 0.1.13 table cell alignment prefix such as `|=> Price |` or `|?v x |`; the prefix remains readable through 0.1.x, and `carve fmt` moves its symbols into a glued leading attribute-block run such as `|={>} Price |` or `|{?v} x |` |
 | `bidi-control-in-source` | a Trojan-Source bidi override or isolate control (U+202A–U+202E, U+2066–U+2069) that canonical Carve preserves but every presentation target strips |
 | `duplicate-heading-id` | two headings producing the same id, either by slug collision or repeated explicit `{#id}` |
 | `broken-crossref` | a `</#id>` cross-reference with no matching heading or numbered caption id; when the id exists on another element, the message names that element and suggests `[text](#id)`, since a cross-reference cannot target it. Matching is case-sensitive (PART 9R R4); a case-only mismatch names the real id, and `carve fmt --migrate` rewrites the reference to it when exactly one id matches |

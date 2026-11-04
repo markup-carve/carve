@@ -1,9 +1,9 @@
 Table per-cell alignment override
 
 ```
-|= Item     |=> Qty |
+|= Item     |={>} Qty |
 | Apple      | 12     |
-| Subtotal   |< 12    |
+| Subtotal   |{<} 12    |
 .
 <table>
   <thead>

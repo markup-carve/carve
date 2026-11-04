@@ -25,7 +25,7 @@ An authored rowspan or colspan on a cell is dropped
 ```
 
 ```
-|>{align=left} a |
+|{> align=left} a |
 .
 <table>
   <tbody>

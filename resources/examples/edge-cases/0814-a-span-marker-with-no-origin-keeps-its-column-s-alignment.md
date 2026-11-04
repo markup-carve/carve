@@ -36,7 +36,7 @@ marker aligns.
 ::: compare
 
 ```carve
-| ^ |=> b |
+| ^ |={>} b |
 |-:|---|
 | c | d |
 ```

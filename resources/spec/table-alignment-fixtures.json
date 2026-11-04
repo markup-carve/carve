@@ -6,8 +6,8 @@
   },
   {
     "name": "attributes spans and empty cells",
-    "canonical": "|={.total} Total |=> Qty |\n| 長い | 7 |\n| ^ | < |\n| | |\n",
-    "aligned": "|={.total} Total |=> Qty |\n| 長い           | 7     |\n| ^              | <     |\n|                |       |\n"
+    "canonical": "|={.total} Total |={>} Qty |\n| 長い | 7 |\n| ^ | < |\n| | |\n",
+    "aligned": "|={.total} Total |={>} Qty |\n| 長い           | 7       |\n| ^              | <       |\n|                |         |\n"
   },
   {
     "name": "authored separator",

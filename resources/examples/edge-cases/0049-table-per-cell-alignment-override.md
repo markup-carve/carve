@@ -3,9 +3,9 @@
 ::: compare
 
 ```carve
-|= Item     |=> Qty |
+|= Item     |={>} Qty |
 | Apple      | 12     |
-| Subtotal   |< 12    |
+| Subtotal   |{<} 12    |
 ```
 
 ```html

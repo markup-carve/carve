@@ -49,7 +49,7 @@ An authored `align` follows PART 10 like any other key and stays beside the comp
 :::::: compare
 
 `````carve
-|>{align=left} a |
+|{> align=left} a |
 `````
 
 ```html

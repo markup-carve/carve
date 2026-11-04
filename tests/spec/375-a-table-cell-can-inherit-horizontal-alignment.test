@@ -1,9 +1,9 @@
 A table cell can inherit horizontal alignment
 
 ```
-|=>^ Name |= Value |
-|?v Bottom |?~ Middle |
-|?^ Top | plain |
+|={>^} Name |= Value |
+|{?v} Bottom |{?~} Middle |
+|{?^} Top | plain |
 |? lone |v? reversed |
 |?< wrong |^< axes |
 .

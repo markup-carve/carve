@@ -189,33 +189,34 @@ with a space.
 
 ### Alignment
 
-`<` left, `~` center, `>` right; paired `^` top, `~` middle, `v` bottom. A
-horizontal marker may stand alone; a vertical marker always needs a horizontal
-partner. Where that partner should stay whatever the column already says, `?`
-stands in for it: `?^`, `?~` and `?v` set the vertical axis only and leave the
-horizontal one to the column. The run is glued to the pipe and terminated by a
-space. It is atomic, so a run that is rejected takes the `=` with it. On a head-row `|=` it sets a default for its starting column; on a later row-header `|=` or a plain `|` it overrides that cell. A `<` span cell beside it carries no default into the covered column. Promoting a plain row with `header-rows` does not turn its markers into column defaults.
+`<` left, `~` center, `>` right; paired `^` top, `~` middle, `v` bottom. Put
+these symbols first inside the cell's attribute block, before ordinary
+attributes: `|{> .num} 12.50 |`. A horizontal symbol may stand alone; a
+vertical symbol needs a horizontal partner. Use `?` to inherit the column's
+horizontal alignment: `{?^}`, `{?~}` and `{?v}` set only the vertical axis.
+A head-row header cell's symbols set the default for its starting column; a
+later row header or body cell overrides only itself. An alignment-only block
+on a span placeholder sets its own column default. Promoting a plain row with
+`header-rows` does not make its symbols column defaults.
 Table attributes can set headerless defaults:
 `{aligns="right,center" valigns="top," widths="30,70"}`. Use
 `{header-rows=N footer-rows=N}` before a pipe table for explicit `thead`/`tfoot`
 ranges; `|=` header cells still work in the body.
 
 ```carve
-|=~ Item |=>^ Qty |
+|={~} Item |={>^} Qty |
 | Apple | 12 |
-| Subtotal |<v 12 |
-| Total |?v 15 |
+| Subtotal |{<v} 12 |
+| Total |{?v} 15 |
 ```
 
-`<v` overrides both axes for that cell; `?v` moves only the vertical one, so the
+`{<v}` overrides both axes for that cell; `{?v}` moves only the vertical one, so the
 Total figure keeps the column's right alignment.
 
-An alignment run beginning with `<` needs content after its terminating space. A
+An alignment-only block needs content after its terminating space. A
 standalone `| < |` cell is the colspan merge, `| ^ |` the rowspan merge.
 `|<|`, `| <|` and `|< |` also merge. The four lone `^` forms behave the
-same way. To make a merged
-header without `=`, add a GFM delimiter row or use
-`{header-rows=1 aligns="right,right,center"}` for explicit per-column defaults.
+same way. `|=< |` and `|=^ |` are header-kind span placeholders.
 
 ### CSV and TSV data
 

@@ -64,7 +64,7 @@ verse
 ```
 
 ```
-|>{style="color:red"} a |
+|{> style="color:red"} a |
 .
 <table>
   <tbody>

@@ -577,13 +577,13 @@
     {
       "id": "CARVE-P9-007",
       "part": "9",
-      "title": "T10 CELL ATTRIBUTES BIND LAST",
+      "title": "T10 ALIGNMENT LEADS THE CELL ATTRIBUTE BLOCK",
       "scope": "parsing"
     },
     {
       "id": "CARVE-P9-008",
       "part": "9",
-      "title": "T11 A MARKER RUN ENDS AT A SPACE",
+      "title": "T11 A CELL PREFIX ENDS AT A SPACE",
       "scope": "parsing"
     },
     {
@@ -1759,7 +1759,7 @@
     {
       "id": "CARVE-P12-040",
       "part": "12",
-      "title": "TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES",
+      "title": "TABLE CELL ALIGNMENT SYMBOLS CARRY TWO INDEPENDENT AXES",
       "scope": "parsing"
     },
     {

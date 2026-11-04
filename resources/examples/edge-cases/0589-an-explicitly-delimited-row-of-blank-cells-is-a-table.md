@@ -132,7 +132,7 @@ The alignment run follows the same rule, `|> |` against `|>|`:
 ::: compare
 
 ```carve
-|> |
+|{>} |
 ```
 
 ```html
@@ -166,7 +166,7 @@ The whole run in its one order, kind, alignment, attributes, then the space:
 ::: compare
 
 ```carve
-|=~{.x} |
+|={~ .x} |
 ```
 
 ```html
@@ -252,7 +252,7 @@ block is cell content:
 ::: compare
 
 ```carve
-|{bad!!} |
+| {bad!!} |
 ```
 
 ```html

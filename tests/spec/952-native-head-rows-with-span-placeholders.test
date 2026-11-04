@@ -15,7 +15,7 @@ Native head rows with span placeholders
 ```
 
 ```
-|=> Price |<< |=~ Stock |
+|={>} Price |{<} < |={~} Stock |
 | 12.50 | EUR | 3 |
 .
 <table>

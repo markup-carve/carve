@@ -7,9 +7,9 @@ marker of `?^`, `?~`, or `?v`; every other use stays visible content.
 ::: compare
 
 ```carve
-|=>^ Name |= Value |
-|?v Bottom |?~ Middle |
-|?^ Top | plain |
+|={>^} Name |= Value |
+|{?v} Bottom |{?~} Middle |
+|{?^} Top | plain |
 |? lone |v? reversed |
 |?< wrong |^< axes |
 ```

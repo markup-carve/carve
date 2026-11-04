@@ -5,6 +5,4 @@
 187-a-comment-fence-is-a-comment-at-any-column-too  CARVE-P11-079 (b) writes a document-level payload with every leading column (markup-carve/carve#4995); the pinned writer drops it to column 0.
 192-a-comment-fence-under-a-nested-item-does-not-close-it-either  CARVE-P11-079 (b) writes a document-level payload with every leading column (markup-carve/carve#4995); the pinned writer drops it to column 0.
 943-an-empty-comment-span-is-written-as-adjacent-delimiters-3  markup-carve/carve#5022: the pinned writer spells an empty comment span with an empty payload line.
-659-table-spans-keep-alignment-defaults-in-physical-columns-4  markup-carve/carve#4980 stage 1: the pinned writer still generates a separator instead of writing |<< on the covered placeholder.
-814-a-span-marker-with-no-origin-keeps-its-column-s-alignment-2  markup-carve/carve#4980 stage 1: the pinned writer still generates a separator for an orphan head-row placeholder.
 952-native-head-rows-with-span-placeholders-9  markup-carve/carve#4980 stage 1: the pinned writer still generates a separator for an orphan head-row placeholder.

@@ -2448,9 +2448,9 @@ declaration wins. Only those exact values are mapped; priority suffixes such
 as `!important` remain unmapped. A mapped declaration MUST NOT produce
 `style-unmapped`.
 
-A cell in the leading header rows supplies the column default through `|=<`, `|=>`, or `|=~`.
+A cell in the leading header rows supplies the column default through `|={<}`, `|={>}`, or `|={~}`.
 A body cell repeating that default needs no marker; a different explicit
-alignment stays on that cell through `|<`, `|>`, or `|~`. A headerless table
+alignment stays on that cell through `|{<}`, `|{>}`, or `|{~}`. A headerless table
 keeps each cell's explicit alignment. Mapping does not require every cell in
 a column to agree. Unsupported values, such as `justify`, and unrelated
 unmapped declarations still produce `style-unmapped`.

@@ -23,5 +23,5 @@ for (const [authored, plain] of PAIRS) {
 }
 
 test('an authored align stays beside the computed alignment', () => {
-  assert.match(html('|>{align=left} a |\n'), /<td align="left" style="text-align: right;">a<\/td>/)
+  assert.match(html('|{> align=left} a |\n'), /<td align="left" style="text-align: right;">a<\/td>/)
 })
