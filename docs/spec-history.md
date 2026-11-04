@@ -234,6 +234,16 @@ the active algorithm together and are retained here for traceability:
 - Raw blocks formerly also accepted a `` ```raw FORMAT `` keyword spelling.
   Block and inline raw now share the `=FORMAT` spelling.
 
+## PART 12 §5 to §16: definition-list entries as nodes
+
+CARVE-P12-027 publishes `definition_term` and `definition_description` as
+nodes. Under the earlier object form those two profiles.md block-vocabulary
+entries named nothing, and a host writing `denyBlock(['definition_term'])` got
+silence, which profiles.md calls the specific failure a normative vocabulary
+exists to prevent. The design reasons for the rest of
+`24-ast-contract.ebnf` are in
+[Technical rationale](./technical-rationale.md#ast-contract).
+
 ## AST position implementation history
 
 Position coverage used to be reported inside PART 12 with per-engine counts and

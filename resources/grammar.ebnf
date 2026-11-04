@@ -12898,8 +12898,7 @@ EOF = (* end of file *) ;
       two `# Notes` headings yield `Notes` and then `Notes-2` (CARVE-P2-004
       states the slug and dedup rules; CARVE-P9-019 shares that namespace with
       every other generated id). A consumer holding only the tree
-      cannot replicate that, and a table of contents, a go-to-definition jump
-      and a cross-document index each need the exact id, not a plausible one.
+      cannot replicate that.
 
       CARVE-P12-005 IS NOT IN TENSION WITH THIS. CARVE-P12-005 forbids folding a resolution result
       in place of the construct the author wrote; here nothing authored is
@@ -12960,14 +12959,10 @@ EOF = (* end of file *) ;
       renders an empty block quote and `The <abbr title="Hyper Text">HTML</abbr>
       spec.`. To show the line as text, escape it: `\*[HTML]: Hyper Text`.
 
-      THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
+      THE FORMATTER CONSEQUENCE IS ACCEPTED. Hoisting means
       PART 11's writer emits the definition after the container the author
-      wrote it in, which reads like a violation of PART 11 §6 (a spelling the AST records is
-      the author's and is reproduced). It
-      is not, because PART 11 §6 governs what the writer may do with what the tree
-      HOLDS, and this clause is what the tree holds. It is accepted for
-      footnotes because a footnote definition renders as a footnote either way,
-      so the move costs the author placement and nothing else.
+      wrote it in. PART 11 §6 governs what the writer may do with what the tree
+      HOLDS, and this clause is what the tree holds.
 
       Definitions appear in DOCUMENT ORDER by source position. Numbering is a
       resolution result and stays on the reference (PART 12 §5).
@@ -12986,13 +12981,6 @@ EOF = (* end of file *) ;
       node. A run of terms belongs to the descriptions that follow it, which is
       the rule the rendered list already shows -- so the grouping is derivable
       and is not published.
-
-      NOT publishing it is the decision. `definition_term` and
-      `definition_description` are in the profiles.md block vocabulary, so a
-      profile can NAME them; under an object form those two entries named
-      nothing, and a host writing `denyBlock(['definition_term'])` got silence,
-      which profiles.md calls the specific failure a normative vocabulary
-      exists to prevent.
 
       A SPELLED LOOSENESS IS A FIELD; A DERIVED ONE IS NOT. `definition_list`
       MAY carry `loose: true`, and it means what PART 9 §17 L7's consumed
@@ -13014,16 +13002,9 @@ EOF = (* end of file *) ;
       `<dl>` at all -- only a second block inside a description wraps it -- so
       `<dd><p>x</p></dd>` has no blank-line spelling at any entry count, and a
       tree without this field cannot say which of the two spellings it came
-      from. That is what makes a definition list unlike a `list`, where `tight`
-      is required and states the whole axis: here the derivation covers
-      everything except the case the derivation cannot see.
+      from.
 
-      THE NAME IS `loose` AND NOT `tight`, and the divergence from `list` is
-      the point. An absent `tight` read as false would say LOOSE, the opposite
-      of the default; `loose: true` absent means derived, which is the truth.
-      It matches PART 9 §17 L7's own key, and follows `list.bareMarker`, the other field
-      here that records an authored distinction the default spelling cannot
-      express.
+      THE NAME IS `loose` AND NOT `tight`. It matches PART 9 §17 L7's own key.
 
    9. HOW DEEP AN INGESTED AST MAY NEST -- NORMATIVE [CARVE-P12-028]. Reading a serialized AST
       is a recursive descent over attacker-controlled structure, so it needs a
@@ -13109,8 +13090,7 @@ EOF = (* end of file *) ;
       (`content` is a node list on `inline_extension` and a string on
       `code_block`), so they are read off the schema. The check never reaches
       inside `attrs.keyValues`, whose values are strings: `[x](/u){type=widget}`
-      puts `{"type":"widget"}` there, and refusing it would refuse a document
-      the engine's own parser produced.
+      puts `{"type":"widget"}` there, and it is not refused.
 
       A `srcByteLength` THAT IS PRESENT BUT WRONG is not refused. Nothing in the
       tree depends on it, so readers ignore its value; (a) is about presence,
@@ -13239,9 +13219,8 @@ EOF = (* end of file *) ;
    15. A TABLE MAY CARRY AN OPTIONAL ROW GROUPING -- NORMATIVE [CARVE-P12-034]. A `table` MAY
       carry `rowGroups`, an object which PARTITIONS the existing `rows` array
       into a head, any number of body groups and a foot. `bodies` MAY be empty:
-      a table whose rows are all head and foot is a partition like any other,
-      and refusing it would make a head-only table the one shape the field
-      cannot describe. It is the representation of a
+      a table whose rows are all head and foot is a partition like any other.
+      It is the representation of a
       table model richer than a core pipe table can spell: several body
       groups, a group's own intermediate header rows, a foot, and a count of
       leading row-header columns per group. The standard ListTable extension
@@ -13252,8 +13231,7 @@ EOF = (* end of file *) ;
       then each body's `headRows` and `bodyRows` in sequence, then `footRows` --
       and they MUST account for every row exactly once. A producer MUST NOT
       publish a partition whose counts do not sum to `rows.length`; a consumer
-      MUST treat one that does not as invalid rather than repairing it. Holding
-      counts keeps `rows` as the single sequence every consumer reads.
+      MUST treat one that does not as invalid rather than repairing it.
 
       `headRows` IS STATED RATHER THAN DERIVED. The leading run of header rows
       is what an HTML renderer already uses for `<thead>`, and it cannot serve
@@ -13267,12 +13245,10 @@ EOF = (* end of file *) ;
       exactly one home for the value. Absent means zero.
 
       THE OBJECT IS OPTIONAL; ITS THREE PARTS ARE NOT. `headRows`, `bodies` and
-      `footRows` are required together, because a partition missing one of them
-      describes no structure at all -- the omission would have to be read as a
-      zero, and a zero head is a claim rather than a silence. `rowHeadColumns`
+      `footRows` are required together. `rowHeadColumns`
       is the exception and is optional, since it does not partition anything.
 
-      ABSENT MEANS TODAY'S STRUCTURE, and this is why the field breaks nothing:
+      ABSENT MEANS TODAY'S STRUCTURE:
       a table without `rowGroups` has the implicit partition every renderer
       already derives -- the leading run of header rows as the head, everything
       after it as one body, no foot, no row-head columns.
@@ -13377,20 +13353,15 @@ EOF = (* end of file *) ;
       `children` are ordinary block nodes IN SOURCE ORDER: the panels are the
       `figure` and `table` nodes among them, exactly the nodes the inner
       caption rules built, and non-panel stray content sits between them in
-      place. There is NO `panels` array: repeating the children under a
-      second key would let the two disagree, the same contradiction CARVE-P12-034's
-      counts-not-copies rule exists to make unrepresentable, and a consumer
-      derives the panel list the way the renderer does -- by type, in order.
+      place. There is NO `panels` array: a consumer derives the panel list
+      the way the renderer does -- by type, in order.
 
       `caption` is the GROUP caption, an array of inline nodes; absent means
       the group is uncaptioned (no empty-array placeholder). `type` and
       `children` are required, `attrs` optional, `pos` per PART 12 §4.
 
       DISCRIMINATED BY TYPE, NOT BY SHAPE. Every `figure` node carries a
-      `target`; the group deliberately does not, and a consumer telling the
-      two apart by probing for the missing field would break silently the day
-      either shape grows a field. The type string is the whole test, which is
-      why this is a NEW type rather than a target-less `figure`.
+      `target`; the group does not. The type string is the whole test.
 
       NO `shortCaption`, NO legends, NO label fields. CARVE-P12-033's `shortCaption`
       stays on `figure` and `table`. The schema
