@@ -360,10 +360,10 @@
       even when the marker found no origin. The canonical writer writes that
       alignment on the placeholder itself, preserving the cell's tree fields.
       Its `header` field is the authored kind: true for a header-kind `^` or `<`
-      (`|=^ |` or `|=< |`, PART 9 §5 T4) or a separator-promoted placeholder, false for
+      (`|= ^ |` or `|= < |`, PART 9 §5 T4) or a separator-promoted placeholder, false for
       a bare `^` or `<`, whose rendered kind T9 derives.
 
-        |=^ |
+        |= ^ |
         | x |
 
         table{ rows: [

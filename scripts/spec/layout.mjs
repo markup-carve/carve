@@ -1591,12 +1591,14 @@ function readMarkerRun(seg) {
 // classify one raw cell segment
 function parseCell(seg) {
   const cell = { header: false, kindMarker: false, align: null, valign: null, attrs: null, content: '' }
-  // A kind marker may be glued to either span glyph. The trailing space
-  // separates a span from an unpadded payload such as `=^` or `=<`.
-  const span = /^(?:=(?=[<^])| *)([<^]) +$/.exec(seg)
-  if (span || ['<', '^'].includes(padTrim(seg))) {
-    cell.header = seg[0] === '='
-    cell.spanMarker = span?.[1] ?? padTrim(seg)
+  // A header prefix ends at its space; its whole padded content may then be
+  // the same span glyph that a body cell uses. The released `=< ` remains a
+  // deprecated alignment prefix and is read below, not as a span.
+  const headerSpan = /^= +([<^]) *$/.exec(seg)
+  const bodySpan = /^ *([<^]) *$/.exec(seg)
+  if (headerSpan || bodySpan) {
+    cell.header = Boolean(headerSpan)
+    cell.spanMarker = (headerSpan ?? bodySpan)[1]
     cell.content = cell.spanMarker
     return cell
   }

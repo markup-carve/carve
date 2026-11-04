@@ -11,8 +11,8 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|a|= <|
-|b|= ^|
+|a|= \< |
+|b|= \^ |
 .
 <table>
   <tbody>
@@ -239,7 +239,7 @@ Table spans keep alignment defaults in physical columns
 ```
 
 ```
-|= <|
+|= \< |
 .
 <table>
   <thead>

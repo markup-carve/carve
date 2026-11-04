@@ -327,7 +327,8 @@
 
       In a data table cell, a payload consisting of `^` or `<`, including after
       an alignment-only block (PART 2), would re-read as a span placeholder.
-      Escape its opener, for example `|{?^} \< |` for a literal `<`. A space
+      Escape its opener, for example `|{?^} \< |` for a literal `<`.
+      Header cells also escape literal glyphs as `|= \< |` and `|= \^ |`. A space
       followed by further content, as in `| <x |`, remains ordinary data.
       Escape a lone data payload `=^` or `=<` and a leading `=` before a brace
       block when that `=` would turn the cell into a header. Escaping more than

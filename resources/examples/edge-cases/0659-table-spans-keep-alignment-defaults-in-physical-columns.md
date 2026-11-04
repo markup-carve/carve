@@ -20,14 +20,14 @@ requires content after its terminating space.
 :::
 
 
-The `=` kind marker makes a header cell, so a following literal `<` or `^`
-is its content rather than a bare span marker.
+The `=` kind marker makes a header cell. Escape a literal `<` or `^` after
+it so the whole cell does not become a span marker.
 
 ::: compare
 
 ```carve
-|a|= <|
-|b|= ^|
+|a|= \< |
+|b|= \^ |
 ```
 
 ```html
@@ -383,7 +383,7 @@ An all-header row after body data stays in `tbody` without a `thead`, and its al
 ::: compare
 
 ```carve
-|= <|
+|= \< |
 ```
 
 ```html

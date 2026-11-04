@@ -39,7 +39,7 @@ Native head rows with span placeholders
 ```
 
 ```
-|= <|
+|= \< |
 .
 <table>
   <thead>
@@ -59,7 +59,7 @@ Native head rows with span placeholders
 ```
 
 ```
-|=^ |
+|= ^ |
 | x |
 .
 <table>

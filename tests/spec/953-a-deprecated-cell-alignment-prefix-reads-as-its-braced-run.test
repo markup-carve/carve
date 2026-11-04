@@ -33,7 +33,7 @@ A deprecated cell alignment prefix reads as its braced run
 ```
 
 ```
-|= Name |=< |= Qty |
+|= Name |= < |= Qty |
 | pen |< | 3 |
 .
 <table>

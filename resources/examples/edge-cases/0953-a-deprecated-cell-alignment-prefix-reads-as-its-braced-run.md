@@ -56,13 +56,14 @@ The braced spelling of the same table:
 
 :::
 
-`|=< |` is no longer an empty left-aligned header. Like `|< |` in a body row,
-it is a colspan placeholder, here of header kind.
+`|=< |` keeps its 0.1.13 reading as an empty left-aligned header. A header-kind
+colspan placeholder uses a space after `=`, like a body-row placeholder:
+`|= < |`.
 
 ::: compare
 
 ```carve
-|= Name |=< |= Qty |
+|= Name |= < |= Qty |
 | pen |< | 3 |
 ```
 

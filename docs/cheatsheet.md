@@ -216,7 +216,8 @@ Total figure keeps the column's right alignment.
 An alignment-only block needs content after its terminating space. A
 standalone `| < |` cell is the colspan merge, `| ^ |` the rowspan merge.
 `|<|`, `| <|` and `|< |` also merge. The four lone `^` forms behave the
-same way. `|=< |` and `|=^ |` are header-kind span placeholders.
+same way. `|= < |` and `|= ^ |` are header-kind span placeholders. The
+deprecated `|=< |` remains an empty left-aligned header cell.
 
 ### CSV and TSV data
 
