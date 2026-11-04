@@ -1518,6 +1518,33 @@ test('an emptied container spanning only its marker is accepted', () => {
   assert.deepEqual(stopFindings(doc, source), [])
 })
 
+function emptyItemDoc(end) {
+  return {
+    type: 'document',
+    children: [
+      { type: 'list', pos: pos(0, end), items: [{ type: 'list_item', pos: pos(0, end), children: [] }] },
+    ],
+  }
+}
+
+test('an item emptied by a consumed + may span its marker, task box and +', () => {
+  // carve#5161: the `+` and the task box are the item's own markup
+  // (CARVE-P12-012), so CARVE-P12-018 stops after them, not at the bullet.
+  for (const line of ['- +', '* +', '1. +', 'a) +', '- [ ] +', '* [x] +', '-  +  ']) {
+    const source = `${line}\nb\n`
+    assert.deepEqual(stopFindings(emptyItemDoc(line.length), source), [], line)
+  }
+})
+
+test('an emptied item reaching past its marker line markup still reports', () => {
+  for (const line of ['- + x', '- [d]: u', '- [ ] [d]: u', '- + +', '1. [x] +']) {
+    const source = `${line}\nb\n`
+    const findings = stopFindings(emptyItemDoc(line.length), source)
+    assert.equal(findings.length, 1, line)
+    assert.match(findings[0], /span covers more than its own markup on an empty "list_item"/)
+  }
+})
+
 test('a container holding an unplaced child is skipped rather than guessed at', () => {
   // Section 4 permits a REASSEMBLED node to omit `pos`. Where one does, the
   // last PLACED child is not the container's last child, so the bound this rule
