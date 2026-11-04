@@ -13530,7 +13530,7 @@ EOF = (* end of file *) ;
       are `^`, `~`, `v` for top, middle and bottom. A horizontal symbol may
       stand alone. A vertical symbol MUST follow a horizontal symbol or the
       `?` inheritance placeholder. Reverse order and duplicate axes leave
-      the whole block as literal content; `~~` or `~ ~` means center plus
+      the whole block as literal content; the glued `~~` means center plus
       middle. `?^`, `?~` and `?v` contribute only a cell-level `valign` and
       inherit horizontal alignment from the column. A lone `?` is invalid.
 
