@@ -3448,7 +3448,17 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         } else rest = rest.replace('+', plusLetter)
       }
       result.push(skipped.lead + (skipped.fenced.has(at) ? '%%' : bracePad + rest))
-      if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
+      // A skipped `%%%` span is one comment, so `parse` erases no line inside it (carve#5151).
+      if (trace && skipped.fenced.has(at)) {
+        const run = COMMENT_FENCE_BODY.exec(trimLineEnd(rest))?.[1].length
+        if (skipped.span === undefined) {
+          skipped.span = run
+          emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'comment', { cell: 'B-comment-start', plus: at })
+        } else if (run === skipped.span) {
+          skipped.span = undefined
+          emit(at, 'S1', ownerPath(), 'CARVE-P0-005', 'closer', { cell: 'B-comment-end', plus: at })
+        } else emit(at, 'S1', ownerPath(), 'CARVE-P0-005', 'payload', { cell: 'B-comment-keep', plus: at })
+      } else if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
       if (at + 1 === skipped.end) {
         if (skipped.host.plus === skipped.at) skipped.host.plus = at
         skipped = null
