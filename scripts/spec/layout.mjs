@@ -4251,9 +4251,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const comment = COMMENT_FENCE_BODY.exec(rest)
       if (comment) {
         const opener = k++
-        // A nonblank line that misses the host ends the span under S1 (CARVE-P0-005, carve#4870).
+        // A nonblank line that misses the span's owner ends the span under S1 (CARVE-P0-005, carve#4870);
+        // a span the host keeps at its content column is missed below that column.
+        const bound = at === column ? column : content
         const closes = (j) => COMMENT_FENCE_BODY.exec(trimLineEnd(view(j)))?.[1].length === comment[1].length
-        const misses = (j) => throughQuotes(lines[j], hostIndex) === null || (trimLineEnd(view(j)) !== '' && docColumn(lines[j], view(j)) < column)
+        const misses = (j) => throughQuotes(lines[j], hostIndex) === null || (trimLineEnd(view(j)) !== '' && docColumn(lines[j], view(j)) < bound)
         while (k < lines.length && !closes(k) && !misses(k)) k++
         if (k < lines.length && closes(k)) k++
         for (let j = opener; fenced && j < Math.min(k, lines.length); j++) fenced.add(j)
