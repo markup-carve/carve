@@ -978,12 +978,12 @@ No special syntax needed - absence of `|=` means no headers.
 ### 4.9 Horizontal Rules
 
 ```
----
 ***
+---
 ___
 ```
 
-Any of these, at least 3 characters, alone on a line.
+Any of these, at least 3 characters, alone on a line. A `---` on the document's first line opens frontmatter instead.
 
 ### 4.10 Attributes
 
