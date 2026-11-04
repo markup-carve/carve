@@ -15,5 +15,6 @@ Cross-engine vectors for single lint rules, one file per rule id, named
    contain every listed string. The rest of the wording is the engine's own.
 
 A vector with no expected findings is a negative: the rule must not fire.
+A file for a rule `docs/validation.md` retires holds only negatives.
 `tests/lint-rule-vectors.test.mjs` checks the shape and runs every vector
 through the pinned carve-js build once it carries the rule.
