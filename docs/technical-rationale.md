@@ -568,6 +568,42 @@ A span holding its own delimiter between two word characters does not form, so a
 path with two or more segments is never italics and `_my_var_` is never underlined. A single segment has the shape of an italic word and cannot be told
 apart without context, so it needs a code span.
 
+## AST contract (PART 12 §5 to §16) {#ast-contract}
+
+Reasons behind rules in `resources/spec/24-ast-contract.ebnf`. The clauses
+themselves state only the rule.
+
+- CARVE-P12-023: a table of contents, a go-to-definition jump and a
+  cross-document index each need the exact generated heading id, not a
+  plausible one.
+- CARVE-P12-026: hoisting reads like a violation of PART 11 §6 (a spelling the
+  AST records is the author's), and is not one. It is accepted for footnotes
+  because a footnote definition renders as a footnote either way, so the move
+  costs the author placement and nothing else.
+- CARVE-P12-027: `loose` is what makes a definition list unlike a `list`,
+  where `tight` is required and states the whole axis; for a definition list
+  the derivation covers everything except the case the derivation cannot
+  see. The name is `loose` and not `tight` on purpose: an absent `tight` read
+  as false would say loose, the opposite of the default, while an absent
+  `loose` means derived, which is the truth. It follows `list.bareMarker`, the
+  other field that records an authored distinction the default spelling
+  cannot express.
+- CARVE-P12-068 (c): refusing `{"type":"widget"}` inside `attrs.keyValues`
+  would refuse a document the engine's own parser produced.
+- CARVE-P12-034: refusing a partition with no bodies would make a head-only
+  table the one shape the field cannot describe. Holding counts keeps `rows`
+  as the single sequence every consumer reads. The three parts are required
+  together because a partition missing one of them describes no structure:
+  the omission would have to be read as a zero, and a zero head is a claim
+  rather than a silence. An absent `rowGroups` is why the field breaks
+  nothing.
+- CARVE-P12-035 `figure_group`: a `panels` array repeating the children would let the two
+  disagree, the same contradiction CARVE-P12-034's counts-not-copies rule
+  makes unrepresentable. A consumer telling a group from a `figure` by
+  probing for the missing `target` would break silently the day either shape
+  grows a field, which is why the group is a new type rather than a
+  target-less `figure`.
+
 ## `^` meaning "caption" vs "footnote" vs "rowspan"
 
 Carve reuses `^`, but only with hard contextual boundaries:
