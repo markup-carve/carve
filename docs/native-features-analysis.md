@@ -23,7 +23,7 @@ references point at `resources/grammar.ebnf`. For current availability, see
 | **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `[text]{kbd}` | ✅ Core reserves three span attributes - `abbr`, `time`, `kbd` (PART 9 §9). `samp`, `var`, `cite`, `dfn` are the Tier-2 SemanticSpan extension's; `code` and `mark` are nobody's, since `` `x` `` and `=x=` already write those elements. The `:name[…]` spelling is soft-deprecated in the extension. |
 | **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | ✅ In spec (4.3). Bare URLs are *not* auto-linked (djot-aligned). |
 | **Inline footnotes** | `[content]{.fn}` | `^[content]` | ✅ Tier-1 core, in grammar (§16). A carve addition (not in djot); pandoc-style `^[content]`, numbered into the shared endnotes. |
-| **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | ✅ In spec (4.8). |
+| **Table alignment** | `:--`, `--:`, `:--:` | `\|={<}` / `\|={>}` / `\|={~}` blocks | ✅ In spec (4.8). |
 | **Rowspan/colspan** | `^` and `<` markers | `^` and `<` markers | ✅ In grammar (span_cell / rowspan_marker / colspan_marker). |
 | **Multi-line cells** | `+` continuation | `+` continuation | ✅ In grammar (table multi-line cells). |
 

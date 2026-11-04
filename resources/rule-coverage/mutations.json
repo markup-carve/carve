@@ -791,8 +791,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": ".exec(seg.slice(afterMarks))",
-          "replace": ".exec(seg.slice(0))"
+          "find": "const aligned = cellAlignment(at[1])",
+          "replace": "const aligned = null"
         }
       ]
     },
@@ -801,8 +801,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "if (seg[end] !== ' ') continue // a tab",
-          "replace": "if (false) continue // a tab"
+          "find": "if (seg[end] === ' ' && (aligned || ordinary))",
+          "replace": "if (seg[end] !== ' ' && (aligned || ordinary))"
         }
       ]
     },
