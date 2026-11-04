@@ -511,7 +511,7 @@ export const escapeUrlAttr = (s) => escapeMarkup(checkUrl(s), true).replaceAll('
 // hardening probes read this value, so stripping after them could arm it (carve#4472).
 export const escapeAuthoredAttr = (s) => escapeMarkup(s, true).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
 
-// PART 9 SS25: URL sink scheme denylist -- a denylisted scheme renders an
+// PART 9 §25: URL sink scheme denylist -- a denylisted scheme renders an
 // EMPTY value. Scheme detection first strips ASCII controls and ALL Unicode
 // whitespace before matching, so an obfuscated scheme cannot slip past.
 const DENY = new Set(['javascript', 'vbscript', 'data', 'file',
@@ -594,7 +594,7 @@ export function matchDestination(text) {
   return g.match(text, 'dest').succeeded() ? unescapeDest(text) : null
 }
 
-// Is `text` exactly one image, inline or reference form (PART 9 SS4 host)?
+// Is `text` exactly one image, inline or reference form (PART 9 §4 host)?
 export function isImageSource(text) {
   return g.match(text, 'image').succeeded() || g.match(text, 'imageRef').succeeded()
 }
@@ -705,7 +705,7 @@ const attrSem = g.createSemantics().addOperation('parseAttrs', {
 })
 
 /*
- * PART 9 SS25: the four attributes whose value is a LIST of URLs a consumer
+ * PART 9 §25: the four attributes whose value is a LIST of URLs a consumer
  * resolves or fetches. The probe runs on every token AS WELL AS on the whole
  * value, and any hit blanks the WHOLE value, so the same value cannot get one
  * answer in position one and another in position two (carve#1320).
@@ -736,7 +736,7 @@ const URL_LIST_SEPARATORS = {
 const urlListIsClean = (separator, value) =>
   value.split(separator).every((token) => token === '' || checkUrl(token) !== '')
 
-// PART 9 SS25 ATTRIBUTE HARDENING: drop on*/srcdoc/formaction; blank any value whose own
+// PART 9 §25 ATTRIBUTE HARDENING: drop on*/srcdoc/formaction; blank any value whose own
 // leading scheme is denylisted, and a URL-list value with a denylisted scheme
 // in ANY candidate as well; blank a style value with a CSS execution vector.
 const STYLE_VECTOR = /expression\(|url\(|@import|behavior:|-moz-binding/i
@@ -895,10 +895,10 @@ export const classTokens = (a) => {
   const tokens = raw.split(/[\t\n\f\r ]+/).filter((t) => t !== '')
   return (tokens.length ? tokens : [raw]).map((v) => hardenAttr('class', v)?.value ?? '')
 }
-// PART 10 SS1: HTML attribute names compare ASCII case-insensitively in every merge.
+// PART 10 §1: HTML attribute names compare ASCII case-insensitively in every merge.
 const foldName = (name) => name.replace(/[A-Z]/g, (c) => c.toLowerCase())
 export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && foldName(a[1]) === 'class')
-// A base class joins the authored slot, so it takes the slot's spelling (PART 10 SS1).
+// A base class joins the authored slot, so it takes the slot's spelling (PART 10 §1).
 export const baseClass = (slot, value) => slot === undefined || slot[0] === 'class' ? ['class', value] : ['kv', slot[1], value]
 // An `id` key spells the id slot, as a `class` key spells the class slot, and
 // CARVE-P9-054 does not probe the slot (carve#4516). A bare `id` is `id=""`.
@@ -1062,7 +1062,7 @@ const sem = g.createSemantics().addOperation('h', {
   inlines(_initial, items) {
     // The bare single-char emphasis delimiters are NOT resolved by the PEG.
     // Build a flat token stream (leaf HTML fragments + bare-delimiter
-    // candidates) and run the PART 9 SS9 delimiter-stack pass over it.
+    // candidates) and run the PART 9 §9 delimiter-stack pass over it.
     return resolveEmphasis(
       () => buildToks(items.children, ''),
       this.source.sourceString,
@@ -1109,7 +1109,7 @@ const sem = g.createSemantics().addOperation('h', {
   },
   inlineNote(_o, content, _c, attrs) {
     // anonymous note: content renders now; numbering happens in PART 9R.
-    // SS16 DISABLES footnote recognition inside the content, in both
+    // §16 DISABLES footnote recognition inside the content, in both
     // directions, so a nested `^[...]` or `[^ref]` renders as its own literal
     // spelling rather than a note - the flag carries that down the whole
     // subtree, since re-enabling it one level in would make `^[a ^[b ^[c] d] e]`
@@ -1140,7 +1140,7 @@ const sem = g.createSemantics().addOperation('h', {
     const raw = content.sourceString
     let inner = raw === '' ? '' : renderInline(raw, '[', false, false, bracketAtoms(content))
     if (tail.numChildren === 0) {
-      // bare bracketed run: literal (PART 9 SS14), content still parsed
+      // bare bracketed run: literal (PART 9 §14), content still parsed
       return `[${inner}]`
     }
     // The never-nest flattening belongs to the tails that PRODUCE a link, not
@@ -1179,18 +1179,18 @@ const sem = g.createSemantics().addOperation('h', {
   hardBreak(_bs, _tail) {
     // The rule CONSUMES the newline (PART 3), so this emits it: one line
     // boundary, one break, whether the boundary was spelled with a backslash
-    // or not. In a line block that is the whole of PART 9 SS23's A '\\'
+    // or not. In a line block that is the whole of PART 9 §23's A '\\'
     // BREAK IS NOT ADDITIVE - there is no soft break left for the container
     // to harden, so nothing synthesizes a second `<br>`.
     //
     // The newline is emitted even where the rule matched `&end` and there was
-    // no newline to consume. PART 10 SS3 states the serialization without a
+    // no newline to consume. PART 10 §3 states the serialization without a
     // condition on it - "a hard break serializes as `<br>` + newline" - and all
     // three engines write it that way, on a document-final `a\` as much as on
     // one inside a stanza. Making it conditional on the SOURCE made the only
     // shape where the two readings differ - a hard break with nothing after it
     // - the one shape the oracle got wrong, which is where the last body line
-    // of a line block lives (PART 11 SS7c).
+    // of a line block lives (PART 11 §7c).
     return '<br>\n'
   },
   shortcode(_c1, name, _c2) {
@@ -1234,7 +1234,7 @@ const sem = g.createSemantics().addOperation('h', {
     const a = renderAttrs(attrsOf(attrs))
     // A forced `{X ... X}` span emphasizes intraword; nested spans of OTHER
     // delimiters resolve normally, but the forced delimiter X itself stays
-    // literal inside (PART 9 SS22). Run the same SS9 stack, holding X literal.
+    // literal inside (PART 9 §22). Run the same §9 stack, holding X literal.
     inlineDepth++
     const body = resolveEmphasis(
       () => buildToks(inner.children, dch),
@@ -1267,7 +1267,7 @@ const sem = g.createSemantics().addOperation('h', {
   },
   rawInline(code, _ob, fmt, _cb) {
     if (omitRawInline) return ''
-    // PART 9 SS20: emitted UNESCAPED for the html format, dropped otherwise
+    // PART 9 §20: emitted UNESCAPED for the html format, dropped otherwise
     const text = rawFrame(codeText(codeInner(code).child(1)))
     return fmt.sourceString === 'html' ? quoteOpaque(text) : ''
   },
@@ -1328,7 +1328,7 @@ const sem = g.createSemantics().addOperation('h', {
   inlineSpace(run) {
     return run.sourceString
   },
-  // Bounded twins (PART 9 SS21a): same emission, a narrower run.
+  // Bounded twins (PART 9 §21a): same emission, a narrower run.
   fSpComment(_sp, _pp, _rest) {
     return ''
   },
@@ -1373,7 +1373,7 @@ const sem = g.createSemantics().addOperation('h', {
     return '\u2013'
   },
   dashRun(_a, _b) {
-    // PART 9 SS8, carve#1443: a run PRECEDED by whitespace (or nothing) and
+    // PART 9 §8, carve#1443: a run PRECEDED by whitespace (or nothing) and
     // FOLLOWED by a non-whitespace character is a flag, not a dash, and stays
     // literal. `git log --oneline` rendered `git log –oneline` before this.
     //
@@ -1399,7 +1399,7 @@ const sem = g.createSemantics().addOperation('h', {
       const nextIsSpace = flankAfter(src, quoteNextIdx(src, end, true))
       if (prevIsSpace && !nextIsSpace) return escapeHtml(this.sourceString)
     }
-    // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot allocateDashes):
+    // PART 9 §8: a run of n hyphens -> em/en dash mix (djot allocateDashes):
     // n%3==0 all em; n%2==0 all en; else maximize em-dashes with the remainder
     // as en, where a remainder of 1 trades one em-dash for two en-dashes. Must
     // match carve-js / carve-php exactly (e.g. n=11 -> 3 em + 1 en, not 1 em).
@@ -1416,9 +1416,9 @@ const sem = g.createSemantics().addOperation('h', {
   },
   looseAttrs(blocks) {
     // The BRACES are literal, their CONTENTS are inline content. A brace run
-    // that attaches to nothing is text (SS15 A7, PART 2 headings), and the
+    // that attaches to nothing is text (§15 A7, PART 2 headings), and the
     // text inside it goes on being text - so a `#word` in there is a tag
-    // (SS19), which is what all three engines emit. Escaping the whole run
+    // (§19), which is what all three engines emit. Escaping the whole run
     // rendered `{#id .cls}` verbatim and lost the tag. Block by block, because
     // one interior spanning a run would read the `}{` between two blocks as
     // content (carve#2136).
@@ -1465,7 +1465,7 @@ sem.addOperation('applyTail(text, source)', {
     // (markup-carve/carve#1195).
     const lbl = label.numChildren ? label.child(0).sourceString : null
     // The RAW list travels, not the rendered string: a definition may carry
-    // attributes too, and PART 9R R1 merges the two per SS15 A3 - which needs
+    // attributes too, and PART 9R R1 merges the two per §15 A3 - which needs
     // both lists, not two finished strings (carve#604).
     // `source` is the bracket text AS WRITTEN. A collapsed reference is
     // matched by that, not by the rendered text: a decorated label defines a
@@ -1504,7 +1504,7 @@ sem.addOperation('parseAttrs', {
     return [first.parseAttrs(), ...rest.children.map((c) => c.parseAttrs())]
   },
   // A GLUED RUN IS ONE LIST (CARVE-P4-002, carve#2136). Concatenating in source
-  // order is enough: renderAttrs over the flat list is SS15 A3 - classes
+  // order is enough: renderAttrs over the flat list is §15 A3 - classes
   // accumulate and deduplicate at the first class's position, an id or key
   // keeps its last value at its first position - so no second merge is needed.
   attrRun(blocks) {
@@ -1564,8 +1564,8 @@ sem.addOperation('parseAttrs', {
   },
 })
 
-// --- PART 9 SS9 E1-E5 delimiter-stack resolver -----------------------------
-// grammar.ebnf PART 9 SS9 specifies emphasis resolution as ONE left-to-right
+// --- PART 9 §9 R1-R5 delimiter-stack resolver -----------------------------
+// grammar.ebnf PART 9 §9 specifies emphasis resolution as ONE left-to-right
 // pass over the inline stream with a delimiter stack -- O(n), NO backtracking.
 // This REPLACES the former backtracking PEG span rules (which re-searched the
 // tail for a closer at every opener -> O(n^2) on a run of unclosed openers).
@@ -2453,13 +2453,13 @@ function bracketNesting(text, budget = Infinity) {
   }
   return { chain, matched, overCap }
 }
-// math attrs merge into the base `math inline|display` class (PART 9 SS18);
+// math attrs merge into the base `math inline|display` class (PART 9 §18);
 // key/value and boolean attributes go through the SAME hardening path as
-// every other carrier (PART 9 SS25)
+// every other carrier (PART 9 §25)
 function mathSpan(kind, code, attrs) {
   const wrap = kind === 'inline' ? ['\\(', '\\)'] : ['\\[', '\\]']
   const list = attrsOf(attrs)
-  // PART 10 SS1: the base classes are prepended INSIDE the class slot, which
+  // PART 10 §1: the base classes are prepended INSIDE the class slot, which
   // stays at the FIRST-APPEARANCE position of a class in the author's order
   // (carve#1164). Same insertion as the `ext-NAME` fallback, so the generic
   // merge supplies the slot test, deduplication, hardening and escaping; the
@@ -2479,7 +2479,7 @@ function mathSpan(kind, code, attrs) {
       ? unclosedBody(inner.child(2))
       : codeText(inner.child(1))
   )
-  // PART 9 SS18 A MATH SPAN CARRIES ROLE MATH (carve#1468). The span carries
+  // PART 9 §18 A MATH SPAN CARRIES ROLE MATH (carve#1468). The span carries
   // `role="math"`. The delimiters exist for a
   // typesetter to find, and until one runs - or if none ever does - a reader
   // announces the backslashes and the caret as prose. The role says the run is
@@ -2552,7 +2552,7 @@ export function parseBlockAttrList(text) {
   return attrSem(m).parseAttrs()
 }
 
-// PART 9 SS15 A3 merge for BLOCK attribute lines: first-appearance position,
+// PART 9 §15 A3 merge for BLOCK attribute lines: first-appearance position,
 // last value wins for id/key, classes ACCUMULATE in source order and
 // DEDUPLICATE - a later list adds its classes rather than replacing the
 // earlier one's, and a class already present is not added twice. This used to
@@ -2597,7 +2597,7 @@ export function renderBlockAttrs(lists, structural = []) {
   return parts.join('')
 }
 
-// quote-context decision (PART 9 SS8): OPENING after whitespace (a soft or
+// quote-context decision (PART 9 §8): OPENING after whitespace (a soft or
 // hard line break included, carve#2822) or an opening context character;
 // CLOSING otherwise. A single quote directly before a digit is always an
 // apostrophe ('70s, '24).
@@ -2832,7 +2832,7 @@ let omitRawInline = false
 let omitComments = false
 
 /*
- * HARD BREAKS: a soft break renders as `<br>` (PART 9 SS23).
+ * HARD BREAKS: a soft break renders as `<br>` (PART 9 §23).
  *
  * A line block and a local hard-break block promise it of every soft break
  * they hold. The promise is about BREAKS, and a newline swallowed by an
@@ -3036,7 +3036,7 @@ function quietOpenComments(text, read) {
 }
 
 function renderInlineInner(text) {
-  // Emphasis is resolved by the PART 9 SS9 delimiter stack in the `inlines`
+  // Emphasis is resolved by the PART 9 §9 delimiter stack in the `inlines`
   // semantic (resolveEmphasis) -- no pre-scan / refusal needed here.
   const saved = unattachedAttrs
   const savedPaired = pairedDelims
@@ -3251,7 +3251,7 @@ const TOKEN_CHARS = /[`[\]{}\\<]/
 // A block body that holds no delimiter, escape or nested construct.
 const PLAIN_BODY = /^[A-Za-z0-9 .#="]*$/
 
-// The markers after `{` that open a braced inline (PART 9 SS22, editorial, comments).
+// The markers after `{` that open a braced inline (PART 9 §22, editorial, comments).
 const BRACED_MARKS = new Set(['/', '*', '_', '~', '^', ',', '=', '+', '-', '#', '%'])
 const bracedHead = ohm.grammar(`CarveBracedHead <: ${g.name} {
   bracedHead = (forcedSpan | editorial | bracedComment) any*
@@ -3260,7 +3260,7 @@ const bracedHeadEnd = bracedHead.createSemantics().addOperation('headEnd', {
   bracedHead(head, _rest) { return head.source.endIdx },
 })
 
-// PART 9 E2a, carve#3940: a braced opener between a closer's opener and the
+// PART 9 §9 P2, carve#3940: a braced opener between a closer's opener and the
 // closer forms first. When the `X}` it needs sits in the closer's block, the
 // outer entry is unreachable and the block attaches to nothing.
 function contestedBlock(source, block) {
@@ -3277,10 +3277,10 @@ function contestedBlock(source, block) {
 /*
  * The source offset of a caption's `#` number placeholder, or -1 for none.
  *
- * PART 9 SS4c puts the placeholder at the FIRST bare `#` in the caption's
+ * PART 9 §4c puts the placeholder at the FIRST bare `#` in the caption's
  * TOP-LEVEL text: `#word` is a tag and `\#` an escape, so neither reaches the
  * `hash` token, and a `#` inside inline markup is literal. The scan therefore
- * walks the same token stream and SS9 pairing the renderer walks, over a stream
+ * walks the same token stream and §9 pairing the renderer walks, over a stream
  * that carries source offsets instead of HTML, and steps over every paired
  * span. Every leaf -- a code span, a link, a forced span -- is one token here,
  * so a `#` it encloses is never seen.

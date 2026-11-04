@@ -177,7 +177,7 @@ CarveCore {
   // `<==`/`==>` and `/*` first; `=>` left that set in carve#1442, and a bare
   // `=` before `>` does not pair as a highlight - measured). This keeps the
   // tokenizer's per-character work
-  // near-constant, so the inline pass (with the SS9 delimiter stack) is O(n).
+  // near-constant, so the inline pass (with the §9 delimiter stack) is O(n).
   inline     = wordSlash | word | spComment | bracedComment | inlineSpace
              | eqArrow | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
@@ -274,10 +274,10 @@ CarveCore {
   // The newline is CONSUMED, as PART 3's `hard_break = '\', newline` spells
   // it. It used to be a lookahead, which left the newline for `nl` and made a
   // line block emit TWO breaks for one line boundary - the additive reading
-  // PART 9 SS23 rejects (carve#1334).
+  // PART 9 §23 rejects (carve#1334).
   hardBreak  = "\\" (newline | &end)
 
-  // --- Mentions and tags (PART 9 SS7): name = letters/digits/_/- with
+  // --- Mentions and tags (PART 9 §7): name = letters/digits/_/- with
   // INTERIOR dots; a trailing dot is punctuation. Word boundary on the
   // left is enforced by the word rule's atGlue/hashGlue absorption.
   // The glued TAIL is the right half of the same boundary rule. A second
@@ -318,7 +318,7 @@ CarveCore {
   mathI      = "$" code attrRun?
   mathD      = "$$" code attrRun?
 
-  // --- Inline literal (PART 9 SS27): "!" prefix on a verbatim code span,
+  // --- Inline literal (PART 9 §27): "!" prefix on a verbatim code span,
   // mirroring math's "$" prefix. Content is HTML-escaped and emitted by every
   // renderer; the <code> wrapper is dropped. A trailing attribute block is the
   // ORDINARY code-span attribute block -- with attributes a <span> carries
@@ -356,7 +356,7 @@ CarveCore {
   // literal fallback is the bracketed rule's, not this one's.
   inlineNote = "^[" ~((" " | "\t")* "]") brContent* "]" attrRun?
 
-  // --- Forced intraword spans {X...X} (PART 9 SS22) and editorial markup.
+  // --- Forced intraword spans {X...X} (PART 9 §22) and editorial markup.
   // A same-type delimiter inside a forced span is literal until the `X}`
   // closer; other constructs nest normally. A brace group that forms no span
   // (`{*}`, `{**}`) is read like any other characters (carve#3973 X6).
@@ -381,7 +381,7 @@ CarveCore {
   // so `>=` before `=}` leaves its `=` to close a forced highlight.
   eqCloseCut<d> = "<=" &(d "}") &"=" | ("<" | ">" | "!") &(d "}") &"="
   // A combined token inside a forced span closes before the span's `X}` and
-  // takes none of its characters (PART 9 SS22: tokens do not overlap).
+  // takes none of its characters (PART 9 §22: tokens do not overlap).
   fSpan<d>   = ~("/" d "}") "/*" ~spaceOrEnd ~graphemeExt fBiFirst<d> fBiInner<d>* fBiCloser<d>
   fBiFirst<d> = fBiCloser<d> | fBiInner<d>
   fBiInner<d> = ~(d "}") biInner
@@ -401,9 +401,9 @@ CarveCore {
   edDel      = "{-" ~graphemeExt (~"-}" edScan<"-">)+ "-}" attrRun?
   // The `~>` and `~}` a substitution needs are TOP-LEVEL: the search skips
   // verbatim content, so a pair whose only `~>` sits in code is a forced
-  // strikethrough (PART 9 SS22, carve#2083). An unclosed run takes the rest of the block.
+  // strikethrough (PART 9 §22, carve#2083). An unclosed run takes the rest of the block.
   // PART 8 ranks a bracket run, an autolink and a cross-reference above
-  // editorial markup (PART 9 E2a, E2b), so the `~>` and the `~}` search both
+  // editorial markup (PART 9 §9 P1), so the `~>` and the `~}` search both
   // step over all three: an autolink or a cross-reference whose body ends in
   // `~` supplies no arrow, and `{~a <https://x~>y> b~}` is a forced
   // strikethrough (ruled 2026-10-15).
@@ -419,9 +419,9 @@ CarveCore {
   edSubNew   = ~"~}" (edSubComment | crossref | autolink | edSubAtom)
   // A `$` or `!` prefix needs no alternative of its own: the backtick run
   // behind it is what carries the arrow, and this rule skips that run.
-  // A matched insertion or deletion is an E2a boundary too, so its `~>` and
-  // `~}` are its own (PART 9 SS22).
-  // An attribute run glued to an atom or a formed span is consumed (PART 9 SS22
+  // A matched insertion or deletion is a region boundary too (PART 9 §9), so its `~>` and
+  // `~}` are its own (PART 9 §22).
+  // An attribute run glued to an atom or a formed span is consumed (PART 9 §22
   // R3), so its characters supply no arrow and no closer.
   edSubAtom  = ~unclosedRun (escape | edSubAttached | bracedComment | edCommentBody | forcedSpan | symbolAttr | edChar)
   edSubAttached = (codeClosed | edInsBody | edDelBody | noteRefBody | nested) attrRun?
@@ -433,11 +433,11 @@ CarveCore {
   // run whose closer sits later in the block stays one span (PART 3 UNCLOSED
   // RUN). A run with no closer takes the rest of the block (carve#3973 X5).
   // A cross-reference, an autolink and a bracket run (its destination slot
-  // included) resolve before editorial markup (PART 8, PART 9 E2b), and an
-  // editorial comment is opaque (E2a), so a `+}` or `-}` inside one is its
+  // included) resolve before editorial markup (PART 8, PART 9 §9 P1), and an
+  // editorial comment is opaque (P1), so a `+}` or `-}` inside one is its
   // content (ruled 2026-10-15). Bodies only, as in `brContent`: an attribute
   // block after any of them is still scanned. A nested matched braced span is
-  // skipped too (E2a), body only, except a frame of the scan's own kind (PART 9 SS22).
+  // skipped too (a region, §9), body only, except a frame of the scan's own kind (PART 9 §22).
   edScan<d>  = ~unclosedRun (fEscComment<d> | fSpComment<d> | escape | codeClosed | crossref | autolinkBody | edCommentBody | bracedComment | noteRefBody | nested
              | forcedBody | ~("{" d) (edSub | edInsBody | edDelBody) | any)
   forcedBody = fBody<"/"> | fBody<"*"> | fBody<"_"> | fBody<"~"> | fBody<"^"> | fBody<","> | fBody<"=">
@@ -449,7 +449,7 @@ CarveCore {
   backtickRun = "\u0060"+
 
   // raw inline passthrough: a code span whose trailing block is EXACTLY
-  // {=format} (PART 9 SS20)
+  // {=format} (PART 9 §20)
   rawInline  = code "{=" ident "}"
 
   // --- Inline extensions: :name[content] -> ext span (PART 8 rank 9);
@@ -478,7 +478,7 @@ CarveCore {
   shortcode  = ":" shortcodeName ":" ~attrs
 
   // --- Bracketed constructs: link / image / span / reference link ---------
-  // The single-char lookahead after `]` selects the construct (PART 9 S14);
+  // The single-char lookahead after `]` selects the construct (PART 9 §14);
   // a bare bracketed run with no tail is LITERAL text (rendered with its
   // content inline-parsed).
   bracketed  = "[" brContent* "]" brTail?
@@ -691,7 +691,7 @@ CarveCore {
   // --- Attribute block (PART 4, strict identifiers) ------------------------
   attrs      = "{" attrSp* attrItem (attrSp+ attrItem)* attrSp* "}"
   // THE INLINE SLOT IS A RUN [CARVE-P4-002]: glued blocks, merged by PART 9
-  // SS15 A3 in the `parseAttrs` action. A space or anything that is not an
+  // §15 A3 in the `parseAttrs` action. A space or anything that is not an
   // attribute block ends it, which `attrs+` already says (carve#2136).
   // edSub and edComment take no attribute block at all (CARVE-P3-017,
   // carve#2138): a block after one is not theirs, so it reads as text.
@@ -840,10 +840,10 @@ CarveCore {
   wordChar   = alnumCh
   delim      = "/" | "*" | "_" | "~" | "^" | "=" | ","
 
-  // A space-preceded %% consumes the whole separating space run and the rest of the line (SS21).
+  // A space-preceded %% consumes the whole separating space run and the rest of the line (§21).
   spComment  = sepRun "%%" (~newline any)*
   // Bounded twins for the two constructs whose content is parsed inline
-  // rather than cut first (PART 9 SS21a): a forced span's own closer, and
+  // rather than cut first (PART 9 §21a): a forced span's own closer, and
   // the combined token's `*/`, are boundaries the run does not cross either.
   fSpComment<d> = sepRun "%%" (~newline ~(d "}") any)*
   // It ends at the closer token only: a `*/` after whitespace or before alnum is text (THE COMBINED TOKEN).
@@ -856,13 +856,13 @@ CarveCore {
   // The run-start form: nothing precedes it, so it carries no separator.
   initialComment = "%%" (~newline any)*
   // {% ... %} consumes through the FIRST closer, including soft line breaks.
-  // It has no leading-space requirement or consumption (SS21a).
+  // It has no leading-space requirement or consumption (§21a).
   bracedComment = "{%" ~graphemeExt (~"%}" any)* "%}"
   // Reuse the memoized space run after a failed comment scan to avoid quadratic rescans; tabs stay text.
   inlineSpace = sepRun | "\t"+
 
   // A bare delimiter that opened nothing is literal text. The attribute block
-  // rides on the delimiter because only a closer can carry one (PART 9 SS9);
+  // rides on the delimiter because only a closer can carry one (PART 9 §9);
   // anywhere else its braces are text and constructs run through them.
   litDelim   = delim looseAttrs?
   bang       = "!" ~"["
@@ -874,7 +874,7 @@ CarveCore {
   // text (HTML-escaped by the renderer)
   lt         = "<"
   gt         = ">"
-  // SMART TYPOGRAPHY (PART 9 SS8). Multi-char patterns are consumed as
+  // SMART TYPOGRAPHY (PART 9 §8). Multi-char patterns are consumed as
   // tokens; the open/close decision for quotes uses the previous source
   // character in the SEMANTICS (deterministic single-char lookbehind).
   // ORDERED LONGEST-FIRST, and the order is the rule (carve#1442). The doubled
