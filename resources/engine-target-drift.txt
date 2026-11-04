@@ -3,6 +3,7 @@
 # corpus row and target. A unanimous engine difference needs an expected fixture
 # and a declaration for each engine. The gate rejects any stale declaration.
 # Format: target/engine/slug  owner/repo#issue and reason
+carve/js/228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block  markup-carve/carve#5109 (carve-js), the pinned writer keeps a footnote definition in its list item instead of collecting it (CARVE-P11-079 (a))
 carve/js/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#5012 (carve-js), the pinned writer inserts boundaries around erased line comments
 carve/js/620-generated-container-documents-23  markup-carve/carve#5012 (carve-js), the pinned writer places a one-line definition after an item as a layout boundary
 carve/php/620-generated-container-documents-23  markup-carve/carve#5012 (carve-php), the pinned writer places a one-line definition after an item as a layout boundary

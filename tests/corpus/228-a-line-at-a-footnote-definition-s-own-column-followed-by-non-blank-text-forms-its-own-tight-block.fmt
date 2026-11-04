@@ -1,5 +1,6 @@
 - a
-  [^f]: x
-  more
 
 see[^f]
+
+[^f]: x
+  more
