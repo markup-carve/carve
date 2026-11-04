@@ -421,6 +421,15 @@ export function checkStopsAtChildren(doc, codepoints, findings) {
       )
       continue
     }
+    // An unplaced child still owns the source its placed descendants cover: a
+    // paragraph joined across an erased line omits `pos` while its last `text`
+    // keeps one, and that text is the container's content (carve#5136).
+    for (const child of children) {
+      if (child.pos && Number.isInteger(child.pos.endOffset)) continue
+      for (const [inner] of walkNodes(child)) {
+        if (inner.pos && Number.isInteger(inner.pos.endOffset)) placedEnds.push(inner.pos.endOffset)
+      }
+    }
     const lastChildEnd = Math.max(...placedEnds)
     if (pos.endOffset <= lastChildEnd) continue
     const tail = codepoints.slice(lastChildEnd, pos.endOffset).join('')

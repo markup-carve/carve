@@ -2558,3 +2558,42 @@ test('a blank tail is not named as an erased comment line', () => {
   assert.equal(findings.length, 1)
   assert.ok(!findings[0].includes('CARVE-P12-022'), findings[0])
 })
+
+test('a container holding a paragraph joined across an erased line ends at that paragraph\'s placed content', () => {
+  // Corpus 350-6 under the carve#5136 ruling: the lazy `tail` folds into the
+  // description's paragraph across the erased `%% c`, so the paragraph omits
+  // pos and the comment after it is the last child with a position.
+  const source = ':: t\n:  a\n   %% c\ntail\n'
+  const description = (end) => ({
+    type: 'definition_description',
+    pos: pos(5, end),
+    children: [
+      {
+        type: 'paragraph',
+        children: [
+          { type: 'text', value: 'a', pos: pos(8, 9) },
+          { type: 'soft_break' },
+          { type: 'text', value: 'tail', pos: pos(18, 22) },
+        ],
+      },
+      { type: 'comment', block: false, content: 'c', form: 'line', pos: pos(13, 17) },
+    ],
+  })
+  const doc = (end) => ({
+    type: 'document',
+    children: [
+      {
+        type: 'definition_list',
+        pos: pos(0, end),
+        items: [{ type: 'definition_term', pos: pos(0, 4), children: [{ type: 'text', value: 't', pos: pos(3, 4) }] }, description(end)],
+      },
+    ],
+  })
+  const ruled = []
+  assert.equal(checkStopsAtChildren(doc(22), [...source], ruled), 3)
+  assert.deepEqual(ruled, [])
+  const past = []
+  checkStopsAtChildren(doc(23), [...source], past)
+  assert.equal(past.length, 1)
+  assert.match(past[0], /on "definition_description"/)
+})
