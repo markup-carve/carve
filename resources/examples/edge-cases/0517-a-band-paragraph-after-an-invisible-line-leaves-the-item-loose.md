@@ -3,7 +3,7 @@
 A comment at the content column retains nothing, so the below-column followers
 in the first two rows open document paragraphs (`CARVE-P0-009` X1,
 `CARVE-P9-053`). The third row's content-column follower is the item's second
-paragraph, and the blank-line separation makes the item loose (PART 9 §17 L1b).
+paragraph, and the blank-line separation makes the item loose (CARVE-P9-013 property 3).
 The fourth row's comment fence also leaves the follower outside the item, and
 the last row's below-column marker starts a separate list.
 

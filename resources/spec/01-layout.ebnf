@@ -327,9 +327,9 @@
         comments and floating attributes leave no paragraph open, so a
         following line below the content column closes the container. A
         footnote definition's own body keeps its paragraph open (FAMILIES
-        row 3, PART 9 §17 L6).
+        row 3).
         Ordinary prose, or a container ending in an open paragraph, permits a
-        lazy fold. Definitions are collected where written (CARVE-P9-034).
+        lazy fold. Definitions are collected where written (CARVE-P9-013).
 
         A FENCED BODY IS NOT A PARAGRAPH -- NORMATIVE [CARVE-P0-013]. A
         payload holds no open paragraph for S4 to continue. In
@@ -451,7 +451,8 @@
         column     two past the column of `[` (CARVE-P9-083)
         prefix     indentation; exactly two columns consumed (PART 9 §24 C3)
         blank      as a list item
-        lazy       yes
+        lazy       yes: a footnote definition's own open paragraph may take a
+                   following line as a fold (S4)
         markers    a list marker as in a list item: `[^a]: n` / `- x` ends
                    with a list after the note
         invisible  as a list item; a footnote definition opens a frame of

@@ -140,7 +140,7 @@ tail
 :::
 
 A link reference definition is metadata. Ending the item disposes of the line
-BELOW it, never of the definition itself - §17 L6 collects that from wherever it
+BELOW it, never of the definition itself - PART 9R collects that from wherever it
 was written, and the use below still resolves:
 
 ::: compare

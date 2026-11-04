@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A blank before only invisible lines loosens the list
 
-PART 9 §17 L1b and L1c with CARVE-P9-013 property 3. A blank line followed only by comments or definitions still stands between an item and the next sibling marker, wherever those lines sit inside the item: in a description body or in a nested list. Removing them must not change the output. A visible line after them keeps the blank inside the item, as the last row shows.
+PART 9 §17 L1c with CARVE-P9-013 property 3. A blank line followed only by comments or definitions still stands between an item and the next sibling marker, wherever those lines sit inside the item: in a description body or in a nested list. Removing them must not change the output. A visible line after them keeps the blank inside the item, as the last row shows.
 
 ::::: compare
 

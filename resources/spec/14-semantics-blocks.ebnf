@@ -336,18 +336,23 @@
               clause, and I6 for the containers;
            2. EMITS NO VISIBLE BLOCK at its authored location: nothing renders
               where the line was written, not an empty paragraph, not a blank
-              line, not residual whitespace (L6 for the definitions, §21 and
+              line, not residual whitespace (§21 and
               §28 for the comments, §15 A2 for the attribute line);
            3. DOES NOT ITSELF CHOOSE THE OWNER of the line that follows it. It
               is neither a paragraph nor a separator, so it can neither BE the
               next block (A2a) nor stand between a blank line and the block
-              after it (L1b).
+              after it: a blank line before it still separates the item's blocks
+              for §17 L1, and a lead of only invisible lines is no first block.
+
+         The three properties hold in every container that admits block
+         content: list items, quotes, footnote bodies, definition
+         descriptions, continuation-attached blocks and any future one.
 
          ONLY THE SEMANTIC ACTION DIFFERS BY KIND, and that action is the only
          thing a per-kind clause has left to state: a span DISCARDS its
          visible content (§21, §28), an attribute line RETAINS pending
          metadata in the current container (§15 A2), and a definition
-         REGISTERS metadata in its permitted scope (L6, PART 9R).
+         REGISTERS metadata in its permitted scope (PART 9R).
 
          WHAT AN INVISIBLE LINE DOES TO THE CONTAINER AROUND IT is the
          `invisible` field of that container's PART 0 FAMILIES row: a `%%%`

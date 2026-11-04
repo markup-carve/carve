@@ -1,6 +1,6 @@
 ## A definition inside a definition-list dd is collected, and the entry keeps no trace
 
-A `<dd>` continues like a list item (§17, definition_body) and is one of the block-level contexts §17 L6 names: a definition written as its content is collected into the document-wide table and the entry renders empty, exactly as a list item or block quote does. This holds the same way for both definition kinds a `<dd>` can hold - a link reference definition and a footnote definition - so a fix for one is not a fix for only one (carve#666).
+A `<dd>` continues like a list item (§17, definition_body) and is one of the block-level contexts CARVE-P9-013 names: a definition written as its content is collected into the document-wide table and the entry renders empty, exactly as a list item or block quote does. This holds the same way for both definition kinds a `<dd>` can hold - a link reference definition and a footnote definition - so a fix for one is not a fix for only one (carve#666).
 
 ::: compare
 

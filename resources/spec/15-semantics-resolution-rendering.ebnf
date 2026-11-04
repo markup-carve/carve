@@ -4,7 +4,7 @@
       INLINE form `^[content]` are implemented, and they are the only note
       forms: `[>` is unclaimed and `[>foo]` is literal text. Numbering, which definition wins,
       collection inside containers, unresolved references and unreferenced
-      definitions are PART 9R R2 and CARVE-P9-034; the rendering rules below stay
+      definitions are PART 9R R2 and CARVE-P9-013; the rendering rules below stay
       normative here.
       - The `[^label]: ` marker opens a marker body under §24 C3
         (CARVE-P9-083), with its content column two columns past the authored
@@ -156,6 +156,17 @@
                              - d
 
          The first is loose and the second keeps its outer list tight.
+         Nothing restricts the earlier block's kind either. So
+
+             - - a
+
+               Body.
+
+         is LOOSE: the sub-list is the item's first visible block and `Body.`
+         is its own paragraph after the blank. A heading or block quote before
+         that paragraph has the same result. A block-level invisible line is
+         no block of either kind (CARVE-P9-013): `- {.x}` / blank / `  Body.`
+         / `- y` is tight, because `Body.` is the item's first visible block.
          This is a statement about ONE
          and TWO blank lines: a run of THREE OR MORE is CARVE-P9-014's hard
          boundary, so the marker below it is not a "next sibling marker" at
@@ -165,7 +176,8 @@
          only the first, except as CARVE-P9-081 below states; a loose
          item's paragraphs are ALL wrapped (<li><p>text</p></li>). An item can hold more than one paragraph
          block and still be tight -- a paragraph after a heading or another
-         interrupting block, and L6 below, are the ways that happens without
+         interrupting block, and a footnote definition between two paragraph
+         lines (CARVE-P9-013 property 1), are the ways that happens without
          a blank line ever appearing.
          When the first visible block of an item is a paragraph, it follows
          the opening `<li>` directly, whether the list is tight or loose and
@@ -187,53 +199,7 @@
              : {.c}
                text
 
-      L1a THE ITEM'S FIRST VISIBLE BLOCK MAY BE ANY KIND -- NORMATIVE [CARVE-P9-029].
-         L1 asks whether the item holds a block after an earlier visible
-         block of its own, separated by a blank. So
-
-             - - a
-
-               Body.
-
-         is LOOSE: the sub-list is the item's first visible block and `Body.`
-         is its own paragraph after the blank. A heading or block quote before
-         that paragraph has the same result. An attribute-block lead is
-         invisible (CARVE-P9-013), so a blank after that lead separates no
-         visible blocks and loosens nothing (L1b, carve#4639).
-
-      L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION -- NORMATIVE [CARVE-P9-030]. L1
-         asks whether the item holds a block after an earlier visible block,
-         separated by a blank. A block-level invisible line (§10 I5) emits
-         no visible block, so it can be neither the earlier block nor the
-         following block (L1a's argument). By the
-         same clause's property 3 it
-         does not choose the next line's owner either: it is not a separator,
-         so the separation it appears to interrupt is intact and the item is
-         LOOSE. This clause is that property's consequence for list
-         TIGHTNESS. A `%%` line or one-line link or abbreviation definition
-         is erased before this test (PART 0 S1); its absence cannot cancel
-         a real blank's separation or create one.
-
-             - a
-
-               %% n
-               text
-
-         is loose. `text` is a second paragraph, the blank line precedes it,
-         and the comment renders nothing. A sub-list, quote or fence in place
-         of `text` is loose for the same reason.
-
-         An invisible LEAD is not a first block either (carve#4639): when only
-         invisible lines precede the blank, the block after it is the
-         item's first visible block, and the blank loosens nothing. Removing
-         the lead must not change the output.
-
-             - %% c
-
-               Body.
-             - x
-
-         is tight, and so is the same item led by `[r]: /u`.
+      L1a, L1b (withdrawn, carve#5131). L1 and CARVE-P9-013 state them.
 
       L1c THE BLANK IS READ AT THE LIST'S LEVEL, NOT THE ITEM'S. L1's first
          disjunct asks what stands BETWEEN one item and the next sibling
@@ -381,21 +347,8 @@
            distinct construct;
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.
-      L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE [CARVE-P9-034]
-         (PART 9R R1/R2 collection). Pass 1 registers link and footnote
-         definitions in the shared symbol table and pass 2 resolves uses
-         document-wide. A one-line link definition is erased before layout
-         (PART 0 S1); a footnote definition remains a block (§10 I5).
-         Neither renders a placeholder paragraph, blank line or residual whitespace.
-         This applies to list items, quotes, footnote bodies, definition
-         descriptions, continuation-attached blocks and any future container
-         admitting block content.
-
-         "No trace" describes output and, for a link definition, layout.
-         Only a footnote definition interrupts the open paragraph without a
-         blank. Its own open paragraph may take a following line as a fold
-         (PART 0 S4). A one-line link definition between two paragraph lines
-         leaves one paragraph unless another boundary separates them.
+      L6 (withdrawn, carve#5131). PART 0 S1, CARVE-P9-013 and the footnote
+         body row of PART 0 FAMILIES state it.
 
       L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN --
          NORMATIVE [CARVE-P9-035]. A container's preceding BLOCK-ATTRIBUTE LINE

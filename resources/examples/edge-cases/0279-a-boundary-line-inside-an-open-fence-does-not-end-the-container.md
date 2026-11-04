@@ -164,7 +164,7 @@ b
 
 The same boundary, a different fence kind, and a different answer - which is
 exactly why the fence kind is its own axis. A colon fence's body is NOT verbatim:
-it holds blocks, so `[^z]: zz` really is a definition. §17 L6 collects it and
+it holds blocks, so `[^z]: zz` really is a definition. PART 9R collects it and
 leaves NO TRACE where it was written, and the same clause has it INTERRUPT the
 open paragraph, so `b` begins a new one rather than folding back into `a`.
 
@@ -324,8 +324,8 @@ cannot see this cell. Put `x` on the marker line and the two answers separate
 §28 makes a comment fence's body verbatim AND invisible, so the blank line, the
 text around it and the closer are all fence content and none of them renders.
 §17 L1 loosens an item on a blank-line-separated second PARAGRAPH, and this item
-has no second paragraph anywhere: L1b says outright that a line rendering
-nothing "is not a paragraph, which is why it cannot BE the second one". The item
+has no second paragraph anywhere: a line rendering nothing is neither a
+paragraph nor a separator (CARVE-P9-013 property 3), so it cannot BE the second one. The item
 is tight, and the document renders exactly one visible thing.
 
 This reaches a collector none of the seven rows above touches. Those pin the

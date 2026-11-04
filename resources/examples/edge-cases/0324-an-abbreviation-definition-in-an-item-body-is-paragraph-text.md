@@ -18,7 +18,7 @@ An abbreviation definition in an item body is a definition (PART 12 §7, carve#4
 
 :::
 
-A sublist after it is a block after the blank, so the item is loose (PART 9 §17 L1b):
+A sublist after it is a block after the blank, so the item is loose (PART 9 §17 L1, CARVE-P9-013 property 3):
 
 ::: compare
 

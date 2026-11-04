@@ -15,7 +15,7 @@ What neither of those can say is what happens when a block ATTACHES after the
 invisible line and the list has a SECOND item. The block answers as it does
 when no invisible line is there - `- a` / blank / `  - b` / `- c` is loose
 (`87-compact-list-blocks-2`), and inserting a line that produces no output
-cannot make the item tight again (§17 L1b).
+cannot make the item tight again (CARVE-P9-013 property 3).
 
 An attribute block:
 
