@@ -2,3 +2,8 @@
 # Each row must differ from the pinned writer's bytes and preserve the input's rendering.
 # Remove a row when the JavaScript pin writes the canonical fixture.
 # Format: <slug><two spaces><reason>
+956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block  CARVE-P12-027 makes a comment between a term and its description the description's first block, written on its marker line (markup-carve/carve#5167); the pinned writer keeps it above the description.
+956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block-2  CARVE-P12-027 makes a comment between a term and its description the description's first block, written on its marker line (markup-carve/carve#5167); the pinned writer keeps it above the description.
+956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block-3  CARVE-P12-027 makes a comment between a term and its description the description's first block, written on its marker line (markup-carve/carve#5167); the pinned writer keeps it above the description.
+956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block-4  CARVE-P12-027 makes a comment between a term and its description the description's first block, written on its marker line (markup-carve/carve#5167); the pinned writer keeps it above the description.
+956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block-5  CARVE-P12-027 makes a comment between a term and its description the description's first block, written on its marker line (markup-carve/carve#5167); the pinned writer keeps it above the description.

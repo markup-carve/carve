@@ -626,12 +626,24 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
       return visualColumn(lineStart(parent.pos.startOffset), parent.pos.startOffset)
     }
     if (parent.type === 'footnote') return visualColumn(lineStart(parent.pos.startOffset), parent.pos.startOffset) + 2
-    const start = lineStart(parent.pos.startOffset)
-    const end = codepoints.indexOf('\n', parent.pos.startOffset)
-    const head = codepoints.slice(parent.pos.startOffset, end < 0 ? codepoints.length : end).join('')
+    let opener = parent.pos.startOffset
+    if (parent.type === 'definition_description') {
+      // A comment written above the `:` line starts the description (CARVE-P12-027,
+      // carve#5167); the separator is on the line after the leading comments.
+      for (const child of parent.children ?? []) {
+        if (child.type !== 'comment' || !Number.isInteger(child.pos?.endOffset)) break
+        const next = codepoints.indexOf('\n', child.pos.endOffset)
+        if (next < 0) return null
+        opener = next + 1
+        while (codepoints[opener] === ' ' || codepoints[opener] === '\t' || codepoints[opener] === '>') opener++
+      }
+    }
+    const start = lineStart(opener)
+    const end = codepoints.indexOf('\n', opener)
+    const head = codepoints.slice(opener, end < 0 ? codepoints.length : end).join('')
     if (parent.type === 'definition_description') {
       const separator = /^: +/.exec(head)
-      return separator ? visualColumn(start, parent.pos.startOffset) + separator[0].length : null
+      return separator ? visualColumn(start, opener) + separator[0].length : null
     }
     // The whole separator run counts (CARVE-P2-010); an attribute adds zero.
     const marker = /^([ \t]*)([-*.]|[0-9]+[.)]|[a-zA-Z]+[.)])(?:\{[^}]*\})?( +)/.exec(head)
