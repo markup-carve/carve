@@ -291,10 +291,13 @@ export const ENDS_AT_LAST_CHILD = new Set([
  * A type with no entry is a type this rule leaves alone when it is empty - a
  * `paragraph` or a `figure` with no children at all is a different defect and
  * `checkContainment` and the schema are where it belongs.
+ *
+ * A quote emptied by a consumed `+` also spans that `+`, like an item does:
+ * the `+` leaves no node but is the container's own markup (CARVE-P12-012).
  */
 export const EMPTY_CONTAINER_MARKUP = new Map(
   Object.entries({
-    block_quote: /^[ \t]*>[ \t]*$/,
+    block_quote: /^[ \t]*>(?:[ \t]*\+)?[ \t]*$/,
     list: /^[ \t]*(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)[ \t]*$/,
     // An item's own markup also holds a bullet's task box and a consumed `+`
     // on the marker line (CARVE-P12-012, carve#5161).
@@ -309,6 +312,8 @@ export const EMPTY_CONTAINER_MARKUP = new Map(
  * the finding so the engine fix reads off the message.
  */
 const ERASED_COMMENT_TAIL = /^(?:[ \t]*(?:%%(?!%)[^\n\r]*)?(?:\r\n|\n|\r|$))+$/
+/** A consumed `+` line after the last child: no node, but the container's markup (carve#5161). */
+const CONSUMED_PLUS_TAIL = /^(?:\r\n|\n|\r)(?:[ \t>]*(?:\r\n|\n|\r))*[ \t>]*\+[ \t]*$/
 const ERASED_LINE_HINT =
   'an erased comment line no child owns is not the container\'s (CARVE-P12-014, CARVE-P12-022)'
 
@@ -436,6 +441,8 @@ export function checkStopsAtChildren(doc, codepoints, findings) {
     const lastChildEnd = Math.max(...placedEnds)
     if (pos.endOffset <= lastChildEnd) continue
     const tail = codepoints.slice(lastChildEnd, pos.endOffset).join('')
+    const atLineStart = /[\n\r]/.test(codepoints[lastChildEnd - 1] ?? '')
+    if (CONSUMED_PLUS_TAIL.test(atLineStart ? `\n${tail}` : tail)) continue
     findings.push(
       `span reaches past its last child on "${node.type}" at ${path}: ` +
         `it ends at ${pos.endOffset}, its last child ends at ${lastChildEnd}, and ` +
