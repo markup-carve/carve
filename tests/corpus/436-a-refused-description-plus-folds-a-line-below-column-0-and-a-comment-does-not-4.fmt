@@ -1,3 +1,4 @@
 :: t
-:  +
-  flush
+: {empty}
+
+flush
