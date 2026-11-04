@@ -27,6 +27,15 @@ const { lintCarve } = await import(pathToFileURL(resolve(engineDir, 'dist/index.
 const lintSource = readFileSync(resolve(engineDir, 'dist/lint.js'), 'utf8')
 const ahead = JSON.parse(readFileSync(resolve(root, 'resources/lint-vector-ahead-of-pin.json'), 'utf8'))
 
+// Rules the page retires: their vectors stay so engines keep proving the rule is silent.
+const RETIRED = new Map([
+  ['ordered-list-split-by-indent', /ordered-list-split-by-indent` reported .*?retires as each engine adopts/s],
+])
+
+test('a retired vector file names a rule the page retires', () => {
+  for (const [rule, text] of RETIRED) assert.match(page, text, rule)
+})
+
 test('the vector directory is not empty', () => {
   assert.ok(files.length > 0)
 })
@@ -47,8 +56,12 @@ for (const file of files) {
     }
     assert.equal(new Set(names).size, names.length, 'duplicate vector name')
     const positives = data.vectors.filter((v) => v.expected.findings.length > 0)
-    assert.ok(positives.length > 0 && positives.length < data.vectors.length,
-      'a vector file needs both positives and negatives')
+    if (RETIRED.has(data.rule)) {
+      assert.deepEqual(positives.map((v) => v.name), [], 'a retired rule expects no finding')
+    } else {
+      assert.ok(positives.length > 0 && positives.length < data.vectors.length,
+        'a vector file needs both positives and negatives')
+    }
     for (const v of data.vectors) {
       assert.match(v.name, /^[a-z0-9-]+$/)
       assert.equal(typeof v.description, 'string')

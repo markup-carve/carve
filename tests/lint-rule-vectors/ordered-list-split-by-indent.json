@@ -4,120 +4,58 @@
   "vectors": [
     {
       "name": "right-aligned-pair",
-      "description": "Right-aligned decimal markers split a continuing list.",
+      "description": "Right-aligned decimal markers open in the same container, so they form one list.",
       "source": " 9. nine\n10. ten\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "same column",
-              "{start=9}"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
       "name": "default-start",
-      "description": "A first list without an explicit start counts from 1.",
+      "description": "A shifted second marker stays a sibling of a first list counting from 1.",
       "source": "  1. a\n 2. b\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 2,
-            "includes": [
-              "same column",
-              "{start=1}"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
       "name": "right-aligned-three",
-      "description": "The second list can contain two items.",
+      "description": "Three right-aligned markers form one list.",
       "source": " 9. nine\n10. ten\n11. eleven\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "same column",
-              "{start=9}"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
       "name": "three-digit-transition",
-      "description": "The column shift at three digits splits the list.",
+      "description": "The column shift at three digits does not split the list.",
       "source": "  98. a\n  99. b\n 100. c\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 2,
-            "includes": [
-              "same column",
-              "{start=98}"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
       "name": "parenthesis-delimiter",
-      "description": "A continuing parenthesis-delimited list splits.",
+      "description": "Right-aligned parenthesis markers form one list.",
       "source": " 9) nine\n10) ten\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "same column"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
       "name": "blank-between",
-      "description": "A blank line does not separate the adjacent lists for lint.",
+      "description": "A blank line between right-aligned markers leaves one loose list.",
       "source": " 9. nine\n\n10. ten\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 1,
-            "includes": [
-              "same column",
-              "{start=9}"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
       "name": "shift-right",
-      "description": "The second marker may shift to the right.",
+      "description": "A second marker shifted to the right stays a sibling item.",
       "source": "9. nine\n\n 10. ten\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 2,
-            "includes": [
-              "same column",
-              "{start=9}"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
