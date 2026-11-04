@@ -541,7 +541,7 @@ ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')')
 roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
               | ('I' | 'V' | 'X' | 'L' | 'C' | 'D' | 'M')+ ;
 
-(* LIST-ITEM ATTRIBUTES (Carve addition; NORMATIVE -- extends PART 9 §15). An
+(* LIST-ITEM ATTRIBUTES (Carve addition; extends PART 9 §15, CARVE-P2-013). An
    attribute block ABUTTING the marker (no space between marker and `{`)
    attaches its attributes to the `<li>` itself; the marker's required space
    follows the block:
