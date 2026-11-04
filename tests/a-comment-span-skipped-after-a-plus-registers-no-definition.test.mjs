@@ -28,3 +28,14 @@ test('the block after the span still attaches, and a definition outside it still
   assert.equal(html('- a\n+\n%%%\n[r]: /u\n%%%\ntext\n\nSee [r][].\n'), '<ul><li>atext</li></ul><p>See [r][].</p>')
   assert.equal(html('- a\n+\n%%%\n[r]: /u\n%%%\n[r]: /v\ntext\n\nSee [r][].\n'), '<ul><li>atext</li></ul><p>See <a href="/v">r</a>.</p>')
 })
+
+test('the trace reads the skipped span as a comment, not as leaf lines', () => {
+  const trace = []
+  parse('- a\n+\n%%%\n[r]: /u\n%%%\ntext\n', { trace })
+  const span = trace.filter((record) => record.line >= 3 && record.line <= 5).map(({ line, form, owner }) => [line, form, owner])
+  assert.deepEqual(span, [
+    [3, 'comment', 'doc/item:1/comment:3'],
+    [4, 'payload', 'doc/item:1/comment:3'],
+    [5, 'closer', 'doc/item:1/comment:3'],
+  ])
+})

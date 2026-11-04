@@ -3452,12 +3452,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (trace && skipped.fenced.has(at)) {
         const run = COMMENT_FENCE_BODY.exec(trimLineEnd(rest))?.[1].length
         if (skipped.span === undefined) {
-          skipped.span = run
-          emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'comment', { cell: 'B-comment-start', plus: at })
-        } else if (run === skipped.span) {
+          skipped.span = { run, owner: `${ownerPath()}/comment:${at + 1}` }
+          emit(at, 'S5', skipped.span.owner, 'CARVE-P0-024', 'comment', { cell: 'B-comment-start', plus: at })
+        } else if (run === skipped.span.run) {
+          emit(at, 'S1', skipped.span.owner, 'CARVE-P0-005', 'closer', { cell: 'B-comment-end', plus: at })
           skipped.span = undefined
-          emit(at, 'S1', ownerPath(), 'CARVE-P0-005', 'closer', { cell: 'B-comment-end', plus: at })
-        } else emit(at, 'S1', ownerPath(), 'CARVE-P0-005', 'payload', { cell: 'B-comment-keep', plus: at })
+        } else emit(at, 'S1', skipped.span.owner, 'CARVE-P0-005', 'payload', { cell: 'B-comment-keep', plus: at })
       } else if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'leaf', { plus: at })
       if (at + 1 === skipped.end) {
         if (skipped.host.plus === skipped.at) skipped.host.plus = at
