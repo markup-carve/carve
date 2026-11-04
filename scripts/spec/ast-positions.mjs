@@ -588,12 +588,14 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
     }
     if (parent.type === 'footnote') return visualColumn(lineStart(parent.pos.startOffset), parent.pos.startOffset) + 2
     const start = lineStart(parent.pos.startOffset)
-    const head = codepoints.slice(start, codepoints.indexOf('\n', start) < 0 ? codepoints.length : codepoints.indexOf('\n', start)).join('')
+    const end = codepoints.indexOf('\n', parent.pos.startOffset)
+    const head = codepoints.slice(parent.pos.startOffset, end < 0 ? codepoints.length : end).join('')
     if (parent.type === 'definition_description') {
-      const separator = /^: +/.exec(head.slice(parent.pos.startOffset - start))
+      const separator = /^: +/.exec(head)
       return separator ? visualColumn(start, parent.pos.startOffset) + separator[0].length : null
     }
-    const marker = /^([ \t]*)([-*.]|[0-9]+[.)]|[a-zA-Z]+[.)])(?:\{[^}]*\})?( )/.exec(head.slice(parent.pos.startOffset - start))
+    // The whole separator run counts (CARVE-P2-010); an attribute adds zero.
+    const marker = /^([ \t]*)([-*.]|[0-9]+[.)]|[a-zA-Z]+[.)])(?:\{[^}]*\})?( +)/.exec(head)
     return marker
       ? visualColumn(start, parent.pos.startOffset + marker[1].length) + marker[2].length + marker[3].length
       : null
@@ -647,7 +649,7 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
       while (rest) {
         const marker = /^(?:[ \t]*> ?|[ \t]*: +|[ \t]*\[\^[^\]]+\]: +|[ \t]*(?:[-*.]|[0-9]+[.)]|[a-zA-Z]+[.)]) )/.exec(rest)
         if (!marker) break
-        prefixEnd += marker[0].length
+        prefixEnd += [...marker[0]].length
         rest = rest.slice(marker[0].length)
       }
       const owner = ownerColumn(node)
