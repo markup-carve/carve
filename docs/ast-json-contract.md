@@ -523,7 +523,10 @@ separates, or synthesized outright - **must omit `pos`**, and it is conformant d
 so. A table cell continued on a `+` line, the hard break a line block makes
 from a soft one, line-block content rebuilt around an indentation sentinel, and
 a `text` run coalesced across such a gap all have values that are not a slice of
-the source at any offset, so no true span exists. The exemption is narrow: it
+the source at any offset, so no true span exists. A paragraph folded across a
+`%%` line the layout erased is one too: it and the soft break crossing the line
+omit `pos`, and the comment keeps its own span as a sibling. A container that
+would only end on such a line stops at its last child before it. The exemption is narrow: it
 covers nodes that *cannot* be placed, not nodes that have not been placed yet. The test is whether a true span EXISTS rather than whether one was written down.
 
 ## A block image is a field, not a shape you re-derive
