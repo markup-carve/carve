@@ -5322,8 +5322,9 @@ EOF = (* end of file *) ;
    ends that document scope from its own line. A comma or ASCII space may
    separate ids; an absent id means all rules. The directive begins after the
    `%%` comment opener, with one ASCII space. It is itself a Carve comment and
-   never renders. A directive in code, raw content, an inline comment, or a
-   fenced comment body is inert. A later enable does not undo a line or
+   never renders. A directive in code, raw content, a braced `{% %}`
+   comment, or a fenced comment body is inert; a trailing `%%` comment
+   (`inline_comment`) is a line comment and carries one. A later enable does not undo a line or
    next-line suppression. For included files, source-line scopes use the
    included file's own lines and document scopes do not cross file boundaries.
    Suppression applies by the finding's reported source line; for any rule id,
