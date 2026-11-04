@@ -92,8 +92,7 @@
       it complete a reference as CommonMark reads one: `#`, one to seven
       ASCII digits and `;`; `#x` or `#X`, one to six hex digits and `;`; or an
       ASCII letter, any run of ASCII letters and digits, and `;`. The named
-      form is tested on its shape, not against a list of names, because the
-      readers do not agree on the list. Any other `&` is emitted bare.
+      form is tested on its shape, not against a list of names. Any other `&` is emitted bare.
 
         a &amp; c &#65; & b &c     ->  a \&amp; c \&#65; & b &c
 
@@ -297,9 +296,7 @@
 
   9b. A SOFT BREAK IN A TABLE CELL IS ONE SPACE -- NORMATIVE [CARVE-P11-061]. Inside
       a pipe-table cell the Markdown target emits a `soft_break` as a single
-      SPACE. CARVE-P11-048's reason is unchanged: a GFM table row is one line, so the
-      newline §9 would write ends the row, and the rest of the cell and every
-      later cell fall out of the table.
+      SPACE, for CARVE-P11-048's reason.
 
         cell children   text "one", soft_break, text "two"
         Markdown row    | one two | x |
@@ -352,8 +349,7 @@
   10a. AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS -- NORMATIVE [CARVE-P11-028]. A
       FOOTNOTE or ABBREVIATION definition that NOTHING references is still
       emitted by the Markdown, plain-text and terminal renderers. HTML drops
-      it, because HTML has nowhere to put a definition nobody used; the other
-      three do not get to drop content the author wrote.
+      it.
 
       A LINK REFERENCE DEFINITION IS COVERED TOO: PART 12 §10 gives it a node,
       so all three kinds walk and all three emit. A REFERENCED link definition
@@ -463,11 +459,8 @@
          above the block on all three targets.
 
       T2 A TABLE CAPTION SURVIVES THE MARKDOWN TARGET as body text AFTER the
-         table, separated by one blank line. The position is what this target
-         already does for the other two captioned hosts -- an image caption
-         and a listing caption both follow their block as body text -- so the
-         table was the odd one out rather than a consequence of Markdown
-         having no caption syntax:
+         table, separated by one blank line, the position an image caption
+         and a listing caption already take as body text on this target:
 
              |= H |             ->  | H |
              | a |                  | --- |
@@ -497,9 +490,7 @@
           10's business rather than this section's.
 
   10f. A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET -- NORMATIVE [CARVE-P11-033].
-      CARVE-P11-028 rules the definition NOTHING references: the Markdown, plain-text
-      and terminal renderers all emit it, because those targets do not get to
-      drop content the author wrote. It says nothing about the definition that
+      CARVE-P11-028 rules the definition NOTHING references. It says nothing about the definition that
       IS referenced.
 
       This clause decides where the consumed definition line goes on those
@@ -589,16 +580,12 @@
          already does, each panel caption as an emphasized `*(...)*`
          paragraph after its host; preserved stray content in place; the
          group caption LAST, as a bold `**...**` paragraph, its number
-         resolved. Emphasis and bold rather than invented syntax: Markdown
-         has no figure grouping, and this is the spelling the tabs/label
-         rule already uses for authored text with no native slot.
+         resolved.
 
       T2 PLAIN TEXT AND THE TERMINAL put the group caption FIRST, its number
          resolved, then a blank line, then each panel: its caption line,
          then its host's degradation (`[Image: alt]` and the rest,
-         unchanged), a blank line between panels. Caption-first because on a
-         caption-less target the group caption is the only line that says
-         what the following blocks are one of.
+         unchanged), a blank line between panels.
 
       Tabs, `presentation=` hints and PDF layout are renderer/extension
       business and out of this clause's scope; hint classes reach the HTML
@@ -673,7 +660,7 @@
       One blank line would merge the lists, violating §1. PART 9 §11 N1a reads THREE
       OR MORE, so three is the canonical form for every hard-boundary run.
 
-      TWO ADJACENT DESCRIPTION LISTS ARE WRITTEN THE SAME WAY (carve#4759). N1a's
+      TWO ADJACENT DESCRIPTION LISTS ARE WRITTEN THE SAME WAY. N1a's
       boundary ends a description list too, so the writer emits exactly three
       blank lines between two description lists with nothing spellable between
       them, a hand-built tree included. It adds no node:
@@ -781,9 +768,7 @@
       keeps CARVE-P11-031, which writes that row as the header.
 
       ON MARKDOWN IMPORT, an all-empty header with no column alignment is
-      omitted, together with its delimiter row. It is the scaffolding this
-      clause writes, so keeping it would give every headerless table an
-      empty header row on its way back. The body keeps its GFM column width,
+      omitted, together with its delimiter row. The body keeps its GFM column width,
       and the importer MUST NOT turn the omitted header into a paragraph of
       pipes. A header carrying cell content or column alignment is retained.
       The omitted header is reported as `structure-unspellable` by the

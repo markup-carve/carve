@@ -551,6 +551,26 @@ x{^2^}
 Each form is resolved from local structure, not from speculative lookahead over
 the rest of the document.
 
+## Writer targets (PART 11 §8 to §10) {#writer-targets}
+
+Reasons behind rules in `resources/spec/22-writer-targets.ebnf`. The clauses
+themselves state only the rule.
+
+- CARVE-P11-051: a named character reference is tested on its shape rather
+  than against a list of names because Markdown readers do not agree on the
+  list.
+- CARVE-P11-028: HTML drops an unused definition because HTML has nowhere to
+  put a definition nobody used; the Markdown, plain-text and terminal targets
+  do not get to drop content the author wrote.
+- CARVE-P11-034 T1: emphasis and bold rather than invented syntax, because
+  Markdown has no figure grouping, and this is the spelling the tabs and
+  label rule already uses for authored text with no native slot. T2 puts the
+  group caption first because on a caption-less target it is the only line
+  that says what the following blocks are one of.
+- CARVE-P11-056, Markdown import: keeping an all-empty header would give
+  every headerless table an empty header row on its way back, since that
+  header is the scaffolding the writer adds.
+
 ## `*[` meaning abbreviation vs bold containing a link
 
 This is another place where Carve pins the distinction to a stable rule.

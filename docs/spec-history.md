@@ -249,6 +249,18 @@ carve-rs positions through its serializer, so a stale Rust pin can also appear
 as a Ruby conformance failure (carve-rb#41). Current status belongs in generated
 conformance reports, not the normative grammar.
 
+## PART 11 §8 to §10: writer target provenance
+
+- CARVE-P11-036, two adjacent description lists written with three blank
+  lines: carve#4759.
+- CARVE-P11-032 T2, a table caption after the table on the Markdown target:
+  the table was the odd one out among the captioned hosts, since an image
+  caption and a listing caption already followed their block as body text.
+  The position was not a consequence of Markdown having no caption syntax.
+
+The design reasons for `22-writer-targets.ebnf` are in
+[Technical rationale](./technical-rationale.md#writer-targets).
+
 ## NUL values at AST ingest
 
 All engines once accepted escaped or in-memory U+0000 values through AST ingest
