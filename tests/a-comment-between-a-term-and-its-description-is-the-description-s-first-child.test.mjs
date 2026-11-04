@@ -87,6 +87,23 @@ test('a list in such a description is measured from the marker line, not the com
   ])
 })
 
+test('a comment on the marker line leaves the separator on that line', () => {
+  const source = ':: t\n: %% c\n  - x\n'
+  const tree = (listStart) => list(17, [
+    term('t', 3),
+    {
+      type: 'definition_description',
+      pos: pos(5, 17),
+      children: [
+        { type: 'comment', block: false, form: 'line', content: 'c', pos: pos(7, 11) },
+        { type: 'list', pos: pos(listStart, 17), items: [{ type: 'list_item', pos: pos(listStart, 17), children: [para('x', 16)] }] },
+      ],
+    },
+  ])
+  assert.deepEqual(findingsFor(tree(14), source), [])
+  assert.equal(findingsFor(tree(12), source).length, 2)
+})
+
 const row = 'a-comment-between-a-term-and-its-description-is-the-description-s-first-block'
 for (const suffix of ['', '-2', '-3', '-4', '-5']) {
   test(`corpus 956${suffix}: the written spelling renders as the source does`, () => {

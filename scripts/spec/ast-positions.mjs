@@ -627,7 +627,7 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
     }
     if (parent.type === 'footnote') return visualColumn(lineStart(parent.pos.startOffset), parent.pos.startOffset) + 2
     let opener = parent.pos.startOffset
-    if (parent.type === 'definition_description') {
+    if (parent.type === 'definition_description' && codepoints[opener] !== ':') {
       // A comment written above the `:` line starts the description (CARVE-P12-027,
       // carve#5167); the separator is on the line after the leading comments.
       for (const child of parent.children ?? []) {
