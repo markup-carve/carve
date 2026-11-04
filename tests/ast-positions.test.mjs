@@ -1081,10 +1081,13 @@ test('task content and marker attributes before a same-line nested marker are no
   }
 })
 
-test('extra spaces after a list marker are indentation beyond its one separator', () => {
+test('every space after a list marker belongs to the owner content column', () => {
+  // markup-carve/carve#5105: CARVE-P2-010 counts the whole separator run.
   for (const [source, expected, marker] of [
-    ['-   - b\n', 2, 4],
-    ['-   a\n    - b\n', 8, 10],
+    ['-   - b\n', 4, 2],
+    ['-   a\n    - b\n', 10, 8],
+    ['-{.x}   a\n    - b\n', 14, 12],
+    ['1.  a\n      - b\n', 10, 12],
   ]) {
     const inner = { type: 'list', pos: pos(expected, source.length), items: [
       { type: 'list_item', pos: pos(expected, source.length) },
@@ -1102,6 +1105,18 @@ test('extra spaces after a list marker are indentation beyond its one separator'
   }
 })
 
+test('an astral footnote label does not shift a same-line list start', () => {
+  const source = '[^😀]: - a\n'
+  const cps = [...source]
+  const inner = { type: 'list', pos: pos(6, cps.length), items: [
+    { type: 'list_item', pos: pos(6, cps.length) },
+  ] }
+  const doc = { type: 'document', children: [{ type: 'footnote', pos: pos(0, cps.length), children: [inner] }] }
+  const findings = []
+  checkOpeningMarkup(doc, cps, findings)
+  assert.deepEqual(findings, [])
+})
+
 /*
  * THE CORPUS, DECLARED RED, for the START rule.
  *
@@ -1117,12 +1132,11 @@ test('extra spaces after a list marker are indentation beyond its one separator'
 const DECLARED_LIST_INDENT_START = [
   "05-lists-14.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "05-lists-8.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "132-thematic-break-requires-contiguous-markers-6.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "151-indented-ordered-marker-content-column-includes-the-marker-indent.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "157-an-indented-attribute-line-attaches-at-top-level-2.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "161-below-content-column-div-body-in-a-list-item-stays-literal.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-5.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-7.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
+  "178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-7.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "206-a-nested-list-in-a-footnote-body-stays-nested.crv 4  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "245-sibling-markers-that-reach-one-column-are-one-list.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
@@ -1139,7 +1153,6 @@ const DECLARED_LIST_INDENT_START = [
   "442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-2.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-5.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-6.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-7.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column-9.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "447-the-host-does-not-change-which-column-a-definition-reaches-7.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
