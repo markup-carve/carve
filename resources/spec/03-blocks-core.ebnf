@@ -6,7 +6,10 @@
 (* A BLOCK BRACE RUN CONTINUES PAST ITS OPENER -- NORMATIVE [CARVE-P2-035].
    A block-position attribute or comment run continues only on lines indented
    at least one column past its opening `{`, including a closing-delimiter-only
-   line. If a continuation fails, the entire run is paragraph text. The column
+   line. If a continuation fails, the entire run is paragraph text, and the
+   line after it continues that paragraph without interrupting it, even when
+   it opens a heading, quote or fence (carve#5080); a fence opener there keeps
+   its closer in the paragraph too. The column
    comparison is made inside its owner after quote prefixes are read. Inline
    attribute and comment runs remain governed by their inline productions.
    PART 4 `continuation` spells the attribute production; PART 9 §21a gives
@@ -724,8 +727,9 @@ definition_indent = whitespace, {whitespace} ;
    of its own, and a definition written between the `dd`'s column and that one
    is the `dd`'s: PART 0 S2 selects the innermost container whose content
    column the line REACHES, and a container it does not reach neither owns
-   the line nor withholds it (CARVE-P0-020). `:: t` / `:  - a` over four
-   spaces registers, exactly as `- - x` over three does.
+   the line nor withholds it (CARVE-P0-020). `:: t` / `:  - a` / `    > q`
+   opens the quote in the `dd`, exactly as `- - x` / `   > q` opens it in
+   the outer item.
 
    Thus the `>` on
 

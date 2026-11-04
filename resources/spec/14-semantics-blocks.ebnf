@@ -286,6 +286,8 @@
            and a line-initial `|` with no closing `|`, are NOT ones);
          - a code or raw fence opener, closer or not (I4);
          - a `:::` opener, closer or not (I4).
+         The exception is the line after a refused brace run: it continues the
+         run's paragraph and interrupts nothing (CARVE-P2-035).
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
          is <p>intro</p> + <hr> + <p>more</p> (corpus
          81-paragraph-interruption).
@@ -321,14 +323,16 @@
          block-attribute line (`{…}` alone on a line, §15). A `%%` line
          comment and a one-line link `[r]: url` or abbreviation `*[A]: …`
          definition are erased before layout under PART 0 S1: they do not
-         interrupt a paragraph. "See[^m].\n
+         interrupt a paragraph. A region marker (CARVE-P11-073) is the one
+         `%%` line S1 keeps: it stays a block-level invisible line of the class
+         below, so "p\n%% #region x\nq" is two paragraphs. "See[^m].\n
          [^m]: note" resolves the footnote; "para\n%% x\nmore" is one paragraph;
          "Para\n{.x}" ends the paragraph with the attribute line floating
          forward (§15; corpus 89-block-attribute-lines-7). (A small
          deviation from djot, which keeps such a line as paragraph text.)
          A BLOCK-LEVEL INVISIBLE LINE IS ONE CLASSIFICATION -- NORMATIVE [CARVE-P9-013].
-         The span, footnote definition and attribute line above are one
-         class. An invisible line in that class, in the container that owns it:
+         The span, footnote definition, attribute line and region marker
+         above are one class. An invisible line in that class, in the container that owns it:
 
            1. CLOSES an open paragraph, with no blank line needed -- this
               clause, and I6 for the containers;
