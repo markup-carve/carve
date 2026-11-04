@@ -314,6 +314,14 @@ export const EMPTY_CONTAINER_MARKUP = new Map(
 const ERASED_COMMENT_TAIL = /^(?:[ \t]*(?:%%(?!%)[^\n\r]*)?(?:\r\n|\n|\r|$))+$/
 /** A consumed `+` line after the last child: no node, but the container's markup (carve#5161). */
 const CONSUMED_PLUS_TAIL = /^(?:\r\n|\n|\r)(?:[ \t>]*(?:\r\n|\n|\r))*[ \t>]*\+[ \t]*$/
+const quoteDepth = (text) => [...text].filter((ch) => ch === '>').length
+/** The `>` a container's lines carry: the prefix before its start, plus its own marker for a quote. */
+function ownQuoteDepth(node, codepoints) {
+  let lineStart = node.pos.startOffset
+  while (lineStart > 0 && codepoints[lineStart - 1] !== '\n' && codepoints[lineStart - 1] !== '\r') lineStart--
+  const prefix = codepoints.slice(lineStart, node.pos.startOffset).join('')
+  return quoteDepth(prefix) + (node.type === 'block_quote' ? 1 : 0)
+}
 const ERASED_LINE_HINT =
   'an erased comment line no child owns is not the container\'s (CARVE-P12-014, CARVE-P12-022)'
 
@@ -442,7 +450,8 @@ export function checkStopsAtChildren(doc, codepoints, findings) {
     if (pos.endOffset <= lastChildEnd) continue
     const tail = codepoints.slice(lastChildEnd, pos.endOffset).join('')
     const atLineStart = /[\n\r]/.test(codepoints[lastChildEnd - 1] ?? '')
-    if (CONSUMED_PLUS_TAIL.test(atLineStart ? `\n${tail}` : tail)) continue
+    if (CONSUMED_PLUS_TAIL.test(atLineStart ? `\n${tail}` : tail) &&
+        quoteDepth(tail.slice(tail.search(/[^\r\n]*$/))) <= ownQuoteDepth(node, codepoints)) continue
     findings.push(
       `span reaches past its last child on "${node.type}" at ${path}: ` +
         `it ends at ${pos.endOffset}, its last child ends at ${lastChildEnd}, and ` +

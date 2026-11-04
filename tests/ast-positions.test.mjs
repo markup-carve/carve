@@ -1500,6 +1500,8 @@ test('a container ends after a consumed plus that leaves no node (carve#5161)', 
   assert.deepEqual(stopFindings(quote, '> > q\n> +\npara\n'), [])
   // A line holding anything besides the plus is not the container's markup.
   assert.equal(stopFindings(item('- a\n+ b\n', 7, 3), '- a\n+ b\n').length, 1)
+  // A `> +` line opens a sibling quote; it is not the list's markup.
+  assert.equal(stopFindings(item('- a\n> +\n', 7, 3), '- a\n> +\n').length, 1)
 })
 
 test('a container holding an unplaced child is skipped rather than guessed at', () => {
