@@ -3460,6 +3460,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // Where the innermost quote prefix taken so far ends, in document columns.
     let viewDoc = 0
     let m = walkIndent(src)
+    // The line as the current quote segment starts, for an opener's C5 column.
+    let segmentSrc = src
     // The leading run of the current segment, written at `col`.
     const lead = (target, spaces = false) => {
       // Ownership only ever removes indentation. `spaces` writes a leading tab
@@ -3574,6 +3576,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
         viewDoc = docColumn(lines[at], src)
         m = walkIndent(src)
+        segmentSrc = src
         stripped = null
         segment = k + 1
         reached = k
@@ -3582,10 +3585,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (m.rest !== '' && m.col < f.col) {
         if (stripped === null && src.length > m.rest.length && src.slice(0, src.length - m.rest.length).includes('\t')) {
           const origins = []
-          for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col)
+          for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col + (frames[q].tabShift ?? 0))
           stripped = strippedColumn(src, origins)
         }
-        if (stripped === null || stripped < f.col) break
+        if (stripped === null || stripped < f.col + (f.tabShift ?? 0)) break
       }
       reached = k
     }
@@ -3982,6 +3985,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         const first = owner === frames[reached] && sibling?.kind === form.kind && sibling.axes === form.axes ? sibling : frame
         frame.listCol = first.listCol ?? col
         frame.listShift = first.listShift ?? col - canon
+        // A marker on a tab run stands at its C5 column, which a follower's stripped run is compared with (SS24 C5).
+        const rest = trimWsStart(segmentSrc)
+        if (rest === src && segmentSrc.slice(0, segmentSrc.length - rest.length).includes('\t') && leadColumn(segmentSrc) === col) {
+          const origins = []
+          for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col + (frames[q].tabShift ?? 0))
+          const shift = strippedColumn(segmentSrc, origins) - col
+          if (shift) frame.tabShift = shift
+        }
         frames.push(frame)
         take(form.head)
         m = walkIndent(src)
