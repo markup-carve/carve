@@ -212,10 +212,11 @@
 
         A COMMENT IS THE ONE EXCEPTION, and the exception is about TIMING
         rather than about what a comment is. `comment_line` IS a block, listed
-        in PART 1 among the INVISIBLE blocks and erased before layout (PART 0
-        S1, §10 I5). It survives the suppression above
-        because it is the only construct on that list whose recognition
-        PRESERVES the verse instead of rewriting it: a definition or a fence
+        in PART 1 among the INVISIBLE blocks and erased before layout in
+        ordinary block content (PART 0 S1, §10 I5); a line-block body is not
+        ordinary block content, so there it is still recognized. It survives
+        the suppression above because it is the only construct on that list
+        whose recognition PRESERVES the verse instead of rewriting it: a definition or a fence
         opener CLAIMS the line and changes what renders, while a comment-only
         body line leaves an EMPTY verse line.
 

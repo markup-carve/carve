@@ -203,8 +203,10 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
      1. a blank line ends the caption;
      2. a line that INTERRUPTS a paragraph under PART 9 §10 I1 to I5 -- a
         heading, blockquote, table, fenced code, `:::` div, thematic break,
-        `:: ` term, `%%%` comment, or a reference, note or abbreviation
-        definition -- ends the caption and starts that block;
+        `:: ` term, `%%%` comment, footnote definition or block-attribute
+        line -- ends the caption and starts that block; a `%%` line and a
+        one-line link or abbreviation definition are erased before layout
+        (PART 0 S1) and end nothing;
      3. a LIST MARKER does NOT end the caption (PART 9 §10 I2): `^ cap` + `- x`
         yields the caption `cap\n- x`;
      4. a further `^ ` line does NOT continue the caption (there is no repeated

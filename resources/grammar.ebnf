@@ -393,7 +393,8 @@
         Leading space stops no line form (S3), so past a missed item a list
         marker is a sibling when it matches the list on every PART 9 §11 N1
         axis and otherwise a new list, so `- a` / ` - b` is one list and
-        `- a` / ` * b` and `1. a` / ` a. b` are two (carve#4545). Every item measures its
+        `- a` / ` * b` and `1. a` / ` a.  b` are two (carve#4545; an initial
+        takes two spaces, carve#4811). Every item measures its
         content against its own content column. `- y` / `1. c` / blank /
         `   # h` puts the heading in the `1.` item, the same as `1. c` /
         blank / `   # h` alone (carve#4369).
@@ -443,8 +444,10 @@
         THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK -- NORMATIVE [CARVE-P0-007].
         Marker-line content is the container's first block and answers S4
         like any other block. Headings, tables, thematic breaks, fenced
-        comments, footnote definitions and floating attributes leave no paragraph open, so a
-        following line below the content column closes the container.
+        comments and floating attributes leave no paragraph open, so a
+        following line below the content column closes the container. A
+        footnote definition's own body keeps its paragraph open (FAMILIES
+        row 3, PART 9 §17 L6).
         Ordinary prose, or a container ending in an open paragraph, permits a
         lazy fold. Definitions are collected where written (CARVE-P9-034).
 
@@ -1702,8 +1705,10 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
      1. a blank line ends the caption;
      2. a line that INTERRUPTS a paragraph under PART 9 §10 I1 to I5 -- a
         heading, blockquote, table, fenced code, `:::` div, thematic break,
-        `:: ` term, `%%%` comment, or a reference, note or abbreviation
-        definition -- ends the caption and starts that block;
+        `:: ` term, `%%%` comment, footnote definition or block-attribute
+        line -- ends the caption and starts that block; a `%%` line and a
+        one-line link or abbreviation definition are erased before layout
+        (PART 0 S1) and end nothing;
      3. a LIST MARKER does NOT end the caption (PART 9 §10 I2): `^ cap` + `- x`
         yields the caption `cap\n- x`;
      4. a further `^ ` line does NOT continue the caption (there is no repeated
@@ -6250,7 +6255,7 @@ EOF = (* end of file *) ;
       A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK -- NORMATIVE [CARVE-P9-023]. pending
          floats PAST an INVISIBLE LINE and attaches to the next VISIBLE block.
          The class is §10 I5's, AN INVISIBLE LINE IS ONE CLASSIFICATION -- the
-         five kinds are enumerated there, and "renders nothing" is its property
+         three kinds are enumerated there, and "renders nothing" is its property
          2. This clause is that property's consequence for a floating
          attribute, and nothing more:
 
@@ -7103,10 +7108,11 @@ EOF = (* end of file *) ;
 
         A COMMENT IS THE ONE EXCEPTION, and the exception is about TIMING
         rather than about what a comment is. `comment_line` IS a block, listed
-        in PART 1 among the INVISIBLE blocks and erased before layout (PART 0
-        S1, §10 I5). It survives the suppression above
-        because it is the only construct on that list whose recognition
-        PRESERVES the verse instead of rewriting it: a definition or a fence
+        in PART 1 among the INVISIBLE blocks and erased before layout in
+        ordinary block content (PART 0 S1, §10 I5); a line-block body is not
+        ordinary block content, so there it is still recognized. It survives
+        the suppression above because it is the only construct on that list
+        whose recognition PRESERVES the verse instead of rewriting it: a definition or a fence
         opener CLAIMS the line and changes what renders, while a comment-only
         body line leaves an EMPTY verse line.
 

@@ -269,7 +269,8 @@
         Leading space stops no line form (S3), so past a missed item a list
         marker is a sibling when it matches the list on every PART 9 §11 N1
         axis and otherwise a new list, so `- a` / ` - b` is one list and
-        `- a` / ` * b` and `1. a` / ` a. b` are two (carve#4545). Every item measures its
+        `- a` / ` * b` and `1. a` / ` a.  b` are two (carve#4545; an initial
+        takes two spaces, carve#4811). Every item measures its
         content against its own content column. `- y` / `1. c` / blank /
         `   # h` puts the heading in the `1.` item, the same as `1. c` /
         blank / `   # h` alone (carve#4369).
@@ -319,8 +320,10 @@
         THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK -- NORMATIVE [CARVE-P0-007].
         Marker-line content is the container's first block and answers S4
         like any other block. Headings, tables, thematic breaks, fenced
-        comments, footnote definitions and floating attributes leave no paragraph open, so a
-        following line below the content column closes the container.
+        comments and floating attributes leave no paragraph open, so a
+        following line below the content column closes the container. A
+        footnote definition's own body keeps its paragraph open (FAMILIES
+        row 3, PART 9 §17 L6).
         Ordinary prose, or a container ending in an open paragraph, permits a
         lazy fold. Definitions are collected where written (CARVE-P9-034).
 
