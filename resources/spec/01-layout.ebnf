@@ -433,7 +433,12 @@
                    `- item` / `  :: t` / `  : a` / `: b` renders `: b` as a
                    paragraph after the list (corpus 657)
         invisible  as a list item: `:: t` / `%% c` / `: d` is one
-                   description list (carve#4716)
+                   description list (carve#4716). A comment line or `%%%`
+                   span between a term and its description is the first
+                   block of that description's body, and with more terms
+                   between (`:: t` / `%% c` / `:: u` / `: d`) of the
+                   description after the last one (CARVE-P12-027,
+                   carve#5167)
         plus       yes
         cells      [B-term-start] `:: ` with content; a one-line leaf with
                    inline content, like a heading, and no ownership of its

@@ -1,0 +1,66 @@
+A comment between a term and its description is the description's first block
+
+```
+:: t
+  %%%
+      a
+  %%%
+:  body
+.
+<dl>
+  <dt>t</dt>
+  <dd>body</dd>
+</dl>
+```
+
+```
+:: t
+%%%
+a
+%%%
+: body
+.
+<dl>
+  <dt>t</dt>
+  <dd>body</dd>
+</dl>
+```
+
+```
+:: t
+%%%
+a
+%%%
+:: u
+: body
+.
+<dl>
+  <dt>t</dt>
+  <dt>u</dt>
+  <dd>body</dd>
+</dl>
+```
+
+```
+:: t
+%% c
+: body
+.
+<dl>
+  <dt>t</dt>
+  <dd>body</dd>
+</dl>
+```
+
+```
+:: t
+%% c
+:: u
+: body
+.
+<dl>
+  <dt>t</dt>
+  <dt>u</dt>
+  <dd>body</dd>
+</dl>
+```

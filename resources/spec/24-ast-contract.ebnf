@@ -99,6 +99,24 @@
       the rule the rendered list already shows -- so the grouping is derivable
       and is not published.
 
+      A COMMENT BETWEEN A TERM AND ITS DESCRIPTION IS THAT DESCRIPTION'S FIRST
+      CHILD (carve#5167). A term ends with its line (PART 0 `[B-term-end]`), so
+      a `comment` written after it, as a `%%` line or a `%%%` span, is the
+      first block of the `definition_description` that follows; with more
+      terms between, of the one after the last term:
+
+          :: t
+          %% c
+          :: u
+          : d
+
+      gives `items` of `t`, `u` and a description whose `children` are the
+      comment `c` and the paragraph `d`. Only the parent moves: the comment's
+      content and extent are read where it is written (PART 0 S1). With no term
+      between, the description's span starts at the comment; with one between,
+      no contiguous span holds the comment without the term, so the
+      description omits `pos` (CARVE-P12-022).
+
       A SPELLED LOOSENESS IS A FIELD; A DERIVED ONE IS NOT. `definition_list`
       MAY carry `loose: true`, and it means what PART 9 §17 L7's consumed
       boolean means: every description renders its children as BLOCKS. Absent,
