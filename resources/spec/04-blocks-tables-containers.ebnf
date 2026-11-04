@@ -111,9 +111,7 @@ alignment_attributes = '{', cell_alignment, [space+, attribute_list], {space}, '
    the whole block as literal content. *)
 cell_alignment = horizontal_alignment, [vertical_alignment]
                | inherited_horizontal_alignment, vertical_alignment ;
-deprecated_aligned_cell = ['='], legacy_alignment_run, [attributes], space, cell_content, {space} ;
-legacy_alignment_run = horizontal_alignment, [vertical_alignment]
-                     | inherited_horizontal_alignment, vertical_alignment ;
+deprecated_aligned_cell = ['='], cell_alignment, [attributes], space, cell_content, {space} ;
 (* The 0.1.13 prefix remains readable through 0.1.x. It gives the same tree
    as cell_alignment in braces; lint warns and fmt writes only braces.
    `|=< |` is reserved for the header-kind colspan placeholder. *)

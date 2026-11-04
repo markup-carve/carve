@@ -303,6 +303,11 @@ const MANIFEST = [
   { repo: 'spec', path: 'tests/an-element-less-container-is-carried-in-a-comment.test.mjs', name: 'CAPTION_LAG', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', optional: true, staleness: 'delete CAPTION_LAG', owner: 'markup-carve/carve#2851' },
 
   // -- carve-js --------------------------------------------------------------
+  // These helpers landed on carve-js main after the pinned spec snapshot.
+  // Their owning suites compare the complete measured set in both directions.
+  { repo: 'carve-js', path: 'test/known-list-span-start-drift-5063.ts', name: 'KNOWN_LIST_SPAN_START_DRIFT_5063', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', stalenessFile: 'test/span-opening-markup-and-containment.test.ts', staleness: 'expect(result.findings.sort()).toEqual([...KNOWN_LIST_SPAN_START_DRIFT_5063].sort())', owner: 'test/span-opening-markup-and-containment.test.ts' },
+  { repo: 'carve-js', path: 'test/ruled-ahead-of-pin-5012.ts', name: 'RULED_HTML_AHEAD_OF_PIN_5012', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', stalenessFile: 'test/corpus.test.ts', staleness: 'now matches: delete its AHEAD_OF_PIN entry', owner: 'test/corpus.test.ts' },
+  { repo: 'carve-js', path: 'test/ruled-ahead-of-pin-5012.ts', name: 'RULED_FMT_AHEAD_OF_PIN_5012', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', stalenessFile: 'test/corpus-canonical-form.test.ts', staleness: 'now matches: delete its AHEAD_OF_PIN entry', owner: 'test/corpus-canonical-form.test.ts' },
   // The #5015 ruling tables live in a helper and are spread into the guarded
   // corpus and canonical maps below. The helper remains ahead of the spec pin.
   { repo: 'carve-js', path: 'test/ruled-ahead-of-pin-5015.ts', name: 'RULED_HTML_AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', stalenessFile: 'test/corpus.test.ts', staleness: 'now matches: delete its AHEAD_OF_PIN entry', owner: 'test/corpus.test.ts' },
