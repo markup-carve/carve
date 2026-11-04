@@ -3655,7 +3655,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       plus.para = false
       lead(plus.markerCanon)
       if (!plusAccepted || claimedMarkers.has(at)) {
-        skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
+        skipInvisible(plus, at, docColumn(lines[at], m.rest), out, true)
         // The marker has no visible content, but its invisible placeholder
         // must stay inside the host so the next line keeps the same owner.
         const keepMarkerColumn = closesDescendant || claimedMarkers.has(at)
@@ -4037,7 +4037,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             src = src.replace('+', '%%')
             m = walkIndent(src)
             refusedPlus.push(at)
-            skipInvisible(frame, at, frame.docMarker)
+            skipInvisible(frame, at, frame.docMarker, null, true)
           }
         }
         lead(m.col)
@@ -4211,10 +4211,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   // line, so each host reads them as it reads a comment before its block. An
   // own-line marker passes its normalized prefix; its raw follower may still
   // carry quote indentation the walk has already removed.
-  function skipInvisible(host, at, column, markerLead = null) {
+  function skipInvisible(host, at, column, markerLead = null, refused = false) {
     const hostIndex = frames.indexOf(host)
     const fenced = new Set()
-    const end = firstVisibleLine(at + 1, hostIndex, column, fenced)
+    const end = firstVisibleLine(at + 1, hostIndex, column, fenced, refused)
     if (end === at + 1) return
     const level = end < lines.length ? throughQuotes(lines[end], hostIndex) : null
     const basis = level ? lines[end] : lines[at]
@@ -4223,9 +4223,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       lead: markerLead ?? basis.slice(0, basis.length - rest.length) + ' '.repeat(host.markerCanon) }
   }
 
-  // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Off the
-  // marker column an invisible line is that next line, and a note definition's body is its own.
-  function firstVisibleLine(from, hostIndex, column, fenced = null) {
+  // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Only the
+  // lines the host keeps are skipped: at the marker column or at or past its content column
+  // (carve#5130). A refused marker moves no line, so it skips only those at its column.
+  // A note definition's body is its own.
+  function firstVisibleLine(from, hostIndex, column, fenced = null, refused = false) {
+    const host = frames[hostIndex]
+    const content = !refused && ['item', 'dd', 'note'].includes(host.kind) ? host.docMarker + host.col - host.markerCol : Infinity
     // A line without the host's quote prefixes ends the quote, so no skipped construct reads it as text.
     const view = (k) => trimWsStart(throughQuotes(lines[k], hostIndex)?.rest ?? '')
     const fromHere = new Proxy([], {
@@ -4239,7 +4243,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     while (k < lines.length) {
       if (throughQuotes(lines[k], hostIndex) === null) return k
       const rest = trimLineEnd(view(k))
-      if (docColumn(lines[k], view(k)) !== column) return k
+      const at = docColumn(lines[k], view(k))
+      if (at !== column && at < content) return k
       const comment = COMMENT_FENCE_BODY.exec(rest)
       if (comment) {
         const opener = k++

@@ -299,14 +299,18 @@
          column of the `+` decides whether it is a marker; the following line
          decides only whether it attaches. Blank lines between
          the marker and its block refuse it. Invisible lines between the
-         marker and the next line are skipped: they are read in the host, and
-         the gates apply to the first visible line after them (carve#4449).
-         S1 erases `%%` lines and one-line link and abbreviation definitions
-         before the next-line test. A `%%%` span and block-level invisible
-         lines follow CARVE-P9-013. An invisible line off the marker column is itself that
-         next line, and a note definition's body belongs to the note. A blank line, the end of
-         input or a sibling after them refuses the `+`. Examples, with `/` for
-         a line break:
+         marker and the next line that the host keeps are skipped: they are
+         read in the host, and the gates apply to the first visible line after
+         them (carve#4449). The host keeps an invisible line at its marker
+         column or at or past its content column (carve#5130). One its
+         FAMILIES `invisible` field closes it at, such as an attribute line or
+         footnote definition below an item's content column, closes the host
+         and so refuses the `+`. S1 erases `%%` lines and one-line link and
+         abbreviation definitions before the next-line test. A `%%%` span and
+         block-level invisible lines follow CARVE-P9-013, and a note
+         definition's body belongs to the note. A blank line, the end of input
+         or a sibling after them refuses the `+`. Examples, with `/` for a line
+         break:
 
          - `- +` / `para` gives the item the paragraph; `:: t` / `: +` / `- l`
            gives the description the list; `[^a]: +` / `- l` gives the note the
@@ -327,7 +331,9 @@
            and `- +` / `{% c %}` / blank / `text` is refused.
            `- a` / `+` / `{x}` / `text`
            gives the item `<p x="">`. `- +` / `*[A]: b` / `text` gives the
-           item `text` and defines `A`.
+           item `text` and defines `A`. At the content column the same
+           holds: `- +` / `  %%%` / `  c` / `  %%%` / `text` gives the item
+           `text`, and `- +` / `  {x}` / `text` gives it `<p x="">`.
          - `- +` / `%% c` / blank / `text` is refused: an empty item and a
            paragraph. So is `- +` / `%% c` / `- b`: an empty item and a sibling
            item.
