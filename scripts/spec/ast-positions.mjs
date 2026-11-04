@@ -296,7 +296,10 @@ export const EMPTY_CONTAINER_MARKUP = new Map(
   Object.entries({
     block_quote: /^[ \t]*>[ \t]*$/,
     list: /^[ \t]*(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)[ \t]*$/,
-    list_item: /^[ \t]*(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)[ \t]*$/,
+    // An item's own markup also holds a task box and a consumed `+` on the
+    // marker line (CARVE-P12-012, carve#5161).
+    list_item:
+      /^[ \t]*(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)(?:[ \t]+\[[ xX_>/!?-]\])?(?:[ \t]+\+)?[ \t]*$/,
   }),
 )
 
