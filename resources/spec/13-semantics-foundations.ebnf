@@ -290,14 +290,15 @@
          does not disqualify the marker. `|<|`, `| <|`, `|< |` and `| < |`
          are spans, as are all four corresponding `^` forms. A lone span
          glyph takes precedence over an empty alignment block. An ordinary
-         attribute disqualifies a span. Thus `|= <|` and `|= ^|` are header
-         cells holding literal `<` and `^`, while `|{?^} \\< |` is a
+         attribute disqualifies a span. A header cell holding literal `<` or
+         `^` escapes the glyph as `|= \\< |` or `|= \\^ |`; `|{?^} \\< |` is a
          vertically aligned cell holding literal `<`. A block containing only
          alignment preserves the span: `|{<} < |` sets its column default.
-         A kind marker glued to the opening `|` and a span glyph makes a
-         HEADER-KIND placeholder: `|=^ |` is rowspan and `|=< |` is colspan.
-         Both keep `span` in the tree. `|=^x |` holds `=^x`; unpadded `|=^|`
-         and `|=<|` are ordinary data content.
+         A header cell whose whole content is a span glyph makes a
+         HEADER-KIND placeholder: `|= ^ |` is rowspan and `|= < |` is colspan.
+         Both keep `span` in the tree. The released `|=< |` is an empty
+         left-aligned header cell under the deprecated marker reading.
+         `|=^x |` holds `=^x`; `|=^ |`, `|=^|` and `|=<|` are ordinary data content.
       T5 SPAN WALK -- NORMATIVE [CARVE-P9-002], a total function. Markers
          resolve in row-major order. Every position belongs to the cell whose
          rectangle covers it; a span never covers a position another cell
@@ -466,11 +467,11 @@
          (CARVE-P11-056). A placeholder with no origin takes its row's kind
          when the other cells that row owns are headers. It remains a span
          placeholder in the tree (PART 12 §26) and renders as an empty
-         `<th scope="col">` in the head row. A header-kind `^` (T4, `|=^ |`)
+         `<th scope="col">` in the head row. A header-kind `^` (T4, `|= ^ |`)
          is a header cell itself, so a row of only orphan placeholders heads
          its table when one of them is header-kind:
 
-             |=^ |
+             |= ^ |
              | x |
 
          gives `<thead>` with one empty `<th scope="col">`. Below the head-row
@@ -539,8 +540,8 @@
              |{#x}=R|        data cell, content `{#x}=R`
 
          A span_cell is the exception: a bare `^` or `<` accepts space padding
-         or a closing pipe (PART 2). A header-kind span (`|=^ |` or `|=< |`,
-         T4) requires its separating space; `|=^|` and `|=<|` are data.
+         or a closing pipe (PART 2). A header-kind span (`|= ^ |` or `|= < |`,
+         T4) follows the kind's separating space; `|=^|` and `|=<|` are data.
 
          A cell with NO run is unchanged -- `| a |` and `|a|` hold `a`, and
          `||` is one empty cell (CARVE-P9-082).

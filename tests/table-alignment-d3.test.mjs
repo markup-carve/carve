@@ -26,13 +26,16 @@ test('D3 alignment is consumed only at the start of a cell attribute block', () 
 })
 
 test('header-kind colspan and alignment-only span blocks preserve column defaults', () => {
-  assert.match(html('|=< |\n| x |\n'), /<thead>[\s\S]*<th scope="col"><\/th>/)
+  assert.match(html('|=< |\n| x |\n'), /<thead>[\s\S]*<th scope="col" style="text-align: left;"><\/th>/)
   assert.match(html('|={>} Price |{<} < |={~} Stock |\n| 12 | EUR | 3 |\n'),
     /<td style="text-align: left;">EUR<\/td>/)
   assert.equal(cell('|=^|\n').content, '=^')
   assert.equal(cell('|=<|\n').content, '=<')
-  assert.equal(cell('|=^ |\n').spanMarker, '^')
-  assert.equal(cell('|=< |\n').spanMarker, '<')
+  assert.equal(cell('|= ^ |\n').spanMarker, '^')
+  assert.equal(cell('|= < |\n').spanMarker, '<')
+  assert.equal(cell('|=< |\n').spanMarker, undefined)
+  assert.equal(cell('|=< |\n').align, 'left')
+  assert.equal(cell('|=^ |\n').content, '=^')
 })
 
 test('released marker spellings retain their tree and have lint migration vectors', () => {

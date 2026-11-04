@@ -1609,13 +1609,16 @@ cell_alignment = horizontal_alignment, [vertical_alignment]
 deprecated_aligned_cell = ['='], cell_alignment, [attributes], space, cell_content, {space} ;
 (* The 0.1.13 prefix remains readable through 0.1.x. It gives the same tree
    as cell_alignment in braces; lint warns and fmt writes only braces.
-   `|=< |` is reserved for the header-kind colspan placeholder. *)
+   `|=< |` retains its released meaning: an empty left-aligned header cell. *)
 span_cell = header_rowspan_marker | header_colspan_marker
           | ['='], cell_alignment_block, space, ('^' | '<'), {space}
           | rowspan_marker | colspan_marker ;
 cell_alignment_block = '{', cell_alignment, {space}, '}' ;
-header_rowspan_marker = '=', '^', space ;
-header_colspan_marker = '=', '<', space ;
+header_rowspan_marker = '=', space, {space}, '^', {space} ;
+header_colspan_marker = '=', space, {space}, '<', {space} ;
+(* The header kind ends at its usual space, and the whole remaining cell is
+   the placeholder. `|= ^ |` and `|= < |` are the canonical padded forms.
+   A literal header glyph is escaped; `|=^ |` is not a header placeholder. *)
 
 rowspan_marker = {space}, '^' ;
 colspan_marker = {space}, '<' ;
@@ -4828,14 +4831,15 @@ EOF = (* end of file *) ;
          does not disqualify the marker. `|<|`, `| <|`, `|< |` and `| < |`
          are spans, as are all four corresponding `^` forms. A lone span
          glyph takes precedence over an empty alignment block. An ordinary
-         attribute disqualifies a span. Thus `|= <|` and `|= ^|` are header
-         cells holding literal `<` and `^`, while `|{?^} \\< |` is a
+         attribute disqualifies a span. A header cell holding literal `<` or
+         `^` escapes the glyph as `|= \\< |` or `|= \\^ |`; `|{?^} \\< |` is a
          vertically aligned cell holding literal `<`. A block containing only
          alignment preserves the span: `|{<} < |` sets its column default.
-         A kind marker glued to the opening `|` and a span glyph makes a
-         HEADER-KIND placeholder: `|=^ |` is rowspan and `|=< |` is colspan.
-         Both keep `span` in the tree. `|=^x |` holds `=^x`; unpadded `|=^|`
-         and `|=<|` are ordinary data content.
+         A header cell whose whole content is a span glyph makes a
+         HEADER-KIND placeholder: `|= ^ |` is rowspan and `|= < |` is colspan.
+         Both keep `span` in the tree. The released `|=< |` is an empty
+         left-aligned header cell under the deprecated marker reading.
+         `|=^x |` holds `=^x`; `|=^ |`, `|=^|` and `|=<|` are ordinary data content.
       T5 SPAN WALK -- NORMATIVE [CARVE-P9-002], a total function. Markers
          resolve in row-major order. Every position belongs to the cell whose
          rectangle covers it; a span never covers a position another cell
@@ -5004,11 +5008,11 @@ EOF = (* end of file *) ;
          (CARVE-P11-056). A placeholder with no origin takes its row's kind
          when the other cells that row owns are headers. It remains a span
          placeholder in the tree (PART 12 §26) and renders as an empty
-         `<th scope="col">` in the head row. A header-kind `^` (T4, `|=^ |`)
+         `<th scope="col">` in the head row. A header-kind `^` (T4, `|= ^ |`)
          is a header cell itself, so a row of only orphan placeholders heads
          its table when one of them is header-kind:
 
-             |=^ |
+             |= ^ |
              | x |
 
          gives `<thead>` with one empty `<th scope="col">`. Below the head-row
@@ -5077,8 +5081,8 @@ EOF = (* end of file *) ;
              |{#x}=R|        data cell, content `{#x}=R`
 
          A span_cell is the exception: a bare `^` or `<` accepts space padding
-         or a closing pipe (PART 2). A header-kind span (`|=^ |` or `|=< |`,
-         T4) requires its separating space; `|=^|` and `|=<|` are data.
+         or a closing pipe (PART 2). A header-kind span (`|= ^ |` or `|= < |`,
+         T4) follows the kind's separating space; `|=^|` and `|=<|` are data.
 
          A cell with NO run is unchanged -- `| a |` and `|a|` hold `a`, and
          `||` is one empty cell (CARVE-P9-082).
@@ -9531,7 +9535,8 @@ EOF = (* end of file *) ;
 
       In a data table cell, a payload consisting of `^` or `<`, including after
       an alignment-only block (PART 2), would re-read as a span placeholder.
-      Escape its opener, for example `|{?^} \< |` for a literal `<`. A space
+      Escape its opener, for example `|{?^} \< |` for a literal `<`.
+      Header cells also escape literal glyphs as `|= \< |` and `|= \^ |`. A space
       followed by further content, as in `| <x |`, remains ordinary data.
       Escape a lone data payload `=^` or `=<` and a leading `=` before a brace
       block when that `=` would turn the cell into a header. Escaping more than
@@ -10020,8 +10025,8 @@ EOF = (* end of file *) ;
         span_cell      = header_rowspan_marker | header_colspan_marker
                        | ['='], cell_alignment_block, space, ('^' | '<'), {space}
                        | rowspan_marker | colspan_marker ;
-        header_rowspan_marker = '=', '^', space ;
-        header_colspan_marker = '=', '<', space ;
+        header_rowspan_marker = '=', space, {space}, '^', {space} ;
+        header_colspan_marker = '=', space, {space}, '<', {space} ;
         rowspan_marker = {space}, '^' ;
         colspan_marker = {space}, '<' ;
 
@@ -10030,6 +10035,7 @@ EOF = (* end of file *) ;
       CARVE-P11-014's space does nothing for it. §2 applies by its own test:
       omitting the escape changes the re-parsed AST, so the payload is escaped
       and the writer emits `| \^ |`, `| \< |`, or `|{?^} \< |` for literal data.
+      A literal header glyph is escaped: `|= \^ |` or `|= \< |`.
       A data payload `=^` or `=<` is escaped at `=`; a literal `=` before a
       brace block is escaped whenever it would start a header prefix.
 
@@ -10072,9 +10078,9 @@ EOF = (* end of file *) ;
       A span placeholder keeps its marker and any alignment-only block,
       including an orphan in the first row and a covered placeholder whose
       block alone sets its column default. A `^` or `<` placeholder whose
-      `header` field is true is written header-kind, `|=^ |` or `|=< |`
+      `header` field is true is written header-kind, `|= ^ |` or `|= < |`
       (PART 9 §5 T4). Thus a separator-promoted orphan keeps its kind:
-      `| ^ | a |` over a separator becomes `|=^ |= a |`. The canonical writer
+      `| ^ | a |` over a separator becomes `|= ^ |= a |`. The canonical writer
       NEVER writes a separator row. GFM separator form remains valid input.
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
@@ -13730,10 +13736,10 @@ EOF = (* end of file *) ;
       even when the marker found no origin. The canonical writer writes that
       alignment on the placeholder itself, preserving the cell's tree fields.
       Its `header` field is the authored kind: true for a header-kind `^` or `<`
-      (`|=^ |` or `|=< |`, PART 9 §5 T4) or a separator-promoted placeholder, false for
+      (`|= ^ |` or `|= < |`, PART 9 §5 T4) or a separator-promoted placeholder, false for
       a bare `^` or `<`, whose rendered kind T9 derives.
 
-        |=^ |
+        |= ^ |
         | x |
 
         table{ rows: [

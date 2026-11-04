@@ -50,8 +50,8 @@ origin's marker applies only to the origin column (CARVE-P9-004).
 
 :::
 
-A space and further content keep `<x` as data. A kind marker keeps `<` as
-header content. Neither is a span marker.
+A space and further content keep `<x` as data. An escaped `<` after a kind
+marker is literal header content. Neither is a span marker.
 
 ::: compare
 
@@ -72,7 +72,7 @@ header content. Neither is a span marker.
 ::: compare
 
 ```carve
-|= <|
+|= \< |
 ```
 
 ```html
@@ -103,14 +103,14 @@ A data payload shaped like a span alignment uses an escape (PART 11 §2).
 
 :::
 
-A `^` glued to a kind marker glued to the pipe is a header-kind span marker
+A `^` that is the whole content after a header kind marker is a header-kind span marker
 (CARVE-P9-006). It is a header cell itself, so a head row of only orphan
 placeholders still heads its table.
 
 ::: compare
 
 ```carve
-|=^ |
+|= ^ |
 | x |
 ```
 

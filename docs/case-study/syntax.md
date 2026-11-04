@@ -870,7 +870,8 @@ The ragged source whitespace above is irrelevant; only the alignment blocks matt
 **Disambiguation.** A lone `<` or `^` is a colspan / rowspan placeholder in
 every space-padding form. A block holding only alignment preserves the span
 and sets that physical column's default; ordinary attributes make the glyph
-literal. `|=< |` and `|=^ |` are header-kind placeholders. Alignment symbols
+literal. `|= < |` and `|= ^ |` are header-kind placeholders; the deprecated
+`|=< |` remains an empty left-aligned header. Alignment symbols
 must lead the attribute block; a vertical symbol needs a horizontal symbol or
 `?` inheritance token first.
 

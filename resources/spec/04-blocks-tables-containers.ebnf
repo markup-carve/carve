@@ -114,13 +114,16 @@ cell_alignment = horizontal_alignment, [vertical_alignment]
 deprecated_aligned_cell = ['='], cell_alignment, [attributes], space, cell_content, {space} ;
 (* The 0.1.13 prefix remains readable through 0.1.x. It gives the same tree
    as cell_alignment in braces; lint warns and fmt writes only braces.
-   `|=< |` is reserved for the header-kind colspan placeholder. *)
+   `|=< |` retains its released meaning: an empty left-aligned header cell. *)
 span_cell = header_rowspan_marker | header_colspan_marker
           | ['='], cell_alignment_block, space, ('^' | '<'), {space}
           | rowspan_marker | colspan_marker ;
 cell_alignment_block = '{', cell_alignment, {space}, '}' ;
-header_rowspan_marker = '=', '^', space ;
-header_colspan_marker = '=', '<', space ;
+header_rowspan_marker = '=', space, {space}, '^', {space} ;
+header_colspan_marker = '=', space, {space}, '<', {space} ;
+(* The header kind ends at its usual space, and the whole remaining cell is
+   the placeholder. `|= ^ |` and `|= < |` are the canonical padded forms.
+   A literal header glyph is escaped; `|=^ |` is not a header placeholder. *)
 
 rowspan_marker = {space}, '^' ;
 colspan_marker = {space}, '<' ;

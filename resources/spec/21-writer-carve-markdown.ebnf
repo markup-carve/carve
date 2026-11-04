@@ -227,8 +227,8 @@
         span_cell      = header_rowspan_marker | header_colspan_marker
                        | ['='], cell_alignment_block, space, ('^' | '<'), {space}
                        | rowspan_marker | colspan_marker ;
-        header_rowspan_marker = '=', '^', space ;
-        header_colspan_marker = '=', '<', space ;
+        header_rowspan_marker = '=', space, {space}, '^', {space} ;
+        header_colspan_marker = '=', space, {space}, '<', {space} ;
         rowspan_marker = {space}, '^' ;
         colspan_marker = {space}, '<' ;
 
@@ -237,6 +237,7 @@
       CARVE-P11-014's space does nothing for it. §2 applies by its own test:
       omitting the escape changes the re-parsed AST, so the payload is escaped
       and the writer emits `| \^ |`, `| \< |`, or `|{?^} \< |` for literal data.
+      A literal header glyph is escaped: `|= \^ |` or `|= \< |`.
       A data payload `=^` or `=<` is escaped at `=`; a literal `=` before a
       brace block is escaped whenever it would start a header prefix.
 
@@ -279,9 +280,9 @@
       A span placeholder keeps its marker and any alignment-only block,
       including an orphan in the first row and a covered placeholder whose
       block alone sets its column default. A `^` or `<` placeholder whose
-      `header` field is true is written header-kind, `|=^ |` or `|=< |`
+      `header` field is true is written header-kind, `|= ^ |` or `|= < |`
       (PART 9 §5 T4). Thus a separator-promoted orphan keeps its kind:
-      `| ^ | a |` over a separator becomes `|=^ |= a |`. The canonical writer
+      `| ^ | a |` over a separator becomes `|= ^ |= a |`. The canonical writer
       NEVER writes a separator row. GFM separator form remains valid input.
 
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
