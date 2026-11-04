@@ -89,24 +89,21 @@ combine on one span where the `:type[…]` form cannot nest.
 
 **Multi-line cells:**
 ```carve
-| Name   | Description        |
-|--------|---------------------|
+|= Name   |= Description        |
 | Item 1 | A long description |
 +        | that continues     |
 ```
 
 **Rowspan (`^`) and Colspan (`<`):**
 ```carve
-| Category | Item   | Price |
-|----------|--------|-------|
+|= Category |= Item   |= Price |
 | Fruits   | Apple  | $1.00 |
 | ^        | Banana | $0.50 |
 | ^        | Orange | $0.75 |
 ```
 
 ```carve
-| Name  | Contact Info      | <     |
-|-------|-------------------|-------|
+|= Name  |= Contact Info      |= <     |
 | Alice | alice@example.com | x5234 |
 ```
 

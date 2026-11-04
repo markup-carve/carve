@@ -311,8 +311,7 @@ the group (PART 9 §4c).
 ````carve
 {#fig-m}
 ::: figure
-| Kind | N |
-|------|---|
+|= Kind |= N |
 | a    | 1 |
 
 ```js

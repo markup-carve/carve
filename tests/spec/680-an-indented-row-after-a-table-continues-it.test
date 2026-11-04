@@ -1,8 +1,7 @@
 An indented row after a table continues it
 
 ```
-|a|
-|---|
+|= a |
 |b|
  |c|
 .

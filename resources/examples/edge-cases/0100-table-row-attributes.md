@@ -9,8 +9,7 @@ delimiter row.
 ::: compare
 
 ```carve
-| Name | Score |{.head}
-|------|-------|
+|= Name |= Score |{.head}
 | Ann  | 9     |{.win}
 ```
 

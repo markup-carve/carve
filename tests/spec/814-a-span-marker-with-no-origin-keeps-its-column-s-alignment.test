@@ -1,8 +1,7 @@
 A span marker with no origin keeps its column's alignment
 
 ```
-| a | b |
-|-:|:-:|
+|={>} a |={~} b |
 | < | c |
 .
 <table>
@@ -16,8 +15,7 @@ A span marker with no origin keeps its column's alignment
 ```
 
 ```
-| ^ |={>} b |
-|-:|---|
+|={>} ^ |={>} b |
 | c | d |
 .
 <table>

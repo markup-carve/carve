@@ -7,8 +7,7 @@ renders as an empty cell rather than being dropped.
 ::: compare
 
 ```carve
-| < | b |
-|---|---|
+|= < |= b |
 | c | d |
 ```
 

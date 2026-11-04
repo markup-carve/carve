@@ -14,8 +14,7 @@ column, and the trailing `e` follows as a plain cell.
 ::: compare
 
 ```carve
-| p | q | r | s |
-|---|---|---|---|
+|= p |= q |= r |= s |
 | a | b | c | d |
 | p | ^ | < | e |
 ```

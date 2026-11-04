@@ -1,8 +1,7 @@
 Blocked span marker renders as empty cell
 
 ```
-| A | B | C |
-|---|---|---|
+|= A |= B |= C |
 | x | y | z |
 | ^ | < | d |
 .

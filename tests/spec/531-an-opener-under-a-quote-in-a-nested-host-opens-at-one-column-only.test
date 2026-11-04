@@ -109,8 +109,7 @@ An opener under a quote in a nested host opens at one column only
 ```
 - a
   > q
-   | c |
-   |---|
+   |= c |
    | 1 |
 .
 <ul>

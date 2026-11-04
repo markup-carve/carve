@@ -5,8 +5,7 @@ A body row indented past the table base still continues the table.
 ::: compare
 
 ```carve
-|a|
-|---|
+|= a |
 |b|
  |c|
 ```

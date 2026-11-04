@@ -29,8 +29,7 @@ short, and the canonical native `=` spelling does not need a delimiter row.
 ::: compare
 
 ```carve
-| |x |
-|---|
+|= |= x |
 | y |
 ```
 
@@ -53,8 +52,7 @@ still preserve it as a header without manufacturing another header cell.
 ::: compare
 
 ```carve
-| h |
-|---|
+|= h |
 | |x |
 ```
 

@@ -1,3 +1,2 @@
-| a {% hidden %} b | c |
-|---|---|
+|= a {% hidden %} b |= c |
 | d %% tail | e |

@@ -70,8 +70,7 @@ on the merged head cell overrides the delimiter only in its starting column.
 ::: compare
 
 ```carve
-|{>} Wide|<|{~} Last|
-|:--|:--|:--|
+|={>} Wide |={<} < |={~} Last |
 |a|b|c|
 ```
 

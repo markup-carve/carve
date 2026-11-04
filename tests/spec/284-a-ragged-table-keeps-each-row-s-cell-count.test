@@ -13,8 +13,7 @@ A ragged table keeps each row's cell count
 ```
 
 ```
-| |x |
-|---|
+|= |= x |
 | y |
 .
 <table>
@@ -28,8 +27,7 @@ A ragged table keeps each row's cell count
 ```
 
 ```
-| h |
-|---|
+|= h |
 | |x |
 .
 <table>

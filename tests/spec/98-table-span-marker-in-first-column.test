@@ -1,8 +1,7 @@
 Table span marker in first column
 
 ```
-| < | b |
-|---|---|
+|= < |= b |
 | c | d |
 .
 <table>

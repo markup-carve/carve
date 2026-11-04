@@ -169,8 +169,7 @@ canonical writer spells it header-kind (CARVE-P11-066).
 ::: compare
 
 ```carve
-| ^ | a |
-|---|---|
+|= ^ |= a |
 | 1 | 2 |
 ```
 

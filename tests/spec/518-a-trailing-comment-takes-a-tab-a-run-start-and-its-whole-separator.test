@@ -33,8 +33,7 @@ a  %% hidden
 ```
 
 ```
-| a	%% hidden | b |
-|---|---|
+|= a	%% hidden |= b |
 | 1 | 2 |
 .
 <table>
@@ -48,8 +47,7 @@ a  %% hidden
 ```
 
 ```
-| %% hidden | b |
-|---|---|
+|= %% hidden |= b |
 | 1 | 2 |
 .
 <table>

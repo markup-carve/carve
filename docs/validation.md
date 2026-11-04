@@ -181,6 +181,7 @@ the command-line and editor behavior stay aligned.
 | `markdown-definition-paragraph` | `term` followed by `: definition` remains a paragraph; Carve needs `:: term` |
 | `github-alert-marker` | `[!NOTE]` or `[!WARNING]` in a blockquote stays literal text |
 | `caption-looking-paragraph` | opt-in hint for a caption-like paragraph directly before or after a table or image |
+| `gfm-delimiter-row` | a GFM separator row in authored Carve; default-on warning. Run `carve fmt` to replace it with native `|=` header cells and keep the table meaning |
 | `deprecated-cell-alignment` | a released 0.1.13 table cell alignment prefix such as `|=> Price |` or `|?v x |`; the prefix remains readable through 0.1.x, and `carve fmt` moves its symbols into a glued leading attribute-block run such as `|={>} Price |` or `|{?v} x |` |
 | `bidi-control-in-source` | a Trojan-Source bidi override or isolate control (U+202A–U+202E, U+2066–U+2069) that canonical Carve preserves but every presentation target strips |
 | `duplicate-heading-id` | two headings producing the same id, either by slug collision or repeated explicit `{#id}` |
