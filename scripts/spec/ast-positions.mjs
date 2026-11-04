@@ -300,6 +300,15 @@ export const EMPTY_CONTAINER_MARKUP = new Map(
   }),
 )
 
+/**
+ * Source holding nothing but blank lines and `%%` lines S1 erased. A container
+ * reaching over it is the trailing half of carve#5136; the clause is named in
+ * the finding so the engine fix reads off the message.
+ */
+const ERASED_COMMENT_TAIL = /^(?:[ \t]*(?:%%(?!%)[^\n\r]*)?(?:\r\n|\n|\r|$))+$/
+const ERASED_LINE_HINT =
+  'an erased comment line no child owns is not the container\'s (CARVE-P12-014, CARVE-P12-022)'
+
 export function checkStopsAtChildren(doc, codepoints, findings) {
   let examined = 0
   for (const [node, path] of walkNodes(doc)) {
@@ -418,7 +427,8 @@ export function checkStopsAtChildren(doc, codepoints, findings) {
     findings.push(
       `span reaches past its last child on "${node.type}" at ${path}: ` +
         `it ends at ${pos.endOffset}, its last child ends at ${lastChildEnd}, and ` +
-        `${JSON.stringify(tail)} belongs to no child of it`,
+        `${JSON.stringify(tail)} belongs to no child of it` +
+        (ERASED_COMMENT_TAIL.test(tail) && tail.includes('%%') ? `; ${ERASED_LINE_HINT}` : ''),
     )
   }
 
@@ -861,9 +871,13 @@ function checkSiblingOverlap(node, path, findings) {
           first[0].pos.startOffset < second[0].pos.endOffset &&
           second[0].pos.startOffset < first[0].pos.endOffset
         ) {
+          // A line comment inside a sibling's span is a node joined across an
+          // erased line, which omits `pos` (carve#5136).
+          const erased = second[0].type === 'comment' && second[0].form === 'line'
           findings.push(
             `sibling spans overlap at ${path}.${key}[${second[1]}]: "${second[0].type}" starts at ` +
-              `${second[0].pos.startOffset}, inside "${first[0].type}" which ends at ${first[0].pos.endOffset}`,
+              `${second[0].pos.startOffset}, inside "${first[0].type}" which ends at ${first[0].pos.endOffset}` +
+              (erased ? `; a "${first[0].type}" joined across an erased comment line omits pos (CARVE-P12-022)` : ''),
           )
           break
         }

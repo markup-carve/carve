@@ -12742,7 +12742,18 @@ EOF = (* end of file *) ;
       unattached attribute block (PART 9 §15 A4) is not. A container ends after
       its explicit closer when it has one, otherwise after its last PLACED
       child. A soft or hard break owns its line terminator, so its exclusive end
-      is column 1 of the next line.
+      is column 1 of the next line. A `%%` line S1 erased (PART 0) that no child
+      owns is not owned source either: a closerless container ends at its last
+      placed child before it, and one emptied of every child spans its own
+      markup (CARVE-P12-018):
+
+          - :: term
+            : payload
+
+              %% c
+          - sub
+
+      The first `list_item` ends after `payload`, at offset 21.
 
       A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD
       IS UNPLACED -- NORMATIVE [CARVE-P12-020]. A container whose last child
@@ -12806,6 +12817,20 @@ EOF = (* end of file *) ;
           | Fresh Fruits    | Apple   |
           + from local      |         |
           + farms           |         |
+
+      AN ERASED COMMENT LINE SEPARATES THE PIECES. A `%%` line S1 erased
+      (PART 0) leaves the paragraph around it open, so the paragraph and the
+      `soft_break` that crosses the line are joined across it and omit `pos`:
+
+          a
+          %% x
+          b
+
+      The `comment` stays a block-level sibling after the paragraph with its
+      own span, offsets 2 to 6, and the two `text` nodes keep theirs. A
+      container whose span would run over such a line in the middle, where
+      the comment is not its descendant, omits `pos` the same way; one the line
+      would only trail ends before it (CARVE-P12-014). The tree is unchanged.
 
       The test is whether a true span EXISTS. A node the producer has not
       placed yet is a gap, not this case, and the exemption does not license
