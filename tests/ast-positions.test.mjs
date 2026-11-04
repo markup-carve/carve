@@ -1537,7 +1537,7 @@ test('an item emptied by a consumed + may span its marker, task box and +', () =
 })
 
 test('an emptied item reaching past its marker line markup still reports', () => {
-  for (const line of ['- + x', '- [d]: u', '- [ ] [d]: u', '- + +']) {
+  for (const line of ['- + x', '- [d]: u', '- [ ] [d]: u', '- + +', '1. [x] +']) {
     const source = `${line}\nb\n`
     const findings = stopFindings(emptyItemDoc(line.length), source)
     assert.equal(findings.length, 1, line)
