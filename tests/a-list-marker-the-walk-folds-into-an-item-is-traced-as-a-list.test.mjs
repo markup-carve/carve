@@ -23,7 +23,7 @@ test('a marker off the column keeps its continuation, lazy and nested lines', ()
   assert.equal(steps('- a\n  - +\n * w\n')[2], '3 S5 doc/item:3 item')
   assert.deepEqual(steps('1. +\n - s\n\nafter\n').slice(2), ['3 S5 doc/item:2 blank', '4 S5 doc text'])
   assert.deepEqual(steps('1. +\n - s\n* t\n').slice(1), ['2 S5 doc/item:2 item', '3 S5 doc/item:3 item'])
-  assert.deepEqual(steps('- +\n + w\n* z\n').slice(1), ['2 S4 doc/item:1 lazy', '3 S5 doc/item:3 item'])
+  assert.deepEqual(steps('- +\n + w\n* z\n').slice(1), ['2 S5 doc text', '3 S5 doc text'])
 })
 
 test('a marker of another list kind under an item paragraph is traced as a new list', () => {
@@ -41,13 +41,13 @@ test('a marker of another kind off the parent column opens a new list', () => {
   assert.equal(renderDoc(parse(source)), '<ul>\n  <li>a</li>\n  <li>w</li>\n</ul>\n<ul>\n  <li>v</li>\n</ul>')
 })
 
-// carve#4214, carve#4409: off the marker column the `+` is a letter and the
-// paragraph folds into it; at the marker column the `+` takes the paragraph.
+// carve#5013: off the marker column the refused `+` renders nothing and opens no
+// paragraph (carve#5111); at the marker column the `+` takes the paragraph.
 test('a paragraph off the marker column of a nested + is traced as lazy in the item', () => {
   const source = '- a\n  - +\n para\n'
-  assert.deepEqual(steps(source).slice(2), ['3 S4 doc/item:1/item:2 lazy'])
-  assert.equal(modelTrace(source)[2].closed, undefined)
+  assert.deepEqual(steps(source).slice(2), ['3 S5 doc text'])
+  assert.equal(modelTrace(source)[2].closed, 2)
   assert.deepEqual(steps('  - +\n  para\n* z\n').slice(1), ['2 S5 doc/item:1 text', '3 S5 doc/item:3 item'])
   assert.equal(modelTrace('- a\n  - +\n  para\n')[2].owner, 'doc/item:1/item:2')
-  assert.equal(steps('  - +\npara\n')[1], '2 S4 doc/item:1 lazy')
+  assert.equal(steps('  - +\npara\n')[1], '2 S5 doc text')
 })

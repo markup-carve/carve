@@ -4017,7 +4017,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           }
         }
         lead(m.col)
-        frame.para = frame.plus !== at
+        // A refused `+` opens no paragraph either (§17 L3); a note body still
+        // takes the next line lazily (corpus 437-2, 838-2).
+        frame.para = frame.plus !== at && (refusedPlus.at(-1) !== at || frames.some((f) => f.kind === 'note'))
         frame.last = 'para'
         return
       }
