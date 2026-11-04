@@ -3775,10 +3775,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             chain = matchMarkerAt({ col: 0, rest: tail })
             continue
           }
+          // A marker that misses only quotes or a colon body folds as text,
+          // and so does its `+` (PART 0 S4, PART 9 §10 I2).
           if (!attachesAt('item', at, column, reached + 1)) {
-            src = src.slice(0, src.length - inner.rest.length) + '%%'
+            src = src.slice(0, src.length - inner.rest.length) + inner.rest.replace('+', plusLetter)
             m = walkIndent(src)
-            refusedPlus.push(at)
           }
           break
         }
