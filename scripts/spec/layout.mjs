@@ -1796,14 +1796,17 @@ function refusedBlockBraceRun(lines, start, cache) {
 }
 
 // The last line a refused run's paragraph keeps: the follower, a fence opener there through its closer (CARVE-P2-035).
-function refusedRunKeptThrough(lines, start, cache) {
+// A follower short of the run's container column is read as usual (PART 0 S4), so only prose there is kept.
+function refusedRunKeptThrough(lines, start, cache, containerCol = 0) {
   let runEnd = refusedBlockBraceRun(lines, start, cache)
   if (runEnd === null) return null
   // PART 0 S1 erases a comment or link definition line first, so the follower is the line after it.
   while (lines[runEnd] !== undefined && invisibleSiblingLine(indentCols(lines[runEnd]).rest)) runEnd++
   const follower = lines[runEnd]
   if (follower === undefined || isBlank(follower)) return runEnd - 1
-  const fence = FENCE.exec(indentCols(follower).rest)
+  const measured = indentCols(follower)
+  if (measured.col < containerCol && !readsAsProse(measured.rest)) return runEnd - 1
+  const fence = FENCE.exec(measured.rest)
   if (!fence || parseFenceInfo(fence[2], fence[1]) === null) return runEnd
   // The paragraph still ends at a blank; a fence with no closer at all is the follower alone.
   let blank = -1
@@ -1815,14 +1818,17 @@ function refusedRunKeptThrough(lines, start, cache) {
   return runEnd
 }
 
+const readsAsProse = (rest) => opensParagraph(rest, true) && !FENCE.test(rest) && !COLON_FENCE.test(rest) && rest[0] !== '{'
+
 // Whether `last` is a line a refused brace run's paragraph keeps. Prose there
 // leaves the paragraph open anyway, so only a block-shaped tail is traced back.
 function endsInRefusedRunParagraph(bodyLines, last) {
-  const tail = indentCols(bodyLines[last]).rest
-  if (opensParagraph(tail, true) && !FENCE.test(tail) && !COLON_FENCE.test(tail) && tail[0] !== '{') return false
+  if (readsAsProse(indentCols(bodyLines[last]).rest)) return false
   const cache = { commentScannedThrough: -1 }
   for (let k = last; k >= 0 && !isBlank(bodyLines[k]); k--) {
     if (indentCols(bodyLines[k]).rest[0] !== '{') continue
+    // A run folded lazily into a quote's paragraph misses the quote and keeps nothing (PART 0 S4).
+    if (k > 0 && QUOTE.test(walkIndent(bodyLines[k - 1]).rest)) return false
     const kept = refusedRunKeptThrough(bodyLines, k, cache)
     if (kept !== null) return kept >= last
   }
@@ -1831,8 +1837,9 @@ function endsInRefusedRunParagraph(bodyLines, last) {
 
 // refusedRunKeptThrough for a run that `text` opens inside the items and
 // quotes it starts, read in that container's coordinates. `below` holds the
-// lines from `text`'s own on, at its column.
-function refusedRunKeptInside(text, below) {
+// lines from `text`'s own on, at its column. `containerCol` is where the
+// container `text` stands in begins, in the same coordinates.
+function refusedRunKeptInside(text, below, containerCol = 0) {
   if (!text.includes('{')) return null
   let depth = 0
   let tail = text
@@ -1842,9 +1849,11 @@ function refusedRunKeptInside(text, below) {
     if (quote) {
       tail = quote[1] ?? ''
       depth++
+      containerCol = 0
     } else if (marker) {
       const lead = indentCols(marker.text)
-      tail = ' '.repeat(marker.indent + marker.markerWidth + lead.col) + lead.rest
+      containerCol = marker.indent + marker.markerWidth
+      tail = ' '.repeat(containerCol + lead.col) + lead.rest
     } else break
   }
   if (indentCols(tail).rest[0] !== '{') return null
@@ -1852,7 +1861,7 @@ function refusedRunKeptInside(text, below) {
     get: (_, key) => key === '0' ? tail : key === 'length' ? below.length
       : below[key] === undefined ? undefined : stripQuotes(below[key], depth)?.rest ?? '',
   })
-  return refusedRunKeptThrough(window, 0, { commentScannedThrough: -1 })
+  return refusedRunKeptThrough(window, 0, { commentScannedThrough: -1 }, containerCol)
 }
 
 function isDefinitionOrAttributeLine(line) {
@@ -3827,7 +3836,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (f.plusShift && m.col < f.plusShift.col) f.plusShift = undefined
       if (f.closedList && m.col < f.closedList.col) f.closedList = undefined
     }
-    const form = classify(m.rest, owner, at, m.col)
+    const form = classify(m.rest, owner, at, m.col, missed)
     // A lazy line folds into a line block's open stanza and closes nothing,
     // so the block's closer still finds it (PART 0 S4). An open payload span
     // cannot carry that stanza past a quote the line missed (carve#5062).
@@ -4453,10 +4462,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     return { host, depth, endsAt, frames: frames.slice() }
   }
 
-  function classify(rest, owner, at, col) {
+  function classify(rest, owner, at, col, missed = false) {
     // Line-final whitespace is trimmed before a line is read, so heads are measured without it.
     rest = trimLineEnd(rest)
     if (rest === '') return { kind: 'blank', interrupts: true }
+    // A line short of its container is read as usual (PART 0 S4): a run there keeps nothing, and a block there ends the keeping.
+    if (missed) {
+      const form = classifyShape(rest, owner, at, col)
+      if (form.kind !== 'text' && at > refusedKept.start && at <= refusedKept.through) refusedKept.through = -1
+      return form
+    }
     // A refused brace run and the line its paragraph keeps are text (CARVE-P2-035).
     if (at > refusedKept.start && at <= refusedKept.through && !invisibleSiblingLine(rest)) return { kind: 'text', interrupts: false, kept: true }
     if (rest[0] === '{' && at !== refusedKept.start) {
@@ -4475,6 +4490,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         return { kind: 'text', interrupts: false, kept: true }
       }
     } else if (rest[0] === '{' && at <= refusedKept.through) return { kind: 'text', interrupts: false, kept: true }
+    return classifyShape(rest, owner, at, col)
+  }
+
+  function classifyShape(rest, owner, at, col) {
     if (QUOTE.test(rest)) return { kind: 'quote', interrupts: true }
     const colon = COLON_FENCE.exec(rest)
     if (colon && COLON_CLOSER.test(rest)) {
@@ -6055,7 +6074,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // A marker below the body's column is no sibling of a list in the body,
               // so it continues the open paragraph once the description dedents it (PART 0 S4).
               const foldedMarker = matchMarkerAt(indentCols(dedented))
-              pushBody(lazyFence || foldedMarker || verseSpanEnded || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
+              // A folded attribute-shaped run is text, so its kept-line rule does not reach the body (CARVE-P2-035).
+              const foldedRun = dedented[0] === '{' && dedented[1] !== '%'
+              pushBody(lazyFence || foldedMarker || verseSpanEnded || CAPTION.test(dedented) || foldedRun ? lazyFrame(dedented) : dedented)
               foldedParagraphAt = bodyLines.length
               i++
               continue
@@ -6690,7 +6711,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qItemPara = false
           return
         }
-        if (idx > qRefusedThrough.at && l.includes('{')) {
+        // A run folded lazily into an item's paragraph is short of the item and keeps nothing (PART 0 S4).
+        const lazyInItem = qOpenPara && !QUOTE.test(walkIndent(l).rest) &&
+          ((qHost.columns.length > 1 && indentCols(l).col < qHost.columns.at(-1) && !matchMarkerAt(indentCols(l))) ||
+            QUOTE.test(walkIndent(stripQuotes(lines[idx - 1] ?? '', 1)?.rest ?? '').rest))
+        if (idx > qRefusedThrough.at && !lazyInItem && l.includes('{')) {
           // A nested quote's run is read at its own depth.
           let depth = 0
           let tail = l
@@ -6699,9 +6724,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             depth++
           }
           // So is a run on an item's marker line, at the item's content column.
+          let containerCol = depth === 0 && qHost.columns.length > 1 && indentCols(tail).col >= qHost.columns.at(-1) ? qHost.columns.at(-1) : 0
           for (let m = matchMarkerAt(indentCols(tail)); m; m = matchMarkerAt(indentCols(tail))) {
             const lead = indentCols(m.text)
-            tail = ' '.repeat(m.indent + m.markerWidth + lead.col) + lead.rest
+            containerCol = m.indent + m.markerWidth
+            tail = ' '.repeat(containerCol + lead.col) + lead.rest
           }
           if (indentCols(tail).rest[0] === '{') {
             const quoted = new Proxy([], {
@@ -6712,7 +6739,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 return offset === 0 ? tail : stripQuotes(lines[idx + offset] ?? '', depth + 1)?.rest ?? ''
               },
             })
-            const kept = refusedRunKeptThrough(quoted, 0, { commentScannedThrough: -1 })
+            const kept = refusedRunKeptThrough(quoted, 0, { commentScannedThrough: -1 }, containerCol)
             if (kept !== null) qRefusedThrough = { at: idx + kept, depth }
           }
         }
@@ -10047,8 +10074,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           const attributes = tryAttrLine(dedentedWindow(lines, i, lm.col), 0)
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
         }
-        if (i > refusedParaThrough && i > wrappedAttrEnd && !insideFence() && !nestedVerbatim() && /^[ \t]*[{>]|^[^ \t]/.test(dmeas.rest)) {
-          const kept = refusedRunKeptInside(dedented, dedentedWindow(lines, i, localBase))
+        // A run folded lazily into a descendant's paragraph is short of its container and keeps nothing (PART 0 S4).
+        const lazyInDescendant = (childParagraphOpen && childCol >= 0 && reach < childCol) ||
+          (!QUOTE.test(dedented) && (bodyQuote.open || QUOTE.test(walkIndent(i - 1 === headIndex ? head.text : lines[i - 1] ?? '').rest)))
+        if (i > refusedParaThrough && i > wrappedAttrEnd && !lazyInDescendant && !insideFence() && !nestedVerbatim() && /^[ \t]*[{>]|^[^ \t]/.test(dmeas.rest)) {
+          const kept = refusedRunKeptInside(dedented, dedentedWindow(lines, i, localBase),
+            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0)
           if (kept !== null) refusedParaThrough = i + kept
         }
         const keptByRefusal = i <= refusedParaThrough
