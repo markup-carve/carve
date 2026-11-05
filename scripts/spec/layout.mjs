@@ -1865,10 +1865,11 @@ function invisibleSiblingLine(rest) {
 }
 
 // A paragraph of only comments renders nothing, so a list reads it as it reads a `%%` line (carve#4799).
+// `measured` keeps the lines' indentation where `rests` drops it (CARVE-P2-035).
 // Returns the index past its last line, or -1. A block opener, `%%` line or attribute line ends
 // it (§10 I1/I5), and so does a list marker in an item (§24 C3). Elsewhere the marker joins
 // the paragraph, which keeps it visible.
-function commentOnlyParaEnd(rests, k, inItem) {
+function commentOnlyParaEnd(rests, k, inItem, measured = rests) {
   if (!indentCols(rests[k] ?? '').rest.startsWith('{%')) return -1
   let end = k + 1
   for (; end < rests.length && !isBlank(rests[end] ?? ''); end++) {
@@ -1880,7 +1881,17 @@ function commentOnlyParaEnd(rests, k, inItem) {
     }
   }
   const para = []
-  for (let j = k; j < end; j++) para.push(rests[j])
+  const cache = { commentScannedThrough: -1 }
+  let open = false
+  for (let j = k; j < end; j++) {
+    // A run whose continuation fails CARVE-P2-035 is paragraph text, so the paragraph is visible.
+    if (!open && indentCols(measured[j]).rest[0] === '{' && refusedBlockBraceRun(measured, j, cache) !== null) return -1
+    for (let c = 0; c < rests[j].length - 1; c++) {
+      if (!open && rests[j][c] === '{' && rests[j][c + 1] === '%') { open = true; c++ }
+      else if (open && rests[j][c] === '%' && rests[j][c + 1] === '}') { open = false; c++ }
+    }
+    para.push(rests[j])
+  }
   return COMMENT_ONLY_PARA.test(para.join('\n')) ? end : -1
 }
 
@@ -7118,7 +7129,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         ? refusedBlockBraceRun(lines, i, refusedCache) : null
       if (refusedBraceEnd !== null) {
         const start = para.length
-        while (i < refusedBraceEnd) para.push(stripIndent(lines[i++]).replace(/[ \t]+$/, ''))
+        while (i < refusedBraceEnd) para.push(stripLazy(stripIndent(lines[i++])).replace(/[ \t]+$/, ''))
         literalSegments.push([start, para.length])
         inlineSpan.scanned = para.length
         forcedAfterRefusal = true
@@ -8389,6 +8400,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemShowsSomething = () => {
       const rests = itemLines.map((text) => trimLineEnd(indentCols(stripLazy(text)).rest))
       const run = (rest) => COMMENT_FENCE_BODY.exec(rest)?.[1].length
+      let measured = null
       // If the note still owns the last nonblank source line, its predicate
       // has checked the entire run since the opener. Reuse that answer for
       // the run instead of rescanning each growing prefix.
@@ -8416,7 +8428,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (close > k) k = close
         else if (rests[k] !== '' && !COMMENT_LINE.test(rests[k]) &&
             !isDefinitionOrAttributeLine(rests[k])) {
-          const para = commentOnlyParaEnd(rests, k, true)
+          measured ??= itemLines.map((text) => trimLineEnd(stripLazy(text)))
+          const para = commentOnlyParaEnd(rests, k, true, measured)
           if (para === -1) return true
           k = para - 1
         }
