@@ -7,32 +7,5 @@
     "php": "6f830e30908204b2a950a984b7d7efaf882992f0",
     "rust": "751c904e67f16e6b7127b746a82e977053e5f9a1"
   },
-  "differences": [
-    {
-      "key": "commonmark/markdown/175",
-      "fingerprint": "b319521797395d3b98ac8052a6ba11cb8c85684dc2a26818df54e7283db5a2cf",
-      "reason": "The Rust Markdown importer spells this list-item HTML block as raw inline, changing its HTML; carve-rs#3927 tracks the fix.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/3927",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "- ```=html\n  <div>\n  ```\n- foo\n",
-            "html": "<ul>\n  <li>\n    <div>\n  </li>\n  <li>foo</li>\n</ul>"
-          },
-          "php": {
-            "status": 0,
-            "source": "- ```=html\n  <div>\n  ```\n- foo\n",
-            "html": "<ul>\n  <li>\n    <div>\n  </li>\n  <li>foo</li>\n</ul>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "- `<div>`{=html}\n- foo\n",
-            "html": "<ul>\n  <li><div></li>\n  <li>foo</li>\n</ul>"
-          }
-        }
-      }
-    }
-  ]
+  "differences": []
 }
