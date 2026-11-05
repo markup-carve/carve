@@ -7595,7 +7595,7 @@ function descriptionLeadSpanOpen(bodyLines) {
   for (; scan.at < bodyLines.length; scan.at++) {
     const line = bodyLines[scan.at]
     // Only a line holding a `%` run can open or close a span; the rest is measured only inside one.
-    if (!scan.span && !line.includes('%%%')) continue
+    if (!scan.span && (!line.includes('%%%') || line.startsWith(LAZY))) continue
     const measured = quoteFreeMeasure(line)
     if (scan.span) {
       const closer = COMMENT_FENCE.exec(measured.rest)
