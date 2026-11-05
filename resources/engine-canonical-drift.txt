@@ -9,3 +9,5 @@
 620-generated-container-documents-14  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
 961-a-container-owned-comment-run-is-one-writer-block  markup-carve/carve#5206 (carve-js), the pinned writer moves a container-owned comment run outside its loose description
 961-a-container-owned-comment-run-is-one-writer-block-2  markup-carve/carve#5206 (carve-js), the pinned writer omits the blank before a loose list's container-owned comment run
+945-a-column-0-comment-before-a-sibling-keeps-the-blank-that-loosens-the-list  markup-carve/carve#5207 (carve-js), the pinned writer separates consecutive comments owned by different blocks and drops the loosening blank
+962-a-document-owned-comment-run-stays-between-list-items  markup-carve/carve#5207 (carve-js), the pinned writer omits blank boundaries around document-owned comments between list items
