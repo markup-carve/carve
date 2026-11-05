@@ -1,0 +1,44 @@
+A container-owned comment run is one writer block
+
+```
+:: t
+: a
+
+  %% c
+  %% d
+
+  b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <p>b</p>
+  </dd>
+</dl>
+```
+
+```
+- a
+
+  %% y
+  %% z
+- c
+.
+<ul>
+  <li><p>a</p></li>
+  <li><p>c</p></li>
+</ul>
+```
+
+```
+- a
+  %% y
+  %% z
+- c
+.
+<ul>
+  <li>a</li>
+  <li>c</li>
+</ul>
+```
