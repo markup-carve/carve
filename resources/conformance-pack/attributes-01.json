@@ -587,7 +587,7 @@
 {"id":"attributes-80d12a718b30","source":":: t\n{  d\n   {.k}\n   # H\n","html":"<dl>\n  <dt>t</dt>\n</dl>\n<p>{  d</p>\n<section id=\"H\">\n  <h1 class=\"k\">H</h1>\n</section>"},
 {"id":"attributes-80f499652a38","source":"- a\n  {.x}\n%%%\n  para\n","html":"<ul>\n  <li>a</li>\n</ul>"},
 {"id":"attributes-80f80ddb19b6","source":" {.note}\nThis paragraph gets the cllass.\n","html":"<p class=\"note\">This paragraph gets the cllass.</p>"},
-{"id":"attributes-80f810d07ee5","source":"  - b\n- a\n  - c\n:     {#x}\n","html":"<ul>\n  <li>b</li>\n  <li>a\n    <ul>\n      <li>c\n:     {<span class=\"tag\"><strong>#x</strong></span>}</li>\n    </ul>\n  </li>\n</ul>"},
+{"id":"attributes-80f810d07ee5","source":"  - b\n- a\n  - c\n:     {#x}\n","html":"<ul>\n  <li>b</li>\n  <li>a\n    <ul>\n      <li>c</li>\n    </ul>\n  </li>\n</ul>\n<p>:     {<span class=\"tag\"><strong>#x</strong></span>}</p>"},
 {"id":"attributes-81220f2e02d1","source":"_*a*{t=\"_\"} b/{t=c_}\ntext\n","html":"<p><u><strong t=\"_\">a</strong> b/{t=c</u>}\ntext</p>"},
 {"id":"attributes-81f0608500d3","source":"_*a*{title=\"_\"} b_\n\t|= a |= b |\n","html":"<p><u><strong title=\"_\">a</strong> b</u></p>\n<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n</table>"},
 {"id":"attributes-824b811637e6","source":"{\n\n^[fn]\n- a\n  {.x}\n  para\n","html":"<p>{</p>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>\n- a</p>\n<p class=\"x\">para</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>fn<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"},

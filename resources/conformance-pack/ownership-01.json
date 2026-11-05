@@ -373,7 +373,7 @@
 {"id":"ownership-4b4d0c41672e","source":": b\n  # H\n  :: c\n","html":"<p>: b</p>\n<section id=\"H\">\n  <h1>H</h1>\n  <dl>\n    <dt>c</dt>\n  </dl>\n</section>"},
 {"id":"ownership-4b4e1341cd5d","source":"- a\n  > q\n     ```js\n   > x   c\n\n    ```\n","html":"<ul>\n  <li>a\n    <blockquote><p>q</p></blockquote>\n    <pre><code class=\"language-js\">&gt; x   c\n\n</code></pre>\n  </li>\n</ul>"},
 {"id":"ownership-4b546e287bf8","source":":: t\n::t\n: - +\n   #  H\n","html":"<dl>\n  <dt>t</dt>\n</dl>\n<p>::t\n: - +</p>\n<section id=\"H\">\n  <h1>H</h1>\n</section>"},
-{"id":"ownership-4b6c37b04931","source":"- foo\n  - [[ ] +\n:     > b\n","html":"<ul>\n  <li>foo\n    <ul>\n      <li>[[ ] +\n:     &gt; b</li>\n    </ul>\n  </li>\n</ul>"},
+{"id":"ownership-4b6c37b04931","source":"- foo\n  - [[ ] +\n:     > b\n","html":"<ul>\n  <li>foo\n    <ul>\n      <li>[[ ] +</li>\n    </ul>\n  </li>\n</ul>\n<p>:     &gt; b</p>"},
 {"id":"ownership-4c0abeacc05c","source":" - a\n  - ```\n> > p\n  x\n  +\n","html":"<ul>\n  <li>a</li>\n  <li>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<blockquote>\n  <blockquote><p>p\nx</p></blockquote>\n</blockquote>"},
 {"id":"ownership-4c378ce2fb42","source":"- t\n  {.c}\n  %% c\n  %% c\n   ````\n   ````\n  x\n","html":"<ul>\n  <li>t\n    <pre class=\"c\"><code></code></pre>\n    x\n  </li>\n</ul>"},
 {"id":"ownership-4c3901b596db","source":":: t\n : - - ```\n      ```\n```\n","html":"<dl>\n  <dt>t</dt>\n  <dd>\n    <ul>\n      <li>\n        <ul>\n          <li>\n            <pre><code></code></pre>\n          </li>\n        </ul>\n        <pre><code></code></pre>\n      </li>\n    </ul>\n  </dd>\n</dl>\n<pre><code></code></pre>"},
