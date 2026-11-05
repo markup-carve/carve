@@ -21,3 +21,6 @@
 #
 # Format: <slug><space><space><reason>
 959-a-braced-comment-that-starts-a-continuation-line-is-at-block-position-4  markup-carve/carve#5189, the pin's writer drops the indentation past the opening { of a continuation-line comment run, so the oracle reads the formatted run as literal text (CARVE-P2-035)
+960-a-lazy-braced-comment-uses-source-columns-in-every-host-2  carve#5203: the pinned writer removes the source-column step that makes a lazy {% run erasable, so the oracle reads its output as literal text (CARVE-P2-035)
+960-a-lazy-braced-comment-uses-source-columns-in-every-host-4  carve#5203: the pinned writer removes the source-column step that makes a lazy {% run erasable, so the oracle reads its output as literal text (CARVE-P2-035)
+960-a-lazy-braced-comment-uses-source-columns-in-every-host-8  carve#5203: the pinned writer removes the source-column step that makes a lazy {% run erasable, so the oracle reads its output as literal text (CARVE-P2-035)

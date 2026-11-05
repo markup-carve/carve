@@ -1,0 +1,109 @@
+A lazy braced comment uses source columns in every host
+
+```
+- pre
+{% b
+b %}
+.
+<ul>
+  <li>pre
+{% b
+b %}</li>
+</ul>
+```
+
+```
+- pre
+{% b
+ b %}
+.
+<ul>
+  <li>pre
+</li>
+</ul>
+```
+
+```
+> pre
+{% b
+b %}
+.
+<blockquote><p>pre
+{% b
+b %}</p></blockquote>
+```
+
+```
+> pre
+{% b
+ b %}
+.
+<blockquote><p>pre
+</p></blockquote>
+```
+
+```
+[^a]: pre
+{% b
+b %}
+
+ref[^a]
+.
+<p>ref<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>pre
+{% b
+b %}<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^a]: pre
+{% b
+ b %}
+
+ref[^a]
+.
+<p>ref<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>pre
+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+::: note
+pre
+{% b
+b %}
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p>pre
+{% b
+b %}</p>
+</aside>
+```
+
+```
+::: note
+pre
+{% b
+ b %}
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p>pre
+</p>
+</aside>
+```
