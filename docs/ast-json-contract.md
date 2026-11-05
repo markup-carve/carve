@@ -526,7 +526,11 @@ a `text` run coalesced across such a gap all have values that are not a slice of
 the source at any offset, so no true span exists. A paragraph folded across a
 `%%` line the layout erased is one too: it and the soft break crossing the line
 omit `pos`, and the comment keeps its own span as a sibling. A container that
-would only end on such a line stops at its last child before it. The exemption is narrow: it
+would only end on such a line stops at its last child before it. The comment's
+parent is the innermost container whose content column its line reaches, else
+the document, whatever follows it: in `- a` / blank / `  %% n` / `- b` the item
+holds it, and at column 0 the document does
+([carve#5178](https://github.com/markup-carve/carve/issues/5178)). The exemption is narrow: it
 covers nodes that *cannot* be placed, not nodes that have not been placed yet. The test is whether a true span EXISTS rather than whether one was written down.
 
 ## A block image is a field, not a shape you re-derive

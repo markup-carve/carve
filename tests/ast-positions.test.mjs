@@ -2471,8 +2471,8 @@ test('a paragraph spanning an erased comment line it does not hold names CARVE-P
   ])
 })
 
-/* Corpus 937's shape: the comment leaves the description body for the document. */
-const erasedTail = '- :: term\n  : payload\n\n    %% c\n- sub\n'
+/* Corpus 937's shape with the comment at column 0, which reaches no container (carve#5178). */
+const erasedTail = '- :: term\n  : payload\n\n%% c\n- sub\n'
 
 function erasedTailDoc({ itemEnd, listPos }) {
   const list = {
@@ -2500,21 +2500,21 @@ function erasedTailDoc({ itemEnd, listPos }) {
       },
       {
         type: 'list_item',
-        pos: pos(32, 37),
-        children: [{ type: 'paragraph', pos: pos(34, 37), children: [{ type: 'text', value: 'sub', pos: pos(34, 37) }] }],
+        pos: pos(28, 33),
+        children: [{ type: 'paragraph', pos: pos(30, 33), children: [{ type: 'text', value: 'sub', pos: pos(30, 33) }] }],
       },
     ],
   }
   if (listPos) list.pos = listPos
-  return { type: 'document', children: [list, { ...erasedComment(27, 31), content: 'c' }] }
+  return { type: 'document', children: [list, { ...erasedComment(23, 27), content: 'c' }] }
 }
 
 test('a container ends before a trailing erased comment line no child owns', () => {
   const findings = []
-  checkStopsAtChildren(erasedTailDoc({ itemEnd: 31 }), [...erasedTail], findings)
+  checkStopsAtChildren(erasedTailDoc({ itemEnd: 27 }), [...erasedTail], findings)
   assert.deepEqual(findings, [
-    'span reaches past its last child on "list_item" at $.children[0].items[0]: it ends at 31, its last child ends at 21, ' +
-      'and "\\n\\n    %% c" belongs to no child of it; an erased comment line no child owns is not the container\'s ' +
+    'span reaches past its last child on "list_item" at $.children[0].items[0]: it ends at 27, its last child ends at 21, ' +
+      'and "\\n\\n%% c" belongs to no child of it; an erased comment line no child owns is not the container\'s ' +
       '(CARVE-P12-014, CARVE-P12-022)',
   ])
   const trimmed = []
@@ -2524,9 +2524,9 @@ test('a container ends before a trailing erased comment line no child owns', () 
 
 test('a container an erased comment line sits inside omits pos', () => {
   const spanned = []
-  checkPositions(erasedTailDoc({ itemEnd: 21, listPos: pos(0, 37) }), erasedTail, spanned)
+  checkPositions(erasedTailDoc({ itemEnd: 21, listPos: pos(0, 33) }), erasedTail, spanned)
   assert.deepEqual(spanned, [
-    'sibling spans overlap at $.children[1]: "comment" starts at 27, inside "list" which ends at 37; ' +
+    'sibling spans overlap at $.children[1]: "comment" starts at 23, inside "list" which ends at 33; ' +
       'a "list" joined across an erased comment line omits pos (CARVE-P12-022)',
   ])
   const omitted = []
