@@ -14,3 +14,4 @@ php/definition-term-block-folded  Retired by the rule A reading in markup-carve/
 rust/fence-delimiter-indentation  Retired by the rule A reading in markup-carve/carve#3885; the legacy default trigger no longer owes this diagnostic.
 rust/ordered-list-split-by-indent  Retired by the rule A reading in markup-carve/carve#3885; the legacy default trigger no longer owes this diagnostic.
 rust/definition-term-block-folded  Retired by the rule A reading in markup-carve/carve#3885; the legacy default trigger no longer owes this diagnostic.
+rust/unclosed-comment-fence  The rust engine does not carry the default authoring rule yet (carve#4907).
