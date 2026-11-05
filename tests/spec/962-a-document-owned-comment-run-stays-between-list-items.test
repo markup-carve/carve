@@ -1,0 +1,18 @@
+A document-owned comment run stays between list items
+
+```
+- a
+%% c1
+
+- b
+%% c2
+
+- c
+%% c3
+.
+<ul>
+  <li><p>a</p></li>
+  <li><p>b</p></li>
+  <li><p>c</p></li>
+</ul>
+```

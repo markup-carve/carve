@@ -296,3 +296,14 @@ html/js/959-a-braced-comment-that-starts-a-continuation-line-is-at-block-positio
 html/php/959-a-braced-comment-that-starts-a-continuation-line-is-at-block-position  markup-carve/carve#5189, a {% that starts a continuation line is at block position (CARVE-P2-035); the pin still reads an unindented run as an inline comment
 html/js/959-a-braced-comment-that-starts-a-continuation-line-is-at-block-position-2  markup-carve/carve#5189, a {% that starts a continuation line is at block position (CARVE-P2-035); the pin still reads an unindented run as an inline comment
 html/php/959-a-braced-comment-that-starts-a-continuation-line-is-at-block-position-2  markup-carve/carve#5189, a {% that starts a continuation line is at block position (CARVE-P2-035); the pin still reads an unindented run as an inline comment
+carve/js/945-a-column-0-comment-before-a-sibling-keeps-the-blank-that-loosens-the-list  markup-carve/carve#5207 (carve-js), the pinned writer separates mixed-owner consecutive comments instead of one block
+carve/php/945-a-column-0-comment-before-a-sibling-keeps-the-blank-that-loosens-the-list  markup-carve/carve#5207 (carve-php), the pinned writer moves the document-owned comment into the list item
+carve/rust/945-a-column-0-comment-before-a-sibling-keeps-the-blank-that-loosens-the-list  markup-carve/carve#5207 (carve-rs), the pinned writer moves the document-owned comment after the list
+carve/js/962-a-document-owned-comment-run-stays-between-list-items  markup-carve/carve#5207 (carve-js), the pinned writer omits blank boundaries around document-owned comments between items
+carve/php/962-a-document-owned-comment-run-stays-between-list-items  markup-carve/carve#5207 (carve-php), the pinned writer moves document-owned comments into list items
+carve/rust/962-a-document-owned-comment-run-stays-between-list-items  markup-carve/carve#5207 (carve-rs), the pinned writer moves document-owned comments after the list
+carve/js/961-a-container-owned-comment-run-is-one-writer-block-2  markup-carve/carve#5206 (carve-js), the pinned writer omits the blank before a loose list's container-owned comment run
+carve/js/961-a-container-owned-comment-run-is-one-writer-block  markup-carve/carve#5206 (carve-js), the pinned writer moves a container-owned comment run outside its loose description
+carve/php/961-a-container-owned-comment-run-is-one-writer-block  markup-carve/carve#5206 (carve-php), the pinned writer separates consecutive container-owned comments into blocks
+carve/rust/961-a-container-owned-comment-run-is-one-writer-block  markup-carve/carve#5206 (carve-rs), the pinned writer separates consecutive container-owned comments into blocks
+carve/rust/961-a-container-owned-comment-run-is-one-writer-block-2  markup-carve/carve#5206 (carve-rs), the pinned writer separates consecutive container-owned comments in a loose list item

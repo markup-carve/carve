@@ -812,9 +812,10 @@
 
       (b) A COMMENT IS WRITTEN AT THE COLUMN OF THE BLOCK THAT OWNS IT. A
           `%%` line or `%%%` fence that the document owns is written at
-          column 0 with a blank line before and after it, even where the
-          source put it below an item or description at a column that does
-          not reach it. A `%%%` fence inside a container is written with
+          column 0, even where the source put it below an item or description
+          at a column that does not reach it. A document-owned `%%` line
+          between list items stays at its source position between those items.
+          A `%%%` fence inside a container is written with
           both delimiters at that container's content column, and each
           payload line at that column plus the indentation it keeps under
           PART 9 §28, so the comment's value survives (§1); rows 418, 508
@@ -836,17 +837,16 @@
           Rows 191, 418, 430, 506-5, 508, 508-2, 508-4, 535-34 and 620-18
           pin it.
 
-          A maximal run of consecutive `%%` lines that one container owns is
-          written at that container's content column as one block: a blank
-          line before and after the run, and no blank between its lines
-          (carve#5206). A document-owned run keeps a blank line between each
-          line. No blank line is written between a container-owned run and its
-          container's opening line or closing fence, and none where it would
-          change the document (§1): a blank line beside the run would
-          loosen a tight list, so in a tight list item the run is written
-          directly below the block above it. A `%%` run between two lines of
-          one paragraph stays in that paragraph, and a region marker keeps
-          the blank lines CARVE-P11-073 gives it. So
+          A maximal run of consecutive `%%` lines, even when its lines have
+          different owners, is written as one block: each line at its owner's
+          column, one blank line before and after the run, and no blank line
+          inside it (carve#5206, carve#5207). No boundary blank is written
+          where it would change the document (§1): a blank line beside the run
+          would loosen a tight list, so in a tight list item the run is written
+          directly below the block above it. No blank line is written between
+          the run and its container's opening line or closing fence. A `%%`
+          run between two lines of one paragraph stays in that paragraph, and
+          a region marker keeps the blank lines CARVE-P11-073 gives it. So
 
             - a
 
@@ -868,7 +868,7 @@
             >
             > %% c
 
-          Rows 87-6, 504-18, 570, 607, 620-14 and 961 pin it.
+          Rows 87-6, 504-18, 570, 607, 620-14, 945, 961 and 962 pin it.
 
       (c) A BLOCK BELOW A FOOTNOTE BODY OR A NESTED FENCE. A block that
           follows a list opened on a footnote definition's line is written at
