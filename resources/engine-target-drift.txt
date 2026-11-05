@@ -306,3 +306,4 @@ carve/js/961-a-container-owned-comment-run-is-one-writer-block-2  markup-carve/c
 carve/js/961-a-container-owned-comment-run-is-one-writer-block  markup-carve/carve#5206 (carve-js), the pinned writer moves a container-owned comment run outside its loose description
 carve/php/961-a-container-owned-comment-run-is-one-writer-block  markup-carve/carve#5206 (carve-php), the pinned writer separates consecutive container-owned comments into blocks
 carve/rust/961-a-container-owned-comment-run-is-one-writer-block  markup-carve/carve#5206 (carve-rs), the pinned writer separates consecutive container-owned comments into blocks
+carve/rust/961-a-container-owned-comment-run-is-one-writer-block-2  markup-carve/carve#5206 (carve-rs), the pinned writer separates consecutive container-owned comments in a loose list item
