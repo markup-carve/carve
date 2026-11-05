@@ -8251,6 +8251,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemHead = i
     // The column a line-block payload line was last found at; lines at or past it stay payload.
     let stanzaPayloadCol = null
+    let descriptionBoundaryScanAt = 0
+    let descriptionBoundaryLineBlock = false
+    let descriptionBoundaryPayloadCol = null
+    let descriptionBoundaryHasSibling = false
     let holdsLineBlock = LINE_BLOCK_SHAPED.test(head.text)
     // The body length at which a descendant's stanza was last found open; each
     // lazy line pushed after it extends that answer without another walk.
@@ -10600,15 +10604,26 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // description followed by a new list leaves its lazy paragraph open.
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol &&
           descLive && authoredBlockBase !== null && lastTermSourceCol !== null && !bodyQuote.open) {
-        const descriptionAt = itemLines.findLastIndex(line => DESCRIPTION_LEAD.test(line))
-        const lead = descriptionAt >= 0 ? DESCRIPTION_LEAD.exec(itemLines[descriptionAt]) : null
-        const lineBlock = lead && markerLineBlock(0, itemLines[descriptionAt].slice(lead[0].length))
-        const payloadCol = indentCols(itemLines[descriptionAt + 1] ?? '').col
-        if (lineBlock &&
-            !itemLines.slice(descriptionAt + 1).some(line => {
-              const measured = indentCols(line)
-              return measured.col < payloadCol && matchMarkerAt(measured)
-            })) break
+        if (descriptionBoundaryScanAt > itemLines.length) {
+          descriptionBoundaryScanAt = 0
+          descriptionBoundaryLineBlock = false
+          descriptionBoundaryPayloadCol = null
+          descriptionBoundaryHasSibling = false
+        }
+        while (descriptionBoundaryScanAt < itemLines.length) {
+          const line = itemLines[descriptionBoundaryScanAt++]
+          const lead = DESCRIPTION_LEAD.exec(line)
+          if (lead) {
+            descriptionBoundaryLineBlock = !!markerLineBlock(0, line.slice(lead[0].length))
+            descriptionBoundaryPayloadCol = null
+            descriptionBoundaryHasSibling = false
+          } else if (descriptionBoundaryLineBlock) {
+            const measured = indentCols(line)
+            if (descriptionBoundaryPayloadCol === null) descriptionBoundaryPayloadCol = measured.col
+            else if (measured.col < descriptionBoundaryPayloadCol && matchMarkerAt(measured)) descriptionBoundaryHasSibling = true
+          }
+        }
+        if (descriptionBoundaryLineBlock && !descriptionBoundaryHasSibling) break
       }
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
