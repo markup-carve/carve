@@ -104,6 +104,42 @@ test('a comment on the marker line leaves the separator on that line', () => {
   assert.equal(findingsFor(tree(12), source).length, 2)
 })
 
+test('a blank line between the comment and the marker line is skipped', () => {
+  const source = ':: t\n%% c\n\n: d\n\n  - x\n'
+  const tree = (listStart) => list(21, [
+    term('t', 3),
+    {
+      type: 'definition_description',
+      pos: pos(5, 21),
+      children: [
+        { type: 'comment', block: false, form: 'line', content: 'c', pos: pos(5, 9) },
+        para('d', 13),
+        { type: 'list', pos: pos(listStart, 21), items: [{ type: 'list_item', pos: pos(listStart, 21), children: [para('x', 20)] }] },
+      ],
+    },
+  ])
+  assert.deepEqual(findingsFor(tree(18), source), [])
+  assert.equal(findingsFor(tree(16), source).length, 2)
+})
+
+test('a list in a description that omits pos is measured from its marker line', () => {
+  const source = ':: t\n%% c\n:: u\n: d\n  - x\n'
+  const tree = (listStart) => list(24, [
+    term('t', 3),
+    term('u', 13),
+    {
+      type: 'definition_description',
+      children: [
+        { type: 'comment', block: false, form: 'line', content: 'c', pos: pos(5, 9) },
+        para('d', 17),
+        { type: 'list', pos: pos(listStart, 24), items: [{ type: 'list_item', pos: pos(listStart, 24), children: [para('x', 23)] }] },
+      ],
+    },
+  ])
+  assert.deepEqual(findingsFor(tree(21), source), ['missing pos on "definition_description" at $.children[0].items[2]'])
+  assert.equal(findingsFor(tree(19), source).length, 3)
+})
+
 const row = 'a-comment-between-a-term-and-its-description-is-the-description-s-first-block'
 for (const suffix of ['', '-2', '-3', '-4', '-5']) {
   test(`corpus 956${suffix}: the written spelling renders as the source does`, () => {
