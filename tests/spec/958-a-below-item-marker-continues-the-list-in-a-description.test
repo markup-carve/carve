@@ -1,0 +1,18 @@
+A below-item marker continues the list in a description
+
+```
+:: term
+: - a
+
+   - c
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <ul>
+      <li><p>a</p></li>
+      <li><p>c</p></li>
+    </ul>
+  </dd>
+</dl>
+```

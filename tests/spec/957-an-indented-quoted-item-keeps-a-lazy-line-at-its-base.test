@@ -1,0 +1,13 @@
+An indented quoted item keeps a lazy line at its base
+
+```
+ - > a
+ b
+.
+<ul>
+  <li>
+    <blockquote><p>a
+b</p></blockquote>
+  </li>
+</ul>
+```
