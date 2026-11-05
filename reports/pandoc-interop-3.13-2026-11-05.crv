@@ -1,0 +1,68 @@
+# Pandoc 3.13 interoperability, 2026-11-05
+
+Pandoc 3.13 is the current release. This report compares the 3.11 CI track with locally installed 3.13, using pandoc-carve main and the held engine-adoption PR #283. The Pandoc binaries were extracted into a workspace prefix, not installed system-wide.
+
+The cited 2026-10-23 report was absent from carve origin/main and its available history in this checkout. The measurements below reconstruct its stated checks from pandoc-carve's `roundtrip-fidelity.test.mjs`, complete bridge suite, and corpus round trip. They do not claim a numeric comparison with the missing report.
+
+## Release and AST compatibility
+
+|= Release |= API in emitted JSON |= pandoc-types cabal bound |= Bridge consequence       |
+| 3.11     | 1.23.1.2             | >=1.23.1.2, <1.24         | Existing CI current track |
+| 3.12     | 1.23.1.2             | >=1.23.1.2, <1.24         | No JSON schema bump       |
+| 3.12.1   | 1.23.1.2             | >=1.23.1.2, <1.24         | No JSON schema bump       |
+| 3.13     | 1.23.1.2             | >=1.23.1.2, <1.24         | No JSON schema bump       |
+
+The API values were read from each binary's `-f markdown -t json` output. The cabal bounds come from the matching Pandoc release tags.
+
+The following changes in the [3.12 release notes](https://github.com/jgm/pandoc/releases/tag/3.12), [3.12.1 release notes](https://github.com/jgm/pandoc/releases/tag/3.12.1), and [3.13 release notes](https://github.com/jgm/pandoc/releases/tag/3.13) can affect an AST, imported source, rendered target, or filter result that passes through this bridge. Performance-only changes with explicitly unchanged output are omitted.
+
+|= Release |= Surface                        |= Change relevant to a Carve round trip                                                                                                                                                                                                                                                                                                                 |
+| 3.12     | Markdown and CommonMark readers | Alerts gain the `alert` class; source positions and relative paths in quotes and lists are corrected; bare URLs with unknown schemes are recognized for rebasing.                                                                                                                                                                                      |
+| 3.12     | Djot and other readers          | Djot code blocks with no language no longer acquire an empty class. Vimwiki classes move to the proper attribute slot. Typst handles mark spans, explicit paragraphs, inline block bodies, citations and soft breaks. AsciiDoc resolves table-head footnotes in document order.                                                                        |
+| 3.12     | HTML reader                     | Checkbox input closing, omitted table-row closing, tables with too few column elements, duplicate attribute precedence, inline style handling, list styles, and note positions change.                                                                                                                                                                 |
+| 3.12     | Docx and ODT readers            | Docx comments use `comment-id` in the AST; link ScreenTips become titles. ODT paragraph style properties now reach text.                                                                                                                                                                                                                               |
+| 3.12     | Writers                         | HTML no longer emits empty paragraphs for invisible content and preserves formatting in obfuscated mail links. Docx writes ScreenTips, image sizing, table widths, and paragraph styles differently. Typst emits bare table labels. Org avoids duplicate footnotes in table cells. XML keeps empty attribute values and significant inline whitespace. |
+| 3.12     | Shared AST handling             | Reader-produced table cells are compacted consistently from single `Para` blocks to `Plain`; empty task list items and task markers are recognized. This can change JSON structure without changing rendered text.                                                                                                                                     |
+| 3.12.1   | Markdown and CommonMark         | Task lists work with `commonmark_x` fancy lists; alert class order is restored; spaces at span edges are retained. Markdown writers bracket destinations with spaces, escape list markers after breaks, and avoid multiline header-only tables. CommonMark writing retains a character after an escaped backslash.                                     |
+| 3.12.1   | Docx and ODT readers            | Docx retains caption bookmarks, double strikethrough and edge spaces in tracked changes. ODT gains flat `fodt`, nested blocks, repeated cells and rows, captions away from document start, embedded media and MathML.                                                                                                                                  |
+| 3.12.1   | Writers                         | Docx headings keep bookmarks in paragraphs. OpenDocument renders abstract blocks and styles; ODT can write `fodt`. Typst restores the final blank line in blocks. XML attribute order now follows source order.                                                                                                                                        |
+| 3.13     | YAML metadata                   | YAML 1.2 treats `yes`, `no`, `on`, `off`, `y`, and `n` as strings and rejects duplicate keys. Numeric forms and diagnostics change. This changes `MetaBool` versus `MetaInlines` for these words.                                                                                                                                                      |
+| 3.13     | Docx and other readers          | Docx retains widthless grid columns, list continuations, fields, note namespaces and tracked marks; it restores body-row table alignment. RST inline markup after punctuation, RTF Unicode fallback, ODT continued numbering and LaTeX macro-loop detection change.                                                                                    |
+| 3.13     | Writers                         | Markdown emits grid tables instead of HTML for wide tables, retains nested notes, and restores an unknown code class as the language. Docx multi-paragraph list items have correct numbering. RST and Haddock retain nested notes. Target writers adjust identifiers, math, language and escaping.                                                     |
+
+No release note announces a Pandoc JSON constructor change or a Djot writer behavior change in these three releases. The relevant API changes are Haskell helper exports, `readFODT` and `writeFODT`, and `readTranslations` taking a path; the JavaScript JSON bridge calls none of them. No Lua or JSON filter contract change was announced.
+
+## Measurement
+
+The complete bridge suite ran with `REQUIRE_PANDOC=1`, `PANDOC` set to each binary, and Node's test concurrency set to 4. The corpus probe reads every `.crv` document in the branch's pinned spec submodule, exports with `roundtrip: true`, sends the JSON through `pandoc -f json -t json`, imports it, and compares normalized HTML with the source. Its bridge-only count is the same comparison without the Pandoc process. The normalization is the one in `test/html-equivalence.mjs`.
+
+|= Branch                      |= Pandoc |= Bridge suite                                             |= Corpus documents |= Bridge-only HTML losses |= Through-Pandoc HTML losses |= Conversion errors |
+| main                         | 3.11    | 739 pass, 0 fail                                          | 3064              | 49                       | 49                          | 0                  |
+| main                         | 3.13    | 737 pass, 2 fail                                          | 3064              | 49                       | 49                          | 0                  |
+| PR #283, local carve-js main | 3.11    | 738 pass, 1 local dependency-pin check                    | 4387              | 62                       | 62                          | 0                  |
+| PR #283, local carve-js main | 3.13    | 736 pass, 3 fail including the local dependency-pin check | 4387              | 62                       | 62                          | 0                  |
+
+All 3064 main and 4387 held-PR corpus documents produced Pandoc API 1.23.1.2 JSON under both binaries. Each branch had the same losing document set at 3.11 and 3.13: 49 on main and 62 on the held PR. Sending the JSON through Pandoc added no HTML loss. The held PR's package manifest still pins the published engine. Its local carve-js main symlink makes the dependency-pin assertion fail by design, so that single failure does not describe a Pandoc defect. The other held failures are the same two 3.13 changes as main.
+
+The existing `roundtrip-fidelity.test.mjs` cases passed on both versions and both branches. The broader corpus shows the remaining bridge/model limits rather than a new 3.13 regression.
+
+## Two checks affected by 3.13
+
+The metadata check expects the bridge's legacy YAML boolean set to equal Pandoc's own reader. With this source, 3.11 gives `MetaBool true`; 3.13 gives `MetaInlines` containing `yes`, as its YAML 1.2 change promises. The bridge currently exports `MetaBool true` on both versions.
+
+```yaml
+---
+flag: yes
+---
+
+Body.
+```
+
+The Markdown golden for the interactive example expects a mermaid fence without a language. Pandoc 3.13 now writes the language from the code block's first class. The source AST already carries that class, and other targets retain it. The before and after outputs at the affected fence are:
+
+````text
+3.11: ``` followed by the diagram and ```
+3.13: ``` mermaid followed by the same diagram and ```
+````
+
+These are 3.13 behavior changes, not evidence that the bridge corrupted the corpus. The current CI matrix remains at 3.11 and 3.10.2 until the two existing test expectations can be revised under the oracle rule.
