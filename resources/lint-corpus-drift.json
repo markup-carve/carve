@@ -1,32 +1,97 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-10-27",
-    "spec": "2a176573ab324f6e85891d903dafdcdfa8c2febb",
-    "js": "c79692da8ba38d0978cbdb52c7424c3e024160a1",
-    "php": "268a96a5249c406ce509e039ab2a75ebd5b661c3",
-    "rust": "6de2ed4cc1f39f3f0a07fb2c6d979b4f0dca21f5",
-    "documents": 3284
+    "date": "2026-11-05",
+    "spec": "c6937da1e4bdb3ce24b011e316a24a7affff4036",
+    "js": "befaeef2161353dba565b3dfc5012d62fd47c1ea",
+    "php": "6f830e30908204b2a950a984b7d7efaf882992f0",
+    "rust": "751c904e67f16e6b7127b746a82e977053e5f9a1",
+    "documents": 4527
   },
   "differences": [
     {
-      "file": "tests/corpus/246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "file": "tests/corpus/245-sibling-markers-that-reach-one-column-are-one-list.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
       "diagnostics": {
         "js": [
           [
-            "continuation-marker-refused",
-            2,
+            "list-marker-below-content-column",
+            3,
             3
           ]
         ],
         "php": [],
         "rust": [
           [
+            "list-marker-below-content-column",
+            3,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
             "continuation-marker-refused",
             2,
             3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it.crv",
+      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
+      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            2,
+            1
           ]
         ]
       }
@@ -63,12 +128,1404 @@
             "unresolved-reference-link",
             1,
             1
+          ],
+          [
+            "unused-link-reference-definition",
+            4,
+            1
           ]
         ],
-        "php": [],
+        "php": [
+          [
+            "unused-link-reference-definition",
+            4,
+            1
+          ]
+        ],
         "rust": [
           [
             "unresolved-reference-link",
+            1,
+            1
+          ],
+          [
+            "unused-link-reference-definition",
+            4,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph-7.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            3,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unattached-block-attribute",
+            3,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "unattached-block-attribute",
+            3,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "markdown-italic-underline",
+            1,
+            2
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/493-empty-containers-share-one-html-body-shape-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "figure-group-empty",
+            26,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "figure-group-empty",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "figure-group-empty",
+            26,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/557-a-line-retained-after-a-comment-opens-a-paragraph-2.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ],
+          [
+            "unclosed-container-fence",
+            2,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            6,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ],
+          [
+            "unclosed-container-fence",
+            2,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            6,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ],
+          [
+            "unclosed-container-fence",
+            2,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/557-a-line-retained-after-a-comment-opens-a-paragraph.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            6,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            6,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            6,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/558-a-container-boundary-is-read-at-the-container-s-own-column-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/558-a-container-boundary-is-read-at-the-container-s-own-column-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            3,
+            4
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            3,
+            4
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/558-a-container-boundary-is-read-at-the-container-s-own-column.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            2,
+            4
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            2,
+            4
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/566-an-opener-past-a-hosted-container-s-column-opens-there-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/566-an-opener-past-a-hosted-container-s-column-opens-there-4.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            3,
+            5
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            3,
+            5
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/566-an-opener-past-a-hosted-container-s-column-opens-there.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            2,
+            5
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            2,
+            5
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim-2.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            4,
+            8
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            8
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            4,
+            8
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            8
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            8
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            3,
+            8
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            8
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            8
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/572-an-opener-past-a-hosted-container-s-column-interrupts-its-open-paragraph-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            6
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            3,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            3,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/572-an-opener-past-a-hosted-container-s-column-interrupts-its-open-paragraph.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            3,
+            4
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            3,
+            4
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-10.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-2.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            7,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            9,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            6
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            7,
+            7
+          ],
+          [
+            "list-item-block-overindented",
+            7,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            9,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            7,
+            7
+          ],
+          [
+            "list-item-block-overindented",
+            7,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            9,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-3.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            5,
+            7
+          ],
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            5,
+            7
+          ],
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            5,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            5,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            5,
+            7
+          ],
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            5,
+            7
+          ],
+          [
+            "list-item-block-overindented",
+            5,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            7
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            5,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            5,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            5,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/583-a-comment-between-a-heading-and-a-colon-fence-leaves-the-fence-an-opener-2.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-comment-fence",
+            3,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            4,
+            7
+          ],
+          [
+            "unclosed-comment-fence",
+            3,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            4,
+            7
+          ],
+          [
+            "unclosed-comment-fence",
+            3,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/583-a-comment-between-a-heading-and-a-colon-fence-leaves-the-fence-an-opener.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-comment-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-comment-fence",
+            6,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            7,
+            5
+          ],
+          [
+            "unclosed-comment-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-comment-fence",
+            6,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            7,
+            5
+          ],
+          [
+            "unclosed-comment-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-comment-fence",
+            6,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base-2.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            2,
+            6
+          ],
+          [
+            "list-item-block-overindented",
+            2,
+            6
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-6.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unclosed-container-fence",
             1,
             1
           ]
@@ -76,17 +1533,184 @@
       }
     },
     {
-      "file": "tests/corpus/384-a-continuation-marker-attaches-a-block-only-at-its-owner-s-marker-column-8.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "file": "tests/corpus/610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph-7.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
       "diagnostics": {
-        "js": [],
-        "php": [],
+        "js": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ],
         "rust": [
           [
-            "continuation-marker-refused",
+            "list-marker-without-blank-line",
             3,
-            2
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "list-marker-without-blank-line",
+            3,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-10.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unattached-block-attribute",
+            2,
+            6
+          ]
+        ],
+        "php": [
+          [
+            "unattached-block-attribute",
+            2,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "unattached-block-attribute",
+            2,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "unclosed-inline-emphasis",
+            3,
+            10
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-12.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            7,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            7,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            3
           ]
         ]
       }
@@ -101,6 +1725,11 @@
             "unused-footnote-definition",
             3,
             1
+          ],
+          [
+            "unused-link-reference-definition",
+            4,
+            6
           ]
         ],
         "php": [
@@ -113,6 +1742,11 @@
             "unused-footnote-definition",
             2,
             3
+          ],
+          [
+            "unused-link-reference-definition",
+            4,
+            6
           ]
         ],
         "rust": [
@@ -125,6 +1759,11 @@
             "unused-footnote-definition",
             2,
             3
+          ],
+          [
+            "unused-link-reference-definition",
+            4,
+            6
           ]
         ]
       }
@@ -196,41 +1835,35 @@
       }
     },
     {
-      "file": "tests/corpus/629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-2.crv",
-      "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-11.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
       "diagnostics": {
-        "js": [
+        "js": [],
+        "php": [],
+        "rust": [
           [
             "continuation-marker-refused",
-            2,
-            1
+            3,
+            5
           ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            2,
-            1
-          ]
-        ],
-        "rust": []
+        ]
       }
     },
     {
-      "file": "tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-36.crv",
-      "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-16.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
       "diagnostics": {
-        "js": [
+        "js": [],
+        "php": [],
+        "rust": [
           [
             "continuation-marker-refused",
-            2,
+            3,
             5
           ]
-        ],
-        "php": [],
-        "rust": []
+        ]
       }
     },
     {
@@ -240,11 +1873,6 @@
       "diagnostics": {
         "js": [
           [
-            "continuation-marker-refused",
-            4,
-            3
-          ],
-          [
             "unclosed-code-fence",
             2,
             5
@@ -272,206 +1900,1139 @@
       }
     },
     {
-      "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-8.crv",
-      "reason": "The measured engines disagree on `unclosed-code-fence` and `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "file": "tests/corpus/637-definition-body-note-and-fence-owner-boundaries-2.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
       "diagnostics": {
         "js": [
           [
+            "block-opener-overindented",
+            3,
+            2
+          ],
+          [
+            "block-opener-overindented",
+            4,
+            2
+          ],
+          [
             "unclosed-code-fence",
-            2,
-            5
+            3,
+            2
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            2
           ]
         ],
         "php": [
           [
+            "block-opener-overindented",
+            3,
+            2
+          ],
+          [
+            "block-opener-overindented",
+            4,
+            2
+          ],
+          [
             "unclosed-code-fence",
-            2,
-            5
+            4,
+            2
           ]
         ],
         "rust": [
           [
-            "continuation-marker-refused",
+            "block-opener-overindented",
+            3,
+            2
+          ],
+          [
+            "block-opener-overindented",
             4,
-            5
+            2
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            2
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-9.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "table-column-overlap",
+            1,
+            16
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/762-a-closed-footnote-child-releases-a-flush-line-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "thematic-break-spelling",
+            4,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "setext-heading-underline",
+            4,
+            3
+          ],
+          [
+            "thematic-break-spelling",
+            4,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "setext-heading-underline",
+            4,
+            3
+          ],
+          [
+            "thematic-break-spelling",
+            4,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-11.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "block-opener-overindented",
+            7,
+            3
           ],
           [
             "unclosed-code-fence",
             2,
-            5
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/635-a-refused-plus-without-the-inner-quote-prefix-renders-as-text.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [
+            1
+          ],
           [
-            "continuation-marker-refused",
-            2,
-            5
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            2,
-            5
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-4.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            5
-          ]
-        ],
-        "php": [],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            1,
-            5
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/649-a-first-block-plus-refuses-a-follower-at-an-intervening-column-5.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ]
-        ],
-        "php": [],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/652-a-quote-s-first-block-plus-takes-a-list-that-carries-its-quote-prefixes-at-its-marker-column.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "continuation-marker-refused",
-            2,
-            9
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            2,
-            9
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/719-combined-emphasis-finds-a-later-nonempty-closer-2.crv",
-      "reason": "Rust omits the markdown-strong-double-star warning on combined-emphasis source.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/3366",
-      "diagnostics": {
-        "js": [
-          [
-            "markdown-strong-double-star",
-            1,
-            2
-          ]
-        ],
-        "php": [
-          [
-            "markdown-strong-double-star",
-            1,
-            2
-          ]
-        ],
-        "rust": []
-      }
-    },
-    {
-      "file": "tests/corpus/719-combined-emphasis-finds-a-later-nonempty-closer.crv",
-      "reason": "Rust omits the markdown-strong-double-star warning on combined-emphasis source.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/3366",
-      "diagnostics": {
-        "js": [
-          [
-            "markdown-strong-double-star",
-            1,
-            2
-          ]
-        ],
-        "php": [
-          [
-            "markdown-strong-double-star",
-            1,
-            2
-          ]
-        ],
-        "rust": []
-      }
-    },
-    {
-      "file": "tests/corpus/728-a-refused-first-block-plus-folds-its-content-column-line-and-the-next-root-block-ends-the-item-4.crv",
-      "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
+            "unclosed-code-fence",
+            7,
             3
           ]
         ],
         "php": [
           [
-            "continuation-marker-refused",
-            1,
+            "block-opener-overindented",
+            7,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            7,
             3
           ]
         ],
-        "rust": []
+        "rust": [
+          [
+            "block-opener-overindented",
+            7,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            3
+          ]
+        ]
       }
     },
     {
-      "file": "tests/corpus/733-consecutive-continuation-markers-in-a-div-hosted-quote.crv",
-      "reason": "The measured engines disagree on continuation-marker-refused diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "file": "tests/corpus/782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-13.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
       "diagnostics": {
-        "js": [],
-        "php": [
+        "js": [
           [
-            "continuation-marker-refused",
-            4,
+            "unclosed-code-fence",
+            2,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            3,
             1
           ]
         ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-8.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/796-a-tab-past-an-off-stop-frame-column-is-measured-in-that-frame.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            2,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "djot-plus-bullet",
+            3,
+            3
+          ],
+          [
+            "list-marker-below-content-column",
+            4,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "djot-plus-bullet",
+            3,
+            3
+          ],
+          [
+            "list-marker-below-content-column",
+            4,
+            4
+          ],
+          [
+            "list-marker-without-blank-line",
+            4,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "djot-plus-bullet",
+            3,
+            3
+          ],
+          [
+            "list-marker-below-content-column",
+            4,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "duplicate-heading-id",
+            3,
+            1
+          ],
+          [
+            "unresolved-footnote",
+            1,
+            2
+          ]
+        ],
+        "php": [
+          [
+            "unresolved-footnote",
+            1,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "unresolved-footnote",
+            1,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "duplicate-heading-id",
+            3,
+            1
+          ],
+          [
+            "heading-trailing-attribute",
+            3,
+            4
+          ],
+          [
+            "unresolved-footnote",
+            1,
+            2
+          ]
+        ],
+        "php": [
+          [
+            "heading-trailing-attribute",
+            3,
+            4
+          ],
+          [
+            "unresolved-footnote",
+            1,
+            2
+          ]
+        ],
+        "rust": [
+          [
+            "heading-trailing-attribute",
+            3,
+            4
+          ],
+          [
+            "unresolved-footnote",
+            1,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/823-a-fence-in-a-list-a-quote-attaches-takes-no-separator-line-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/823-a-fence-in-a-list-a-quote-attaches-takes-no-separator-line-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            4,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            4,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/823-a-fence-in-a-list-a-quote-attaches-takes-no-separator-line-4.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            4,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            4,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/840-content-behind-a-lead-tab-offers-no-first-block-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/840-content-behind-a-lead-tab-offers-no-first-block-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/840-content-behind-a-lead-tab-offers-no-first-block-4.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            11
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/840-content-behind-a-lead-tab-offers-no-first-block-5.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/845-a-frontmatter-opener-s-rest-is-a-format-token-or-nothing-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "setext-heading-underline",
+            3,
+            1
+          ],
+          [
+            "thematic-break-spelling",
+            3,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "setext-heading-underline",
+            3,
+            1
+          ],
+          [
+            "thematic-break-spelling",
+            3,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "setext-heading-underline",
+            3,
+            1
+          ],
+          [
+            "thematic-break-spelling",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/853-a-line-after-a-marker-line-folded-into-a-sublist-item-folds-too.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            10
+          ]
+        ],
+        "php": [
+          [
+            "list-marker-below-content-column",
+            3,
+            7
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            10
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            3,
+            10
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/855-a-comment-block-in-a-line-block-leaves-nothing-3.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-comment-fence",
+            3,
+            1
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-comment-fence",
+            3,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-comment-fence",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            5,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            4,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            5,
+            1
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            7,
+            2
+          ],
+          [
+            "continuation-marker-refused",
+            6,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            4,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/855-invisible-lines-after-a-plus-are-skipped-and-the-first-visible-line-decides-4.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
         "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/856-a-quote-at-the-content-column-stays-in-the-item-after-a-refused-separator.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "block-opener-overindented",
+            3,
+            3
+          ],
+          [
+            "description-separator-below-content-column",
+            2,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            3,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            3,
+            3
+          ],
+          [
+            "description-separator-below-content-column",
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/867-an-indented-comment-block-in-a-line-block-leaves-nothing-4.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-comment-fence",
+            2,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-comment-fence",
+            2,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-comment-fence",
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/868-a-paragraph-after-a-note-attached-fence-closed-past-a-blank-takes-a-lazy-line.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/868-a-separator-below-a-term-in-a-note-item-stays-term-text.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "description-separator-below-content-column",
+            2,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "description-separator-below-content-column",
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/87-compact-list-blocks-10.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ],
+          [
+            "unattached-block-attribute",
+            3,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ],
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ],
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/871-a-div-closes-only-on-a-run-of-its-own-width-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "block-marker-as-text",
+            2,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            3,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            4,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            3,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            4,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "block-marker-as-text",
+            2,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            3,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            4,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            3,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            4,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "block-marker-as-text",
+            2,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            3,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            4,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            3,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            4,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/871-a-div-closes-only-on-a-run-of-its-own-width-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "block-marker-as-text",
+            2,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            3,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            5,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            1,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            3,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            5,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "block-marker-as-text",
+            2,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            3,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            5,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            3,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            5,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "block-marker-as-text",
+            2,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            3,
+            3
+          ],
+          [
+            "colon-fence-length-mismatch",
+            5,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            3,
+            3
+          ],
+          [
+            "unclosed-container-fence",
+            5,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/873-an-item-on-a-note-marker-line-takes-its-plus-at-its-own-marker-column-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/874-a-lazy-line-in-a-note-does-not-keep-the-note-host-open-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            4,
+            11
+          ]
+        ],
+        "php": [
+          [
+            "block-opener-overindented",
+            4,
+            11
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            11
+          ]
+        ],
+        "rust": [
+          [
+            "block-opener-overindented",
+            4,
+            11
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            11
+          ]
+        ]
       }
     },
     {
@@ -479,11 +3040,429 @@
       "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
       "issue": "https://github.com/markup-carve/carve/issues/3421",
       "diagnostics": {
-        "js": [
+        "js": [],
+        "php": [],
+        "rust": [
           [
             "continuation-marker-refused",
             3,
             5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/886-an-own-line-plus-is-measured-through-quote-prefixes-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-5.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unresolved-reference-link",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-6.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unresolved-reference-link",
+            1,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            1,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unresolved-reference-link",
+            1,
+            1
+          ]
+        ],
+        "php": [
+          [
+            "unresolved-reference-link",
+            1,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unresolved-reference-link",
+            1,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            3,
+            4
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            6,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-4.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            4,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            5,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            2,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            2,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-4.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            1,
+            1
+          ],
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            3,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/951-an-unclosed-fence-in-a-marker-line-note-cannot-retain-the-following-line.crv",
+      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unused-footnote-definition",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ],
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unused-footnote-definition",
+            1,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            4,
+            5
+          ],
+          [
+            "unused-footnote-definition",
+            1,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/955-a-quote-plus-after-a-quote-attached-paragraph-is-a-letter-2.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
           ]
         ],
         "php": [],
@@ -491,7 +3470,51 @@
           [
             "continuation-marker-refused",
             3,
-            5
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/955-a-quote-plus-after-a-quote-attached-paragraph-is-a-letter-3.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/955-a-quote-plus-after-a-quote-attached-paragraph-is-a-letter.crv",
+      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
+      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            3,
+            3
           ]
         ]
       }

@@ -56,13 +56,12 @@
 # <engine>  <rule>  <type>  <count>  <owner/repo#N>
 carve-js  starts-past-opening-markup  list  10  markup-carve/carve#5063
 carve-js  starts-past-opening-markup  list_item  10  markup-carve/carve#5063
-carve-php  starts-past-opening-markup  list  22  markup-carve/carve#5063
-carve-php  starts-past-opening-markup  list_item  25  markup-carve/carve#5063
+carve-php  starts-past-opening-markup  list  52  markup-carve/carve#5063
+carve-php  starts-past-opening-markup  list_item  54  markup-carve/carve#5063
 carve-rs  starts-past-opening-markup  list  13  markup-carve/carve#5063
 carve-rs  starts-past-opening-markup  list_item  13  markup-carve/carve#5063
-carve-php  starts-past-opening-markup  link_reference_definition  107  markup-carve/carve-php#4494
-carve-rs  ends-past-last-child  list_item  1  markup-carve/carve-rs#3870
-carve-rs  ends-past-last-child  paragraph  1  markup-carve/carve-rs#3871
-carve-rs  starts-past-opening-markup  comment  1  markup-carve/carve-rs#3872
-carve-rs  ends-before-placed-child  list_item  1  markup-carve/carve-rs#3873
-carve-php  starts-past-opening-markup  block_quote  1  markup-carve/carve-php#4646
+carve-php  starts-past-opening-markup  block_quote  2  markup-carve/carve-php#4646
+carve-php  empty-span-covers-more  list_item  22  markup-carve/carve-php#4724
+carve-php  ends-past-last-child  list_item  1  markup-carve/carve-php#4723
+carve-php  starts-past-opening-markup  abbreviation_def  26  markup-carve/carve-php#4722
+carve-php  starts-past-opening-markup  comment  3  markup-carve/carve-php#4721

@@ -146,8 +146,15 @@ const shippedDeclaration = () =>
  *
  * Run 36552218597, on the next head, fails the same step again.
  */
-// Re-measured at the pinned engines: the German heading ID differs in one document.
-const LAST_MEASURED = new Map([['link.href', 2], ['text.value', 2]])
+// Re-measured by AST conformance run 42111003988 at the final engine pins.
+const LAST_MEASURED = new Map([
+  ['text.value', 5],
+  ['comment.content', 6],
+  ['list.tight', 2],
+  ['code_block.content', 6],
+  ['heading.attrs.id', 2],
+  ['code.value', 1],
+])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>

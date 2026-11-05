@@ -217,18 +217,6 @@
 # lint, so its six lines are an inference the next scheduled run confirms or
 # reports STALE. carve-js is being changed in parallel; its lines go in the
 # commit that proves it matches.
-php/88-markdown-a-note-alert-is-a-note-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-php/89-markdown-a-tip-alert-is-a-tip-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-php/90-markdown-an-important-alert-is-an-info-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-php/91-markdown-a-warning-alert-is-a-warning-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-php/92-markdown-a-caution-alert-is-a-danger-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-php/100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote  CARVE-P2-033: keeps a GitHub alert as a blockquote
-rust/88-markdown-a-note-alert-is-a-note-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-rust/89-markdown-a-tip-alert-is-a-tip-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-rust/90-markdown-an-important-alert-is-an-info-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-rust/91-markdown-a-warning-alert-is-a-warning-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-rust/92-markdown-a-caution-alert-is-a-danger-admonition  CARVE-P2-033: keeps a GitHub alert as a blockquote
-rust/100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote  CARVE-P2-033: keeps a GitHub alert as a blockquote
 
 # CARVE-P2-034, ruled 2026-11-01 (carve#4812): an HTML block holding one HTML
 # comment imports as a `%%` comment or a `%%%` comment fence. Cases 101 and 102
@@ -236,34 +224,13 @@ rust/100-markdown-an-alert-body-keeps-a-nested-label-as-a-quote  CARVE-P2-033: k
 # block as raw HTML (measured through tests/corpus-convert.test.mjs); carve-php
 # and carve-rs are inferred to do the same, and the next scheduled run confirms
 # or reports STALE.
-php/101-markdown-an-html-comment-block-imports-as-a-line-comment  CARVE-P2-034: keeps an HTML comment block as raw HTML
-php/102-markdown-a-multi-line-html-comment-imports-as-a-comment-fence  CARVE-P2-034: keeps an HTML comment block as raw HTML
-rust/101-markdown-an-html-comment-block-imports-as-a-line-comment  CARVE-P2-034: keeps an HTML comment block as raw HTML
-rust/102-markdown-a-multi-line-html-comment-imports-as-a-comment-fence  CARVE-P2-034: keeps an HTML comment block as raw HTML
-rust/html-import--adjacent-definition-lists  The pinned carve-rs predates the three-blank boundary between two description lists (markup-carve/carve#4759); fixed on carve-rs main, pending the pin.
-php/html-import--adjacent-definition-lists  The pinned carve-php predates the three-blank boundary between two description lists (markup-carve/carve#4759); fixed on carve-php main, pending the pin.
-rust/html-import--list-table-for-block-cells  The pinned carve-rs writes an empty item as - +, which the one attach rule refuses (markup-carve/carve#4409, #4442); pending the pin.
-php/html-import--list-table-for-block-cells  The pinned carve-php writes an empty item as - +, which the one attach rule refuses (markup-carve/carve#4409, #4442); pending the pin.
 
 # CARVE-P2-034, ruled 2026-11-02 (carve#4917): an HTML comment that ends a list
 # imports as `%%` at its own column plus the three-blank list boundary. Measured
 # by converting cases 103 to 108 with carve-js `e0a3d9e3` and carve-php
 # `0afc8b3a`: both write the comment into the first item, so the lists merge.
 # carve-rs `6a1e54a0` already writes the ruled spelling.
-js/103-markdown-an-html-comment-that-ends-a-list-keeps-the-next-list-apart  CARVE-P2-034: writes the comment into the first item
-js/105-markdown-an-html-comment-that-ends-a-nested-list-stays-in-the-outer-item  CARVE-P2-034: writes the comment into the first item
-js/106-markdown-an-html-comment-that-ends-a-list-in-a-quote  CARVE-P2-034: writes the comment into the first item
-js/107-markdown-an-html-comment-that-ends-an-ordered-list  CARVE-P2-034: writes the comment into the first item
-js/108-markdown-an-html-comment-that-interrupts-a-list-item  CARVE-P2-034: writes the comment into the first item
-php/103-markdown-an-html-comment-that-ends-a-list-keeps-the-next-list-apart  CARVE-P2-034: writes the comment into the first item
-php/105-markdown-an-html-comment-that-ends-a-nested-list-stays-in-the-outer-item  CARVE-P2-034: writes the comment into the first item
-php/106-markdown-an-html-comment-that-ends-a-list-in-a-quote  CARVE-P2-034: writes the comment into the first item
-php/107-markdown-an-html-comment-that-ends-an-ordered-list  CARVE-P2-034: writes the comment into the first item
-php/108-markdown-an-html-comment-that-interrupts-a-list-item  CARVE-P2-034: writes the comment into the first item
 
 # PART 11 section 6h and the D3 ruling at carve#5091: an empty left-aligned body
 # cell imports as `|{<} |` and keeps its alignment (carve#5101). The pinned
 # engines predate the D3 importer (carve-js#4372) and still write `| |`.
-js/84-html-empty-aligned-body-cell  The pinned carve-js predates carve-js#4372 and drops the empty cell's alignment; pending the pin.
-php/84-html-empty-aligned-body-cell  The pinned carve-php predates the D3 port and drops the empty cell's alignment; pending the pin.
-rust/84-html-empty-aligned-body-cell  The pinned carve-rs predates the D3 port and drops the empty cell's alignment; pending the pin.
