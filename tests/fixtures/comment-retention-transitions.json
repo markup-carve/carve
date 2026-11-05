@@ -59,23 +59,23 @@
                       "value": "tail"
                     }
                   ]
-                },
-                {
-                  "type": "comment",
-                  "content": "hidden",
-                  "block": false,
-                  "pos": {
-                    "startLine": 2,
-                    "endLine": 2,
-                    "startColumn": 2,
-                    "endColumn": 11,
-                    "startOffset": 8,
-                    "endOffset": 17
-                  }
                 }
               ]
             }
           ]
+        },
+        {
+          "type": "comment",
+          "content": "hidden",
+          "block": false,
+          "pos": {
+            "startLine": 2,
+            "endLine": 2,
+            "startColumn": 2,
+            "endColumn": 11,
+            "startOffset": 8,
+            "endOffset": 17
+          }
         }
       ]
     }
