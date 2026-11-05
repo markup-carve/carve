@@ -825,9 +825,23 @@ Djot:   <li>a<ul><li>b</li></ul></li><li>c</li>
 Carve:  <li><p>a</p><ul><li>b</li></ul></li><li><p>c</p></li>
 ```
 
-A block quote, a code fence, a colon div, a heading and a table after the blank
-are loose in both. To keep the list tight, drop the blank line: a nested list
-needs none (§24 C3).
+A block quote, a code fence, a colon div, a heading and a table directly after
+the lead and a blank are loose in both. After a nested list, djot.js keeps the
+item tight whatever follows: a blank read while the nested list is open does not
+loosen the outer item. Carve loosens it there too.
+
+```
+- a
+
+  - b
+
+  > q
+
+Djot:   <li>a<ul><li>b</li></ul><blockquote>q</blockquote></li>
+Carve:  <li><p>a</p><ul><li>b</li></ul><blockquote><p>q</p></blockquote></li>
+```
+
+To keep the list tight, drop the blank lines: a nested list needs none (§24 C3).
 
 **Why.** One rule for every block kind, the one CommonMark applies too
 (carve#5015). An AST break: the difference is a `<p>` wrapper, not the content.
