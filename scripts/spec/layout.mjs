@@ -10265,7 +10265,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (nm && nm.indent >= contentCol && !inDefBody &&
               !fence.opaque && !nestedOpaque && (!wasNested || endedBelow) && !inPayload &&
               // A quote or a div on the marker line starts the descendant's run there.
-              (descendantQ1.col < 0 ? QUOTE.test(nm.text) || COLON_FENCE.test(nm.text) || markerLineBlock(nm.indent + nm.markerWidth, nm.text) : nm.indent < descendantQ1.col)) {
+              (descendantQ1.col < 0 || nm.indent < descendantQ1.col)) {
             seedDescendantQ1(nm.indent + nm.markerWidth, nm.text, prefixMemo(state, lines, i).paragraph, i)
           }
           if (descendantOwned) {
