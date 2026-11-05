@@ -3628,7 +3628,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (attachedTo?.host.kind === 'dd') {
       const stands = stripQuotes(src, attachedTo.depth)
       const line = stands && walkIndent(stands.rest)
-      if (line && DESCRIPTION_TEXT.test(line.rest) && line.col < attachedTo.host.col) {
+      const parent = attachedTo.frames[attachedTo.frames.indexOf(attachedTo.host) - 1]
+      if (line && DESCRIPTION_TEXT.test(line.rest) && line.col < attachedTo.host.col &&
+          (line.col >= parent.col || line.col === parent.markerCol)) {
         if (attachedTo.endsAt(at)) {
           frames.length = 0
           frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
