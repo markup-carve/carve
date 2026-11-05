@@ -9,7 +9,7 @@ test('a description marker at the surviving item marker column ends a nested lin
   for (const marker of ['- ', '1. ', '* [ ] ']) {
     for (const chain of ['- ::: |', '- - ::: |']) {
       for (const shift of [0, 1, 2]) {
-        const source = `${marker}x\n${' '.repeat(marker.length)}:: t\n${' '.repeat(marker.length)}: ${chain}\n${' '.repeat(marker.length + 5 + shift)}- item\n: z\n`
+        const source = `${marker}x\n${' '.repeat(marker.length)}:: t\n${' '.repeat(marker.length)}: ${chain}\n${' '.repeat(marker.length + 3 + chain.indexOf(':::') + shift)}- item\n: z\n`
         const html = render(source)
         assert.match(html, /<p>: z<\/p>\s*$/, source)
         assert.doesNotMatch(html, /- item<br>\s*: z/, source)
@@ -25,4 +25,5 @@ test('an ordinary nested list keeps a lazy definition-shaped line', () => {
   assert.match(render('- x\n  :: t\n  : - ::: |\n       - item\n  - b\n: z\n'), /<li>b\n: z<\/li>/)
   assert.match(render('- x\n  :: t\n  : prose ::: |\n       - item\n: z\n'), /<li>item\n: z<\/li>/)
   assert.match(render('- x\n  :: t\n  : - ::: |\n       - item\n     - b\n: z\n'), /<li>b\n: z<\/li>/)
+  assert.match(render('- x\n  :: t\n  : - ::: |\n       - deep\n      - less\n: z\n'), /<p>: z<\/p>\s*$/)
 })

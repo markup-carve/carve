@@ -10614,13 +10614,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           const line = itemLines[descriptionBoundaryScanAt++]
           const lead = DESCRIPTION_LEAD.exec(line)
           if (lead) {
-            descriptionBoundaryLineBlock = !!markerLineBlock(0, line.slice(lead[0].length))
-            descriptionBoundaryPayloadCol = null
+            const lineBlock = markerLineBlock(0, line.slice(lead[0].length))
+            descriptionBoundaryLineBlock = !!lineBlock
+            descriptionBoundaryPayloadCol = lineBlock ? lead[0].length + lineBlock.column : null
             descriptionBoundaryHasSibling = false
           } else if (descriptionBoundaryLineBlock) {
             const measured = indentCols(line)
-            if (descriptionBoundaryPayloadCol === null) descriptionBoundaryPayloadCol = measured.col
-            else if (measured.col < descriptionBoundaryPayloadCol && matchMarkerAt(measured)) descriptionBoundaryHasSibling = true
+            if (measured.col < descriptionBoundaryPayloadCol && matchMarkerAt(measured)) descriptionBoundaryHasSibling = true
           }
         }
         if (descriptionBoundaryLineBlock && !descriptionBoundaryHasSibling) break
