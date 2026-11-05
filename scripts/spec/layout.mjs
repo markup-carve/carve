@@ -3628,7 +3628,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (attachedTo?.host.kind === 'dd') {
       const stands = stripQuotes(src, attachedTo.depth)
       const line = stands && walkIndent(stands.rest)
-      if (line && DESCRIPTION_TEXT.test(line.rest) && line.col < attachedTo.host.col) {
+      const parent = attachedTo.frames[attachedTo.frames.indexOf(attachedTo.host) - 1]
+      if (line && DESCRIPTION_TEXT.test(line.rest) && line.col < attachedTo.host.col &&
+          (line.col >= parent.col || line.col === parent.markerCol)) {
         if (attachedTo.endsAt(at)) {
           frames.length = 0
           frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
@@ -7593,7 +7595,7 @@ function descriptionLeadSpanOpen(bodyLines) {
   for (; scan.at < bodyLines.length; scan.at++) {
     const line = bodyLines[scan.at]
     // Only a line holding a `%` run can open or close a span; the rest is measured only inside one.
-    if (!scan.span && !line.includes('%%%')) continue
+    if (!scan.span && (!line.includes('%%%') || line.startsWith(LAZY))) continue
     const measured = quoteFreeMeasure(line)
     if (scan.span) {
       const closer = COMMENT_FENCE.exec(measured.rest)
@@ -8682,7 +8684,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         return true
       }
       const d = descendantQ1At(descendantQ1.col)
-      return d === null ? true : d.open
+      return d?.open === true
     }
     // The quote run the deepest descendant holds, read like the item's own.
     const descendantQuote = { at: -2, open: false, table: false, hosts: [] }
@@ -10263,7 +10265,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (nm && nm.indent >= contentCol && !inDefBody &&
               !fence.opaque && !nestedOpaque && (!wasNested || endedBelow) && !inPayload &&
               // A quote or a div on the marker line starts the descendant's run there.
-              (descendantQ1.col < 0 ? QUOTE.test(nm.text) || COLON_FENCE.test(nm.text) || markerLineBlock(nm.indent + nm.markerWidth, nm.text) : nm.indent < descendantQ1.col)) {
+              (descendantQ1.col < 0 || nm.indent < descendantQ1.col)) {
             seedDescendantQ1(nm.indent + nm.markerWidth, nm.text, prefixMemo(state, lines, i).paragraph, i)
           }
           if (descendantOwned) {
