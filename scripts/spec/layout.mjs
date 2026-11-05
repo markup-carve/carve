@@ -7179,8 +7179,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // A lazy frame records ownership, not a new column for a line-start run.
       // Measure the authored lines after removing that frame (CARVE-P2-035).
       const braceLine = unframeLazy(lines[i])
-      const braceStart = indentCols(braceLine).rest.startsWith('{')
-      const runLines = braceStart ? new Proxy(lines, {
+      const lazyComment = lines[i].includes(LAZY) && indentCols(braceLine).rest.startsWith('{%')
+      const blockBrace = ind(i).rest[0] === '{'
+      const runLines = (lazyComment || blockBrace) ? new Proxy(lines, {
         get(target, key) {
           const line = Reflect.get(target, key)
           if (typeof key !== 'string' || !/^\d+$/.test(key)) return line
@@ -7192,7 +7193,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             : unframeLazy(line)
         },
       }) : lines
-      const refusedBraceEnd = braceStart && !inlineSpanOpen()
+      const refusedBraceEnd = (lazyComment || blockBrace) && !inlineSpanOpen()
         ? refusedBlockBraceRun(runLines, i, refusedCache) : null
       if (refusedBraceEnd !== null) {
         const start = para.length
