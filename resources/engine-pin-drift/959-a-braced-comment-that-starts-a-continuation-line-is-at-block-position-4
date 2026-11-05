@@ -1,0 +1,1 @@
+carve#5189: the pin's writer drops the indentation past the opening { of a continuation-line comment run, so the model reads the formatted run as literal text (CARVE-P2-035)

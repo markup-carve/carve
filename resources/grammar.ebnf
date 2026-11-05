@@ -6919,8 +6919,11 @@ EOF = (* end of file *) ;
         At block position its continuations follow CARVE-P2-035: each later
         line, including a `%}`-only closer, must be indented past the opening
         `{`. Otherwise every line of the run is literal paragraph text, and a
-        following line without a blank joins that paragraph. The inline run
-        after `a ` above keeps its own rule.
+        following line without a blank joins that paragraph. A `{%` that
+        starts a line is at block position, including the start of a
+        continuation line of an open paragraph: `pre\n{% a\nb %}` renders
+        `<p>pre\n{% a\nb %}</p>` in the root, a list item and a quote alike
+        (carve#5189). The inline run after `a ` above keeps its own rule.
       - ESCAPING. `\{%` is literal text.
       - EVERY RENDER TARGET DROPS IT. HTML, Markdown, plain text and ANSI emit
         nothing for it, as they already do for `%%`. A host that wants comments
