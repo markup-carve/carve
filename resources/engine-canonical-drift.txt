@@ -7,3 +7,5 @@
 570-an-at-column-comment-retains-nothing  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
 607-a-quoted-comment-or-attribute-line-closes-the-quote-s-paragraph  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
 620-generated-container-documents-14  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
+961-a-container-owned-comment-run-is-one-writer-block  markup-carve/carve#5206 (carve-js), the pinned writer moves a container-owned comment run outside its loose description
+961-a-container-owned-comment-run-is-one-writer-block-2  markup-carve/carve#5206 (carve-js), the pinned writer omits the blank before a loose list's container-owned comment run

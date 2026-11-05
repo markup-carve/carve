@@ -10543,14 +10543,15 @@ EOF = (* end of file *) ;
           Rows 191, 418, 430, 506-5, 508, 508-2, 508-4, 535-34 and 620-18
           pin it.
 
-          A `%%` line that a container owns is written at that container's
-          content column with a blank line before and after it, the layout a
-          document-owned one gets, so one rule covers every owner
-          (carve#5192). No blank line is written between the line and its
+          A maximal run of consecutive `%%` lines that one container owns is
+          written at that container's content column as one block: a blank
+          line before and after the run, and no blank between its lines
+          (carve#5206). A document-owned run keeps a blank line between each
+          line. No blank line is written between a container-owned run and its
           container's opening line or closing fence, and none where it would
-          change the document (§1): a blank line beside the comment would
-          loosen a tight list, so in a tight list item the line is written
-          directly below the block above it. A `%%` line between two lines of
+          change the document (§1): a blank line beside the run would
+          loosen a tight list, so in a tight list item the run is written
+          directly below the block above it. A `%%` run between two lines of
           one paragraph stays in that paragraph, and a region marker keeps
           the blank lines CARVE-P11-073 gives it. So
 
@@ -10574,7 +10575,7 @@ EOF = (* end of file *) ;
             >
             > %% c
 
-          Rows 87-6, 504-18, 570, 607 and 620-14 pin it.
+          Rows 87-6, 504-18, 570, 607, 620-14 and 961 pin it.
 
       (c) A BLOCK BELOW A FOOTNOTE BODY OR A NESTED FENCE. A block that
           follows a list opened on a footnote definition's line is written at
