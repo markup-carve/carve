@@ -10,6 +10,44 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+## [0.1.14] - 2026-11-06
+
+The spec settles one attach rule for `+`, a four-step block layout, a braced table alignment spelling and a canonical `***` thematic break. The executable spec model now follows the layout clauses across lists, descriptions, quotes, notes and comments, and the corpus pins the readings the engines owe.
+
+### Changes
+
+- Table cell alignment is written as a braced attribute (`|={>} Price |`). The 0.1.13 prefixes (`|=>`, `|<`) stay readable through 0.1.x, `deprecated-cell-alignment` reports them and `fmt --migrate` rewrites them (#5092, #5093, #5094, #5100, #5102).
+- The canonical writer writes every thematic break as `***` and native `|=` table headers; `thematic-break-spelling` hints at other spellings (#4982, #4984, #3870, #5064, #5097, #5089).
+- A lone `---` on the first line opens frontmatter that runs to the end of the document, and a frontmatter opener's rest is a format token or nothing (#5085, #5096, #4402, #3700).
+- A definition term is one line; a letter or roman marker with a dot needs two spaces; `(c)` and `(r)` stay text; single-hyphen arrows are gone and an arrow needs its exact hyphen run; a mention or tag name holds at least one ASCII letter (#4894, #4828, #4824, #4831, #4851, #4705, #4826).
+- One attach rule covers every `+` host. A refused `+` reads as a plain letter, is escaped by the writer when the block below would attach, and skips invisible lines before testing the next one (#4427, #4433, #4877, #4483, #4576, #5073, #5074, #4413, #4467).
+- Block layout is stated as four steps and one container table, and one-line invisible content is erased before layout (#3887, #4990, #5078, #3895, #3908).
+
+### Fixes
+
+- Continuation `+`: first-block attachment, attached fences, refused markers and quote, item, description and note hosts read the same way in the model and corpus (#3740, #3795, #3802, #3937, #3942, #3984, #3994, #4009, #4070, #4082, #4091, #4123, #4210, #4221, #4224, #4225, #4242, #4251, #4256, #4261, #4262, #4267, #4272, #4290, #4319, #4341, #4344, #4353, #4394, #4401, #4403, #4420, #4422, #4423, #4425, #4436, #4444, #4518, #4520, #4599, #4603, #4612, #4649, #4650, #4657, #4702, #4703, #4704, #4731, #4782, #4832, #5019, #5041, #5042, #5050, #5058, #5060, #5128).
+- Lazy lines fold into the deepest open paragraph and move with the frame they missed, through notes, fences and quotes (#3702, #3853, #3878, #3911, #3926, #3979, #4268, #4276, #4286, #4302, #4419, #4484, #4505, #4695, #4753).
+- List items measure content against their own content column; markers between an item's columns, task boxes, tabs after a marker, blank and invisible lines and looseness follow the clauses (#3704, #3707, #3708, #3711, #3736, #3788, #3836, #3846, #3848, #3883, #3998, #4027, #4056, #4090, #4110, #4124, #4125, #4206, #4244, #4249, #4360, #4373, #4492, #4493, #4535, #4540, #4542, #4605, #4635, #4636, #4655, #4747, #4754, #4756, #4761, #4766, #4777, #4780, #4787, #4788, #4789, #4792, #4819, #4844, #4879, #4897, #4899, #4900, #4904, #4913, #5008, #5043, #5047, #5052, #5070, #5072, #5079, #5133, #5165).
+- Description lists and definitions: separators measure from the term, abbreviation definitions define in every container, comments and one-line definitions close no container, and a comment between a term and its description is the description's first child (#3703, #3758, #4049, #4102, #4197, #4331, #4361, #4432, #4434, #4507, #4743, #4751, #4820, #4874, #4884, #4902, #5002, #5169).
+- Quotes: ownership after a blank, quoted colon lines, caption after a quote and comment-only quotes (#3732, #3785, #4035, #4330, #4424, #4428, #4601, #4744, #4823, #5036).
+- Code and comment fences open without a closer lookahead, keep blank lines and payload when nested, close only at their own column, and keep their language with invalid metadata (#3716, #3760, #3783, #3900, #3969, #4006, #4012, #4032, #4046, #4443, #4653, #4656, #4825, #4955, #5076).
+- Comments: `%%` is removed before the delimiter stack runs, braced comments count as nothing for flank tests, a comment-only paragraph is invisible at any length, and comment spans in line blocks, notes and descriptions close where written (#3993, #4052, #4063, #4202, #4311, #4321, #4523, #4536, #4595, #4609, #4662, #4746, #4817, #4821, #4843, #4853, #4869, #4872, #4882, #4885, #4896, #4954, #4975, #4991, #5000, #5025, #5033).
+- Tables: continuation rows and cells, span markers, escaped pipes, widths, overlapping header ranges and dropped authored rowspan or colspan (#3739, #3868, #3872, #4188, #4211, #4281, #4519, #4528, #4530, #4598, #4600, #4611, #4637, #4659, #4779, #4783).
+- Inline: the inline pairing procedure is normative; braced openers, combined tokens, the delimiter stack, arrows, attribute runs, heading ids, abbreviations, cloned headings, reference labels and quote direction follow it (#3672, #3682, #3683, #3684, #3686, #3689, #3720, #3721, #3722, #3755, #3776, #3781, #3790, #3834, #3880, #3888, #3893, #3906, #3914, #3924, #3932, #3946, #3953, #3962, #3982, #3983, #4001, #4026, #4040, #4053, #4096, #4107, #4114, #4139, #4144, #4169, #4187, #4198, #4201, #4204, #4215, #4241, #4265, #4273, #4301, #4336, #4337, #4350, #4388, #4429, #4430, #4485, #4487, #4508, #4527, #4529, #4531, #4534, #4561, #4578, #4597, #4602, #4604, #4664, #4706, #4709, #4733, #4764, #4778, #4781, #4836, #4839, #4840, #4842, #4845, #4847, #4854, #5054, #5086, #5087).
+- Block structure: Carve whitespace only, lead tabs, div closers, block image promotion, captions, TOC placement, line-block stanzas and hard-break divs (#3712, #3731, #3744, #3831, #3833, #4119, #4172, #4186, #4196, #4248, #4285, #4414, #4417, #4517, #4594, #4596, #4607, #4646, #4665, #4797, #4871, #4887, #4893, #4978, #5088).
+- Includes: CSV and TSV selection, invalid line ranges, captions after code includes, empty delimited includes and per-file render losses (#3763, #3765, #3787, #3804, #3858, #3958, #4707).
+- AST: line block breaks, cloned heading inline nodes, colspan or rowspan of 1 validates, link reference definition spans and `pos` across erased comments (#3705, #3726, #4652, #4969, #5146).
+
+### Improvements
+
+- HTML and Markdown import: GitHub alerts become admonitions, Markdown HTML comments become comments, attributes are written once, unresolved references and plain `<hr>` follow the spec (#3692, #3886, #4533, #4981).
+- Markdown export: link-label brackets, spaced thematic breaks, Markdown habit lints and kept footnote attributes (#3757, #4852).
+- Formatter: writer cases for `!` before links, formatter diagnostics, one layout per shape where writers differed, italic braces around word-flanked slashes, duplicate abbreviation carriers (#3738, #3791, #3812, #4857, #4970, #5158).
+- Lint: authoring lint and suppression are specified, fragile constructs warn, HTML comments and glob shapes are reported, `fence-delimiter-indentation`, `raw-block-syntax` and `ordered-list-split-by-indent` retire (#3800, #3806, #3839, #4005, #4833, #4848, #4856, #5005).
+- CLI and API: error statuses and categories and the HTML API fragment terminator are specified (#3756, #3794).
+- The reference engine pins move to current carve-js main and the conformance ledgers follow; the corpus pins model readings the engines owe (#3675, #3687, #3691, #3693, #3694, #3753, #3754, #3801, #3864, #4446, #4539, #4541, #4838, #4875, #4908, #4977, #4985, #4989, #5020, #5090).
+- Spec text: provenance and rationale move out of normative clauses, stale references are repaired, and the review rounds' findings are applied (#3661, #3668, #3669, #3670, #3673, #3674, #3717, #4173, #4192, #4452, #4477, #4480, #4486, #4491, #4521, #4522, #4547, #4558, #4575, #4593, #4624, #4625, #4626, #4638, #4679, #4696, #4701, #4730, #4818, #4822, #4841, #5117, #5118, #5143, #5147, #5148, #5149, #5150, #5154, #5155).
+
 ## [0.1.13] - 2026-10-25
 
 The spec adds progress and blocked task states, settles import and escaping rules, and improves marker colors in the playground.
