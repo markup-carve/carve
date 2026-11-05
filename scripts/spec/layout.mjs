@@ -7181,12 +7181,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const braceLine = unframeLazy(lines[i])
       const lazyComment = lines[i].includes(LAZY) && indentCols(braceLine).rest.startsWith('{%')
       const blockBrace = ind(i).rest[0] === '{'
+      const commentRun = indentCols(braceLine).rest.startsWith('{%')
       const runLines = (lazyComment || blockBrace) ? new Proxy(lines, {
         get(target, key) {
           const line = Reflect.get(target, key)
           if (typeof key !== 'string' || !/^\d+$/.test(key)) return line
           const row = Number(key)
-          if (!line?.includes(LAZY)) return line
+          if (!commentRun && !line?.includes(LAZY)) return line
           const sourceCol = braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
           return sourceCol !== undefined
             ? ' '.repeat(Math.max(0, sourceCol)) + trimWsStart(unframeLazy(line))
