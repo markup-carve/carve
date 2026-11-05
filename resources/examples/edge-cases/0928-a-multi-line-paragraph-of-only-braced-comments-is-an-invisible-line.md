@@ -37,9 +37,9 @@ CARVE-P9-042, CARVE-P9-013 and PART 9 §17 L3 (carve#4799) applies when the brac
 
 ```html
 <ul>
-  <li>{% c
-d %}
-    Body.
+  <li><p>{% c
+d %}</p>
+    <p>Body.</p>
   </li>
 </ul>
 ```
@@ -59,8 +59,12 @@ d %}
 
 ```html
 <ul>
-  <li><p>a</p></li>
-  <li><p>b</p></li>
+  <li>a</li>
+</ul>
+<p>{% c
+d %}</p>
+<ul>
+  <li>b</li>
 </ul>
 ```
 
