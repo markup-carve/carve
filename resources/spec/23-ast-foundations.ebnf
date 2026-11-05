@@ -399,10 +399,13 @@
           - :: term
             : payload
 
-              %% c
+          %% c
           - sub
 
-      The first `list_item` ends after `payload`, at offset 21.
+      The comment's column reaches no container, so the document holds it
+      (PART 0 S1) and the first `list_item` ends after `payload`, at offset 21.
+      Indented to column 4 the line reaches the description, which then holds
+      the comment and ends after it.
 
       A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD
       IS UNPLACED -- NORMATIVE [CARVE-P12-020]. A container whose last child
@@ -475,8 +478,9 @@
           %% x
           b
 
-      The `comment` stays a block-level sibling after the paragraph with its
-      own span, offsets 2 to 6, and the two `text` nodes keep theirs. A
+      The `comment` stays a block-level sibling after the paragraph, in the
+      container its column reaches (PART 0 S1), with its own span, offsets 2
+      to 6, and the two `text` nodes keep theirs. A
       container whose span would run over such a line in the middle, where
       the comment is not its descendant, omits `pos` the same way; one the line
       would only trail ends before it (CARVE-P12-014). The tree is unchanged.

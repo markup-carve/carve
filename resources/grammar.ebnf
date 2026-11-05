@@ -260,6 +260,10 @@
         ends an open paragraph and an unmarked quote, and closes the items its
         FAMILIES rows name. Retain a comment node with its authored
         spelling and complete source extent in the AST and source map.
+        Its parent is the innermost open container whose content column
+        the line reaches, by the S2 walk a visible line at that column gets,
+        else the document; the lines after it do not move it (carve#5178).
+        PART 12 §8 places one between a term and its description.
         An erased line that continues an open quote loses its `>` prefixes
         with it, so it reads the same inside a quote as outside one
         (carve#5129). A marker line that opens a container keeps its opener;
@@ -12632,10 +12636,13 @@ EOF = (* end of file *) ;
           - :: term
             : payload
 
-              %% c
+          %% c
           - sub
 
-      The first `list_item` ends after `payload`, at offset 21.
+      The comment's column reaches no container, so the document holds it
+      (PART 0 S1) and the first `list_item` ends after `payload`, at offset 21.
+      Indented to column 4 the line reaches the description, which then holds
+      the comment and ends after it.
 
       A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD
       IS UNPLACED -- NORMATIVE [CARVE-P12-020]. A container whose last child
@@ -12708,8 +12715,9 @@ EOF = (* end of file *) ;
           %% x
           b
 
-      The `comment` stays a block-level sibling after the paragraph with its
-      own span, offsets 2 to 6, and the two `text` nodes keep theirs. A
+      The `comment` stays a block-level sibling after the paragraph, in the
+      container its column reaches (PART 0 S1), with its own span, offsets 2
+      to 6, and the two `text` nodes keep theirs. A
       container whose span would run over such a line in the middle, where
       the comment is not its descendant, omits `pos` the same way; one the line
       would only trail ends before it (CARVE-P12-014). The tree is unchanged.
