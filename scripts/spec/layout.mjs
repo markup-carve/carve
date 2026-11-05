@@ -10595,10 +10595,18 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         break // sibling or outer list
       }
       // A `: ` line that misses the item stays outside it after a term or its description (CARVE-P0-024).
-      // A separator at the surviving item's marker column ends that item
-      // when a nested definition list is still live in its authored block (PART 0 S4).
+      // A separator at the surviving item's marker column ends an item whose
+      // current description opened a line-block child (PART 0 S4). A completed
+      // description followed by a new list leaves its lazy paragraph open.
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol &&
-          descLive && authoredBlockBase !== null && lastTermSourceCol !== null && !bodyQuote.open) break
+          descLive && authoredBlockBase !== null && lastTermSourceCol !== null && !bodyQuote.open) {
+        const descriptionAt = itemLines.findLastIndex(line => DESCRIPTION_LEAD.test(line))
+        if (descriptionAt >= 0 && LINE_BLOCK_SHAPED.test(itemLines[descriptionAt]) &&
+            !itemLines.slice(descriptionAt + 1).some(line => {
+              const measured = indentCols(line)
+              return measured.col === 0 && matchMarkerAt(measured)
+            })) break
+      }
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
           lastListBlock === 'term' && (lm.L?.col ?? col) < lastTermSourceCol) break
