@@ -5648,6 +5648,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           let noteBodyQuoted = false
           let lastBlockLine = ''
           const pushBody = (text, row = i, column = null) => {
+            // A host's `+` boundary bounds the description's blocks too, as it does an item's (carve#5182).
+            if (sortedHas(state.attachmentBoundaries?.get(lines), row) && state.attachmentBoundaries.get(bodyLines)?.at(-1) !== bodyLines.length) {
+              markAttachmentBoundary(state, bodyLines)
+            }
             bodyLines.push(text)
             if (!text.startsWith(LAZY)) lastBlockLine = text
             const source = ind(row)
