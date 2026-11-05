@@ -17,3 +17,7 @@ test('a description marker at the surviving item marker column ends a nested lin
     }
   }
 })
+
+test('an ordinary nested list keeps a lazy definition-shaped line', () => {
+  assert.match(render('- a\n  - b\n: c\n'), /<li>b\n: c<\/li>/)
+})

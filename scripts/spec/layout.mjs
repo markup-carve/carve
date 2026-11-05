@@ -10596,9 +10596,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       }
       // A `: ` line that misses the item stays outside it after a term or its description (CARVE-P0-024).
       // A separator at the surviving item's marker column ends that item
-      // when a nested description is still live (PART 0 S4).
+      // when a nested description is still live in its authored block (PART 0 S4).
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol &&
-          descLive && !bodyQuote.open) break
+          descLive && authoredBlockBase !== null && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
           lastListBlock === 'term' && (lm.L?.col ?? col) < lastTermSourceCol) break
