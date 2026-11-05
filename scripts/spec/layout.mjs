@@ -3447,7 +3447,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           refusedPlus.push(at)
         } else rest = rest.replace('+', plusLetter)
       }
-      result.push(skipped.lead + (skipped.fenced.has(at) ? '%%' : bracePad + rest))
+      result.push(skipped.lead + (skipped.fenced.has(at) ? ' '.repeat(skipped.spanPad ?? 0) + '%%' : bracePad + rest))
       // A skipped `%%%` span is one comment, so `parse` erases no line inside it (carve#5151).
       if (trace && skipped.fenced.has(at)) {
         const run = COMMENT_FENCE_BODY.exec(trimLineEnd(rest))?.[1].length
@@ -3662,6 +3662,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // The marker has no visible content, but its invisible placeholder
         // must stay inside the host so the next line keeps the same owner.
         const keepMarkerColumn = closesDescendant || claimedMarkers.has(at)
+        if (skipped && !keepMarkerColumn) skipped.spanPad = spanPad(plus)
         result.push(out + ' '.repeat(keepMarkerColumn ? 0 : Math.max(0, plus.canon - plus.markerCanon)) + '%%')
         refusedPlus.push(at)
         if (trace) emit(at, 'S2', ownerPath(), 'CARVE-P9-067', 'plus', { cell: 'B-plus-start' })
@@ -4041,6 +4042,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             m = walkIndent(src)
             refusedPlus.push(at)
             skipInvisible(frame, at, frame.docMarker, null, true)
+            if (skipped) skipped.spanPad = spanPad(frame)
           }
         }
         lead(m.col)
@@ -4224,6 +4226,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const rest = level?.rest ?? throughQuotes(lines[at], hostIndex)?.rest ?? lines[at]
     skipped = { host, at, end, hostIndex, column, fenced, brace: null,
       lead: markerLead ?? basis.slice(0, basis.length - rest.length) + ' '.repeat(host.markerCanon) }
+  }
+
+  // A `%%%` span after a refused marker closes no item (PART 0 FAMILIES `invisible`, carve#5170),
+  // so its placeholder lines stand at the host's content column, not below it.
+  function spanPad(host) {
+    return ['item', 'dd', 'note'].includes(host.kind) ? Math.max(0, host.canon - host.markerCanon) : 0
   }
 
   // The first line past the invisible lines from `from` (CARVE-P9-013, carve#4449). Only the
