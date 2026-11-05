@@ -5,6 +5,26 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const render = source => renderDoc(parse(source))
 
+test('the reported marker is a document paragraph after the surviving item', () => {
+  assert.equal(render('- x\n  :: t\n  : - ::: |\n       - item\n: z\n'), `<ul>
+  <li>x
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <ul>
+          <li>
+            <div class="line-block">
+              <p>&nbsp;- item</p>
+            </div>
+          </li>
+        </ul>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>: z</p>`)
+})
+
 test('a description marker at the surviving item marker column ends a nested line block', () => {
   for (const marker of ['- ', '1. ', '* [ ] ']) {
     for (const chain of ['- ::: |', '- - ::: |']) {
