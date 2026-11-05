@@ -569,7 +569,7 @@ export const rawPayload = (bodyLines, terminated = true) =>
 // line is re-materialized behind the LAZY frame, whose first character is not
 // whitespace, so it stands at column 0 and IS its own content.
 const BLANK_MEAS = { col: 0, rest: '', tabs: false }
-const LAZY_MEAS = (rest) => ({ col: 0, rest: lazyFrame(rest), tabs: false })
+const LAZY_MEAS = (rest, sourceCol = 0) => ({ col: 0, rest: lazyFrame(rest), tabs: false, sourceCol })
 
 // The leading whitespace run, removed. `line.replace(/^[ \t]+/, '')` spells the
 // same thing without being counted, and this is a walk over indentation like
@@ -4728,6 +4728,8 @@ function normalizeSource(src) {
   return src
 }
 
+const authoredBraceColumns = new WeakMap()
+
 function restoreOrdinaryPlus(value, sentinel) {
   if (typeof value === 'string') return value.replaceAll(sentinel, '+')
   if (Array.isArray(value)) {
@@ -4767,6 +4769,18 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
     blockEndMemo: new Map(),
     unterminatedLines: new WeakSet(src.endsWith('\n') ? [] : [lines]),
   }
+  // The ownership walk can move a lazy line to a container's column. Keep its
+  // authored column for CARVE-P2-035, after any quote prefix is read.
+  const sourceBraceColumn = (line) => {
+    let rest = line
+    for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+      const quote = QUOTE.exec(walkIndent(rest).rest)
+      if (!quote) break
+      rest = quote[1] ?? ''
+    }
+    return indentCols(rest).col
+  }
+  authoredBraceColumns.set(lines, authored.map(sourceBraceColumn))
   // Only when a sink is passed. An always-present key would change the state
   // object's own shape, which a structural test deep-compares.
   if (stateSink) state.descendantQ1Log = (stateSink.descendantQ1 = [])
@@ -5069,6 +5083,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   let i = 0
   const n = lines.length
   const sourceColumns = state.descriptionSourceColumns?.get(lines)
+  const braceSourceColumns = authoredBraceColumns.get(lines)
   const relativeTermColumns = state.itemRelativeTermColumns?.has(lines) ?? false
   layoutWork.lineVisits += n
 
@@ -5355,6 +5370,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const label = m[1]
       const sourceDefCol = ind(i).L?.col ?? ind(i).col
       const bodyLines = [m[2]]
+      const noteBraceColumns = []
+      authoredBraceColumns.set(bodyLines, noteBraceColumns)
       const inheritedFenceOpens = new Set()
       const defLine = i
       let attachedFrom = -1
@@ -5435,6 +5452,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // An ancestor already answered §10 I4 for this line (CARVE-P0-014).
           if (state.fenceOpensAt?.get(lines)?.has(i)) inheritedFenceOpens.add(bodyLines.length)
           const attrOpener = content.startsWith('{') && noteOpenFence(i) === -1
+          noteBraceColumns[bodyLines.length] = authoredBraceColumns.get(lines)?.[i] ?? measured.col
           bodyLines.push(content)
           // The body reader can rebase this line before recognizing its block.
           // Check the claim only when a below-column follower asks for it.
@@ -5531,6 +5549,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             !(measured.col === 0 && (isDefinitionOrAttributeLine(measured.rest) ||
               tryAttrLine(lines, i)))) {
           bodyLines.push(lazyFrame(measured.rest))
+          noteBraceColumns[bodyLines.length - 1] = authoredBraceColumns.get(lines)?.[i] ?? measured.col
           lazyParagraphOpen = true
           i++
         } else break
@@ -6148,6 +6167,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const close = findColonCloser(lines.slice(0, extent), i, cf[1].length)
           const end = close === -1 ? extent : close
           const body = lines.slice(i + 1, end)
+          const bodyBraceColumns = authoredBraceColumns.get(lines)?.slice(i + 1, end)
+          if (bodyBraceColumns) authoredBraceColumns.set(body, bodyBraceColumns)
           markMeasuredContainerText(state, lines, i + 1, end, ind)
           i = close === -1 ? extent : close + 1
           inheritFinalBreak(lines, body, end, state)
@@ -6357,6 +6378,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- block quote ---
     if (QUOTE.test(line)) {
       const inner = []
+      const quoteBraceColumns = []
+      authoredBraceColumns.set(inner, quoteBraceColumns)
       const sourceQuoteCol = ind(i).L?.col ?? ind(i).col
       // The quote's own container ladder and the fence a container in it holds
       // open (carve#2538). `qHost.fence` replaces the run string this used to
@@ -7074,6 +7097,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // A line that reached HERE already framed came from an outer
           // collector's own fold; framing it twice leaks the sentinel into the
           // rendered text, which the paragraph collector strips only once.
+          quoteBraceColumns[inner.length] = authoredBraceColumns.get(lines)?.[i] ?? ind(i).col
           inner.push(lines[i].startsWith(LAZY) ? lines[i] : lazyFrame(ind(i).rest))
           i++
           continue
@@ -7152,8 +7176,23 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       return inlineSpan.codeRun !== 0 || inlineSpan.comment
     }
     while (i < n && !isBlank(lines[i])) {
-      const refusedBraceEnd = ind(i).rest[0] === '{' && !inlineSpanOpen()
-        ? refusedBlockBraceRun(lines, i, refusedCache) : null
+      // A lazy frame records ownership, not a new column for a line-start run.
+      // Measure the authored lines after removing that frame (CARVE-P2-035).
+      const braceLine = unframeLazy(lines[i])
+      const lazyComment = lines[i].includes(LAZY) && indentCols(braceLine).rest.startsWith('{%')
+      const runLines = lazyComment ? new Proxy(lines, {
+        get(target, key) {
+          const line = Reflect.get(target, key)
+          if (typeof key !== 'string' || !/^\d+$/.test(key)) return line
+          const row = Number(key)
+          const sourceCol = braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
+          return sourceCol !== undefined
+            ? ' '.repeat(Math.max(0, sourceCol)) + trimWsStart(unframeLazy(line))
+            : unframeLazy(line)
+        },
+      }) : lines
+      const refusedBraceEnd = (lazyComment || ind(i).rest[0] === '{') && !inlineSpanOpen()
+        ? refusedBlockBraceRun(runLines, i, refusedCache) : null
       if (refusedBraceEnd !== null) {
         const start = para.length
         while (i < refusedBraceEnd) para.push(stripLazy(stripIndent(lines[i++])).replace(/[ \t]+$/, ''))
@@ -8257,6 +8296,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // synthesized, or one whose run held a tab - and the inner parse walks it
     // once. Every push goes through `pushLine` so the two arrays cannot drift.
     const itemMeas = []
+    const itemBraceColumns = []
+    authoredBraceColumns.set(itemLines, itemBraceColumns)
     const itemSourceRows = []
     let itemHasTerm = DEFLIST_TERM.test(head.text)
     const measurement = state.opaqueMeasurement
@@ -8281,6 +8322,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       }
       itemLines.push(text)
       itemMeas.push(m)
+      itemBraceColumns.push(authoredBraceColumns.get(lines)?.[row] ?? m?.sourceCol)
       itemSourceRows.push(row)
       if (itemLines.length > 1 && DEFLIST_TERM.test(ind(row)?.rest ?? '')) itemHasTerm = true
       if (itemOrigins) itemOrigins.push(text === '' ? undefined :
@@ -9735,7 +9777,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           col > contentCol &&
           col < contentCol + TASK_MARKER_SOURCE_WIDTH &&
           lm.rest !== '' && !insideFence()) {
-        pushLine(lazyFrame(lm.rest), LAZY_MEAS(lm.rest))
+        pushLine(lazyFrame(lm.rest), LAZY_MEAS(lm.rest, lm.col))
         i++
         continue
       }

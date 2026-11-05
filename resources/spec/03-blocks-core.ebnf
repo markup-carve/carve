@@ -10,7 +10,11 @@
    line after it continues that paragraph without interrupting it, even when
    it opens a heading, quote or fence (carve#5080); a fence opener there keeps
    its closer in the paragraph too. The column
-   comparison is made inside its owner after quote prefixes are read. Inline
+   comparison uses the lines' source columns after quote prefixes are read.
+   A `{%` opened on a lazy paragraph continuation keeps its written source
+   column, even when it is short of its owner's content column. A continuation
+   at or left of that `{` refuses the whole run in every owner; one or more
+   source columns past it continues the run. Inline
    attribute and comment runs remain governed by their inline productions.
    PART 4 `continuation` spells the attribute production; PART 9 §21a gives
    comment rendering. The importer now passes these runs through. *)
