@@ -327,14 +327,34 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // pinned engines; sections 556 to 575 moved the counts below.
 // Re-measured 2026-10-27 at the pinned JS, PHP and Rust revisions; corpus 697
 // adds one document to each extent count.
-// Re-measured after the engine pin advance: the definition extents now agree.
+// Re-measured by AST conformance run 42111003988 at the final engine pins.
 const LAST_MEASURED = new Map([
-  ['list (extent)', 5],
-  ['list_item (extent)', 6],
+  ['list (extent)', 52],
+  ['list_item (extent)', 60],
   ['definition_list (extent)', 2],
-  ['definition_term (extent)', 2],
-  ['text (extent)', 2],
-  ['soft_break (extent)', 2],
+  ['text (extent)', 9],
+  ['soft_break (extent)', 1],
+  ['abbreviation_def (extent)', 26],
+  ['paragraph (extent)', 8],
+  ['footnote (extent)', 26],
+  ['comment (extent)', 6],
+  ['cell_wrap (presence)', 5],
+  ['definition_description (extent)', 18],
+  ['list (presence)', 4],
+  ['list_item (presence)', 3],
+  ['link (presence)', 3],
+  ['text (presence)', 6],
+  ['block_quote (extent)', 7],
+  ['image (presence)', 2],
+  ['line_block (extent)', 2],
+  ['definition_list (presence)', 2],
+  ['definition_description (presence)', 2],
+  ['emphasis (presence)', 5],
+  ['paragraph (presence)', 1],
+  ['code (presence)', 1],
+  ['code_block (extent)', 1],
+  ['figure_group (presence)', 1],
+  ['code (extent)', 1],
 ])
 
 const asMeasured = (counts) =>
