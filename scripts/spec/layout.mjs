@@ -7129,7 +7129,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         ? refusedBlockBraceRun(lines, i, refusedCache) : null
       if (refusedBraceEnd !== null) {
         const start = para.length
-        while (i < refusedBraceEnd) para.push(stripIndent(lines[i++]).replace(/[ \t]+$/, ''))
+        while (i < refusedBraceEnd) para.push(stripLazy(stripIndent(lines[i++])).replace(/[ \t]+$/, ''))
         literalSegments.push([start, para.length])
         inlineSpan.scanned = para.length
         forcedAfterRefusal = true
