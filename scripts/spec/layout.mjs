@@ -5648,6 +5648,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           let noteBodyQuoted = false
           let lastBlockLine = ''
           const pushBody = (text, row = i, column = null) => {
+            // A host's `+` boundary bounds the description's blocks too, as it does an item's (carve#5182).
+            if (sortedHas(state.attachmentBoundaries?.get(lines), row) && state.attachmentBoundaries.get(bodyLines)?.at(-1) !== bodyLines.length) {
+              markAttachmentBoundary(state, bodyLines)
+            }
             bodyLines.push(text)
             if (!text.startsWith(LAZY)) lastBlockLine = text
             const source = ind(row)
@@ -8985,8 +8989,25 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // is the item's own and ends the attached paragraph (CARVE-P0-011).
       const lonePara = !attachNext && foldablePlainLine(ind(i + opener).rest)
       if (lonePara) {
-        for (let k = i + opener + 1; k < end; k++) {
+        // The line after a refused brace run continues the paragraph, a fence opener there through its closer (CARVE-P2-035).
+        const braceCache = { commentScannedThrough: -1 }
+        let forcedThrough = -1
+        for (let k = i + opener; k < end; k++) {
           const km = ind(k)
+          const runEnd = km.rest[0] === '{' ? refusedBlockBraceRun(lines, k, braceCache) : null
+          if (runEnd !== null) {
+            k = runEnd - 1
+            forcedThrough = runEnd
+            const follower = runEnd < end ? FENCE.exec(ind(runEnd).rest) : null
+            if (follower && parseFenceInfo(follower[2], follower[1]) !== null) {
+              for (let j = runEnd + 1; j < end; j++) {
+                const closer = PURE_FENCE.exec(ind(j).rest)
+                if (closer && closer[1][0] === follower[1][0] && closer[1].length >= follower[1].length) { forcedThrough = j; break }
+              }
+            }
+            continue
+          }
+          if (k === i + opener || k <= forcedThrough) continue
           if (km.col >= contentCol && (opensBlockAt(km.rest, k) || isCodeBlockOpener(km.rest) || isDefinitionOrAttributeLine(km.rest))) {
             end = k
             break
