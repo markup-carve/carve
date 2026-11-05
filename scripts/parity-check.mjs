@@ -59,7 +59,7 @@ try {
     ['---\ncarve-version: 0.1\n---\n\nx\n\n%% carve-version: 99.0; generated-by: test\n', 'carve-version-unsupported', false],
     ['::: note\n::: tip\nx\n:::\n', 'unclosed-container-fence', true],
     ['::: note\nx\n\n    :::\n', 'unclosed-container-fence', true],
-    ['a. ::: note\n   x\n', 'unclosed-container-fence', true],
+    ['a.  ::: note\n    x\n', 'unclosed-container-fence', true],
     [':::: note\n:::\ninner\n:::\n::::\n', 'colon-fence-length-mismatch', false],
     ['| a `|{#x}<` b |\n', 'table-marker-run-padding', false],
     ['| a \\|{#x}< b |\n', 'table-marker-run-padding', false],

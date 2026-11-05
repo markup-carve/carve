@@ -1,20 +1,19 @@
 Inline {%%} remains.
 
-{% x
+\{% x
 y %}
 
-{% x
-  y %}
+%%
 
 {#one
 key=1}
 alpha
 
-{#two
-  key=2}
+{#two key="2"}
 beta
 
 # a
-{% x
+
+\{% x
 y %}
-# b
+\# b
