@@ -23,4 +23,6 @@ test('an ordinary nested list keeps a lazy definition-shaped line', () => {
   assert.match(render('- a\n    ::: note\n    - b\n: c\n'), /<li>b\n: c<\/li>/)
   assert.match(render('- x\n  :: t\n  : desc\n  - b\n: z\n'), /<li>b\n: z<\/li>/)
   assert.match(render('- x\n  :: t\n  : - ::: |\n       - item\n  - b\n: z\n'), /<li>b\n: z<\/li>/)
+  assert.match(render('- x\n  :: t\n  : prose ::: |\n       - item\n: z\n'), /<li>item\n: z<\/li>/)
+  assert.match(render('- x\n  :: t\n  : - ::: |\n       - item\n     - b\n: z\n'), /<li>b\n: z<\/li>/)
 })

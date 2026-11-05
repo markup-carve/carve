@@ -10601,10 +10601,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol &&
           descLive && authoredBlockBase !== null && lastTermSourceCol !== null && !bodyQuote.open) {
         const descriptionAt = itemLines.findLastIndex(line => DESCRIPTION_LEAD.test(line))
-        if (descriptionAt >= 0 && LINE_BLOCK_SHAPED.test(itemLines[descriptionAt]) &&
+        const lead = descriptionAt >= 0 ? DESCRIPTION_LEAD.exec(itemLines[descriptionAt]) : null
+        const lineBlock = lead && markerLineBlock(0, itemLines[descriptionAt].slice(lead[0].length))
+        const payloadCol = indentCols(itemLines[descriptionAt + 1] ?? '').col
+        if (lineBlock &&
             !itemLines.slice(descriptionAt + 1).some(line => {
               const measured = indentCols(line)
-              return measured.col === 0 && matchMarkerAt(measured)
+              return measured.col < payloadCol && matchMarkerAt(measured)
             })) break
       }
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && !bodyQuote.open) break
