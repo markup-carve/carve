@@ -786,7 +786,7 @@
 {"id":"plus-aafa1d728cf9","source":" | a | b |\n","html":"<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>"},
 {"id":"plus-ab1bace8acc0","source":"1. ordered\n+  \n- item\n","html":"<ol>\n  <li>ordered</li>\n</ol>\n<ul>\n  <li>item</li>\n</ul>"},
 {"id":"plus-ab4dd5938aa7","source":"| a | b |\n+ c  | d | \n> + x\n","html":"<table>\n  <tbody>\n    <tr><td>a c</td><td>b d</td></tr>\n  </tbody>\n</table>\n<blockquote><p>+ x</p></blockquote>"},
-{"id":"plus-ab50314fa09a","source":"- a\n  - b\n | x | y |:: t Ω\n\n+ c\n","html":"<ul>\n  <li>a\n    <ul>\n      <li>b\n| x | y |:: t Ω</li>\n    </ul>\n  </li>\n</ul>\n<p>+ c</p>"},
+{"id":"plus-ab50314fa09a","source":"- a\n  - b\n | x | y |:: t Ω\n\n+ c\n","html":"<ul>\n  <li>a\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul>\n<p>| x | y |:: t Ω</p>\n<p>+ c</p>"},
 {"id":"plus-ab53add43762","source":"| a `b |\n+ c  d` |\n","html":"<table>\n  <tbody>\n    <tr><td>a <code>b c  d</code></td></tr>\n  </tbody>\n</table>"},
 {"id":"plus-ac1f14cadb21","source":"| a `b |\n+ c` |\n- \n","html":"<table>\n  <tbody>\n    <tr><td>a <code>b c</code></td></tr>\n  </tbody>\n</table>\n<p>-</p>"},
 {"id":"plus-ac4da013d34a","source":" | a | b |\n| a | b |\n+ c | d | \n\n","html":"<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>a c</td><td>b d</td></tr>\n  </tbody>\n</table>"},

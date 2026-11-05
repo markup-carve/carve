@@ -8684,7 +8684,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         return true
       }
       const d = descendantQ1At(descendantQ1.col)
-      return d === null ? true : d.open
+      return d?.open === true
     }
     // The quote run the deepest descendant holds, read like the item's own.
     const descendantQuote = { at: -2, open: false, table: false, hosts: [] }
