@@ -5,6 +5,12 @@
 # Format: target/engine/slug  owner/repo#issue and reason
 ansi/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
 carve/php/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
+carve/js/87-compact-list-blocks-6  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
+carve/js/504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-18  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
+carve/js/570-an-at-column-comment-retains-nothing  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
+carve/js/607-a-quoted-comment-or-attribute-line-closes-the-quote-s-paragraph  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
+carve/js/620-generated-container-documents-14  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
+carve/rust/570-an-at-column-comment-retains-nothing  markup-carve/carve-rs#3864, the pinned writer puts the %% line after the inner fence where carve#5178 gives it to the inner fence (CARVE-P11-079 (b))
 ansi/php/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  carve-php main still writes this target differently from carve-js and carve-rs after the pin move; triage in markup-carve/carve#5185.
 ansi/rust/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  markup-carve/carve-rs#3864, carve-rs main writes the collected definition after the item where carve-js keeps CARVE-P11-079's layout
 markdown/php/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  carve-php main still writes this target differently from carve-js and carve-rs after the pin move; triage in markup-carve/carve#5185.

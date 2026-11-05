@@ -836,6 +836,39 @@
           Rows 191, 418, 430, 506-5, 508, 508-2, 508-4, 535-34 and 620-18
           pin it.
 
+          A `%%` line that a container owns is written at that container's
+          content column with a blank line before and after it, the layout a
+          document-owned one gets, so one rule covers every owner
+          (carve#5192). No blank line is written between the line and its
+          container's opening line or closing fence, and none where it would
+          change the document (§1): a blank line beside the comment would
+          loosen a tight list, so in a tight list item the line is written
+          directly below the block above it. A `%%` line between two lines of
+          one paragraph stays in that paragraph, and a region marker keeps
+          the blank lines CARVE-P11-073 gives it. So
+
+            - a
+
+              %% c
+            - b
+
+            > a
+            > %% c
+
+          are written
+
+            - a
+
+              %% c
+
+            - b
+
+            > a
+            >
+            > %% c
+
+          Rows 87-6, 504-18, 570, 607 and 620-14 pin it.
+
       (c) A BLOCK BELOW A FOOTNOTE BODY OR A NESTED FENCE. A block that
           follows a list opened on a footnote definition's line is written at
           that list's column, a literal `+` after a nested fence is written

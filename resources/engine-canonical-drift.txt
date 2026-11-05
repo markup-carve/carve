@@ -2,3 +2,8 @@
 # Each row must differ from the pinned writer's bytes and preserve the input's rendering.
 # Remove a row when the JavaScript pin writes the canonical fixture.
 # Format: <slug><two spaces><reason>
+87-compact-list-blocks-6  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
+504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth-18  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
+570-an-at-column-comment-retains-nothing  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
+607-a-quoted-comment-or-attribute-line-closes-the-quote-s-paragraph  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
+620-generated-container-documents-14  markup-carve/carve#5192 (carve-js), the pinned writer writes a container-owned %% line without the blank lines CARVE-P11-079 (b) gives it
