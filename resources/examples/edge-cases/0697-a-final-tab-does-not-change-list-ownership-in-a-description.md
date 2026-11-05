@@ -1,6 +1,6 @@
 ## A final tab does not change list ownership in a description
 
-A line-final tab is dropped before the list marker is read. The blank and the residual column put the second marker in a separate tight list.
+A line-final tab is dropped before the list marker is read. In a description body, a marker after a blank line at the residual column of the first item is a sibling item of the same list, and the blank makes that list loose.
 
 ::: compare
 
