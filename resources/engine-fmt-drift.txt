@@ -20,3 +20,4 @@
 # resources/engine-pin-drift/.README says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+959-a-braced-comment-that-starts-a-continuation-line-is-at-block-position-4  markup-carve/carve#5189, the pin's writer drops the indentation past the opening { of a continuation-line comment run, so the oracle reads the formatted run as literal text (CARVE-P2-035)

@@ -1,0 +1,42 @@
+A braced comment that starts a continuation line is at block position
+
+```
+pre
+{% a
+b %}
+.
+<p>pre
+{% a
+b %}</p>
+```
+
+```
+- pre
+  {% a
+  b %}
+.
+<ul>
+  <li>pre
+{% a
+b %}</li>
+</ul>
+```
+
+```
+> pre
+> {% a
+> b %}
+.
+<blockquote><p>pre
+{% a
+b %}</p></blockquote>
+```
+
+```
+pre
+{% a
+  b %}
+.
+<p>pre
+</p>
+```
