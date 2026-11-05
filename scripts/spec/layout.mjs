@@ -1833,9 +1833,10 @@ function endsInRefusedRunParagraph(bodyLines, last) {
 // quotes it starts, read in that container's coordinates. `below` holds the
 // lines from `text`'s own on, at its column.
 function refusedRunKeptInside(text, below) {
+  if (!text.includes('{')) return null
   let depth = 0
   let tail = text
-  for (;;) {
+  for (let peeled = 0; peeled < MAX_NESTING_DEPTH; peeled++) {
     const quote = QUOTE.exec(walkIndent(tail).rest)
     const marker = quote ? null : matchMarkerAt(indentCols(tail))
     if (quote) {
@@ -6678,11 +6679,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qItemPara = false
           return
         }
-        if (idx > qRefusedThrough.at) {
+        if (idx > qRefusedThrough.at && l.includes('{')) {
           // A nested quote's run is read at its own depth.
           let depth = 0
           let tail = l
-          for (let m = QUOTE.exec(walkIndent(tail).rest); m; m = QUOTE.exec(walkIndent(tail).rest)) {
+          for (let m = QUOTE.exec(walkIndent(tail).rest); m && depth < MAX_NESTING_DEPTH; m = QUOTE.exec(walkIndent(tail).rest)) {
             tail = m[1] ?? ''
             depth++
           }
