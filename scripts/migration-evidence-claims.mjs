@@ -63,7 +63,7 @@ const classes = new Map([
 // until that engine is removed here, in the commit that moves its pin.
 const AHEAD_OF_PIN = {
   // carve#4973: the canonical writer writes every thematic break as ***.
-  'markdown-thematic-break': { engines: ['rust', 'php'], rust: { output: '---\n' }, php: { output: '---' } },
+  'markdown-thematic-break': { engines: ['php'], php: { output: '---' } },
 }
 // Link-fragment fixup messages name the authored spelling (CARVE-P2-031).
 const FIXUP_MESSAGES = {
