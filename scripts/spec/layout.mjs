@@ -10032,6 +10032,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const inOpaque = col >= contentCol && fence.opaque !== null && fence.opaque.opens !== false
       const lineMarker = inPayload || inOpaque ? null : matchMarkerAt(lm, col >= contentCol ? contentCol : 0)
       const nm = lineMarker
+      const quoteClaimsDefinitionLine = bodyQuote.open &&
+        (bodyQuote.at === i - 1 || quoteLazyAt === i - 1) && !QUOTE.test(lm.rest)
       if (nm && col >= contentCol) descendantColumns.add(nm.indent + nm.markerWidth)
       if (DEFLIST_TERM.test(lm.rest) && col >= contentCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) {
@@ -10043,7 +10045,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         lastListBlock = 'term'
       } else if (nm && col >= contentCol && !insideFence()) lastListBlock = 'item'
       // The marker-column rule lasts only while the item's description is open.
-      if ((DEFLIST_TERM.test(lm.rest) || DESCRIPTION_TEXT.test(lm.rest)) &&
+      if (!quoteClaimsDefinitionLine && (DEFLIST_TERM.test(lm.rest) || DESCRIPTION_TEXT.test(lm.rest)) &&
           (lm.L?.col ?? col) === lastTermSourceCol && lastListBlock === 'term') definitionListOpen = true
       else if (col >= contentCol && lm.rest !== '' && !insideFence() && !COMMENT_LINE.test(lm.rest) &&
           !DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) <= lastTermSourceCol &&

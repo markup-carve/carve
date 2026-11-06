@@ -20,4 +20,5 @@ test('an open description in a quote ends its item at the marker column (carve#5
 
 test('a term with no open description leaves the quote paragraph lazy (carve#5346)', () => {
   assert.match(html('- a\n  :: t\n  > prose\n: z\n'), /<blockquote><p>prose\n: z<\/p><\/blockquote>/)
+  assert.match(html('- :: t\n  > prose\n  : d\n: z\n'), /<blockquote><p>prose\n: d\n: z<\/p><\/blockquote>/)
 })
