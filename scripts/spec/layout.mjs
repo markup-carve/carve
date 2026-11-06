@@ -10535,7 +10535,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
         // A DESCRIPTION MARKER is asked what its body carries, as a sub-list
         // marker is: `: +` and `: # H` hold no paragraph (CARVE-P0-011).
-        else if (DESCRIPTION_LEAD.test(dmeas.rest) && opensDescriptionAt(itemLines, dmeas.col) &&
+        else if (DESCRIPTION_LEAD.test(dmeas.rest) && opensDescriptionAt(itemLines, dmeas.col, itemLines.length - 1) &&
             !descriptionCarriesParagraph(dmeas.rest)) closePara()
         /*
          * A FOOTNOTE DEFINITION'S OWN BODY LEAVES THE PARAGRAPH CLOSED -- carve#1357.
