@@ -46,3 +46,12 @@ test('a quote span closed below the quote leaves the next block loose', () => {
   assert.equal(html('- a\n  > %%%\n %%%\n\n  u\n'), loose)
   assert.equal(html('- a\n  > %%%\n  > %%%\n\n  u\n'), loose)
 })
+
+// carve#5300 shape 1: the span ended the body's paragraph, so the line reaches only the document.
+for (const [host, body] of [[':: t\n: a', 'dd'], ['[^n]: a', 'note'], ['- a', 'item']]) {
+  test(`a column-0 line after a marker-line span in a ${body} body leaves the body`, () => {
+    const out = html(`${host}\n  . %%%\n    n\nzz\n${body === 'note' ? '\n[^n]\n' : ''}`)
+    assert.match(out, body === 'note' ? /^<p>zz<\/p>/ : /<p>zz<\/p>$/)
+    assert.equal(out.match(/zz/g).length, 1)
+  })
+}

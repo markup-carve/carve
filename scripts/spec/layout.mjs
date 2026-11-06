@@ -2404,6 +2404,8 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0, quoteBody
   if (endsInRefusedRunParagraph(bodyLines, last)) return true
   // A line-block payload line is inline content whatever its shape, so its stanza stays open (PART 2 line_block).
   if (hostEndsInLineBlockStanza(bodyLines, depth, true)) return true
+  // An open `%%%` span ended the paragraph before it, and the next line ends the span (PART 0 S1).
+  if (bodyHoldsOpenCommentSpan(bodyLines)) return false
   // An attribute-shaped line without its nested quote marker, or short of an
   // item's content column, is a lazy continuation of that host's paragraph.
   // Its braces do not close the paragraph when the description asks whether
