@@ -1,0 +1,22 @@
+Text ending a nested span opens a paragraph in the surviving item
+
+```
+- a
+  - - %%%
+    n
+zz
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <ul>
+          <li></li>
+        </ul>
+        n
+zz
+      </li>
+    </ul>
+  </li>
+</ul>
+```

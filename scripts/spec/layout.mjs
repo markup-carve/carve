@@ -10426,11 +10426,15 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (descendantOwned) {
             if (descendantQ1.col < 0) seedDescendantQ1(subCol >= 0 ? subCol : headSubCol, '')
             // A line that opens, carries or closes an opaque descendant body is
-            // verbatim, and a verbatim body holds no paragraph. A sibling marker
-            // ends a comment span before opening its own paragraph (PART 0 S1).
+            // verbatim, and a verbatim body holds no paragraph. Once a comment
+            // span ends, a line in a later child list can open a paragraph in
+            // its surviving item. Marker-line descendants retain their own
+            // paragraph decision (PART 0 S1/S4).
             advanceDescendantQ1(dmeas.rest, absorbedFenceSeen,
               nestedOpaque !== null || (wasNested !== null && !endedBelow &&
-                !(wasNested.kind === 'comment' && nm && descendantLineOpensParagraph(nm.text, false, i))), i, dmeas.col)
+                !(wasNested.kind === 'comment' && nestedOpaque === null &&
+                  (nm ? descendantLineOpensParagraph(nm.text, false, i)
+                    : subCol >= 0 && descendantLineOpensParagraph(dmeas.rest, false, i)))), i, dmeas.col)
           }
           if (keptByRefusal && descendantQ1.col >= 0 && dmeas.rest !== '') descendantQ1.open = true
           if (dmeas.rest !== '') {
