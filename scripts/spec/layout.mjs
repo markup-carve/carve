@@ -7533,11 +7533,24 @@ function fencedBlockEnd(lines, start) {
  *  block-quote form, a sibling marker ends the list form), the fence rule does
  *  not. The caller hands lines[start..end) to parseBlocks, which owns the actual
  *  block classification. */
+// The line after a footnote definition at `at` and its unbroken body, or -1.
+function leadingNoteEnd(lines, at) {
+  const measured = indentCols(lines[at] ?? '')
+  if (!FOOTNOTE_DEF.test(measured.rest)) return -1
+  let k = at + 1
+  while (k < lines.length && !isBlank(lines[k]) && indentCols(lines[k]).col >= measured.col + FOOTNOTE_BODY_COLUMN) k++
+  return k
+}
 function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
-  // A fence after a leading attribute run is still the attached block (carve#1238).
+  // A fence after a leading attribute run is still the attached block (carve#1238),
+  // and so is one after a footnote definition the host keeps (§17 L3, carve#5288).
   let opener = start
   const column = indentCols(lines[start] ?? '').col
-  for (let attrs; (attrs = tryAttrLine(dedentedWindow(lines, opener, column), 0)); ) opener += attrs.next
+  for (let attrs, note; ; ) {
+    if ((attrs = tryAttrLine(dedentedWindow(lines, opener, column), 0))) opener += attrs.next
+    else if ((note = leadingNoteEnd(lines, opener)) !== -1) opener = note
+    else break
+  }
   const fenced = fencedBlockEnd(lines, opener)
   if (fenced !== -1) return fenced + 1
   let end = start
@@ -7605,13 +7618,17 @@ function markMeasuredContainerText(state, lines, from, to, ind) {
 // every marker line of the host, so read the shorter side (carve#4017).
 const DESCRIPTION_TEXT = /^: (?=[ \t]*[^ \t\n\r])/
 const DESCRIPTION_RUN = /^::? /
+const TERM_RUN = /^:: /
 // Whether a `: ` line at `col` is a description: the nearest line at or left of
 // that column is the entry's term or an earlier description of it.
+// A term holds no body, so a deeper line after it ended the entry (carve#5289).
 const opensDescriptionAt = (bodyLines, col, end = bodyLines.length) => {
+  let deeper = false
   for (let k = end - 1; k >= 0; k--) {
     const measured = indentCols(bodyLines[k])
-    if (measured.rest === '' || measured.col > col) continue
-    return measured.col === col && DESCRIPTION_RUN.test(measured.rest)
+    if (measured.rest === '') continue
+    if (measured.col > col) { deeper = true; continue }
+    return measured.col === col && DESCRIPTION_RUN.test(measured.rest) && !(deeper && TERM_RUN.test(measured.rest))
   }
   return false
 }
@@ -7669,14 +7686,16 @@ function descriptionLeadSpanOpen(bodyLines) {
 
 // `opensDescriptionAt` for the line just pushed, reading the entry above behind its markers.
 const entryAbove = (bodyLines, col) => {
+  let deeper = false
   for (let k = bodyLines.length - 2; k >= 0; k--) {
     let measured = indentCols(bodyLines[k])
-    if (measured.rest === '' || measured.col > col) continue
+    if (measured.rest === '') continue
+    if (measured.col > col) { deeper = true; continue }
     for (let marker; measured.col < col && (marker = matchMarkerAt(measured)); ) {
       const next = indentCols(marker.text)
       measured = { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
     }
-    return measured.col === col && DESCRIPTION_RUN.test(measured.rest)
+    return measured.col === col && DESCRIPTION_RUN.test(measured.rest) && !(deeper && TERM_RUN.test(measured.rest))
   }
   return false
 }
