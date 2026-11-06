@@ -9727,6 +9727,10 @@ EOF = (* end of file *) ;
       THE WRITER COMPUTES THE WIDTH IT NEEDS. A fence is widened to clear the
       longest fence-character run in its content and narrowed when nothing
       requires the extra width, and §1 holds through both.
+      For colon containers (divs and line blocks), the run to clear is one
+      that would close the container; a longer bare colon run does not force
+      widening. Backtick fences still clear longer backtick runs. For example,
+      `::: |` containing a bare `::::` stays `::: |` and closes with `:::`.
 
       THE COMBINED FORM IS RECORDED: a `strong` parsed from `bold_italic`
       carries `boldItalic` (PART 12 §3), and the writer reproduces it.
