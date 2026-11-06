@@ -317,9 +317,11 @@
         attach via a PRECEDING block-attribute line.
       - WRAPPER. Renders as `<div class="hardbreaks">` (a generic div, never an
         `<aside>`).
-      - DIRECT PARAGRAPHS ONLY. Each soft break in a direct paragraph child of
-        the block becomes a hard break (`<br>`). Nested blocks parse normally and
-        keep normal soft-break behavior; the mode is not inherited.
+      - DIRECT PARAGRAPHS ONLY. Only an immediate `soft_break` child of a
+        direct paragraph child of the block becomes a hard break (`<br>`).
+        A line feed inside an unresolved reference's literal fallback is not
+        such a child. Nested blocks parse normally and keep normal soft-break
+        behavior; the mode is not inherited.
       - NO WHITESPACE PRESERVATION. Unlike `::: |`, leading whitespace has no
         special visual-preservation rule. Ordinary paragraph parsing trims or
         folds it as usual.

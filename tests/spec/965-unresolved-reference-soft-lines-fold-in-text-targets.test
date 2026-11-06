@@ -1,0 +1,33 @@
+Unresolved reference soft lines fold in text targets
+
+```
+[a
+b][missing]
+.
+<p>[a
+b][missing]</p>
+```
+
+```
+::: \
+[a
+b][missing]
+:::
+.
+<div class="hardbreaks">
+  <p>[a
+b][missing]</p>
+</div>
+```
+
+```
+::: \
+![a
+b][missing]
+:::
+.
+<div class="hardbreaks">
+  <p>![a
+b][missing]</p>
+</div>
+```

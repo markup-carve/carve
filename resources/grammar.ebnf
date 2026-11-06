@@ -7137,9 +7137,11 @@ EOF = (* end of file *) ;
         attach via a PRECEDING block-attribute line.
       - WRAPPER. Renders as `<div class="hardbreaks">` (a generic div, never an
         `<aside>`).
-      - DIRECT PARAGRAPHS ONLY. Each soft break in a direct paragraph child of
-        the block becomes a hard break (`<br>`). Nested blocks parse normally and
-        keep normal soft-break behavior; the mode is not inherited.
+      - DIRECT PARAGRAPHS ONLY. Only an immediate `soft_break` child of a
+        direct paragraph child of the block becomes a hard break (`<br>`).
+        A line feed inside an unresolved reference's literal fallback is not
+        such a child. Nested blocks parse normally and keep normal soft-break
+        behavior; the mode is not inherited.
       - NO WHITESPACE PRESERVATION. Unlike `::: |`, leading whitespace has no
         special visual-preservation rule. Ordinary paragraph parsing trims or
         folds it as usual.
@@ -7854,8 +7856,15 @@ EOF = (* end of file *) ;
       duplicate precedence, hoisting and container rules apply unchanged.
       Unresolved -> the bracketed run renders as literal source text; in a
       table cell that source is the cell content after the `\|` unescape
-      (PART 2 table cells, carve#4718), so `| [a\|b][m] |` gives `[a|b][m]`. Carve
-      has NO shortcut reference: a bare [label] or ![alt] never resolves
+      (PART 2 table cells, carve#4718), so `| [a\|b][m] |` gives `[a|b][m]`. It
+      keeps the source delimiters and inline spelling, but an ordinary soft
+      line feed in that fallback folds to one space on plain and ANSI targets.
+      Authored hard breaks, verbatim content and line-block-promoted breaks
+      remain visible. A local hard-break block (CARVE-P9-050) promotes only an
+      immediate soft-break child of its direct paragraph, not a line feed
+      nested in an unresolved link or image fallback. No special AST carrier
+      is introduced for this case. Carve has NO shortcut reference: a bare
+      [label] or ![alt] never resolves
       (PART 9 §14). A collapsed image `![alt][]` takes its alt text as the
       label, so the alt text must be non-empty; the full `![alt][ref]` form
       allows an empty one.
