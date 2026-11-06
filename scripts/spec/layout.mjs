@@ -10310,8 +10310,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // descendant the deepest frame - corpus 513-...-5 keeps `tail` in an
         // item whose paragraph the span never closed.
         if (!inCommentSpan) {
+          // A sibling marker that missed a descendant comment span ended it
+          // before opening its own paragraph. The old span cannot suppress Q1.
           if (nm && nm.indent >= contentCol && !inDefBody &&
-              !fence.opaque && !nestedOpaque && (!wasNested || endedBelow) && !inPayload &&
+              !fence.opaque && !nestedOpaque && (!wasNested || endedBelow || wasNested.kind === 'comment') && !inPayload &&
               // A quote or a div on the marker line starts the descendant's run there.
               (descendantQ1.col < 0 || nm.indent < descendantQ1.col)) {
             seedDescendantQ1(nm.indent + nm.markerWidth, nm.text, prefixMemo(state, lines, i).paragraph, i)
