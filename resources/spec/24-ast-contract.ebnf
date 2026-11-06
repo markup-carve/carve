@@ -9,6 +9,9 @@
       whose id was slugged from its text rather than written carries that id in
       `attrs.id`, the slot an authored `{#id}` occupies, and carries it in the
       resolved tree exactly as the two values above do.
+      A heading retained under an unused footnote definition has no generated
+      id to carry: that definition did not participate in id resolution.
+      An authored `{#id}` still occupies `attrs.id`.
 
       The criterion is PART 12 §5's own: recomputability. A heading id is NOT a function
       of the heading. Dedup assigns the next free suffix in document order, so

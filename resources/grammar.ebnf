@@ -6091,6 +6091,10 @@ EOF = (* end of file *) ;
         has one exception: a footnote definition's headings take their ids
         after every body heading, in definition order, so `[^n]: # abc`
         written above `# abc` leaves the body `abc` and the note `abc-2`.
+        An unused footnote definition does not enter this id assignment:
+        its headings receive no generated id, reserve no dedup suffix,
+        and remain outside the reference indexes. An authored `{#id}`
+        remains an authored attribute on its heading.
       - Empty document or doc with no headings: zero <section> elements
         are emitted.
       - THE `sections` RENDER OPTION. A host MAY offer a boolean
@@ -12806,6 +12810,9 @@ EOF = (* end of file *) ;
       whose id was slugged from its text rather than written carries that id in
       `attrs.id`, the slot an authored `{#id}` occupies, and carries it in the
       resolved tree exactly as the two values above do.
+      A heading retained under an unused footnote definition has no generated
+      id to carry: that definition did not participate in id resolution.
+      An authored `{#id}` still occupies `attrs.id`.
 
       The criterion is PART 12 §5's own: recomputability. A heading id is NOT a function
       of the heading. Dedup assigns the next free suffix in document order, so
