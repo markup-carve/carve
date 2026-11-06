@@ -1,0 +1,48 @@
+A lazy line after a comment keeps the deepest list open
+
+```
+- a
+  - b
+{% c
+ d %}
+ tail
+
+  - z
+.
+<ul>
+  <li>a
+    <ul>
+      <li><p>b
+
+tail</p></li>
+      <li><p>z</p></li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - mid
+    - b
+ {% c
+   d %}
+  tail
+
+    - z
+.
+<ul>
+  <li>a
+    <ul>
+      <li>mid
+        <ul>
+          <li><p>b
+
+tail</p></li>
+          <li><p>z</p></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```

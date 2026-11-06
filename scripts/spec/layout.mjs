@@ -3482,6 +3482,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   let reach = 0
   let runs = null
   let nextVisible = -1
+  let lastBlankBeforeVisible = -1
   let movedSpan = null
   // Fence-shaped lines the walk read as paragraph text.
   const textFences = []
@@ -4401,8 +4402,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const fence = commentSpanEnd(text, at)
     if (fence !== -1) return fence
     if (!text.startsWith('{%')) return -1
+    // Stop at the comment's closer. A following lazy line belongs to the
+    // paragraph that was open before the invisible run, not to the run itself.
+    let last = at
+    while (last < lines.length && !lines[last].includes('%}')) last++
+    if (last >= lines.length) return -1
     const view = new Proxy([], {
-      get: (_, key) => key === 'length' ? lines.length : /^\d+$/.test(String(key))
+      get: (_, key) => key === 'length' ? last + 1 : /^\d+$/.test(String(key))
         ? stripQuotes(lines[Number(key)], quoteDepth)?.rest ?? '' : undefined,
     })
     const end = commentOnlyParaEnd(view, at, true, view)
@@ -4421,13 +4427,15 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
 
   // How deep the next visible line reaches through the indentation frames below `from`.
   function nextVisibleReach(at, from) {
+    const braced = walkIndent(lines[at].replace(/^[ \t>]*(?=>)>? ?/, '')).rest.startsWith('{%')
     if (nextVisible <= at) {
+      lastBlankBeforeVisible = -1
       const own = invisibleCommentEnd(trimLineEnd(walkIndent(lines[at].replace(/^[ \t>]*(?=>)>? ?/, '')).rest), at)
       nextVisible = (own === -1 ? at : own) + 1
       for (; nextVisible < lines.length; nextVisible++) {
         const stands = walkIndent(lines[nextVisible].replace(/^[ \t>]*(?=>)>? ?/, ''))
         const text = trimLineEnd(stands.rest)
-        if (text === '') continue
+        if (text === '') { lastBlankBeforeVisible = nextVisible; continue }
         const span = invisibleCommentEnd(text, nextVisible)
         if (span !== -1) nextVisible = span
         else if (!transparentLine(text, nextVisible)) break
@@ -4444,6 +4452,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (!['item', 'dd', 'note'].includes(frames[k].kind) || next.col < frames[k].col) break
       deepest = k
     }
+    // An invisible run leaves the deepest paragraph available to a lazy line.
+    // That line can miss every content column yet still keep the frames open.
+    if (braced && deepest < frames.length - 1 && lastBlankBeforeVisible < at && next.col > frames[from].col &&
+        top().para && foldablePlainLine(next.rest)) return frames.length - 1
     return deepest
   }
 
