@@ -55,3 +55,17 @@ for (const [host, body] of [[':: t\n: a', 'dd'], ['[^n]: a', 'note'], ['- a', 'i
     assert.equal(out.match(/zz/g).length, 1)
   })
 }
+
+// carve#5300 section 2: a comment line below the column stays in the line block's span; the next line folds into the stanza (carve#4956).
+test('a line after a below-column comment line folds into a note stanza', () => {
+  assert.match(html('[^n]: ::: |\n  x\n  %%%\n%% c\nmore\n\n[^n]\n'), /<p>x<br>\nmore<\/p>/)
+})
+
+test('a quoted item stanza span closed below the item keeps the stanza for a lazy line', () => {
+  assert.match(html('> - ::: |\n>   x\n>   %%%\n> %% c\n> %%%\nmore\n'), /<p>x<br>\nmore<\/p>/)
+})
+
+test('a block-shaped line after a note stanza span still leaves the note', () => {
+  assert.match(html('[^n]: ::: |\n  x\n  %%%\n# h\n\n[^n]\n'), /<h1>h<\/h1>/)
+  assert.match(html('[^n]: ::: |\n  x\n  %%%\n:::\n\n[^n]\n'), /^<div>/)
+})

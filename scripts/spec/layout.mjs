@@ -2924,8 +2924,9 @@ function hostedDefinitionAt(h, inner) {
 function hostColonStep(h, inner, commentOpens = false, markerLine = false, remainingDepth = MAX_NESTING_DEPTH, codeCloses = () => false) {
   if (!h.colonComment && !h.colons?.length && !inner.rest.startsWith(':::') && !inner.rest.startsWith('%%')) return false
   const comment = COMMENT_FENCE_BODY.exec(inner.rest)
-  // A line below the line block's base ends its span under S1 (PART 0).
-  if (h.colonComment && h.colonCommentFloor !== undefined && inner.rest !== '' && inner.col < h.colonCommentFloor) h.colonComment = null
+  // A line below the line block's base ends its span under S1 (PART 0); a comment line stays payload.
+  if (h.colonComment && h.colonCommentFloor !== undefined && inner.rest !== '' && inner.col < h.colonCommentFloor &&
+      !COMMENT_LINE.test(inner.rest)) h.colonComment = null
   else if (h.colonComment) {
     if (comment && comment[1].length === h.colonComment) h.colonComment = null
     return true
@@ -5494,8 +5495,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if ((inItem || descriptionOwnerColumn !== null) &&
             measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !attachPending) break
         // A line that misses the note ends a comment span the body holds, and the body (PART 0 S1).
-        if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN && !COMMENT_LINE.test(lines[i] ?? '') && !attachPending && missedLiveSpan() &&
-          !hostEndsInLineBlockStanza(bodyLines, 0, true)) break
+        const verseSpanEnded = !isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN && !COMMENT_LINE.test(lines[i] ?? '') && !attachPending && missedLiveSpan()
+        if (verseSpanEnded && !hostEndsInLineBlockStanza(bodyLines, 0, true)) break
         if (isBlank(lines[i])) afterComment = false
         if (measured.col >= FOOTNOTE_BODY_COLUMN || isBlank(lines[i])) {
           retainedParagraph = false
@@ -5596,7 +5597,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // Rule A: a payload line below the body column ends the fence and the body.
           break
         } else if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN &&
-            (lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) &&
+            // A line that ended the span folds into the stanza it left open (PART 0 S4, carve#4956).
+            (verseSpanEnded || (lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom))) &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !COLON_CLOSER.test(lines[i]) &&
             !opensFence(lines, i) &&
