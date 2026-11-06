@@ -1684,8 +1684,8 @@
     },
     {
       "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-3.crv",
-      "reason": "The measured engines disagree on `unclosed-container-fence` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "JavaScript misses an unclosed colon div when plus attachment ends its host; the expected finding and clause are in markup-carve/carve-js#4511.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4511",
       "diagnostics": {
         "js": [],
         "php": [
@@ -1706,8 +1706,8 @@
     },
     {
       "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-4.crv",
-      "reason": "The measured engines disagree on `unclosed-container-fence` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "JavaScript misses an unclosed colon div when plus attachment ends its host; the expected finding and clause are in markup-carve/carve-js#4511.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4511",
       "diagnostics": {
         "js": [],
         "php": [
@@ -1728,8 +1728,8 @@
     },
     {
       "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div.crv",
-      "reason": "The measured engines disagree on `unclosed-container-fence` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "JavaScript misses an unclosed colon div when plus attachment ends its host; the expected finding and clause are in markup-carve/carve-js#4511.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4511",
       "diagnostics": {
         "js": [],
         "php": [
