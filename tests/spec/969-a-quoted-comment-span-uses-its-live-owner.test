@@ -14,15 +14,3 @@ z
   <p>x</p>
 </blockquote>
 ```
-
-```
-> %%%
-%%
-> %%%
-z
-.
-<blockquote>
-
-</blockquote>
-<p>z</p>
-```

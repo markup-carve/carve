@@ -27,9 +27,7 @@ z
 
 :::
 
-An unmarked comment-shaped line is payload while a quote-owned span remains open. Its exact closer ends that span, leaving one quote.
-
-::: compare
+An unmarked comment-shaped line is payload while a quote-owned span remains open. Its exact closer ends that span, leaving one quote. The decision trace pins this case in the direct regression test.
 
 ```carve
 > %%%
@@ -44,5 +42,3 @@ z
 </blockquote>
 <p>z</p>
 ```
-
-:::
