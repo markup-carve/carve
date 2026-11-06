@@ -11,8 +11,8 @@
   "differences": [
     {
       "file": "tests/corpus/245-sibling-markers-that-reach-one-column-are-one-list.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP misses a frame-relative tabbed sibling marker; the expected result and clause are in markup-carve/carve-php#4735.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4735",
       "diagnostics": {
         "js": [
           [
