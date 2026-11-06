@@ -18,3 +18,11 @@ test('a later fence owned by the outer item keeps its payload blank', () => {
   assert.match(out, /<pre><code>\npayload\n<\/code><\/pre>/)
   assert.match(out, /<li>sibling<\/li>/)
 })
+
+for (const source of [
+  '- - +\n  ```\n    ```\n\n  tail\n  ```\n- sibling\n',
+  '- - +\n  text\n  ```\n\n  tail\n  ```\n- sibling\n',
+]) test('a blank within a paired fence keeps a sibling tight', () => {
+  const out = renderDoc(parse(source))
+  assert.match(out, /<li>sibling<\/li>/, source)
+})

@@ -9451,7 +9451,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // `+` at the item's marker column attaches one block there (§17 L3).
       const lm = ind(i)
       if (headSubCol > contentCol && CONT_MARKER.test(headSubMarker?.text ?? '') &&
-          markerLineAttachedFence === null && fence.opaque?.kind === 'code') markerLineAttachedFence = fence.opaque
+          markerLineAttachedFence === null && fence.opaque?.kind === 'code') {
+        const attached = itemLines.slice(1)
+        const first = attached[attachedOpener(attached, 0)] ?? ''
+        const opener = FENCE.exec(first)
+        markerLineAttachedFence = opener && parseFenceInfo(opener[2], opener[1]) !== null ? fence.opaque : false
+      }
       // A sublist item's `+` holds its block at that item's marker column, so that block ends no sublist.
       if (i >= descendantBlockEnd && i > headIndex && lm.rest !== '') {
         const above = matchMarkerAt(ind(i - 1))
@@ -10450,14 +10455,18 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             host = CONT_MARKER.test(trimWs(marker.text)) && marker.indent === lm.col && marker.indent > baseIndent ? null : { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
             if (host === null) {
               let closed = false
-              for (let k = i + 1; k < n && !closed; k++) {
+              let closerAtBase = false
+              for (let k = i + 1; k < n && !closerAtBase; k++) {
                 const at = ind(k)
                 if (at.rest === '') continue
                 if (at.col < floor) break
                 const c = PURE_FENCE.exec(at.rest)
-                closed = !!c && c[1][0] === opaque.run[0] && c[1].length >= opaque.run.length
-                if (closed) opaque.closerAtBase = at.col === floor
+                if (c && c[1][0] === opaque.run[0] && c[1].length >= opaque.run.length) {
+                  closed = true
+                  closerAtBase = at.col === floor
+                }
               }
+              opaque.closerAtBase = closerAtBase
               if (!closed) opaque.endsAtBlank = true
               break
             }
