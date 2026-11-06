@@ -9255,6 +9255,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const attachFlushLeft = () => {
       if (i >= n || isBlank(lines[i])) return false
       const blockColumn = ind(i).L?.col ?? ind(i).col
+      const localColumn = ind(i).col
       const closesColon = fence.colon.length > 0
       if ((fence.opaque?.kind === 'code' && fence.opaque.opens !== false) || closesColon) {
         const bounds = state.attachmentBoundaries ??= new WeakMap()
@@ -9351,7 +9352,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (!leavesFenceOpen(taken)) pushLine('', BLANK_MEAS)
       // Below the content column the blank after the block is the host's
       // separator, not payload of a fence the block leaves open (§17 L3).
-      else if (blockColumn < contentCol) {
+      // Measured in the item's own columns: `blockColumn` is a source column (carve#5304).
+      else if (localColumn < contentCol) {
         const bounds = state.attachmentBoundaries ??= new WeakMap()
         bounds.set(itemLines, [...(bounds.get(itemLines) ?? []), itemLines.length])
       }
@@ -9474,6 +9476,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (lm.rest === '') {
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
+        if (fence.opaque?.endsAtBlank) fence.opaque = null
         if (insideFence()) {
           fenceBlankRun++
           const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
@@ -10350,6 +10353,30 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // A line the note paragraph claims is note text; it opens no fence here.
         if (!inNestedComment && !inDescendantSpan && (!absorbedFenceSeen || fence.opaque) && !foldedChildFence &&
             (fence.opaque || !noteClaimsBelow)) trackFence(dedented, opens, i)
+        // A fence a descendant's `+` attaches below that descendant's content column
+        // ends at its first blank when it has no closer (§17 L3, carve#5304).
+        if (fence.opaque?.kind === 'code' && !fence.opaque.attachedChecked) {
+          fence.opaque.attachedChecked = true
+          let above = i - 1
+          while (above > 0 && (COMMENT_LINE.test(ind(above).rest) || ind(above).rest[0] === '{' && tryAttrLine(dedentedWindow(lines, above, ind(above).col), 0))) above--
+          let host = above >= 0 ? ind(previousVisible(above)) : null
+          for (let marker; host && (marker = matchMarkerAt(host)); ) {
+            const next = indentCols(marker.text)
+            host = CONT_MARKER.test(trimWs(marker.text)) && marker.indent === lm.col && marker.indent > baseIndent ? null : { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
+            if (host === null) {
+              let closed = false
+              for (let k = i + 1; k < n && !closed; k++) {
+                const at = ind(k)
+                if (at.rest === '') continue
+                if (at.col < contentCol) break
+                const c = PURE_FENCE.exec(at.rest)
+                closed = !!c && c[1][0] === fence.opaque.run[0] && c[1].length >= fence.opaque.run.length
+              }
+              if (!closed) fence.opaque.endsAtBlank = true
+              break
+            }
+          }
+        }
         // ADVANCE. One line the descendant takes, in the descendant's own
         // coordinates, which is what makes the state readable at its column.
         // A COMMENT SPAN WRITTEN BELOW THIS COLUMN IS NOT THE DESCENDANT'S. Its
