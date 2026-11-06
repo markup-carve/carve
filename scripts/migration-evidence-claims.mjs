@@ -62,6 +62,9 @@ const classes = new Map([
 // write instead, compared exactly; once an engine writes the ruled report the row fails
 // until that engine is removed here, in the commit that moves its pin.
 const AHEAD_OF_PIN = {}
+// The engine pin can move a measured report before the importer manifest moves.
+// Keep the manifest read-only and gate exact, stale-checked pin variants here.
+const PIN_REPORT_OVERRIDES = JSON.parse(readFileSync(resolve(root, 'resources/migration-pin-overrides.json'), 'utf8'))
 // Link-fragment fixup messages name the authored spelling (CARVE-P2-031).
 const FIXUP_MESSAGES = {
   'link-fragment-case-rewritten': 'Rewrote link fragment #install-steps to #Install-Steps, the one heading id it matches without regard to case.',
@@ -69,13 +72,24 @@ const FIXUP_MESSAGES = {
 }
 const manifest = JSON.parse(readFileSync(resolve(root, 'tests/importer-fidelity/manifest.json'), 'utf8'))
 for (const id of Object.keys(AHEAD_OF_PIN)) assert.ok(manifest.cases.some(row => row.id === id), `AHEAD_OF_PIN names ${id}, which no manifest row has`)
+for (const id of Object.keys(PIN_REPORT_OVERRIDES)) assert.ok(manifest.cases.some(row => row.id === id), `PIN_REPORT_OVERRIDES names ${id}, which no manifest row has`)
 const covered = new Set()
 for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
   for (const fixture of manifest.cases.filter(row => row.runner === 'core')) {
     const entry = AHEAD_OF_PIN[fixture.id]
     const pinned = entry?.engines.includes(engine) ? entry[engine] ?? entry.pinned : undefined
     const ahead = pinned ?? {}
-    const expected = { ...fixture.expected, ...fixture.expected.engines?.[engine], ...ahead }
+    const baseline = { ...fixture.expected, ...fixture.expected.engines?.[engine], ...ahead }
+    const override = PIN_REPORT_OVERRIDES[fixture.id]?.[engine] ?? {}
+    if (Object.keys(override).length) {
+      const baselineFields = Object.fromEntries(Object.keys(override).map(key => [key, baseline[key]]))
+      assert.notDeepEqual(
+        baselineFields,
+        override,
+        `${fixture.id}/${engine}: pin report override is stale; the manifest now agrees`,
+      )
+    }
+    const expected = { ...baseline, ...override }
     const result = spawnSync(command, [...prefix, 'migrate', '--from', fixture.sourceFormat, '--report', '-', '--check-loss'],
       { input: fixture.input, encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 })
     const context = `${engine}/${fixture.id}`
