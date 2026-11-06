@@ -7623,8 +7623,9 @@ function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
   // carve#5288, carve#5324).
   let opener = start
   const column = indentCols(lines[start] ?? '').col
-  for (let attrs, note; ; ) {
+  for (let attrs, note, span; ; ) {
     if (isOneLineComment(lines[opener])) opener++
+    else if ((span = COMMENT_FENCE.exec(lines[opener] ?? ''))) opener = opaqueSpanEnd(lines, opener) + 1
     else if ((attrs = tryAttrLine(dedentedWindow(lines, opener, column), 0))) opener += attrs.next
     else if ((note = leadingNoteEnd(lines, opener)) !== -1) opener = note
     else break
