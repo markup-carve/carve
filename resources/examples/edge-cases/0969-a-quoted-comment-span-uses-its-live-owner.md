@@ -1,5 +1,5 @@
 ---
-page: edge-comments
+page: edge-containers
 ---
 
 ## A quoted comment span uses its live owner

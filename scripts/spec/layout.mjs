@@ -3855,7 +3855,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         : inner.lineBlock && inner.span?.[0] === '%' ? inner.span : null
     if (spanRun && missed && m.rest.startsWith('%%')) {
       if (spanRun !== true && COMMENT_FENCE_BODY.exec(m.rest)?.[1].length === spanRun.length) inner.span = null
-      lead(m.col)
       // A quote-owned span keeps an unmarked comment payload in its quote.
       // Preserve that prefix in the reader input as we do for a closer below
       // the owner; otherwise the quote reader splits one span into two quotes.

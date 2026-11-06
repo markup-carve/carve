@@ -21,3 +21,9 @@ test('an unmarked comment line stays in a live quote-owned span', () => {
   assert.equal(trace[1].form, 'payload')
   assert.equal(trace[2].form, 'closer')
 })
+
+test('an indented unmarked payload keeps the quote without visible marker text', () => {
+  const source = '> %%%\n  %%\n> %%%\nz\n'
+  assert.equal(renderDoc(parse(source)), '<blockquote>\n\n</blockquote>\n<p>z</p>')
+  assert.equal(modelTrace(source).find((line) => line.line === 2)?.owner, 'doc/quote:1/comment:1')
+})
