@@ -313,6 +313,24 @@ if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
   }
 }
 
+// Number every authored example, then emit only one fixture for each input.
+// Distinct examples can demonstrate the same rule in prose without requiring
+// engines to run the same document more than once. Prefer a fixture with a
+// hand-written target sidecar so that target contract remains attached. The
+// tracked sidecar lock, not the current output directory, decides this: a
+// clean rebuild must pick exactly the same rows as an incremental rebuild.
+const fixtureName = (ex) => `${ex.idx}-${ex.slug}${ex.exampleIdx === 1 ? '' : `-${ex.exampleIdx}`}`
+const sidecarFiles = Object.keys(JSON.parse(readFileSync(resolve(repoRoot, 'resources/corpus-sidecars.lock.json'), 'utf8')))
+const sidecarCount = (ex) => sidecarFiles.filter((f) => f.startsWith(`${fixtureName(ex)}.`)).length
+const byInput = new Map()
+for (const ex of examples) {
+  const hash = createHash('sha256').update(applyModifiers(ex.carve + '\n', ex.modifiers)).digest('hex')
+  const current = byInput.get(hash)
+  if (!current || sidecarCount(ex) > sidecarCount(current)) byInput.set(hash, ex)
+}
+const chosen = new Set(byInput.values())
+const corpusExamples = examples.filter((ex) => chosen.has(ex))
+
 mkdirSync(outDir, { recursive: true })
 
 /*
@@ -344,7 +362,7 @@ for (const f of readdirSync(outDir)) {
 }
 
 const renamedSidecars = []
-for (const ex of examples) {
+for (const ex of corpusExamples) {
   const suffix = ex.exampleIdx === 1 ? '' : `-${ex.exampleIdx}`
   const slug = `${ex.slug}${suffix}`
   for (const [key, sidecar] of sidecarsBySlug) {
@@ -357,14 +375,14 @@ for (const ex of examples) {
   }
 }
 
-for (const ex of examples) {
+for (const ex of corpusExamples) {
   const suffix = ex.exampleIdx === 1 ? '' : `-${ex.exampleIdx}`
   const base = `${ex.idx}-${ex.slug}${suffix}`
   writeFileSync(resolve(outDir, `${base}.crv`), applyModifiers(ex.carve + '\n', ex.modifiers))
   writeFileSync(resolve(outDir, `${base}.html`), ex.html + '\n')
   console.log(`  ${base}.{crv,html}`)
 }
-console.log(`\nWrote ${examples.length} pairs to ${outDir}`)
+console.log(`\nWrote ${corpusExamples.length} unique pairs to ${outDir}`)
 for (const moved of renamedSidecars) console.log(`  moved with its case: ${moved}`)
 
 /*
@@ -380,9 +398,9 @@ for (const moved of renamedSidecars) console.log(`  moved with its case: ${moved
 const written = readdirSync(outDir)
 const crvCount = written.filter((f) => f.endsWith('.crv')).length
 const htmlCount = written.filter((f) => f.endsWith('.html')).length
-if (crvCount !== declaredPairs || htmlCount !== declaredPairs) {
+if (crvCount !== corpusExamples.length || htmlCount !== corpusExamples.length) {
   console.error(
-    `generate-corpus: the source declares ${declaredPairs} pair(s) but tests/corpus holds ` +
+    `generate-corpus: the source declares ${declaredPairs} pair(s), ${corpusExamples.length} unique inputs, but tests/corpus holds ` +
       `${crvCount} .crv and ${htmlCount} .html.`,
   )
   console.error('  Two cases sharing a generated name would read as one, and the other is gone.')
@@ -449,8 +467,8 @@ const maxRun = (s, ch) => {
 // which tests/corpus already is. Skipping is stated rather than silent: a case
 // that quietly vanished from a downstream runner is the shape this repo has
 // been bitten by before.
-const mirrored = examples.filter((ex) => ex.modifiers.size === 0 || (ex.modifiers.size === 1 && ex.modifiers.has('no-render')))
-const notMirrored = examples.filter((ex) => !mirrored.includes(ex))
+const mirrored = corpusExamples.filter((ex) => ex.modifiers.size === 0 || (ex.modifiers.size === 1 && ex.modifiers.has('no-render')))
+const notMirrored = corpusExamples.filter((ex) => !mirrored.includes(ex))
 const bySection = new Map()
 for (const ex of mirrored) {
   if (!bySection.has(ex.section)) bySection.set(ex.section, [])

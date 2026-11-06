@@ -17,11 +17,3 @@ A comment inside a forced span or the combined token ends at its closer
 .
 <p><strong><em>a</em></strong> y</p>
 ```
-
-```
-/*a %%c
-b*/ y
-.
-<p><strong><em>a
-b</em></strong> y</p>
-```

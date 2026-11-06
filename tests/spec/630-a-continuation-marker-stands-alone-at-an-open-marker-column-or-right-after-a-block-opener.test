@@ -125,29 +125,6 @@ para</p></blockquote>
 </ul>
 ```
 
-````
-- - - ```
-      x
-    +
-tail
-.
-<ul>
-  <li>
-    <ul>
-      <li>
-        <ul>
-          <li>
-            <pre><code>x
-</code></pre>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
-<p>tail</p>
-````
-
 ```
   > +
 q
@@ -225,22 +202,6 @@ para
   </li>
 </ol>
 <p>para</p>
-```
-
-```
-- a
-  - b
-+
-para
-.
-<ul>
-  <li>a
-    <ul>
-      <li>b</li>
-    </ul>
-    para
-  </li>
-</ul>
 ```
 
 ```

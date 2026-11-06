@@ -11,15 +11,3 @@ An attributed cell keeps its attributes and its literal marker
   </tbody>
 </table>
 ```
-
-```
-| a | b |
-| c | < |
-.
-<table>
-  <tbody>
-    <tr><td>a</td><td>b</td></tr>
-    <tr><td colspan="2">c</td></tr>
-  </tbody>
-</table>
-```

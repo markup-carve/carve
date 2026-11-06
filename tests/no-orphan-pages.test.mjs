@@ -136,6 +136,7 @@ test('every UNROUTED waiver still names a real page', () => {
 const exampleScan = scanExampleSource(readExampleFiles(repoRoot).split('\n'))
 numberExamples(exampleScan, exampleSectionNumbers(repoRoot))
 const sectionSlugByFixture = new Map(exampleScan.examples.map((example) => [example.corpusName, example.slug]))
+const exampleByFixture = new Map(exampleScan.examples.map((example) => [example.corpusName, example]))
 
 /* The census is the fixtures a contributor actually commits, not the scanner's
  * own account of what it extracted - the same reason scripts/lib/example-pair-
@@ -334,7 +335,18 @@ test('the corpus census agrees with the example source', () => {
    * make the routing assertion below pass over nothing. */
   assert.ok(corpusFixtures.length > 1000, `expected the tracked corpus fixtures, found ${corpusFixtures.length}`)
   const unsourced = corpusFixtures.filter((name) => !sectionSlugByFixture.has(name))
-  const unwritten = [...sectionSlugByFixture.keys()].filter((name) => !corpusFixtures.includes(name))
+  const emittedPairs = new Set(corpusFixtures.map((name) => JSON.stringify([
+    readFileSync(resolve(repoRoot, 'tests/corpus', `${name}.crv`), 'utf8'),
+    readFileSync(resolve(repoRoot, 'tests/corpus', `${name}.html`), 'utf8'),
+  ])))
+  // Authored examples may repeat a byte-identical input and expectation. The
+  // generator emits one fixture for that pair; a missing source example is
+  // sound only if the emitted corpus still carries its exact pair.
+  const unwritten = [...sectionSlugByFixture.keys()].filter((name) => {
+    if (corpusFixtures.includes(name)) return false
+    const ex = exampleByFixture.get(name)
+    return !emittedPairs.has(JSON.stringify([ex.carve + '\n', ex.html + '\n']))
+  })
   assert.deepEqual(
     { unsourced, unwritten },
     { unsourced: [], unwritten: [] },

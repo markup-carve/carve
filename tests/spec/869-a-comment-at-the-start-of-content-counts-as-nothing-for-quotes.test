@@ -7,12 +7,6 @@ A comment at the start of content counts as nothing for quotes
 ```
 
 ```
-{%%}"q"
-.
-<p>“q”</p>
-```
-
-```
 {% c %}{% d %}'word
 .
 <p>‘word</p>

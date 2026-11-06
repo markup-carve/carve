@@ -1610,17 +1610,6 @@
         }
       ]
     }
-,
-    {
-      "rule": "CARVE-P2-036",
-      "edits": [
-        {
-          "file": "scripts/spec/html.mjs",
-          "find": "parsed = parsed.replace(new RegExp(` ${key}=\"[^\"]*\"`, 'gi'), '')",
-          "replace": "parsed = parsed.replace(new RegExp(` ${key}=\"[^\"]*\"`, 'gi'), ' data-x=\"0\"')"
-        }
-      ]
-    }
   ],
   "unmapped": {
     "CARVE-P0-003": "frame record is the whole layout; implemented, but no single targeted site found within the time box (layout-transitions.json is not editable)",

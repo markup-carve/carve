@@ -1586,59 +1586,6 @@
       }
     },
     {
-      "file": "tests/corpus/614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "list-marker-without-blank-line",
-            3,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            4,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            1,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            4,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            1,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "list-marker-without-blank-line",
-            3,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            4,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            1,
-            1
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-10.crv",
       "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
       "issue": "https://github.com/markup-carve/carve/issues/5226",

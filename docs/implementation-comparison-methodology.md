@@ -14,10 +14,10 @@ same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
 adapter coverage, rough CLI timing, and the extension hook surface each
 implementation exposes.
 
-## Core fixture counts (2026-10-26 CET, with 2026-10-28 additions)
+## Core fixture counts (2026-10-26 CET, with later corpus reconciliation)
 
-The count-only run covers 3,125 core documents and their 194 target sidecars.
-The run scores 3,319 fixtures per engine. The five pairs in corpus 764 and 765
+The count-only run covers 3,070 core documents and their 194 target sidecars.
+The run scores 3,264 fixtures per engine. The five pairs in corpus 764 and 765
 were checked against the current engine pins on 2026-10-28 and added to the
 dated run's counts. The comparison checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
@@ -40,15 +40,15 @@ including the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>3122 / 3125</strong>
+    <strong>3067 / 3070</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3125 / 3125</strong>
+    <strong>3070 / 3070</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3125 / 3125</strong>
+    <strong>3070 / 3070</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -59,9 +59,9 @@ including the
 
 | Implementation | Dated run commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `fc0f31c78` | `3122 / 3125` | `3316 / 3319` | `3` | `0` |
-| JS | `4a10e5eae` | `3125 / 3125` | `3319 / 3319` | `0` | `0` |
-| PHP | `6280573be` | `3125 / 3125` | `3319 / 3319` | `0` | `0` |
+| Rust | `fc0f31c78` | `3067 / 3070` | `3261 / 3264` | `3` | `0` |
+| JS | `4a10e5eae` | `3070 / 3070` | `3264 / 3264` | `0` | `0` |
+| PHP | `6280573be` | `3070 / 3070` | `3264 / 3264` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
@@ -489,15 +489,15 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3125 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=3316/3319 mismatch=3 error=0 skipped=0 runs=3319
+profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=3070 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=3261/3264 mismatch=3 error=0 skipped=0 runs=3264
   mismatch: html 699-a-quoted-link-definition-in-a-footnote-body-registers-globally
   mismatch: html 700-a-marker-line-sublist-stays-open-in-a-description-body
   mismatch: html 708-invisible-content-and-image-promotion
   mismatching documents: 3
-js: pass=3319/3319 mismatch=0 error=0 skipped=0 runs=3319
+js: pass=3264/3264 mismatch=0 error=0 skipped=0 runs=3264
   mismatching documents: 0
-php: pass=3319/3319 mismatch=0 error=0 skipped=0 runs=3319
+php: pass=3264/3264 mismatch=0 error=0 skipped=0 runs=3264
   mismatching documents: 0
 cross_impl_diffs=3
 

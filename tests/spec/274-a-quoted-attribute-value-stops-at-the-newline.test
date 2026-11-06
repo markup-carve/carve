@@ -27,17 +27,6 @@ b”}</p>
 
 ```
 {.a
-.b}
-
-paragraph
-.
-<p>{.a
-.b}</p>
-<p>paragraph</p>
-```
-
-```
-{.a
 
 .b}
 

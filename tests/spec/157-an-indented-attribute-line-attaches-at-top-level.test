@@ -1,13 +1,6 @@
 An indented attribute line attaches at top level
 
 ```
- {.note}
- This paragraph.
-.
-<p class="note">This paragraph.</p>
-```
-
-```
  {.todo}
  - one
  - two

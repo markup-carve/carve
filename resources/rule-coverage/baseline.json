@@ -96,7 +96,6 @@
     "CARVE-P2-026": "503-a-block-opener-indented-under-a-definition-term-ends-the-term-at-every-depth-10",
     "CARVE-P2-027": "439-a-colon-followed-by-only-whitespace-is-not-a-description-7",
     "CARVE-P2-035": "792-a-glued-attribute-run-is-one-physical-line-4",
-    "CARVE-P2-036": "854-a-computed-span-drops-the-author-copy-of-its-key",
     "CARVE-P3-001": "529-a-container-label-publishes-its-inline-run-11",
     "CARVE-P3-002": "705-unicode-whitespace-ends-a-link-destination",
     "CARVE-P3-003": "717-citation-shaped-lines-remain-core-text-2",

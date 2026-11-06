@@ -73,21 +73,3 @@ tail
 </ul>
 <p>tail</p>
 ```
-
-```
-- | a |
-  | b |
-tail
-.
-<ul>
-  <li>
-    <table>
-      <tbody>
-        <tr><td>a</td></tr>
-        <tr><td>b</td></tr>
-      </tbody>
-    </table>
-  </li>
-</ul>
-<p>tail</p>
-```

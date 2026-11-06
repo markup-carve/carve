@@ -1,38 +1,6 @@
 The entry after a first-block plus description is its sibling
 
 ```
-:: t
-: +
-after
-: b
-.
-<dl>
-  <dt>t</dt>
-  <dd>after</dd>
-  <dd>b</dd>
-</dl>
-```
-
-```
-- x
-
-  :: t
-  : +
-  after
-  : b
-.
-<ul>
-  <li><p>x</p>
-    <dl>
-      <dt>t</dt>
-      <dd>after</dd>
-      <dd>b</dd>
-    </dl>
-  </li>
-</ul>
-```
-
-```
 > :: t
 > : +
 > > q

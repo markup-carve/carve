@@ -16,17 +16,6 @@ A first-block marker on an indented opener reads only its marker column
 ```
 
 ```
-- a
-+
-- b
-.
-<ul>
-  <li>a</li>
-  <li>b</li>
-</ul>
-```
-
-```
 - foo
   - [ ] task
   +
@@ -91,21 +80,6 @@ A first-block marker on an indented opener reads only its marker column
   </li>
 </ul>
 <p>x</p>
-```
-
-```
-- foo
-  - +
-> b
-.
-<ul>
-  <li>foo
-    <ul>
-      <li></li>
-    </ul>
-  </li>
-</ul>
-<blockquote><p>b</p></blockquote>
 ```
 
 ```

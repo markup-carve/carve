@@ -301,8 +301,11 @@
       target heading's text, and that text is not copied into the node; a
       consumer reads it from the heading.
 
-   4. POSITIONS ARE REQUIRED. Every node EXCEPT the document root carries
-      `pos`:
+   4. POSITIONS ARE REQUIRED WHEN A TRUE SPAN EXISTS. Every node except the
+      document root MUST carry `pos` when it has a truthful contiguous span
+      in the source. A reassembled node MUST omit it (CARVE-P12-022); this
+      applies to citation items too (CARVE-P12-038). The position has this
+      shape:
 
         {"startLine":1,"endLine":1,"startColumn":2,"endColumn":5,
          "startOffset":1,"endOffset":4}

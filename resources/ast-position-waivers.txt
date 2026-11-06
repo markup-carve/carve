@@ -1,184 +1,17 @@
-# The POSITION findings `npm run ast:check` reports, split into the two
-# populations it used to print as one number.
-#
-# PART 12 §4 exempts a node the producer REASSEMBLED - its value is not a slice
-# of the source at any offset, so no honest span exists. docs/ast-json.md names
-# those cases verbatim - "A table cell continued on a `+` line, the hard break a
-# line block makes" - and its conformance table's carve-js row names carve-js as
-# the engine that omits a continued cell's position. Those lines are `permitted`
-# below and there is nothing to fix in any engine, ever.
-#
-# Everything else is OWED. docs/ast-json.md narrows the exemption to "covers
-# nodes that *cannot* be placed, not nodes that have not been placed yet", and
-# its conformance section states the test as "whether a true span EXISTS rather
-# than whether one was written down". Each of those lines carries the issue
-# tracking it.
-#
-# Cited by PHRASE, not by line: every line number this header used to carry had
-# drifted (carve#965), and the phrases are pinned in
-# scripts/spec/ast-page-anchors.mjs so a reworded clause fails a test instead of
-# quietly sending a reader to the wrong paragraph.
-#
-# Printed as one number the two were indistinguishable, so the total moved
-# whenever the CORPUS grew and nobody could tell which half moved. Measured over
-# the three engines' mains on 2026-08-06 that is not hypothetical: the permitted
-# half was 16 findings in each of the three engines and grew with the fixtures
-# added over the preceding week, while the owed half - 7 in carve-js, 17 in
-# carve-rs, 4 in carve-php - did not move at all.
-#
-# THE OWED HALF EMPTIED ONCE, AND DID NOT STAY EMPTY. Re-measured 2026-08-07 at
-# carve-js 39b9223, carve-rs 0d560cc and carve-php d45e250 over 833 documents,
-# all 28 owed findings were gone: carve-js#813 and carve-js#814, carve-rs#716,
-# #736 and #737, and carve-php#965 had all landed.
-#
-# RE-MEASURED 2026-08-17 at carve-js 02c4d80, carve-rs 1ad93f0 and carve-php
-# 4610ef8 - the three mains at the moment the pin moved to 02c4d80 - over the
-# same 1124 documents. NOTHING IN THIS FILE MOVED. The owed half still holds
-# four findings, all in carve-php and all one defect
-# (markup-carve/carve-php#1351, still open). Every permitted line still
-# reconciles: 38 findings in carve-js, 35 in carve-rs and 32 in carve-php, with
-# nothing outstanding in the first two. Findings, not lines: the count column is
-# what the run reconciles against, and a line may carry more than one.
-#
-# AND AGAIN LATER THAT DAY at carve-js 80537c8, carve-rs 71318e9 and carve-php
-# 84c422b, over 1131 documents - across carve-php shipping four container
-# rulings, seven new corpus documents and a carve-js comment-fence fix. NOTHING
-# IN THIS FILE MOVED EITHER TIME. Same four owed findings under the same open
-# issue, and the same permitted totals: 38, 35 and 32.
-#
-# THEN IT MOVED, an hour later, at carve-js c8c8dc3 over the same 1131
-# documents. markup-carve/carve-js#1154 gave a continuation row's carried text
-# its own span, so three PERMITTED lines stopped describing anything: the `333`
-# and `333-4` text omissions are gone entirely and `333-5` went from two to one.
-# carve-js's permitted total is 35, not 38. carve-rs and carve-php did not move
-# and still read 35 and 32, and the OWED half is untouched - the same four
-# findings under the same open markup-carve/carve-php#1351.
-#
-# AND AGAIN 2026-08-18, at the release freeze. The owed half is EMPTY: the three
-# markup-carve/carve-php#1351 lines reported FIXED and that issue is closed, so
-# they moved to the graveyard below. The permitted half grew by 62 findings over
-# 62 lines, entirely from the corpus growing 1124 -> 1259 across the freeze: the
-# `344` line block and eleven table documents in `349`, `354`, `355` and `356`.
-#
-# EVERY ONE OF THOSE 62 WAS CHECKED AGAINST THE CONSTRUCT, not against the run.
-# The eleven table documents each hold a `+` continuation row - five of them
-# behind a quote prefix (`> + b |`, `> > + b |`), which is why a naive scan for
-# a flush-left `+` misses them - and `docs/ast-json.md` names that case verbatim.
-# `344` is a code span opened on one line and continued past a comment-only line
-# the block layer removes, so its value is reassembled from two non-adjacent
-# regions and no honest span exists. None of the 62 is a node nobody has placed.
-#
-# MEASUREMENT BASIS, stated because it is weaker than the paragraphs above and a
-# reader should not have to guess: carve-js was measured at its main 2dc3232e.
-# carve-rs and carve-php were measured at LOCAL CHECKOUTS BEHIND THEIR MAINS,
-# so their document lists are inferred from the construct and from the run's own
-# three-way comparison reporting 1262 of 1262 documents unanimous - not from a
-# build of their release commits. The scheduled run is what confirms it.
-#
-# AND THE MEASUREMENT ARRIVED, later the same day, and corrected three of the
-# 62. Taken from fresh worktrees of every engine's main - carve-js 020c73e8,
-# carve-rs a33c42ad, carve-php f30ebd1 - over the same 1259 corpus documents
-# plus 3 synthetic samples, with each engine reporting 55 findings and 0
-# outstanding. The paragraph above is what the inference produced; this is what
-# a build of those mains says, and where the two differ the build wins:
-#
-#   carve-php  344 `code`    FIXED, deleted. All three engines place this span
-#                            and carve-js and carve-rs always did, which is the
-#                            tell the inference missed: a clause about the
-#                            CONSTRUCT cannot reach one engine only. The run's
-#                            value drops the comment line, but the region it owns
-#                            is contiguous from the opening backtick to its last
-#                            codepoint, so an honest extent exists. §4 exempts a
-#                            value no offset slices; it does not exempt a node
-#                            whose value is shorter than its extent.
-#   carve-php  355-2 `text`  FIXED, deleted. The continuation row here is `+ |`
-#                            and carries nothing, so the cell's text is the
-#                            contiguous `a` on the header row above it. Nothing
-#                            is reassembled and all three engines place it.
-#   carve-php  354 `text`    COUNT, 2 -> 1. The joined cell's `a cont` is still
-#                            unplaceable in every engine and its line stays; the
-#                            second cell's `b` is contiguous and carve-php now
-#                            places it, the same retirement
-#                            markup-carve/carve-js#1154 made for carve-js.
-#
-# NONE OF THE THREE WAS WIDENED and none went because the run wanted it gone:
-# each was probed directly against carve-rs and carve-php on the document named,
-# and the construct is what decided. Two of them were `permitted` lines
-# describing a node the other two engines had been placing all along - a waiver
-# sized to one engine's gap rather than to the clause, which is
-# markup-carve/carve#755's hole in its quietest form.
-#
-# WHICH IS WHY THE "NOTHING MOVED" NOTE ABOVE IS KEPT RATHER THAN OVERWRITTEN.
-# It was true when it was measured and false ninety minutes later, and the two
-# together are the actual claim this file can support: a permitted line is a
-# statement about one build, and the engines land fixes faster than a paragraph
-# describing them stays accurate. The run is what says which state you are in.
-#
-# The measurement this replaces ran the same 1124 documents at carve-js
-# e2e8460, carve-rs b6ff319 and carve-php b6d49a7, and reported both halves the
-# same way. Between the two, carve-js closed the five engine gaps
-# `resources/engine-pin-drift.txt` declared - so five merged engine fixes moved
-# the HTML that file is about and moved no position at all. The permitted half
-# it recorded growing by 24 findings over 20 declaration lines, from the `333`
-# continuation-row fixtures, is the state measured above.
-#
-# WHICH IS THE POINT OF DATING THE CLAIM. The corpus grew 291 documents between
-# the 2026-08-07 measurement and the two above, and the header's own note that
-# the permitted half "grew with the fixtures added over the preceding week"
-# says fixtures produce
-# position findings. An emptiness claim measured over a corpus a quarter smaller
-# than today's is not evidence the half is still empty - it is evidence of what
-# was true on the day, which is why the day is written down. Whoever re-measures
-# next: replace the paragraph above, do not append to it, and name the corpus
-# size and the three engine commits you measured at.
-#
-# The file was never going to be retired at empty: the permitted lines still
-# fail if an engine stops producing them, and the OWED section is where the next
-# gap gets declared. A ledger only kept while it is non-empty is a ledger nobody
-# starts again.
-#
+# AST position waivers under PART 12 §4 and CARVE-P12-022.
 # Format: <engine>  <document>  <type>  <count>  <status>
 #
-# `status` is `permitted` or a fully qualified `owner/repo#N`. Exact in three
-# directions, the same contract resources/ast-value-divergence.txt uses:
+# `permitted` means the node has no truthful contiguous source span because
+# its value was reassembled. An owed finding names a fully qualified engine
+# issue. Never use `permitted` for an engine that could place the node.
 #
-#   - a finding no line covers          -> UNWAIVED, fails
-#   - a line whose count moved          -> COUNT, fails
-#   - a line nothing produces any more  -> FIXED, fails until you delete it
+# The conformance run checks every finding and every declaration in both
+# directions: unwaived findings, changed counts and stale lines all fail.
+# The declaration is per engine, document and node type so one valid waiver
+# cannot conceal a separate gap of the same type.
 #
-# The third is the one that used to be unreachable in the sibling file: its
-# reconciliation ran only when something diverged, which is never the state a
-# stale line needs deleting in (carve#534).
-#
-# NEVER widen a line to `permitted` to quiet a run. A finding is permitted
-# because the node CANNOT be placed, not because nobody has placed it.
-#
-# Per ENGINE, per DOCUMENT and per TYPE, because `missing pos on "text"` is one
-# cause in `237-a-continuation-row-carries-no-trailing-text` that §4 permits and
-# a different cause in `182-openers-past-the-nesting-cap-are-one-paragraph` that
-# is an engine gap, and a per-type line would name the first and hide the
-# second - which is exactly what the grouped report did.
-
-# ---- PERMITTED: a merged `text` run whose pieces are not adjacent ------------
-#
-# The §4 reassembly clause. The two halves of a table cell continued on a `+`
-# line (237, 249-4, 256-15/16/17, 63, 64), and the merged `tab gap` text
-# whose space replaces a tab (41-line-blocks-9, 400, 402). All three engines
-# omit; the clause names the category, not the engine.
-#
-# `03-links-12` STOOD HERE and came off on 2026-08-08, one line per engine. It
-# was an autolink UNWRAPPED inside a link label: the label collapsed to a single
-# `text` run joined across the gap the autolink left, which is a value no offset
-# slices. §3a ended the unwrap - "a nested link and an autolink stay nodes"
-# (markup-carve/carve#967) - and all three engines now publish
-# `text > autolink > text` for `[pre <http://h> post](/u)`, each of the three
-# placed. Nothing is reassembled, so there is nothing for §4 to exempt, and a
-# waiver outliving its defect is a hole sized exactly to the old one
-# (markup-carve/carve#755).
-#
-# A CONTROL: these lines pin unchanged behavior, so no A/B over an engine can
-# fail on them. What is falsifiable is the declaration itself - see the three
-# directions above, each exercised in tests/ast-waivers.test.mjs.
+# ---- PERMITTED: nonadjacent merged text -------------------------------------
+# These rows describe joined text whose source pieces are not contiguous.
 
 carve-js   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted
 carve-js   402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  text        1  permitted
@@ -479,8 +312,6 @@ carve-js   557-a-line-retained-after-a-comment-opens-a-paragraph-4.crv  paragrap
 carve-js   557-a-line-retained-after-a-comment-opens-a-paragraph-4.crv  soft_break  1  permitted
 carve-js   557-a-line-retained-after-a-comment-opens-a-paragraph-5.crv  paragraph  1  permitted
 carve-js   557-a-line-retained-after-a-comment-opens-a-paragraph-5.crv  soft_break  1  permitted
-carve-js   570-an-at-column-comment-retains-nothing-2.crv  paragraph  1  permitted
-carve-js   570-an-at-column-comment-retains-nothing-2.crv  soft_break  1  permitted
 carve-js   588-a-block-quote-and-a-footnote-body-take-the-first-block-form-7.crv  comment  1  permitted
 carve-js   588-a-block-quote-and-a-footnote-body-take-the-first-block-form-8.crv  comment  1  permitted
 carve-js   616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  paragraph  1  permitted
@@ -492,9 +323,7 @@ carve-js   662-a-tab-after-a-comment-marker-stays-in-its-text.crv  soft_break  1
 carve-js   726-a-second-plus-starts-its-own-paragraph-after-attachment-4.crv  comment  1  permitted
 carve-js   801-a-footnote-body-refuses-a-first-block-at-its-body-column-2.crv  comment  1  permitted
 carve-js   801-a-footnote-body-refuses-a-first-block-at-its-body-column-3.crv  comment  1  permitted
-carve-js   801-a-footnote-body-refuses-a-first-block-at-its-body-column-4.crv  comment  1  permitted
 carve-js   801-a-footnote-body-refuses-a-first-block-at-its-body-column-8.crv  comment  1  permitted
-carve-js   801-a-footnote-body-refuses-a-first-block-at-its-body-column.crv  comment  1  permitted
 carve-js   802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-3.crv  comment  1  permitted
 carve-js   802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-4.crv  comment  1  permitted
 carve-js   802-an-unprefixed-line-does-not-reach-a-quoted-note-s-first-block-5.crv  comment  1  permitted
@@ -683,8 +512,6 @@ carve-php  557-a-line-retained-after-a-comment-opens-a-paragraph-4.crv  paragrap
 carve-php  557-a-line-retained-after-a-comment-opens-a-paragraph-4.crv  soft_break  1  permitted
 carve-php  557-a-line-retained-after-a-comment-opens-a-paragraph-5.crv  paragraph  1  permitted
 carve-php  557-a-line-retained-after-a-comment-opens-a-paragraph-5.crv  soft_break  1  permitted
-carve-php  570-an-at-column-comment-retains-nothing-2.crv  paragraph  1  permitted
-carve-php  570-an-at-column-comment-retains-nothing-2.crv  soft_break  1  permitted
 carve-php  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  block_quote  1  markup-carve/carve-php#4725
 carve-php  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  list  1  markup-carve/carve-php#4725
 carve-php  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  list_item  1  markup-carve/carve-php#4725
@@ -817,8 +644,6 @@ carve-rs  557-a-line-retained-after-a-comment-opens-a-paragraph-4.crv  paragraph
 carve-rs  557-a-line-retained-after-a-comment-opens-a-paragraph-4.crv  soft_break  1  permitted
 carve-rs  557-a-line-retained-after-a-comment-opens-a-paragraph-5.crv  paragraph  1  permitted
 carve-rs  557-a-line-retained-after-a-comment-opens-a-paragraph-5.crv  soft_break  1  permitted
-carve-rs  570-an-at-column-comment-retains-nothing-2.crv  paragraph  1  permitted
-carve-rs  570-an-at-column-comment-retains-nothing-2.crv  soft_break  1  permitted
 carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  block_quote  1  markup-carve/carve-rs#3934
 carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  list  1  markup-carve/carve-rs#3934
 carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  list_item  1  markup-carve/carve-rs#3934

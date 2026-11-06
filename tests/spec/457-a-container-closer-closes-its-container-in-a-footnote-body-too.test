@@ -25,24 +25,3 @@ see[^f]
   </ol>
 </section>
 ```
-
-```
-:: t
-:  a
-   ::: note
-    [r]: /url
-   :::
-
-[r][]
-.
-<dl>
-  <dt>t</dt>
-  <dd>
-    <p>a</p>
-    <aside class="admonition note" aria-label="Note">
-
-    </aside>
-  </dd>
-</dl>
-<p><a href="/url">r</a></p>
-```

@@ -199,8 +199,6 @@
              : {.c}
                text
 
-      L1a, L1b (withdrawn, carve#5131). L1 and CARVE-P9-013 state them.
-
       L1c THE BLANK IS READ AT THE LIST'S LEVEL, NOT THE ITEM'S. L1's first
          disjunct asks what stands BETWEEN one item and the next sibling
          marker. A blank line with nothing of the item after it stands between
@@ -347,9 +345,6 @@
            distinct construct;
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.
-      L6 (withdrawn, carve#5131). PART 0 S1, CARVE-P9-013 and the footnote
-         body row of PART 0 FAMILIES state it.
-
       L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN --
          NORMATIVE [CARVE-P9-035]. A container's preceding BLOCK-ATTRIBUTE LINE
          (§15) MAY carry the boolean `loose`. It says that the container's

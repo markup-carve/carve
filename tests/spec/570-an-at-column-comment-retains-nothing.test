@@ -25,16 +25,3 @@ tail</p>
   </ul>
 </blockquote>
 ```
-
-```
-- inner
-  %% c
- code
-- tail
-.
-<ul>
-  <li>inner
-code</li>
-  <li>tail</li>
-</ul>
-```

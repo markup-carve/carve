@@ -15,13 +15,6 @@ A block quote and a footnote body take the first-block form
 
 ```
 > +
-flush
-.
-<blockquote><p>flush</p></blockquote>
-```
-
-```
-> +
 .
 <blockquote>
 

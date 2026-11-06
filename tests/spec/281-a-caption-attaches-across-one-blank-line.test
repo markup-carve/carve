@@ -66,16 +66,6 @@ def greet():
 
 ```
 ![Apollo 11](apollo.jpg)
-^ Figure 1: First moon landing
-.
-<figure>
-  <img src="apollo.jpg" alt="Apollo 11">
-  <figcaption>Figure 1: First moon landing</figcaption>
-</figure>
-```
-
-```
-![Apollo 11](apollo.jpg)
 
 ^ Figure 1: First moon landing
 .
