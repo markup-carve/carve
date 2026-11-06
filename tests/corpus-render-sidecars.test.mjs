@@ -1,5 +1,6 @@
 /*
- * Every non-HTML sidecar in the core corpus is what the pinned build produces.
+ * Every non-HTML sidecar in the core corpus is what the pinned build produces,
+ * except target-specific differences declared in engine-target-drift.txt.
  *
  * The bytes in a `.md`, `.txt`, `.ansi` or `.fmt` sidecar are HAND-WRITTEN, so
  * `corpus:build` never rewrites one and nothing in this repository rendered
@@ -22,6 +23,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToAnsi, carveToCarve, carveToMarkdown, carveToPlainText } from '@markup-carve/carve'
 import { shortfall } from '../scripts/spec/participants.mjs'
+import { parseTargetDrift } from '../scripts/lib/target-drift.mjs'
 import { loadCanonicalDrift, loadDeclaredFmtDrift } from './fmt-drift.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -36,6 +38,8 @@ const RENDERERS = {
 
 const declared = loadDeclaredFmtDrift(here)
 const canonicalDrift = loadCanonicalDrift(here)
+const targetDrift = parseTargetDrift(resolve(here, '..', 'resources', 'engine-target-drift.txt'))
+const targetOfExtension = { md: 'markdown', txt: 'plain', ansi: 'ansi', fmt: 'carve' }
 
 const sidecars = readdirSync(corpusDir)
   .filter((name) => /^\d+-.*\.(md|txt|ansi|fmt)$/.test(name))
@@ -69,13 +73,16 @@ for (const name of sidecars) {
   // a read divergence need not diverge on every target, so asserting that it
   // still mismatches would fail for the wrong reason.
   const aheadOfPin = target === 'fmt' && canonicalDrift.has(slug)
+  const targetAheadOfPin = targetDrift.has(`${targetOfExtension[target]}/js/${slug}`)
   test(`${target}: ${slug}`, { skip: declared.has(slug) || aheadOfPin ? 'declared drift' : false }, () => {
     const source = resolve(corpusDir, `${slug}.crv`)
     assert.ok(existsSync(source), `missing ${slug}.crv pair`)
-    assert.equal(
-      RENDERERS[target](readFileSync(source, 'utf8')),
-      readFileSync(resolve(corpusDir, name), 'utf8'),
-      `${name} is not what the pinned build renders`,
-    )
+    const actual = RENDERERS[target](readFileSync(source, 'utf8'))
+    const expected = readFileSync(resolve(corpusDir, name), 'utf8')
+    if (targetAheadOfPin) {
+      assert.notEqual(actual, expected, `${name} now matches the pinned build; remove its target-drift entry`)
+    } else {
+      assert.equal(actual, expected, `${name} is not what the pinned build renders`)
+    }
   })
 }
