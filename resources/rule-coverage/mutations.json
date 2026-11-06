@@ -61,8 +61,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "(qOpenPara || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)",
-          "replace": "(true || qOpenPara || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)"
+          "find": "(qOpenPara || foldedColon || (qStanzaSpanRun !== null && qStanzaOpen)) &&\n            !bodyEndsWrappedAttr(inner)",
+          "replace": "(true || qOpenPara || foldedColon || (qStanzaSpanRun !== null && qStanzaOpen)) &&\n            !bodyEndsWrappedAttr(inner)"
         }
       ]
     },
@@ -206,7 +206,7 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "(qOpenPara || foldedColon) &&\n            !bodyEndsWrappedAttr(inner)",
+          "find": "(qOpenPara || foldedColon || (qStanzaSpanRun !== null && qStanzaOpen)) &&\n            !bodyEndsWrappedAttr(inner)",
           "replace": "false &&\n            !bodyEndsWrappedAttr(inner)"
         }
       ]
