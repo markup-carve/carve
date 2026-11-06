@@ -7343,12 +7343,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   return blocks
 }
 
-// A block that opens a code fence, after any attribute lines, and never closes it.
+// A block that opens a code fence, after any attribute lines or kept note, and never closes it.
 const leavesFenceOpen = (block) => {
   let at = 0
-  for (let attrs; ; ) {
+  for (let attrs, note; ; ) {
     if (isOneLineComment(block[at])) at++
     else if ((attrs = tryAttrLine(block, at))) at = attrs.next
+    else if ((note = leadingNoteEnd(block, at)) !== -1 && note < block.length) at = note
     else break
   }
   const m = FENCE.exec(block[at] ?? '')
@@ -7540,11 +7541,15 @@ function fencedBlockEnd(lines, start) {
  *  not. The caller hands lines[start..end) to parseBlocks, which owns the actual
  *  block classification. */
 // The line after a footnote definition at `at` and its unbroken body, or -1.
+// The walk reads a body line in the note, so it may stand at any column as text.
 function leadingNoteEnd(lines, at) {
   const measured = indentCols(lines[at] ?? '')
   if (!FOOTNOTE_DEF.test(measured.rest)) return -1
   let k = at + 1
-  while (k < lines.length && !isBlank(lines[k]) && indentCols(lines[k]).col >= measured.col + FOOTNOTE_BODY_COLUMN) k++
+  for (; k < lines.length && !isBlank(lines[k]); k++) {
+    const line = indentCols(lines[k])
+    if (line.col < measured.col + FOOTNOTE_BODY_COLUMN && !foldablePlainLine(line.rest)) break
+  }
   return k
 }
 function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
@@ -7985,13 +7990,14 @@ function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, q
   }
 }
 
-// A leading comment or attribute run belongs to the one block being attached.
+// A leading comment, attribute run or kept note belongs to the one block being attached.
 // Locate its actual opener before checking whether it is a colon frame.
 function attachedOpener(attached, column) {
   let opener = 0
-  for (let attrs; ; ) {
+  for (let attrs, note; ; ) {
     if (isOneLineComment(attached[opener]) && opener + 1 < attached.length) opener++
     else if ((attrs = tryAttrLine(dedentedWindow(attached, opener, column), 0)) && opener + attrs.next < attached.length) opener += attrs.next
+    else if ((note = leadingNoteEnd(attached, opener)) !== -1 && note < attached.length) opener = note
     else break
   }
   return opener

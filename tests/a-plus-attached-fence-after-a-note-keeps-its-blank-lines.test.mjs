@@ -7,7 +7,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 // (PART 9 §17 L3), so the fence after it runs through its closer as it does
 // without the note.
 const html = source => renderDoc(parse(source)).trim()
-const withoutNote = source => source.split('\n').filter(line => !line.includes('[^n]:')).join('\n')
+const withoutNote = source => source.split('\n').filter(line => !line.includes('[^n]:') && line.trim() !== 'y').join('\n')
 
 const cases = {
   'a blank body': '- +\n  [^n]: x\n```\n\n```\n',
@@ -15,6 +15,8 @@ const cases = {
   'a blank, then a line': '- +\n  [^n]: x\n~~~\n\nz\n~~~\n',
   'an ordered host': '1. +\n   [^n]: x\n```\n\n```\n',
   'a note at the marker column': '- +\n[^n]: x\n```\n\n```\n',
+  'no closer': '- +\n  [^n]: x\n```\nz\n',
+  'a note with a body line': '- +\n  [^n]: x\n    y\n```\n\n```\n',
 }
 
 for (const [name, source] of Object.entries(cases)) {
